@@ -1,0 +1,20 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad
+spec:
+  host: launchpad.apps.infra01.example.com
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad-admin
+spec:
+  host: launchpad-admin.apps.infra01.example.com
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad-api
+spec:
+  host: launchpad-api.apps.infra01.example.com

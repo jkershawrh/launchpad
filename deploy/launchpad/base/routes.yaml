@@ -43,11 +43,11 @@ metadata:
     app.kubernetes.io/part-of: partner-ai-launchpad
 spec:
   tls:
-    termination: edge
+    termination: reencrypt
     insecureEdgeTerminationPolicy: Redirect
   to:
     kind: Service
     name: backend
     weight: 100
   port:
-    targetPort: 8000
+    targetPort: 8443

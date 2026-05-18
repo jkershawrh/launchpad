@@ -6,13 +6,17 @@ namespace: partner-ai-launchpad
 resources:
   - ../../base
 
+patches:
+  - path: patch-routes.yaml
+  - path: patch-configmap.yaml
+
 images:
   - name: backend
-    newName: registry.CLUSTER_DOMAIN/partner-ai-launchpad/backend
+    newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend
     newTag: latest
   - name: partner-portal
-    newName: registry.CLUSTER_DOMAIN/partner-ai-launchpad/partner-portal
+    newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-portal
     newTag: latest
   - name: admin
-    newName: registry.CLUSTER_DOMAIN/partner-ai-launchpad/admin
+    newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-admin
     newTag: latest

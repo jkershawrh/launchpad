@@ -15,6 +15,7 @@ resources:
   - configmap.yaml
   - secrets-template.yaml
   - routes.yaml
+  - oauth-setup.yaml
 
 commonLabels:
   app.kubernetes.io/managed-by: kustomize

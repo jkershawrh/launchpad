@@ -2,14 +2,15 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import catalog_adapter, provisioning_service
+from app.auth.oauth import User, require_admin
 from app.domain.enums import CatalogStatus
 from app.domain.models import CatalogItem, LabSession
 from app.services.system_monitor import SystemMonitor
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 monitor = SystemMonitor()
 
 

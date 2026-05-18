@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import provisioning_service
+from app.auth.oauth import User, get_current_user
 from app.domain.enums import LabRequestStatus
 from app.domain.models import LabRequest, LabSession
 

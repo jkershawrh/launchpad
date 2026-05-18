@@ -18,7 +18,28 @@ spec:
         app.kubernetes.io/part-of: partner-ai-launchpad
         app.kubernetes.io/component: api
     spec:
+      serviceAccountName: launchpad-backend
       containers:
+        - name: oauth-proxy
+          image: registry.redhat.io/openshift4/ose-oauth-proxy:latest
+          args:
+            - --https-address=:8443
+            - --provider=openshift
+            - --openshift-service-account=launchpad-backend
+            - --upstream=http://localhost:8000
+            - --cookie-secret-file=/var/run/secrets/oauth/cookie-secret
+            - --tls-cert=/etc/tls/private/tls.crt
+            - --tls-key=/etc/tls/private/tls.key
+            - --pass-user-headers=true
+            - --pass-access-token=true
+          ports:
+            - containerPort: 8443
+              name: oauth-proxy
+          volumeMounts:
+            - name: tls
+              mountPath: /etc/tls/private
+            - name: oauth-cookie
+              mountPath: /var/run/secrets/oauth
         - name: backend
           image: backend:latest
           ports:
@@ -33,6 +54,8 @@ spec:
                 secretKeyRef:
                   name: launchpad-db-secret
                   key: DATABASE_URL
+            - name: AUTH_ENABLED
+              value: "true"
           readinessProbe:
             httpGet:
               path: /health
@@ -54,3 +77,10 @@ spec:
             limits:
               cpu: "1"
               memory: 512Mi
+      volumes:
+        - name: tls
+          secret:
+            secretName: launchpad-backend-tls
+        - name: oauth-cookie
+          secret:
+            secretName: launchpad-oauth-cookie
