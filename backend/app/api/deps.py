@@ -71,6 +71,16 @@ def create_provisioning_service() -> ProvisioningService:
             cleanup=LocalCleanupAdapter(),
             db_stores=db_stores,
         )
+    elif mode == "openshift":
+        from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+        from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
+        from app.adapters.openshift.validation import OpenShiftValidationAdapter
+        return ProvisioningService(
+            provisioner=OpenShiftProvisioningAdapter(),
+            validator=OpenShiftValidationAdapter(),
+            cleanup=OpenShiftCleanupAdapter(),
+            db_stores=db_stores,
+        )
     return ProvisioningService(db_stores=db_stores)
 
 

@@ -1,0 +1,53 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad
+  labels:
+    app.kubernetes.io/name: partner-portal
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: partner-portal
+    weight: 100
+  port:
+    targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad-admin
+  labels:
+    app.kubernetes.io/name: admin
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: admin
+    weight: 100
+  port:
+    targetPort: 8080
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad-api
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  to:
+    kind: Service
+    name: backend
+    weight: 100
+  port:
+    targetPort: 8000

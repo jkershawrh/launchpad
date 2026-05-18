@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -10,9 +12,13 @@ app = FastAPI(
     version="0.1.0",
 )
 
+cors_origins = os.environ.get(
+    "CORS_ORIGINS", "http://localhost:5173,http://localhost:5174"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174"],
+    allow_origins=[o.strip() for o in cors_origins],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -34,7 +40,9 @@ def startup():
 @app.get("/health")
 def health():
     db_url = get_database_url()
+    mode = os.environ.get("LAUNCHPAD_MODE", "mock")
     return {
         "status": "ok",
+        "mode": mode,
         "persistence": "postgresql" if db_url else "in-memory",
     }

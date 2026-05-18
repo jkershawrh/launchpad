@@ -1,0 +1,20 @@
+FROM registry.access.redhat.com/ubi9/nodejs-22:latest AS build
+
+USER 0
+WORKDIR /opt/app-root/src
+COPY package.json package-lock.json ./
+RUN npm ci && chmod -R g+w node_modules
+COPY . .
+RUN npm run build
+
+FROM registry.access.redhat.com/ubi9/nginx-122:latest
+
+LABEL name="partner-ai-launchpad-admin" \
+      version="0.1.0" \
+      description="Partner AI Launchpad — Admin Portal"
+
+COPY --from=build /opt/app-root/src/dist /opt/app-root/src
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]

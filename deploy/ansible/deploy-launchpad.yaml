@@ -1,0 +1,74 @@
+---
+- name: Deploy Partner AI Launchpad to OpenShift
+  hosts: localhost
+  connection: local
+  vars:
+    namespace: partner-ai-launchpad
+    overlay: infra01
+    deploy_dir: "{{ playbook_dir }}/../launchpad"
+    wait_timeout: 300
+
+  tasks:
+    - name: Verify oc login
+      ansible.builtin.command: oc whoami
+      register: oc_whoami
+      changed_when: false
+      failed_when: oc_whoami.rc != 0
+
+    - name: Display logged-in user
+      ansible.builtin.debug:
+        msg: "Logged in as {{ oc_whoami.stdout }}"
+
+    - name: Create namespace
+      ansible.builtin.command: oc new-project {{ namespace }}
+      register: ns_result
+      changed_when: ns_result.rc == 0
+      failed_when: ns_result.rc != 0 and 'already exists' not in ns_result.stderr
+      ignore_errors: true
+
+    - name: Switch to namespace if it already exists
+      ansible.builtin.command: oc project {{ namespace }}
+      when: ns_result.rc != 0
+      changed_when: false
+
+    - name: Apply secrets
+      ansible.builtin.command: >-
+        oc apply
+        -f {{ deploy_dir }}/base/secrets-template.yaml
+        -n {{ namespace }}
+      changed_when: true
+
+    - name: Apply kustomize overlay
+      ansible.builtin.command: >-
+        oc apply
+        -k {{ deploy_dir }}/overlays/{{ overlay }}
+        -n {{ namespace }}
+      changed_when: true
+
+    - name: Wait for pods ready
+      ansible.builtin.command: >-
+        oc wait
+        --for=condition=Available
+        deployment/backend
+        deployment/partner-portal
+        deployment/admin
+        deployment/postgres
+        -n {{ namespace }}
+        --timeout={{ wait_timeout }}s
+      changed_when: false
+      register: wait_result
+
+    - name: Get routes
+      ansible.builtin.command: >-
+        oc get route -n {{ namespace }}
+        -o jsonpath='{range .items[*]}{.metadata.name}={.spec.host}{"\n"}{end}'
+      register: routes_output
+      changed_when: false
+
+    - name: Print access URLs
+      ansible.builtin.debug:
+        msg: |
+          Deployment complete. Access URLs:
+          {% for line in routes_output.stdout_lines %}
+          - {{ line.split('=')[0] }}: https://{{ line.split('=')[1] }}
+          {% endfor %}

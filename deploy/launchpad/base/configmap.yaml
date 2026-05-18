@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-config
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+data:
+  LAUNCHPAD_MODE: "openshift"
+  CORS_ORIGINS: "https://launchpad.apps.CLUSTER_DOMAIN,https://launchpad-admin.apps.CLUSTER_DOMAIN"
