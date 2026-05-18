@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers import admin, branding, catalog, lab_requests, lab_sessions, tenants
+from app.storage.database import get_database_url, init_db
 
 app = FastAPI(
     title="Partner AI Launchpad",
@@ -24,6 +25,16 @@ app.include_router(branding.router)
 app.include_router(admin.router)
 
 
+@app.on_event("startup")
+def startup():
+    if get_database_url():
+        init_db()
+
+
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    db_url = get_database_url()
+    return {
+        "status": "ok",
+        "persistence": "postgresql" if db_url else "in-memory",
+    }

@@ -37,6 +37,7 @@ class ProvisioningService:
         showback=None,
         branding=None,
         cleanup=None,
+        db_stores=None,
     ):
         self.catalog = catalog or MockCatalogAdapter()
         self.pool = pool or MockPoolAdapter()
@@ -47,26 +48,42 @@ class ProvisioningService:
         self.showback = showback or MockShowbackAdapter()
         self.branding = branding or FileBrandingAdapter()
         self.cleanup = cleanup
+        self.db = db_stores
 
         self._requests: dict[str, LabRequest] = {}
         self._sessions: dict[str, LabSession] = {}
         self._plans: dict[str, ProvisioningPlan] = {}
 
+    def _save_request(self, request: LabRequest) -> None:
+        self._requests[request.request_id] = request
+        if self.db and hasattr(self.db, 'requests'):
+            self.db.requests.save(request)
+
+    def _save_session(self, session: LabSession) -> None:
+        self._sessions[session.session_id] = session
+        if self.db and hasattr(self.db, 'sessions'):
+            self.db.sessions.save(session)
+
+    def _save_plan(self, plan: ProvisioningPlan) -> None:
+        self._plans[plan.plan_id] = plan
+        if self.db and hasattr(self.db, 'plans'):
+            self.db.plans.save(plan)
+
     def submit_request(self, request: LabRequest) -> LabRequest:
         catalog_item = self.catalog.get_item(request.catalog_item_id)
         if not catalog_item:
             request = request.model_copy(update={"status": LabRequestStatus.REJECTED})
-            self._requests[request.request_id] = request
+            self._save_request(request)
             return request
 
         constraint_result: ConstraintResult = self.constraints.evaluate(request)
         if not constraint_result.allowed:
             request = request.model_copy(update={"status": LabRequestStatus.REJECTED})
-            self._requests[request.request_id] = request
+            self._save_request(request)
             return request
 
         request = request.model_copy(update={"status": LabRequestStatus.ACCEPTED})
-        self._requests[request.request_id] = request
+        self._save_request(request)
         return request
 
     def provision(self, request_id: str) -> LabSession:
@@ -87,7 +104,7 @@ class ProvisioningService:
         self.pool.reserve(request.request_id, hw, qp)
 
         plan = self.provisioner.create_plan(request, catalog_item)
-        self._plans[plan.plan_id] = plan
+        self._save_plan(plan)
 
         result = self.provisioner.provision(plan)
 
@@ -121,10 +138,10 @@ class ProvisioningService:
         session = transition(session, SessionStatus.PROVISIONING, reason="provisioning started")
         session = transition(session, SessionStatus.VALIDATING, reason="provisioning complete")
 
-        self._sessions[session.session_id] = session
-        self._requests[request_id] = request.model_copy(
+        self._save_session(session)
+        self._save_request(request.model_copy(
             update={"status": LabRequestStatus.PROVISIONING}
-        )
+        ))
 
         return session
 
@@ -142,7 +159,7 @@ class ProvisioningService:
         else:
             session = transition(session, SessionStatus.READY, reason="all checks passed")
 
-        self._sessions[session_id] = session
+        self._save_session(session)
         return session
 
     def activate_session(self, session_id: str) -> LabSession:
@@ -150,7 +167,7 @@ class ProvisioningService:
         if not session:
             raise ValueError(f"Session {session_id} not found")
         session = transition(session, SessionStatus.ACTIVE, reason="lab activated")
-        self._sessions[session_id] = session
+        self._save_session(session)
         return session
 
     def get_handoff(self, session_id: str) -> HandoffPackage:
@@ -253,7 +270,7 @@ class ProvisioningService:
         if not session:
             raise ValueError(f"Session {session_id} not found")
         session = transition(session, SessionStatus.RESETTING, reason="reset requested")
-        self._sessions[session_id] = session
+        self._save_session(session)
         return session
 
     def reclaim_session(self, session_id: str) -> LabSession:
@@ -264,7 +281,7 @@ class ProvisioningService:
         if self.cleanup and session.resources.get("compose_file"):
             self.cleanup.cleanup(session.resources["compose_file"])
         session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed")
-        self._sessions[session_id] = session
+        self._save_session(session)
         return session
 
     def force_reclaim_session(self, session_id: str) -> LabSession:
@@ -288,7 +305,7 @@ class ProvisioningService:
                 "lifecycle_events": session.lifecycle_events + [event],
             }
         )
-        self._sessions[session_id] = session
+        self._save_session(session)
         return session
 
     def get_session(self, session_id: str) -> Optional[LabSession]:
