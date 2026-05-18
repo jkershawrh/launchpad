@@ -3,18 +3,18 @@ kind: Route
 metadata:
   name: launchpad
 spec:
-  host: launchpad.apps.infra01.example.com
+  host: launchpad.apps.ocpv-infra01.dal12.infra.demo.redhat.com
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: launchpad-admin
 spec:
-  host: launchpad-admin.apps.infra01.example.com
+  host: launchpad-admin.apps.ocpv-infra01.dal12.infra.demo.redhat.com
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: launchpad-api
 spec:
-  host: launchpad-api.apps.infra01.example.com
+  host: launchpad-api.apps.ocpv-infra01.dal12.infra.demo.redhat.com
