@@ -1,0 +1,7 @@
+---
+- name: Health Check All Inference Services
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - health_check

@@ -1,0 +1,8 @@
+hardware_profile_id: gaudi-endpoint
+display_name: Gaudi Endpoint Access
+xeon_required: true
+gaudi_mode: endpoint
+openshift_ai_required: true
+kafka_required: false
+virtualization_required: false
+notes: Access to Gaudi-accelerated model endpoint via OpenShift AI

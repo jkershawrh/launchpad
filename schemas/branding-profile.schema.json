@@ -1,0 +1,72 @@
+{
+  "$defs": {
+    "BrandingTheme": {
+      "enum": [
+        "default",
+        "cockpit_dark",
+        "partner_light"
+      ],
+      "title": "BrandingTheme",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "branding_profile_id": {
+      "title": "Branding Profile Id",
+      "type": "string"
+    },
+    "display_name": {
+      "title": "Display Name",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "logo_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Logo Refs",
+      "type": "array"
+    },
+    "primary_color": {
+      "default": "#EE0000",
+      "title": "Primary Color",
+      "type": "string"
+    },
+    "secondary_color": {
+      "default": "#0066CC",
+      "title": "Secondary Color",
+      "type": "string"
+    },
+    "footer_text": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Footer Text"
+    },
+    "theme": {
+      "$ref": "#/$defs/BrandingTheme",
+      "default": "default"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "branding_profile_id",
+    "display_name",
+    "title"
+  ],
+  "title": "BrandingProfile",
+  "type": "object"
+}

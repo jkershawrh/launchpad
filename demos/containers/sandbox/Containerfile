@@ -1,0 +1,38 @@
+FROM registry.access.redhat.com/ubi9/python-311:latest
+
+LABEL name="ai-sandbox" \
+      version="1.0.0" \
+      description="Partner AI Launchpad — Open Sandbox Environment"
+
+USER 0
+
+RUN dnf install -y \
+    openssh-server \
+    openssh-clients \
+    git \
+    vim \
+    wget \
+    procps-ng \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
+
+RUN ssh-keygen -A \
+    && mkdir -p /run/sshd \
+    && sed -i 's/#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config \
+    && sed -i 's/#PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config \
+    && echo "Port 2222" >> /etc/ssh/sshd_config
+
+RUN useradd -m -s /bin/bash lab-user \
+    && echo "lab-user:launchpad" | chpasswd
+
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+COPY entrypoint.sh /opt/app-root/src/entrypoint.sh
+RUN chmod +x /opt/app-root/src/entrypoint.sh
+
+COPY playbooks/ /home/lab-user/playbooks/
+RUN chown -R lab-user:lab-user /home/lab-user/playbooks
+
+EXPOSE 2222 8888 8443 6901 8080
+
+ENTRYPOINT ["/opt/app-root/src/entrypoint.sh"]

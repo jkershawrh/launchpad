@@ -1,0 +1,172 @@
+---
+# Inference Gateway Quality Rubric
+# Scoring criteria for the routing gateway (Phase 1)
+
+name: gateway
+version: "1.0"
+total_points: 189
+pass_threshold: 90
+
+criteria:
+  structure:
+    router_compiles:
+      points: 5
+      severity: critical
+      check: "router.py compiles without syntax errors"
+    routing_policy_compiles:
+      points: 5
+      severity: critical
+      check: "routing_policy.py compiles without errors"
+    config_valid:
+      points: 5
+      severity: critical
+      check: "config.yaml parses as valid YAML with backends and routes"
+
+  routing:
+    task_type_routing:
+      points: 10
+      severity: critical
+      check: "Embeddings/classification/reranking route to OpenVINO CPU"
+    conditional_routing:
+      points: 10
+      severity: critical
+      check: "Completions route by model_size_b (<=3B CPU, >3B Gaudi)"
+    unknown_task_rejection:
+      points: 5
+      severity: high
+      check: "Unknown task types return HTTP 400"
+    routing_metadata:
+      points: 10
+      severity: critical
+      check: "Response includes selected_backend, reason, accelerator, latency, cost"
+
+  error_handling:
+    backend_down_502:
+      points: 10
+      severity: critical
+      check: "Returns 502 when backend is unreachable (not 200 with null)"
+    backend_timeout_504:
+      points: 5
+      severity: high
+      check: "Returns 504 when backend times out"
+    config_error_handled:
+      points: 5
+      severity: high
+      check: "Gateway handles missing/malformed config.yaml gracefully"
+
+  endpoints:
+    health_endpoint:
+      points: 5
+      severity: critical
+      check: "GET /health returns 200 with backend count and version"
+    routes_endpoint:
+      points: 5
+      severity: high
+      check: "GET /v1/routes returns current routing table"
+    backends_endpoint:
+      points: 5
+      severity: high
+      check: "GET /v1/backends returns backend list with capabilities"
+    metrics_endpoint:
+      points: 5
+      severity: medium
+      check: "GET /metrics returns Prometheus-format metrics"
+
+  container:
+    containerfile_exists:
+      points: 5
+      severity: critical
+      check: "Containerfile uses UBI9, non-root user, exposes port"
+    requirements_complete:
+      points: 5
+      severity: high
+      check: "requirements.txt includes fastapi, httpx, asyncpg, prometheus_client"
+
+  security:
+    api_key_auth:
+      description: "API-key middleware via FastAPI Depends() protects /v1/route and write endpoints"
+      points: 15
+      severity: critical
+      check: "grep for Depends and api_key in router.py"
+    error_sanitization:
+      description: "Error responses do not leak internal URLs or stack traces"
+      points: 10
+      severity: critical
+      check: "No svc.cluster.local in HTTPException detail strings"
+    request_size_limits:
+      description: "RouteRequest.prompt has max_length, texts has max_items via Field"
+      points: 5
+      severity: high
+      check: "grep for max_length in router.py RouteRequest"
+    rate_limiting:
+      description: "Rate limiter applied to /v1/route endpoint"
+      points: 5
+      severity: high
+      check: "grep for RateLimiter or rate_limit in router.py"
+    health_probes_backends:
+      description: "GET /health probes DB connectivity, not just static healthy"
+      points: 5
+      severity: high
+      check: "grep for is_connected in health endpoint"
+    retry_failover:
+      description: "On backend failure, tries fallback backend"
+      points: 5
+      severity: high
+      check: "grep for fallback in route_request function"
+    texts_typed_list_str:
+      description: "RouteRequest.texts is Optional[list[str]], not bare list"
+      points: 3
+      severity: high
+      check: "grep for list[str] in RouteRequest"
+    cors_middleware:
+      description: "CORSMiddleware configured with explicit origins"
+      points: 3
+      severity: medium
+      check: "grep for CORSMiddleware in router.py"
+    uuid_path_params:
+      description: "Path parameters use UUID type, not bare str"
+      points: 3
+      severity: medium
+      check: "grep for UUID in api.py path signatures"
+    build_payload_raises:
+      description: "_build_payload raises ValueError on unsupported task"
+      points: 3
+      severity: medium
+      check: "No return None, None in _build_payload"
+    containerfile_curl_health:
+      description: "Containerfile HEALTHCHECK uses curl, not python"
+      points: 2
+      severity: low
+      check: "grep for curl in Containerfile HEALTHCHECK"
+    logging_not_at_import:
+      description: "logging.basicConfig not called at module import level"
+      points: 2
+      severity: low
+      check: "basicConfig inside if __name__ block"
+
+  local_fallback:
+    local_fallback_module:
+      description: "gateway/local_inference.py exists and compiles"
+      points: 5
+      severity: high
+      check: "local_inference.py exists in gateway/"
+    local_fallback_env_toggle:
+      description: "Local fallback enabled via LOCAL_FALLBACK_ENABLED env var"
+      points: 5
+      severity: high
+      check: "grep LOCAL_FALLBACK_ENABLED in local_inference.py"
+    local_fallback_on_backend_failure:
+      description: "When primary backend unreachable and fallback is local, uses local model"
+      points: 10
+      severity: critical
+      check: "router.py references local_inference for fallback"
+    local_fallback_returns_metadata:
+      description: "Response includes selected_backend local and reason with fallback"
+      points: 5
+      severity: medium
+      check: "selected_backend local in router.py fallback path"
+    local_fallback_health_reports:
+      description: "Health endpoint reports local model status"
+      points: 3
+      severity: medium
+      check: "local_fallback in health endpoint response"

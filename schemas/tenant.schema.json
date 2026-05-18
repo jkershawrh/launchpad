@@ -1,0 +1,100 @@
+{
+  "$defs": {
+    "TenantStatus": {
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "title": "TenantStatus",
+      "type": "string"
+    },
+    "TenantType": {
+      "enum": [
+        "redhat_internal",
+        "intel_internal",
+        "partner",
+        "client",
+        "demo"
+      ],
+      "title": "TenantType",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "tenant_id": {
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "display_name": {
+      "title": "Display Name",
+      "type": "string"
+    },
+    "tenant_type": {
+      "$ref": "#/$defs/TenantType"
+    },
+    "status": {
+      "$ref": "#/$defs/TenantStatus",
+      "default": "active"
+    },
+    "branding_profile_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Branding Profile Id"
+    },
+    "default_quota_profile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Quota Profile"
+    },
+    "default_ttl": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Ttl"
+    },
+    "cost_center": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cost Center"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "display_name",
+    "tenant_type"
+  ],
+  "title": "Tenant",
+  "type": "object"
+}

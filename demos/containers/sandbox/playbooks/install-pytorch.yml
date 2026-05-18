@@ -1,0 +1,27 @@
+---
+- name: Install PyTorch with Intel Extensions
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Install PyTorch CPU
+      pip:
+        name:
+          - torch
+          - torchvision
+          - torchaudio
+        extra_args: "--extra-index-url https://download.pytorch.org/whl/cpu"
+        state: present
+
+    - name: Install Intel Extension for PyTorch
+      pip:
+        name: intel-extension-for-pytorch
+        state: present
+      ignore_errors: true
+
+    - name: Verify installation
+      command: python3 -c "import torch; print(f'PyTorch {torch.__version__} installed')"
+      register: pytorch_check
+
+    - name: Report
+      debug:
+        msg: "{{ pytorch_check.stdout }}"

@@ -1,0 +1,83 @@
+---
+# OpenVINO Model Server ServingRuntime for Xeon 6
+#
+# Uses the built-in OpenShift AI OVMS runtime.
+# Supports ONNX and OpenVINO IR model formats.
+# Enables BF16 inference via INFERENCE_PRECISION_HINT for AMX acceleration.
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: ovms-xeon6-runtime
+  namespace: intel-rh-openvino-inference
+  labels:
+    app.kubernetes.io/name: ovms-xeon6-runtime
+    platform: intel-xeon6
+  annotations:
+    openshift.io/display-name: "OpenVINO Model Server (Xeon 6 AMX)"
+    platform.intel.com/accelerator: xeon6-amx
+spec:
+  supportedModelFormats:
+    - name: openvino_ir
+      version: opset13
+      autoSelect: true
+    - name: onnx
+      version: "1"
+      autoSelect: true
+
+  protocolVersions:
+    - v2
+    - grpc-v2
+
+  containers:
+    - name: kserve-container
+      image: registry.redhat.io/rhoai/odh-openvino-serving-runtime-rhel8:latest
+      args:
+        - --model_name={{.Name}}
+        - --port=8080
+        - --rest_port=8888
+        - --model_path=/mnt/models
+        - --target_device=CPU
+        - --plugin_config={"INFERENCE_PRECISION_HINT":"BF16"}
+
+      ports:
+        - name: http
+          containerPort: 8888
+          protocol: TCP
+        - name: grpc
+          containerPort: 8080
+          protocol: TCP
+
+      resources:
+        requests:
+          cpu: "2"
+          memory: "2Gi"
+        limits:
+          cpu: "4"
+          memory: "4Gi"
+
+      securityContext:
+        runAsNonRoot: true
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+      livenessProbe:
+        httpGet:
+          path: /v2/health/live
+          port: 8888
+        initialDelaySeconds: 10
+        periodSeconds: 15
+
+      readinessProbe:
+        httpGet:
+          path: /v2/health/ready
+          port: 8888
+        initialDelaySeconds: 5
+        periodSeconds: 10
+
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""

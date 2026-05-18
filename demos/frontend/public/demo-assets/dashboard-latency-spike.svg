@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" font-family="Red Hat Text, sans-serif">
+  <rect width="800" height="400" fill="#1a1a2e" rx="8"/>
+  <text x="20" y="30" fill="#ccc" font-size="14" font-weight="700">Inference Gateway — Latency Dashboard</text>
+  <text x="700" y="30" fill="#666" font-size="11">Last 30 min</text>
+  <!-- P99 Latency Chart -->
+  <rect x="20" y="45" width="480" height="160" fill="#16213e" rx="4"/>
+  <text x="30" y="65" fill="#8892b0" font-size="11">p99 Latency (ms)</text>
+  <text x="440" y="65" fill="#e74c3c" font-size="11" font-weight="700">4,521 ms</text>
+  <polyline points="30,180 80,178 130,176 180,175 230,174 260,170 280,150 300,120 320,100 340,95 380,92 420,90 460,88 490,87" stroke="#3498db" fill="none" stroke-width="2"/>
+  <polyline points="260,170 280,150 300,120 320,100" stroke="#e74c3c" fill="none" stroke-width="3"/>
+  <text x="255" y="165" fill="#e74c3c" font-size="9">14:23 UTC ▲</text>
+  <text x="30" y="195" fill="#555" font-size="9">200ms</text>
+  <text x="30" y="100" fill="#555" font-size="9">4,500ms</text>
+  <!-- Error Rate -->
+  <rect x="510" y="45" width="270" height="160" fill="#16213e" rx="4"/>
+  <text x="520" y="65" fill="#8892b0" font-size="11">Error Rate</text>
+  <text x="720" y="65" fill="#e74c3c" font-size="11" font-weight="700">3.2%</text>
+  <rect x="530" y="80" width="230" height="20" fill="#2d3436" rx="3"/>
+  <rect x="530" y="80" width="74" height="20" fill="#e74c3c" rx="3"/>
+  <text x="540" y="94" fill="#fff" font-size="10">3.2%</text>
+  <text x="520" y="120" fill="#8892b0" font-size="10">502 Errors: 47</text>
+  <text x="520" y="138" fill="#8892b0" font-size="10">Affected: /v1/route</text>
+  <text x="520" y="156" fill="#e74c3c" font-size="10">● ALERT FIRING</text>
+  <!-- Service Status -->
+  <rect x="20" y="215" width="480" height="80" fill="#16213e" rx="4"/>
+  <text x="30" y="235" fill="#8892b0" font-size="11">Inference Pods</text>
+  <circle cx="50" cy="260" r="8" fill="#2ecc71"/><text x="65" y="264" fill="#aaa" font-size="10">gateway-01 OK</text>
+  <circle cx="200" cy="260" r="8" fill="#2ecc71"/><text x="215" y="264" fill="#aaa" font-size="10">gateway-02 OK</text>
+  <circle cx="350" cy="260" r="8" fill="#e74c3c"/><text x="365" y="264" fill="#e74c3c" font-size="10">gaudi-01 DOWN</text>
+  <!-- Throughput -->
+  <rect x="510" y="215" width="270" height="80" fill="#16213e" rx="4"/>
+  <text x="520" y="235" fill="#8892b0" font-size="11">Throughput</text>
+  <text x="520" y="260" fill="#2ecc71" font-size="22" font-weight="700">847</text>
+  <text x="580" y="260" fill="#8892b0" font-size="12">req/s</text>
+  <text x="520" y="280" fill="#666" font-size="10">▼ 3% from baseline</text>
+  <!-- Footer -->
+  <rect x="20" y="310" width="760" height="70" fill="#16213e" rx="4"/>
+  <text x="30" y="335" fill="#8892b0" font-size="11">Intel Xeon 6 + Gaudi — Inference Platform Operations</text>
+  <rect x="30" y="348" width="80" height="18" fill="#2ecc71" rx="3"/><text x="42" y="361" fill="#fff" font-size="10">Xeon Eco</text>
+  <rect x="120" y="348" width="80" height="18" fill="#3498db" rx="3"/><text x="127" y="361" fill="#fff" font-size="10">Xeon Perf</text>
+  <rect x="210" y="348" width="80" height="18" fill="#e67e22" rx="3"/><text x="222" y="361" fill="#fff" font-size="10">Gaudi</text>
+  <text x="310" y="361" fill="#e74c3c" font-size="10">Overdrive lane: OFFLINE</text>
+</svg>

@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-routing-config
+  namespace: intel-rh-demo
+data:
+  config.local.yaml: |
+    ---
+    # Routing config — LiteLLM proxy on Red Hat OpenShift AI
+    # Falls back to local TinyLlama if LiteLLM is unreachable
+    #
+    # Confirmed working models:
+    #   Xeon 6 (CPU):
+    #     granite-4-0-h-tiny       — IBM Granite tiny, fast classification/governance
+    #     codellama-7b-instruct    — Code Llama 7B, CPU-efficient completion
+    #     nomic-embed-text-v1-5    — Nomic embeddings (768-dim)
+    #   Gaudi (GPU):
+    #     granite-3-2-8b-instruct  — IBM Granite 8B, general-purpose chat
+    #     llama-scout-17b          — Llama Scout 17B, complex reasoning
+    #     deepseek-r1-distill-qwen-14b — DeepSeek 14B, deep analysis
+    #     microsoft-phi-4          — Phi-4 14B, structured output
+    #
+    #   Down/incompatible: qwen3-14b, Llama-Guard-3-1B, Docling
+
+    backends:
+      - name: litellm-cpu
+        url: ${LITELLM_API_BASE}
+        api_key: ${LITELLM_API_KEY}
+        accelerator: xeon6
+        capabilities:
+          - completion
+          - embeddings
+          - classification
+          - reranking
+          - governance
+          - policy
+        cost_per_1k_tokens: 0.0004
+        max_concurrent: 10
+
+      - name: litellm-gpu
+        url: ${LITELLM_API_BASE}
+        api_key: ${LITELLM_API_KEY}
+        accelerator: gaudi
+        capabilities:
+          - completion
+          - batch_generation
+          - governance
+          - policy
+        cost_per_1k_tokens: 0.001
+        max_concurrent: 5
+
+    routes:
+      - task: embeddings
+        backend: litellm-cpu
+        reason: "nomic-embed-text-v1-5 on Xeon 6 — 768-dim embeddings"
+        fallback: local
+
+      - task: classification
+        backend: litellm-cpu
+        reason: "granite-4-0-h-tiny on Xeon 6 — fast, low-cost classification"
+        fallback: local
+
+      - task: search
+        backend: litellm-cpu
+        reason: "Vector search via LiteLLM on Xeon 6"
+
+      - task: reranking
+        backend: litellm-cpu
+        reason: "codellama-7b-instruct cross-encoder reranking on Xeon 6"
+        fallback: local
+
+      - task: completion
+        conditions:
+          - model_size_b: 8
+            operator: "<="
+            backend: litellm-cpu
+            reason: "codellama-7b on Xeon 6 — small model, CPU-efficient with AMX"
+          - model_size_b: 8
+            operator: ">"
+            backend: litellm-gpu
+            reason: "llama-scout-17b on Gaudi — large model needs HBM and tensor cores"
+        default_backend: litellm-gpu
+        reason: "Route by model size — small to Xeon 6, large to Gaudi"
+        fallback: local
+
+      - task: batch_generation
+        backend: litellm-gpu
+        reason: "deepseek-r1-distill-qwen-14b on Gaudi — batch throughput"
+        fallback: local
+
+      - task: governance
+        backend: litellm-cpu
+        reason: "granite-4-0-h-tiny on Xeon 6 — fast governance evaluation"
+        fallback: local
+
+      - task: policy
+        backend: litellm-cpu
+        reason: "granite-4-0-h-tiny on Xeon 6 — policy compliance check"
+        fallback: local

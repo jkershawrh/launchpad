@@ -1,0 +1,42 @@
+---
+- name: Apply inference gateway manifests
+  ansible.builtin.command:
+    cmd: "oc apply -k {{ deploy_dir }}/gateway"
+  register: apply_result
+  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+- name: Wait for gateway deployment to be ready
+  ansible.builtin.command:
+    cmd: >
+      oc rollout status deployment/inference-gateway
+      -n intel-rh-inference-gateway
+      --timeout={{ deploy_timeout_seconds }}s
+  register: rollout_result
+  changed_when: false
+
+- name: Get gateway route URL
+  ansible.builtin.command:
+    cmd: "oc get route inference-gateway -n intel-rh-inference-gateway -o jsonpath='{.spec.host}'"
+  register: gateway_url
+  changed_when: false
+
+- name: Health check gateway
+  ansible.builtin.uri:
+    url: "https://{{ gateway_url.stdout }}/health"
+    method: GET
+    return_content: true
+    validate_certs: false
+    timeout: 10
+  register: gw_health
+  retries: 5
+  delay: 5
+  until: gw_health.status == 200
+
+- name: Display gateway status
+  ansible.builtin.debug:
+    msg: |
+      Inference Gateway Deployed:
+        URL: https://{{ gateway_url.stdout }}
+        Backends: {{ gw_health.json.backends }}
+        Routes: {{ gw_health.json.routes }}
+        Status: {{ gw_health.json.status }}

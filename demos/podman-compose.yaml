@@ -1,0 +1,81 @@
+---
+# Intel-Red Hat AI Partner Demo — Local Development Stack
+#
+# Usage:
+#   podman-compose up --build -d
+#   podman-compose logs -f gateway
+#   podman-compose down -v
+#
+# Services:
+#   postgres       — PostgreSQL 15 (port 5432)
+#   gateway        — Inference Gateway + API (port 8080)
+#   cpu-inference  — vLLM CPU inference server (port 8000)
+#   frontend       — React dashboard (port 3000)
+#
+# Not included (require cluster hardware):
+#   gaudi-inference  — needs Intel Gaudi accelerator
+#   openvino-cpu     — needs KServe/OpenShift AI operator
+
+services:
+  postgres:
+    image: docker.io/library/postgres:15-alpine
+    environment:
+      POSTGRES_USER: gateway
+      POSTGRES_PASSWORD: REDACTED
+      POSTGRES_DB: inference_platform
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "gateway"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Containerfile
+    env_file:
+      - .env
+    environment:
+      PORT: "8080"
+      DATABASE_URL: "postgresql://gateway:REDACTED@postgres:5432/inference_platform"
+      CONFIG_PATH: "/opt/app-root/src/config.local.yaml"
+      LOCAL_FALLBACK_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./gateway/config.local.yaml:/opt/app-root/src/config.local.yaml:ro
+      - gateway_model_cache:/opt/app-root/src/.cache
+
+  cpu-inference:
+    build:
+      context: ./containers/vllm-cpu
+      dockerfile: Containerfile
+    environment:
+      MODEL_NAME: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+      PORT: "8000"
+      USE_BF16: "false"
+    ports:
+      - "8000:8000"
+    volumes:
+      - model_cache:/opt/app-root/src/.cache
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Containerfile
+    ports:
+      - "3030:8080"
+    depends_on:
+      - gateway
+
+volumes:
+  postgres_data:
+  model_cache:
+  gateway_model_cache:

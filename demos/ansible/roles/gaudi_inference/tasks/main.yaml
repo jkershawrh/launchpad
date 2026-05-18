@@ -1,0 +1,54 @@
+---
+- name: Check for Gaudi nodes
+  ansible.builtin.command:
+    cmd: >
+      oc get nodes -o jsonpath='{.items[?(@.status.allocatable.habana\.ai/gaudi)].metadata.name}'
+  register: gaudi_nodes
+  changed_when: false
+
+- name: Fail if no Gaudi nodes available
+  ansible.builtin.fail:
+    msg: "No Gaudi GPU nodes found in cluster. Cannot deploy Gaudi inference path."
+  when: gaudi_nodes.stdout | trim | length == 0
+
+- name: Check for Habana device plugin
+  ansible.builtin.command:
+    cmd: "oc get daemonset -A -o name"
+  register: daemonsets
+  changed_when: false
+
+- name: Warn if Habana device plugin not detected
+  ansible.builtin.debug:
+    msg: "WARNING: Habana device plugin DaemonSet not detected. Gaudi pods may fail to schedule."
+  when: "'habana' not in daemonsets.stdout"
+
+- name: Apply Gaudi inference manifests
+  ansible.builtin.command:
+    cmd: "oc apply -k {{ deploy_dir }}/gaudi-inference"
+  register: apply_result
+  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+- name: Wait for Gaudi InferenceService to be ready
+  ansible.builtin.command:
+    cmd: >
+      oc wait --for=condition=Ready
+      inferenceservice/gaudi-inference-example
+      -n {{ gaudi_namespace }}
+      --timeout={{ deploy_timeout_seconds }}s
+  register: wait_result
+  changed_when: false
+
+- name: Get Gaudi InferenceService URL
+  ansible.builtin.command:
+    cmd: "oc get inferenceservice gaudi-inference-example -n {{ gaudi_namespace }} -o jsonpath='{.status.url}'"
+  register: gaudi_url
+  changed_when: false
+
+- name: Display Gaudi deployment status
+  ansible.builtin.debug:
+    msg: |
+      Gaudi Inference Deployed:
+        Namespace: {{ gaudi_namespace }}
+        URL: {{ gaudi_url.stdout }}
+        Gaudi Nodes: {{ gaudi_nodes.stdout }}
+        Status: Ready

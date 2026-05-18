@@ -1,0 +1,7 @@
+---
+- name: Teardown All Inference Deployments
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - teardown

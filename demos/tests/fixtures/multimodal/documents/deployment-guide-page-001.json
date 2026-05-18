@@ -1,0 +1,20 @@
+{
+  "fixture_id": "deployment-guide-page-001",
+  "type": "document",
+  "source": "synthetic",
+  "description": "8-page deployment quick-start guide for the Intel-Red Hat AI Inference Platform on OpenShift. Covers prerequisites, operator installation, model deployment, routing configuration, and verification steps. Includes 3 screenshots of OpenShift console and 2 terminal output examples.",
+  "page_count": 8,
+  "format": "pdf",
+  "sections": [
+    {"page": 1, "title": "Prerequisites", "has_images": false},
+    {"page": 2, "title": "Cluster Setup", "has_images": true, "image_description": "OpenShift console - node list"},
+    {"page": 3, "title": "Install Operators", "has_images": true, "image_description": "OperatorHub search for RHOAI"},
+    {"page": 4, "title": "Deploy Gateway", "has_images": false},
+    {"page": 5, "title": "Deploy Inference Runtimes", "has_images": true, "image_description": "Terminal output - oc apply"},
+    {"page": 6, "title": "Configure Routing", "has_images": false},
+    {"page": 7, "title": "Verify Deployment", "has_images": true, "image_description": "Terminal output - curl health check"},
+    {"page": 8, "title": "Troubleshooting", "has_images": false}
+  ],
+  "expected_tags": ["deployment", "quickstart", "openshift", "operators"],
+  "demo_context": "Used for document_visual_summary tasks — the model summarizes a deployment guide with embedded screenshots."
+}

@@ -1,0 +1,44 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: openvino-inference-policy
+  namespace: intel-rh-openvino-inference
+  labels:
+    app.kubernetes.io/name: openvino-inference-policy
+    app.kubernetes.io/part-of: intel-rh-ai-platform
+    platform: intel-xeon6
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              policy-group.network.openshift.io/ingress: ""
+      ports:
+        - port: 8888
+          protocol: TCP
+        - port: 8080
+          protocol: TCP
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: intel-rh-inference-gateway
+      ports:
+        - port: 8888
+          protocol: TCP
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+      ports:
+        - port: 53
+          protocol: UDP
+    - to: []
+      ports:
+        - port: 443
+          protocol: TCP

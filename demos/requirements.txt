@@ -1,0 +1,21 @@
+# Python dependencies for Intel-Red Hat Partner AI Demo Platform
+
+# Testing framework
+pytest>=8.0.0
+pytest-cov>=4.1.0
+pytest-timeout>=2.2.0
+
+# YAML and config parsing
+pyyaml>=6.0
+
+# HTTP requests for API testing
+requests>=2.31.0
+
+# Code quality
+flake8>=7.0.0
+pylint>=3.0.0
+black>=24.0.0
+isort>=5.13.0
+
+# Container interaction
+# Note: Assumes podman CLI is installed on system

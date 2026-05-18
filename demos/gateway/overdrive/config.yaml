@@ -1,0 +1,181 @@
+lanes:
+  eco:
+    target_endpoint: ${LITELLM_API_BASE}
+    model: granite-4-0-h-tiny
+    accelerator: xeon6
+    capabilities: [classification, short_summary, image_classification, screenshot_classification]
+    max_token_estimate: 4000
+    max_latency_ms: 8000
+    priority_min: low
+
+  performance:
+    target_endpoint: ${LITELLM_API_BASE}
+    model: codellama-7b-instruct
+    accelerator: xeon6
+    capabilities: [embedding, rerank, short_summary, long_summary, rag_question, image_text_embedding, visual_similarity, ocr_layout_extract]
+    max_token_estimate: 16000
+    max_latency_ms: 5000
+    priority_min: normal
+
+  overdrive:
+    target_endpoint: ${LITELLM_API_BASE}
+    model: llama-scout-17b
+    accelerator: gaudi
+    capabilities: [long_summary, incident_rca, batch_summary, document_summary, code_summary, rag_question, screenshot_summary, chart_interpretation, diagram_explanation, document_visual_summary, visual_rag_question, multimodal_incident_summary, multimodal_rca, image_to_manual]
+    max_token_estimate: 64000
+    max_latency_ms: 10000
+    priority_min: high
+
+routing_matrix:
+  - task_type: classification
+    token_max: 4000
+    priority: any
+    latency_target_max: 8000
+    lane: eco
+
+  - task_type: embedding
+    token_max: 8000
+    priority: any
+    latency_target_max: 5000
+    lane: performance
+
+  - task_type: rerank
+    token_max: 8000
+    priority: any
+    latency_target_max: 5000
+    lane: performance
+
+  - task_type: short_summary
+    token_max: 16000
+    priority: [normal, high]
+    latency_target_max: 8000
+    lane: performance
+
+  - task_type: long_summary
+    token_min: 16000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: incident_rca
+    token_min: 16000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: batch_summary
+    token_min: 32000
+    priority: [high, critical]
+    latency_target_max: 10000
+    lane: overdrive
+
+  - task_type: rag_question
+    token_max: 8000
+    priority: any
+    latency_target_max: 5000
+    lane: performance
+
+  - task_type: rag_question
+    token_min: 8000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: document_summary
+    token_min: 16000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: code_summary
+    token_min: 16000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  # Multimodal routing rules
+  - task_type: image_classification
+    token_max: 4000
+    priority: any
+    latency_target_max: 8000
+    lane: eco
+
+  - task_type: screenshot_classification
+    token_max: 4000
+    priority: any
+    latency_target_max: 8000
+    lane: eco
+
+  - task_type: image_text_embedding
+    token_max: 8000
+    priority: any
+    latency_target_max: 5000
+    lane: performance
+
+  - task_type: visual_similarity
+    token_max: 8000
+    priority: any
+    latency_target_max: 5000
+    lane: performance
+
+  - task_type: ocr_layout_extract
+    token_max: 8000
+    priority: any
+    latency_target_max: 5000
+    lane: performance
+
+  - task_type: screenshot_summary
+    token_min: 8000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: chart_interpretation
+    token_min: 8000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: diagram_explanation
+    token_min: 8000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: document_visual_summary
+    token_min: 16000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: visual_rag_question
+    token_min: 8000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: multimodal_incident_summary
+    token_min: 16000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: multimodal_rca
+    token_min: 16000
+    priority: [high, critical]
+    latency_target_max: 5000
+    lane: overdrive
+
+  - task_type: image_to_manual
+    token_min: 8000
+    priority: [high, critical]
+    latency_target_max: 10000
+    lane: overdrive
+
+fallback_rules:
+  - from: overdrive
+    to: performance
+    condition: token_estimate_lt_32000
+  - from: performance
+    to: eco
+    condition: task_type_in_classification,short_summary

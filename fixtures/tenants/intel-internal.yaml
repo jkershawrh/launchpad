@@ -1,0 +1,8 @@
+tenant_id: intel-internal
+display_name: Intel Internal
+tenant_type: intel_internal
+status: active
+branding_profile_id: redhat-intel-default
+default_quota_profile: large
+default_ttl: "24h"
+cost_center: intel-internal-demos

@@ -1,0 +1,10 @@
+branding_profile_id: redhat-intel-default
+display_name: Red Hat + Intel Default
+title: Partner AI Launchpad
+logo_refs:
+  - redhat-logo.svg
+  - intel-logo.svg
+primary_color: "#EE0000"
+secondary_color: "#0071C5"
+footer_text: "Powered by Red Hat OpenShift and Intel"
+theme: default

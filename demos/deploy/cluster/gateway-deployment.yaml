@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: intel-rh-demo
+  labels:
+    app: inference-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inference-gateway
+  template:
+    metadata:
+      labels:
+        app: inference-gateway
+    spec:
+      containers:
+        - name: gateway
+          image: image-registry.openshift-image-registry.svc:5000/intel-rh-demo/inference-gateway:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "8080"
+            - name: CONFIG_PATH
+              value: /config/config.local.yaml
+            - name: LOCAL_FALLBACK_ENABLED
+              value: "false"
+          envFrom:
+            - secretRef:
+                name: gateway-config
+            - secretRef:
+                name: postgres-credentials
+                optional: true
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+            - name: model-cache
+              mountPath: /model-cache
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+      volumes:
+        - name: config
+          configMap:
+            name: gateway-routing-config
+        - name: tmp
+          emptyDir: {}
+        - name: model-cache
+          emptyDir: {}

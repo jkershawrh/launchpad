@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: intel-rh-database
+  labels:
+    app.kubernetes.io/name: inference-database
+    app.kubernetes.io/part-of: intel-rh-ai-platform
+spec:
+  selector:
+    app.kubernetes.io/name: inference-database
+  ports:
+    - port: 5432
+      targetPort: 5432
+      protocol: TCP
+  type: ClusterIP

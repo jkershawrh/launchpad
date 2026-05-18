@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-cache
+  namespace: intel-rh-openvino-inference
+  labels:
+    app.kubernetes.io/name: model-cache
+    app.kubernetes.io/part-of: intel-rh-ai-platform
+    platform: intel-xeon6
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

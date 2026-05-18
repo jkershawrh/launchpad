@@ -1,0 +1,30 @@
+---
+- name: Apply CPU inference manifests
+  ansible.builtin.command:
+    cmd: "oc apply -k {{ deploy_dir }}/cpu-inference"
+  register: apply_result
+  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+- name: Wait for CPU InferenceService to be ready
+  ansible.builtin.command:
+    cmd: >
+      oc wait --for=condition=Ready
+      inferenceservice/cpu-inference-example
+      -n {{ cpu_namespace }}
+      --timeout={{ deploy_timeout_seconds }}s
+  register: wait_result
+  changed_when: false
+
+- name: Get CPU InferenceService URL
+  ansible.builtin.command:
+    cmd: "oc get inferenceservice cpu-inference-example -n {{ cpu_namespace }} -o jsonpath='{.status.url}'"
+  register: cpu_url
+  changed_when: false
+
+- name: Display CPU deployment status
+  ansible.builtin.debug:
+    msg: |
+      CPU Inference Deployed:
+        Namespace: {{ cpu_namespace }}
+        URL: {{ cpu_url.stdout }}
+        Status: Ready

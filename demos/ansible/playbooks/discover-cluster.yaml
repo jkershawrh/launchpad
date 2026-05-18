@@ -1,0 +1,7 @@
+---
+- name: Discover OpenShift AI Cluster Configuration
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - cluster_discovery

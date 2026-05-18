@@ -1,0 +1,11 @@
+route_id: eco
+required_checks:
+  - endpoint_defined
+  - endpoint_health_pass
+  - supports_task_type
+  - token_estimate_within_limit
+fail_conditions:
+  - endpoint_missing
+  - health_failed
+  - task_unsupported
+  - token_estimate_exceeds_lane_max

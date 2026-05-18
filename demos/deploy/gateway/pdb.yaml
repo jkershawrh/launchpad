@@ -1,0 +1,13 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: inference-gateway-pdb
+  namespace: intel-rh-inference-gateway
+  labels:
+    app.kubernetes.io/name: inference-gateway
+    app.kubernetes.io/part-of: intel-rh-ai-platform
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inference-gateway

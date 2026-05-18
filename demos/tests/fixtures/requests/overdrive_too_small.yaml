@@ -1,0 +1,10 @@
+request_id: fix-008
+task_type: classification
+token_estimate: 1000
+priority: critical
+latency_target_ms: 8000
+prompt: "Small classification"
+expected:
+  selected_route: eco
+  outcome: route
+  reason: task_does_not_require_overdrive

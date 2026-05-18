@@ -1,0 +1,62 @@
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: gaudi-inference-example
+  namespace: intel-rh-gaudi-inference
+  labels:
+    app.kubernetes.io/name: gaudi-inference-example
+    platform: intel-gaudi
+    accelerator: gaudi-gpu
+  annotations:
+    description: "Example Gaudi GPU inference service for partners"
+    serving.kserve.io/deploymentMode: "Serverless"
+    openshift.io/display-name: "Gaudi Inference Example"
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: pytorch
+        version: "2"
+
+      runtime: vllm-gaudi-runtime
+
+      # Optional: Specify storage for custom models
+      # storageUri: "pvc://model-storage/phi-2"
+      # OR
+      # storageUri: "s3://bucket/path/to/model"
+
+      resources:
+        requests:
+          cpu: "4"
+          memory: "16Gi"
+          habana.ai/gaudi: "1"
+        limits:
+          cpu: "8"
+          memory: "32Gi"
+          habana.ai/gaudi: "1"
+
+      env:
+        - name: MODEL_NAME
+          value: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+        # For larger models on Gaudi:
+        # value: "microsoft/phi-2"  # 2.7B
+        # value: "microsoft/Phi-3-mini-4k-instruct"  # 3.8B
+        # value: "meta-llama/Llama-2-7b-chat-hf"  # 7B (requires approval)
+
+    # Scaling configuration
+    # Gaudi is expensive - keep replicas lower than CPU
+    minReplicas: 1
+    maxReplicas: 3
+
+    # Container concurrency (requests per pod)
+    # Gaudi can handle more concurrent requests than CPU
+    containerConcurrency: 5
+
+    # Scale-to-zero (optional - comment out to keep running)
+    # For Gaudi, may want to keep at least 1 replica running to avoid cold starts
+    # scaleTarget: 1
+    # scaleMetric: concurrency
+
+  # Optional: Canary deployment
+  # canaryTrafficPercent: 10

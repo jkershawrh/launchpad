@@ -1,0 +1,36 @@
+---
+- name: Configure Observability
+  hosts: localhost
+  connection: local
+  vars:
+    metrics_port: 9090
+  tasks:
+    - name: Install prometheus client
+      pip:
+        name: prometheus-client
+        state: present
+
+    - name: Create metrics exporter script
+      copy:
+        dest: ~/metrics-exporter.py
+        content: |
+          """Simple metrics exporter for sandbox monitoring."""
+          from prometheus_client import start_http_server, Counter, Gauge
+          import time
+          import psutil
+
+          REQUEST_COUNT = Counter('sandbox_requests_total', 'Total inference requests')
+          CPU_USAGE = Gauge('sandbox_cpu_percent', 'CPU usage percentage')
+          MEM_USAGE = Gauge('sandbox_memory_percent', 'Memory usage percentage')
+
+          if __name__ == '__main__':
+              start_http_server({{ metrics_port }})
+              print(f"Metrics exporter running on port {{ metrics_port }}")
+              while True:
+                  CPU_USAGE.set(psutil.cpu_percent())
+                  MEM_USAGE.set(psutil.virtual_memory().percent)
+                  time.sleep(15)
+
+    - name: Report
+      debug:
+        msg: "Observability configured. Run: python3 ~/metrics-exporter.py"

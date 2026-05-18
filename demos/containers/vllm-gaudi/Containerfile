@@ -1,0 +1,139 @@
+# Gaudi Inference Container - V1 (Local Testing)
+#
+# This is V1 for local development and testing.
+# V2 will use official Habana base image when deployed to Gaudi cluster.
+#
+# V1 -> V2 Migration:
+# - Replace base image with vault.habana.ai/gaudi-docker/1.17.0/ubuntu22.04/habanalabs/pytorch-installer-2.3.1
+# - Install actual Habana drivers and Synapse AI SDK
+# - Use vLLM built with Gaudi backend support
+# - Configure HABANA_VISIBLE_DEVICES and HPU device mapping
+#
+# For now, V1 builds successfully and tests the inference API structure.
+
+FROM registry.access.redhat.com/ubi9/python-311:latest
+
+# Metadata
+LABEL name="vllm-gaudi-inference" \
+      version="1.0.0-v1" \
+      description="vLLM inference server with Intel Gaudi GPU support (V1 - local testing)" \
+      maintainer="Intel-RH AI Platform Team" \
+      io.k8s.description="vLLM inference server optimized for Intel Gaudi accelerators" \
+      io.k8s.display-name="vLLM Gaudi Inference V1" \
+      io.openshift.tags="ai,llm,inference,gaudi,vllm"
+
+USER 0
+
+# Install system dependencies
+RUN dnf install -y \
+    git \
+    gcc \
+    gcc-c++ \
+    make \
+    && dnf clean all
+
+USER 1001
+
+# Upgrade pip and install build tools
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+
+# Install PyTorch (CPU version for V1 local testing)
+# V2 will use: habana-torch with Gaudi backend
+RUN pip install --no-cache-dir \
+    torch==2.5.1 \
+    --index-url https://download.pytorch.org/whl/cpu
+
+# Install transformers and related libraries
+RUN pip install --no-cache-dir \
+    transformers>=4.40.0 \
+    accelerate>=0.27.0 \
+    sentencepiece \
+    protobuf
+
+# Install FastAPI for inference server
+RUN pip install --no-cache-dir \
+    fastapi>=0.110.0 \
+    uvicorn[standard]>=0.27.0 \
+    pydantic>=2.0.0
+
+# V1: Create mock Habana framework structure for testing
+# V2 will install: habana-frameworks-torch, habana-frameworks-tensorflow
+RUN mkdir -p /opt/app-root/src/.habana && \
+    echo "# V1 Mock - Replace with real Habana SDK in V2" > /opt/app-root/src/.habana/README
+
+# Set Habana environment variables (V1 placeholders)
+# V2 will set actual device mappings
+ENV HABANA_VISIBLE_DEVICES="all" \
+    HABANA_LOGS="/opt/app-root/src/logs/habana" \
+    HL_NUM_DEVICES="8" \
+    HABANA_USE_MOCK="true"
+
+# Model cache directory
+ENV HF_HOME=/opt/app-root/src/.cache \
+    TRANSFORMERS_CACHE=/opt/app-root/src/.cache
+
+# Create necessary directories
+RUN mkdir -p /opt/app-root/src/logs/habana && \
+    mkdir -p /opt/app-root/src/.cache
+
+# Switch to root to create system directories
+USER 0
+
+# V1: Create mock habanalabs directory structure
+# V2 will have actual Habana drivers installed by system packages
+RUN mkdir -p /usr/lib/habanalabs && \
+    echo "Mock Habana Driver V1" > /usr/lib/habanalabs/README.txt && \
+    chmod 755 /usr/lib/habanalabs
+
+# Switch back to non-root user
+USER 1001
+
+# Copy inference server
+COPY --chown=1001:0 inference_server.py /opt/app-root/src/
+COPY --chown=1001:0 entrypoint.sh /opt/app-root/src/
+
+# Make entrypoint executable
+RUN chmod +x /opt/app-root/src/entrypoint.sh
+
+# Set working directory
+WORKDIR /opt/app-root/src
+
+# Expose inference port
+EXPOSE 8000
+
+# Health check using Python (no curl dependency needed)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+
+# Use entrypoint script
+ENTRYPOINT ["/opt/app-root/src/entrypoint.sh"]
+
+# Notes for V2 (Real Gaudi Deployment):
+#
+# 1. Base Image:
+#    FROM vault.habana.ai/gaudi-docker/1.17.0/ubuntu22.04/habanalabs/pytorch-installer-2.3.1
+#
+# 2. Install Habana SDK:
+#    RUN apt-get update && apt-get install -y \
+#        habanalabs-firmware \
+#        habanalabs-graph \
+#        habanalabs-rdma-core \
+#        habanalabs-thunk
+#
+# 3. Install Habana PyTorch:
+#    RUN pip install habana-torch-plugin habana-torch-dataloader
+#
+# 4. Build vLLM with Gaudi backend:
+#    RUN git clone https://github.com/vllm-project/vllm.git && \
+#        cd vllm && \
+#        VLLM_TARGET_DEVICE=hpu python setup.py install
+#
+# 5. Device access in manifests:
+#    resources:
+#      limits:
+#        habana.ai/gaudi: 1
+#
+# 6. Environment variables:
+#    - Remove HABANA_USE_MOCK
+#    - Set actual device IDs
+#    - Configure Synapse AI logging

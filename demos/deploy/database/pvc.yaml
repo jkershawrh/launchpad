@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+  namespace: intel-rh-database
+  labels:
+    app.kubernetes.io/name: inference-database
+    app.kubernetes.io/part-of: intel-rh-ai-platform
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

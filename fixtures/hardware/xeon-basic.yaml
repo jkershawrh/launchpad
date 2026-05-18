@@ -1,0 +1,8 @@
+hardware_profile_id: xeon-basic
+display_name: Xeon Basic
+xeon_required: true
+gaudi_mode: none
+openshift_ai_required: false
+kafka_required: false
+virtualization_required: false
+notes: Standard Intel Xeon compute only

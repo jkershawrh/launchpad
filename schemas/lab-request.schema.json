@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "CatalogCategory": {
+      "enum": [
+        "quick_start",
+        "guided_build",
+        "open_sandbox"
+      ],
+      "title": "CatalogCategory",
+      "type": "string"
+    },
+    "LabRequestStatus": {
+      "enum": [
+        "submitted",
+        "accepted",
+        "rejected",
+        "provisioning",
+        "ready",
+        "failed"
+      ],
+      "title": "LabRequestStatus",
+      "type": "string"
+    },
+    "Persistence": {
+      "enum": [
+        "ephemeral",
+        "persistent"
+      ],
+      "title": "Persistence",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "tenant_id": {
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "requester_id": {
+      "title": "Requester Id",
+      "type": "string"
+    },
+    "catalog_item_id": {
+      "title": "Catalog Item Id",
+      "type": "string"
+    },
+    "requested_mode": {
+      "$ref": "#/$defs/CatalogCategory"
+    },
+    "persistence": {
+      "$ref": "#/$defs/Persistence",
+      "default": "ephemeral"
+    },
+    "ttl": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ttl"
+    },
+    "hardware_profile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Hardware Profile"
+    },
+    "quota_profile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quota Profile"
+    },
+    "branding_profile_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Branding Profile Id"
+    },
+    "requested_capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Requested Capabilities",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/LabRequestStatus",
+      "default": "submitted"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "requester_id",
+    "catalog_item_id",
+    "requested_mode"
+  ],
+  "title": "LabRequest",
+  "type": "object"
+}

@@ -1,0 +1,46 @@
+---
+# Full Platform Deployment
+#
+# Deploys the complete Intel-Red Hat AI Inference Platform:
+#   1. Discover cluster capabilities
+#   2. Deploy PostgreSQL database (persistence layer)
+#   3. Deploy OpenVINO CPU inference (embeddings, classification, reranking)
+#   4. Deploy vLLM CPU inference (small LLM completions)
+#   5. Deploy vLLM Gaudi inference (large LLM completions)
+#   6. Deploy inference gateway (routing + API layer)
+#   7. Deploy observability stack (metrics, dashboard)
+#   8. Run health checks on all components
+#
+# Usage:
+#   ansible-playbook playbooks/deploy-platform.yaml
+#   ansible-playbook playbooks/deploy-platform.yaml --skip-tags gaudi
+#   ansible-playbook playbooks/deploy-platform.yaml --tags "discovery,database,gateway"
+
+- name: Deploy Intel-Red Hat AI Inference Platform
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - role: cluster_discovery
+      tags: [discovery]
+
+    - role: database
+      tags: [database, infrastructure]
+
+    - role: openvino_inference
+      tags: [openvino, cpu, inference]
+
+    - role: cpu_inference
+      tags: [cpu, inference]
+
+    - role: gaudi_inference
+      tags: [gaudi, inference]
+
+    - role: gateway
+      tags: [gateway]
+
+    - role: observability
+      tags: [observability, monitoring]
+
+    - role: health_check
+      tags: [health]

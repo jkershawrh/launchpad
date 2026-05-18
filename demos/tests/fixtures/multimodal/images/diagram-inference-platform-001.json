@@ -1,0 +1,21 @@
+{
+  "fixture_id": "diagram-inference-platform-001",
+  "type": "diagram",
+  "source": "synthetic",
+  "description": "Architecture diagram of the Intel-Red Hat AI Inference Platform. Shows the dual-path routing from a single gateway to three inference lanes: Eco (Granite on Xeon 6), Performance (CodeLlama on Xeon 6), and Overdrive (Llama Scout on Gaudi). Includes PostgreSQL database, React frontend, and LiteLLM proxy.",
+  "width": 1200,
+  "height": 800,
+  "visual_elements": [
+    "Gateway box (center top) with routing arrows",
+    "Eco lane (green, left) — Granite Tiny, Xeon 6",
+    "Performance lane (blue, center) — CodeLlama 7B, Xeon 6 + AMX",
+    "Overdrive lane (orange, right) — Llama Scout 17B, Gaudi",
+    "Fallback arrows (overdrive → performance, performance → eco)",
+    "PostgreSQL database (bottom left)",
+    "React Frontend + OAuth (bottom right)",
+    "LiteLLM Proxy (top, external)"
+  ],
+  "expected_tags": ["architecture", "routing", "dual_path", "xeon6", "gaudi"],
+  "expected_classification": "architecture_diagram",
+  "demo_context": "The canonical architecture diagram for the platform — used in the Architecture Explainer workload profile."
+}

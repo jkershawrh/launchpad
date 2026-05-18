@@ -1,0 +1,7 @@
+quota_profile_id: standard
+cpu_limit: "8"
+memory_limit: 16Gi
+storage_limit: 50Gi
+max_pods: 30
+max_routes: 10
+ttl_max: "12h"

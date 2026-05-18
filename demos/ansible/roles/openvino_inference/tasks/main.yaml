@@ -1,0 +1,32 @@
+---
+- name: Apply OpenVINO CPU inference manifests
+  ansible.builtin.command:
+    cmd: "oc apply -k {{ deploy_dir }}/openvino-cpu"
+  register: apply_result
+  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+- name: Wait for OpenVINO InferenceService to be ready
+  ansible.builtin.command:
+    cmd: >
+      oc wait --for=condition=Ready
+      inferenceservice/embeddings-minilm
+      -n intel-rh-openvino-inference
+      --timeout={{ deploy_timeout_seconds }}s
+  register: wait_result
+  changed_when: false
+
+- name: Get OpenVINO InferenceService URL
+  ansible.builtin.command:
+    cmd: "oc get inferenceservice embeddings-minilm -n intel-rh-openvino-inference -o jsonpath='{.status.url}'"
+  register: ovms_url
+  changed_when: false
+
+- name: Display OpenVINO deployment status
+  ansible.builtin.debug:
+    msg: |
+      OpenVINO CPU Inference Deployed:
+        Namespace: intel-rh-openvino-inference
+        URL: {{ ovms_url.stdout }}
+        Model: all-MiniLM-L6-v2 (embeddings)
+        Runtime: OpenVINO Model Server
+        Accelerator: Xeon 6 AMX (BF16)

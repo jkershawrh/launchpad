@@ -1,0 +1,33 @@
+---
+- name: Apply observability stack manifests
+  ansible.builtin.command:
+    cmd: "oc apply -k {{ deploy_dir }}/observability"
+  register: apply_result
+  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+- name: Check if Grafana is available
+  ansible.builtin.command:
+    cmd: "oc get route -A -l app=grafana -o name"
+  register: grafana_route
+  changed_when: false
+  failed_when: false
+
+- name: Import Grafana dashboard (if Grafana available)
+  ansible.builtin.command:
+    cmd: >
+      oc create configmap inference-gateway-dashboard
+      --from-file=dashboard.json={{ deploy_dir }}/observability/grafana-dashboard.json
+      -n openshift-monitoring
+      --dry-run=client -o yaml | oc apply -f -
+  when: grafana_route.stdout | length > 0
+  register: dashboard_result
+  changed_when: "'created' in dashboard_result.stdout or 'configured' in dashboard_result.stdout"
+  failed_when: false
+
+- name: Display observability status
+  ansible.builtin.debug:
+    msg: |
+      Observability Stack:
+        ServiceMonitor: deployed
+        Grafana Dashboard: {{ 'imported' if (grafana_route.stdout | length > 0) else 'skipped (Grafana not found)' }}
+        Metrics Endpoint: https://{{ gateway_url.stdout | default('gateway-url') }}/metrics

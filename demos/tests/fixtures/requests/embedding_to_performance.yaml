@@ -1,0 +1,9 @@
+request_id: fix-002
+task_type: embedding
+token_estimate: 6000
+priority: normal
+latency_target_ms: 5000
+prompt: "Embed this document"
+expected:
+  selected_route: performance
+  outcome: route

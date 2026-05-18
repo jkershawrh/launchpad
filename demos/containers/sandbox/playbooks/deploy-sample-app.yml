@@ -1,0 +1,44 @@
+---
+- name: Deploy Sample Inference App
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Create sample app directory
+      file:
+        path: ~/sample-app
+        state: directory
+
+    - name: Create sample inference script
+      copy:
+        dest: ~/sample-app/inference.py
+        content: |
+          """Sample inference script using the model endpoint."""
+          import os
+          import json
+          try:
+              import httpx
+              endpoint = os.environ.get("MODEL_ENDPOINT", "http://localhost:8080")
+              resp = httpx.post(
+                  f"{endpoint}/v1/route",
+                  json={"task": "completion", "prompt": "What is OpenShift?", "max_tokens": 100},
+                  timeout=30,
+              )
+              print(json.dumps(resp.json(), indent=2))
+          except ImportError:
+              print("Install httpx first: pip install httpx")
+          except Exception as e:
+              print(f"Error: {e}")
+
+    - name: Create README
+      copy:
+        dest: ~/sample-app/README.md
+        content: |
+          # Sample Inference App
+
+          Run: `python3 inference.py`
+
+          Set MODEL_ENDPOINT to point to your inference gateway.
+
+    - name: Report
+      debug:
+        msg: "Sample app deployed to ~/sample-app. Run: python3 ~/sample-app/inference.py"

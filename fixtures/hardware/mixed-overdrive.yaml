@@ -1,0 +1,8 @@
+hardware_profile_id: mixed-overdrive
+display_name: Mixed Overdrive
+xeon_required: true
+gaudi_mode: endpoint
+openshift_ai_required: true
+kafka_required: true
+virtualization_required: true
+notes: Full-stack environment with Xeon, Gaudi endpoint, Kafka, and OCP Virt

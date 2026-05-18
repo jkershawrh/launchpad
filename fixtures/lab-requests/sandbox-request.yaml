@@ -1,0 +1,9 @@
+tenant_id: intel-internal
+requester_id: ai-researcher-1
+catalog_item_id: mixed-ai-sandbox
+requested_mode: open_sandbox
+persistence: persistent
+ttl: "12h"
+hardware_profile: mixed-overdrive
+quota_profile: large
+branding_profile_id: redhat-intel-default

@@ -1,0 +1,170 @@
+# Rubric for OpenShift/Kubernetes Manifest Artifacts
+# Used to score manifest quality and completeness
+
+artifact_type: manifest
+version: "1.0"
+passing_score: 90
+
+criteria:
+  yaml_valid:
+    description: "All YAML files parse without errors"
+    points: 15
+    severity: critical
+    check_method: "yaml.safe_load() succeeds for all files"
+
+  kustomize_builds:
+    description: "Kustomize builds manifests successfully"
+    points: 15
+    severity: critical
+    check_method: "kustomize build . returns exit 0"
+
+  oc_dry_run:
+    description: "OpenShift dry-run validation passes"
+    points: 20
+    severity: critical
+    check_method: "oc apply --dry-run=client -f manifest.yaml"
+
+  has_namespace:
+    description: "Namespace manifest is present"
+    points: 5
+    severity: high
+    check_method: "grep 'kind: Namespace'"
+
+  has_serving_runtime:
+    description: "ServingRuntime manifest is present"
+    points: 10
+    severity: high
+    check_method: "grep 'kind: ServingRuntime'"
+
+  has_inference_service:
+    description: "InferenceService manifest is present"
+    points: 10
+    severity: high
+    check_method: "grep 'kind: InferenceService'"
+
+  non_root_security_context:
+    description: "SecurityContext specifies non-root user"
+    points: 15
+    severity: critical
+    check_method: "check runAsNonRoot: true in securityContext"
+
+  resource_limits_defined:
+    description: "Resource requests and limits defined"
+    points: 10
+    severity: high
+    check_method: "verify resources.limits and resources.requests present"
+
+  no_privileged_containers:
+    description: "No containers run as privileged"
+    points: 10
+    severity: critical
+    check_method: "verify privileged: false or not set"
+
+  node_selector_present:
+    description: "Node selector/affinity defined for targeted deployment"
+    points: 5
+    severity: medium
+    check_method: "check nodeSelector or affinity present"
+
+  network_policy_present:
+    description: "NetworkPolicy for tenant isolation"
+    points: 5
+    severity: medium
+    check_method: "grep 'kind: NetworkPolicy'"
+
+  no_plaintext_credentials:
+    description: "Secret manifests use placeholder values with change instructions"
+    points: 15
+    severity: critical
+    check: "secret.yaml has CHANGE-ME markers"
+
+  cross_namespace_secrets_correct:
+    description: "Gateway references secrets from its own namespace"
+    points: 5
+    severity: critical
+    check: "Gateway deployment has its own secret or documented sync"
+
+  read_only_root_filesystem:
+    description: "Non-DB containers have readOnlyRootFilesystem: true"
+    points: 10
+    severity: high
+    check: "readOnlyRootFilesystem in securityContext"
+
+  dns_namespace_selector:
+    description: "DNS egress uses kubernetes.io/metadata.name, not name label"
+    points: 5
+    severity: high
+    check: "kubernetes.io/metadata.name: openshift-dns in network policies"
+
+  ingress_labels_consistent:
+    description: "Ingress labels standardized to policy-group.network.openshift.io/ingress"
+    points: 5
+    severity: high
+    check: "Consistent ingress label across all network policies"
+
+  gateway_egress_database:
+    description: "Gateway network policy has egress to database on port 5432"
+    points: 5
+    severity: high
+    check: "Egress to intel-rh-database on 5432"
+
+  placeholder_images_replaced:
+    description: "No [TBD] placeholder images in manifests"
+    points: 5
+    severity: high
+    check: "[TBD not found in any deployment YAML"
+
+  database_security_context:
+    description: "Database deployment has full securityContext"
+    points: 5
+    severity: high
+    check: "runAsNonRoot, allowPrivilegeEscalation in database deployment"
+
+  no_hardcoded_run_as_user:
+    description: "No hardcoded runAsUser: 1001 that conflicts with SCC"
+    points: 5
+    severity: medium
+    check: "runAsUser: 1001 not present in manifests"
+
+  pdb_gateway:
+    description: "PodDisruptionBudget defined for gateway"
+    points: 5
+    severity: medium
+    check: "pdb.yaml exists in deploy/gateway/"
+
+  hpa_gateway:
+    description: "HorizontalPodAutoscaler defined for gateway"
+    points: 5
+    severity: medium
+    check: "hpa.yaml exists in deploy/gateway/"
+
+  anti_affinity_gateway:
+    description: "Gateway has preferred pod anti-affinity"
+    points: 3
+    severity: medium
+    check: "podAntiAffinity in gateway deployment"
+
+  database_recreate_strategy:
+    description: "Database deployment uses strategy: Recreate"
+    points: 5
+    severity: medium
+    check: "strategy type Recreate in database deployment"
+
+  startup_probe_inference:
+    description: "Inference containers have startupProbe"
+    points: 3
+    severity: low
+    check: "startupProbe in serving-runtime"
+
+scoring:
+  total_points: 216
+  grade_scale:
+    A: ">= 206"
+    B: ">= 194"  # 90% of 216
+    C: ">= 173"
+    F: "< 173"
+
+notes: |
+  Manifests must achieve at least 90% (194/216 points) to pass stage gate.
+  All 'critical' severity checks must pass.
+  Manifests should use [TBD] placeholders for values not yet known.

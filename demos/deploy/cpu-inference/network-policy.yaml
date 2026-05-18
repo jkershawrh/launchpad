@@ -1,0 +1,75 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cpu-inference-netpol
+  namespace: intel-rh-cpu-inference
+  labels:
+    app.kubernetes.io/name: cpu-inference-network-policy
+  annotations:
+    description: "Network policy for CPU inference namespace isolation"
+spec:
+  # Apply to all pods in this namespace
+  podSelector: {}
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    # Allow ingress from OpenShift ingress controller
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              policy-group.network.openshift.io/ingress: ""
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8080
+
+    # Allow ingress from same namespace (pod-to-pod)
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8000
+
+    # Allow monitoring (Prometheus)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: openshift-monitoring
+      ports:
+        - protocol: TCP
+          port: 8000
+        - protocol: TCP
+          port: 8080
+
+  egress:
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: openshift-dns
+      ports:
+        - protocol: UDP
+          port: 53
+
+    # Allow HTTPS for model downloads (HuggingFace, etc.)
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 443
+
+    # Allow HTTP for internal services
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 80
+
+    # Allow egress to same namespace
+    - to:
+        - podSelector: {}

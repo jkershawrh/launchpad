@@ -1,0 +1,9 @@
+request_id: fix-001
+task_type: classification
+token_estimate: 1000
+priority: normal
+latency_target_ms: 8000
+prompt: "Classify this alert"
+expected:
+  selected_route: eco
+  outcome: route

@@ -1,0 +1,40 @@
+---
+- name: Verify oc CLI is available
+  ansible.builtin.command: oc version --client
+  register: oc_version
+  changed_when: false
+
+- name: Verify cluster connection
+  ansible.builtin.command: oc cluster-info
+  register: cluster_info
+  changed_when: false
+
+- name: Run cluster discovery script
+  ansible.builtin.command:
+    cmd: "{{ scripts_dir }}/discover-cluster.sh --output {{ project_root }}/cluster-info.yaml --verbose"
+  register: discovery_output
+  changed_when: true
+
+- name: Read discovery results
+  ansible.builtin.slurp:
+    src: "{{ project_root }}/cluster-info.yaml"
+  register: cluster_info_raw
+
+- name: Parse cluster info
+  ansible.builtin.set_fact:
+    cluster_config: "{{ cluster_info_raw.content | b64decode | from_yaml }}"
+
+- name: Display cluster summary
+  ansible.builtin.debug:
+    msg: |
+      Cluster Discovery Results:
+        API URL: {{ cluster_config.cluster.api_url | default('unknown') }}
+        Version: {{ cluster_config.cluster.version | default('unknown') }}
+        CPU Nodes: {{ cluster_config.nodes.cpu_count | default(0) }}
+        Gaudi Nodes: {{ cluster_config.nodes.gaudi_count | default(0) }}
+        OpenShift AI: {{ cluster_config.operators.openshift_ai.installed | default(false) }}
+
+- name: Fail if no CPU worker nodes
+  ansible.builtin.fail:
+    msg: "No CPU worker nodes found in cluster"
+  when: (cluster_config.nodes.cpu_count | default(0) | int) == 0

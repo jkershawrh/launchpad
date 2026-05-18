@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tenant-isolation
+  namespace: intel-rh-partner-{{ tenant_slug }}
+  labels:
+    tenant: "{{ tenant_slug }}"
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: intel-rh-inference-gateway
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: intel-rh-cpu-inference
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: intel-rh-gaudi-inference
+    - to:
+        - namespaceSelector: {}
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

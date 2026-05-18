@@ -1,0 +1,62 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: intel-rh-gaudi-inference
+  annotations:
+    description: "Kustomize configuration for Intel-RH Gaudi inference path"
+
+# Namespace for all resources
+namespace: intel-rh-gaudi-inference
+
+# Create namespace if it doesn't exist
+resources:
+  - namespace.yaml
+  - serving-runtime.yaml
+  - inference-service.yaml
+  - network-policy.yaml
+  - model-cache-pvc.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/part-of: intel-rh-ai-platform
+  platform: intel-gaudi
+  accelerator: gaudi-gpu
+
+# Common annotations
+commonAnnotations:
+  platform.intel.com/accelerator: gaudi
+  platform.redhat.com/component: ai-inference
+
+# Images (to be updated with actual registry and digest)
+images:
+  - name: "quay.io/intel-redhat/vllm-gaudi:latest"
+    newName: "localhost/vllm-gaudi"  # For local testing
+    newTag: "test"  # For local testing
+    # In production, replace with:
+    # newName: quay.io/your-org/vllm-gaudi
+    # digest: sha256:actual-digest
+
+# ConfigMap generator for shared configuration
+configMapGenerator:
+  - name: gaudi-inference-config
+    literals:
+      - DEFAULT_MODEL=TinyLlama/TinyLlama-1.1B-Chat-v1.0
+      - MAX_MODEL_LEN=2048
+      - INFERENCE_TIMEOUT=60s
+      - GAUDI_DEVICE_TYPE=gaudi2
+
+secretGenerator:
+  - name: hf-token
+    envs:
+      - hf-token.env
+    type: Opaque
+
+# Patches (optional - for environment-specific overrides)
+# patches:
+#   - path: patches/prod-resources.yaml
+#     target:
+#       kind: ServingRuntime
+#       name: vllm-gaudi-runtime

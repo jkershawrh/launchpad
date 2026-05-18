@@ -1,0 +1,18 @@
+{
+  "fixture_id": "chart-throughput-001",
+  "type": "screenshot",
+  "source": "synthetic",
+  "description": "Dual-axis time-series chart showing inference throughput (requests/sec) on the left axis and Gaudi utilization (%) on the right axis. Shows correlation: as request volume increases from 500 to 1,200 req/s, Gaudi utilization rises from 20% to 85%. Xeon 6 utilization remains stable at 45-55%.",
+  "width": 1400,
+  "height": 600,
+  "visual_elements": [
+    "Request throughput line (blue, left axis, 500-1200 req/s)",
+    "Gaudi utilization line (orange, right axis, 20-85%)",
+    "Xeon 6 utilization band (grey, stable 45-55%)",
+    "Time axis (24-hour window)",
+    "Peak annotation at 15:30 UTC"
+  ],
+  "expected_tags": ["throughput", "utilization", "gaudi", "xeon6", "correlation"],
+  "expected_classification": "performance_chart",
+  "demo_context": "Shows how intelligent routing keeps Xeon 6 stable while Gaudi absorbs the heavy workload surge."
+}

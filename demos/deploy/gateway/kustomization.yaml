@@ -1,0 +1,27 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: intel-rh-inference-gateway
+
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - route.yaml
+  - network-policy.yaml
+  - pdb.yaml
+  - hpa.yaml
+
+commonLabels:
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/part-of: intel-rh-ai-platform
+
+commonAnnotations:
+  platform.intel.com/component: inference-gateway
+  platform.redhat.com/component: ai-routing
+
+images:
+  - name: "quay.io/intel-redhat/inference-gateway:latest"
+    newName: "localhost/inference-gateway"
+    newTag: "latest"

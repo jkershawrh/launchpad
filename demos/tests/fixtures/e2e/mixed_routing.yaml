@@ -1,0 +1,57 @@
+requests:
+  - request_id: e2e-001
+    task_type: classification
+    token_estimate: 1000
+    priority: normal
+    latency_target_ms: 8000
+    expected:
+      selected_route: eco
+      outcome: route
+  - request_id: e2e-002
+    task_type: embedding
+    token_estimate: 6000
+    priority: normal
+    latency_target_ms: 5000
+    expected:
+      selected_route: performance
+      outcome: route
+  - request_id: e2e-003
+    task_type: long_summary
+    token_estimate: 24000
+    priority: high
+    latency_target_ms: 5000
+    expected:
+      selected_route: overdrive
+      outcome: route
+  - request_id: e2e-004
+    task_type: incident_rca
+    token_estimate: 32000
+    priority: critical
+    latency_target_ms: 5000
+    expected:
+      selected_route: overdrive
+      outcome: route
+  - request_id: e2e-005
+    task_type: unknown
+    token_estimate: 1000
+    priority: normal
+    latency_target_ms: 5000
+    expected:
+      selected_route: null
+      outcome: indeterminate
+  - request_id: e2e-006
+    task_type: rerank
+    token_estimate: 4000
+    priority: normal
+    latency_target_ms: 5000
+    expected:
+      selected_route: performance
+      outcome: route
+  - request_id: e2e-007
+    task_type: batch_summary
+    token_estimate: 40000
+    priority: critical
+    latency_target_ms: 10000
+    expected:
+      selected_route: overdrive
+      outcome: route

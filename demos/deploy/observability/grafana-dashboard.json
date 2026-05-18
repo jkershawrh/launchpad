@@ -1,0 +1,110 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "description": "Intel-Red Hat AI Inference Platform — routing decisions, latency, throughput, and cost",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "title": "Requests by Backend",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(gateway_requests_total[5m])",
+          "legendFormat": "{{task}} → {{backend}}"
+        }
+      ]
+    },
+    {
+      "title": "Routing Decision Breakdown",
+      "type": "piechart",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(gateway_routing_decisions_total) by (backend)",
+          "legendFormat": "{{backend}}"
+        }
+      ]
+    },
+    {
+      "title": "Request Latency by Backend (p95)",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(gateway_request_latency_seconds_bucket[5m]))",
+          "legendFormat": "p95 {{task}} → {{backend}}"
+        }
+      ]
+    },
+    {
+      "title": "Request Latency by Backend (p50)",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(gateway_request_latency_seconds_bucket[5m]))",
+          "legendFormat": "p50 {{task}} → {{backend}}"
+        }
+      ]
+    },
+    {
+      "title": "Requests per Task Type",
+      "type": "bargauge",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(gateway_requests_total) by (task)",
+          "legendFormat": "{{task}}"
+        }
+      ]
+    },
+    {
+      "title": "Xeon 6 vs Gaudi Traffic Split",
+      "type": "stat",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 16 },
+      "targets": [
+        {
+          "expr": "sum(gateway_routing_decisions_total{backend=~\".*cpu.*|.*openvino.*\"})",
+          "legendFormat": "Xeon 6 (CPU)"
+        },
+        {
+          "expr": "sum(gateway_routing_decisions_total{backend=~\".*gaudi.*\"})",
+          "legendFormat": "Gaudi (GPU)"
+        }
+      ]
+    },
+    {
+      "title": "Error Rate",
+      "type": "timeseries",
+      "datasource": "Prometheus",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 16 },
+      "targets": [
+        {
+          "expr": "rate(gateway_requests_total{status=\"error\"}[5m])",
+          "legendFormat": "errors {{backend}}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["intel", "redhat", "ai", "inference", "gateway"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Intel-Red Hat AI Inference Platform",
+  "uid": "intel-rh-ai-gateway",
+  "version": 1
+}

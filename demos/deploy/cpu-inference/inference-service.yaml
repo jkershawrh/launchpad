@@ -1,0 +1,52 @@
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: cpu-inference-example
+  namespace: intel-rh-cpu-inference
+  labels:
+    app.kubernetes.io/name: cpu-inference-example
+    platform: intel-xeon6
+  annotations:
+    description: "Example CPU inference service for partners"
+    serving.kserve.io/deploymentMode: "Serverless"
+    openshift.io/display-name: "CPU Inference Example"
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: pytorch
+        version: "2"
+
+      runtime: vllm-cpu-runtime
+
+      # Optional: Specify storage for custom models
+      # storageUri: "pvc://model-storage/tinyllama"
+      # OR
+      # storageUri: "s3://bucket/path/to/model"
+
+      resources:
+        requests:
+          cpu: "2"
+          memory: "6Gi"
+        limits:
+          cpu: "4"
+          memory: "8Gi"
+
+      env:
+        - name: MODEL_NAME
+          value: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+
+    # Scaling configuration
+    minReplicas: 1
+    maxReplicas: 3
+
+    # Container concurrency (requests per pod)
+    containerConcurrency: 1
+
+    # Scale-to-zero (optional - comment out to keep running)
+    # scaleTarget: 1
+    # scaleMetric: concurrency
+
+  # Optional: Canary deployment
+  # canaryTrafficPercent: 10

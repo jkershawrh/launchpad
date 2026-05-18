@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: intel-rh-cpu-inference
+  labels:
+    app.kubernetes.io/name: intel-rh-ai-platform
+    app.kubernetes.io/component: cpu-inference
+    platform: intel-xeon6
+    runtime: vllm-cpu
+  annotations:
+    description: "Intel-Red Hat AI Platform - CPU Inference (Xeon6)"
+    owner: "Red Hat Infrastructure Team"
+    intel.com/hardware: "xeon6"

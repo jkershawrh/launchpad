@@ -1,0 +1,57 @@
+---
+# Observability Stack Quality Rubric
+# Scoring criteria for monitoring and dashboards (Phase 4)
+
+name: observability
+version: "1.0"
+total_points: 60
+pass_threshold: 90
+
+criteria:
+  servicemonitor:
+    exists:
+      points: 10
+      severity: critical
+      check: "ServiceMonitor manifest exists and is valid YAML"
+    targets_gateway:
+      points: 10
+      severity: critical
+      check: "ServiceMonitor targets inference-gateway service"
+    scrapes_metrics:
+      points: 5
+      severity: high
+      check: "Scrapes /metrics endpoint at defined interval"
+
+  dashboard:
+    exists:
+      points: 10
+      severity: high
+      check: "Grafana dashboard JSON exists and is valid"
+    has_panels:
+      points: 5
+      severity: high
+      check: "Dashboard has >= 4 visualization panels"
+    latency_panel:
+      points: 5
+      severity: medium
+      check: "Includes latency percentile panel"
+    routing_panel:
+      points: 5
+      severity: medium
+      check: "Includes routing decision breakdown panel"
+    queries_gateway_metrics:
+      points: 5
+      severity: high
+      check: "Dashboard queries use gateway_ metric prefix"
+
+  kustomization:
+    includes_resources:
+      points: 5
+      severity: high
+      check: "Kustomization includes servicemonitor.yaml"
+
+  error_rate_promql_correct:
+    description: "Grafana error rate panel uses correct PromQL expression"
+    points: 3
+    severity: low
+    check: "No subtraction pattern in error rate expression"

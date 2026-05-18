@@ -1,0 +1,23 @@
+---
+# ServiceMonitor for scraping inference gateway metrics
+# Prometheus Operator will auto-discover and scrape the /metrics endpoint
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: inference-gateway-metrics
+  namespace: intel-rh-demo
+  labels:
+    app.kubernetes.io/name: inference-gateway
+    platform: intel-redhat
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inference-gateway
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+      - intel-rh-demo

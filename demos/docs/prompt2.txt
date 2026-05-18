@@ -1,0 +1,522 @@
+You are working inside my existing inference demo repo.
+
+Current state:
+- The first demo already does simple policy routing.
+- I want to expand it into a small, provable, staged system.
+- Do not turn this into a giant platform.
+- Do not add autonomous remediation.
+- Do not add governance/ARE yet.
+- This phase is still about inference power + routing + proof.
+
+Goal:
+Expand the existing simple policy-routing demo into “StarGate Overdrive Lite”:
+
+A deterministic, test-driven inference routing demo that can:
+1. classify incoming inference requests,
+2. route them to the correct inference lane,
+3. evaluate readiness/performance gates,
+4. record evidence for each route decision,
+5. produce a red/green build report,
+6. produce a route/rubric report,
+7. support future expansion into Kafka-fed swarm/agent demos without building that yet.
+
+Core principle:
+No route is selected just because code says so.
+A route is selected only when the request attributes, available route state, and rubric criteria pass.
+
+Keep this small and provable.
+
+Do not implement live Kafka yet.
+Do not implement agent swarms yet.
+Do not implement ARE/governance yet.
+Do not implement cluster mutation.
+Do not implement autonomous remediation.
+
+Build only the next clean layer around the existing policy router.
+
+------------------------------------------------------------
+PHASE OBJECTIVE
+------------------------------------------------------------
+
+Add a staged, rubric-based route evaluation system around the current policy routing demo.
+
+The system should support three initial inference lanes:
+
+1. eco
+   - target: Xeon/simple CPU route or mock CPU endpoint
+   - use: classification, small prompts, low token estimate
+   - expected: low cost, normal latency
+
+2. performance
+   - target: optimized CPU/OpenVINO-style route or mock optimized endpoint
+   - use: embeddings, reranking, medium summaries
+   - expected: higher throughput than eco
+
+3. overdrive
+   - target: Gaudi/vLLM-style route or mock accelerator endpoint
+   - use: long summaries, batch generation, high token estimate
+   - expected: high throughput / heavy generation path
+
+For now, these may be mock endpoints if the real inference endpoints are not present.
+
+The important part is the routing framework, tests, rubrics, evidence, and reports.
+
+------------------------------------------------------------
+ARCHITECTURE
+------------------------------------------------------------
+
+Add or adapt the repo to have these concepts:
+
+Request
+  - request_id
+  - task_type
+  - priority
+  - token_estimate
+  - latency_target_ms
+  - payload_ref or prompt
+  - metadata
+
+Route
+  - route_id
+  - lane: eco | performance | overdrive
+  - target_endpoint
+  - capabilities
+  - current_health
+  - current_load optional
+  - readiness evidence
+
+Rubric
+  - route eligibility criteria
+  - required evidence
+  - pass/fail/warn outcomes
+  - failure classes
+
+Decision
+  - request_id
+  - selected_route
+  - outcome: route | fallback | queue | deny | indeterminate
+  - reason codes
+  - evidence
+  - timestamp
+
+Evidence
+  - request attributes
+  - route state
+  - rubric checks
+  - latency/throughput measurements if available
+  - mock endpoint result if using mocks
+
+Report
+  - route decisions
+  - pass/fail criteria
+  - failed checks
+  - selected lane
+  - build red/green status
+
+------------------------------------------------------------
+INITIAL POLICY ROUTING MATRIX
+------------------------------------------------------------
+
+Implement this matrix as data/config where possible, not hardcoded spaghetti.
+
+| Task Type | Token Estimate | Priority | Latency Target | Route |
+|---|---:|---|---:|---|
+| classification | < 4k | any | <= 8000ms | eco |
+| embedding | < 8k | any | <= 5000ms | performance |
+| rerank | < 8k | any | <= 5000ms | performance |
+| short_summary | < 16k | normal/high | <= 8000ms | performance |
+| long_summary | >= 16k | high | <= 5000ms | overdrive |
+| incident_rca | >= 16k | high/critical | <= 5000ms | overdrive |
+| batch_summary | >= 32k | high/critical | <= 10000ms | overdrive |
+| unknown | any | any | any | indeterminate |
+
+Fallback behavior:
+- If overdrive is requested but not ready, fallback to performance only if token_estimate < 32k.
+- If performance is not ready, fallback to eco only for classification or small summary.
+- If no valid route exists, return indeterminate or queue.
+- Do not silently route to a lower tier without recording the reason.
+
+------------------------------------------------------------
+ROUTE READINESS RUBRIC
+------------------------------------------------------------
+
+Add YAML rubrics for each lane.
+
+Example:
+
+rubrics/routes/eco.yaml
+- route_id: eco
+- required checks:
+  - endpoint_defined
+  - endpoint_health_pass
+  - supports_task_type
+  - token_estimate_within_limit
+- pass:
+  - all required checks pass
+- fail:
+  - endpoint missing
+  - health failed
+  - task unsupported
+  - token estimate exceeds lane max
+
+rubrics/routes/performance.yaml
+- route_id: performance
+- required checks:
+  - endpoint_defined
+  - endpoint_health_pass
+  - supports_task_type
+  - token_estimate_within_limit
+  - latency_target_supported
+- fail if:
+  - route unhealthy
+  - token estimate exceeds max
+  - task unsupported
+
+rubrics/routes/overdrive.yaml
+- route_id: overdrive
+- required checks:
+  - endpoint_defined
+  - endpoint_health_pass
+  - supports_heavy_generation
+  - token_estimate_requires_overdrive
+  - priority_allows_overdrive
+  - latency_target_requires_or_allows_overdrive
+- fail if:
+  - endpoint unhealthy
+  - request too small to justify overdrive
+  - priority too low
+  - token estimate too high for current mock/model limit
+- warn if:
+  - route selected but fallback unavailable
+  - latency target is aggressive
+
+Keep the language performance-focused.
+Do not use governance or policy-heavy language in user-facing reports.
+
+Use terms like:
+- route
+- readiness
+- performance tier
+- lane
+- overdrive
+- fallback
+- queue
+- evidence
+- reason
+
+Avoid:
+- governance
+- authority
+- compliance
+- ARE
+- admissibility
+- enforcement
+
+------------------------------------------------------------
+BUILD TDD RED/GREEN MATRIX
+------------------------------------------------------------
+
+Add a build matrix and make tests prove each layer.
+
+| Build Stage | Red Condition | Green Condition | Evidence |
+|---|---|---|---|
+| Request Model | invalid request accepted | invalid rejected, valid accepted | unit tests |
+| Route Model | route missing required fields accepted | schema validates route definitions | unit tests |
+| Rubric Loader | bad rubric loads | valid rubrics load, invalid fail | unit tests |
+| Rubric Evaluator | pass/fail inconsistent | deterministic pass/fail/warn | unit tests with fixtures |
+| Router | wrong lane selected | expected route from matrix | unit tests |
+| Fallback | fallback untested | overdrive/performance fallback proven | unit tests |
+| Evidence Recorder | no decision evidence | decision contains checks/reasons | unit tests |
+| Report Generator | no readable output | route/build reports generated | snapshot/golden tests |
+| Simulated E2E | no complete request flow | fixture batch routes correctly | integration test |
+| Existing Demo Integration | old demo breaks | existing route still works | regression test |
+
+Graduation rule:
+- Do not move to the next build stage while required tests are red.
+- Preserve existing demo behavior.
+- Add regression tests before changing routing logic.
+
+------------------------------------------------------------
+TEST FIXTURES TO CREATE
+------------------------------------------------------------
+
+Create fixtures for these cases:
+
+1. classification_to_eco
+Input:
+- task_type: classification
+- token_estimate: 1000
+- priority: normal
+Expected:
+- selected_route: eco
+- outcome: route
+
+2. embedding_to_performance
+Input:
+- task_type: embedding
+- token_estimate: 6000
+Expected:
+- selected_route: performance
+
+3. long_summary_to_overdrive
+Input:
+- task_type: long_summary
+- token_estimate: 24000
+- priority: high
+Expected:
+- selected_route: overdrive
+
+4. incident_rca_to_overdrive
+Input:
+- task_type: incident_rca
+- token_estimate: 32000
+- priority: critical
+Expected:
+- selected_route: overdrive
+
+5. overdrive_unhealthy_fallback_to_performance
+Input:
+- task_type: long_summary
+- token_estimate: 24000
+- priority: high
+Route state:
+- overdrive health: fail
+- performance health: pass
+Expected:
+- selected_route: performance
+- outcome: fallback
+- reason includes overdrive_unhealthy
+
+6. performance_unhealthy_small_task_fallback_to_eco
+Input:
+- task_type: short_summary
+- token_estimate: 3000
+Route state:
+- performance health: fail
+- eco health: pass
+Expected:
+- selected_route: eco
+- outcome: fallback
+
+7. unknown_task_indeterminate
+Input:
+- task_type: unknown
+Expected:
+- outcome: indeterminate
+- no selected route
+
+8. overdrive_too_small_not_selected
+Input:
+- task_type: classification
+- token_estimate: 1000
+- priority: critical
+Expected:
+- selected_route: eco
+- reason: task_does_not_require_overdrive
+
+9. all_routes_unhealthy_queue_or_indeterminate
+Input:
+- task_type: long_summary
+- token_estimate: 24000
+Route state:
+- eco health: fail
+- performance health: fail
+- overdrive health: fail
+Expected:
+- outcome: queue or indeterminate
+- no route selected
+
+10. batch_run_report
+Input:
+- mixed batch of requests
+Expected:
+- report shows counts by selected route, fallback count, indeterminate count, and failed checks
+
+------------------------------------------------------------
+EVIDENCE FORMAT
+------------------------------------------------------------
+
+Every route decision must emit evidence like:
+
+{
+  "decision_id": "dec-001",
+  "request_id": "req-001",
+  "outcome": "route",
+  "selected_route": "overdrive",
+  "evaluated_routes": ["eco", "performance", "overdrive"],
+  "checks": [
+    {
+      "name": "endpoint_health_pass",
+      "route": "overdrive",
+      "result": "pass",
+      "observed": true
+    },
+    {
+      "name": "token_estimate_requires_overdrive",
+      "route": "overdrive",
+      "result": "pass",
+      "observed": 24000
+    }
+  ],
+  "reason_codes": [
+    "task_type_long_summary",
+    "token_estimate_exceeds_performance_threshold",
+    "overdrive_ready"
+  ],
+  "timestamp": "..."
+}
+
+------------------------------------------------------------
+REPORTING
+------------------------------------------------------------
+
+Add two reports.
+
+1. Build red/green report
+
+Example:
+
+{
+  "build_status": "green",
+  "stages": [
+    {"name": "request_model", "status": "green", "tests": 8, "failures": 0},
+    {"name": "rubric_evaluator", "status": "green", "tests": 12, "failures": 0},
+    {"name": "router", "status": "red", "tests": 10, "failures": 1}
+  ],
+  "blocking": ["router"]
+}
+
+2. Route performance/routing report
+
+Example:
+
+{
+  "batch_id": "batch-001",
+  "total_requests": 100,
+  "routes": {
+    "eco": 42,
+    "performance": 38,
+    "overdrive": 16
+  },
+  "fallbacks": 3,
+  "indeterminate": 1,
+  "top_reason_codes": [
+    "task_type_classification",
+    "token_estimate_requires_overdrive",
+    "overdrive_unhealthy"
+  ]
+}
+
+------------------------------------------------------------
+CLI COMMANDS
+------------------------------------------------------------
+
+Add or update CLI commands.
+
+Required commands:
+
+- validate-rubrics
+- route-request <fixture>
+- route-batch <fixture>
+- report-build
+- report-routes <batch_result>
+- run-e2e-fixture <fixture>
+
+Example:
+
+python -m stargate validate-rubrics
+python -m stargate route-request fixtures/requests/long_summary.yaml
+python -m stargate route-batch fixtures/batches/mixed_batch.yaml
+python -m stargate report-build
+python -m stargate run-e2e-fixture fixtures/e2e/mixed_routing.yaml
+
+Use the existing repo’s language/tooling if already established. If the repo is Python, use Python. If it is Node/TypeScript, use that. Do not introduce unnecessary languages.
+
+------------------------------------------------------------
+IMPLEMENTATION ORDER
+------------------------------------------------------------
+
+Use TDD.
+
+Step 1:
+Inspect current repo structure and identify the existing policy router.
+
+Step 2:
+Add failing tests for the routing matrix before changing implementation.
+
+Step 3:
+Add or adapt request/route/decision models.
+
+Step 4:
+Add rubric YAML loader.
+
+Step 5:
+Add deterministic rubric evaluator.
+
+Step 6:
+Wire evaluator into the existing router.
+
+Step 7:
+Add evidence output for every route decision.
+
+Step 8:
+Add fallback logic and tests.
+
+Step 9:
+Add batch routing and route report.
+
+Step 10:
+Add build red/green report.
+
+Step 11:
+Run all tests.
+
+Step 12:
+Summarize:
+- what is green
+- what is red
+- what changed
+- what remains intentionally out of scope
+
+------------------------------------------------------------
+ACCEPTANCE CRITERIA
+------------------------------------------------------------
+
+This phase is complete only when:
+
+1. Existing simple policy routing still works.
+2. Routing matrix tests pass.
+3. Rubric loader tests pass.
+4. Rubric evaluator tests pass.
+5. Fallback tests pass.
+6. Every route decision emits structured evidence.
+7. Batch routing produces route summary.
+8. Build red/green report exists.
+9. Simulated E2E fixture passes.
+10. No live Kafka is required.
+11. No live OpenShift is required.
+12. No remediation execution exists.
+13. No AI execution exists.
+14. No governance/ARE language is added to user-facing demo output.
+15. The implementation remains small and easy to explain.
+
+------------------------------------------------------------
+OUTPUT REQUEST
+------------------------------------------------------------
+
+Before coding, print your implementation plan and the first failing tests you will add.
+
+Then proceed in TDD order:
+- add tests
+- run tests and show red
+- implement minimal code
+- run tests and show green
+- refactor only after green
+
+At the end, provide:
+1. Files changed
+2. Tests added
+3. Commands to run
+4. Current red/green matrix
+5. Example route report
+6. Clear list of what was intentionally not built

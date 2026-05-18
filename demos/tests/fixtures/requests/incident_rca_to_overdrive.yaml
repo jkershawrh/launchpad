@@ -1,0 +1,9 @@
+request_id: fix-004
+task_type: incident_rca
+token_estimate: 32000
+priority: critical
+latency_target_ms: 5000
+prompt: "Root cause analysis for outage"
+expected:
+  selected_route: overdrive
+  outcome: route

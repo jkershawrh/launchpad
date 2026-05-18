@@ -1,0 +1,104 @@
+:root {
+  /* Red Hat brand overrides for PatternFly */
+  --pf-t--global--font--family--body: 'Red Hat Text', 'RedHatText', var(--pf-t--global--font--family--sans-serif);
+  --pf-t--global--font--family--heading: 'Red Hat Display', 'RedHatDisplay', var(--pf-t--global--font--family--sans-serif);
+
+  /* Red Hat red as primary brand color */
+  --rh-color--brand: #EE0000;
+  --rh-color--brand-dark: #A30000;
+  --rh-color--brand-light: #FCEAEA;
+
+  /* Intel Xeon 6 accent */
+  --rh-color--xeon6: #0066CC;
+  --rh-color--xeon6-bg: #E7F1FF;
+  --rh-color--xeon6-done: #C3E6CB;
+
+  /* Intel Gaudi accent */
+  --rh-color--gaudi: #E67700;
+  --rh-color--gaudi-bg: #FFF4E6;
+  --rh-color--gaudi-done: #FFEEBA;
+
+  /* Local/fallback */
+  --rh-color--local: #6A6E73;
+  --rh-color--local-bg: #F0F0F0;
+  --rh-color--local-done: #D6D8DB;
+
+  /* Success */
+  --rh-color--success: #3E8635;
+  --rh-color--success-bg: #F3FAF2;
+
+  /* Text */
+  --rh-color--text: #151515;
+  --rh-color--text-secondary: #6A6E73;
+  --rh-color--text-on-dark: #FFFFFF;
+
+  /* Surfaces */
+  --rh-color--surface: #FFFFFF;
+  --rh-color--surface-secondary: #F0F0F0;
+  --rh-color--surface-tertiary: #F8F9FA;
+  --rh-color--border: #D2D2D2;
+  --rh-color--border-strong: #8A8D90;
+}
+
+/* Apply Red Hat Display to headings */
+h1, h2, h3, h4, h5, h6,
+.pf-v6-c-title,
+.pf-v6-c-content h1,
+.pf-v6-c-content h2,
+.pf-v6-c-content h3 {
+  font-family: 'Red Hat Display', 'RedHatDisplay', var(--pf-t--global--font--family--sans-serif) !important;
+}
+
+/* Apply Red Hat Text to body */
+body,
+.pf-v6-c-page,
+.pf-v6-c-content {
+  font-family: 'Red Hat Text', 'RedHatText', var(--pf-t--global--font--family--sans-serif) !important;
+}
+
+/* Override PatternFly primary button to Red Hat red */
+.pf-v6-c-button.pf-m-primary {
+  --pf-v6-c-button--m-primary--BackgroundColor: var(--rh-color--brand);
+  --pf-v6-c-button--m-primary--hover--BackgroundColor: var(--rh-color--brand-dark);
+  --pf-v6-c-button--m-primary--active--BackgroundColor: var(--rh-color--brand-dark);
+  --pf-v6-c-button--m-primary--focus--BackgroundColor: var(--rh-color--brand-dark);
+}
+
+/* Override PatternFly link color to Red Hat red */
+.pf-v6-c-nav__link.pf-m-current {
+  --pf-v6-c-nav__link--m-current--Color: var(--rh-color--brand);
+}
+
+/* Red Hat brand accent on focus rings */
+*:focus-visible {
+  outline-color: var(--rh-color--brand) !important;
+}
+
+/* Masthead brand bar */
+.pf-v6-c-masthead {
+  --pf-v6-c-masthead--BackgroundColor: #151515;
+}
+
+/* Red Hat branded Label overrides */
+.pf-v6-c-label.pf-m-red {
+  --pf-v6-c-label--BackgroundColor: #FCEAEA;
+  --pf-v6-c-label--Color: #A30000;
+  --pf-v6-c-label--icon--Color: #EE0000;
+}
+
+.pf-v6-c-label.pf-m-blue {
+  --pf-v6-c-label--BackgroundColor: #E7F1FF;
+  --pf-v6-c-label--Color: #004080;
+  --pf-v6-c-label--icon--Color: #0066CC;
+}
+
+.pf-v6-c-label.pf-m-orange {
+  --pf-v6-c-label--BackgroundColor: #FFF4E6;
+  --pf-v6-c-label--Color: #8F4700;
+  --pf-v6-c-label--icon--Color: #E67700;
+}
+
+/* NavItem active state — Red Hat red */
+.pf-v6-c-nav__link::after {
+  --pf-v6-c-nav__link--after--BackgroundColor: var(--rh-color--brand);
+}

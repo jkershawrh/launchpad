@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" font-family="Red Hat Text, sans-serif">
+  <rect width="800" height="350" fill="#1a1a2e" rx="8"/>
+  <text x="400" y="28" fill="#ccc" font-size="14" font-weight="700" text-anchor="middle">Throughput vs Hardware Utilization — 24 Hour Window</text>
+  <!-- Chart area -->
+  <rect x="60" y="45" width="700" height="230" fill="#16213e" rx="4"/>
+  <!-- Y axis labels (left - req/s) -->
+  <text x="15" y="75" fill="#3498db" font-size="9">1,200</text>
+  <text x="15" y="130" fill="#3498db" font-size="9">900</text>
+  <text x="15" y="185" fill="#3498db" font-size="9">600</text>
+  <text x="15" y="240" fill="#3498db" font-size="9">300</text>
+  <text x="10" y="265" fill="#3498db" font-size="8" transform="rotate(-90,10,180)">Requests/sec</text>
+  <!-- Y axis labels (right - %) -->
+  <text x="770" y="75" fill="#e67e22" font-size="9">100%</text>
+  <text x="770" y="130" fill="#e67e22" font-size="9">75%</text>
+  <text x="770" y="185" fill="#e67e22" font-size="9">50%</text>
+  <text x="770" y="240" fill="#e67e22" font-size="9">25%</text>
+  <!-- Grid lines -->
+  <line x1="60" y1="75" x2="760" y2="75" stroke="#2d3436" stroke-width="0.5"/>
+  <line x1="60" y1="130" x2="760" y2="130" stroke="#2d3436" stroke-width="0.5"/>
+  <line x1="60" y1="185" x2="760" y2="185" stroke="#2d3436" stroke-width="0.5"/>
+  <line x1="60" y1="240" x2="760" y2="240" stroke="#2d3436" stroke-width="0.5"/>
+  <!-- Xeon utilization band (grey, stable 45-55%) -->
+  <polygon points="60,165 180,162 300,168 420,160 540,165 660,162 760,167 760,175 660,172 540,175 420,170 300,178 180,172 60,175" fill="#555" opacity="0.3"/>
+  <!-- Request throughput line (blue) -->
+  <polyline points="60,200 120,195 180,190 240,185 300,180 360,160 420,130 480,100 540,80 600,75 660,78 720,85 760,90" stroke="#3498db" fill="none" stroke-width="2.5"/>
+  <!-- Gaudi utilization line (orange) -->
+  <polyline points="60,230 120,225 180,220 240,215 300,200 360,170 420,130 480,100 540,85 600,80 660,82 720,88 760,92" stroke="#e67e22" fill="none" stroke-width="2.5"/>
+  <!-- Peak annotation -->
+  <circle cx="600" cy="75" r="4" fill="#e74c3c"/>
+  <text x="605" y="68" fill="#e74c3c" font-size="9">Peak: 1,187 req/s</text>
+  <text x="605" y="80" fill="#e67e22" font-size="9">Gaudi: 85%</text>
+  <!-- X axis labels -->
+  <text x="60" y="268" fill="#666" font-size="9">00:00</text>
+  <text x="200" y="268" fill="#666" font-size="9">06:00</text>
+  <text x="340" y="268" fill="#666" font-size="9">12:00</text>
+  <text x="480" y="268" fill="#666" font-size="9">15:30</text>
+  <text x="620" y="268" fill="#666" font-size="9">18:00</text>
+  <text x="740" y="268" fill="#666" font-size="9">24:00</text>
+  <!-- Legend -->
+  <rect x="60" y="290" width="700" height="45" fill="#16213e" rx="4"/>
+  <line x1="80" y1="310" x2="110" y2="310" stroke="#3498db" stroke-width="2.5"/>
+  <text x="115" y="314" fill="#aaa" font-size="10">Request Throughput (req/s)</text>
+  <line x1="300" y1="310" x2="330" y2="310" stroke="#e67e22" stroke-width="2.5"/>
+  <text x="335" y="314" fill="#aaa" font-size="10">Gaudi Utilization (%)</text>
+  <rect x="530" y="303" width="30" height="14" fill="#555" opacity="0.4"/>
+  <text x="565" y="314" fill="#aaa" font-size="10">Xeon 6 Utilization (stable 45-55%)</text>
+</svg>

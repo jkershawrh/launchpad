@@ -1,0 +1,8 @@
+quota_profile_id: large
+cpu_limit: "32"
+memory_limit: 64Gi
+storage_limit: 200Gi
+max_pods: 100
+max_routes: 25
+gaudi_access_limit: 2
+ttl_max: "24h"

@@ -1,0 +1,110 @@
+# Rubric for Quickstart Documentation
+# Used to score partner-facing quickstart quality
+
+artifact_type: quickstart
+version: "1.0"
+passing_score: 90
+
+criteria:
+  readme_exists:
+    description: "README.md file exists in quickstart directory"
+    points: 10
+    severity: critical
+    check_method: "test -f README.md"
+
+  has_title:
+    description: "README has clear title describing the quickstart"
+    points: 5
+    severity: high
+    check_method: "grep '^# ' README.md"
+
+  has_prerequisites:
+    description: "Prerequisites section clearly lists requirements"
+    points: 15
+    severity: high
+    required_sections:
+      - "Access to OpenShift cluster"
+      - "oc CLI installed"
+      - "Namespace/project created"
+    check_method: "grep -i 'prerequisite' README.md"
+
+  has_step_by_step:
+    description: "Numbered step-by-step instructions"
+    points: 20
+    severity: critical
+    check_method: "check for numbered list (1., 2., 3., etc.)"
+
+  expected_output_shown:
+    description: "Expected output shown for key commands"
+    points: 10
+    severity: medium
+    check_method: "look for code blocks showing expected output"
+
+  files_referenced_exist:
+    description: "All files referenced in README actually exist"
+    points: 15
+    severity: critical
+    check_method: "verify each referenced file exists in quickstart dir"
+
+  commands_valid:
+    description: "Commands in README are syntactically correct"
+    points: 10
+    severity: high
+    check_method: "extract commands and validate syntax"
+
+  has_testing_section:
+    description: "Section explaining how to test the deployment"
+    points: 10
+    severity: high
+    check_method: "grep -i 'test\\|verify' README.md"
+
+  has_cleanup_section:
+    description: "Instructions for cleanup/teardown"
+    points: 5
+    severity: medium
+    check_method: "grep -i 'cleanup\\|delete\\|teardown' README.md"
+
+  time_estimate:
+    description: "Estimated time to complete is documented"
+    points: 5
+    severity: low
+    check_method: "grep -i 'time\\|minutes' README.md"
+
+  deployment_script:
+    description: "Optional deploy.sh script for automation"
+    points: 5
+    severity: low
+    check_method: "test -f deploy.sh && test -x deploy.sh"
+
+scoring:
+  total_points: 110
+  grade_scale:
+    A: ">= 105"
+    B: ">= 99"   # 90% of 110
+    C: ">= 88"
+    F: "< 88"
+
+usability_criteria:
+  # Manual checks - cannot be fully automated
+  new_user_can_follow:
+    description: "Fresh user can complete without external help"
+    scoring: "1-5 scale (5 = excellent)"
+    weight: "High"
+    method: "Manual testing with new user"
+
+  time_to_complete:
+    description: "Time for experienced user to complete"
+    target: "< 15 minutes"
+    weight: "Medium"
+    method: "Timed testing"
+
+  clarity:
+    description: "Instructions are clear and unambiguous"
+    scoring: "1-5 scale"
+    weight: "High"
+    method: "Manual review"
+
+notes: |
+  Quickstarts must achieve at least 90% (99/110 points) to pass stage gate.
+  Usability criteria are evaluated manually during stage review.
+  Partners should be able to complete quickstart independently.

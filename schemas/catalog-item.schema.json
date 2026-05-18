@@ -1,0 +1,156 @@
+{
+  "$defs": {
+    "CatalogCategory": {
+      "enum": [
+        "quick_start",
+        "guided_build",
+        "open_sandbox"
+      ],
+      "title": "CatalogCategory",
+      "type": "string"
+    },
+    "CatalogStatus": {
+      "enum": [
+        "draft",
+        "active",
+        "deprecated"
+      ],
+      "title": "CatalogStatus",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "catalog_item_id": {
+      "title": "Catalog Item Id",
+      "type": "string"
+    },
+    "display_name": {
+      "title": "Display Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "category": {
+      "$ref": "#/$defs/CatalogCategory"
+    },
+    "version": {
+      "default": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/CatalogStatus",
+      "default": "draft"
+    },
+    "required_capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Capabilities",
+      "type": "array"
+    },
+    "optional_capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Optional Capabilities",
+      "type": "array"
+    },
+    "default_hardware_profile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Hardware Profile"
+    },
+    "default_quota_profile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Quota Profile"
+    },
+    "default_ttl": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Ttl"
+    },
+    "provisioner_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Provisioner Refs",
+      "type": "array"
+    },
+    "validation_refs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Validation Refs",
+      "type": "array"
+    },
+    "observability_profile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Observability Profile"
+    },
+    "supported_branding": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Branding",
+      "type": "array"
+    },
+    "handoff_template": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Handoff Template"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "catalog_item_id",
+    "display_name",
+    "category"
+  ],
+  "title": "CatalogItem",
+  "type": "object"
+}

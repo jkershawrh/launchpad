@@ -1,0 +1,8 @@
+hardware_profile_id: gaudi-direct
+display_name: Gaudi Direct Access
+xeon_required: true
+gaudi_mode: direct
+openshift_ai_required: true
+kafka_required: false
+virtualization_required: false
+notes: Direct Gaudi hardware allocation for model training/inference

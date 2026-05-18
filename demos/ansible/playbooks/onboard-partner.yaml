@@ -1,0 +1,15 @@
+---
+- name: Onboard Partner Tenant
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    tenant_slug: "{{ tenant_slug }}"
+    tenant_display_name: "{{ tenant_display_name | default(tenant_slug) }}"
+    tenant_tier: "{{ tenant_tier | default('pilot') }}"
+    tenant_cpu_cores: "{{ cpu_cores | default(8) }}"
+    tenant_memory_gb: "{{ memory_gb | default(32) }}"
+    tenant_max_pods: "{{ max_pods | default(20) }}"
+    tenant_api_key: "{{ api_key | default('changeme') }}"
+  roles:
+    - role: tenant_onboard

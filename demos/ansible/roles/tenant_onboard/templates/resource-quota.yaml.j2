@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: tenant-quota
+  namespace: intel-rh-partner-{{ tenant_slug }}
+  labels:
+    tenant: "{{ tenant_slug }}"
+spec:
+  hard:
+    requests.cpu: "{{ tenant_cpu_cores | default(8) }}"
+    requests.memory: "{{ tenant_memory_gb | default(32) }}Gi"
+    limits.cpu: "{{ (tenant_cpu_cores | default(8) | int) * 2 }}"
+    limits.memory: "{{ (tenant_memory_gb | default(32) | int) * 2 }}Gi"
+    pods: "{{ tenant_max_pods | default(20) }}"
+    persistentvolumeclaims: "{{ tenant_max_pvcs | default(5) }}"

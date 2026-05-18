@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm-config
+  namespace: intel-rh-inference-gateway
+  labels:
+    app: keycloak
+data:
+  realm-export.json: |
+    {
+      "realm": "intel-rh-partner-demo",
+      "enabled": true,
+      "sslRequired": "external",
+      "registrationAllowed": false,
+      "loginWithEmailAllowed": true,
+      "duplicateEmailsAllowed": false,
+      "clients": [
+        {
+          "clientId": "inference-gateway",
+          "enabled": true,
+          "protocol": "openid-connect",
+          "publicClient": false,
+          "bearerOnly": false,
+          "standardFlowEnabled": true,
+          "directAccessGrantsEnabled": true,
+          "serviceAccountsEnabled": true,
+          "authorizationServicesEnabled": false,
+          "redirectUris": ["https://*.apps.*.openshiftapps.com/*"],
+          "webOrigins": ["+"],
+          "protocolMappers": [
+            {
+              "name": "tenant_id",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-attribute-mapper",
+              "config": {
+                "user.attribute": "tenant_id",
+                "claim.name": "tenant_id",
+                "jsonType.label": "String",
+                "id.token.claim": "true",
+                "access.token.claim": "true"
+              }
+            },
+            {
+              "name": "tenant_slug",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-attribute-mapper",
+              "config": {
+                "user.attribute": "tenant_slug",
+                "claim.name": "tenant_slug",
+                "jsonType.label": "String",
+                "id.token.claim": "true",
+                "access.token.claim": "true"
+              }
+            },
+            {
+              "name": "tier",
+              "protocol": "openid-connect",
+              "protocolMapper": "oidc-usermodel-attribute-mapper",
+              "config": {
+                "user.attribute": "tier",
+                "claim.name": "tier",
+                "jsonType.label": "String",
+                "id.token.claim": "true",
+                "access.token.claim": "true"
+              }
+            }
+          ]
+        },
+        {
+          "clientId": "inference-frontend",
+          "enabled": true,
+          "protocol": "openid-connect",
+          "publicClient": true,
+          "standardFlowEnabled": true,
+          "directAccessGrantsEnabled": false,
+          "redirectUris": ["https://*.apps.*.openshiftapps.com/*", "http://localhost:5173/*"],
+          "webOrigins": ["+"],
+          "attributes": {
+            "pkce.code.challenge.method": "S256"
+          }
+        }
+      ],
+      "roles": {
+        "realm": [
+          { "name": "partner", "description": "Partner demo user" },
+          { "name": "admin", "description": "Platform administrator" }
+        ]
+      },
+      "defaultRoles": ["partner"]
+    }

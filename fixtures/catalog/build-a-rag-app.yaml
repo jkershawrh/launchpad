@@ -1,0 +1,24 @@
+catalog_item_id: build-a-rag-app
+display_name: Build a RAG App
+description: Guided build area for creating a Retrieval Augmented Generation application using OpenShift AI and Intel hardware.
+category: guided_build
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+  - model_endpoint
+  - workbench
+optional_capabilities:
+  - gaudi_direct
+  - vector_db
+default_hardware_profile: xeon-basic
+default_quota_profile: standard
+default_ttl: "8h"
+provisioner_refs:
+  - mock-provisioner
+validation_refs:
+  - resource-check
+observability_profile: default
+supported_branding:
+  - redhat-intel-default
+handoff_template: guided-build-handoff

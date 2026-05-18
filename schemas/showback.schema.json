@@ -1,0 +1,158 @@
+{
+  "properties": {
+    "showback_id": {
+      "title": "Showback Id",
+      "type": "string"
+    },
+    "tenant_id": {
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "session_id": {
+      "title": "Session Id",
+      "type": "string"
+    },
+    "catalog_item_id": {
+      "title": "Catalog Item Id",
+      "type": "string"
+    },
+    "namespace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Namespace"
+    },
+    "duration_seconds": {
+      "default": 0,
+      "title": "Duration Seconds",
+      "type": "integer"
+    },
+    "cpu_requested": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cpu Requested"
+    },
+    "cpu_used_estimate": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cpu Used Estimate"
+    },
+    "memory_requested": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Memory Requested"
+    },
+    "memory_used_estimate": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Memory Used Estimate"
+    },
+    "storage_requested": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Storage Requested"
+    },
+    "storage_used_estimate": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Storage Used Estimate"
+    },
+    "gaudi_endpoint_requests": {
+      "default": 0,
+      "title": "Gaudi Endpoint Requests",
+      "type": "integer"
+    },
+    "gaudi_direct_minutes": {
+      "default": 0,
+      "title": "Gaudi Direct Minutes",
+      "type": "integer"
+    },
+    "model_requests": {
+      "default": 0,
+      "title": "Model Requests",
+      "type": "integer"
+    },
+    "estimated_tokens": {
+      "default": 0,
+      "title": "Estimated Tokens",
+      "type": "integer"
+    },
+    "kafka_messages": {
+      "default": 0,
+      "title": "Kafka Messages",
+      "type": "integer"
+    },
+    "cost_estimate": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cost Estimate"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "tenant_id",
+    "session_id",
+    "catalog_item_id"
+  ],
+  "title": "ShowbackRecord",
+  "type": "object"
+}

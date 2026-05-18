@@ -1,0 +1,34 @@
+---
+# Embedding model served via OpenVINO on Xeon 6
+# Model: all-MiniLM-L6-v2 (ONNX, ~80MB, sentence embeddings)
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: embeddings-minilm
+  namespace: intel-rh-openvino-inference
+  labels:
+    app.kubernetes.io/name: embeddings-minilm
+    platform: intel-xeon6
+    task: embeddings
+  annotations:
+    serving.kserve.io/deploymentMode: "Serverless"
+spec:
+  predictor:
+    model:
+      modelFormat:
+        name: onnx
+        version: "1"
+      runtime: ovms-xeon6-runtime
+      # storageUri points to the exported ONNX model
+      # Update after exporting with scripts/export-models.sh
+      storageUri: "pvc://model-cache/openvino/all-MiniLM-L6-v2"
+      resources:
+        requests:
+          cpu: "2"
+          memory: "2Gi"
+        limits:
+          cpu: "4"
+          memory: "4Gi"
+    minReplicas: 1
+    maxReplicas: 5
+    containerConcurrency: 10

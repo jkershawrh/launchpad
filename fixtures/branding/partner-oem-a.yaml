@@ -1,0 +1,10 @@
+branding_profile_id: partner-oem-a
+display_name: Partner OEM A
+title: Partner OEM A AI Lab
+logo_refs:
+  - partner-oem-a-logo.svg
+  - intel-logo.svg
+primary_color: "#1A1A2E"
+secondary_color: "#0071C5"
+footer_text: "Partner OEM A — Powered by Intel and Red Hat"
+theme: partner_light

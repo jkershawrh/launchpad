@@ -1,0 +1,22 @@
+{
+  "fixture_id": "architecture-dual-path-001",
+  "type": "diagram",
+  "source": "synthetic",
+  "description": "High-level dual-path inference architecture showing request flow from client through OpenShift Route to the inference gateway, which routes to either Intel Xeon 6 (CPU path) or Intel Gaudi (GPU path). Includes KServe ServingRuntimes, model cache PVCs, and Prometheus monitoring.",
+  "width": 1400,
+  "height": 900,
+  "visual_elements": [
+    "Client request entry (top)",
+    "OpenShift Route + OAuth Proxy",
+    "Inference Gateway (decision point)",
+    "CPU Path: Xeon 6 → vLLM CPU → Granite/CodeLlama models",
+    "GPU Path: Gaudi → vLLM Gaudi → Llama Scout/DeepSeek models",
+    "KServe ServingRuntime labels on each path",
+    "Model Cache PVC (shared storage)",
+    "Prometheus ServiceMonitor (bottom)",
+    "Cost annotations: $0.0004/1K (CPU) vs $0.001/1K (GPU)"
+  ],
+  "expected_tags": ["architecture", "dual_path", "kserve", "openshift", "cost_model"],
+  "expected_classification": "architecture_diagram",
+  "demo_context": "Used in the Architecture Explainer profile to demonstrate vision-language understanding of complex system diagrams."
+}

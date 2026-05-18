@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  generateName: intel-rh-demo-build-
+  namespace: intel-rh-demo
+spec:
+  pipelineRef:
+    name: intel-rh-demo-build
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes: [ReadWriteOnce]
+          resources:
+            requests:
+              storage: 2Gi

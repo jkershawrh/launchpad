@@ -1,0 +1,57 @@
+# Gaudi Inference Container - V2 (Production)
+#
+# Uses official Habana base image with Synapse AI SDK
+# for real Intel Gaudi accelerator hardware.
+#
+# Build: podman build -t vllm-gaudi:v2 -f Containerfile.v2 .
+# Run:   podman run -p 8000:8000 --device=/dev/accel vllm-gaudi:v2
+
+FROM vault.habana.ai/gaudi-docker/1.17.0/ubuntu22.04/habanalabs/pytorch-installer-2.3.1
+
+LABEL name="vllm-gaudi-inference" \
+      version="2.0.0" \
+      description="vLLM inference server with Intel Gaudi GPU support (V2 - Production)" \
+      io.k8s.display-name="vLLM Gaudi Inference V2" \
+      io.openshift.tags="ai,inference,gaudi,vllm"
+
+# Gaudi HPU environment
+ENV HABANA_VISIBLE_DEVICES="all" \
+    HABANA_LOGS="/opt/app-root/src/logs/habana" \
+    PT_HPU_LAZY_MODE=1 \
+    OMPI_MCA_btl_vader_single_copy_mechanism=none \
+    HF_HOME=/opt/app-root/src/.cache \
+    TRANSFORMERS_CACHE=/opt/app-root/src/.cache \
+    PORT=8000
+
+WORKDIR /opt/app-root/src
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    optimum-habana \
+    transformers>=4.40.0 \
+    accelerate>=0.27.0 \
+    fastapi>=0.110.0 \
+    "uvicorn[standard]>=0.27.0" \
+    pydantic>=2.0.0 \
+    sentencepiece \
+    protobuf
+
+# Create directories
+USER 0
+RUN mkdir -p /opt/app-root/src/.cache \
+    && mkdir -p /opt/app-root/src/logs/habana \
+    && chown -R 1001:0 /opt/app-root/src
+
+# Copy application
+COPY inference_server.py /opt/app-root/src/inference_server.py
+COPY entrypoint.sh /opt/app-root/src/entrypoint.sh
+RUN chmod +x /opt/app-root/src/entrypoint.sh
+
+USER 1001
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+ENTRYPOINT ["/opt/app-root/src/entrypoint.sh"]

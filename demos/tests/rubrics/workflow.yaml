@@ -1,0 +1,151 @@
+---
+# Workflow Routing Quality Rubric
+# Scoring criteria for multi-step inference routing across hardware tiers
+
+name: workflow
+version: "2.0"
+total_points: 155
+pass_threshold: 90
+
+criteria:
+  architecture_visualization:
+    request_flow_diagram:
+      points: 5
+      severity: critical
+      check: "RequestFlowDiagram component renders gateway→Xeon6/Gaudi→observability flow"
+    workflow_diagrams:
+      points: 5
+      severity: critical
+      check: "WorkflowDiagrams component renders 3 POC pipelines with per-step hardware badges"
+    accessibility:
+      points: 5
+      severity: high
+      check: "Diagrams have ARIA labels for screen readers"
+
+  routing_logic:
+    task_to_backend_mapping:
+      points: 5
+      severity: critical
+      check: "config.yaml maps 5 task types to 3 backends with documented reasons"
+    conditional_routing:
+      points: 5
+      severity: critical
+      check: "completion task routes by model_size_b (<=3B CPU, >3B Gaudi)"
+    local_config_override:
+      points: 5
+      severity: high
+      check: "CONFIG_PATH env var allows local config.local.yaml override"
+
+  multi_step_validation:
+    rag_pipeline:
+      points: 5
+      severity: critical
+      check: "Enterprise RAG chains 4 steps across embed(CPU)→search→rerank(CPU)→generate(Gaudi)"
+    aiops_pipeline:
+      points: 5
+      severity: critical
+      check: "AIOps chains classify(CPU)→correlate(CPU)→RCA(Gaudi)→governance(local)"
+    agent_pipeline:
+      points: 5
+      severity: critical
+      check: "Agent chains intent(CPU)→risk(CPU)→plan(Gaudi)→policy(local)"
+
+  trace_metadata:
+    routing_in_response:
+      points: 5
+      severity: critical
+      check: "Every gateway response includes selected_backend, reason, accelerator, latency_ms, cost"
+    per_step_trace:
+      points: 5
+      severity: high
+      check: "POC apps produce trace arrays with per-step backend, accelerator, latency"
+    hardware_badges:
+      points: 5
+      severity: medium
+      check: "HardwareBadge component renders Xeon6 (blue) and Gaudi (orange) labels"
+
+  live_workflow:
+    component_exists:
+      points: 5
+      severity: critical
+      check: "LiveWorkflow component exists with step states (pending, running, done, error)"
+    calls_gateway_per_step:
+      points: 10
+      severity: critical
+      check: "LiveWorkflow makes real gateway API calls per step"
+    shows_latency:
+      points: 5
+      severity: critical
+      check: "Displays actual per-step latency after execution"
+    auto_run_trigger:
+      points: 5
+      severity: high
+      check: "Supports runTrigger prop for auto-execution on scenario click"
+    handles_local_steps:
+      points: 5
+      severity: high
+      check: "Handles local (non-gateway) steps without API call"
+    animation:
+      points: 5
+      severity: medium
+      check: "CSS pulse animation on running step, color transitions on connectors"
+
+  build_your_own:
+    component_exists:
+      points: 5
+      severity: critical
+      check: "BuildYourOwn component exists with task selector and model size picker"
+    task_selector:
+      points: 5
+      severity: critical
+      check: "Dropdown for completion, embeddings, classification, reranking"
+    model_size_picker:
+      points: 5
+      severity: critical
+      check: "Clickable size buttons (1B, 3B, 7B, 13B, 70B) with threshold indicator"
+    route_prediction:
+      points: 5
+      severity: critical
+      check: "Shows predicted route (backend + hardware) before sending"
+    prediction_match:
+      points: 5
+      severity: high
+      check: "Indicates whether actual route matched prediction"
+    free_text_prompt:
+      points: 5
+      severity: high
+      check: "TextArea for custom prompt input"
+
+  fallback_routing:
+    fallback_in_routing_config:
+      description: "Config routes include fallback: local field"
+      points: 5
+      severity: high
+      check: "fallback: local in config.local.yaml routes"
+    routing_policy_sets_fallback:
+      description: "RoutingPolicy.route() populates decision.fallback from config"
+      points: 5
+      severity: high
+      check: "fallback extracted from rule in routing_policy.py"
+
+  rag_pipeline:
+    vector_search_real:
+      description: "Vector search step calls gateway with search task, not local no-op"
+      points: 5
+      severity: high
+      check: "RAG workflow Vector Search is not marked local: true"
+    knowledge_base_corpus:
+      description: "Local inference has pre-loaded knowledge base for vector search"
+      points: 5
+      severity: high
+      check: "KNOWLEDGE_BASE in local_inference.py"
+    search_task_supported:
+      description: "Gateway supports search as a valid task type"
+      points: 5
+      severity: high
+      check: "search in VALID_TASKS in router.py"
+    step_chaining:
+      description: "Generate step receives search/rerank context as input"
+      points: 5
+      severity: high
+      check: "searchContext passed to completion prompt in LiveWorkflow"

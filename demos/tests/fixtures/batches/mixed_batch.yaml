@@ -1,0 +1,52 @@
+batch_id: batch-001
+requests:
+  - request_id: b-001
+    task_type: classification
+    token_estimate: 1000
+    priority: normal
+    latency_target_ms: 8000
+  - request_id: b-002
+    task_type: embedding
+    token_estimate: 6000
+    priority: normal
+    latency_target_ms: 5000
+  - request_id: b-003
+    task_type: long_summary
+    token_estimate: 24000
+    priority: high
+    latency_target_ms: 5000
+  - request_id: b-004
+    task_type: incident_rca
+    token_estimate: 32000
+    priority: critical
+    latency_target_ms: 5000
+  - request_id: b-005
+    task_type: classification
+    token_estimate: 500
+    priority: low
+    latency_target_ms: 8000
+  - request_id: b-006
+    task_type: unknown
+    token_estimate: 1000
+    priority: normal
+    latency_target_ms: 5000
+  - request_id: b-007
+    task_type: rerank
+    token_estimate: 4000
+    priority: normal
+    latency_target_ms: 5000
+  - request_id: b-008
+    task_type: short_summary
+    token_estimate: 8000
+    priority: high
+    latency_target_ms: 8000
+  - request_id: b-009
+    task_type: batch_summary
+    token_estimate: 40000
+    priority: critical
+    latency_target_ms: 10000
+  - request_id: b-010
+    task_type: long_summary
+    token_estimate: 20000
+    priority: high
+    latency_target_ms: 5000

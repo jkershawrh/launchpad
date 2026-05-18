@@ -1,0 +1,18 @@
+{
+  "fixture_id": "grafana-error-rate-001",
+  "type": "screenshot",
+  "source": "synthetic",
+  "description": "Grafana error rate dashboard with three panels: HTTP 502 errors by endpoint, error rate percentage over time, and affected service breakdown. Shows error spike from 0.1% to 3.2% correlating with Gaudi health check failure.",
+  "width": 1920,
+  "height": 1080,
+  "visual_elements": [
+    "Error rate percentage chart (spike from 0.1% to 3.2%)",
+    "HTTP 502 count by endpoint (bar chart, /v1/route highest)",
+    "Affected services table (gateway-pod-1, gateway-pod-2 highlighted)",
+    "Alert status indicator (FIRING, red)",
+    "Time range: last 1 hour"
+  ],
+  "expected_tags": ["error_rate", "502_errors", "service_impact", "alert_firing"],
+  "expected_classification": "anomaly",
+  "demo_context": "Companion to the latency spike dashboard — shows the error impact of the Gaudi memory pressure event."
+}

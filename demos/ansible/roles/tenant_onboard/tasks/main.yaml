@@ -1,0 +1,63 @@
+---
+- name: Create partner namespace
+  ansible.builtin.command:
+    cmd: "oc create namespace intel-rh-partner-{{ tenant_slug }} --dry-run=client -o yaml | oc apply -f -"
+  register: ns_result
+  changed_when: "'created' in ns_result.stdout or 'configured' in ns_result.stdout"
+
+- name: Label partner namespace
+  ansible.builtin.command:
+    cmd: >
+      oc label namespace intel-rh-partner-{{ tenant_slug }}
+      tenant={{ tenant_slug }}
+      tier={{ tenant_tier | default('pilot') }}
+      managed-by=intel-rh-platform
+      --overwrite
+  changed_when: false
+
+- name: Apply resource quota
+  ansible.builtin.template:
+    src: resource-quota.yaml.j2
+    dest: "/tmp/tenant-{{ tenant_slug }}-quota.yaml"
+  changed_when: false
+
+- name: Create resource quota
+  ansible.builtin.command:
+    cmd: "oc apply -f /tmp/tenant-{{ tenant_slug }}-quota.yaml"
+  register: quota_result
+  changed_when: "'created' in quota_result.stdout or 'configured' in quota_result.stdout"
+
+- name: Apply limit range
+  ansible.builtin.template:
+    src: limit-range.yaml.j2
+    dest: "/tmp/tenant-{{ tenant_slug }}-limits.yaml"
+  changed_when: false
+
+- name: Create limit range
+  ansible.builtin.command:
+    cmd: "oc apply -f /tmp/tenant-{{ tenant_slug }}-limits.yaml"
+  register: limit_result
+  changed_when: "'created' in limit_result.stdout or 'configured' in limit_result.stdout"
+
+- name: Apply network policy
+  ansible.builtin.template:
+    src: network-policy.yaml.j2
+    dest: "/tmp/tenant-{{ tenant_slug }}-netpol.yaml"
+  changed_when: false
+
+- name: Create network policy
+  ansible.builtin.command:
+    cmd: "oc apply -f /tmp/tenant-{{ tenant_slug }}-netpol.yaml"
+  register: netpol_result
+  changed_when: "'created' in netpol_result.stdout or 'configured' in netpol_result.stdout"
+
+- name: Create tenant API key secret
+  ansible.builtin.command:
+    cmd: >
+      oc create secret generic tenant-api-key
+      --from-literal=api-key={{ tenant_api_key | default('changeme') }}
+      -n intel-rh-partner-{{ tenant_slug }}
+      --dry-run=client -o yaml | oc apply -f -
+  register: secret_result
+  changed_when: "'created' in secret_result.stdout or 'configured' in secret_result.stdout"
+  no_log: true

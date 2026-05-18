@@ -1,0 +1,9 @@
+---
+- name: Deploy Gaudi Inference Path
+  hosts: localhost
+  gather_facts: false
+
+  roles:
+    - cluster_discovery
+    - gaudi_inference
+    - health_check

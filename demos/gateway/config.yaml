@@ -1,0 +1,67 @@
+---
+# Inference Gateway Routing Configuration
+#
+# Defines available backends and routing rules.
+# The gateway uses this to decide which backend handles each request.
+
+backends:
+  - name: openvino-cpu
+    url: http://embeddings-minilm.intel-rh-openvino-inference.svc.cluster.local
+    accelerator: xeon6
+    capabilities:
+      - embeddings
+      - classification
+      - reranking
+    cost_per_1k_tokens: 0.001
+    max_concurrent: 10
+
+  - name: vllm-cpu
+    url: http://cpu-inference-example.intel-rh-cpu-inference.svc.cluster.local
+    accelerator: xeon6
+    capabilities:
+      - completion
+    cost_per_1k_tokens: 0.002
+    max_concurrent: 3
+    max_model_size_b: 3
+
+  - name: vllm-gaudi
+    url: http://gaudi-inference-example.intel-rh-gaudi-inference.svc.cluster.local
+    accelerator: gaudi
+    capabilities:
+      - completion
+      - batch_generation
+    cost_per_1k_tokens: 0.008
+    max_concurrent: 5
+    min_model_size_b: 1
+
+routes:
+  - task: embeddings
+    backend: openvino-cpu
+    reason: "Embeddings are compute-bound, AMX-accelerated on Xeon 6"
+
+  - task: classification
+    backend: openvino-cpu
+    reason: "Classification models run efficiently on CPU with ONNX/OpenVINO"
+
+  - task: reranking
+    backend: openvino-cpu
+    reason: "Reranking is latency-sensitive, CPU avoids GPU queue contention"
+
+  - task: completion
+    conditions:
+      - model_size_b: 3
+        operator: "<="
+        backend: vllm-cpu
+        reason: "Small models (<= 3B) run well on Xeon 6 with BF16/AMX"
+      - model_size_b: 3
+        operator: ">"
+        backend: vllm-gaudi
+        reason: "Large models (> 3B) need Gaudi HBM and tensor acceleration"
+    default_backend: vllm-gaudi
+    reason: "Completions route by model size — small to CPU, large to Gaudi"
+    fallback: local
+
+  - task: batch_generation
+    backend: vllm-gaudi
+    reason: "Batch workloads benefit from Gaudi throughput and parallelism"
+    fallback: local

@@ -1,0 +1,24 @@
+catalog_item_id: inference-overdrive-quickstart
+display_name: Inference Overdrive Quick Start
+description: Fast-start demo showcasing AI inference on Intel Xeon and Gaudi hardware with Red Hat OpenShift AI.
+category: quick_start
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+  - model_endpoint
+optional_capabilities:
+  - gaudi_direct
+  - kafka
+default_hardware_profile: gaudi-endpoint
+default_quota_profile: standard
+default_ttl: "4h"
+provisioner_refs:
+  - mock-provisioner
+validation_refs:
+  - smoke-test
+observability_profile: default
+supported_branding:
+  - redhat-intel-default
+  - partner-oem-a
+handoff_template: quickstart-handoff

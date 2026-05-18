@@ -1,0 +1,99 @@
+---
+# Database Layer Quality Rubric
+# Scoring criteria for Stage 8 (Database Foundation)
+
+name: database
+version: "1.0"
+total_points: 124
+pass_threshold: 90
+
+criteria:
+  schema:
+    migration_idempotent:
+      points: 15
+      severity: critical
+      check: "All CREATE TABLE/INDEX use IF NOT EXISTS"
+    tables_complete:
+      points: 10
+      severity: critical
+      check: "All 5 tables defined (inference_requests, governance_decisions, backends, routing_rules, audit_log)"
+    foreign_keys:
+      points: 10
+      severity: high
+      check: "FK constraints on governance_decisions.request_id and routing_rules.backend_id"
+    indexes_defined:
+      points: 5
+      severity: medium
+      check: "Indexes on created_at, task+backend, decision, source"
+
+  module:
+    compiles:
+      points: 5
+      severity: critical
+      check: "db.py compiles without syntax errors"
+    functions_exported:
+      points: 10
+      severity: critical
+      check: "All required async functions exist (connect, insert_request, get_requests, etc.)"
+    graceful_degradation:
+      points: 15
+      severity: critical
+      check: "All db functions return safely when no database is connected"
+
+  sql_safety:
+    parameterized_queries:
+      points: 15
+      severity: critical
+      check: "No string interpolation in SQL (use make_interval, $N parameters)"
+    encapsulation:
+      points: 10
+      severity: high
+      check: "API endpoints use db module functions, not db._pool directly"
+
+  integration:
+    config_seeding:
+      points: 5
+      severity: medium
+      check: "seed_from_config() populates backends and routing_rules from config.yaml"
+
+  hardening:
+    migration_tracking_table:
+      description: "Migration tracking uses applied_migrations table"
+      points: 5
+      severity: high
+      check: "grep for applied_migrations in db.py"
+    is_connected_tests_pool:
+      description: "is_connected() executes SELECT 1, not just checks _pool"
+      points: 5
+      severity: medium
+      check: "grep for SELECT 1 in is_connected function"
+    seed_validates_backend_id:
+      description: "seed_from_config validates backend_id is not None"
+      points: 3
+      severity: medium
+      check: "grep for backend_id None check"
+    audit_same_connection:
+      description: "_audit uses caller connection, not separate pool.acquire"
+      points: 3
+      severity: medium
+      check: "conn parameter in _audit signature"
+    no_redundant_except:
+      description: "No except (ValueError, Exception) patterns"
+      points: 2
+      severity: low
+      check: "(ValueError, Exception) not in db.py"
+    composite_status_created_index:
+      description: "Composite index on (status, created_at)"
+      points: 3
+      severity: low
+      check: "grep for idx_requests_status_created in migration SQL"
+    updated_at_trigger:
+      description: "updated_at trigger on backends table"
+      points: 3
+      severity: low
+      check: "grep for TRIGGER and updated_at in migration"
+    query_timeout:
+      description: "Pool uses statement_timeout configuration"
+      points: 3
+      severity: low
+      check: "grep for statement_timeout in db.py"

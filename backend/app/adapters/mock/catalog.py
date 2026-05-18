@@ -1,0 +1,341 @@
+from __future__ import annotations
+
+from typing import Dict, List, Optional
+
+from app.domain.enums import CatalogCategory, CatalogStatus
+from app.domain.models import CatalogItem
+
+SEED_CATALOG: List[Dict] = [
+    {
+        "catalog_item_id": "inference-overdrive-quickstart",
+        "display_name": "Inference Overdrive Quick Start",
+        "description": "Fast-start demo showcasing AI inference on Intel Xeon and Gaudi hardware.",
+        "category": CatalogCategory.QUICK_START,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "default_hardware_profile": "gaudi-endpoint",
+        "default_quota_profile": "standard",
+        "default_ttl": "4h",
+    },
+    {
+        "catalog_item_id": "build-a-rag-app",
+        "display_name": "Build a RAG App",
+        "description": "Guided build area for creating a RAG application.",
+        "category": CatalogCategory.GUIDED_BUILD,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "default_hardware_profile": "xeon-basic",
+        "default_quota_profile": "standard",
+        "default_ttl": "8h",
+    },
+    {
+        "catalog_item_id": "mixed-ai-sandbox",
+        "display_name": "Mixed AI Sandbox",
+        "description": "Open sandbox with Xeon and optional Gaudi access.",
+        "category": CatalogCategory.OPEN_SANDBOX,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "default_hardware_profile": "mixed-overdrive",
+        "default_quota_profile": "large",
+        "default_ttl": "12h",
+    },
+    {
+        "catalog_item_id": "inference-overdrive",
+        "display_name": "Inference Overdrive",
+        "description": "Dual-path AI inference gateway with intelligent routing across Intel Xeon 6 and Gaudi hardware.",
+        "category": CatalogCategory.QUICK_START,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint"],
+        "default_hardware_profile": "gaudi-endpoint",
+        "default_quota_profile": "standard",
+        "default_ttl": "4h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health", "smoke-query"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"demo_source": "gateway"},
+    },
+    {
+        "catalog_item_id": "enterprise-rag",
+        "display_name": "Enterprise RAG Pipeline",
+        "description": "Question-answering pipeline routing queries to optimal Intel hardware. Xeon for embedding and reranking, Gaudi for generation.",
+        "category": CatalogCategory.QUICK_START,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint", "vector_db"],
+        "default_hardware_profile": "gaudi-endpoint",
+        "default_quota_profile": "standard",
+        "default_ttl": "4h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health", "rag-smoke-test"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"demo_source": "pocs/enterprise-rag"},
+    },
+    {
+        "catalog_item_id": "aiops-copilot",
+        "display_name": "AIOps Copilot",
+        "description": "Incident response pipeline: alert classification, root cause analysis, and governance-gated remediation across Intel hardware.",
+        "category": CatalogCategory.QUICK_START,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint"],
+        "default_hardware_profile": "gaudi-endpoint",
+        "default_quota_profile": "standard",
+        "default_ttl": "4h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health", "aiops-smoke-test"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"demo_source": "pocs/aiops-copilot"},
+    },
+    {
+        "catalog_item_id": "governed-agent",
+        "display_name": "Governed Agent Execution",
+        "description": "AI agent with intent classification, risk scoring, and policy validation gates. Demonstrates safe agent execution.",
+        "category": CatalogCategory.GUIDED_BUILD,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint"],
+        "default_hardware_profile": "gaudi-endpoint",
+        "default_quota_profile": "standard",
+        "default_ttl": "8h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health", "agent-smoke-test"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default"],
+        "metadata": {"demo_source": "pocs/governed-agent"},
+    },
+    {
+        "catalog_item_id": "agent-swarm",
+        "display_name": "Agent Swarm Coordination",
+        "description": "Multi-agent investigation swarm with parallel wave execution across Intel hardware tiers.",
+        "category": CatalogCategory.GUIDED_BUILD,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift"],
+        "default_hardware_profile": "xeon-basic",
+        "default_quota_profile": "standard",
+        "default_ttl": "8h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default"],
+        "metadata": {"demo_source": "overdrive/swarm"},
+    },
+    {
+        "catalog_item_id": "research-agent",
+        "display_name": "Research Agent",
+        "description": "Governed multi-step Q&A agent with knowledge base search, reranking, and evidence-based synthesis.",
+        "category": CatalogCategory.GUIDED_BUILD,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift"],
+        "default_hardware_profile": "xeon-basic",
+        "default_quota_profile": "standard",
+        "default_ttl": "8h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default"],
+        "metadata": {"demo_source": "overdrive/research_agent"},
+    },
+    {
+        "catalog_item_id": "recovery-demo",
+        "display_name": "Hardware Recovery Demo",
+        "description": "Demonstrates graceful hardware failure, automatic fallback from Gaudi to Xeon, and recovery with zero request loss.",
+        "category": CatalogCategory.QUICK_START,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint"],
+        "default_hardware_profile": "gaudi-endpoint",
+        "default_quota_profile": "standard",
+        "default_ttl": "4h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"demo_source": "overdrive/recovery"},
+    },
+    {
+        "catalog_item_id": "workload-generator",
+        "display_name": "Workload Generator",
+        "description": "Generate realistic enterprise AI workloads: incident storms, RAG barrages, token cannons, and model races.",
+        "category": CatalogCategory.GUIDED_BUILD,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint"],
+        "default_hardware_profile": "mixed-overdrive",
+        "default_quota_profile": "large",
+        "default_ttl": "8h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default"],
+        "metadata": {"demo_source": "overdrive/batch_runner"},
+    },
+    {
+        "catalog_item_id": "training-demo",
+        "display_name": "Model Training Demo",
+        "description": "Simulated fine-tuning workflows with loss curves, evaluation metrics, and model comparison across Intel Gaudi hardware.",
+        "category": CatalogCategory.GUIDED_BUILD,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "gaudi_direct"],
+        "default_hardware_profile": "gaudi-direct",
+        "default_quota_profile": "large",
+        "default_ttl": "8h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default"],
+        "metadata": {"demo_source": "overdrive/training_backend"},
+    },
+    {
+        "catalog_item_id": "replay-comparison",
+        "display_name": "Replay Comparison",
+        "description": "Run the same workload on Xeon-only vs Xeon+Gaudi configurations. Compare latency, throughput, and cost.",
+        "category": CatalogCategory.QUICK_START,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint"],
+        "default_hardware_profile": "mixed-overdrive",
+        "default_quota_profile": "standard",
+        "default_ttl": "4h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"demo_source": "overdrive/replay"},
+    },
+    {
+        "catalog_item_id": "full-platform-sandbox",
+        "display_name": "Full Platform Sandbox",
+        "description": "Complete AI platform sandbox with all demos, gateway, Overdrive engine, and full hardware access.",
+        "category": CatalogCategory.OPEN_SANDBOX,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint", "gaudi_direct", "kafka"],
+        "optional_capabilities": ["workbench", "virtualization"],
+        "default_hardware_profile": "mixed-overdrive",
+        "default_quota_profile": "large",
+        "default_ttl": "12h",
+        "provisioner_refs": ["demo-provisioner"],
+        "validation_refs": ["gateway-health", "full-platform-check"],
+        "handoff_template": "demo-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"demo_source": "all"},
+    },
+    {
+        "catalog_item_id": "sandbox-minimal",
+        "display_name": "Minimal Sandbox",
+        "description": "Lightweight sandbox with RHEL base, oc CLI, podman, and Python. SSH and web console access.",
+        "category": CatalogCategory.OPEN_SANDBOX,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift"],
+        "default_hardware_profile": "xeon-basic",
+        "default_quota_profile": "small",
+        "default_ttl": "4h",
+        "provisioner_refs": ["sandbox-provisioner"],
+        "validation_refs": ["ssh-check", "console-check"],
+        "handoff_template": "sandbox-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal", "partner-oem-a"],
+        "metadata": {"sandbox_type": "minimal", "stack_level": "minimal", "access_methods": ["web_console", "ssh"], "aap_level": "none"},
+    },
+    {
+        "catalog_item_id": "sandbox-ai-dev",
+        "display_name": "AI Developer Sandbox",
+        "description": "AI-focused development sandbox with PyTorch, vLLM, Jupyter, VS Code Server, and model endpoint access. Includes Ansible playbooks for common setups.",
+        "category": CatalogCategory.OPEN_SANDBOX,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint"],
+        "optional_capabilities": ["gaudi_direct"],
+        "default_hardware_profile": "gaudi-endpoint",
+        "default_quota_profile": "standard",
+        "default_ttl": "8h",
+        "provisioner_refs": ["sandbox-provisioner"],
+        "validation_refs": ["ssh-check", "console-check", "jupyter-check"],
+        "handoff_template": "sandbox-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"sandbox_type": "ai_dev", "stack_level": "ai_dev", "access_methods": ["web_console", "ssh", "jupyter", "vscode"], "aap_level": "playbook_library"},
+    },
+    {
+        "catalog_item_id": "sandbox-full-stack",
+        "display_name": "Full Red Hat AI Sandbox",
+        "description": "Complete Red Hat AI stack with all tools, all access methods, and full AAP integration. OpenVINO, Intel toolkits, Kafka, Tekton, and more.",
+        "category": CatalogCategory.OPEN_SANDBOX,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift", "model_endpoint", "gaudi_direct", "kafka", "workbench"],
+        "optional_capabilities": ["virtualization"],
+        "default_hardware_profile": "mixed-overdrive",
+        "default_quota_profile": "large",
+        "default_ttl": "12h",
+        "provisioner_refs": ["sandbox-provisioner"],
+        "validation_refs": ["ssh-check", "console-check", "jupyter-check", "vscode-check", "aap-check"],
+        "handoff_template": "sandbox-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal"],
+        "metadata": {"sandbox_type": "full_stack", "stack_level": "full_redhat_ai", "access_methods": ["web_console", "ssh", "vscode", "jupyter", "api"], "aap_level": "full_aap"},
+    },
+    {
+        "catalog_item_id": "sandbox-custom",
+        "display_name": "Custom Sandbox",
+        "description": "Fully configurable sandbox — choose your stack level, access methods, AAP integration, and hardware profile.",
+        "category": CatalogCategory.OPEN_SANDBOX,
+        "version": "1.0.0",
+        "status": CatalogStatus.ACTIVE,
+        "required_capabilities": ["openshift"],
+        "optional_capabilities": ["model_endpoint", "gaudi_direct", "kafka", "workbench", "virtualization"],
+        "default_hardware_profile": "xeon-basic",
+        "default_quota_profile": "standard",
+        "default_ttl": "8h",
+        "provisioner_refs": ["sandbox-provisioner"],
+        "validation_refs": ["ssh-check"],
+        "handoff_template": "sandbox-handoff",
+        "supported_branding": ["redhat-intel-default", "intel-internal", "partner-oem-a"],
+        "metadata": {"sandbox_type": "custom", "stack_level": "minimal", "access_methods": ["web_console", "ssh"], "aap_level": "none"},
+    },
+]
+
+
+class MockCatalogAdapter:
+    def __init__(self) -> None:
+        self._items: Dict[str, CatalogItem] = {}
+        for data in SEED_CATALOG:
+            item = CatalogItem(**data)
+            self._items[item.catalog_item_id] = item
+
+    def list_items(self) -> List[CatalogItem]:
+        return list(self._items.values())
+
+    def get_item(self, catalog_item_id: str) -> Optional[CatalogItem]:
+        return self._items.get(catalog_item_id)
+
+    def validate_item(self, catalog_item_id: str) -> bool:
+        item = self._items.get(catalog_item_id)
+        return item is not None and item.status == CatalogStatus.ACTIVE
+
+    def add_item(self, item: CatalogItem) -> CatalogItem:
+        if item.catalog_item_id in self._items:
+            raise ValueError(f"Catalog item {item.catalog_item_id} already exists")
+        self._items[item.catalog_item_id] = item
+        return item
+
+    def update_item(self, catalog_item_id: str, updates: dict) -> CatalogItem:
+        item = self._items.get(catalog_item_id)
+        if not item:
+            raise ValueError(f"Catalog item {catalog_item_id} not found")
+        updated = item.model_copy(update=updates)
+        self._items[catalog_item_id] = updated
+        return updated
+
+    def set_status(self, catalog_item_id: str, status: CatalogStatus) -> CatalogItem:
+        item = self._items.get(catalog_item_id)
+        if not item:
+            raise ValueError(f"Catalog item {catalog_item_id} not found")
+        updated = item.model_copy(update={"status": status})
+        self._items[catalog_item_id] = updated
+        return updated

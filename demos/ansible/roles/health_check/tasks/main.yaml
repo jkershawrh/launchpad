@@ -1,0 +1,88 @@
+---
+# Health checks for all platform components
+
+- name: Get Gateway route URL
+  ansible.builtin.command:
+    cmd: "oc get route inference-gateway -n {{ gateway_namespace }} -o jsonpath='{.spec.host}'"
+  register: gateway_url
+  changed_when: false
+  failed_when: false
+
+- name: Health check Gateway
+  ansible.builtin.uri:
+    url: "https://{{ gateway_url.stdout }}/health"
+    method: GET
+    return_content: true
+    validate_certs: false
+    timeout: 10
+  register: gateway_health
+  retries: "{{ health_check_retries }}"
+  delay: "{{ health_check_delay }}"
+  until: gateway_health.status == 200
+  when: gateway_url.rc == 0 and gateway_url.stdout | length > 0
+
+- name: Get CPU InferenceService URL
+  ansible.builtin.command:
+    cmd: "oc get inferenceservice cpu-inference-example -n {{ cpu_namespace }} -o jsonpath='{.status.url}'"
+  register: cpu_url
+  changed_when: false
+  failed_when: false
+
+- name: Health check CPU inference
+  ansible.builtin.uri:
+    url: "{{ cpu_url.stdout }}/health"
+    method: GET
+    return_content: true
+    timeout: 30
+  register: cpu_health
+  retries: "{{ health_check_retries }}"
+  delay: "{{ health_check_delay }}"
+  until: cpu_health.status == 200
+  when: cpu_url.rc == 0 and cpu_url.stdout | length > 0
+
+- name: Get Gaudi InferenceService URL
+  ansible.builtin.command:
+    cmd: "oc get inferenceservice gaudi-inference-example -n {{ gaudi_namespace }} -o jsonpath='{.status.url}'"
+  register: gaudi_url
+  changed_when: false
+  failed_when: false
+
+- name: Health check Gaudi inference
+  ansible.builtin.uri:
+    url: "{{ gaudi_url.stdout }}/health"
+    method: GET
+    return_content: true
+    timeout: 30
+  register: gaudi_health
+  retries: "{{ health_check_retries }}"
+  delay: "{{ health_check_delay }}"
+  until: gaudi_health.status == 200
+  when: gaudi_url.rc == 0 and gaudi_url.stdout | length > 0
+
+- name: Get OpenVINO InferenceService URL
+  ansible.builtin.command:
+    cmd: "oc get inferenceservice embeddings-minilm -n {{ openvino_namespace }} -o jsonpath='{.status.url}'"
+  register: openvino_url
+  changed_when: false
+  failed_when: false
+
+- name: Health check OpenVINO inference
+  ansible.builtin.uri:
+    url: "{{ openvino_url.stdout }}/v2/health/ready"
+    method: GET
+    return_content: true
+    timeout: 30
+  register: openvino_health
+  retries: "{{ health_check_retries }}"
+  delay: "{{ health_check_delay }}"
+  until: openvino_health.status == 200
+  when: openvino_url.rc == 0 and openvino_url.stdout | length > 0
+
+- name: Summary
+  ansible.builtin.debug:
+    msg: |
+      Health Check Summary:
+        Gateway:  {{ 'HEALTHY' if (gateway_health.status | default(0)) == 200 else 'NOT AVAILABLE' }}
+        CPU:      {{ 'HEALTHY' if (cpu_health.status | default(0)) == 200 else 'NOT AVAILABLE' }}
+        Gaudi:    {{ 'HEALTHY' if (gaudi_health.status | default(0)) == 200 else 'NOT AVAILABLE' }}
+        OpenVINO: {{ 'HEALTHY' if (openvino_health.status | default(0)) == 200 else 'NOT AVAILABLE' }}

@@ -1,0 +1,25 @@
+---
+- name: Configure Model Endpoint Access
+  hosts: localhost
+  connection: local
+  vars:
+    model_endpoint: "{{ lookup('env', 'MODEL_ENDPOINT') | default('http://localhost:8080', true) }}"
+  tasks:
+    - name: Create model endpoint config
+      copy:
+        dest: ~/model-endpoint.env
+        content: |
+          MODEL_ENDPOINT={{ model_endpoint }}
+          MODEL_API_KEY={{ lookup('env', 'MODEL_API_KEY') | default('', true) }}
+
+    - name: Test model endpoint connectivity
+      uri:
+        url: "{{ model_endpoint }}/health"
+        method: GET
+        timeout: 10
+      register: health_check
+      ignore_errors: true
+
+    - name: Report endpoint status
+      debug:
+        msg: "Model endpoint {{ 'is reachable' if health_check.status == 200 else 'is NOT reachable' }} at {{ model_endpoint }}"

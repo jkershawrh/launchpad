@@ -1,0 +1,1144 @@
+# Validation Matrix for Intel-Red Hat Partner AI Demo Platform
+# Defines pass/fail criteria for each stage gate
+
+stage_0_test_infrastructure:
+  framework:
+    test_framework_loads:
+      description: "Test framework module loads successfully"
+      points: 10
+      required: true
+    make_test_runs:
+      description: "Can execute make test-all without errors"
+      points: 15
+      required: true
+    validation_matrix_parses:
+      description: "Validation matrix YAML loads and parses"
+      points: 10
+      required: true
+
+  rubrics:
+    rubric_files_exist:
+      description: "Rubric files are present in tests/rubrics/"
+      points: 10
+      required: true
+    rubrics_well_defined:
+      description: "Rubric files have proper structure with scoring criteria"
+      points: 15
+      required: true
+
+  ci_pipeline:
+    ci_config_present:
+      description: "CI configuration file exists"
+      points: 5
+      required: false
+    ci_runs_tests:
+      description: "CI pipeline executes test suite"
+      points: 5
+      required: false
+
+  ci_reliability:
+    no_continue_on_error:
+      description: "CI test stages do not use continue-on-error"
+      points: 5
+      required: true
+    no_makefile_dash_prefix:
+      description: "Makefile test targets do not use - prefix to ignore failures"
+      points: 5
+      required: true
+    single_conftest:
+      description: "project_root fixture defined only in conftest.py"
+      points: 5
+      required: true
+
+# Stage 0 Passing Threshold: 90% of total points
+
+stage_1_cpu_inference:
+  container_build:
+    build_success:
+      description: "vLLM CPU container builds successfully"
+      points: 15
+      required: true
+    build_time:
+      description: "Build completes in < 5 minutes"
+      points: 5
+      required: false
+    image_size:
+      description: "Image size < 5GB"
+      points: 5
+      required: false
+    vulnerabilities:
+      description: "Security scan shows 0 critical, 0 high vulns"
+      points: 10
+      required: true
+
+  container_runtime:
+    starts_without_error:
+      description: "Container starts successfully"
+      points: 15
+      required: true
+    health_endpoint_200:
+      description: "Health endpoint returns HTTP 200"
+      points: 10
+      required: true
+    non_root_user:
+      description: "Container runs as non-root user"
+      points: 10
+      required: true
+    graceful_shutdown:
+      description: "Container shuts down gracefully on SIGTERM"
+      points: 5
+      required: false
+
+  local_inference:
+    model_loads:
+      description: "Test model loads successfully"
+      points: 15
+      required: true
+    generates_output:
+      description: "Inference generates text output"
+      points: 15
+      required: true
+    ttft_acceptable:
+      description: "Time-to-first-token < 2000ms for tiny model"
+      points: 10
+      required: false
+    tokens_per_sec:
+      description: "Generates > 10 tokens/sec"
+      points: 10
+      required: false
+    concurrent_requests:
+      description: "Handles 3 concurrent requests"
+      points: 5
+      required: false
+    reliability:
+      description: "10 consecutive successful inferences"
+      points: 10
+      required: true
+
+  manifests:
+    yaml_valid:
+      description: "All manifest files are valid YAML"
+      points: 10
+      required: true
+    kustomize_builds:
+      description: "kustomize build succeeds"
+      points: 10
+      required: true
+    oc_dry_run:
+      description: "oc apply --dry-run=client passes"
+      points: 15
+      required: true
+    has_namespace:
+      description: "Namespace manifest present"
+      points: 5
+      required: true
+    has_serving_runtime:
+      description: "ServingRuntime manifest present"
+      points: 5
+      required: true
+    has_inference_service:
+      description: "InferenceService manifest present"
+      points: 5
+      required: true
+    non_root_security_context:
+      description: "Security context specifies non-root"
+      points: 10
+      required: true
+    resource_limits_defined:
+      description: "Resource limits defined for all containers"
+      points: 5
+      required: true
+
+  container_security:
+    inference_auth:
+      description: "Inference servers have API key authentication"
+      points: 10
+      required: true
+    error_sanitization:
+      description: "500 errors do not leak raw exception messages"
+      points: 5
+      required: true
+    unique_ids:
+      description: "Completion IDs use uuid, not timestamp"
+      points: 3
+      required: false
+
+  quickstart:
+    readme_exists:
+      description: "README.md exists in quickstart directory"
+      points: 5
+      required: true
+    has_prerequisites:
+      description: "README includes prerequisites section"
+      points: 5
+      required: true
+    has_step_by_step:
+      description: "README has numbered step-by-step instructions"
+      points: 10
+      required: true
+    files_referenced_exist:
+      description: "All files referenced in README actually exist"
+      points: 10
+      required: true
+    expected_output_shown:
+      description: "README shows expected output for commands"
+      points: 5
+      required: false
+
+# Stage 1 Passing Threshold: 90% of total points
+
+stage_2_gaudi_inference:
+  # Similar structure to stage_1, plus Gaudi-specific checks
+  container_build:
+    build_success:
+      description: "vLLM Gaudi container builds successfully"
+      points: 15
+      required: true
+    habana_drivers_present:
+      description: "Habana drivers/libraries present in image"
+      points: 10
+      required: true
+    vulnerabilities:
+      description: "Security scan shows 0 critical, 0 high vulns"
+      points: 10
+      required: true
+
+  container_runtime:
+    starts_without_error:
+      description: "Container starts successfully"
+      points: 15
+      required: true
+    health_endpoint_200:
+      description: "Health endpoint returns HTTP 200"
+      points: 10
+      required: true
+    non_root_user:
+      description: "Container runs as non-root user"
+      points: 10
+      required: true
+
+  manifests:
+    yaml_valid:
+      description: "All manifest files are valid YAML"
+      points: 10
+      required: true
+    kustomize_builds:
+      description: "kustomize build succeeds"
+      points: 10
+      required: true
+    oc_dry_run:
+      description: "oc apply --dry-run=client passes"
+      points: 15
+      required: true
+    habana_device_plugin_requested:
+      description: "Manifest requests habana.ai/* resources"
+      points: 15
+      required: true
+    gaudi_node_selector:
+      description: "Node selector targets Gaudi nodes"
+      points: 10
+      required: true
+
+  quickstart:
+    readme_exists:
+      description: "README.md exists"
+      points: 5
+      required: true
+    has_step_by_step:
+      description: "Step-by-step instructions present"
+      points: 10
+      required: true
+    explains_cpu_vs_gaudi:
+      description: "Clearly explains when to use Gaudi vs CPU"
+      points: 10
+      required: true
+
+# Stage 2 Passing Threshold: 90% of total points
+
+stage_3_demo_client:
+  functionality:
+    connects_to_vllm:
+      description: "Client can connect to vLLM endpoint"
+      points: 20
+      required: true
+    sends_prompt:
+      description: "Client successfully sends prompts"
+      points: 15
+      required: true
+    handles_errors:
+      description: "Client handles connection/inference errors gracefully"
+      points: 10
+      required: true
+    logs_structured:
+      description: "Logs output in structured format (JSON)"
+      points: 10
+      required: true
+
+  metrics:
+    ttft_measured:
+      description: "Measures time-to-first-token"
+      points: 15
+      required: true
+    tokens_sec_calculated:
+      description: "Calculates tokens per second"
+      points: 15
+      required: true
+    latency_p50_p99:
+      description: "Logs p50 and p99 latency"
+      points: 10
+      required: false
+
+  containerization:
+    builds_as_container:
+      description: "Client builds as container image"
+      points: 10
+      required: true
+    runs_as_job:
+      description: "Can run as OpenShift Job"
+      points: 5
+      required: false
+
+# Stage 3 Passing Threshold: 90% of total points
+
+stage_4_cluster_discovery:
+  script_structure:
+    script_exists:
+      description: "Discovery script exists"
+      points: 10
+      required: true
+    script_executable:
+      description: "Script is executable"
+      points: 5
+      required: true
+    has_shebang:
+      description: "Script has proper shebang"
+      points: 5
+      required: true
+
+  functionality:
+    accepts_help_flag:
+      description: "Script accepts --help flag"
+      points: 5
+      required: true
+    accepts_output_flag:
+      description: "Script accepts --output flag"
+      points: 5
+      required: true
+    handles_no_cluster:
+      description: "Handles no cluster connection gracefully"
+      points: 10
+      required: true
+    dry_run_mode:
+      description: "Supports --dry-run mode"
+      points: 10
+      required: true
+
+  output_format:
+    valid_yaml:
+      description: "Output is valid YAML"
+      points: 10
+      required: true
+    has_cluster_section:
+      description: "Output contains cluster section"
+      points: 10
+      required: true
+    has_nodes_section:
+      description: "Output contains nodes section"
+      points: 10
+      required: true
+    has_operators_section:
+      description: "Output contains operators section"
+      points: 10
+      required: true
+
+  cluster_discovery:
+    discovers_version:
+      description: "Discovers cluster version"
+      points: 10
+      required: true
+    discovers_api_url:
+      description: "Discovers cluster API URL"
+      points: 5
+      required: false
+
+  node_discovery:
+    discovers_node_count:
+      description: "Discovers total node count"
+      points: 10
+      required: true
+    discovers_gaudi_nodes:
+      description: "Discovers Gaudi GPU nodes"
+      points: 15
+      required: true
+    discovers_cpu_nodes:
+      description: "Discovers CPU nodes"
+      points: 10
+      required: true
+    discovers_node_labels:
+      description: "Discovers node labels for scheduling"
+      points: 15
+      required: true
+
+  operator_discovery:
+    discovers_openshift_ai:
+      description: "Discovers OpenShift AI operator"
+      points: 10
+      required: true
+    discovers_habana_plugin:
+      description: "Discovers Habana device plugin"
+      points: 10
+      required: true
+
+  registry_discovery:
+    discovers_registry:
+      description: "Discovers image registry"
+      points: 5
+      required: false
+
+# Stage 4 Passing Threshold: 90% of total points
+
+# =============================================================================
+# Stage 5: Smoke Deploy (Blocked on cluster access)
+# =============================================================================
+stage_5_smoke_deploy:
+  cpu_deployment:
+    deploy_succeeds:
+      description: "CPU inference deploys to cluster via oc apply -k"
+      points: 15
+      required: true
+    inference_service_ready:
+      description: "InferenceService reaches Ready condition"
+      points: 15
+      required: true
+    health_endpoint:
+      description: "Health, models, completions endpoints respond"
+      points: 10
+      required: true
+    performance:
+      description: "TTFT < 30s for TinyLlama on CPU"
+      points: 10
+      required: false
+
+  gaudi_deployment:
+    gaudi_nodes_available:
+      description: "Cluster has Gaudi nodes with habana.ai/gaudi resource"
+      points: 10
+      required: true
+    deploy_succeeds:
+      description: "Gaudi inference deploys to cluster"
+      points: 15
+      required: true
+    pod_on_gaudi_node:
+      description: "Pod scheduled on Gaudi node with GPU resource"
+      points: 10
+      required: true
+    performance:
+      description: "TTFT < 5s for TinyLlama on Gaudi"
+      points: 10
+      required: false
+
+# =============================================================================
+# Stage 6: Partner Pack (Pending Stage 5)
+# =============================================================================
+stage_6_partner_pack:
+  documentation:
+    deployment_guide:
+      description: "Final deployment guide with real cluster values (no TBD)"
+      points: 20
+      required: true
+    performance_report:
+      description: "Benchmark results with CPU vs Gaudi comparison"
+      points: 15
+      required: true
+    partner_onboarding:
+      description: "Partner onboarding instructions"
+      points: 15
+      required: true
+
+# =============================================================================
+# Phase 1: Inference Gateway
+# =============================================================================
+phase_1_gateway:
+  routing:
+    config_valid:
+      description: "config.yaml defines 3+ backends and 5+ routes"
+      points: 10
+      required: true
+    task_routing:
+      description: "Routes embeddings/classification/reranking to CPU, large completions to Gaudi"
+      points: 15
+      required: true
+    unknown_task_400:
+      description: "Unknown task types return HTTP 400"
+      points: 5
+      required: true
+    routing_metadata:
+      description: "Response includes backend, reason, accelerator, latency, cost"
+      points: 10
+      required: true
+
+  error_handling:
+    backend_down_502:
+      description: "Returns 502 when backend unreachable"
+      points: 10
+      required: true
+    config_error:
+      description: "Handles missing/malformed config gracefully"
+      points: 5
+      required: true
+
+  endpoints:
+    health:
+      description: "GET /health returns 200 with backend/route counts"
+      points: 5
+      required: true
+    metrics:
+      description: "GET /metrics returns Prometheus format with gateway_ prefix"
+      points: 5
+      required: true
+    routes_backends:
+      description: "GET /v1/routes and /v1/backends return current state"
+      points: 5
+      required: true
+
+  container:
+    builds:
+      description: "Gateway Containerfile builds on UBI9, non-root"
+      points: 5
+      required: true
+
+  local_fallback:
+    local_fallback_module:
+      description: "Local inference module exists for development fallback"
+      points: 5
+      required: true
+    local_fallback_on_failure:
+      description: "Gateway falls back to local model when backends unreachable"
+      points: 10
+      required: true
+    routing_policy_sets_fallback:
+      description: "Routing policy populates fallback field from config"
+      points: 5
+      required: true
+
+  security:
+    api_key_auth:
+      description: "API-key middleware protects inference and write endpoints"
+      points: 15
+      required: true
+    error_sanitization:
+      description: "Error messages do not expose internal service URLs"
+      points: 10
+      required: true
+    request_size_limits:
+      description: "Prompt max_length and texts max_items enforced"
+      points: 5
+      required: false
+    rate_limiting:
+      description: "Rate limiter throttles excessive requests"
+      points: 5
+      required: false
+    cors_middleware:
+      description: "CORS middleware configured"
+      points: 3
+      required: false
+
+# =============================================================================
+# Phase 2: OpenVINO CPU Runtime
+# =============================================================================
+phase_2_openvino:
+  manifests:
+    runtime_exists:
+      description: "ServingRuntime references OpenVINO with ONNX support"
+      points: 10
+      required: true
+    bf16_enabled:
+      description: "BF16 INFERENCE_PRECISION_HINT set for AMX acceleration"
+      points: 10
+      required: true
+    inference_service:
+      description: "InferenceService for embeddings model defined"
+      points: 10
+      required: true
+    pvc_and_network:
+      description: "Model cache PVC and network policy exist"
+      points: 5
+      required: true
+
+  model_export:
+    script_exists:
+      description: "export-models.sh exists with --help, --dry-run"
+      points: 5
+      required: true
+    references_models:
+      description: "Script references MiniLM embedding model"
+      points: 5
+      required: true
+
+# =============================================================================
+# Phase 4: Observability
+# =============================================================================
+phase_4_observability:
+  servicemonitor:
+    exists_valid:
+      description: "ServiceMonitor targets gateway and scrapes /metrics"
+      points: 15
+      required: true
+
+  dashboard:
+    exists_valid:
+      description: "Grafana dashboard JSON with 4+ panels"
+      points: 10
+      required: true
+    latency_routing_panels:
+      description: "Includes latency and routing decision panels"
+      points: 5
+      required: false
+    queries_gateway_metrics:
+      description: "Dashboard queries reference gateway_ metrics"
+      points: 5
+      required: true
+
+# =============================================================================
+# Phase 6: POC Demo Applications
+# =============================================================================
+phase_6_pocs:
+  structure:
+    all_exist:
+      description: "3 POC dirs exist with app.py and README.md"
+      points: 5
+      required: true
+    all_compile:
+      description: "All app.py files compile without errors"
+      points: 5
+      required: true
+
+  enterprise_rag:
+    pipeline_complete:
+      description: "Has embed→search→rerank→generate pipeline"
+      points: 10
+      required: true
+    multi_task:
+      description: "Uses embeddings, reranking, completion task types"
+      points: 5
+      required: true
+
+  aiops_copilot:
+    pipeline_complete:
+      description: "Has classify→correlate→RCA→governance pipeline"
+      points: 10
+      required: true
+    dynamic_governance:
+      description: "Governance action derived from RCA output"
+      points: 5
+      required: true
+
+  governed_agent:
+    pipeline_complete:
+      description: "Has intent→risk→plan→policy pipeline"
+      points: 10
+      required: true
+    deny_escalate:
+      description: "Can deny, escalate, and allow actions"
+      points: 5
+      required: true
+    evidence_bundle:
+      description: "Produces structured evidence for audit"
+      points: 5
+      required: true
+
+  cross_cutting:
+    error_handling:
+      description: "All POCs handle gateway errors without traceback"
+      points: 5
+      required: true
+    mock_mode:
+      description: "All POCs support --mock for offline demos"
+      points: 5
+      required: true
+
+# =============================================================================
+# Ansible Automation
+# =============================================================================
+ansible_automation:
+  roles:
+    all_roles_exist:
+      description: "8 roles: discovery, database, openvino, cpu, gaudi, gateway, observability, health_check"
+      points: 15
+      required: true
+    health_check_complete:
+      description: "Health check covers all 4 components (gateway, CPU, Gaudi, OpenVINO)"
+      points: 10
+      required: true
+
+  playbooks:
+    deploy_platform:
+      description: "deploy-platform.yaml includes all roles in correct order"
+      points: 10
+      required: true
+    teardown:
+      description: "teardown.yaml cleans up all namespaces"
+      points: 5
+      required: true
+    individual:
+      description: "Separate playbooks for cpu, gaudi, discover, health-check"
+      points: 5
+      required: false
+
+  inventory:
+    all_namespaces:
+      description: "Inventory defines all 4 namespace variables"
+      points: 5
+      required: true
+
+# =============================================================================
+# Stage 7: Manifest Hardening + Build Infrastructure
+# =============================================================================
+stage_7_hardening:
+  manifest_fixes:
+    configmap_wired:
+      description: "ConfigMap referenced via envFrom in serving runtimes"
+      points: 10
+      required: true
+    hf_token_secret:
+      description: "HF_TOKEN injected from Secret via secretKeyRef"
+      points: 10
+      required: true
+    memory_adequate:
+      description: "CPU memory request >= 5Gi for model + overhead"
+      points: 10
+      required: true
+    node_selectors_active:
+      description: "Node selectors enabled (not commented out)"
+      points: 10
+      required: true
+    gaudi_tolerations:
+      description: "Gaudi tolerations defined for GPU-tainted nodes"
+      points: 5
+      required: true
+
+  pvc_model_cache:
+    pvc_exists:
+      description: "PersistentVolumeClaim for model caching (>= 10Gi)"
+      points: 10
+      required: true
+    volume_mounted:
+      description: "PVC mounted at /opt/app-root/src/.cache"
+      points: 10
+      required: true
+
+  build_script:
+    exists_executable:
+      description: "build-images.sh exists, is executable, has --help"
+      points: 5
+      required: true
+    dry_run:
+      description: "Supports --dry-run for all targets (cpu, gaudi, gateway)"
+      points: 5
+      required: true
+    push_support:
+      description: "Supports --push --registry for image publishing"
+      points: 5
+      required: false
+
+  v2_gaudi:
+    containerfile_v2:
+      description: "Containerfile.v2 uses Habana base image, no mock mode"
+      points: 10
+      required: true
+    hpu_detection:
+      description: "inference_server.py can return 'hpu' device"
+      points: 5
+      required: true
+    real_device_check:
+      description: "entrypoint.sh checks /dev/accel (not /dev/hl0)"
+      points: 5
+      required: true
+
+  security_hardening:
+    no_plaintext_secrets:
+      description: "Secret manifests use placeholder values with change instructions"
+      points: 15
+      required: true
+    read_only_root_filesystem:
+      description: "All non-DB containers have readOnlyRootFilesystem"
+      points: 10
+      required: true
+    dns_namespace_selector:
+      description: "DNS egress uses correct namespace selector label"
+      points: 5
+      required: true
+    gateway_egress_database:
+      description: "Gateway network policy allows egress to database"
+      points: 5
+      required: true
+    database_security_context:
+      description: "Database has security context"
+      points: 5
+      required: true
+
+# =============================================================================
+# Stage 8: Database Foundation
+# =============================================================================
+stage_8_database:
+  schema:
+    migration_idempotent:
+      description: "All CREATE TABLE/INDEX use IF NOT EXISTS"
+      points: 15
+      required: true
+    tables_complete:
+      description: "5 tables: inference_requests, governance_decisions, backends, routing_rules, audit_log"
+      points: 10
+      required: true
+    foreign_keys:
+      description: "FK constraints on governance_decisions and routing_rules"
+      points: 10
+      required: true
+
+  module:
+    graceful_degradation:
+      description: "All db functions return safely without database"
+      points: 15
+      required: true
+    sql_safety:
+      description: "Parameterized queries (make_interval, $N), no string interpolation"
+      points: 15
+      required: true
+    migration_tracking_table:
+      description: "Migrations tracked via applied_migrations table"
+      points: 5
+      required: false
+    is_connected_tests_pool:
+      description: "is_connected() validates pool with SELECT 1"
+      points: 5
+      required: false
+    query_timeout:
+      description: "Pool uses statement_timeout"
+      points: 3
+      required: false
+
+  integration:
+    config_seeding:
+      description: "seed_from_config() with ON CONFLICT for idempotency"
+      points: 10
+      required: false
+    gateway_persistence:
+      description: "Gateway persists requests via db.insert_request()"
+      points: 10
+      required: true
+
+# =============================================================================
+# Stage 9: API Endpoints
+# =============================================================================
+stage_9_api:
+  read_endpoints:
+    list_requests:
+      description: "GET /api/v1/requests with pagination and filters"
+      points: 10
+      required: true
+    get_by_id:
+      description: "GET /api/v1/requests/{id} queries by UUID directly"
+      points: 10
+      required: true
+    list_decisions:
+      description: "GET /api/v1/decisions with governance audit trail"
+      points: 10
+      required: true
+
+  write_endpoints:
+    approve_decision:
+      description: "POST /api/v1/decisions/{id}/approve with validated approved_by"
+      points: 10
+      required: true
+
+  analytics:
+    routing_distribution:
+      description: "% requests per backend over time"
+      points: 5
+      required: false
+    latency_percentiles:
+      description: "p50/p95/p99 by backend"
+      points: 5
+      required: false
+    governance_summary:
+      description: "% approved/denied/escalated"
+      points: 5
+      required: false
+
+  behavior:
+    consistent_503:
+      description: "All endpoints return 503 when DB unavailable"
+      points: 10
+      required: true
+    input_validation:
+      description: "Unknown tasks return 400, health returns 200"
+      points: 10
+      required: true
+    metrics_endpoint:
+      description: "GET /metrics returns Prometheus format"
+      points: 5
+      required: false
+
+# =============================================================================
+# Stage 10: Database Deployment
+# =============================================================================
+stage_10_deploy:
+  manifests:
+    postgresql_deployment:
+      description: "PostgreSQL deployment with health probes"
+      points: 15
+      required: true
+    persistent_storage:
+      description: "PVC >= 10Gi for database storage"
+      points: 10
+      required: true
+    network_policy:
+      description: "NetworkPolicy restricts access to gateway namespace only"
+      points: 10
+      required: true
+    credentials_secret:
+      description: "Secret for database credentials"
+      points: 5
+      required: true
+
+  ansible:
+    role_exists:
+      description: "Database Ansible role deploys and verifies readiness"
+      points: 10
+      required: true
+    platform_playbook:
+      description: "deploy-platform.yaml includes database role before gateway"
+      points: 5
+      required: true
+
+# =============================================================================
+# Stage 11: Frontend Dashboard
+# =============================================================================
+stage_11_frontend:
+  structure:
+    vite_project:
+      description: "Vite + React + TypeScript project scaffolded and builds"
+      points: 5
+      required: true
+    patternfly_installed:
+      description: "PatternFly 6 packages installed (@patternfly/react-core, table, charts, icons)"
+      points: 5
+      required: true
+    typescript_strict:
+      description: "TypeScript strict mode, no type errors"
+      points: 5
+      required: true
+
+  pages:
+    dashboard:
+      description: "Dashboard shows health, backends, routing distribution, latency, governance"
+      points: 10
+      required: true
+    request_history:
+      description: "Request History with filterable paginated table"
+      points: 10
+      required: true
+    governance_audit:
+      description: "Governance Audit with decision table, evidence viewer, approve workflow"
+      points: 15
+      required: true
+    routing_config:
+      description: "Routing Config shows rules and backends"
+      points: 5
+      required: true
+    cost_analytics:
+      description: "Cost Analytics with breakdown by backend and task"
+      points: 5
+      required: true
+    performance:
+      description: "Performance with latency percentiles by backend"
+      points: 5
+      required: true
+    live_demo:
+      description: "Live Demo with scenario tabs, gateway routing, trace display"
+      points: 10
+      required: true
+
+  api_integration:
+    types_defined:
+      description: "TypeScript interfaces for all API response shapes"
+      points: 5
+      required: true
+    hooks_defined:
+      description: "React Query hooks for all endpoints"
+      points: 5
+      required: true
+    error_handling:
+      description: "Loading spinners, error alerts for failed API calls"
+      points: 5
+      required: true
+
+  testing:
+    vitest_tests:
+      description: "Vitest + React Testing Library tests passing"
+      points: 10
+      required: true
+    component_tests:
+      description: "Component and page tests covering navigation, badges, interactions"
+      points: 5
+      required: true
+
+  security:
+    nginx_security_headers:
+      description: "nginx adds CSP, HSTS, X-Frame-Options, nosniff headers"
+      points: 10
+      required: true
+    metrics_not_public:
+      description: "Metrics endpoint not publicly proxied"
+      points: 5
+      required: true
+    race_conditions_handled:
+      description: "AbortController prevents race conditions in async components"
+      points: 5
+      required: false
+    approve_via_body:
+      description: "approved_by sent via POST body, not query string"
+      points: 5
+      required: true
+
+# =============================================================================
+# Stage 12: Frontend Deployment
+# =============================================================================
+stage_12_frontend_deploy:
+  container:
+    containerfile:
+      description: "Containerfile uses UBI + nginx, non-root, serves built assets"
+      points: 10
+      required: true
+  manifests:
+    deploy_manifests:
+      description: "Deployment, Service, Route manifests for OpenShift"
+      points: 10
+      required: true
+  ansible:
+    role_exists:
+      description: "Ansible role deploys frontend and verifies health"
+      points: 5
+      required: true
+
+# =============================================================================
+# Workflow Routing Validation
+# =============================================================================
+workflow_routing:
+  visualization:
+    request_flow_diagram:
+      description: "RequestFlowDiagram component exists with ARIA label"
+      points: 10
+      required: true
+    workflow_diagrams:
+      description: "WorkflowDiagrams shows 3 POC pipelines with hardware badges"
+      points: 10
+      required: true
+
+  routing_logic:
+    config_complete:
+      description: "config.yaml has 3+ backends, 5+ routes with reasons"
+      points: 10
+      required: true
+    local_config:
+      description: "config.local.yaml maps to podman-compose service names"
+      points: 5
+      required: true
+
+  multi_step:
+    rag_pipeline:
+      description: "RAG chains embed(CPU)→search→rerank(CPU)→generate(Gaudi)"
+      points: 10
+      required: true
+    aiops_pipeline:
+      description: "AIOps chains classify(CPU)→correlate(CPU)→RCA(Gaudi)→governance"
+      points: 10
+      required: true
+    agent_pipeline:
+      description: "Agent chains intent(CPU)→risk(CPU)→plan(Gaudi)→policy"
+      points: 10
+      required: true
+
+  trace:
+    routing_metadata:
+      description: "Gateway responses include backend, reason, accelerator, latency, cost"
+      points: 10
+      required: true
+    hardware_badges:
+      description: "HardwareBadge renders Xeon6 (blue) and Gaudi (orange)"
+      points: 5
+      required: true
+
+  live_workflow:
+    component_exists:
+      description: "LiveWorkflow component with step states (pending, running, done, error)"
+      points: 10
+      required: true
+    calls_gateway:
+      description: "Makes real gateway API calls per step with actual latency"
+      points: 10
+      required: true
+    auto_run:
+      description: "Supports runTrigger prop for auto-execution on scenario click"
+      points: 5
+      required: true
+    animation:
+      description: "CSS pulse animation on running step, gradient connectors"
+      points: 5
+      required: false
+
+  build_your_own:
+    component_exists:
+      description: "BuildYourOwn component with task selector, model size picker, prediction"
+      points: 10
+      required: true
+    task_and_size:
+      description: "Task dropdown (4 types) + model size buttons (1B-70B) with threshold"
+      points: 5
+      required: true
+    route_prediction:
+      description: "Shows predicted route before sending, indicates match after"
+      points: 5
+      required: true
+    free_text:
+      description: "Free text prompt input with gateway API call"
+      points: 5
+      required: true
+
+  try_it_integration:
+    four_tabs:
+      description: "Try It page has 4 tabs: RAG, AIOps, Agent, Build Your Own"
+      points: 5
+      required: true
+    workflow_execution:
+      description: "Clicking scenario auto-runs LiveWorkflow"
+      points: 5
+      required: true
+
+# =============================================================================
+# Integration Tests
+# =============================================================================
+integration_tests:
+  database:
+    migrations_run:
+      description: "Migrations create all tables on live PostgreSQL"
+      points: 10
+      required: true
+    insert_retrieve:
+      description: "Insert and retrieve requests, decisions, approvals"
+      points: 15
+      required: true
+    query_filtering:
+      description: "Filters by task, backend, status, decision work correctly"
+      points: 10
+      required: true
+    analytics_queries:
+      description: "All analytics SQL executes without error"
+      points: 10
+      required: true
+    config_seeding:
+      description: "seed_from_config populates backends and rules idempotently"
+      points: 5
+      required: true
+
+# All stages passing threshold: 90% of total points

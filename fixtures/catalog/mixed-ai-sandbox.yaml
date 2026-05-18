@@ -1,0 +1,26 @@
+catalog_item_id: mixed-ai-sandbox
+display_name: Mixed AI Sandbox
+description: Open sandbox environment with Xeon and optional Gaudi access for flexible AI experimentation.
+category: open_sandbox
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+optional_capabilities:
+  - model_endpoint
+  - gaudi_direct
+  - kafka
+  - workbench
+  - virtualization
+default_hardware_profile: mixed-overdrive
+default_quota_profile: large
+default_ttl: "12h"
+provisioner_refs:
+  - mock-provisioner
+validation_refs:
+  - namespace-check
+observability_profile: default
+supported_branding:
+  - redhat-intel-default
+  - partner-oem-a
+handoff_template: sandbox-handoff

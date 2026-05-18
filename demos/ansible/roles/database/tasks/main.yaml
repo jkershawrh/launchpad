@@ -1,0 +1,35 @@
+---
+- name: Apply PostgreSQL database manifests
+  ansible.builtin.command:
+    cmd: "oc apply -k {{ deploy_dir }}/database"
+  register: apply_result
+  changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+- name: Wait for PostgreSQL deployment to be ready
+  ansible.builtin.command:
+    cmd: >
+      oc rollout status deployment/postgres
+      -n {{ database_namespace }}
+      --timeout={{ deploy_timeout_seconds }}s
+  register: rollout_result
+  changed_when: false
+
+- name: Verify PostgreSQL is accepting connections
+  ansible.builtin.command:
+    cmd: >
+      oc exec deployment/postgres -n {{ database_namespace }}
+      -- pg_isready -U gateway
+  register: pg_ready
+  retries: 10
+  delay: 5
+  until: pg_ready.rc == 0
+  changed_when: false
+
+- name: Display database status
+  ansible.builtin.debug:
+    msg: |
+      PostgreSQL Database Deployed:
+        Namespace: {{ database_namespace }}
+        Service: postgres.{{ database_namespace }}.svc.cluster.local:5432
+        Database: inference_platform
+        Status: Ready

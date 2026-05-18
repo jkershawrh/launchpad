@@ -1,0 +1,8 @@
+tenant_id: partner-oem-a
+display_name: Partner OEM A
+tenant_type: partner
+status: active
+branding_profile_id: partner-oem-a
+default_quota_profile: standard
+default_ttl: "8h"
+cost_center: demo-partner-oem-a

@@ -1,0 +1,18 @@
+{
+  "fixture_id": "dashboard-latency-spike-001",
+  "type": "screenshot",
+  "source": "synthetic",
+  "description": "Grafana-style operations dashboard showing inference gateway latency spike. P99 latency increases from 200ms to 4,500ms over 15 minutes. Error rate panel shows correlated increase from 0.1% to 3.2%. Service status panel shows 2 of 5 inference pods unhealthy.",
+  "width": 1920,
+  "height": 1080,
+  "visual_elements": [
+    "p99 latency time-series chart (blue line, spike at 14:23 UTC)",
+    "error rate gauge (red zone at 3.2%)",
+    "service status panel (2 unhealthy pods highlighted red)",
+    "request throughput chart (stable at 850 req/s)",
+    "time range selector (last 30 minutes)"
+  ],
+  "expected_tags": ["latency_spike", "error_rate", "service_degradation", "pod_unhealthy"],
+  "expected_classification": "anomaly",
+  "demo_context": "This screenshot represents what an on-call engineer would see during an inference gateway degradation event caused by Gaudi memory pressure."
+}

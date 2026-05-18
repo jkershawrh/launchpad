@@ -1,0 +1,27 @@
+FROM registry.access.redhat.com/ubi9/python-311:latest
+
+# Metadata
+LABEL name="inference-test-client" \
+      version="1.0" \
+      description="Test client for vLLM-compatible inference services" \
+      maintainer="Red Hat AI Team"
+
+# Set working directory
+WORKDIR /opt/app-root/src
+
+# Copy requirements and install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy client script
+COPY client.py .
+
+# Make client executable
+RUN chmod +x client.py
+
+# Run as non-root user (already default in UBI Python image)
+USER 1001
+
+# Default command shows help
+ENTRYPOINT ["python3", "client.py"]
+CMD ["--help"]

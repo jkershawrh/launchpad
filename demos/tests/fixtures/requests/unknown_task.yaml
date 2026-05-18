@@ -1,0 +1,9 @@
+request_id: fix-007
+task_type: unknown
+token_estimate: 1000
+priority: normal
+latency_target_ms: 5000
+prompt: "Unknown task"
+expected:
+  selected_route: null
+  outcome: indeterminate

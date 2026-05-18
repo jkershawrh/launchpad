@@ -1,0 +1,16 @@
+route_id: overdrive
+required_checks:
+  - endpoint_defined
+  - endpoint_health_pass
+  - supports_heavy_generation
+  - token_estimate_requires_overdrive
+  - priority_allows_overdrive
+  - latency_target_requires_or_allows_overdrive
+fail_conditions:
+  - endpoint_unhealthy
+  - request_too_small_for_overdrive
+  - priority_too_low
+  - token_estimate_exceeds_model_limit
+warn_conditions:
+  - fallback_unavailable
+  - latency_target_aggressive

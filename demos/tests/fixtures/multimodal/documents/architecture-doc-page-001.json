@@ -1,0 +1,27 @@
+{
+  "fixture_id": "architecture-doc-page-001",
+  "type": "document",
+  "source": "synthetic",
+  "description": "15-page technical architecture document for the Intel-Red Hat AI Inference Platform. Covers dual-path routing, lane evaluation, workload profiles, tokenization model, and deployment architecture. Contains 6 architecture diagrams and 3 performance comparison charts.",
+  "page_count": 15,
+  "format": "pdf",
+  "sections": [
+    {"page": 1, "title": "Executive Summary", "has_images": false},
+    {"page": 2, "title": "Platform Overview", "has_images": true, "image_description": "High-level architecture diagram"},
+    {"page": 3, "title": "Intel Xeon 6 Capabilities", "has_images": true, "image_description": "AMX instruction set diagram"},
+    {"page": 4, "title": "Intel Gaudi Capabilities", "has_images": true, "image_description": "HBM architecture diagram"},
+    {"page": 5, "title": "Routing Engine Design", "has_images": true, "image_description": "Three-lane routing flow"},
+    {"page": 6, "title": "Rubric Evaluation System", "has_images": false},
+    {"page": 7, "title": "Workload Profiles", "has_images": false},
+    {"page": 8, "title": "Performance Comparison", "has_images": true, "image_description": "Xeon 6 vs Gaudi throughput chart"},
+    {"page": 9, "title": "Cost Model", "has_images": true, "image_description": "Cost comparison bar chart"},
+    {"page": 10, "title": "Failover Mechanisms", "has_images": true, "image_description": "Failover flow diagram"},
+    {"page": 11, "title": "Deployment on OpenShift", "has_images": true, "image_description": "OpenShift deployment topology"},
+    {"page": 12, "title": "Monitoring and Observability", "has_images": true, "image_description": "Prometheus/Grafana stack diagram"},
+    {"page": 13, "title": "Security Model", "has_images": false},
+    {"page": 14, "title": "Capacity Planning", "has_images": false},
+    {"page": 15, "title": "Appendix - API Reference", "has_images": false}
+  ],
+  "expected_tags": ["architecture", "technical_doc", "xeon6", "gaudi", "deployment"],
+  "demo_context": "The comprehensive platform architecture document — used for document_visual_summary and architecture_explainer demos."
+}

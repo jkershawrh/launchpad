@@ -1,0 +1,9 @@
+tenant_id: redhat-internal
+requester_id: sa-engineer-1
+catalog_item_id: build-a-rag-app
+requested_mode: guided_build
+persistence: persistent
+ttl: "8h"
+hardware_profile: xeon-basic
+quota_profile: standard
+branding_profile_id: redhat-intel-default

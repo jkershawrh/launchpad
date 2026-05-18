@@ -1,0 +1,48 @@
+{
+  "test_prompts": [
+    {
+      "name": "simple_greeting",
+      "prompt": "Hello, how are you today?",
+      "max_tokens": 20,
+      "expected_type": "conversational"
+    },
+    {
+      "name": "factual_question",
+      "prompt": "The capital of France is",
+      "max_tokens": 10,
+      "expected_contains": ["Paris", "paris"]
+    },
+    {
+      "name": "counting",
+      "prompt": "Count to five: 1, 2, 3,",
+      "max_tokens": 15,
+      "expected_type": "sequence"
+    },
+    {
+      "name": "cpu_inference_question",
+      "prompt": "Why is CPU-based inference important for LLMs?",
+      "max_tokens": 100,
+      "expected_type": "technical"
+    },
+    {
+      "name": "minimal",
+      "prompt": "Test",
+      "max_tokens": 5,
+      "expected_type": "short"
+    }
+  ],
+  "performance_benchmarks": {
+    "tiny_model_cpu": {
+      "max_ttft_seconds": 10,
+      "min_tokens_per_second": 1,
+      "max_memory_mb": 4096
+    }
+  },
+  "model_info": {
+    "default_test_model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "parameters": "1.1B",
+    "size_gb": 2.2,
+    "license": "Apache-2.0",
+    "suitable_for": "quick testing, demos, CPU inference validation"
+  }
+}

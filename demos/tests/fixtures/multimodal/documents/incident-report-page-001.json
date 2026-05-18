@@ -1,0 +1,22 @@
+{
+  "fixture_id": "incident-report-page-001",
+  "type": "document",
+  "source": "synthetic",
+  "description": "10-page incident post-mortem report for the Gaudi accelerator overload event on 2026-05-10. Contains timeline, root cause analysis, impact assessment, and action items. Includes 4 embedded dashboard screenshots and 2 architecture diagrams.",
+  "page_count": 10,
+  "format": "pdf",
+  "sections": [
+    {"page": 1, "title": "Incident Summary", "has_images": false},
+    {"page": 2, "title": "Timeline", "has_images": true, "image_description": "Annotated timeline chart"},
+    {"page": 3, "title": "Dashboard Evidence - Latency", "has_images": true, "image_description": "Grafana latency dashboard screenshot"},
+    {"page": 4, "title": "Dashboard Evidence - Error Rate", "has_images": true, "image_description": "Error rate dashboard screenshot"},
+    {"page": 5, "title": "Root Cause Analysis", "has_images": false},
+    {"page": 6, "title": "Architecture Context", "has_images": true, "image_description": "Routing architecture diagram"},
+    {"page": 7, "title": "Failover Analysis", "has_images": true, "image_description": "Failover flow diagram"},
+    {"page": 8, "title": "Impact Assessment", "has_images": false},
+    {"page": 9, "title": "Action Items", "has_images": false},
+    {"page": 10, "title": "Appendix - Raw Metrics", "has_images": false}
+  ],
+  "expected_tags": ["incident_report", "post_mortem", "gaudi", "failover"],
+  "demo_context": "A realistic incident report that demonstrates document_visual_summary capabilities — the model must understand both text and embedded images."
+}

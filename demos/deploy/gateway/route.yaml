@@ -1,0 +1,18 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: inference-gateway
+  namespace: intel-rh-inference-gateway
+  labels:
+    app.kubernetes.io/name: inference-gateway
+spec:
+  to:
+    kind: Service
+    name: inference-gateway
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

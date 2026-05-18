@@ -1,0 +1,67 @@
+---
+- name: Setup RAG Pipeline Components
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Install RAG dependencies
+      pip:
+        name:
+          - chromadb
+          - sentence-transformers
+          - langchain
+          - httpx
+        state: present
+
+    - name: Create RAG example directory
+      file:
+        path: ~/rag-pipeline
+        state: directory
+
+    - name: Create RAG example script
+      copy:
+        dest: ~/rag-pipeline/rag_example.py
+        content: |
+          """Simple RAG pipeline example."""
+          import os
+          try:
+              import chromadb
+              from sentence_transformers import SentenceTransformer
+
+              # Initialize vector store
+              client = chromadb.Client()
+              collection = client.create_collection("docs")
+
+              # Add sample documents
+              docs = [
+                  "Red Hat OpenShift is a Kubernetes platform for enterprise applications.",
+                  "Intel Gaudi accelerators provide efficient AI training and inference.",
+                  "Intel Xeon processors with AMX enable fast AI inference on CPU.",
+                  "OpenShift AI provides managed ML workflows on OpenShift.",
+              ]
+              collection.add(
+                  documents=docs,
+                  ids=[f"doc_{i}" for i in range(len(docs))],
+              )
+
+              # Query
+              results = collection.query(query_texts=["What is OpenShift?"], n_results=2)
+              print("Query: What is OpenShift?")
+              print("Results:", results["documents"])
+          except ImportError as e:
+              print(f"Missing dependency: {e}")
+              print("Run: ansible-navigator run ~/playbooks/setup-rag-pipeline.yml")
+
+    - name: Create README
+      copy:
+        dest: ~/rag-pipeline/README.md
+        content: |
+          # RAG Pipeline Example
+
+          Run: `python3 rag_example.py`
+
+          This demonstrates a simple retrieval-augmented generation pipeline
+          using ChromaDB for vector storage and sentence-transformers for embeddings.
+
+    - name: Report
+      debug:
+        msg: "RAG pipeline set up at ~/rag-pipeline. Run: python3 ~/rag-pipeline/rag_example.py"

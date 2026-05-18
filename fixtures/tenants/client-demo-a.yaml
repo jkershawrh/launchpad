@@ -1,0 +1,8 @@
+tenant_id: client-demo-a
+display_name: Client Demo A
+tenant_type: client
+status: active
+branding_profile_id: redhat-intel-default
+default_quota_profile: standard
+default_ttl: "4h"
+cost_center: demo-client-a

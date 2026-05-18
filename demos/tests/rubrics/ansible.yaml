@@ -1,0 +1,71 @@
+---
+# Ansible Automation Quality Rubric
+# Scoring criteria for deployment automation
+
+name: ansible
+version: "1.0"
+total_points: 80
+pass_threshold: 90
+
+criteria:
+  structure:
+    config_exists:
+      points: 5
+      severity: critical
+      check: "ansible.cfg exists with correct roles_path"
+    inventory_exists:
+      points: 5
+      severity: critical
+      check: "inventory/hosts.yaml defines all namespace variables"
+
+  roles:
+    cluster_discovery:
+      points: 5
+      severity: critical
+      check: "cluster_discovery role runs discover-cluster.sh"
+    database:
+      points: 5
+      severity: critical
+      check: "database role deploys PostgreSQL and verifies pg_isready"
+    openvino_inference:
+      points: 5
+      severity: high
+      check: "openvino_inference role deploys OpenVINO manifests"
+    cpu_inference:
+      points: 5
+      severity: high
+      check: "cpu_inference role deploys CPU inference manifests"
+    gaudi_inference:
+      points: 5
+      severity: high
+      check: "gaudi_inference role checks Gaudi nodes before deploying"
+    gateway:
+      points: 5
+      severity: critical
+      check: "gateway role deploys gateway and verifies health"
+    observability:
+      points: 5
+      severity: medium
+      check: "observability role deploys ServiceMonitor"
+    health_check:
+      points: 10
+      severity: critical
+      check: "health_check role verifies all 4 components (gateway, CPU, Gaudi, OpenVINO)"
+    teardown:
+      points: 5
+      severity: high
+      check: "teardown role cleans up all namespaces"
+
+  playbooks:
+    deploy_platform:
+      points: 10
+      severity: critical
+      check: "deploy-platform.yaml includes all roles in correct order (discovery→database→inference→gateway→observability→health)"
+    skip_tags:
+      points: 5
+      severity: medium
+      check: "Supports --skip-tags gaudi for CPU-only deployment"
+    individual_playbooks:
+      points: 5
+      severity: medium
+      check: "Separate playbooks for deploy-cpu, deploy-gaudi, teardown, health-check"

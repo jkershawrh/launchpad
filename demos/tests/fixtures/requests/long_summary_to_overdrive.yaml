@@ -1,0 +1,9 @@
+request_id: fix-003
+task_type: long_summary
+token_estimate: 24000
+priority: high
+latency_target_ms: 5000
+prompt: "Summarize this large document"
+expected:
+  selected_route: overdrive
+  outcome: route

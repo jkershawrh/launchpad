@@ -1,0 +1,125 @@
+---
+# Frontend Dashboard Quality Rubric
+# Scoring criteria for Stage 11 (Partner Dashboard)
+
+name: frontend
+version: "1.0"
+total_points: 152
+pass_threshold: 90
+
+criteria:
+  patternfly:
+    uses_pf_components:
+      points: 15
+      severity: critical
+      check: "All UI built with PatternFly 6 components (Page, Card, Table, Nav, etc.)"
+    red_hat_fonts:
+      points: 5
+      severity: high
+      check: "Red Hat Display, Text, Mono fonts loaded via PatternFly base CSS"
+    consistent_layout:
+      points: 10
+      severity: high
+      check: "Page + Masthead + Sidebar layout pattern used consistently"
+
+  pages:
+    all_7_pages:
+      points: 15
+      severity: critical
+      check: "Dashboard, Request History, Governance, Routing, Costs, Performance, Live Demo"
+    responsive_layout:
+      points: 5
+      severity: medium
+      check: "Gallery and page sections adapt to viewport"
+
+  api:
+    typescript_types:
+      points: 10
+      severity: critical
+      check: "All API response shapes defined as TypeScript interfaces"
+    react_query_hooks:
+      points: 10
+      severity: critical
+      check: "React Query hooks for all endpoints with caching and refetch"
+    error_states:
+      points: 10
+      severity: high
+      check: "Loading spinners, error alerts, empty states handled"
+    loading_states:
+      points: 5
+      severity: high
+      check: "PatternFly Spinner shown during data fetch"
+
+  security:
+    abort_controller_build:
+      description: "BuildYourOwn uses AbortController to cancel stale requests"
+      points: 5
+      severity: high
+      check: "grep for AbortController in BuildYourOwn.tsx"
+    abort_controller_workflow:
+      description: "LiveWorkflow uses AbortController to cancel stale API calls"
+      points: 5
+      severity: high
+      check: "grep for AbortController in LiveWorkflow.tsx"
+    approve_via_post_body:
+      description: "approveDecision sends approved_by in POST body, not query string"
+      points: 5
+      severity: high
+      check: "approved_by not in URL in client.ts"
+    auth_headers_support:
+      description: "API client supports configurable auth token header"
+      points: 5
+      severity: high
+      check: "grep for Authorization or X-API-Key in client.ts"
+    nginx_security_headers:
+      description: "nginx.conf adds CSP, HSTS, X-Frame-Options, X-Content-Type-Options"
+      points: 10
+      severity: medium
+      check: "grep for Content-Security-Policy in nginx.conf"
+    metrics_restricted:
+      description: "/metrics proxy restricted to internal access"
+      points: 5
+      severity: medium
+      check: "grep for internal or deny in /metrics location"
+
+  code_quality:
+    content_type_conditional:
+      description: "Content-Type header only set on requests with body"
+      points: 3
+      severity: medium
+      check: "Content-Type conditionally applied in client.ts"
+    routes_typed:
+      description: "Routes endpoint returns typed Route interface, not unknown[]"
+      points: 3
+      severity: medium
+      check: "Route interface in types.ts"
+    no_dead_code:
+      description: "No unused variables like riskColors"
+      points: 2
+      severity: medium
+      check: "riskColors not defined unused in GovernanceAudit.tsx"
+    no_unused_locals_ts:
+      description: "tsconfig noUnusedLocals and noUnusedParameters true"
+      points: 3
+      severity: medium
+      check: "noUnusedLocals: true in tsconfig.json"
+    error_boundary_logging:
+      description: "ErrorBoundary has componentDidCatch with error logging"
+      points: 3
+      severity: low
+      check: "grep componentDidCatch in ErrorBoundary.tsx"
+    spinner_aria_labels:
+      description: "All Spinner components have aria-label"
+      points: 3
+      severity: low
+      check: "No bare Spinner without aria-label"
+
+  testing:
+    component_tests:
+      points: 10
+      severity: critical
+      check: "Vitest + React Testing Library tests for key components"
+    typescript_strict:
+      points: 5
+      severity: high
+      check: "TypeScript strict mode enabled, no type errors"

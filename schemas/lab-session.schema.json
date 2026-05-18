@@ -1,0 +1,284 @@
+{
+  "$defs": {
+    "LifecycleEvent": {
+      "properties": {
+        "from_status": {
+          "$ref": "#/$defs/SessionStatus"
+        },
+        "to_status": {
+          "$ref": "#/$defs/SessionStatus"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        }
+      },
+      "required": [
+        "from_status",
+        "to_status"
+      ],
+      "title": "LifecycleEvent",
+      "type": "object"
+    },
+    "SessionStatus": {
+      "enum": [
+        "requested",
+        "provisioning",
+        "validating",
+        "ready",
+        "active",
+        "expired",
+        "resetting",
+        "reclaimed",
+        "failed",
+        "rejected",
+        "validation_failed",
+        "cleanup_failed"
+      ],
+      "title": "SessionStatus",
+      "type": "string"
+    },
+    "ValidationResult": {
+      "properties": {
+        "validation_id": {
+          "title": "Validation Id",
+          "type": "string"
+        },
+        "session_id": {
+          "title": "Session Id",
+          "type": "string"
+        },
+        "check_name": {
+          "title": "Check Name",
+          "type": "string"
+        },
+        "result": {
+          "$ref": "#/$defs/ValidationResultStatus"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence"
+        },
+        "timestamp": {
+          "format": "date-time",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id",
+        "check_name",
+        "result"
+      ],
+      "title": "ValidationResult",
+      "type": "object"
+    },
+    "ValidationResultStatus": {
+      "enum": [
+        "pass",
+        "fail",
+        "warn",
+        "skipped"
+      ],
+      "title": "ValidationResultStatus",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "session_id": {
+      "title": "Session Id",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "tenant_id": {
+      "title": "Tenant Id",
+      "type": "string"
+    },
+    "catalog_item_id": {
+      "title": "Catalog Item Id",
+      "type": "string"
+    },
+    "namespace": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Namespace"
+    },
+    "cluster_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cluster Ref"
+    },
+    "status": {
+      "$ref": "#/$defs/SessionStatus",
+      "default": "requested"
+    },
+    "lab_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lab Url"
+    },
+    "dashboard_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dashboard Url"
+    },
+    "handoff_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Handoff Url"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expires At"
+    },
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "resources": {
+      "additionalProperties": true,
+      "title": "Resources",
+      "type": "object"
+    },
+    "validation_results": {
+      "items": {
+        "$ref": "#/$defs/ValidationResult"
+      },
+      "title": "Validation Results",
+      "type": "array"
+    },
+    "showback_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Showback Ref"
+    },
+    "lifecycle_events": {
+      "items": {
+        "$ref": "#/$defs/LifecycleEvent"
+      },
+      "title": "Lifecycle Events",
+      "type": "array"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    }
+  },
+  "required": [
+    "request_id",
+    "tenant_id",
+    "catalog_item_id"
+  ],
+  "title": "LabSession",
+  "type": "object"
+}

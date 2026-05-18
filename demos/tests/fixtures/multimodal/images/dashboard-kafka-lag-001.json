@@ -1,0 +1,18 @@
+{
+  "fixture_id": "dashboard-kafka-lag-001",
+  "type": "screenshot",
+  "source": "synthetic",
+  "description": "Kafka consumer lag monitoring dashboard showing increasing consumer lag on the routing-decisions topic. Lag grows from 0 to 12,000 messages over 10 minutes. Producer rate is stable at 200 msg/s but consumer rate dropped to 50 msg/s.",
+  "width": 1920,
+  "height": 1080,
+  "visual_elements": [
+    "consumer lag time-series (growing staircase pattern)",
+    "producer rate chart (flat at 200 msg/s)",
+    "consumer rate chart (drop from 200 to 50 msg/s at 14:30 UTC)",
+    "topic partition distribution table",
+    "consumer group status panel"
+  ],
+  "expected_tags": ["consumer_lag", "throughput_drop", "kafka", "event_streaming"],
+  "expected_classification": "anomaly",
+  "demo_context": "This shows what happens when the event consumer can't keep up with the workload producer — relevant to the Kafka firehose demo."
+}

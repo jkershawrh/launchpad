@@ -1,0 +1,9 @@
+tenant_id: partner-oem-a
+requester_id: demo-engineer-1
+catalog_item_id: inference-overdrive-quickstart
+requested_mode: quick_start
+persistence: ephemeral
+ttl: "4h"
+hardware_profile: gaudi-endpoint
+quota_profile: standard
+branding_profile_id: partner-oem-a

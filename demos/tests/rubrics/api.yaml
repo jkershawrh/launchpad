@@ -1,0 +1,90 @@
+---
+# API Layer Quality Rubric
+# Scoring criteria for Stage 9 (API Endpoints)
+
+name: api
+version: "1.0"
+total_points: 103
+pass_threshold: 90
+
+criteria:
+  structure:
+    module_compiles:
+      points: 5
+      severity: critical
+      check: "api.py compiles without syntax errors"
+    router_mounted:
+      points: 5
+      severity: critical
+      check: "API router mounted on gateway app via include_router"
+    consistent_errors:
+      points: 10
+      severity: high
+      check: "All endpoints return 503 when DB unavailable (not mixed 200/503)"
+
+  read_endpoints:
+    list_requests:
+      points: 10
+      severity: critical
+      check: "GET /api/v1/requests returns paginated list with filters"
+    get_request_by_id:
+      points: 10
+      severity: critical
+      check: "GET /api/v1/requests/{id} queries DB by UUID, returns 404 if not found"
+    list_decisions:
+      points: 5
+      severity: high
+      check: "GET /api/v1/decisions returns governance decision history"
+    get_decision_by_id:
+      points: 5
+      severity: high
+      check: "GET /api/v1/decisions/{id} queries by UUID with evidence bundle"
+
+  write_endpoints:
+    approve_decision:
+      points: 10
+      severity: critical
+      check: "POST /api/v1/decisions/{id}/approve records approval with validated approved_by"
+    audit_trail:
+      points: 5
+      severity: high
+      check: "Write operations create audit_log entries"
+
+  analytics:
+    routing_distribution:
+      points: 5
+      severity: medium
+      check: "GET /api/v1/analytics/routing-distribution returns % per backend"
+    latency_percentiles:
+      points: 5
+      severity: medium
+      check: "GET /api/v1/analytics/latency-percentiles returns p50/p95/p99"
+    cost_by_task:
+      points: 5
+      severity: medium
+      check: "GET /api/v1/analytics/cost-by-task returns cost breakdown"
+    governance_summary:
+      points: 5
+      severity: medium
+      check: "GET /api/v1/analytics/governance-summary returns decision counts"
+
+  behavior:
+    health_endpoint:
+      points: 5
+      severity: critical
+      check: "GET /health returns 200 with backend count, route count, version"
+    input_validation:
+      points: 5
+      severity: high
+      check: "Unknown task types return 400, invalid UUIDs handled gracefully"
+    metrics_endpoint:
+      points: 5
+      severity: medium
+      check: "GET /metrics returns Prometheus-format metrics"
+
+  hardening:
+    prometheus_cardinality_bounded:
+      description: "ROUTING_DECISIONS reason label bounded to prevent cardinality explosion"
+      points: 3
+      severity: medium
+      check: "reason label truncated to 30 chars or hashed"

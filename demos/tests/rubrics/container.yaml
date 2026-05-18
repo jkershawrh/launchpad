@@ -1,0 +1,115 @@
+# Rubric for Container Artifacts
+# Used to score container images against quality criteria
+
+artifact_type: container
+version: "1.0"
+passing_score: 90
+
+criteria:
+  build_success:
+    description: "Container builds without errors"
+    points: 20
+    severity: critical
+    check_method: "podman build exit code == 0"
+
+  build_time:
+    description: "Build completes within acceptable time"
+    points: 5
+    severity: low
+    threshold: "< 5 minutes"
+    check_method: "measure build duration"
+
+  image_size:
+    description: "Image size is reasonable"
+    points: 10
+    severity: medium
+    threshold: "< 5GB for inference containers"
+    check_method: "podman images --format '{{.Size}}'"
+
+  security_scan:
+    description: "No critical or high severity vulnerabilities"
+    points: 25
+    severity: critical
+    threshold: "0 critical, 0 high"
+    check_method: "trivy image --severity CRITICAL,HIGH"
+
+  non_root_user:
+    description: "Container runs as non-root user"
+    points: 15
+    severity: critical
+    check_method: "podman inspect --format '{{.Config.User}}'"
+
+  health_endpoint:
+    description: "Health check endpoint responds"
+    points: 15
+    severity: high
+    check_method: "curl http://localhost:PORT/health returns 200"
+
+  graceful_shutdown:
+    description: "Container handles SIGTERM gracefully"
+    points: 5
+    severity: low
+    check_method: "send SIGTERM, verify clean exit within 30s"
+
+  labels_present:
+    description: "Container has proper OCI labels"
+    points: 5
+    severity: low
+    required_labels:
+      - "org.opencontainers.image.title"
+      - "org.opencontainers.image.version"
+    check_method: "podman inspect --format '{{.Config.Labels}}'"
+
+  inference_auth_middleware:
+    description: "Inference servers have API key middleware protecting endpoints"
+    points: 10
+    severity: critical
+    check: "grep for API_KEY or Depends in inference_server.py"
+
+  error_sanitization_inference:
+    description: "500 error responses do not contain raw exception messages"
+    points: 5
+    severity: critical
+    check: "str(e) not in HTTPException detail for 500 errors"
+
+  correct_text_extraction:
+    description: "Completion text uses token offsets, not character slicing"
+    points: 3
+    severity: high
+    check: "No generated_text[len(request.prompt)] pattern"
+
+  unique_completion_ids:
+    description: "Completion IDs use uuid4, not timestamp"
+    points: 3
+    severity: medium
+    check: "grep for uuid in inference_server.py"
+
+  lifespan_pattern:
+    description: "FastAPI apps use lifespan, not deprecated on_event"
+    points: 3
+    severity: medium
+    check: "lifespan in code, no @app.on_event"
+
+  input_validation_cpu:
+    description: "CPU CompletionRequest has Field constraints on max_tokens"
+    points: 3
+    severity: medium
+    check: "ge= and le= on max_tokens Field"
+
+  containerignore_present:
+    description: ".containerignore files exist"
+    points: 3
+    severity: low
+    check: ".containerignore exists in container dirs"
+
+scoring:
+  total_points: 130
+  grade_scale:
+    A: ">= 95"
+    B: ">= 90"
+    C: ">= 80"
+    F: "< 80"
+
+notes: |
+  Containers must achieve at least 90 points to pass stage gate.
+  All 'critical' severity checks must pass regardless of total score.

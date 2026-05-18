@@ -1,0 +1,7 @@
+quota_profile_id: small
+cpu_limit: "2"
+memory_limit: 4Gi
+storage_limit: 20Gi
+max_pods: 10
+max_routes: 3
+ttl_max: "4h"

@@ -1,0 +1,27 @@
+---
+all:
+  hosts:
+    localhost:
+      ansible_connection: local
+  vars:
+    project_root: "{{ playbook_dir }}/.."
+    deploy_dir: "{{ project_root }}/deploy"
+    scripts_dir: "{{ project_root }}/scripts"
+    tools_dir: "{{ project_root }}/tools"
+
+    # Cluster connection (override via -e or group_vars)
+    openshift_api_url: ""
+    openshift_token: ""
+
+    # Inference defaults
+    default_model: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    cpu_namespace: "intel-rh-cpu-inference"
+    gaudi_namespace: "intel-rh-gaudi-inference"
+    openvino_namespace: "intel-rh-openvino-inference"
+    gateway_namespace: "intel-rh-inference-gateway"
+    database_namespace: "intel-rh-database"
+
+    # Timeouts
+    deploy_timeout_seconds: 600
+    health_check_retries: 30
+    health_check_delay: 10

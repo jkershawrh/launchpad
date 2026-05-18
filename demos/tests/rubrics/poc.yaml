@@ -1,0 +1,83 @@
+---
+# POC Demo Application Quality Rubric
+# Scoring criteria for demo wedge applications (Phase 6)
+
+name: poc
+version: "1.0"
+total_points: 95
+pass_threshold: 90
+
+criteria:
+  structure:
+    all_pocs_exist:
+      points: 5
+      severity: critical
+      check: "All 3 POC directories exist (enterprise-rag, aiops-copilot, governed-agent)"
+    all_have_app:
+      points: 5
+      severity: critical
+      check: "Each POC has app.py that compiles"
+    all_have_readme:
+      points: 5
+      severity: high
+      check: "Each POC has README.md with partner messaging"
+
+  enterprise_rag:
+    pipeline_steps:
+      points: 10
+      severity: critical
+      check: "Has embed, search, rerank, generate steps"
+    multi_task_routing:
+      points: 5
+      severity: critical
+      check: "Uses embeddings, reranking, and completion task types"
+    calls_gateway:
+      points: 5
+      severity: critical
+      check: "Routes all inference through gateway"
+
+  aiops_copilot:
+    pipeline_steps:
+      points: 10
+      severity: critical
+      check: "Has classify, correlate, generate_rca, governance steps"
+    dynamic_governance:
+      points: 5
+      severity: high
+      check: "Governance action derived from RCA, not hardcoded"
+    incident_correlation:
+      points: 5
+      severity: high
+      check: "Similar incidents vary by alert text content"
+
+  governed_agent:
+    pipeline_steps:
+      points: 10
+      severity: critical
+      check: "Has classify_intent, risk_score, plan, policy_check steps"
+    risk_amplifiers:
+      points: 5
+      severity: high
+      check: "Risk score increases for production, privileged, root keywords"
+    deny_capability:
+      points: 5
+      severity: critical
+      check: "Can deny, escalate, and allow_with_audit"
+    evidence_bundle:
+      points: 5
+      severity: high
+      check: "Produces structured evidence for audit trail"
+
+  cross_cutting:
+    error_handling:
+      points: 5
+      severity: critical
+      check: "All POCs handle gateway errors gracefully (no traceback)"
+    mock_mode:
+      points: 5
+      severity: high
+      check: "All POCs support --mock for offline demos"
+    consistent_gateway_url:
+      points: 5
+      severity: high
+      check: "All POCs use same GATEWAY_URL pattern and --gateway flag"

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" font-family="Red Hat Text, sans-serif">
+  <rect width="800" height="400" fill="#f0f0f0" rx="8"/>
+  <!-- Card body -->
+  <rect x="100" y="60" width="600" height="250" fill="#2d3436" rx="12" stroke="#555" stroke-width="1"/>
+  <!-- Heat sink fins -->
+  <g fill="#444" stroke="#555" stroke-width="0.5">
+    <rect x="150" y="70" width="8" height="180" rx="1"/>
+    <rect x="170" y="70" width="8" height="180" rx="1"/>
+    <rect x="190" y="70" width="8" height="180" rx="1"/>
+    <rect x="210" y="70" width="8" height="180" rx="1"/>
+    <rect x="230" y="70" width="8" height="180" rx="1"/>
+    <rect x="250" y="70" width="8" height="180" rx="1"/>
+    <rect x="270" y="70" width="8" height="180" rx="1"/>
+    <rect x="290" y="70" width="8" height="180" rx="1"/>
+    <rect x="310" y="70" width="8" height="180" rx="1"/>
+    <rect x="330" y="70" width="8" height="180" rx="1"/>
+    <rect x="350" y="70" width="8" height="180" rx="1"/>
+    <rect x="370" y="70" width="8" height="180" rx="1"/>
+    <rect x="390" y="70" width="8" height="180" rx="1"/>
+    <rect x="410" y="70" width="8" height="180" rx="1"/>
+    <rect x="430" y="70" width="8" height="180" rx="1"/>
+    <rect x="450" y="70" width="8" height="180" rx="1"/>
+    <rect x="470" y="70" width="8" height="180" rx="1"/>
+    <rect x="490" y="70" width="8" height="180" rx="1"/>
+    <rect x="510" y="70" width="8" height="180" rx="1"/>
+    <rect x="530" y="70" width="8" height="180" rx="1"/>
+    <rect x="550" y="70" width="8" height="180" rx="1"/>
+  </g>
+  <!-- Label area -->
+  <rect x="580" y="100" width="100" height="120" fill="#1a1a2e" rx="6"/>
+  <text x="630" y="135" fill="#e67e22" font-size="14" font-weight="700" text-anchor="middle">Intel</text>
+  <text x="630" y="155" fill="#e67e22" font-size="16" font-weight="700" text-anchor="middle">Gaudi</text>
+  <text x="630" y="175" fill="#8892b0" font-size="10" text-anchor="middle">HL-225</text>
+  <text x="630" y="195" fill="#8892b0" font-size="9" text-anchor="middle">96GB HBM2E</text>
+  <!-- PCIe connector -->
+  <rect x="130" y="260" width="300" height="25" fill="#b8860b" rx="2"/>
+  <text x="280" y="277" fill="#1a1a2e" font-size="10" text-anchor="middle">PCIe Gen4 x16</text>
+  <!-- Power connectors -->
+  <rect x="590" y="265" width="40" height="18" fill="#333" rx="2" stroke="#666"/>
+  <text x="610" y="278" fill="#aaa" font-size="7" text-anchor="middle">8-pin</text>
+  <rect x="640" y="265" width="35" height="18" fill="#333" rx="2" stroke="#666"/>
+  <text x="658" y="278" fill="#aaa" font-size="7" text-anchor="middle">6-pin</text>
+  <!-- Bracket -->
+  <rect x="100" y="55" width="15" height="260" fill="#888" rx="2"/>
+  <!-- Spec callouts -->
+  <rect x="100" y="320" width="600" height="60" fill="#fff" rx="6" stroke="#ddd"/>
+  <text x="130" y="342" fill="#1a1a2e" font-size="12" font-weight="700">Intel Gaudi 2 Accelerator</text>
+  <text x="130" y="362" fill="#666" font-size="10">96GB HBM2E • 2.45 TB/s bandwidth • 24 Tensor Cores • 300W TDP • PCIe Gen4 x16</text>
+  <text x="130" y="375" fill="#e67e22" font-size="10">100+ tokens/sec generation • 17B+ parameter models • AI inference optimized</text>
+</svg>

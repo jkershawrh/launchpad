@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 350" font-family="Red Hat Text, sans-serif">
+  <rect width="800" height="350" fill="#1a1a2e" rx="8"/>
+  <text x="20" y="28" fill="#ccc" font-size="14" font-weight="700">Error Rate Monitor — Inference Gateway</text>
+  <text x="700" y="28" fill="#e74c3c" font-size="11" font-weight="700">● FIRING</text>
+  <!-- Error Rate Chart -->
+  <rect x="20" y="42" width="480" height="140" fill="#16213e" rx="4"/>
+  <text x="30" y="60" fill="#8892b0" font-size="11">Error Rate %</text>
+  <polyline points="30,165 80,164 130,163 180,162 220,160 240,150 260,130 280,110 300,100 320,95 360,92 400,90 440,88 490,87" stroke="#e74c3c" fill="none" stroke-width="2"/>
+  <text x="30" y="170" fill="#555" font-size="8">0.1%</text>
+  <text x="30" y="90" fill="#e74c3c" font-size="8">3.2%</text>
+  <text x="235" y="148" fill="#e74c3c" font-size="8">▲ 14:25</text>
+  <!-- 502 by endpoint -->
+  <rect x="510" y="42" width="270" height="140" fill="#16213e" rx="4"/>
+  <text x="520" y="60" fill="#8892b0" font-size="11">HTTP 502 by Endpoint</text>
+  <rect x="520" y="72" width="180" height="14" fill="#e74c3c" rx="2"/><text x="525" y="83" fill="#fff" font-size="9">/v1/route — 47</text>
+  <rect x="520" y="92" width="60" height="14" fill="#e67e22" rx="2"/><text x="525" y="103" fill="#fff" font-size="9">/health — 8</text>
+  <rect x="520" y="112" width="30" height="14" fill="#f39c12" rx="2"/><text x="525" y="123" fill="#fff" font-size="9">/v1 — 3</text>
+  <text x="520" y="150" fill="#8892b0" font-size="10">Total: 58 errors in 27 min</text>
+  <text x="520" y="165" fill="#e74c3c" font-size="10">Impact: 142 SLA breaches</text>
+  <!-- Services affected -->
+  <rect x="20" y="192" width="760" height="55" fill="#16213e" rx="4"/>
+  <text x="30" y="212" fill="#8892b0" font-size="11">Affected Services</text>
+  <rect x="30" y="222" width="140" height="18" fill="#2d3436" rx="3" stroke="#e74c3c"/><text x="40" y="235" fill="#e74c3c" font-size="9">gateway-pod-1 ● ERROR</text>
+  <rect x="180" y="222" width="140" height="18" fill="#2d3436" rx="3" stroke="#e74c3c"/><text x="190" y="235" fill="#e74c3c" font-size="9">gateway-pod-2 ● ERROR</text>
+  <rect x="330" y="222" width="140" height="18" fill="#2d3436" rx="3" stroke="#2ecc71"/><text x="340" y="235" fill="#2ecc71" font-size="9">postgres ● HEALTHY</text>
+  <rect x="480" y="222" width="140" height="18" fill="#2d3436" rx="3" stroke="#2ecc71"/><text x="490" y="235" fill="#2ecc71" font-size="9">frontend ● HEALTHY</text>
+  <!-- Timeline -->
+  <rect x="20" y="258" width="760" height="75" fill="#16213e" rx="4"/>
+  <text x="30" y="278" fill="#8892b0" font-size="11">Incident Timeline</text>
+  <circle cx="60" cy="305" r="4" fill="#2ecc71"/><text x="70" y="309" fill="#aaa" font-size="9">14:20 Normal</text>
+  <circle cx="200" cy="305" r="4" fill="#e74c3c"/><text x="210" y="309" fill="#e74c3c" font-size="9">14:23 Gaudi HBM 97%</text>
+  <circle cx="380" cy="305" r="4" fill="#e74c3c"/><text x="390" y="309" fill="#e74c3c" font-size="9">14:25 Health check FAIL</text>
+  <circle cx="560" cy="305" r="4" fill="#e67e22"/><text x="570" y="309" fill="#e67e22" font-size="9">14:28 SLA breach</text>
+  <circle cx="700" cy="305" r="4" fill="#2ecc71"/><text x="710" y="309" fill="#2ecc71" font-size="9">14:50 Restored</text>
+</svg>

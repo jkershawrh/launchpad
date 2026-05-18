@@ -1,0 +1,33 @@
+FROM registry.access.redhat.com/ubi9/python-311:latest
+
+LABEL name="inference-gateway" \
+      version="1.0.0" \
+      description="Intel-Red Hat AI Inference Gateway — routes requests across Xeon 6 and Gaudi backends"
+
+WORKDIR /opt/app-root/src
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir torch --extra-index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY router.py .
+COPY routing_policy.py .
+COPY api.py .
+COPY auth.py .
+COPY tenant_api.py .
+COPY content_validator.py .
+COPY db.py .
+COPY local_inference.py .
+COPY __init__.py .
+COPY config.yaml .
+COPY migrations/ ./migrations/
+COPY overdrive/ ./overdrive/
+
+USER 1001
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["python3", "router.py"]

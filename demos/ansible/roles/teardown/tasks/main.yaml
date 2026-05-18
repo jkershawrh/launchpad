@@ -1,0 +1,67 @@
+---
+# Teardown all platform components in reverse deployment order
+
+- name: Delete observability resources
+  ansible.builtin.command:
+    cmd: "oc delete -k {{ deploy_dir }}/observability --ignore-not-found"
+  register: obs_delete
+  changed_when: "'deleted' in obs_delete.stdout"
+  failed_when: false
+
+- name: Delete gateway resources
+  ansible.builtin.command:
+    cmd: "oc delete -k {{ deploy_dir }}/gateway --ignore-not-found"
+  register: gw_delete
+  changed_when: "'deleted' in gw_delete.stdout"
+  failed_when: false
+
+- name: Delete Gaudi inference resources
+  ansible.builtin.command:
+    cmd: "oc delete -k {{ deploy_dir }}/gaudi-inference --ignore-not-found"
+  register: gaudi_delete
+  changed_when: "'deleted' in gaudi_delete.stdout"
+  failed_when: false
+
+- name: Delete CPU inference resources
+  ansible.builtin.command:
+    cmd: "oc delete -k {{ deploy_dir }}/cpu-inference --ignore-not-found"
+  register: cpu_delete
+  changed_when: "'deleted' in cpu_delete.stdout"
+  failed_when: false
+
+- name: Delete OpenVINO inference resources
+  ansible.builtin.command:
+    cmd: "oc delete -k {{ deploy_dir }}/openvino-cpu --ignore-not-found"
+  register: ovms_delete
+  changed_when: "'deleted' in ovms_delete.stdout"
+  failed_when: false
+
+- name: Delete database resources
+  ansible.builtin.command:
+    cmd: "oc delete -k {{ deploy_dir }}/database --ignore-not-found"
+  register: db_delete
+  changed_when: "'deleted' in db_delete.stdout"
+  failed_when: false
+
+- name: Wait for namespace cleanup
+  ansible.builtin.command:
+    cmd: "oc wait --for=delete namespace/{{ item }} --timeout=120s"
+  loop:
+    - "{{ gateway_namespace }}"
+    - "{{ gaudi_namespace }}"
+    - "{{ cpu_namespace }}"
+    - "{{ openvino_namespace }}"
+    - "{{ database_namespace }}"
+  changed_when: false
+  failed_when: false
+
+- name: Teardown summary
+  ansible.builtin.debug:
+    msg: |
+      Teardown Complete:
+        Observability: {{ 'deleted' if obs_delete.rc | default(1) == 0 else 'skipped' }}
+        Gateway: {{ 'deleted' if gw_delete.rc | default(1) == 0 else 'skipped' }}
+        Gaudi: {{ 'deleted' if gaudi_delete.rc | default(1) == 0 else 'skipped' }}
+        CPU: {{ 'deleted' if cpu_delete.rc | default(1) == 0 else 'skipped' }}
+        OpenVINO: {{ 'deleted' if ovms_delete.rc | default(1) == 0 else 'skipped' }}
+        Database: {{ 'deleted' if db_delete.rc | default(1) == 0 else 'skipped' }}
