@@ -5,5 +5,5 @@ metadata:
   labels:
     app.kubernetes.io/part-of: partner-ai-launchpad
 data:
-  LAUNCHPAD_MODE: "openshift"
+  LAUNCHPAD_MODE: "mock"
   CORS_ORIGINS: "https://launchpad.apps.example.com,https://launchpad-admin.apps.example.com"
