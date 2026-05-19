@@ -167,7 +167,7 @@ def _build_payload(request: RouteRequest, task: str, backend=None) -> tuple:
     if task in ("completion", "batch_generation"):
         if use_chat:
             return "/v1/chat/completions", {
-                "model": request.model or "default",
+                "model": request.model or "granite-3-2-8b-instruct",
                 "messages": [{"role": "user", "content": user_text}],
                 "max_tokens": request.max_tokens,
                 "temperature": request.temperature,
@@ -230,7 +230,7 @@ def _build_payload(request: RouteRequest, task: str, backend=None) -> tuple:
     elif task in ("governance", "policy"):
         if use_chat:
             return "/v1/chat/completions", {
-                "model": request.model or "default",
+                "model": request.model or "granite-4-0-h-tiny",
                 "messages": [{"role": "user", "content": user_text}],
                 "max_tokens": request.max_tokens,
                 "temperature": request.temperature,
