@@ -56,51 +56,29 @@ class OpenShiftProvisioningAdapter:
         self._custom_objects = client.CustomObjectsApi()
 
     def create_plan(self, request: LabRequest, catalog_item: CatalogItem) -> ProvisioningPlan:
-        demo_source = catalog_item.metadata.get("demo_source", "launchpad")
+        meta = catalog_item.metadata or {}
+        demo_source = meta.get("demo_source", "launchpad")
+        deploy_method = meta.get("deploy_method", "kustomize-dir")
+        deploy_path = meta.get("deploy_path", str(DEMO_DEPLOY_ROOT))
         namespace = f"launchpad-{request.tenant_id}-{uuid.uuid4().hex[:8]}"
 
         return ProvisioningPlan(
             request_id=request.request_id,
             target_namespace=namespace,
             steps=[
-                ProvisioningStep(
-                    name="create-project",
-                    adapter="openshift",
-                    action="create_namespace",
-                    params={"namespace": namespace},
-                    order=1,
-                ),
-                ProvisioningStep(
-                    name="apply-kustomize",
-                    adapter="openshift",
-                    action="apply_kustomize",
-                    params={
-                        "overlay": str(self._overlay_path),
-                        "namespace": namespace,
-                    },
-                    order=2,
-                ),
-                ProvisioningStep(
-                    name="wait-for-deployments",
-                    adapter="openshift",
-                    action="wait_deployments",
-                    params={"namespace": namespace, "timeout": WAIT_TIMEOUT},
-                    order=3,
-                ),
-                ProvisioningStep(
-                    name="get-routes",
-                    adapter="openshift",
-                    action="get_routes",
-                    params={"namespace": namespace},
-                    order=4,
-                ),
+                ProvisioningStep(name="create-project", adapter="openshift", action="create_namespace", order=1),
+                ProvisioningStep(name="deploy", adapter="openshift", action="deploy", order=2),
+                ProvisioningStep(name="get-routes", adapter="openshift", action="get_routes", order=3),
             ],
             adapters_required=["openshift"],
             validation_steps=["pod-status", "route-accessible"],
             estimated_duration="120s",
             required_resources={
                 "demo_source": demo_source,
+                "deploy_method": deploy_method,
+                "deploy_path": deploy_path,
                 "overlay_path": str(self._overlay_path),
+                "catalog_item_id": catalog_item.catalog_item_id,
             },
         )
 
@@ -109,20 +87,36 @@ class OpenShiftProvisioningAdapter:
         if not namespace:
             namespace = f"launchpad-demo-{uuid.uuid4().hex[:8]}"
 
-        overlay_path = plan.required_resources.get("overlay_path", str(self._overlay_path))
+        res = plan.required_resources
+        deploy_method = res.get("deploy_method", "kustomize-dir")
+        deploy_path = res.get("deploy_path", str(self._overlay_path))
+
+        # Resolve deploy path for container context
+        resolved_path = deploy_path
+        if "demos/quickstarts/" in deploy_path:
+            resolved_path = deploy_path.replace("demos/quickstarts/", "/opt/quickstarts/")
+        elif "demos/deploy/" in deploy_path:
+            resolved_path = deploy_path.replace("demos/deploy/", "/opt/demos-deploy/")
+        if not Path(resolved_path).exists() and Path(deploy_path).exists():
+            resolved_path = deploy_path
 
         # --- Step 1: Create namespace ---
         self._create_namespace(namespace)
 
-        # --- Step 2: Grant image pull access from partner-ai-launchpad ---
+        # --- Step 2: Grant image pull access ---
         self._grant_image_pull(namespace)
 
-        # --- Step 3: Create demo secrets (with session-specific MaaS key) ---
-        session_maas_key = plan.required_resources.get("maas_api_key", "")
+        # --- Step 3: Create secrets ---
+        session_maas_key = res.get("maas_api_key", "")
         self._create_demo_secrets(namespace, session_maas_key)
 
-        # --- Step 4: Apply demo manifests ---
-        self._apply_kustomize(overlay_path, namespace)
+        # --- Step 4: Deploy based on method ---
+        if deploy_method == "helm":
+            self._deploy_helm(resolved_path, namespace, res.get("catalog_item_id", "quickstart"))
+        elif deploy_method == "kustomize":
+            self._deploy_kustomize(resolved_path, namespace)
+        else:
+            self._apply_kustomize(str(DEMO_DEPLOY_ROOT), namespace)
 
         # --- Step 5: Brief wait for resources to be created (not full readiness) ---
         import time
@@ -232,6 +226,35 @@ class OpenShiftProvisioningAdapter:
                 raise ValueError(
                     f"Failed to create namespace '{namespace}': {exc.status} {exc.reason}"
                 ) from exc
+
+    def _deploy_helm(self, chart_path: str, namespace: str, release_name: str) -> None:
+        helm = shutil.which("helm")
+        if helm is None:
+            raise ValueError("'helm' not found on PATH")
+
+        dep_result = subprocess.run(
+            [helm, "dependency", "build", chart_path],
+            capture_output=True, text=True, timeout=120,
+        )
+
+        result = subprocess.run(
+            [helm, "install", release_name, chart_path, "-n", namespace, "--timeout", "120s"],
+            capture_output=True, text=True, timeout=180,
+        )
+        if result.returncode != 0:
+            raise ValueError(f"Helm install failed for '{release_name}' in '{namespace}':\n{result.stderr[:300]}")
+
+    def _deploy_kustomize(self, kustomize_path: str, namespace: str) -> None:
+        kubectl = shutil.which("kubectl") or shutil.which("oc")
+        if kubectl is None:
+            raise ValueError("Neither 'kubectl' nor 'oc' found on PATH")
+
+        result = subprocess.run(
+            [kubectl, "apply", "-k", kustomize_path, "-n", namespace],
+            capture_output=True, text=True, timeout=120,
+        )
+        if result.returncode != 0:
+            raise ValueError(f"Kustomize apply failed in '{namespace}':\n{result.stderr[:300]}")
 
     def _apply_kustomize(self, overlay_path: str, namespace: str) -> None:
         kubectl = shutil.which("kubectl") or shutil.which("oc")

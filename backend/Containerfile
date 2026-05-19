@@ -9,13 +9,23 @@ WORKDIR /opt/app-root/src
 USER 0
 RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz \
     | tar xz -C /usr/local/bin oc kubectl \
-    && chmod +x /usr/local/bin/oc /usr/local/bin/kubectl
+    && chmod +x /usr/local/bin/oc /usr/local/bin/kubectl \
+    && curl -sL https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz \
+    | tar xz -C /usr/local/bin --strip-components=1 linux-amd64/helm \
+    && chmod +x /usr/local/bin/helm
 
 RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy asyncpg psycopg2-binary kubernetes
 
 COPY backend/app/ ./app/
 COPY deploy/ /opt/deploy/
 COPY demos/deploy/ /opt/demos-deploy/
+COPY demos/quickstarts/ /opt/quickstarts/
+
+# Pre-build Helm chart dependencies at image build time
+RUN helm repo add ai-quickstart https://rh-ai-quickstart.github.io/ai-architecture-charts 2>/dev/null || true \
+    && helm repo update 2>/dev/null || true \
+    && cd /opt/quickstarts/rag/deploy/helm/rag && helm dependency build . 2>&1 || true \
+    && cd /opt/quickstarts/llm-cpu-serving/helm && helm dependency build . 2>&1 || true
 
 USER 1001
 

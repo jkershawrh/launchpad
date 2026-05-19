@@ -318,7 +318,7 @@ SEED_CATALOG: List[Dict] = [
             "official_quickstart": True,
             "quickstart_source": "rh-ai-quickstart/RAG",
             "deploy_method": "helm",
-            "deploy_path": "demos/quickstarts/rag/deploy/helm",
+            "deploy_path": "demos/quickstarts/rag/deploy/helm/rag",
             "image": "quay.io/rh-ai-quickstart/llamastack-dist-ui:0.2.44",
             "maas_compatible": True,
         },
