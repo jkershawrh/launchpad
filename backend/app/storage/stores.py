@@ -164,6 +164,14 @@ class PostgresRequestStore:
                 return LabRequest.model_validate(row[0])
         return None
 
+    def list_all(self) -> List[LabRequest]:
+        engine = get_engine()
+        if not engine:
+            return []
+        with engine.connect() as conn:
+            rows = conn.execute(select(lab_requests_table.c.data)).fetchall()
+            return [LabRequest.model_validate(r[0]) for r in rows]
+
 
 class PostgresPlanStore:
     def save(self, plan: ProvisioningPlan) -> None:

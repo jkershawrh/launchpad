@@ -53,6 +53,17 @@ class ProvisioningService:
         self._requests: dict[str, LabRequest] = {}
         self._sessions: dict[str, LabSession] = {}
         self._plans: dict[str, ProvisioningPlan] = {}
+        self._load_from_db()
+
+    def _load_from_db(self) -> None:
+        if not self.db:
+            return
+        if hasattr(self.db, 'sessions'):
+            for session in self.db.sessions.list_all():
+                self._sessions[session.session_id] = session
+        if hasattr(self.db, 'requests'):
+            for request in self.db.requests.list_all():
+                self._requests[request.request_id] = request
 
     def _save_request(self, request: LabRequest) -> None:
         self._requests[request.request_id] = request

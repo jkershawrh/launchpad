@@ -6,7 +6,12 @@ LABEL name="partner-ai-launchpad-backend" \
 
 WORKDIR /opt/app-root/src
 
-RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy asyncpg psycopg2-binary
+USER 0
+RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz \
+    | tar xz -C /usr/local/bin oc kubectl \
+    && chmod +x /usr/local/bin/oc /usr/local/bin/kubectl
+
+RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy asyncpg psycopg2-binary kubernetes
 
 COPY . .
 

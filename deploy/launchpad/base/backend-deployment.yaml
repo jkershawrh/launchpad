@@ -18,6 +18,7 @@ spec:
         app.kubernetes.io/part-of: partner-ai-launchpad
         app.kubernetes.io/component: api
     spec:
+      serviceAccountName: launchpad-backend
       containers:
         - name: backend
           image: backend:latest
