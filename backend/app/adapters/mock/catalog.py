@@ -54,7 +54,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health", "smoke-query"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
-        "metadata": {"demo_source": "gateway"},
+        "metadata": {"demo_pages": "overdrive,try-it,architecture", "demo_source": "gateway"},
     },
     {
         "catalog_item_id": "enterprise-rag",
@@ -71,7 +71,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health", "rag-smoke-test"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
-        "metadata": {"demo_source": "pocs/enterprise-rag"},
+        "metadata": {"demo_pages": "try-it", "demo_source": "pocs/enterprise-rag"},
     },
     {
         "catalog_item_id": "aiops-copilot",
@@ -88,7 +88,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health", "aiops-smoke-test"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
-        "metadata": {"demo_source": "pocs/aiops-copilot"},
+        "metadata": {"demo_pages": "operations", "demo_source": "pocs/aiops-copilot"},
     },
     {
         "catalog_item_id": "governed-agent",
@@ -105,7 +105,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health", "agent-smoke-test"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default"],
-        "metadata": {"demo_source": "pocs/governed-agent"},
+        "metadata": {"demo_pages": "governance", "demo_source": "pocs/governed-agent"},
     },
     {
         "catalog_item_id": "agent-swarm",
@@ -122,7 +122,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default"],
-        "metadata": {"demo_source": "overdrive/swarm"},
+        "metadata": {"demo_pages": "swarm", "demo_source": "overdrive/swarm"},
     },
     {
         "catalog_item_id": "research-agent",
@@ -139,7 +139,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default"],
-        "metadata": {"demo_source": "overdrive/research_agent"},
+        "metadata": {"demo_pages": "agent", "demo_source": "overdrive/research_agent"},
     },
     {
         "catalog_item_id": "recovery-demo",
@@ -156,7 +156,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
-        "metadata": {"demo_source": "overdrive/recovery"},
+        "metadata": {"demo_pages": "recovery", "demo_source": "overdrive/recovery"},
     },
     {
         "catalog_item_id": "workload-generator",
@@ -173,7 +173,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default"],
-        "metadata": {"demo_source": "overdrive/batch_runner"},
+        "metadata": {"demo_pages": "workload", "demo_source": "overdrive/batch_runner"},
     },
     {
         "catalog_item_id": "training-demo",
@@ -190,7 +190,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default"],
-        "metadata": {"demo_source": "overdrive/training_backend"},
+        "metadata": {"demo_pages": "training", "demo_source": "overdrive/training_backend"},
     },
     {
         "catalog_item_id": "replay-comparison",
@@ -207,7 +207,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
-        "metadata": {"demo_source": "overdrive/replay"},
+        "metadata": {"demo_pages": "replay", "demo_source": "overdrive/replay"},
     },
     {
         "catalog_item_id": "full-platform-sandbox",
@@ -225,7 +225,7 @@ SEED_CATALOG: List[Dict] = [
         "validation_refs": ["gateway-health", "full-platform-check"],
         "handoff_template": "demo-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
-        "metadata": {"demo_source": "all"},
+        "metadata": {"demo_pages": "all", "demo_source": "all"},
     },
     {
         "catalog_item_id": "sandbox-minimal",

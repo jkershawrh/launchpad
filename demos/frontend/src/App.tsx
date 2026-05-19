@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppLayout from './components/AppLayout';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -22,6 +22,7 @@ import TenantAdmin from './pages/TenantAdmin';
 import CapacityDashboard from './pages/CapacityDashboard';
 import PublishingHouse from './pages/PublishingHouse';
 import { TenantProvider } from './context/TenantContext';
+import { LaunchpadConfigProvider, useConfig, isPageEnabled } from './context/LaunchpadConfig';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,37 +30,49 @@ const queryClient = new QueryClient({
   },
 });
 
+function AppRoutes() {
+  const config = useConfig();
+  const enabled = (page: string) => isPageEnabled(config, page);
+
+  return (
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<Overview />} />
+        {enabled('architecture') && <Route path="/architecture" element={<Architecture />} />}
+        {enabled('try-it') && <Route path="/try-it" element={<TryIt />} />}
+        {enabled('operations') && <Route path="/operations" element={<Operations />} />}
+        {enabled('governance') && <Route path="/governance" element={<GovernanceAudit />} />}
+        {enabled('overdrive') && <Route path="/overdrive" element={<Overdrive />} />}
+        {enabled('tokenizer') && <Route path="/tokenizer" element={<Tokenizer />} />}
+        {enabled('workload') && <Route path="/workload" element={<WorkloadDemo />} />}
+        {enabled('agent') && <Route path="/agent" element={<ResearchAgent />} />}
+        {enabled('training') && <Route path="/training" element={<TrainingDemo />} />}
+        {enabled('optimization') && <Route path="/optimization" element={<OptimizationDemo />} />}
+        {enabled('swarm') && <Route path="/swarm" element={<SwarmDemo />} />}
+        {enabled('replay') && <Route path="/replay" element={<ReplayDemo />} />}
+        {enabled('recovery') && <Route path="/recovery" element={<RecoveryDemo />} />}
+        {enabled('cockpit') && <Route path="/cockpit" element={<CockpitDashboard />} />}
+        {enabled('capacity') && <Route path="/capacity" element={<CapacityDashboard />} />}
+        {enabled('gallery') && <Route path="/gallery" element={<PublishingHouse />} />}
+        {enabled('admin') && <Route path="/admin/tenants" element={<TenantAdmin />} />}
+        {enabled('docs') && <Route path="/docs" element={<Docs />} />}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
     <TenantProvider>
+    <LaunchpadConfigProvider>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route index element={<Overview />} />
-            <Route path="/architecture" element={<Architecture />} />
-            <Route path="/try-it" element={<TryIt />} />
-            <Route path="/operations" element={<Operations />} />
-            <Route path="/governance" element={<GovernanceAudit />} />
-            <Route path="/overdrive" element={<Overdrive />} />
-            <Route path="/tokenizer" element={<Tokenizer />} />
-            <Route path="/workload" element={<WorkloadDemo />} />
-            <Route path="/agent" element={<ResearchAgent />} />
-            <Route path="/training" element={<TrainingDemo />} />
-            <Route path="/optimization" element={<OptimizationDemo />} />
-            <Route path="/swarm" element={<SwarmDemo />} />
-            <Route path="/replay" element={<ReplayDemo />} />
-            <Route path="/recovery" element={<RecoveryDemo />} />
-            <Route path="/cockpit" element={<CockpitDashboard />} />
-            <Route path="/capacity" element={<CapacityDashboard />} />
-            <Route path="/gallery" element={<PublishingHouse />} />
-            <Route path="/admin/tenants" element={<TenantAdmin />} />
-            <Route path="/docs" element={<Docs />} />
-          </Route>
-        </Routes>
+        <AppRoutes />
       </BrowserRouter>
     </QueryClientProvider>
+    </LaunchpadConfigProvider>
     </TenantProvider>
     </ErrorBoundary>
   );

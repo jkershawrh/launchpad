@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useConfig, isPageEnabled } from '../context/LaunchpadConfig';
 import {
   Brand,
   Masthead,
@@ -75,10 +76,22 @@ export default function AppLayout() {
   const { data: health } = useHealth();
   const { tenant, isAdmin } = useTenant();
 
-  const visibleSections = navSections.filter(s => {
-    if (s.title === 'Admin' && !isAdmin) return false;
-    return true;
-  });
+  const config = useConfig();
+  const pageEnabled = (path: string) => {
+    const page = path === '/' ? 'overview' : path.replace('/', '').replace('/tenants', '');
+    return isPageEnabled(config, page);
+  };
+
+  const visibleSections = navSections
+    .filter(s => {
+      if (s.title === 'Admin' && !isAdmin) return false;
+      return true;
+    })
+    .map(s => ({
+      ...s,
+      items: s.items.filter(item => pageEnabled(item.path)),
+    }))
+    .filter(s => s.items.length > 0);
 
   const masthead = (
     <Masthead>
