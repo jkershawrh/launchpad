@@ -375,6 +375,21 @@ class ProvisioningService:
         self.pool.release(session.request_id)
         if self.cleanup and session.resources.get("compose_file"):
             self.cleanup.cleanup(session.resources["compose_file"])
+
+        if self.cleanup and session.namespace:
+            self.cleanup.cleanup(session.namespace)
+
+        if self.cleanup and session.resources.get("gateway_namespace"):
+            gw_ns = session.resources["gateway_namespace"]
+            active_demos_for_gw = sum(
+                1 for s in self._sessions.values()
+                if s.session_id != session_id
+                and s.status.value in ("ready", "active", "validating", "provisioning")
+                and s.resources.get("gateway_namespace") == gw_ns
+            )
+            if active_demos_for_gw == 0:
+                self.cleanup.cleanup(gw_ns)
+
         session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed")
         self._save_session(session)
         return session

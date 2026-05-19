@@ -79,73 +79,163 @@ class OpenShiftProvisioningAdapter:
                 "deploy_path": deploy_path,
                 "overlay_path": str(self._overlay_path),
                 "catalog_item_id": catalog_item.catalog_item_id,
+                "demo_pages": meta.get("demo_pages", "all"),
             },
         )
 
     def provision(self, plan: ProvisioningPlan) -> ProvisionResult:
-        namespace = plan.target_namespace
-        if not namespace:
-            namespace = f"launchpad-demo-{uuid.uuid4().hex[:8]}"
-
         res = plan.required_resources
         deploy_method = res.get("deploy_method", "kustomize-dir")
         deploy_path = res.get("deploy_path", str(self._overlay_path))
-
-        # Resolve deploy path for container context
-        resolved_path = deploy_path
-        if "demos/quickstarts/" in deploy_path:
-            resolved_path = deploy_path.replace("demos/quickstarts/", "/opt/quickstarts/")
-        elif "demos/deploy/" in deploy_path:
-            resolved_path = deploy_path.replace("demos/deploy/", "/opt/demos-deploy/")
-        if not Path(resolved_path).exists() and Path(deploy_path).exists():
-            resolved_path = deploy_path
-
-        # --- Step 1: Create namespace ---
-        self._create_namespace(namespace)
-
-        # --- Step 2: Grant image pull access ---
-        self._grant_image_pull(namespace)
-
-        # --- Step 3: Create secrets ---
+        demo_pages = res.get("demo_pages", "all")
+        catalog_item_id = res.get("catalog_item_id", "demo")
         session_maas_key = res.get("maas_api_key", "")
-        self._create_demo_secrets(namespace, session_maas_key)
 
-        # --- Step 4: Deploy based on method ---
-        if deploy_method == "helm":
-            self._deploy_helm(resolved_path, namespace, res.get("catalog_item_id", "quickstart"))
-        elif deploy_method == "kustomize":
-            self._deploy_kustomize(resolved_path, namespace)
-        else:
-            self._apply_kustomize(str(DEMO_DEPLOY_ROOT), namespace)
+        # Extract tenant from namespace name
+        namespace = plan.target_namespace or f"launchpad-demo-{uuid.uuid4().hex[:8]}"
+        # Parse tenant: launchpad-{tenant}-{hash}
+        parts = namespace.split("-")
+        tenant_id = "-".join(parts[1:-1]) if len(parts) > 2 else "default"
+        gw_namespace = f"launchpad-gw-{tenant_id}"
+        demo_namespace = f"launchpad-demo-{tenant_id}-{catalog_item_id}-{uuid.uuid4().hex[:6]}"
 
-        # --- Step 5: Brief wait for resources to be created (not full readiness) ---
-        import time
+        # --- Step 1: Ensure tenant gateway exists ---
+        gw_existed = self._namespace_exists(gw_namespace)
+        if not gw_existed:
+            self._create_namespace(gw_namespace)
+            self._grant_image_pull(gw_namespace)
+            self._create_demo_secrets(gw_namespace, session_maas_key)
+            self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
+            time.sleep(5)
+
+        # --- Step 2: Create demo namespace ---
+        self._create_namespace(demo_namespace)
+        self._grant_image_pull(demo_namespace)
+
+        # --- Step 3: Deploy filtered frontend in demo namespace ---
+        gateway_url = f"http://gateway.{gw_namespace}.svc.cluster.local:8080"
+        self._deploy_demo_frontend(demo_namespace, demo_pages, gateway_url, catalog_item_id)
+
         time.sleep(5)
 
-        # --- Step 6: Retrieve routes ---
-        routes = self._get_routes(namespace)
+        # --- Step 4: Retrieve routes from demo namespace ---
+        routes = self._get_routes(demo_namespace)
 
         route_names = list(routes.keys())
-        lab_url = routes.get(route_names[0], f"https://{namespace}.apps.cluster.local") if route_names else f"https://{namespace}.apps.cluster.local"
-        api_url = lab_url
+        lab_url = routes.get(route_names[0], f"https://{demo_namespace}.apps.cluster.local") if route_names else f"https://{demo_namespace}.apps.cluster.local"
 
-        self._active_namespaces[namespace] = overlay_path
+        self._active_namespaces[demo_namespace] = gw_namespace
 
         return ProvisionResult(
-            namespace=namespace,
+            namespace=demo_namespace,
             lab_url=lab_url,
-            dashboard_url=api_url,
+            dashboard_url=f"https://{gw_namespace}.apps.cluster.local",
             resources={
-                "namespace": namespace,
-                "overlay_path": overlay_path,
+                "namespace": demo_namespace,
+                "gateway_namespace": gw_namespace,
+                "demo_pages": demo_pages,
+                "catalog_item_id": catalog_item_id,
                 "routes": routes,
-                "services": ["postgres", "backend", "partner-portal", "admin"],
+                "gateway_url": gateway_url,
             },
         )
 
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _namespace_exists(self, namespace: str) -> bool:
+        try:
+            self._core_v1.read_namespace(namespace)
+            return True
+        except ApiException:
+            return False
+
+    def _deploy_demo_frontend(self, namespace: str, pages: str, gateway_url: str, demo_name: str) -> None:
+        config_data = {
+            "config.json": f'{{"pages": "{pages}", "gateway_url": "{gateway_url}", "demo_name": "{demo_name}"}}'
+        }
+        try:
+            self._core_v1.create_namespaced_config_map(namespace, client.V1ConfigMap(
+                metadata=client.V1ObjectMeta(name="demo-config"),
+                data=config_data,
+            ))
+        except ApiException as e:
+            if e.status != 409:
+                pass
+
+        FRONTEND_IMAGE = "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-frontend:latest"
+
+        container = client.V1Container(
+            name="frontend",
+            image=FRONTEND_IMAGE,
+            ports=[client.V1ContainerPort(container_port=8080)],
+            env=[
+                client.V1EnvVar(name="GATEWAY_URL", value=gateway_url),
+            ],
+            volume_mounts=[
+                client.V1VolumeMount(name="config", mount_path="/opt/app-root/src/config.json", sub_path="config.json"),
+            ],
+            resources=client.V1ResourceRequirements(
+                requests={"cpu": "100m", "memory": "128Mi"},
+                limits={"cpu": "500m", "memory": "256Mi"},
+            ),
+        )
+
+        deployment = client.V1Deployment(
+            metadata=client.V1ObjectMeta(name="demo-frontend", labels={"app": "demo-frontend"}),
+            spec=client.V1DeploymentSpec(
+                replicas=1,
+                selector=client.V1LabelSelector(match_labels={"app": "demo-frontend"}),
+                template=client.V1PodTemplateSpec(
+                    metadata=client.V1ObjectMeta(labels={"app": "demo-frontend"}),
+                    spec=client.V1PodSpec(
+                        containers=[container],
+                        volumes=[
+                            client.V1Volume(name="config", config_map=client.V1ConfigMapVolumeSource(name="demo-config")),
+                        ],
+                    ),
+                ),
+            ),
+        )
+
+        try:
+            self._apps_v1.create_namespaced_deployment(namespace, deployment)
+        except ApiException as e:
+            if e.status != 409:
+                pass
+
+        try:
+            self._core_v1.create_namespaced_service(namespace, client.V1Service(
+                metadata=client.V1ObjectMeta(name="demo-frontend"),
+                spec=client.V1ServiceSpec(
+                    selector={"app": "demo-frontend"},
+                    ports=[client.V1ServicePort(name="http", port=8080, target_port=8080)],
+                ),
+            ))
+        except ApiException as e:
+            if e.status != 409:
+                pass
+
+        route_body = {
+            "apiVersion": "route.openshift.io/v1",
+            "kind": "Route",
+            "metadata": {"name": f"demo-{demo_name[:20]}", "namespace": namespace},
+            "spec": {
+                "to": {"kind": "Service", "name": "demo-frontend"},
+                "port": {"targetPort": "http"},
+                "tls": {"termination": "edge", "insecureEdgeTerminationPolicy": "Redirect"},
+            },
+        }
+        try:
+            result = self._custom_objects.create_namespaced_custom_object(
+                "route.openshift.io", "v1", namespace, "routes", route_body
+            )
+            host = result.get("spec", {}).get("host", "")
+            if not host:
+                host = f"demo-{demo_name[:20]}-{namespace}.apps.cluster.local"
+        except ApiException:
+            pass
 
     def _grant_image_pull(self, namespace: str) -> None:
         body = client.V1RoleBinding(
