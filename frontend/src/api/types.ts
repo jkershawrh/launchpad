@@ -21,6 +21,7 @@ export interface CatalogItem {
   default_hardware_profile?: string;
   default_quota_profile?: string;
   default_ttl?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface LabRequest {
