@@ -300,8 +300,8 @@ SEED_CATALOG: List[Dict] = [
     },
     {
         "catalog_item_id": "qs-rag-chatbot",
-        "display_name": "Enterprise RAG Chatbot",
-        "description": "Retrieval-augmented generation chatbot with document upload, vector search (PGVector), and Llama Stack. Supports Intel Gaudi HPU and Xeon CPU.",
+        "display_name": "Enterprise RAG Chatbot — Official AI Quickstart",
+        "description": "Official Red Hat Summit AI Quickstart. Retrieval-augmented generation chatbot with document upload, vector search (PGVector), and Llama Stack. Supports Intel Gaudi HPU and Xeon CPU.",
         "category": CatalogCategory.QUICK_START,
         "version": "0.2.44",
         "status": CatalogStatus.ACTIVE,
@@ -315,6 +315,7 @@ SEED_CATALOG: List[Dict] = [
         "handoff_template": "quickstart-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
         "metadata": {
+            "official_quickstart": True,
             "quickstart_source": "rh-ai-quickstart/RAG",
             "deploy_method": "helm",
             "deploy_path": "demos/quickstarts/rag/deploy/helm",
@@ -324,8 +325,8 @@ SEED_CATALOG: List[Dict] = [
     },
     {
         "catalog_item_id": "qs-llm-cpu-serving",
-        "display_name": "LLM CPU Serving (Intel Xeon)",
-        "description": "HR assistant chatbot running TinyLlama on CPU-only via vLLM. No GPU needed — optimized for Intel Xeon with AVX-512. Minimal resource footprint.",
+        "display_name": "LLM CPU Serving (Intel Xeon) — Official AI Quickstart",
+        "description": "Official Red Hat Summit AI Quickstart. HR assistant chatbot running TinyLlama on CPU-only via vLLM. No GPU needed — optimized for Intel Xeon with AVX-512. Minimal resource footprint.",
         "category": CatalogCategory.QUICK_START,
         "version": "1.0.0",
         "status": CatalogStatus.ACTIVE,
@@ -338,6 +339,7 @@ SEED_CATALOG: List[Dict] = [
         "handoff_template": "quickstart-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
         "metadata": {
+            "official_quickstart": True,
             "quickstart_source": "rh-ai-quickstart/llm-cpu-serving",
             "deploy_method": "helm",
             "deploy_path": "demos/quickstarts/llm-cpu-serving/helm",
@@ -347,8 +349,8 @@ SEED_CATALOG: List[Dict] = [
     },
     {
         "catalog_item_id": "qs-vllm-tool-calling",
-        "display_name": "vLLM Tool Calling (Granite 3.2)",
-        "description": "Deploy Granite 3.2 8B with function/tool calling enabled via KServe. Essential for building AI agents. Supports Intel Xeon CPU, Gaudi HPU, and GPU.",
+        "display_name": "vLLM Tool Calling (Granite 3.2) — Official AI Quickstart",
+        "description": "Official Red Hat Summit AI Quickstart. Deploy Granite 3.2 8B with function/tool calling enabled via KServe. Essential for building AI agents. Supports Intel Xeon CPU, Gaudi HPU, and GPU.",
         "category": CatalogCategory.QUICK_START,
         "version": "1.0.0",
         "status": CatalogStatus.ACTIVE,
@@ -362,6 +364,7 @@ SEED_CATALOG: List[Dict] = [
         "handoff_template": "quickstart-handoff",
         "supported_branding": ["redhat-intel-default", "intel-internal"],
         "metadata": {
+            "official_quickstart": True,
             "quickstart_source": "rh-ai-quickstart/vllm-tool-calling",
             "deploy_method": "kustomize",
             "deploy_path": "demos/quickstarts/vllm-tool-calling/vllm-tool-calling/granite3.2-8b/cpu",
