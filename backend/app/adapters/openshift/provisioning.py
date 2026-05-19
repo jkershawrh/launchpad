@@ -123,8 +123,9 @@ class OpenShiftProvisioningAdapter:
         # --- Step 4: Apply demo manifests ---
         self._apply_kustomize(overlay_path, namespace)
 
-        # --- Step 5: Wait for deployments to become available ---
-        self._wait_for_deployments(namespace, WAIT_TIMEOUT)
+        # --- Step 5: Brief wait for resources to be created (not full readiness) ---
+        import time
+        time.sleep(5)
 
         # --- Step 6: Retrieve routes ---
         routes = self._get_routes(namespace)
@@ -195,6 +196,21 @@ class OpenShiftProvisioningAdapter:
         )
         try:
             self._core_v1.create_namespaced_secret(namespace, secret)
+        except ApiException as exc:
+            if exc.status != 409:
+                pass
+
+        pg_secret = client.V1Secret(
+            metadata=client.V1ObjectMeta(name="postgres-credentials"),
+            string_data={
+                "POSTGRES_DB": "inference_platform",
+                "POSTGRES_USER": "gateway",
+                "POSTGRES_PASSWORD": f"lab-{namespace[:16]}",
+                "DATABASE_URL": f"postgresql://gateway:lab-{namespace[:16]}@postgres:5432/inference_platform",
+            },
+        )
+        try:
+            self._core_v1.create_namespaced_secret(namespace, pg_secret)
         except ApiException as exc:
             if exc.status != 409:
                 pass

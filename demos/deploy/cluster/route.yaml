@@ -2,15 +2,14 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: intel-rh-demo
-  namespace: intel-rh-demo
   annotations:
     haproxy.router.openshift.io/timeout: 600s
 spec:
   to:
     kind: Service
-    name: frontend
+    name: gateway
   port:
-    targetPort: proxy
+    targetPort: 8080
   tls:
-    termination: reencrypt
+    termination: edge
     insecureEdgeTerminationPolicy: Redirect
