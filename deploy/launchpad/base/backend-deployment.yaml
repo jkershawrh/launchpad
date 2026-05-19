@@ -28,6 +28,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: launchpad-config
+            - secretRef:
+                name: launchpad-litellm
+                optional: true
           env:
             - name: DATABASE_URL
               valueFrom:

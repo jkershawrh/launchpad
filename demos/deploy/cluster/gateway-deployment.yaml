@@ -15,6 +15,10 @@ spec:
       labels:
         app: inference-gateway
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:15-alpine
+          command: ['sh', '-c', 'until pg_isready -h postgres -p 5432; do echo "Waiting for postgres..."; sleep 2; done']
       containers:
         - name: gateway
           image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-gateway:latest
@@ -27,7 +31,7 @@ spec:
             - name: CONFIG_PATH
               value: /config/config.local.yaml
             - name: LOCAL_FALLBACK_ENABLED
-              value: "false"
+              value: "true"
           envFrom:
             - secretRef:
                 name: gateway-config

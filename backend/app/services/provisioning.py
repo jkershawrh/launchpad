@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import uuid as _uuid
 from datetime import datetime, timedelta
 from typing import Optional
@@ -64,6 +65,38 @@ class ProvisioningService:
         if hasattr(self.db, 'requests'):
             for request in self.db.requests.list_all():
                 self._requests[request.request_id] = request
+        self._cleanup_orphaned_sessions()
+
+    def _cleanup_orphaned_sessions(self) -> None:
+        active_statuses = {"ready", "active", "validating", "provisioning", "resetting"}
+        for session in list(self._sessions.values()):
+            if session.status.value in active_statuses and session.namespace:
+                try:
+                    if os.environ.get("LAUNCHPAD_MODE") == "openshift":
+                        from kubernetes import client, config
+                        try:
+                            config.load_incluster_config()
+                        except Exception:
+                            config.load_kube_config()
+                        core = client.CoreV1Api()
+                        try:
+                            core.read_namespace(session.namespace)
+                        except Exception:
+                            event = LifecycleEvent(
+                                from_status=session.status,
+                                to_status=SessionStatus.RECLAIMED,
+                                reason="orphaned — namespace no longer exists",
+                            )
+                            session = session.model_copy(
+                                update={
+                                    "status": SessionStatus.RECLAIMED,
+                                    "completed_at": datetime.utcnow(),
+                                    "lifecycle_events": session.lifecycle_events + [event],
+                                }
+                            )
+                            self._save_session(session)
+                except Exception:
+                    pass
 
     def _save_request(self, request: LabRequest) -> None:
         self._requests[request.request_id] = request

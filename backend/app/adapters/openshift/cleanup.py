@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from typing import Optional
 
 try:
@@ -40,13 +41,27 @@ class OpenShiftCleanupAdapter:
 
         try:
             self._core_v1.delete_namespace(name=namespace)
-            self._active_namespaces.pop(namespace, None)
-            return True
         except ApiException as exc:
             if exc.status == 404:
-                # Namespace already deleted – treat as success
                 self._active_namespaces.pop(namespace, None)
                 return True
             raise ValueError(
                 f"Failed to delete namespace '{namespace}': {exc.status} {exc.reason}"
             ) from exc
+
+        self._wait_for_deletion(namespace, timeout=60)
+        self._active_namespaces.pop(namespace, None)
+        return True
+
+    def _wait_for_deletion(self, namespace: str, timeout: int = 60) -> None:
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            try:
+                ns = self._core_v1.read_namespace(namespace)
+                if ns.status and ns.status.phase == "Terminating":
+                    time.sleep(3)
+                    continue
+            except ApiException as exc:
+                if exc.status == 404:
+                    return
+            time.sleep(3)

@@ -239,7 +239,7 @@ class OpenShiftProvisioningAdapter:
             )
 
         deploy_dir = Path(overlay_path)
-        skip_files = {"namespace.yaml", "kustomization.yaml", "secrets-template.yaml", "keycloak-realm.yaml", "oauth-proxy.yaml", "postgres-backup.yaml"}
+        skip_files = {"namespace.yaml", "kustomization.yaml", "secrets-template.yaml", "keycloak-realm.yaml", "oauth-proxy.yaml", "postgres-backup.yaml", "frontend-deployment.yaml"}
         yamls = sorted([
             f for f in deploy_dir.glob("*.yaml")
             if f.name not in skip_files
