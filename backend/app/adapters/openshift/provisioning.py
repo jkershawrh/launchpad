@@ -18,8 +18,9 @@ except ImportError:  # pragma: no cover
 from app.adapters.interfaces import ProvisionResult
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
 
-DEPLOY_ROOT = Path(__file__).resolve().parents[5] / "deploy" / "launchpad"
-KUSTOMIZE_OVERLAY = DEPLOY_ROOT / "overlays" / "infra01"
+_CONTAINER_DEMOS = Path("/opt/demos-deploy/cluster")
+_LOCAL_DEMOS = Path(__file__).resolve().parents[5] / "demos" / "deploy" / "cluster"
+DEMO_DEPLOY_ROOT = _CONTAINER_DEMOS if _CONTAINER_DEMOS.exists() else _LOCAL_DEMOS
 
 WAIT_TIMEOUT = 300  # seconds
 POLL_INTERVAL = 5
@@ -31,7 +32,7 @@ WATCHED_DEPLOYMENTS = ["backend", "partner-portal", "admin"]
 
 class OpenShiftProvisioningAdapter:
     def __init__(self, overlay_path: Optional[Path] = None):
-        self._overlay_path = overlay_path or KUSTOMIZE_OVERLAY
+        self._overlay_path = overlay_path or DEMO_DEPLOY_ROOT
         self._active_namespaces: dict[str, str] = {}
 
         if not HAS_KUBERNETES:
@@ -165,20 +166,37 @@ class OpenShiftProvisioningAdapter:
         if kubectl is None:
             raise ValueError(
                 "Neither 'kubectl' nor 'oc' found on PATH. "
-                "One of them is required to apply kustomize overlays."
+                "One of them is required to apply manifests."
             )
 
-        result = subprocess.run(
-            [kubectl, "apply", "-k", overlay_path, "-n", namespace],
-            capture_output=True,
-            text=True,
-            timeout=600,
-        )
-        if result.returncode != 0:
-            raise ValueError(
-                f"Failed to apply kustomize overlay '{overlay_path}' "
-                f"in namespace '{namespace}':\n{result.stderr}"
+        deploy_dir = Path(overlay_path)
+        skip_files = {"namespace.yaml", "kustomization.yaml", "secrets-template.yaml", "keycloak-realm.yaml"}
+        yamls = sorted([
+            f for f in deploy_dir.glob("*.yaml")
+            if f.name not in skip_files
+        ])
+
+        if not yamls:
+            raise ValueError(f"No YAML files found in {overlay_path}")
+
+        for yaml_file in yamls:
+            content = yaml_file.read_text()
+            cleaned = "\n".join(
+                line for line in content.splitlines()
+                if not line.strip().startswith("namespace:")
             )
+            result = subprocess.run(
+                [kubectl, "apply", "-f", "-", "-n", namespace],
+                input=cleaned,
+                capture_output=True,
+                text=True,
+                timeout=60,
+            )
+            if result.returncode != 0 and "already exists" not in result.stderr:
+                raise ValueError(
+                    f"Failed to apply '{yaml_file.name}' "
+                    f"in namespace '{namespace}':\n{result.stderr}"
+                )
 
     def _wait_for_deployments(
         self,

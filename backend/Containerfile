@@ -13,7 +13,9 @@ RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/op
 
 RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy asyncpg psycopg2-binary kubernetes
 
-COPY . .
+COPY backend/app/ ./app/
+COPY deploy/ /opt/deploy/
+COPY demos/deploy/ /opt/demos-deploy/
 
 USER 1001
 
