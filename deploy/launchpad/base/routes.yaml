@@ -7,14 +7,14 @@ metadata:
     app.kubernetes.io/part-of: partner-ai-launchpad
 spec:
   tls:
-    termination: edge
+    termination: reencrypt
     insecureEdgeTerminationPolicy: Redirect
   to:
     kind: Service
     name: partner-portal
     weight: 100
   port:
-    targetPort: 8080
+    targetPort: 8443
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -25,14 +25,14 @@ metadata:
     app.kubernetes.io/part-of: partner-ai-launchpad
 spec:
   tls:
-    termination: edge
+    termination: reencrypt
     insecureEdgeTerminationPolicy: Redirect
   to:
     kind: Service
     name: admin
     weight: 100
   port:
-    targetPort: 8080
+    targetPort: 8443
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -43,11 +43,11 @@ metadata:
     app.kubernetes.io/part-of: partner-ai-launchpad
 spec:
   tls:
-    termination: edge
+    termination: reencrypt
     insecureEdgeTerminationPolicy: Redirect
   to:
     kind: Service
     name: backend
     weight: 100
   port:
-    targetPort: 8000
+    targetPort: 8443

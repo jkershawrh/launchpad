@@ -6,11 +6,18 @@ metadata:
     app.kubernetes.io/name: backend
     app.kubernetes.io/part-of: partner-ai-launchpad
     app.kubernetes.io/component: api
+  annotations:
+    service.beta.openshift.io/serving-cert-secret-name: backend-tls
 spec:
   type: ClusterIP
   ports:
-    - port: 8000
+    - name: http
+      port: 8000
       targetPort: 8000
+      protocol: TCP
+    - name: oauth-proxy
+      port: 8443
+      targetPort: 8443
       protocol: TCP
   selector:
     app.kubernetes.io/name: backend
