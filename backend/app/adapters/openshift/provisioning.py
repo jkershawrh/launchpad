@@ -152,8 +152,45 @@ class OpenShiftProvisioningAdapter:
             return False
 
     def _deploy_demo_frontend(self, namespace: str, pages: str, gateway_url: str, demo_name: str) -> None:
+        # Parse host:port from gateway_url for nginx resolver
+        gw_host = gateway_url.replace("http://", "").split(":")[0]
+        gw_port = gateway_url.replace("http://", "").split(":")[-1] if ":" in gateway_url.replace("http://", "") else "8080"
+
+        nginx_conf = f"""worker_processes auto;
+error_log /dev/stderr;
+pid /tmp/nginx.pid;
+events {{ worker_connections 1024; }}
+http {{
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    sendfile on;
+    keepalive_timeout 65;
+    resolver dns-default.openshift-dns.svc.cluster.local valid=10s;
+    server {{
+        listen 8080;
+        root /opt/app-root/src;
+        index index.html;
+        set $gateway {gw_host};
+        location /v1/ {{
+            proxy_pass http://$gateway:{gw_port}/v1/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_read_timeout 300s;
+        }}
+        location /api/ {{
+            proxy_pass http://$gateway:{gw_port}/api/;
+            proxy_set_header Host $host;
+            proxy_read_timeout 300s;
+        }}
+        location / {{
+            try_files $uri $uri/ /index.html;
+        }}
+    }}
+}}"""
+
         config_data = {
-            "config.json": f'{{"pages": "{pages}", "gateway_url": "{gateway_url}", "demo_name": "{demo_name}"}}'
+            "config.json": f'{{"pages": "{pages}", "gateway_url": "{gateway_url}", "demo_name": "{demo_name}"}}',
+            "nginx.conf": nginx_conf,
         }
         try:
             self._core_v1.create_namespaced_config_map(namespace, client.V1ConfigMap(
@@ -170,11 +207,9 @@ class OpenShiftProvisioningAdapter:
             name="frontend",
             image=FRONTEND_IMAGE,
             ports=[client.V1ContainerPort(container_port=8080)],
-            env=[
-                client.V1EnvVar(name="GATEWAY_URL", value=gateway_url),
-            ],
             volume_mounts=[
                 client.V1VolumeMount(name="config", mount_path="/opt/app-root/src/config.json", sub_path="config.json"),
+                client.V1VolumeMount(name="config", mount_path="/etc/nginx/nginx.conf", sub_path="nginx.conf"),
             ],
             resources=client.V1ResourceRequirements(
                 requests={"cpu": "100m", "memory": "128Mi"},
@@ -217,25 +252,12 @@ class OpenShiftProvisioningAdapter:
             if e.status != 409:
                 pass
 
-        route_body = {
-            "apiVersion": "route.openshift.io/v1",
-            "kind": "Route",
-            "metadata": {"name": f"demo-{demo_name[:20]}", "namespace": namespace},
-            "spec": {
-                "to": {"kind": "Service", "name": "demo-frontend"},
-                "port": {"targetPort": "http"},
-                "tls": {"termination": "edge", "insecureEdgeTerminationPolicy": "Redirect"},
-            },
-        }
-        try:
-            result = self._custom_objects.create_namespaced_custom_object(
-                "route.openshift.io", "v1", namespace, "routes", route_body
+        oc = shutil.which("oc") or shutil.which("kubectl")
+        if oc:
+            subprocess.run(
+                [oc, "create", "route", "edge", "demo", "--service=demo-frontend", "--port=8080", "-n", namespace],
+                capture_output=True, text=True, timeout=30,
             )
-            host = result.get("spec", {}).get("host", "")
-            if not host:
-                host = f"demo-{demo_name[:20]}-{namespace}.apps.cluster.local"
-        except ApiException:
-            pass
 
     def _grant_image_pull(self, namespace: str) -> None:
         body = client.V1RoleBinding(
