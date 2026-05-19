@@ -25,6 +25,14 @@ RESOURCE_TIERS = {
 
 STORAGE_TO_TIER = {"20Gi": "light", "50Gi": "medium", "100Gi": "heavy", "200Gi": "heavy"}
 
+# Max tier allowed per quota profile
+QUOTA_MAX_TIER = {
+    "small": "light",
+    "standard": "medium",
+    "large": "heavy",
+}
+TIER_ORDER = ["light", "medium", "heavy"]
+
 
 class OpenShiftSandboxProvisioner:
     def __init__(self) -> None:
@@ -45,7 +53,16 @@ class OpenShiftSandboxProvisioner:
         stack_level = sandbox_config.get("stack_level") or meta.get("stack_level", "minimal")
         access_methods = sandbox_config.get("access_methods") or meta.get("access_methods", ["ssh"])
         storage_size = sandbox_config.get("storage_size", "20Gi")
-        compute_tier = STORAGE_TO_TIER.get(storage_size, "light")
+        requested_tier = STORAGE_TO_TIER.get(storage_size, "light")
+
+        quota_profile = request.quota_profile or catalog_item.default_quota_profile or "standard"
+        max_tier = QUOTA_MAX_TIER.get(quota_profile, "medium")
+        if TIER_ORDER.index(requested_tier) > TIER_ORDER.index(max_tier):
+            raise ValueError(
+                f"Compute tier '{requested_tier}' exceeds quota profile '{quota_profile}' "
+                f"(max allowed: '{max_tier}'). Request a smaller storage size or upgrade quota."
+            )
+        compute_tier = requested_tier
 
         namespace = f"launchpad-sandbox-{request.tenant_id}-{uuid.uuid4().hex[:8]}"
 
@@ -89,9 +106,10 @@ class OpenShiftSandboxProvisioner:
         # 2. Grant image pull
         self._grant_image_pull(namespace)
 
-        # 3. Create secrets
+        # 3. Create secrets (use session-specific MaaS key for tracking)
         ssh_password = f"lab-{uuid.uuid4().hex[:8]}"
-        self._create_secrets(namespace, ssh_password)
+        session_maas_key = res.get("maas_api_key", os.environ.get("LITELLM_API_KEY", ""))
+        self._create_secrets(namespace, ssh_password, session_maas_key)
 
         # 4. Create PVC
         self._create_pvc(namespace, storage_size)
@@ -165,13 +183,16 @@ class OpenShiftSandboxProvisioner:
         except ApiException:
             pass
 
-    def _create_secrets(self, namespace: str, ssh_password: str) -> None:
+    def _create_secrets(self, namespace: str, ssh_password: str, maas_key: str = "") -> None:
+        litellm_key = maas_key or os.environ.get("LITELLM_API_KEY", "")
         for name, data in [
             ("sandbox-credentials", {"SSH_USER": "lab-user", "SSH_PASSWORD": ssh_password}),
             ("maas-config", {
                 "MODEL_ENDPOINT": os.environ.get("LITELLM_API_BASE", "https://litellm-prod.apps.maas.redhatworkshops.io"),
-                "LITELLM_API_KEY": os.environ.get("LITELLM_API_KEY", ""),
+                "LITELLM_API_KEY": litellm_key,
                 "LITELLM_API_BASE": os.environ.get("LITELLM_API_BASE", "https://litellm-prod.apps.maas.redhatworkshops.io"),
+                "MAAS_SESSION_KEY": maas_key,
+                "MAAS_RATE_LIMIT_RPM": os.environ.get("MAAS_RATE_LIMIT_RPM", "60"),
             }),
         ]:
             try:

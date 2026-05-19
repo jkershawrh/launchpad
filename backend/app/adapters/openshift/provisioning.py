@@ -117,8 +117,9 @@ class OpenShiftProvisioningAdapter:
         # --- Step 2: Grant image pull access from partner-ai-launchpad ---
         self._grant_image_pull(namespace)
 
-        # --- Step 3: Create demo secrets ---
-        self._create_demo_secrets(namespace)
+        # --- Step 3: Create demo secrets (with session-specific MaaS key) ---
+        session_maas_key = plan.required_resources.get("maas_api_key", "")
+        self._create_demo_secrets(namespace, session_maas_key)
 
         # --- Step 4: Apply demo manifests ---
         self._apply_kustomize(overlay_path, namespace)
@@ -180,8 +181,9 @@ class OpenShiftProvisioningAdapter:
             if exc.status != 409:
                 pass
 
-    def _create_demo_secrets(self, namespace: str) -> None:
+    def _create_demo_secrets(self, namespace: str, session_maas_key: str = "") -> None:
         import os
+        litellm_key = session_maas_key or os.environ.get("LITELLM_API_KEY", "")
         secret = client.V1Secret(
             metadata=client.V1ObjectMeta(name="gateway-config"),
             string_data={
@@ -189,9 +191,10 @@ class OpenShiftProvisioningAdapter:
                     "LITELLM_API_BASE",
                     "https://litellm-prod.apps.maas.redhatworkshops.io",
                 ),
-                "LITELLM_API_KEY": os.environ.get("LITELLM_API_KEY", ""),
+                "LITELLM_API_KEY": litellm_key,
                 "API_KEY": "",
                 "LOCAL_FALLBACK_ENABLED": "true",
+                "MAAS_SESSION_KEY": session_maas_key,
             },
         )
         try:

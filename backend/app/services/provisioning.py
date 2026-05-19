@@ -191,8 +191,16 @@ class ProvisioningService:
             raise ValueError(f"No capacity available for hardware={hw} quota={qp}")
         self.pool.reserve(request.request_id, hw, qp)
 
+        maas_api_key = f"sk-launchpad-{_uuid.uuid4().hex[:24]}"
+
         provisioner = self._get_provisioner(catalog_item)
         plan = provisioner.create_plan(request, catalog_item)
+        plan = plan.model_copy(update={
+            "required_resources": {
+                **plan.required_resources,
+                "maas_api_key": maas_api_key,
+            }
+        })
         self._save_plan(plan)
 
         result = provisioner.provision(plan)
@@ -209,8 +217,6 @@ class ProvisioningService:
                 namespace=result.namespace,
             )
         )
-
-        maas_api_key = f"sk-launchpad-{_uuid.uuid4().hex[:24]}"
 
         session = LabSession(
             request_id=request.request_id,
