@@ -142,12 +142,44 @@ class ProvisioningService:
         self._save_request(request)
         return request
 
+    # Session limits per user/tenant
+    MAX_ACTIVE_PER_USER = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_USER", "2"))
+    MAX_ACTIVE_PER_TENANT = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_TENANT", "5"))
+
+    def _check_session_limits(self, request: LabRequest) -> None:
+        active_statuses = {"requested", "provisioning", "validating", "ready", "active"}
+
+        user_active = sum(
+            1 for s in self._sessions.values()
+            if s.status.value in active_statuses and s.request_id in self._requests
+            and self._requests[s.request_id].requester_id == request.requester_id
+        )
+        if user_active >= self.MAX_ACTIVE_PER_USER:
+            raise ValueError(
+                f"Session limit reached: {request.requester_id} already has "
+                f"{user_active} active session(s) (max {self.MAX_ACTIVE_PER_USER}). "
+                f"Reclaim an existing session before requesting a new one."
+            )
+
+        tenant_active = sum(
+            1 for s in self._sessions.values()
+            if s.status.value in active_statuses and s.tenant_id == request.tenant_id
+        )
+        if tenant_active >= self.MAX_ACTIVE_PER_TENANT:
+            raise ValueError(
+                f"Tenant limit reached: {request.tenant_id} has "
+                f"{tenant_active} active session(s) (max {self.MAX_ACTIVE_PER_TENANT}). "
+                f"Reclaim existing sessions before requesting new ones."
+            )
+
     def provision(self, request_id: str) -> LabSession:
         request = self._requests.get(request_id)
         if not request:
             raise ValueError(f"Request {request_id} not found")
         if request.status != LabRequestStatus.ACCEPTED:
             raise ValueError(f"Request {request_id} is not accepted (status: {request.status.value})")
+
+        self._check_session_limits(request)
 
         catalog_item = self.catalog.get_item(request.catalog_item_id)
         if not catalog_item:
