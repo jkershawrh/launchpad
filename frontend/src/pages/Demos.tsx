@@ -70,9 +70,13 @@ export default function Demos() {
 
   useEffect(() => {
     api.listCatalog().then((data) => {
-      const demoItems = data.filter((item) =>
-        DEMO_CATALOG_IDS.includes(item.catalog_item_id)
-      );
+      const demoItems = data
+        .filter((item) => DEMO_CATALOG_IDS.includes(item.catalog_item_id))
+        .sort((a, b) => {
+          const aOfficial = (a.metadata?.official_quickstart as boolean) ? 0 : 1;
+          const bOfficial = (b.metadata?.official_quickstart as boolean) ? 0 : 1;
+          return aOfficial - bOfficial;
+        });
       setItems(demoItems);
       setLoading(false);
     });
