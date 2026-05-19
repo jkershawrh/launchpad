@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/ubi9/python-311:latest
 
 LABEL name="ai-sandbox" \
       version="1.0.0" \
-      description="Partner AI Launchpad — Open Sandbox Environment"
+      description="Partner AI Launchpad — AI Sandbox (MaaS Client)"
 
 USER 0
 
@@ -25,14 +25,25 @@ RUN ssh-keygen -A \
 RUN useradd -m -s /bin/bash lab-user \
     && echo "lab-user:launchpad" | chpasswd
 
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+# Install MaaS client stack — inference is remote, keep image lean
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir \
+       httpx \
+       openai \
+       pyyaml \
+       pandas \
+       ipython
 
 COPY entrypoint.sh /opt/app-root/src/entrypoint.sh
 RUN chmod +x /opt/app-root/src/entrypoint.sh
 
 COPY playbooks/ /home/lab-user/playbooks/
-RUN chown -R lab-user:lab-user /home/lab-user/playbooks
+RUN chown -R 0:0 /home/lab-user/playbooks && chmod -R g+r /home/lab-user/playbooks
 
-EXPOSE 2222 8888 8443 6901 8080
+# Ensure SSH + home writable by OpenShift random UID
+RUN chmod -R g+w /run/sshd && chmod g+w /etc/ssh/sshd_config \
+    && chmod -R g+w /home/lab-user
+
+EXPOSE 2222 8888 8443
 
 ENTRYPOINT ["/opt/app-root/src/entrypoint.sh"]

@@ -98,6 +98,18 @@ class ProvisioningService:
                 except Exception:
                     pass
 
+    def _get_provisioner(self, catalog_item):
+        from app.domain.enums import CatalogCategory
+        if catalog_item.category == CatalogCategory.OPEN_SANDBOX:
+            mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+            if mode == "openshift":
+                from app.adapters.openshift.sandbox_provisioning import OpenShiftSandboxProvisioner
+                return OpenShiftSandboxProvisioner()
+            elif mode == "local":
+                from app.adapters.local.sandbox_provisioner import LocalSandboxProvisioner
+                return LocalSandboxProvisioner()
+        return self.provisioner
+
     def _save_request(self, request: LabRequest) -> None:
         self._requests[request.request_id] = request
         if self.db and hasattr(self.db, 'requests'):
@@ -147,10 +159,11 @@ class ProvisioningService:
             raise ValueError(f"No capacity available for hardware={hw} quota={qp}")
         self.pool.reserve(request.request_id, hw, qp)
 
-        plan = self.provisioner.create_plan(request, catalog_item)
+        provisioner = self._get_provisioner(catalog_item)
+        plan = provisioner.create_plan(request, catalog_item)
         self._save_plan(plan)
 
-        result = self.provisioner.provision(plan)
+        result = provisioner.provision(plan)
 
         ttl_str = request.ttl or catalog_item.default_ttl or "4h"
         hours = int(ttl_str.replace("h", ""))
