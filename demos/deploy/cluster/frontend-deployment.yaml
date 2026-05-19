@@ -40,7 +40,7 @@ spec:
               mountPath: /etc/proxy/secrets
               readOnly: true
         - name: frontend
-          image: image-registry.openshift-image-registry.svc:5000/intel-rh-demo/inference-frontend:latest
+          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-frontend:latest
           ports:
             - containerPort: 8080
               protocol: TCP

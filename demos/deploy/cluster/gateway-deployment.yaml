@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: image-registry.openshift-image-registry.svc:5000/intel-rh-demo/inference-gateway:latest
+          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-gateway:latest
           ports:
             - containerPort: 8080
               protocol: TCP

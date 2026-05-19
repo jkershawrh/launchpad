@@ -114,19 +114,24 @@ class OpenShiftProvisioningAdapter:
         # --- Step 1: Create namespace ---
         self._create_namespace(namespace)
 
-        # --- Step 2: Apply kustomize overlay ---
+        # --- Step 2: Grant image pull access from partner-ai-launchpad ---
+        self._grant_image_pull(namespace)
+
+        # --- Step 3: Create demo secrets ---
+        self._create_demo_secrets(namespace)
+
+        # --- Step 4: Apply demo manifests ---
         self._apply_kustomize(overlay_path, namespace)
 
-        # --- Step 3: Wait for deployments to become available ---
+        # --- Step 5: Wait for deployments to become available ---
         self._wait_for_deployments(namespace, WAIT_TIMEOUT)
 
-        # --- Step 4: Retrieve routes ---
+        # --- Step 6: Retrieve routes ---
         routes = self._get_routes(namespace)
 
-        lab_url = routes.get("launchpad", f"https://launchpad-{namespace}.apps.cluster.local")
-        api_url = routes.get(
-            "launchpad-api", f"https://launchpad-api-{namespace}.apps.cluster.local"
-        )
+        route_names = list(routes.keys())
+        lab_url = routes.get(route_names[0], f"https://{namespace}.apps.cluster.local") if route_names else f"https://{namespace}.apps.cluster.local"
+        api_url = lab_url
 
         self._active_namespaces[namespace] = overlay_path
 
@@ -145,6 +150,54 @@ class OpenShiftProvisioningAdapter:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _grant_image_pull(self, namespace: str) -> None:
+        body = client.V1RoleBinding(
+            metadata=client.V1ObjectMeta(
+                name=f"{namespace}-image-puller",
+                namespace="partner-ai-launchpad",
+            ),
+            role_ref=client.V1RoleRef(
+                api_group="rbac.authorization.k8s.io",
+                kind="ClusterRole",
+                name="system:image-puller",
+            ),
+            subjects=[
+                client.RbacV1Subject(
+                    kind="Group",
+                    name=f"system:serviceaccounts:{namespace}",
+                    api_group="rbac.authorization.k8s.io",
+                )
+            ],
+        )
+        try:
+            self._rbac_v1 = client.RbacAuthorizationV1Api()
+            self._rbac_v1.create_namespaced_role_binding(
+                namespace="partner-ai-launchpad", body=body
+            )
+        except ApiException as exc:
+            if exc.status != 409:
+                pass
+
+    def _create_demo_secrets(self, namespace: str) -> None:
+        import os
+        secret = client.V1Secret(
+            metadata=client.V1ObjectMeta(name="gateway-config"),
+            string_data={
+                "LITELLM_API_BASE": os.environ.get(
+                    "LITELLM_API_BASE",
+                    "https://litellm-prod.apps.maas.redhatworkshops.io",
+                ),
+                "LITELLM_API_KEY": os.environ.get("LITELLM_API_KEY", ""),
+                "API_KEY": "",
+                "LOCAL_FALLBACK_ENABLED": "true",
+            },
+        )
+        try:
+            self._core_v1.create_namespaced_secret(namespace, secret)
+        except ApiException as exc:
+            if exc.status != 409:
+                pass
 
     def _create_namespace(self, namespace: str) -> None:
         body = client.V1Namespace(
@@ -170,7 +223,7 @@ class OpenShiftProvisioningAdapter:
             )
 
         deploy_dir = Path(overlay_path)
-        skip_files = {"namespace.yaml", "kustomization.yaml", "secrets-template.yaml", "keycloak-realm.yaml"}
+        skip_files = {"namespace.yaml", "kustomization.yaml", "secrets-template.yaml", "keycloak-realm.yaml", "oauth-proxy.yaml", "postgres-backup.yaml"}
         yamls = sorted([
             f for f in deploy_dir.glob("*.yaml")
             if f.name not in skip_files
