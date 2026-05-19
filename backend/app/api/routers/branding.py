@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.auth.oauth import get_current_user
 
 from app.api.deps import branding_adapter
 from app.domain.models import BrandingProfile
 
-router = APIRouter(prefix="/branding-profiles", tags=["branding"])
+router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/branding-profiles", tags=["branding"])
 
 
 @router.get("", response_model=List[BrandingProfile])

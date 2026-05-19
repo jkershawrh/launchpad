@@ -1,11 +1,10 @@
 """
-Red Hat SSO / OpenShift OAuth integration.
+Authentication for Partner AI Launchpad.
 
-On OpenShift: oauth-proxy sidecar handles authentication and passes
-X-Forwarded-User and X-Forwarded-Email headers to the backend.
-
-For local dev: AUTH_ENABLED=false (default) skips auth.
-For cluster: AUTH_ENABLED=true requires valid headers from oauth-proxy.
+Three auth methods supported:
+1. OAuth proxy headers (X-Forwarded-User) — browser access via SSO
+2. API key (X-API-Key header) — programmatic/CLI access
+3. Disabled (AUTH_ENABLED=false) — local dev only
 """
 from __future__ import annotations
 
@@ -24,7 +23,8 @@ class User(BaseModel):
 
 
 AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "false").lower() == "true"
-
+API_KEYS = set(filter(None, os.environ.get("API_KEYS", "").split(",")))
+ADMIN_API_KEYS = set(filter(None, os.environ.get("ADMIN_API_KEYS", "").split(",")))
 ADMIN_GROUPS = {"launchpad-admins", "system:cluster-admins", "dedicated-admins"}
 
 
@@ -37,13 +37,21 @@ def get_current_user(request: Request) -> User:
             is_admin=True,
         )
 
+    api_key = request.headers.get("X-API-Key")
+    if api_key:
+        if api_key in ADMIN_API_KEYS:
+            return User(username="api-admin", is_admin=True)
+        if api_key in API_KEYS or api_key in ADMIN_API_KEYS:
+            return User(username="api-user", is_admin=False)
+        raise HTTPException(401, "Invalid API key")
+
     username = request.headers.get("X-Forwarded-User")
     email = request.headers.get("X-Forwarded-Email")
     groups_header = request.headers.get("X-Forwarded-Groups", "")
     groups = [g.strip() for g in groups_header.split(",") if g.strip()]
 
     if not username:
-        raise HTTPException(401, "Not authenticated — missing X-Forwarded-User header")
+        raise HTTPException(401, "Not authenticated — provide X-API-Key header or authenticate via SSO")
 
     is_admin = bool(ADMIN_GROUPS & set(groups))
 

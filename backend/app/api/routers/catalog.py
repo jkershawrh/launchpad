@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.auth.oauth import get_current_user
 
 from app.api.deps import catalog_adapter
 from app.domain.models import CatalogItem
 
-router = APIRouter(prefix="/catalog", tags=["catalog"])
+router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/catalog", tags=["catalog"])
 
 
 @router.get("", response_model=List[CatalogItem])

@@ -9,7 +9,7 @@ from app.auth.oauth import User, get_current_user
 from app.domain.enums import LabRequestStatus
 from app.domain.models import LabRequest, LabSession
 
-router = APIRouter(prefix="/lab-requests", tags=["lab-requests"])
+router = APIRouter(prefix="/lab-requests", tags=["lab-requests"], dependencies=[Depends(get_current_user)])
 
 
 @router.post("", response_model=LabRequest, status_code=201)

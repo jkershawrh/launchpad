@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.auth.oauth import get_current_user
 
 from app.api.deps import tenant_store
 from app.domain.models import Tenant
 
-router = APIRouter(prefix="/tenants", tags=["tenants"])
+router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/tenants", tags=["tenants"])
 
 
 @router.post("", response_model=Tenant, status_code=201)

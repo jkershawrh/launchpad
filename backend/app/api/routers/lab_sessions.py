@@ -2,14 +2,16 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+
+from app.auth.oauth import get_current_user
 
 from app.api.deps import provisioning_service
 from app.domain.lifecycle import InvalidTransitionError, ValidationRequiredError
 from app.domain.models import LabSession, ShowbackRecord
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
-router = APIRouter(prefix="/lab-sessions", tags=["lab-sessions"])
+router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/lab-sessions", tags=["lab-sessions"])
 
 
 @router.get("", response_model=List[LabSession])
