@@ -21,6 +21,7 @@ export interface CatalogItem {
   default_hardware_profile?: string;
   default_quota_profile?: string;
   default_ttl?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface LabRequest {
@@ -54,6 +55,7 @@ export interface LabSession {
   tenant_id: string;
   catalog_item_id: string;
   namespace?: string;
+  cluster_ref?: string;
   status: string;
   lab_url?: string;
   dashboard_url?: string;

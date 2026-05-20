@@ -56,6 +56,7 @@ export interface LabSession {
   tenant_id: string;
   catalog_item_id: string;
   namespace?: string;
+  cluster_ref?: string;
   status: string;
   lab_url?: string;
   dashboard_url?: string;

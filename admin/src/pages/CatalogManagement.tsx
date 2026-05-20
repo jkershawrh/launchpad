@@ -4,9 +4,9 @@ import type { CatalogItem } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
 
 const CATEGORIES = ['quick_start', 'guided_build', 'open_sandbox'] as const;
-const HARDWARE_PROFILES = ['small', 'medium', 'large', 'gpu-enabled'] as const;
-const QUOTA_PROFILES = ['default', 'extended', 'unlimited'] as const;
-const TTL_OPTIONS = ['PT1H', 'PT2H', 'PT4H', 'PT8H', 'PT24H'] as const;
+const HARDWARE_PROFILES = ['xeon-basic', 'gaudi-endpoint', 'gaudi-direct', 'mixed-overdrive'] as const;
+const QUOTA_PROFILES = ['small', 'standard', 'large'] as const;
+const TTL_OPTIONS = ['4h', '8h', '12h', '24h'] as const;
 
 const STATUS_CYCLE: Record<string, string> = {
   draft: 'active',
@@ -248,6 +248,7 @@ export default function CatalogManagement() {
                 <th className="py-3 px-4">Status</th>
                 <th className="py-3 px-4">Hardware</th>
                 <th className="py-3 px-4">TTL</th>
+                <th className="py-3 px-4">Provisioner</th>
                 <th className="py-3 px-4">Actions</th>
               </tr>
             </thead>
@@ -255,11 +256,23 @@ export default function CatalogManagement() {
               {items.map((item) => (
                 <tr key={item.catalog_item_id} className="border-b border-[#F0F0F0] last:border-0 hover:bg-[#F0F0F0]/50">
                   <td className="py-3 px-4 font-mono text-xs text-[#151515]">{item.catalog_item_id}</td>
-                  <td className="py-3 px-4 text-[#151515]">{item.display_name}</td>
+                  <td className="py-3 px-4 text-[#151515]">
+                    <span>{item.display_name}</span>
+                    {(item.metadata as Record<string, unknown>)?.official_quickstart && (
+                      <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#EE0000] text-white uppercase">Official</span>
+                    )}
+                  </td>
                   <td className="py-3 px-4"><StatusBadge status={item.category} /></td>
                   <td className="py-3 px-4"><StatusBadge status={item.status} /></td>
                   <td className="py-3 px-4 text-xs text-[#6A6E73]">{item.default_hardware_profile || '—'}</td>
                   <td className="py-3 px-4 text-xs text-[#6A6E73]">{item.default_ttl || '—'}</td>
+                  <td className="py-3 px-4">
+                    {(item.metadata as Record<string, unknown>)?.provisioner_mode === 'rhdp' ? (
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">RHDP</span>
+                    ) : (
+                      <span className="text-xs text-[#6A6E73]">Direct</span>
+                    )}
+                  </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
                       <button
