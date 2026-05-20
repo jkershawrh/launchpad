@@ -1,0 +1,70 @@
+= Hardware Recovery
+:navtitle: Hardware Recovery
+:imagesdir: ../images
+
+The Hardware Recovery demo shows how the inference gateway gracefully handles hardware failures.
+When a Gaudi accelerator becomes unavailable, the system automatically falls back to CPU-based inference — maintaining service availability with a performance trade-off.
+
+== What You Will Learn
+
+* How the gateway detects backend failures
+* How automatic failover works between Gaudi and CPU backends
+* The latency and throughput impact of failover
+
+== Try It: Observe Normal Operation
+
+. Click the *Demo* tab and navigate to the *Recovery* page.
+. The dashboard shows the current state of all backends — Gaudi and CPU.
+. Send a test request:
++
+[source]
+----
+"Summarize the key advantages of hardware-accelerated AI inference."
+----
+. *Expected result* — the request routes to the Gaudi backend. Note the latency (typically 50-150ms to first token).
+
+== Try It: Simulate a Hardware Failure
+
+. Click *Simulate Gaudi Failure* on the recovery dashboard.
+. Send the same request again:
++
+[source]
+----
+"Summarize the key advantages of hardware-accelerated AI inference."
+----
+. *Expected result* — the gateway detects the Gaudi backend is unavailable and automatically routes to the CPU fallback. The response still arrives, but with higher latency (200-500ms). The dashboard shows the failover in real time.
+
+== Try It: Recover the Backend
+
+. Click *Restore Gaudi* on the recovery dashboard.
+. Send another request.
+. *Expected result* — the gateway detects the Gaudi backend is healthy again and routes back to it. Latency returns to the accelerated baseline.
+
+== Failover Behavior
+
+[cols="1,2,2",options="header"]
+|===
+|State |Primary Backend |Fallback
+
+|Normal
+|Gaudi 3 (low latency, high throughput)
+|—
+
+|Gaudi down
+|CPU / llama.cpp (higher latency, lower throughput)
+|Automatic, no request dropped
+
+|Gaudi recovered
+|Gaudi 3 (restored)
+|Gateway health check detects recovery within 30s
+|===
+
+[NOTE]
+====
+The failover is transparent to the caller — the API contract is identical.
+The only visible difference is latency and throughput.
+In production, this means your application stays up even when accelerator hardware has issues.
+====
+
+[.next-nav]
+xref:10-workload-generator.adoc[Next: Workload Generator →]

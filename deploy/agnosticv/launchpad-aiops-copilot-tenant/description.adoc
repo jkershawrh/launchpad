@@ -1,0 +1,16 @@
+
+Launchpad AIOps Copilot Demo.
+
+Incident response with alert classification, root cause analysis, and remediation.
+
+== What Gets Deployed
+
+* *Keycloak user* -- SSO credentials for the demo
+* *Tenant namespace* -- Isolated namespace with resource quotas
+* *LiteLLM virtual key* -- Per-tenant API key for model-as-a-service inference
+* *Demo frontend* -- Filtered to AIOps Copilot pages (operations)
+* *Showroom* -- Interactive lab UI with terminal, console, and demo tabs
+
+== Inference
+
+All inference uses LiteMaaS backed by Intel Gaudi 3 accelerators via LiteLLM virtual keys.

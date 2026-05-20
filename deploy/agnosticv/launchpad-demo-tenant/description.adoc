@@ -1,0 +1,29 @@
+
+Intel x Red Hat AI Partner Launchpad Demo.
+
+This catalog item provisions a per-tenant demo environment on a shared
+Launchpad base cluster. Each tenant gets their own namespace, credentials,
+LiteLLM virtual key, and demo frontend.
+
+== What Gets Deployed
+
+* *Keycloak user* -- SSO credentials for the demo
+* *Tenant namespace* -- Isolated namespace with resource quotas
+* *LiteLLM virtual key* -- Per-tenant API key for model-as-a-service inference
+* *Demo frontend* -- Filtered demo pages (inference overdrive, agent swarm, etc.)
+* *Showroom* -- Interactive lab UI with terminal, console, and demo portal tabs
+
+== Available Demos
+
+All demos use real inference via LiteMaaS backed by Intel Gaudi 3 accelerators:
+
+* Inference Overdrive -- Model routing performance benchmarking
+* Enterprise RAG -- Retrieval-augmented generation Q&A
+* AIOps Copilot -- Alert classification and remediation
+* Governed Agent -- Risk-gated agent execution
+* Agent Swarm -- Multi-agent parallel workloads
+* Research Agent -- Multi-step document analysis
+* Recovery Demo -- Hardware failover (Gaudi to CPU)
+* Workload Generator -- Load testing and benchmarking
+* Training Demo -- Fine-tuning workflows
+* Replay Comparison -- Xeon vs Gaudi comparison

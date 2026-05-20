@@ -295,7 +295,7 @@ http {{
             string_data={
                 "LITELLM_API_BASE": os.environ.get(
                     "LITELLM_API_BASE",
-                    "https://litellm-prod.apps.maas.redhatworkshops.io",
+                    "",
                 ),
                 "LITELLM_API_KEY": litellm_key,
                 "API_KEY": "",

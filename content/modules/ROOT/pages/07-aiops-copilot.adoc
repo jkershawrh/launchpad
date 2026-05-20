@@ -1,0 +1,85 @@
+= AIOps Copilot
+:navtitle: AIOps Copilot
+:imagesdir: ../images
+
+The AIOps Copilot demo shows an AI-powered incident response pipeline.
+Alerts are classified by severity, root cause analysis is performed, and remediation actions are proposed — all governed by policy checks.
+
+== What You Will Learn
+
+* How AI classifies and triages operational alerts
+* How root cause analysis works with LLM reasoning
+* How governance gates control automated remediation
+
+== Try It: Classify an Alert
+
+. Click the *Demo* tab and navigate to the *Operations* page.
+. Select a sample alert from the alert feed, or create a custom alert:
++
+[source]
+----
+Alert: Pod CrashLoopBackOff
+Namespace: production-api
+Pod: payment-service-7f8b9c-x2k4p
+Restart count: 15
+Last log: "java.lang.OutOfMemoryError: Java heap space"
+----
+. Click *Analyze*.
+. *Expected result* — the copilot:
+** Classifies severity (Critical — production service, memory exhaustion)
+** Identifies root cause (JVM heap too small for current workload)
+** Proposes remediation (increase memory limits, check for memory leaks)
+
+== Try It: Review Remediation Governance
+
+. After the analysis completes, review the proposed remediation actions.
+. Each action shows a governance status:
++
+[cols="1,2,2",options="header"]
+|===
+|Action |Risk Level |Gate
+
+|Increase memory limit
+|Low
+|Auto-approved — resource scaling within quota
+
+|Restart pod
+|Low
+|Auto-approved — non-destructive restart
+
+|Scale deployment
+|Medium
+|Requires confirmation — affects resource allocation
+
+|Modify production config
+|High
+|Blocked — requires human approval
+|===
+
+. Low-risk actions can execute automatically. High-risk actions are blocked until a human approves them.
+
+== How the Pipeline Works
+
+[cols="1,2,2",options="header"]
+|===
+|Stage |Model |Hardware
+
+|Alert classification
+|Granite 3.2 8B
+|Xeon 6 — fast classification using a small model
+
+|Root cause analysis
+|Llama 3.1 70B
+|CPU — deep reasoning over log context
+
+|Remediation generation
+|Granite 3.2 8B
+|Gaudi 3 — generate structured remediation plan
+
+|Governance check
+|Policy engine
+|Rule-based — no model inference needed
+|===
+
+[.next-nav]
+xref:08-governed-agent.adoc[Next: Governed Agent →]

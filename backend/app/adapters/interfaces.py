@@ -51,11 +51,13 @@ class ProvisionResult:
         lab_url: str,
         dashboard_url: str,
         resources: Optional[Dict[str, Any]] = None,
+        cluster_ref: Optional[str] = None,
     ):
         self.namespace = namespace
         self.lab_url = lab_url
         self.dashboard_url = dashboard_url
         self.resources = resources or {}
+        self.cluster_ref = cluster_ref
 
 
 class ValidationAdapter(Protocol):

@@ -1,0 +1,61 @@
+= Model Training
+:navtitle: Model Training
+:imagesdir: ../images
+
+The Model Training demo walks through fine-tuning a model on Intel hardware.
+You will configure a training job, monitor its progress, and compare the fine-tuned model against the base model.
+
+== What You Will Learn
+
+* How to set up a fine-tuning job on Intel Gaudi
+* How to monitor training progress
+* How fine-tuning changes model behavior for a specific task
+
+== Try It: Configure a Training Job
+
+. Click the *Demo* tab and navigate to the *Training* page.
+. Select the base model: *Granite 3.2 8B Instruct*.
+. Choose a training dataset from the available options (e.g., customer support Q&A).
+. Configure training parameters:
+** *Epochs:* 3
+** *Learning rate:* 2e-5
+** *Batch size:* 4
+. Click *Start Training*.
+. *Expected result* — a training job launches. The progress panel shows loss curves, learning rate schedule, and estimated time remaining.
+
+== Try It: Monitor Training Progress
+
+During training, the dashboard shows:
+
+[cols="1,3",options="header"]
+|===
+|Metric |What It Shows
+
+|Training loss
+|How well the model fits the training data — should decrease over epochs
+
+|Validation loss
+|How well the model generalizes — should track training loss without diverging
+
+|Learning rate
+|Current learning rate value following the configured schedule
+
+|Throughput
+|Samples processed per second on Intel Gaudi
+|===
+
+== Try It: Compare Base vs Fine-Tuned
+
+After training completes:
+
+. The demo provides a side-by-side comparison interface.
+. Enter a prompt relevant to the training dataset:
++
+[source]
+----
+"A customer reports they cannot access their account after a password reset. What troubleshooting steps should I follow?"
+----
+. *Expected result* — the base model gives a generic response. The fine-tuned model gives a response tailored to the specific support workflow from the training data, with domain-specific terminology and procedures.
+
+[.next-nav]
+xref:12-replay-comparison.adoc[Next: Replay Comparison →]

@@ -88,9 +88,11 @@ def test_api_can_list_catalog(client):
     resp = client.get("/catalog")
     assert resp.status_code == 200
     items = resp.json()
-    assert len(items) == 21
+    assert len(items) == 25
     ids = {i["catalog_item_id"] for i in items}
     assert "inference-overdrive-quickstart" in ids
+    assert "qs-data-governance" in ids
+    assert "qs-ppe-compliance" in ids
 
 
 def test_api_can_get_catalog_item(client):

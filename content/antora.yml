@@ -1,0 +1,15 @@
+name: modules
+title: Intel x Red Hat AI Launchpad
+version: ~
+nav:
+  - modules/ROOT/nav.adoc
+asciidoc:
+  attributes:
+    user: user1
+    password: openshift
+    demo_pages: all
+
+    openshift_api_url: "https://api.cluster-GUID.example.opentlc.com:6443"
+    openshift_console_url: "https://console-openshift-console.apps.cluster-GUID.example.opentlc.com"
+    openshift_cluster_ingress_domain: apps.cluster-GUID.example.opentlc.com
+    demo_url: "https://demo-{user}-demo.{openshift_cluster_ingress_domain}"

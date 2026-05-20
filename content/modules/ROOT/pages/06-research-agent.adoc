@@ -1,0 +1,64 @@
+= Research Agent
+:navtitle: Research Agent
+:imagesdir: ../images
+
+The Research Agent demo shows a multi-step document analysis workflow.
+The agent decomposes complex questions into sub-queries, retrieves evidence, reranks results, and produces citation-backed answers.
+
+== What You Will Learn
+
+* How agentic RAG breaks down complex questions into research steps
+* How reranking improves retrieval quality
+* How citations trace answers back to source documents
+
+== Try It: Run a Research Query
+
+. Click the *Demo* tab and navigate to the *Agent* page.
+. Enter a research question that requires synthesizing multiple sources:
++
+[source]
+----
+"Compare the performance characteristics of vLLM and TGI for serving large language models on Intel hardware. What are the trade-offs?"
+----
+. Click *Research*.
+. *Expected result* — the agent:
+.. Decomposes the question into sub-queries (e.g., "vLLM performance on Intel", "TGI benchmarks", "comparison metrics")
+.. Retrieves relevant documents for each sub-query
+.. Reranks results to surface the most relevant evidence
+.. Synthesizes a comprehensive answer with numbered citations
+
+== Understanding the Research Steps
+
+The agent panel shows each step of the research process:
+
+[cols="1,3",options="header"]
+|===
+|Step |What Happens
+
+|Query decomposition
+|The LLM breaks the complex question into 2-4 focused sub-queries
+
+|Retrieval
+|Each sub-query searches the knowledge base via vector similarity
+
+|Reranking
+|A cross-encoder model reranks retrieved chunks by relevance (runs on Xeon)
+
+|Synthesis
+|The LLM generates a comprehensive answer using all retrieved evidence (runs on Gaudi)
+|===
+
+== Try It: Ask a Follow-Up
+
+After receiving the initial answer:
+
+. Type a follow-up question in the same session:
++
+[source]
+----
+"Which of these would you recommend for a batch processing workload with 1000+ concurrent requests?"
+----
+. *Expected result* — the agent retains context from the previous research and focuses its new retrieval on batch processing specifics.
+
+[.next-nav]
+xref:07-aiops-copilot.adoc[Next: AIOps Copilot →]

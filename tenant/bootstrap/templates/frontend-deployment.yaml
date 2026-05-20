@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-frontend
+  namespace: {{ include "launchpad-demo.namespace" . }}
+  labels:
+    app: demo-frontend
+    {{- include "launchpad-demo.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.demo.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: demo-frontend
+  template:
+    metadata:
+      labels:
+        app: demo-frontend
+        {{- include "launchpad-demo.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: frontend
+        image: {{ .Values.demo.frontend.image }}
+        ports:
+        - containerPort: 8080
+          name: http
+        volumeMounts:
+        - name: config
+          mountPath: /etc/demo-config
+          readOnly: true
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+          readOnly: true
+        resources:
+          {{- toYaml .Values.demo.frontend.resources | nindent 10 }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop: [ALL]
+      volumes:
+      - name: config
+        configMap:
+          name: demo-config
+          items:
+          - key: config.json
+            path: config.json
+      - name: nginx-conf
+        configMap:
+          name: demo-config
+          items:
+          - key: nginx.conf
+            path: nginx.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-frontend
+  namespace: {{ include "launchpad-demo.namespace" . }}
+  labels:
+    app: demo-frontend
+    {{- include "launchpad-demo.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: demo-frontend
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http

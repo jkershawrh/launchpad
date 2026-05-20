@@ -1,0 +1,69 @@
+= Intel x Red Hat AI Launchpad
+:navtitle: Intel x Red Hat AI Launchpad
+
+== About This Lab
+
+The Intel x Red Hat AI Launchpad showcases enterprise AI capabilities on Intel hardware running Red Hat OpenShift.
+Every demo uses *real inference* — requests route through the LiteMaaS gateway to models running on Intel Gaudi 3 accelerators and Xeon 6 processors.
+
+This lab demonstrates how Intel and Red Hat work together to deliver production-ready AI infrastructure.
+
+== What You Can Do
+
+Each demo is a self-contained experience focused on a specific AI capability:
+
+[cols="2,3",options="header"]
+|===
+|Demo |What It Shows
+
+|*Inference Overdrive*
+|Real-time model routing across 5 models — compare latency, throughput, and routing policy across Gaudi and Xeon backends.
+
+|*Enterprise RAG*
+|Retrieval-augmented generation pipeline with document upload, vector search, and multi-model inference routing.
+
+|*Agent Swarm*
+|Multi-agent parallel execution — multiple AI agents coordinate on complex tasks using different models.
+
+|*Research Agent*
+|Multi-step document analysis with query decomposition, reranking, and citation-backed answers.
+
+|*AIOps Copilot*
+|Incident response pipeline — alert classification, root cause analysis, and governance-gated remediation.
+
+|*Governed Agent*
+|Risk-gated agent execution with policy enforcement, audit logging, and human-in-the-loop approvals.
+
+|*Hardware Recovery*
+|Graceful hardware failover — watch the system automatically fall back from Gaudi to CPU inference.
+
+|*Workload Generator*
+|Load testing with storm, barrage, and token-cannon modes — benchmark your infrastructure under pressure.
+
+|*Model Training*
+|Fine-tuning workflows for model customization on Intel hardware.
+
+|*Replay Comparison*
+|Side-by-side performance comparison between Xeon CPU and Gaudi HPU inference for the same workloads.
+|===
+
+== Architecture
+
+All demos share a common architecture:
+
+. *Demo Frontend* — React application filtered to show the relevant demo pages.
+. *Inference Gateway* — FastAPI service that implements model routing policy.
+. *LiteMaaS* — LiteLLM proxy providing unified OpenAI-compatible API across all models.
+. *Intel Gaudi 3* — 24 accelerator cards serving models via KServe on OpenShift AI.
+. *Intel Xeon 6* — CPU-based inference for embedding, classification, and small models.
+
+Each tenant gets their own namespace, gateway instance, LiteLLM virtual key, and isolated resources.
+
+== Tags
+
+* *Hardware:* Intel Gaudi 3, Intel Xeon 6
+* *Platform:* Red Hat OpenShift, OpenShift AI
+* *Use cases:* Inference, RAG, Agents, AIOps, Training, Benchmarking
+
+[.next-nav]
+xref:02-accessing-the-cluster.adoc[Next: Accessing the Cluster →]

@@ -1,0 +1,15 @@
+---
+#include /includes/ansible_control_plane/event_controllers_lb.yaml
+
+purpose: event
+
+worker_instance_count: 4
+ai_workers_cores: 16
+ai_workers_memory: 32Gi
+
+__meta__:
+  deployer:
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-05-04
+      pull: missing

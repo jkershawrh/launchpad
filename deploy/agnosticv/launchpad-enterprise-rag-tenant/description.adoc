@@ -1,0 +1,16 @@
+
+Launchpad Enterprise RAG Demo.
+
+Retrieval-augmented generation pipeline with vector search and multi-model routing.
+
+== What Gets Deployed
+
+* *Keycloak user* -- SSO credentials for the demo
+* *Tenant namespace* -- Isolated namespace with resource quotas
+* *LiteLLM virtual key* -- Per-tenant API key for model-as-a-service inference
+* *Demo frontend* -- Filtered to Enterprise RAG pages (try-it)
+* *Showroom* -- Interactive lab UI with terminal, console, and demo tabs
+
+== Inference
+
+All inference uses LiteMaaS backed by Intel Gaudi 3 accelerators via LiteLLM virtual keys.

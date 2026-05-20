@@ -1,0 +1,93 @@
+= Replay Comparison
+:navtitle: Replay Comparison
+:imagesdir: ../images
+
+The Replay Comparison demo runs the same workload on Intel Xeon CPU and Intel Gaudi 3 accelerator, then shows the results side by side.
+This lets you quantify exactly how much Gaudi accelerates inference for your specific workload.
+
+== What You Will Learn
+
+* Concrete latency and throughput differences between CPU and accelerator inference
+* Which workload types benefit most from Gaudi acceleration
+* How to evaluate hardware ROI for your inference needs
+
+== Try It: Run a Comparison
+
+. Click the *Demo* tab and navigate to the *Replay* page.
+. Select a comparison scenario:
+** *Single prompt* — one request, compare response time
+** *Batch* — 20 identical requests, compare throughput
+** *Mixed workload* — varied prompts and token lengths
+. Enter a prompt (or use the default):
++
+[source]
+----
+"Write a detailed technical overview of retrieval-augmented generation, including architecture, components, and deployment considerations for enterprise environments."
+----
+. Click *Run Comparison*.
+. *Expected result* — the same prompt runs on both backends simultaneously. Results appear side by side.
+
+== Understanding the Results
+
+The comparison panel shows:
+
+[cols="1,1,1",options="header"]
+|===
+|Metric |Xeon 6 (CPU) |Gaudi 3 (Accelerator)
+
+|Time to First Token
+|200-500ms
+|50-150ms
+
+|Tokens/second
+|10-30
+|40-100+
+
+|Total time (512 tokens)
+|15-50s
+|5-12s
+
+|Power efficiency
+|Baseline
+|3-5x tokens per watt
+|===
+
+[NOTE]
+====
+Actual numbers depend on the model, prompt length, and generation length.
+The comparison uses the same model and parameters on both backends to ensure a fair test.
+====
+
+== Try It: Batch Comparison
+
+. Select *Batch* mode with 20 requests.
+. Click *Run Comparison*.
+. *Expected result* — the batch runs on both backends. The aggregate view shows:
+** Total time to complete all 20 requests
+** Average latency per request
+** p95 latency
+** Throughput (requests/minute)
+
+This demonstrates the throughput advantage of Gaudi at scale — the gap widens as concurrency increases.
+
+== When to Choose Each Backend
+
+[cols="1,1",options="header"]
+|===
+|Use Case |Recommended Backend
+
+|Interactive chat (low latency critical)
+|Gaudi 3
+
+|Batch processing (high throughput)
+|Gaudi 3
+
+|Lightweight classification / embeddings
+|Xeon 6 (cost-effective)
+
+|Development and testing
+|Xeon 6 (no accelerator needed)
+
+|Cost-sensitive low-volume workloads
+|Xeon 6
+|===

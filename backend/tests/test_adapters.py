@@ -13,7 +13,7 @@ from app.domain.models import LabRequest, LabSession
 def test_mock_catalog_adapter_lists_items():
     adapter = MockCatalogAdapter()
     items = adapter.list_items()
-    assert len(items) == 21
+    assert len(items) == 25
     ids = {i.catalog_item_id for i in items}
     assert "inference-overdrive-quickstart" in ids
     assert "build-a-rag-app" in ids

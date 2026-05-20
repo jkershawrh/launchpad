@@ -1,49 +1,197 @@
-# Partner AI Launchpad
+# Intel x Red Hat AI Partner Launchpad
 
-Reusable OpenShift-based lab platform for Red Hat/Intel partner and client demos.
+Self-service demo platform that provisions AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Integrates with the Red Hat Demo Platform (RHDP) to deliver repeatable, branded, time-boxed AI experiences for partners, customers, and internal teams.
 
-Provides three experiences:
-- **Quick Start Labs** — prebuilt, guided, fast-start demos
-- **Guided Build Areas** — template-driven build spaces for AI ideas
-- **Open Sandboxes** — flexible partner/client namespaces with quotas, tools, and observability
+## What It Does
 
-## Local Setup
+One-click access to pre-built AI demos running on real hardware. Each demo provisions an isolated environment with its own namespace, inference gateway, model routing, and LiteLLM virtual API key — backed by Intel Gaudi 3 for accelerated inference and Intel Xeon 6 for CPU-optimized workloads.
+
+**10 custom demos** built by the Intel x Red Hat partnership:
+
+| Demo | What It Shows |
+|------|--------------|
+| **Inference Overdrive** | Real-time model routing across 5 models — compare Gaudi vs Xeon latency and throughput |
+| **Enterprise RAG** | Retrieval-augmented generation with vector search, embedding on Xeon, generation on Gaudi |
+| **Agent Swarm** | Multi-agent parallel execution — multiple models coordinate on complex tasks |
+| **Research Agent** | Multi-step document analysis with query decomposition, reranking, and citations |
+| **AIOps Copilot** | Alert classification, root cause analysis, and governance-gated remediation |
+| **Governed Agent** | Risk-gated AI agent execution with policy enforcement and audit logging |
+| **Hardware Recovery** | Graceful failover from Gaudi to CPU — transparent to the caller |
+| **Workload Generator** | Load testing with storm, barrage, and token-cannon modes |
+| **Model Training** | Fine-tuning workflows on Intel Gaudi with evaluation |
+| **Replay Comparison** | Side-by-side Xeon vs Gaudi performance benchmarking |
+
+**7 official Red Hat AI Quickstarts** from Summit, deployed via existing RHDP catalog items:
+
+- Enterprise RAG Chatbot
+- Data Governance
+- PPE Compliance Monitor
+- Product Recommendation
+- IT Self-Service
+- LLM CPU Serving (Intel Xeon)
+- vLLM Tool Calling (Granite 3.2)
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  User                                                        │
+│    │                                                         │
+│    ▼                                                         │
+│  RHDP Catalog (demo.redhat.com)                              │
+│    │                                                         │
+│    ▼                                                         │
+│  Sandbox API ──► Assigns namespace on shared CNV cluster     │
+│    │                                                         │
+│    ▼                                                         │
+│  AgnosticD ──► Deploys tenant via ArgoCD                     │
+│    │                                                         │
+│    ▼                                                         │
+│  ┌────────────────────────────────────────────────────────┐  │
+│  │  Per-Tenant Namespace                                  │  │
+│  │  ┌──────────────┐  ┌────────────┐  ┌──────────────┐   │  │
+│  │  │ Demo Frontend │  │  Gateway   │  │  PostgreSQL  │   │  │
+│  │  │ (filtered     │─▶│ (routing   │  │  (state)     │   │  │
+│  │  │  pages)       │  │  policy)   │  └──────────────┘   │  │
+│  │  └──────────────┘  └─────┬──────┘                      │  │
+│  └──────────────────────────┼─────────────────────────────┘  │
+│                             │                                │
+│                             ▼                                │
+│                    LiteMaaS (LiteLLM)                        │
+│                             │                                │
+│              ┌──────────────┼──────────────┐                 │
+│              ▼              ▼              ▼                 │
+│         Intel Gaudi 3  Intel Xeon 6   llama.cpp              │
+│         (Granite, Phi, (embeddings,   (Llama 70B)            │
+│          DeepSeek,      classification)                      │
+│          Qwen)                                               │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Key Components
+
+| Component | Purpose |
+|-----------|---------|
+| **Sandbox API** | RHDP cluster pool manager — assigns namespaces on shared OpenShift clusters |
+| **AgnosticD** | Ansible-based deployment automation — installs operators and workloads |
+| **ArgoCD** | GitOps delivery — deploys the tenant Helm chart per user |
+| **Inference Gateway** | FastAPI service implementing model routing policy across Intel hardware |
+| **LiteMaaS** | LiteLLM proxy providing unified OpenAI-compatible API across all models |
+| **Showroom** | Interactive lab UI with step-by-step instructions, terminal, and console tabs |
+| **Demo Frontend** | React application with runtime page filtering via ConfigMap |
+
+## How It Works
+
+### For Users
+
+1. Order a demo from the RHDP catalog at demo.redhat.com
+2. Receive a Showroom URL with SSO credentials
+3. Follow the step-by-step lab instructions in the left panel
+4. Interact with the demo in the right panel (terminal, console, or demo portal)
+5. Environment automatically reclaims after the configured TTL
+
+### For Operators
+
+1. The **cluster config** (`launchpad-cluster`) provisions shared base infrastructure once — RHOAI, GitOps, Keycloak on a CNV pool cluster
+2. Each **tenant config** (`launchpad-*-tenant`) creates an isolated per-user environment on the shared cluster
+3. The Sandbox API manages capacity, quotas, and lifecycle
+4. Each tenant gets its own LiteLLM virtual key for usage tracking and rate limiting
+
+## Repository Structure
+
+```
+launchpad/
+├── backend/                    # FastAPI backend — lifecycle, provisioning, adapters
+│   └── app/
+│       ├── adapters/           # Mock, local, OpenShift, and RHDP adapter tiers
+│       │   └── rhdp/           # Sandbox API client and RHDP provisioning
+│       ├── domain/             # Pydantic models, enums, state machine
+│       ├── services/           # Provisioning service, lifecycle management
+│       └── api/                # REST API endpoints
+├── frontend/                   # Partner portal (React/Vite/Tailwind)
+├── admin/                      # Admin dashboard (React/Vite/Tailwind)
+├── demos/
+│   ├── frontend/               # Demo frontend (React, runtime page filtering)
+│   └── gateway/                # Inference gateway (FastAPI, routing policy)
+├── content/                    # Showroom lab content (Antora/AsciiDoc)
+│   └── modules/ROOT/pages/     # 12 lab guide pages
+├── tenant/
+│   └── bootstrap/              # Helm chart deployed per-user by ArgoCD
+├── deploy/
+│   ├── agnosticv/              # RHDP catalog item configs (cluster + tenant)
+│   └── launchpad/              # Kustomize manifests for Launchpad platform
+└── docs/                       # Architecture and process documentation
+```
+
+## Models
+
+All models served via KServe on OpenShift AI, accessed through LiteMaaS:
+
+| Model | Hardware | Use Case |
+|-------|----------|----------|
+| Granite 3.2 8B Instruct | Intel Gaudi 3 | General-purpose generation, classification |
+| Llama 3.1 70B | CPU (llama.cpp) | Large-scale reasoning |
+| DeepSeek R1 Distill Qwen 14B | Intel Gaudi 3 | Deep reasoning, chain-of-thought |
+| Microsoft Phi-4 | Intel Gaudi 3 | Efficient small-model inference |
+| Qwen3 14B | Intel Gaudi 3 | Multilingual generation, tool calling |
+
+## Infrastructure
+
+- **Compute:** Intel Gaudi 3 (24 cards across 3 nodes) + Intel Xeon 6
+- **Platform:** Red Hat OpenShift 4.18+ with OpenShift AI 2.25
+- **Cluster pools:** Managed by RHDP Sandbox API across CNV clusters
+- **Deployment:** AgnosticD + ArgoCD (GitOps)
+- **Auth:** Keycloak SSO + LiteLLM virtual keys per tenant
+
+## Roadmap
+
+### Done
+
+- [x] Backend — FastAPI with domain models, lifecycle state machine, adapter pattern (mock/local/openshift/rhdp)
+- [x] Partner portal — React frontend with branding, demo catalog, sandbox configuration
+- [x] Admin dashboard — session management, tenant management, catalog CRUD, system status
+- [x] Demo frontend — runtime page filtering via ConfigMap, 10 demo pages
+- [x] Inference gateway — FastAPI routing policy across Gaudi/Xeon/CPU backends
+- [x] RHDP Sandbox API integration — client, pool adapter, provisioning adapter, cleanup
+- [x] Catalog — 25 items (10 custom demos, 7 official quickstarts, 4 sandboxes, 4 originals)
+- [x] AgnosticV configs — cluster config + 10 individual demo tenant configs following RHDP pattern
+- [x] Tenant bootstrap Helm chart — ArgoCD-deployable chart (frontend + gateway + postgres + route)
+- [x] Per-demo model lists — each demo gets LiteLLM virtual keys for the right set of models
+- [x] Showroom lab content — 12 AsciiDoc pages with step-by-step walkthroughs matching RHDP quickstart format
+- [x] Sandbox API verified — connected to real fleet (10 CNV clusters), login + cluster listing working
+- [x] Security — SSO (oauth-proxy), API key auth, session limits, resource quotas, no hardcoded secrets
+
+### In Progress
+
+- [ ] Sandbox API `app` role token — needed to create placements (current token is `shared-cluster-manager` role)
+- [ ] End-to-end placement test — create a real namespace on a CNV cluster via Sandbox API
+- [ ] Push to git repo — code needs to be in a repo that ArgoCD can pull from
+- [ ] Build + push container images — `quay.io/intel-redhat/demo-frontend` and `inference-gateway`
+
+### To Do
+
+- [ ] Submit AgnosticV configs to `rhpds/agnosticv` — PR the demo tenant configs into the RHDP catalog
+- [ ] Onboard a Launchpad base cluster — order `launchpad-cluster` from RHDP to provision shared infra (RHOAI + GitOps + Keycloak)
+- [ ] Full end-to-end test — order a demo from RHDP catalog, verify Showroom + frontend + gateway + inference all work
+- [ ] RHOAI install on infra01 — blocked pending manager approval, needed for official quickstarts on that cluster
+- [ ] Admin dashboard updates — add 4 new quickstarts to admin catalog view
+- [ ] Showroom content images — add screenshots to lab guide pages
+- [ ] AI-powered brand generation — dynamic branding profiles per partner/customer
+
+## Development
 
 ```bash
-# Python 3.11+ required
-pip install -e ".[dev]"
+# Run locally with mock adapters
+cd backend
+LAUNCHPAD_MODE=mock uvicorn app.main:app --reload
+
+# Run tests
+cd backend && python -m pytest tests/ -q
+
+# Run with RHDP integration
+LAUNCHPAD_MODE=rhdp \
+SANDBOX_API_URL=$SANDBOX_API_ROUTE \
+SANDBOX_LOGIN_TOKEN=$(cat ~/.sandbox/token) \
+HTTPS_PROXY=http://squid.redhat.com:3128 \
+uvicorn app.main:app --reload
 ```
-
-## Run Tests
-
-```bash
-make test
-```
-
-## Run Tests with Coverage
-
-```bash
-make test-cov
-```
-
-## Project Structure
-
-```
-backend/
-  app/
-    domain/       # Pydantic models, enums, lifecycle state machine
-    adapters/     # External system adapter interfaces
-    services/     # Business logic orchestration
-  tests/          # pytest test suite
-
-fixtures/         # Seed data (YAML)
-schemas/          # JSON Schema definitions
-docs/             # Architecture and design docs
-```
-
-## Stack
-
-- **Backend:** Python, FastAPI, Pydantic
-- **Database:** PostgreSQL (Phase 3)
-- **Frontend:** React, Vite, Tailwind (Phase 5)
-- **Tests:** pytest, Vitest

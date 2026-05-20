@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: {{ include "launchpad-demo.namespace" . }}
+  labels:
+    app: gateway
+    {{- include "launchpad-demo.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.demo.gateway.replicas }}
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+        {{- include "launchpad-demo.labels" . | nindent 8 }}
+    spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ['sh', '-c', 'until nc -z postgres 5432; do sleep 2; done']
+      containers:
+      - name: gateway
+        image: {{ .Values.demo.gateway.image }}
+        ports:
+        - containerPort: 8080
+          name: http
+        envFrom:
+        - secretRef:
+            name: gateway-config
+        resources:
+          {{- toYaml .Values.demo.gateway.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop: [ALL]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: {{ include "launchpad-demo.namespace" . }}
+  labels:
+    app: gateway
+    {{- include "launchpad-demo.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: gateway
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http

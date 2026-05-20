@@ -1,0 +1,65 @@
+= Enterprise RAG Pipeline
+:navtitle: Enterprise RAG
+:imagesdir: ../images
+
+The Enterprise RAG demo shows a retrieval-augmented generation pipeline where queries are routed to optimal Intel hardware — Xeon for embedding and reranking, Gaudi for generation.
+
+== What You Will Learn
+
+* How RAG enhances LLM responses with retrieved document context
+* How the gateway routes embedding vs generation requests to different hardware
+* How to interact with a chat interface backed by vector search
+
+== Try It: Ask a Question
+
+. Click the *Demo* tab and navigate to the *Try It* page.
+. Type a question in the chat input and press *Enter*:
++
+[source]
+----
+"What is the process for requesting a new hardware allocation?"
+----
+. *Expected result* — the system retrieves relevant document chunks via vector search, then generates a grounded response with source citations. The embedding request routes to Xeon; the generation request routes to Gaudi.
+
+== Try It: Compare With and Without RAG
+
+. First, ask a general knowledge question:
++
+[source]
+----
+"What is retrieval-augmented generation?"
+----
+. The model answers from its training data — no retrieval step, no citations.
+. Now ask a question that requires internal document context:
++
+[source]
+----
+"What are the company's security requirements for AI model deployment?"
+----
+. *Expected result* — the RAG pipeline retrieves relevant policy documents and the response includes specific citations.
+
+== How the Routing Works
+
+[cols="2,2,2",options="header"]
+|===
+|Step |Hardware |Why
+
+|Embed query → vector
+|Xeon 6
+|Embedding models are small and CPU-optimized
+
+|Retrieve top-k chunks
+|PostgreSQL (PGVector)
+|Vector similarity search
+
+|Rerank results
+|Xeon 6
+|Cross-encoder reranking is lightweight
+
+|Generate answer
+|Gaudi 3
+|Large model generation benefits from accelerator throughput
+|===
+
+[.next-nav]
+xref:05-agent-swarm.adoc[Next: Agent Swarm →]

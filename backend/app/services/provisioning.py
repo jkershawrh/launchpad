@@ -100,6 +100,12 @@ class ProvisioningService:
 
     def _get_provisioner(self, catalog_item):
         from app.domain.enums import CatalogCategory
+
+        mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+        if mode == "rhdp" and catalog_item.metadata.get("provisioner_mode") == "rhdp":
+            from app.adapters.rhdp.provisioning import RHDPProvisioningAdapter
+            return RHDPProvisioningAdapter()
+
         if catalog_item.category == CatalogCategory.OPEN_SANDBOX:
             mode = os.environ.get("LAUNCHPAD_MODE", "mock")
             if mode == "openshift":
@@ -189,16 +195,22 @@ class ProvisioningService:
         qp = request.quota_profile or catalog_item.default_quota_profile or "standard"
         if not self.pool.check_capacity(hw, qp):
             raise ValueError(f"No capacity available for hardware={hw} quota={qp}")
-        self.pool.reserve(request.request_id, hw, qp)
+        reservation = self.pool.reserve(request.request_id, hw, qp)
 
         maas_api_key = f"sk-launchpad-{_uuid.uuid4().hex[:24]}"
 
         provisioner = self._get_provisioner(catalog_item)
         plan = provisioner.create_plan(request, catalog_item)
+
+        sandbox_data = {}
+        if isinstance(reservation, dict):
+            sandbox_data = reservation
+
         plan = plan.model_copy(update={
             "required_resources": {
                 **plan.required_resources,
                 "maas_api_key": maas_api_key,
+                "sandbox_data": sandbox_data,
             }
         })
         self._save_plan(plan)
@@ -218,11 +230,14 @@ class ProvisioningService:
             )
         )
 
+        cluster_ref = getattr(result, "cluster_ref", None) or sandbox_data.get("ingress_domain")
+
         session = LabSession(
             request_id=request.request_id,
             tenant_id=request.tenant_id,
             catalog_item_id=request.catalog_item_id,
             namespace=result.namespace,
+            cluster_ref=cluster_ref,
             lab_url=result.lab_url,
             dashboard_url=dashboard_url,
             expires_at=expires_at,

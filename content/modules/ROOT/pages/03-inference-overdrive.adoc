@@ -1,0 +1,82 @@
+= Inference Overdrive
+:navtitle: Inference Overdrive
+:imagesdir: ../images
+
+Inference Overdrive demonstrates real-time model routing across Intel hardware.
+The gateway routes each request to the optimal backend based on task type, model size, and hardware availability — Gaudi 3 for large models, Xeon 6 for embeddings and small models.
+
+== What You Will Learn
+
+* How intelligent routing distributes inference across heterogeneous hardware
+* Latency and throughput differences between Gaudi 3 and Xeon 6 backends
+* How routing policy adapts to load and hardware availability
+
+== Try It: Compare Model Performance
+
+. Click the *Demo* tab to open the demo portal.
+. Navigate to the *Overdrive* page from the sidebar.
+. Select a prompt and click *Send* — the gateway routes your request and shows which backend handled it.
+. Try the same prompt with different models using the model selector dropdown:
++
+[source]
+----
+"Explain the key differences between transformer and diffusion architectures."
+----
+. *Expected result* — each model responds with different latency. Granite 3.2 8B on Gaudi responds fastest; Llama 3.1 70B on CPU takes longer but provides more detailed output.
+
+== Try It: Observe Routing Policy
+
+. Navigate to the *Architecture* page to see the routing topology.
+. The diagram shows how requests flow from the gateway to different backends.
+. Return to *Overdrive* and send several requests rapidly — watch the routing metrics update in real time.
+
+.Routing rules
+[cols="2,3",options="header"]
+|===
+|Task Type |Routing Decision
+
+|Embeddings / Reranking
+|Xeon 6 — optimized for lightweight vector operations
+
+|Classification (< 3B params)
+|Xeon 6 — fast, low-cost classification
+
+|Generation (> 3B params)
+|Gaudi 3 — accelerated large-model inference
+
+|Batch workloads
+|Gaudi 3 — high throughput for batch processing
+|===
+
+== Try It: Interactive Chat
+
+. Navigate to the *Try It* page.
+. This is a general-purpose chat interface backed by the routing gateway.
+. Type a question and press *Enter*:
++
+[source]
+----
+"What are the benefits of running AI inference on Intel Gaudi accelerators?"
+----
+. *Expected result* — the response comes from the model selected by routing policy. The response header shows which model and backend handled the request.
+
+== Understanding the Metrics
+
+The Overdrive page shows real-time metrics:
+
+[cols="1,3",options="header"]
+|===
+|Metric |What It Means
+
+|Latency (ms)
+|Time from request to first token — lower is better. Gaudi typically shows 50-150ms; CPU shows 200-500ms.
+
+|Throughput (tokens/sec)
+|Token generation rate — Gaudi typically achieves 40-100+ tokens/sec; CPU 10-30 tokens/sec.
+
+|Routing decision
+|Which backend the gateway selected and why — based on model size, task type, and current load.
+|===
+
+[.next-nav]
+xref:04-enterprise-rag.adoc[Next: Enterprise RAG →]

@@ -1,0 +1,127 @@
+= Accessing the Cluster
+:navtitle: Accessing the Cluster
+:imagesdir: ../images
+
+All demo components run inside *your* OpenShift *project* (Kubernetes namespace) for this lab.
+Your namespace is `{user}-demo`.
+This page walks through what you should see for pods, services, and routes — and how to reach the demo portal.
+
+== Logging In
+
+From the OpenShift Demo Platform, note your credentials:
+
+* *Username:* `{user}`
+* *Password:* `{password}`
+
+Click the *OpenShift Console* tab in the top right to open the web console.
+Log in with the credentials above.
+
+== Checking Pods
+
+After logging in, navigate to *Workloads → Pods* in the left menu.
+Make sure you are viewing the `{user}-demo` project.
+
+.Key pods to verify
+[cols="2,3",options="header"]
+|===
+|Pod name contains |Purpose
+
+|`demo-frontend`
+|React demo interface served via nginx — this is the main UI you interact with.
+
+|`gateway`
+|Inference gateway — routes requests to the right model based on task type and routing policy.
+
+|`postgres`
+|PostgreSQL — stores gateway state, conversation history, and routing metrics.
+|===
+
+[NOTE]
+====
+All three pods should show `1/1 Running`.
+The gateway pod has an init container that waits for postgres — it may take 30-60 seconds to start.
+====
+
+=== Using the CLI to check pods
+
+Click the *Terminal* tab to open a terminal session. Log in to the cluster:
+
+[source,bash,role="execute",subs=attributes+]
+----
+oc login --insecure-skip-tls-verify \
+  -u {user} \
+  -p {password} \
+  {openshift_api_url}
+----
+
+Check the pods:
+
+[source,bash,role="execute",subs=attributes+]
+----
+oc get pods -n {user}-demo
+----
+
+== Checking Routes
+
+Routes expose the demo UI externally. Check them from the console (*Networking → Routes*) or CLI:
+
+[source,bash,role="execute",subs=attributes+]
+----
+oc get routes -n {user}-demo
+----
+
+.Route breakdown
+[cols="2,3",options="header"]
+|===
+|Route |Purpose
+
+|`demo`
+|*This is the URL you interact with.* Opens the demo frontend with the gateway proxied behind it.
+|===
+
+== Opening the Demo Portal
+
+Click the *Demo* tab at the top of Showroom to open the demo frontend directly.
+
+Alternatively, copy the `HOST/PORT` value from the `demo` route and open it in your browser.
+
+You should see the demo interface with navigation for the pages enabled in your demo.
+The gateway is already connected to LiteMaaS with your personal virtual API key — inference requests route to Intel Gaudi 3 accelerators automatically.
+
+== Available Models
+
+Your demo has access to the following models via LiteMaaS:
+
+[cols="2,2,2",options="header"]
+|===
+|Model |Hardware |Use Case
+
+|Granite 3.2 8B Instruct
+|Gaudi 3
+|General-purpose generation, classification, embeddings
+
+|Llama 3.1 70B
+|CPU (llama.cpp)
+|Large-scale generation, reasoning
+
+|DeepSeek R1 Distill Qwen 14B
+|Gaudi 3
+|Deep reasoning, chain-of-thought
+
+|Microsoft Phi-4
+|Gaudi 3
+|Efficient small-model inference
+
+|Qwen3 14B
+|Gaudi 3
+|Multilingual generation, tool calling
+|===
+
+[NOTE]
+====
+Not all demos have access to all models.
+The specific models available depend on the demo you ordered — the routing policy only sends requests to models your virtual key is authorized for.
+====
+
+[.next-nav]
+xref:03-inference-overdrive.adoc[Next: Inference Overdrive →]

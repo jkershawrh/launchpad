@@ -1,0 +1,90 @@
+= Governed Agent
+:navtitle: Governed Agent
+:imagesdir: ../images
+
+The Governed Agent demo shows how AI agent execution can be gated by policy.
+Every action the agent proposes is evaluated against a risk framework before execution — high-risk actions require human-in-the-loop approval.
+
+== What You Will Learn
+
+* How governance policies control AI agent behavior
+* How risk scoring gates automated actions
+* How audit logging provides traceability for compliance
+
+== Try It: Execute a Governed Task
+
+. Click the *Demo* tab and navigate to the *Governance* page.
+. Enter a task that requires the agent to take actions:
++
+[source]
+----
+"Review the current deployment configuration for the payment service and recommend optimizations for cost and performance."
+----
+. Click *Execute*.
+. *Expected result* — the agent analyzes the request, proposes a series of actions, and each action is evaluated against the governance policy:
+** *Read-only actions* (list pods, check metrics) — auto-approved
+** *Configuration changes* (update resource limits) — requires confirmation
+** *Destructive actions* (delete resources, modify secrets) — blocked pending human approval
+
+== Understanding the Governance Framework
+
+[cols="1,1,3",options="header"]
+|===
+|Risk Level |Gate |Examples
+
+|Low
+|Auto-execute
+|Read cluster state, query metrics, list resources
+
+|Medium
+|Confirm
+|Scale deployments, update ConfigMaps, modify resource limits
+
+|High
+|Human approval
+|Delete resources, modify secrets, change RBAC, production deployments
+
+|Critical
+|Blocked
+|Actions outside the namespace scope, privilege escalation attempts
+|===
+
+== Try It: Trigger a High-Risk Action
+
+. Ask the agent to do something that requires elevated permissions:
++
+[source]
+----
+"Delete all pods in the namespace and redeploy from scratch."
+----
+. *Expected result* — the agent recognizes this as a high-risk destructive action. The governance gate blocks execution and requests human approval. The audit log records the attempt, the policy violation, and the block decision.
+
+== Audit Trail
+
+Every agent action generates an audit entry:
+
+[cols="1,3",options="header"]
+|===
+|Field |Content
+
+|Timestamp
+|When the action was proposed
+
+|Agent
+|Which model proposed the action
+
+|Action
+|What the agent wanted to do
+
+|Risk score
+|Computed risk level (low/medium/high/critical)
+
+|Decision
+|Approved, confirmed, or blocked
+
+|Reasoning
+|Why the governance policy reached this decision
+|===
+
+[.next-nav]
+xref:09-recovery-demo.adoc[Next: Hardware Recovery →]

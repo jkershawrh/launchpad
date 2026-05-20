@@ -1,0 +1,65 @@
+= Workload Generator
+:navtitle: Workload Generator
+:imagesdir: ../images
+
+The Workload Generator demo lets you stress-test the inference infrastructure with configurable load patterns.
+See how Intel Gaudi 3 and Xeon 6 handle sustained throughput under pressure.
+
+== What You Will Learn
+
+* How to benchmark inference throughput and latency under load
+* How different load patterns affect model serving performance
+* How the gateway handles concurrent requests across backends
+
+== Try It: Run a Storm Test
+
+. Click the *Demo* tab and navigate to the *Workload* page.
+. Select *Storm* mode — sends a burst of concurrent requests.
+. Configure:
+** *Concurrent requests:* 10
+** *Model:* Granite 3.2 8B
+** *Prompt:* Leave default or enter a custom prompt
+. Click *Launch Storm*.
+. *Expected result* — 10 requests hit the gateway simultaneously. The results panel shows per-request latency, total throughput, and p50/p95/p99 percentiles.
+
+== Try It: Run a Barrage Test
+
+. Select *Barrage* mode — sends sustained sequential requests over time.
+. Configure:
+** *Duration:* 30 seconds
+** *Rate:* 2 requests/second
+** *Model:* All (rotating across available models)
+. Click *Launch Barrage*.
+. *Expected result* — requests stream continuously for 30 seconds. The live chart shows latency over time. You may see latency increase as the backends approach saturation.
+
+== Try It: Token Cannon
+
+. Select *Token Cannon* mode — maximizes token generation throughput.
+. Configure:
+** *Max tokens:* 2048
+** *Concurrent:* 5
+** *Model:* Llama 3.1 70B
+. Click *Fire*.
+. *Expected result* — generates long-form responses to measure sustained token throughput. The dashboard shows tokens/second for each request and aggregate throughput.
+
+== Understanding the Results
+
+[cols="1,3",options="header"]
+|===
+|Metric |What It Means
+
+|TTFT (Time to First Token)
+|How quickly the model begins responding — critical for interactive use cases.
+
+|Tokens/sec
+|Sustained generation rate — higher is better for batch and throughput workloads.
+
+|p50 / p95 / p99
+|Latency percentiles — p99 shows worst-case latency under load.
+
+|Error rate
+|Percentage of failed requests — should be 0% under normal load.
+|===
+
+[.next-nav]
+xref:11-training-demo.adoc[Next: Model Training →]

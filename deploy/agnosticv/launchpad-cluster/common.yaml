@@ -1,0 +1,200 @@
+---
+# -------------------------------------------------------------------
+# --- Catalog Item: Launchpad AI Partner Demo Base Infra
+# --- Base cluster for Intel x Red Hat AI Partner demos.
+# --- Deploys OpenShift AI, GitOps, Keycloak, and the Launchpad
+# --- inference gateway on top of an OpenShift cluster.
+# --- Designed to be registered with the OpenShift Sandbox API.
+# -------------------------------------------------------------------
+
+#include /includes/agd-v2-mapping.yaml
+#include /includes/catalog-icon-openshift.yaml
+#include /includes/terms-of-service.yaml
+#include /includes/sandbox-api.yaml
+
+#include /includes/access-restriction-admins-only.yaml
+#include /includes/secrets/ocp4_ai_offline_token.yaml
+#include /includes/parameters/purpose.yaml
+
+# -------------------------------------------------------------------
+# Mandatory Variables
+# -------------------------------------------------------------------
+
+config: openshift-workloads
+cloud_provider: none
+num_users: 0
+
+clusters:
+- default:
+    api_url: "{{ openshift_api_url }}"
+    api_token: "{{ openshift_cluster_admin_token }}"
+
+# ===================================================================
+# Cluster Sizing
+# ===================================================================
+openshift_cnv_scale_cluster: true
+
+worker_instance_count: 2
+ai_workers_cores: 8
+ai_workers_memory: 16Gi
+
+# ===================================================================
+# Additional Collections & roles to be installed for this config
+# ===================================================================
+tag: main
+requirements_content:
+  collections:
+
+  - name: https://github.com/rhpds/assisted_installer.git
+    type: git
+    version: v0.0.9
+
+  - name: https://github.com/agnosticd/core_workloads.git
+    type: git
+    version: "{{ tag }}"
+
+  - name: https://github.com/agnosticd/ai_workloads.git
+    type: git
+    version: "{{ tag }}"
+
+  - name: https://github.com/agnosticd/showroom.git
+    type: git
+    version: v1.6.8
+
+# ===================================================================
+# List of workloads to be deployed
+# ===================================================================
+workloads:
+
+- agnosticd.core_workloads.ocp4_workload_authentication
+- agnosticd.ai_workloads.ocp4_workload_openshift_ai
+- agnosticd.core_workloads.ocp4_workload_openshift_gitops
+- agnosticd.core_workloads.ocp4_workload_gitops_bootstrap
+- agnosticd.showroom.ocp4_workload_ocp_console_embed
+
+# ===================================================================
+# Workload: ocp4_workload_authentication
+# ===================================================================
+ocp4_workload_authentication_provider: keycloak
+ocp4_workload_authentication_keycloak_channel: stable-v26.4
+
+# ===================================================================
+# Workload: ocp4_workload_openshift_gitops
+# ===================================================================
+ocp4_workload_openshift_gitops_channel: latest
+ocp4_workload_openshift_gitops_setup_cluster_admin: true
+ocp4_workload_openshift_gitops_update_route_tls: true
+ocp4_workload_openshift_gitops_rbac_update: true
+ocp4_workload_openshift_gitops_rbac_policy: |
+  g, system:cluster-admins, role:admin
+  g, admin, role:admin
+ocp4_workload_openshift_gitops_rbac_scopes: '[name,groups]'
+ocp4_workload_openshift_gitops_resource_tracking_method: annotation
+
+# ===================================================================
+# Workload: agnosticd.ai_workloads.ocp4_workload_openshift_ai
+# ===================================================================
+
+ocp4_workload_openshift_ai_channel: stable-2.25
+ocp4_workload_openshift_ai_use_catalog_snapshot: false
+ocp4_workload_openshift_ai_deploy_dsc: true
+ocp4_workload_openshift_ai_dashboard: Managed
+ocp4_workload_openshift_ai_datasciencepipelines: Managed
+ocp4_workload_openshift_ai_workbenches: Managed
+ocp4_workload_openshift_ai_modelmeshserving: Managed
+ocp4_workload_openshift_ai_kserve: Removed
+ocp4_workload_openshift_ai_ray: Removed
+ocp4_workload_openshift_ai_trustyai: Removed
+ocp4_workload_openshift_ai_trainingoperator: Removed
+ocp4_workload_openshift_ai_modelregistry: Removed
+ocp4_workload_openshift_ai_codeflare: Removed
+ocp4_workload_openshift_ai_feastoperator: Removed
+ocp4_workload_openshift_ai_llamastackoperator: Removed
+ocp4_workload_openshift_ai_kueue: Removed
+ocp4_workload_openshift_ai_aipipelines: Managed
+
+# ===================================================================
+# Workload: ocp4_workload_gitops_bootstrap
+# ===================================================================
+ocp4_workload_gitops_bootstrap_repo_url: https://github.com/rhpds/ci-template-gitops.git
+ocp4_workload_gitops_bootstrap_repo_revision: main
+ocp4_workload_gitops_bootstrap_repo_path: cluster/infra/bootstrap
+ocp4_workload_gitops_bootstrap_application_name: "bootstrap-infra"
+ocp4_workload_gitops_bootstrap_helm_values:
+  turn_off_kustomize: true
+
+# -------------------------------------------------------------------
+# Babylon meta variables
+# -------------------------------------------------------------------
+
+__meta__:
+  owners:
+    maintainer:
+    - name: Jack Kershaw
+      email: jkershaw@redhat.com
+  catalog:
+    display_name: "Launchpad AI Partner Demo Base Infra (CNV)"
+    category: Labs
+    namespace: babylon-catalog-{{ stage | default('?') }}
+    keywords:
+    - openshift
+    - intel
+    - ai
+    - gaudi
+    - partner
+    - launchpad
+    labels:
+      Provider: RHDP
+    reportingLabels:
+      primaryBU: Hybrid_Platforms
+    parameters: []
+    workshopUiDisabled: true
+
+  components:
+  - name: openshift
+    display_name: OpenShift Cluster
+    item: agd-v2/ocp-cluster-cnv-pools
+    parameter_values:
+      cluster_size: multinode
+      host_ocp4_installer_version: '4.20'
+    propagate_provision_data:
+    - name: openshift_api_ca_cert
+      var: openshift_api_ca_cert
+    - name: openshift_api_url
+      var: openshift_api_url
+    - name: openshift_cluster_admin_token
+      var: openshift_api_key
+    - name: openshift_cluster_admin_token
+      var: openshift_cluster_admin_token
+    - name: bastion_public_hostname
+      var: bastion_ansible_host
+    - name: bastion_ssh_user_name
+      var: bastion_ansible_user
+    - name: bastion_ssh_password
+      var: bastion_ansible_ssh_pass
+    - name: bastion_ssh_port
+      var: bastion_ansible_port
+    - name: sandbox_openshift_api_key
+      var: sandbox_openshift_api_key
+    - name: sandbox_openshift_api_url
+      var: sandbox_openshift_api_url
+    - name: sandbox_openshift_namespace
+      var: sandbox_openshift_namespace
+
+  deployer:
+    scm_url: https://github.com/agnosticd/agnosticd-v2
+    scm_ref: main
+    execution_environment:
+      image: quay.io/agnosticd/ee-multicloud:chained-2026-02-23
+      pull: missing
+    actions:
+      destroy:
+        disable: false
+      start:
+        disable: false
+      status:
+        disable: true
+      stop:
+        disable: false
+      update:
+        disable: true

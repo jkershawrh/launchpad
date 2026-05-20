@@ -1,0 +1,16 @@
+ifndef::showroom_primary_view_url[]
+Please wait.
+
+When your environment is deployed, access information will be displayed below.
+endif::[]
+
+ifdef::showroom_primary_view_url[]
+
+== Launchpad AI Partner Demo
+
+[cols="1,3"]
+|===
+| Showroom URL | {showroom_primary_view_url}
+|===
+
+endif::[]

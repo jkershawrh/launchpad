@@ -1,0 +1,54 @@
+= Agent Swarm
+:navtitle: Agent Swarm
+:imagesdir: ../images
+
+The Agent Swarm demo shows multiple AI agents working in parallel on a complex task.
+Each agent uses a different model, and the swarm coordinator aggregates their results.
+
+== What You Will Learn
+
+* How multi-agent architectures decompose complex tasks
+* How different models contribute different strengths to a coordinated output
+* How the gateway routes parallel requests across multiple backends
+
+== Try It: Launch a Swarm
+
+. Click the *Demo* tab and navigate to the *Swarm* page.
+. Enter a complex research question that benefits from multiple perspectives:
++
+[source]
+----
+"Analyze the security implications of deploying large language models in regulated industries. Consider compliance, data privacy, and model governance."
+----
+. Click *Launch Swarm*.
+. *Expected result* — multiple agents spin up simultaneously, each tackling a different aspect of the question. You can watch their progress in real time:
+** *Agent 1* (Granite) — focuses on compliance frameworks
+** *Agent 2* (Llama) — deep-dives into data privacy considerations
+** *Agent 3* (Qwen) — analyzes model governance best practices
+
+== Understanding the Swarm Output
+
+The swarm panel shows:
+
+[cols="1,3",options="header"]
+|===
+|Element |What It Shows
+
+|Agent cards
+|Each agent's model, status (thinking/done), and individual response
+
+|Coordination summary
+|The aggregated answer synthesizing all agent outputs
+
+|Timing
+|Per-agent latency and total swarm execution time — parallel execution means the total time approaches the slowest agent, not the sum
+|===
+
+== Try It: Compare Single Agent vs Swarm
+
+. Ask the same question using just the chat (Try It page) with a single model.
+. Then run the same question through the swarm.
+. *Expected result* — the swarm produces a more comprehensive, multi-perspective answer by combining the strengths of different models.
+
+[.next-nav]
+xref:06-research-agent.adoc[Next: Research Agent →]

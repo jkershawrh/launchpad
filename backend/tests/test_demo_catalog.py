@@ -45,7 +45,7 @@ def catalog():
 
 def test_catalog_lists_all_items_including_demos(catalog):
     items = catalog.list_items()
-    assert len(items) == 21
+    assert len(items) == 25
     ids = {i.catalog_item_id for i in items}
     for demo_id in ALL_DEMO_IDS:
         assert demo_id in ids, f"Missing demo item: {demo_id}"

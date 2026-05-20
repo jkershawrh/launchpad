@@ -1,0 +1,34 @@
+
+Base OpenShift Infra Cluster for Intel x Red Hat AI Partner Launchpad demos.
+
+This catalog item deploys shared platform services on top of an OpenShift cluster, preparing it to host Launchpad demo tenant environments via the OpenShift Sandbox API.
+
+== What Gets Deployed
+
+* *Keycloak SSO* -- OpenShift authentication with admin and per-user accounts
+* *ArgoCD (OpenShift GitOps)* -- GitOps operator for tenant workload delivery
+* *OpenShift AI* -- Dashboard, pipelines, workbenches, model serving
+
+== Design
+
+This catalog item is designed to be registered with the OpenShift Sandbox API.
+Individual Launchpad demo tenants are provisioned on top of this base cluster.
+Each demo tenant gets its own namespace, Keycloak user, LiteLLM virtual key,
+and a filtered demo frontend showing only the relevant demo pages.
+
+== Demos Available
+
+* Inference Overdrive -- Model routing and performance benchmarking
+* Agent Swarm -- Multi-agent parallel execution
+* Research Agent -- Multi-step Q&A with reranking
+* Enterprise RAG -- Retrieval-augmented generation pipeline
+* AIOps Copilot -- Alert classification and remediation
+* Governed Agent -- Risk-gated agent execution
+* Hardware Recovery -- Graceful Gaudi/CPU fallback
+* Workload Generator -- Load testing and benchmarking
+* Training Demo -- Fine-tuning workflows
+* Replay Comparison -- Xeon vs Gaudi performance comparison
+
+== Requirements
+
+Deploys on top of an OpenShift 4.20+ cluster from CNV pools.

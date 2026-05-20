@@ -81,6 +81,20 @@ def create_provisioning_service() -> ProvisioningService:
             cleanup=OpenShiftCleanupAdapter(),
             db_stores=db_stores,
         )
+    elif mode == "rhdp":
+        from app.adapters.rhdp.cleanup import RHDPCleanupAdapter
+        from app.adapters.rhdp.pool import RHDPPoolAdapter
+        from app.adapters.rhdp.provisioning import RHDPProvisioningAdapter
+        from app.adapters.rhdp.sandbox_api import SandboxAPIClient
+        from app.adapters.rhdp.validation import RHDPValidationAdapter
+        sandbox_api = SandboxAPIClient()
+        return ProvisioningService(
+            pool=RHDPPoolAdapter(sandbox_api=sandbox_api),
+            provisioner=RHDPProvisioningAdapter(),
+            validator=RHDPValidationAdapter(),
+            cleanup=RHDPCleanupAdapter(sandbox_api=sandbox_api),
+            db_stores=db_stores,
+        )
     return ProvisioningService(db_stores=db_stores)
 
 
