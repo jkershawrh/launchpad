@@ -11,7 +11,7 @@ demo:
   branding: "default"
 
   frontend:
-    image: quay.io/intel-redhat/demo-frontend:latest
+    image: quay.io/rhpds/launchpad-demo-frontend:latest
     replicas: 1
     resources:
       requests:
@@ -22,7 +22,7 @@ demo:
         memory: 256Mi
 
   gateway:
-    image: quay.io/intel-redhat/inference-gateway:latest
+    image: quay.io/rhpds/launchpad-gateway:latest
     replicas: 1
     litellmApiEndpoint: ""
     litellmVirtualKey: ""
