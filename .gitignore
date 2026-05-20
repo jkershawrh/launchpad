@@ -30,3 +30,6 @@ kubeconfig*
 # Build artifacts
 www/
 *.tar.gz
+
+# Cloned upstream quickstart repos — reference by URL, don't vendor
+demos/quickstarts/
