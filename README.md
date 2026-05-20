@@ -149,33 +149,35 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 
 - [x] Backend — FastAPI with domain models, lifecycle state machine, adapter pattern (mock/local/openshift/rhdp)
 - [x] Partner portal — React frontend with branding, demo catalog, sandbox configuration
-- [x] Admin dashboard — session management, tenant management, catalog CRUD, system status
+- [x] Admin dashboard — session management, tenant management, catalog CRUD, system status, Official badges, RHDP column
 - [x] Demo frontend — runtime page filtering via ConfigMap, 10 demo pages
 - [x] Inference gateway — FastAPI routing policy across Gaudi/Xeon/CPU backends
-- [x] RHDP Sandbox API integration — client, pool adapter, provisioning adapter, cleanup
-- [x] Catalog — 25 items (10 custom demos, 7 official quickstarts, 4 sandboxes, 4 originals)
-- [x] AgnosticV configs — cluster config + 10 individual demo tenant configs following RHDP pattern
+- [x] RHDP Sandbox API integration — client, pool adapter, provisioning adapter, cleanup (29 unit tests)
+- [x] Catalog — 25 items (10 custom demos, 7 official quickstarts, 4 sandboxes, 4 originals), all wired to RHDP
+- [x] AgnosticV configs — cluster config + 11 tenant configs following RHDP pattern, PR submitted to `rhpds/agnosticv`
 - [x] Tenant bootstrap Helm chart — ArgoCD-deployable chart (frontend + gateway + postgres + route)
-- [x] Per-demo model lists — each demo gets LiteLLM virtual keys for the right set of models
+- [x] Per-demo model lists — each demo gets LiteLLM virtual keys for 1-5 models based on routing needs
 - [x] Showroom lab content — 12 AsciiDoc pages with step-by-step walkthroughs matching RHDP quickstart format
 - [x] Sandbox API verified — connected to real fleet (10 CNV clusters), login + cluster listing working
 - [x] Security — SSO (oauth-proxy), API key auth, session limits, resource quotas, no hardcoded secrets
+- [x] Repo live — https://github.com/rhpds/launchpad, branch protection enabled
+- [x] Container images built locally — `launchpad-demo-frontend` (363 MB) + `launchpad-gateway` (2.25 GB)
+- [x] 257 backend tests passing (all adapters covered)
+- [x] Documentation — architecture, adapters, build matrix, provisioning lifecycle, tenancy, showback all up to date
 
-### In Progress
+### Waiting On (external)
 
-- [ ] Sandbox API `app` role token — needed to create placements (current token is `shared-cluster-manager` role)
+- [ ] Sandbox API `app` role token — need admin to run `sandbox-cli jwt issue --name launchpad --role app`
+- [ ] quay.io push access — need to be added to `rhpds` org to push container images
+- [ ] AgnosticV PR review — submitted to `rhpds/agnosticv` branch `launchpad-demos`, pending review from Tony Kay / Nate Stephany
+
+### To Do (once unblocked)
+
+- [ ] Push container images to `quay.io/rhpds/launchpad-demo-frontend` and `quay.io/rhpds/launchpad-gateway`
 - [ ] End-to-end placement test — create a real namespace on a CNV cluster via Sandbox API
-- [ ] Push to git repo — code needs to be in a repo that ArgoCD can pull from
-- [ ] Build + push container images — `quay.io/intel-redhat/demo-frontend` and `inference-gateway`
-
-### To Do
-
-- [ ] Submit AgnosticV configs to `rhpds/agnosticv` — PR the demo tenant configs into the RHDP catalog
-- [ ] Onboard a Launchpad base cluster — order `launchpad-cluster` from RHDP to provision shared infra (RHOAI + GitOps + Keycloak)
-- [ ] Full end-to-end test — order a demo from RHDP catalog, verify Showroom + frontend + gateway + inference all work
-- [ ] RHOAI install on infra01 — blocked pending manager approval, needed for official quickstarts on that cluster
-- [ ] Admin dashboard updates — add 4 new quickstarts to admin catalog view
-- [ ] Showroom content images — add screenshots to lab guide pages
+- [ ] Onboard a Launchpad base cluster — order `launchpad-cluster` from RHDP to provision shared infra
+- [ ] Full end-to-end test — order a demo from RHDP catalog, verify Showroom + frontend + gateway + inference
+- [ ] Showroom screenshots — capture from a running demo environment
 - [ ] AI-powered brand generation — dynamic branding profiles per partner/customer
 
 ## Development
