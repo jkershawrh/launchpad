@@ -109,7 +109,7 @@ def test_force_reclaim_from_any_state():
     reclaimed = provisioning_service.force_reclaim_session(session.session_id)
     assert reclaimed.status == SessionStatus.RECLAIMED
     assert reclaimed.completed_at is not None
-    assert reclaimed.lifecycle_events[-1].reason == "force reclaimed by admin"
+    assert "force reclaimed by admin" in reclaimed.lifecycle_events[-1].reason
 
 
 def test_force_reclaim_missing_session():

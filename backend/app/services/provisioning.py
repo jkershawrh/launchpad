@@ -436,7 +436,8 @@ class ProvisioningService:
             if active_demos_for_gw == 0:
                 self.cleanup.cleanup(gw_ns)
 
-        session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed")
+        session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed — credentials scrubbed")
+        session = self._scrub_credentials(session)
         self._save_session(session)
         notify_stargate(
             session_id=session.session_id,
@@ -456,10 +457,15 @@ class ProvisioningService:
             self.cleanup.cleanup(session.resources["compose_file"])
         if self.cleanup and session.resources.get("container_name"):
             self.cleanup.cleanup(session.resources["container_name"])
+        if self.cleanup and session.namespace:
+            try:
+                self.cleanup.cleanup(session.namespace)
+            except Exception:
+                pass
         event = LifecycleEvent(
             from_status=session.status,
             to_status=SessionStatus.RECLAIMED,
-            reason="force reclaimed by admin",
+            reason="force reclaimed by admin — credentials scrubbed",
         )
         session = session.model_copy(
             update={
@@ -468,7 +474,28 @@ class ProvisioningService:
                 "lifecycle_events": session.lifecycle_events + [event],
             }
         )
+        session = self._scrub_credentials(session)
         self._save_session(session)
+        return session
+
+    def _scrub_credentials(self, session: LabSession) -> LabSession:
+        scrubbed_resources = {
+            k: v for k, v in session.resources.items()
+            if k not in ("sa_token", "sandbox_data")
+        }
+        session = session.model_copy(update={
+            "maas_api_key": None,
+            "resources": scrubbed_resources,
+        })
+        for plan in self._plans.values():
+            if plan.request_id == session.request_id:
+                scrubbed_plan_resources = {
+                    k: v for k, v in plan.required_resources.items()
+                    if k not in ("maas_api_key", "sandbox_data")
+                }
+                updated_plan = plan.model_copy(update={"required_resources": scrubbed_plan_resources})
+                self._plans[plan.plan_id] = updated_plan
+                self._save_plan(updated_plan)
         return session
 
     def get_session(self, session_id: str) -> Optional[LabSession]:
@@ -548,21 +575,45 @@ class ProvisioningService:
         if not workshop:
             raise ValueError(f"Workshop {workshop_id} not found")
 
+        failed_reclaims = []
         for session_id in workshop.session_ids:
             try:
                 self.reclaim_session(session_id)
             except (ValueError, Exception):
                 try:
                     self.force_reclaim_session(session_id)
-                except Exception:
-                    pass
+                except Exception as e:
+                    failed_reclaims.append({"session_id": session_id, "error": str(e)})
 
+        status = "completed" if not failed_reclaims else "completed_with_errors"
         workshop = workshop.model_copy(update={
-            "status": "completed",
+            "status": status,
             "completed_at": datetime.utcnow(),
+            "metadata": {**workshop.metadata, "failed_reclaims": failed_reclaims},
         })
         self._workshops[workshop.workshop_id] = workshop
         return workshop
 
     def get_workshop(self, workshop_id: str) -> Optional[Workshop]:
         return self._workshops.get(workshop_id)
+
+    def enforce_ttl(self) -> int:
+        now = datetime.utcnow()
+        reclaimable = {"ready", "active"}
+        reclaimed_count = 0
+        for session in list(self._sessions.values()):
+            if session.status.value not in reclaimable:
+                continue
+            if session.expires_at is None:
+                continue
+            if session.expires_at < now:
+                try:
+                    self.reclaim_session(session.session_id)
+                    reclaimed_count += 1
+                except Exception:
+                    try:
+                        self.force_reclaim_session(session.session_id)
+                        reclaimed_count += 1
+                    except Exception:
+                        pass
+        return reclaimed_count
