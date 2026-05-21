@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" font-family="'Red Hat Display', 'Segoe UI', sans-serif">
+  <defs>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+    </filter>
+    <linearGradient id="redhat" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EE0000"/>
+      <stop offset="100%" stop-color="#CC0000"/>
+    </linearGradient>
+    <linearGradient id="intel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0068B5"/>
+      <stop offset="100%" stop-color="#004A8F"/>
+    </linearGradient>
+    <linearGradient id="stargate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6B21A8"/>
+      <stop offset="100%" stop-color="#4C1D95"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#FAFAFA" rx="12"/>
+
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-size="22" font-weight="700" fill="#151515">Intel × Red Hat AI Partner Launchpad — System Architecture</text>
+
+  <!-- User -->
+  <rect x="500" y="60" width="200" height="50" rx="25" fill="#151515" filter="url(#shadow)"/>
+  <text x="600" y="91" text-anchor="middle" font-size="14" font-weight="600" fill="white">Partner / Customer</text>
+  <line x1="600" y1="110" x2="600" y2="140" stroke="#151515" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- LAUNCHPAD box -->
+  <rect x="40" y="140" width="740" height="480" rx="12" fill="white" stroke="#EE0000" stroke-width="2.5" filter="url(#shadow)"/>
+  <rect x="40" y="140" width="740" height="36" rx="12" fill="url(#redhat)"/>
+  <rect x="40" y="164" width="740" height="12" fill="url(#redhat)"/>
+  <text x="410" y="163" text-anchor="middle" font-size="15" font-weight="700" fill="white">LAUNCHPAD — Demo Platform</text>
+
+  <!-- Frontend apps -->
+  <rect x="60" y="190" width="155" height="65" rx="8" fill="#FFF0F0" stroke="#EE0000" stroke-width="1"/>
+  <text x="137" y="215" text-anchor="middle" font-size="11" font-weight="600" fill="#CC0000">Partner Portal</text>
+  <text x="137" y="232" text-anchor="middle" font-size="9" fill="#6A6E73">React • Branding • Catalog</text>
+  <text x="137" y="246" text-anchor="middle" font-size="9" fill="#6A6E73">25 demos • Launch</text>
+
+  <rect x="225" y="190" width="155" height="65" rx="8" fill="#FFF0F0" stroke="#EE0000" stroke-width="1"/>
+  <text x="302" y="215" text-anchor="middle" font-size="11" font-weight="600" fill="#CC0000">Admin Dashboard</text>
+  <text x="302" y="232" text-anchor="middle" font-size="9" fill="#6A6E73">Sessions • Tenants</text>
+  <text x="302" y="246" text-anchor="middle" font-size="9" fill="#6A6E73">Persistent • Reports</text>
+
+  <rect x="390" y="190" width="155" height="65" rx="8" fill="#FFF0F0" stroke="#EE0000" stroke-width="1"/>
+  <text x="467" y="215" text-anchor="middle" font-size="11" font-weight="600" fill="#CC0000">Demo Frontend</text>
+  <text x="467" y="232" text-anchor="middle" font-size="9" fill="#6A6E73">10 demo pages</text>
+  <text x="467" y="246" text-anchor="middle" font-size="9" fill="#6A6E73">Runtime page filtering</text>
+
+  <rect x="555" y="190" width="210" height="65" rx="8" fill="#E8F4FD" stroke="#0068B5" stroke-width="1"/>
+  <text x="660" y="215" text-anchor="middle" font-size="11" font-weight="600" fill="#004A8F">Inference Gateway</text>
+  <text x="660" y="232" text-anchor="middle" font-size="9" fill="#6A6E73">Model routing policy</text>
+  <text x="660" y="246" text-anchor="middle" font-size="9" fill="#6A6E73">Gaudi / Xeon / CPU routing</text>
+
+  <!-- Backend -->
+  <rect x="60" y="275" width="505" height="150" rx="8" fill="#F8F8F8" stroke="#D2D2D2" stroke-width="1.5"/>
+  <text x="312" y="296" text-anchor="middle" font-size="12" font-weight="700" fill="#151515">Backend API (FastAPI)</text>
+
+  <!-- Backend internals -->
+  <rect x="75" y="308" width="145" height="50" rx="6" fill="white" stroke="#D2D2D2"/>
+  <text x="147" y="328" text-anchor="middle" font-size="10" font-weight="600" fill="#151515">Lifecycle Engine</text>
+  <text x="147" y="344" text-anchor="middle" font-size="9" fill="#6A6E73">17-state machine</text>
+
+  <rect x="230" y="308" width="145" height="50" rx="6" fill="white" stroke="#D2D2D2"/>
+  <text x="302" y="328" text-anchor="middle" font-size="10" font-weight="600" fill="#151515">Provisioning</text>
+  <text x="302" y="344" text-anchor="middle" font-size="9" fill="#6A6E73">Self-svc • Workshop</text>
+
+  <rect x="385" y="308" width="165" height="50" rx="6" fill="white" stroke="#D2D2D2"/>
+  <text x="467" y="328" text-anchor="middle" font-size="10" font-weight="600" fill="#151515">Security</text>
+  <text x="467" y="344" text-anchor="middle" font-size="9" fill="#6A6E73">SSO • Limits • Creds</text>
+
+  <rect x="75" y="365" width="475" height="45" rx="6" fill="#F0F0F0" stroke="#D2D2D2"/>
+  <text x="312" y="385" text-anchor="middle" font-size="10" font-weight="600" fill="#151515">Adapters:  Mock  │  Local  │  OpenShift  │  RHDP  │  AAP</text>
+  <text x="312" y="400" text-anchor="middle" font-size="9" fill="#6A6E73">420 tests • TDD red/green • CI green on every push</text>
+
+  <!-- PostgreSQL -->
+  <rect x="580" y="310" width="180" height="55" rx="8" fill="#E8F0E8" stroke="#3E8635" stroke-width="1"/>
+  <text x="670" y="333" text-anchor="middle" font-size="11" font-weight="600" fill="#2E6B2E">PostgreSQL</text>
+  <text x="670" y="349" text-anchor="middle" font-size="9" fill="#6A6E73">Sessions • Plans • Tenants</text>
+
+  <!-- Showroom -->
+  <rect x="60" y="440" width="230" height="55" rx="8" fill="#FFF8E1" stroke="#F0AB00" stroke-width="1"/>
+  <text x="175" y="463" text-anchor="middle" font-size="11" font-weight="600" fill="#996600">Showroom Lab Content</text>
+  <text x="175" y="480" text-anchor="middle" font-size="9" fill="#6A6E73">12 AsciiDoc pages • Step-by-step</text>
+
+  <!-- AgnosticV -->
+  <rect x="310" y="440" width="200" height="55" rx="8" fill="#FFF8E1" stroke="#F0AB00" stroke-width="1"/>
+  <text x="410" y="463" text-anchor="middle" font-size="11" font-weight="600" fill="#996600">AgnosticV Configs</text>
+  <text x="410" y="480" text-anchor="middle" font-size="9" fill="#6A6E73">12 tenant configs • ArgoCD Helm</text>
+
+  <!-- Tenant Chart -->
+  <rect x="530" y="440" width="230" height="55" rx="8" fill="#FFF8E1" stroke="#F0AB00" stroke-width="1"/>
+  <text x="645" y="463" text-anchor="middle" font-size="11" font-weight="600" fill="#996600">Tenant Helm Chart</text>
+  <text x="645" y="480" text-anchor="middle" font-size="9" fill="#6A6E73">Frontend • Gateway • PG • NetworkPolicy</text>
+
+  <!-- STARGATE box -->
+  <rect x="800" y="140" width="380" height="480" rx="12" fill="white" stroke="#6B21A8" stroke-width="2.5" filter="url(#shadow)"/>
+  <rect x="800" y="140" width="380" height="36" rx="12" fill="url(#stargate)"/>
+  <rect x="800" y="164" width="380" height="12" fill="url(#stargate)"/>
+  <text x="990" y="163" text-anchor="middle" font-size="15" font-weight="700" fill="white">STARGATE — AI Operations</text>
+
+  <!-- StarGate internals -->
+  <rect x="815" y="190" width="350" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1"/>
+  <text x="990" y="213" text-anchor="middle" font-size="11" font-weight="600" fill="#4C1D95">LLM-Powered Cluster Monitoring</text>
+  <text x="990" y="230" text-anchor="middle" font-size="9" fill="#6A6E73">Namespace health • Pod status • Route accessibility</text>
+
+  <rect x="815" y="255" width="350" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1"/>
+  <text x="990" y="278" text-anchor="middle" font-size="11" font-weight="600" fill="#4C1D95">Failure Classification (Rubrics)</text>
+  <text x="990" y="295" text-anchor="middle" font-size="9" fill="#6A6E73">Named failure classes • LLM analysis • Evidence bundles</text>
+
+  <rect x="815" y="320" width="350" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1"/>
+  <text x="990" y="343" text-anchor="middle" font-size="11" font-weight="600" fill="#4C1D95">Risk-Gated Remediation</text>
+  <text x="990" y="360" text-anchor="middle" font-size="9" fill="#6A6E73">Low → auto  │  Medium → approval  │  High → blocked</text>
+
+  <rect x="815" y="385" width="350" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1"/>
+  <text x="990" y="408" text-anchor="middle" font-size="11" font-weight="600" fill="#4C1D95">Launchpad Remediation Catalog</text>
+  <text x="990" y="425" text-anchor="middle" font-size="9" fill="#6A6E73">reclaim_session • release_placement • reclaim_workshop</text>
+
+  <rect x="815" y="450" width="350" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1"/>
+  <text x="990" y="473" text-anchor="middle" font-size="11" font-weight="600" fill="#4C1D95">Audit + Evidence Trail</text>
+  <text x="990" y="490" text-anchor="middle" font-size="9" fill="#6A6E73">Every action recorded • Compliance ready</text>
+
+  <!-- Integration arrows -->
+  <!-- Pre-flight -->
+  <line x1="565" y1="340" x2="815" y2="210" stroke="#6B21A8" stroke-width="2" stroke-dasharray="6,3"/>
+  <rect x="640" y="248" width="140" height="28" rx="14" fill="#6B21A8"/>
+  <text x="710" y="267" text-anchor="middle" font-size="9" font-weight="600" fill="white">1. PRE-FLIGHT</text>
+
+  <!-- Evidence -->
+  <line x1="565" y1="370" x2="815" y2="280" stroke="#6B21A8" stroke-width="2"/>
+  <rect x="640" y="305" width="140" height="28" rx="14" fill="#6B21A8"/>
+  <text x="710" y="324" text-anchor="middle" font-size="9" font-weight="600" fill="white">2. EVIDENCE</text>
+
+  <!-- Catch -->
+  <line x1="565" y1="400" x2="815" y2="350" stroke="#C9190B" stroke-width="2"/>
+  <rect x="640" y="362" width="140" height="28" rx="14" fill="#C9190B"/>
+  <text x="710" y="381" text-anchor="middle" font-size="9" font-weight="600" fill="white">3. CATCH FAILURE</text>
+
+  <!-- Callback -->
+  <line x1="815" y1="420" x2="565" y2="410" stroke="#3E8635" stroke-width="2" stroke-dasharray="6,3"/>
+  <rect x="640" y="408" width="140" height="28" rx="14" fill="#3E8635"/>
+  <text x="710" y="427" text-anchor="middle" font-size="9" font-weight="600" fill="white">4. CALLBACK</text>
+
+  <!-- External services -->
+  <rect x="40" y="650" width="200" height="70" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="140" y="676" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">RHDP Sandbox API</text>
+  <text x="140" y="693" text-anchor="middle" font-size="9" fill="#6A6E73">12 CNV clusters</text>
+  <text x="140" y="706" text-anchor="middle" font-size="9" fill="#6A6E73">Namespace provisioning</text>
+
+  <rect x="260" y="650" width="200" height="70" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="360" y="676" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">ArgoCD (GitOps)</text>
+  <text x="360" y="693" text-anchor="middle" font-size="9" fill="#6A6E73">tenant/bootstrap/ Helm</text>
+  <text x="360" y="706" text-anchor="middle" font-size="9" fill="#6A6E73">Per-demo deployment</text>
+
+  <rect x="480" y="650" width="200" height="70" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="580" y="676" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">AAP Controller</text>
+  <text x="580" y="693" text-anchor="middle" font-size="9" fill="#6A6E73">Job templates</text>
+  <text x="580" y="706" text-anchor="middle" font-size="9" fill="#6A6E73">v4.5.27 on infra01</text>
+
+  <rect x="700" y="650" width="240" height="70" rx="8" fill="white" stroke="#0068B5" stroke-width="2" filter="url(#shadow)"/>
+  <text x="820" y="676" text-anchor="middle" font-size="11" font-weight="600" fill="#004A8F">LiteMaaS (LiteLLM)</text>
+  <text x="820" y="693" text-anchor="middle" font-size="9" fill="#6A6E73">5 models • Per-tenant virtual keys</text>
+  <text x="820" y="706" text-anchor="middle" font-size="9" fill="#6A6E73">Granite • Llama • DeepSeek • Phi • Qwen</text>
+
+  <!-- Intel hardware -->
+  <rect x="960" y="650" width="220" height="70" rx="8" fill="url(#intel)" filter="url(#shadow)"/>
+  <text x="1070" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="white">Intel Hardware</text>
+  <text x="1070" y="693" text-anchor="middle" font-size="10" fill="#B0D4F1">Gaudi 3 — 24 cards</text>
+  <text x="1070" y="706" text-anchor="middle" font-size="10" fill="#B0D4F1">Xeon 6 — CPU inference</text>
+
+  <!-- Connection lines to external -->
+  <line x1="200" y1="520" x2="140" y2="650" stroke="#D2D2D2" stroke-width="1.5"/>
+  <line x1="400" y1="520" x2="360" y2="650" stroke="#D2D2D2" stroke-width="1.5"/>
+  <line x1="500" y1="410" x2="580" y2="650" stroke="#D2D2D2" stroke-width="1.5"/>
+  <line x1="660" y1="260" x2="820" y2="650" stroke="#0068B5" stroke-width="1.5"/>
+  <line x1="820" y1="720" x2="1070" y2="650" stroke="#0068B5" stroke-width="1.5"/>
+
+  <!-- Footer -->
+  <text x="600" y="770" text-anchor="middle" font-size="11" fill="#6A6E73">420 tests • 28 local E2E • CI green • Branch protection • Secret scanning • Push protection</text>
+  <text x="600" y="790" text-anchor="middle" font-size="10" fill="#6A6E73">Launchpad creates and destroys. StarGate observes and heals. Clear separation. Zero overlap.</text>
+
+  <!-- Legend -->
+  <rect x="40" y="820" width="1140" height="60" rx="8" fill="#F8F8F8" stroke="#D2D2D2"/>
+  <text x="60" y="845" font-size="10" font-weight="600" fill="#151515">Integration:</text>
+  <line x1="140" y1="841" x2="180" y2="841" stroke="#6B21A8" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="185" y="845" font-size="9" fill="#6A6E73">Pre-flight / Callback</text>
+  <line x1="310" y1="841" x2="350" y2="841" stroke="#6B21A8" stroke-width="2"/>
+  <text x="355" y="845" font-size="9" fill="#6A6E73">Evidence</text>
+  <line x1="430" y1="841" x2="470" y2="841" stroke="#C9190B" stroke-width="2"/>
+  <text x="475" y="845" font-size="9" fill="#6A6E73">Failure catch</text>
+  <line x1="570" y1="841" x2="610" y2="841" stroke="#3E8635" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="615" y="845" font-size="9" fill="#6A6E73">Success callback</text>
+
+  <text x="60" y="867" font-size="10" font-weight="600" fill="#151515">Degradation:</text>
+  <text x="155" y="867" font-size="9" fill="#6A6E73">StarGate down → Launchpad works alone (mock constraints, direct cleanup)</text>
+  <text x="650" y="867" font-size="9" fill="#6A6E73">Launchpad down → StarGate monitors existing environments independently</text>
+</svg>

@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 750" font-family="'Red Hat Display', 'Segoe UI', sans-serif">
+  <defs>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+    </filter>
+    <marker id="arrowR" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#EE0000"/>
+    </marker>
+    <marker id="arrowP" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6B21A8"/>
+    </marker>
+    <marker id="arrowG" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#3E8635"/>
+    </marker>
+    <marker id="arrowD" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#C9190B"/>
+    </marker>
+  </defs>
+
+  <rect width="1100" height="750" fill="#FAFAFA" rx="12"/>
+  <text x="550" y="35" text-anchor="middle" font-size="20" font-weight="700" fill="#151515">Launchpad ↔ StarGate Integration Flow</text>
+
+  <!-- Launchpad column -->
+  <rect x="40" y="55" width="440" height="680" rx="12" fill="white" stroke="#EE0000" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="40" y="55" width="440" height="32" rx="12" fill="#EE0000"/>
+  <rect x="40" y="76" width="440" height="11" fill="#EE0000"/>
+  <text x="260" y="77" text-anchor="middle" font-size="14" font-weight="700" fill="white">LAUNCHPAD (Action Layer)</text>
+
+  <!-- StarGate column -->
+  <rect x="620" y="55" width="440" height="680" rx="12" fill="white" stroke="#6B21A8" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="620" y="55" width="440" height="32" rx="12" fill="#6B21A8"/>
+  <rect x="620" y="76" width="440" height="11" fill="#6B21A8"/>
+  <text x="840" y="77" text-anchor="middle" font-size="14" font-weight="700" fill="white">STARGATE (Intelligence Layer)</text>
+
+  <!-- Step 1: Pre-flight -->
+  <rect x="60" y="100" width="400" height="55" rx="8" fill="#F8F8F8" stroke="#D2D2D2"/>
+  <text x="260" y="123" text-anchor="middle" font-size="12" font-weight="600" fill="#151515">User orders demo</text>
+  <text x="260" y="141" text-anchor="middle" font-size="10" fill="#6A6E73">Partner portal → submit request</text>
+
+  <line x1="460" y1="127" x2="620" y2="127" stroke="#6B21A8" stroke-width="2.5" marker-end="url(#arrowP)"/>
+  <rect x="485" y="110" width="110" height="24" rx="12" fill="#6B21A8"/>
+  <text x="540" y="126" text-anchor="middle" font-size="9" font-weight="600" fill="white">1. PRE-FLIGHT</text>
+
+  <rect x="640" y="100" width="400" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8"/>
+  <text x="840" y="123" text-anchor="middle" font-size="12" font-weight="600" fill="#4C1D95">Evaluate cluster health</text>
+  <text x="840" y="141" text-anchor="middle" font-size="10" fill="#6A6E73">Capacity • Known issues • LLM assessment</text>
+
+  <line x1="620" y1="145" x2="460" y2="145" stroke="#6B21A8" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="540" y="157" text-anchor="middle" font-size="9" fill="#6B21A8">allowed / warn / blocked</text>
+
+  <!-- Step 2: Provision -->
+  <rect x="60" y="180" width="400" height="80" rx="8" fill="#FFF0F0" stroke="#EE0000"/>
+  <text x="260" y="203" text-anchor="middle" font-size="12" font-weight="600" fill="#CC0000">Provision demo environment</text>
+  <text x="260" y="221" text-anchor="middle" font-size="10" fill="#6A6E73">Sandbox API → claim namespace</text>
+  <text x="260" y="237" text-anchor="middle" font-size="10" fill="#6A6E73">ArgoCD → deploy Helm chart (frontend + gateway + PG)</text>
+  <text x="260" y="253" text-anchor="middle" font-size="10" fill="#6A6E73">Validate → ready → activate</text>
+
+  <!-- Step 3: Evidence -->
+  <rect x="60" y="280" width="400" height="55" rx="8" fill="#F8F8F8" stroke="#D2D2D2"/>
+  <text x="260" y="303" text-anchor="middle" font-size="12" font-weight="600" fill="#151515">Post lifecycle events</text>
+  <text x="260" y="321" text-anchor="middle" font-size="10" fill="#6A6E73">provisioned → validated → ready → active</text>
+
+  <line x1="460" y1="307" x2="620" y2="307" stroke="#6B21A8" stroke-width="2.5" marker-end="url(#arrowP)"/>
+  <rect x="485" y="290" width="110" height="24" rx="12" fill="#6B21A8"/>
+  <text x="540" y="306" text-anchor="middle" font-size="9" font-weight="600" fill="white">2. EVIDENCE</text>
+
+  <rect x="640" y="280" width="400" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8"/>
+  <text x="840" y="303" text-anchor="middle" font-size="12" font-weight="600" fill="#4C1D95">Record + monitor</text>
+  <text x="840" y="321" text-anchor="middle" font-size="10" fill="#6A6E73">External evidence • Rubric evaluation • Health tracking</text>
+
+  <!-- User active -->
+  <rect x="60" y="355" width="400" height="50" rx="8" fill="#E8F0E8" stroke="#3E8635"/>
+  <text x="260" y="378" text-anchor="middle" font-size="12" font-weight="600" fill="#2E6B2E">Demo active — user interacting</text>
+  <text x="260" y="395" text-anchor="middle" font-size="10" fill="#6A6E73">Real inference on Gaudi 3 + Xeon 6</text>
+
+  <rect x="640" y="355" width="400" height="50" rx="8" fill="#F5F0FF" stroke="#6B21A8" stroke-dasharray="4,2"/>
+  <text x="840" y="378" text-anchor="middle" font-size="12" font-weight="600" fill="#4C1D95">Continuous monitoring</text>
+  <text x="840" y="395" text-anchor="middle" font-size="10" fill="#6A6E73">Watching namespace health, pod status, routes</text>
+
+  <!-- Step 4: Reclaim -->
+  <rect x="60" y="425" width="400" height="50" rx="8" fill="#F8F8F8" stroke="#D2D2D2"/>
+  <text x="260" y="448" text-anchor="middle" font-size="12" font-weight="600" fill="#151515">Reclaim triggered</text>
+  <text x="260" y="465" text-anchor="middle" font-size="10" fill="#6A6E73">TTL expired • admin reclaim • workshop ended</text>
+
+  <!-- Step 5: Try cleanup -->
+  <rect x="60" y="490" width="400" height="60" rx="8" fill="#FFF0F0" stroke="#EE0000"/>
+  <text x="260" y="513" text-anchor="middle" font-size="12" font-weight="600" fill="#CC0000">Try cleanup directly</text>
+  <text x="260" y="531" text-anchor="middle" font-size="10" fill="#6A6E73">Delete namespace • release placement • scrub credentials</text>
+
+  <!-- Fork: success vs failure -->
+  <line x1="160" y1="550" x2="160" y2="580" stroke="#3E8635" stroke-width="2"/>
+  <line x1="360" y1="550" x2="360" y2="580" stroke="#C9190B" stroke-width="2"/>
+
+  <!-- Success path -->
+  <rect x="60" y="580" width="180" height="50" rx="8" fill="#E8F0E8" stroke="#3E8635" stroke-width="2"/>
+  <text x="150" y="603" text-anchor="middle" font-size="12" font-weight="700" fill="#2E6B2E">RECLAIMED</text>
+  <text x="150" y="620" text-anchor="middle" font-size="10" fill="#6A6E73">Cleanup succeeded</text>
+
+  <!-- Failure path -->
+  <rect x="270" y="580" width="210" height="50" rx="8" fill="#FDE8E8" stroke="#C9190B" stroke-width="2"/>
+  <text x="375" y="603" text-anchor="middle" font-size="12" font-weight="700" fill="#C9190B">CLEANUP_FAILED</text>
+  <text x="375" y="620" text-anchor="middle" font-size="10" fill="#6A6E73">Post failure to StarGate</text>
+
+  <!-- Failure → StarGate -->
+  <line x1="480" y1="605" x2="620" y2="530" stroke="#C9190B" stroke-width="2.5" marker-end="url(#arrowD)"/>
+  <rect x="485" y="548" width="130" height="24" rx="12" fill="#C9190B"/>
+  <text x="550" y="564" text-anchor="middle" font-size="9" font-weight="600" fill="white">3. CATCH FAILURE</text>
+
+  <rect x="640" y="490" width="400" height="80" rx="8" fill="#FDE8E8" stroke="#C9190B"/>
+  <text x="840" y="513" text-anchor="middle" font-size="12" font-weight="600" fill="#C9190B">Pick up cleanup failure</text>
+  <text x="840" y="531" text-anchor="middle" font-size="10" fill="#6A6E73">LLM classifies failure type</text>
+  <text x="840" y="547" text-anchor="middle" font-size="10" fill="#6A6E73">Select remediation from catalog</text>
+  <text x="840" y="563" text-anchor="middle" font-size="10" fill="#6A6E73">Evaluate risk → auto-execute or escalate</text>
+
+  <!-- StarGate executes -->
+  <rect x="640" y="585" width="400" height="55" rx="8" fill="#F5F0FF" stroke="#6B21A8"/>
+  <text x="840" y="608" text-anchor="middle" font-size="12" font-weight="600" fill="#4C1D95">Execute remediation</text>
+  <text x="840" y="626" text-anchor="middle" font-size="10" fill="#6A6E73">oc delete ns • sandbox-api delete • force cleanup</text>
+
+  <!-- Callback -->
+  <line x1="620" y1="635" x2="480" y2="660" stroke="#3E8635" stroke-width="2.5" stroke-dasharray="6,3" marker-end="url(#arrowG)"/>
+  <rect x="485" y="638" width="110" height="24" rx="12" fill="#3E8635"/>
+  <text x="540" y="654" text-anchor="middle" font-size="9" font-weight="600" fill="white">4. CALLBACK</text>
+
+  <!-- Final reclaimed -->
+  <rect x="270" y="655" width="210" height="50" rx="8" fill="#E8F0E8" stroke="#3E8635" stroke-width="2"/>
+  <text x="375" y="678" text-anchor="middle" font-size="12" font-weight="700" fill="#2E6B2E">RECLAIMED</text>
+  <text x="375" y="695" text-anchor="middle" font-size="10" fill="#6A6E73">StarGate fixed it → finalized</text>
+
+  <!-- Footer -->
+  <text x="550" y="730" text-anchor="middle" font-size="11" fill="#6A6E73">Launchpad acts first. StarGate catches failures. Neither depends on the other to function.</text>
+</svg>
