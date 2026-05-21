@@ -426,33 +426,59 @@ class ProvisioningService:
         if not session:
             raise ValueError(f"Session {session_id} not found")
         self.pool.release(session.request_id)
+
+        cleanup_errors = []
         if self.cleanup and session.resources.get("compose_file"):
-            self.cleanup.cleanup(session.resources["compose_file"])
+            try:
+                self.cleanup.cleanup(session.resources["compose_file"])
+            except Exception as e:
+                cleanup_errors.append(str(e))
 
         if self.cleanup and session.namespace:
-            self.cleanup.cleanup(session.namespace)
+            try:
+                self.cleanup.cleanup(session.namespace)
+            except Exception as e:
+                cleanup_errors.append(str(e))
 
         if self.cleanup and session.resources.get("gateway_namespace"):
             gw_ns = session.resources["gateway_namespace"]
-            active_demos_for_gw = sum(
-                1 for s in self._sessions.values()
-                if s.session_id != session_id
-                and s.status.value in ("ready", "active", "validating", "provisioning")
-                and s.resources.get("gateway_namespace") == gw_ns
-            )
-            if active_demos_for_gw == 0:
-                self.cleanup.cleanup(gw_ns)
+            with self._get_gw_lock(gw_ns):
+                active_demos_for_gw = sum(
+                    1 for s in self._sessions.values()
+                    if s.session_id != session_id
+                    and s.status.value in ("ready", "active", "validating", "provisioning")
+                    and s.resources.get("gateway_namespace") == gw_ns
+                )
+                if active_demos_for_gw == 0:
+                    try:
+                        self.cleanup.cleanup(gw_ns)
+                    except Exception as e:
+                        cleanup_errors.append(str(e))
 
-        session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed — credentials scrubbed")
         session = self._scrub_credentials(session)
-        self._save_session(session)
-        notify_stargate(
-            session_id=session.session_id,
-            namespace=session.namespace,
-            status="reclaimed",
-            lab_code=session.catalog_item_id,
-            tenant_id=session.tenant_id,
-        )
+
+        if cleanup_errors:
+            session = transition(session, SessionStatus.CLEANUP_FAILED,
+                                 reason=f"cleanup failed — credentials scrubbed — errors: {'; '.join(cleanup_errors)}")
+            self._save_session(session)
+            notify_stargate(
+                session_id=session.session_id,
+                namespace=session.namespace,
+                status="cleanup_failed",
+                lab_code=session.catalog_item_id,
+                tenant_id=session.tenant_id,
+                error_summary="; ".join(cleanup_errors),
+            )
+        else:
+            session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed — credentials scrubbed")
+            self._save_session(session)
+            notify_stargate(
+                session_id=session.session_id,
+                namespace=session.namespace,
+                status="reclaimed",
+                lab_code=session.catalog_item_id,
+                tenant_id=session.tenant_id,
+            )
         return session
 
     def force_reclaim_session(self, session_id: str) -> LabSession:

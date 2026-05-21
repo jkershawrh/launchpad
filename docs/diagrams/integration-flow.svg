@@ -84,8 +84,8 @@
 
   <!-- Step 5: Try cleanup -->
   <rect x="60" y="490" width="400" height="60" rx="8" fill="#FFF0F0" stroke="#EE0000"/>
-  <text x="260" y="513" text-anchor="middle" font-size="12" font-weight="600" fill="#CC0000">Try cleanup directly</text>
-  <text x="260" y="531" text-anchor="middle" font-size="10" fill="#6A6E73">Delete namespace • release placement • scrub credentials</text>
+  <text x="260" y="513" text-anchor="middle" font-size="12" font-weight="600" fill="#CC0000">Try cleanup directly (try/catch)</text>
+  <text x="260" y="531" text-anchor="middle" font-size="10" fill="#6A6E73">Delete namespace • release placement • scrub creds • gateway lock</text>
 
   <!-- Fork: success vs failure -->
   <line x1="160" y1="550" x2="160" y2="580" stroke="#3E8635" stroke-width="2"/>
@@ -99,7 +99,7 @@
   <!-- Failure path -->
   <rect x="270" y="580" width="210" height="50" rx="8" fill="#FDE8E8" stroke="#C9190B" stroke-width="2"/>
   <text x="375" y="603" text-anchor="middle" font-size="12" font-weight="700" fill="#C9190B">CLEANUP_FAILED</text>
-  <text x="375" y="620" text-anchor="middle" font-size="10" fill="#6A6E73">Post failure to StarGate</text>
+  <text x="375" y="620" text-anchor="middle" font-size="10" fill="#6A6E73">notify_stargate(cleanup_failed)</text>
 
   <!-- Failure → StarGate -->
   <line x1="480" y1="605" x2="620" y2="530" stroke="#C9190B" stroke-width="2.5" marker-end="url(#arrowD)"/>

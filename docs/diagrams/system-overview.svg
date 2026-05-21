@@ -154,10 +154,10 @@
   <text x="385" y="722" text-anchor="middle" font-size="9" fill="#6A6E73">tenant/bootstrap/ Helm</text>
   <text x="385" y="736" text-anchor="middle" font-size="9" fill="#6A6E73">Per-demo deployment</text>
 
-  <rect x="520" y="680" width="210" height="70" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
-  <text x="625" y="706" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">AAP Controller</text>
-  <text x="625" y="722" text-anchor="middle" font-size="9" fill="#6A6E73">Job templates v4.5</text>
-  <text x="625" y="736" text-anchor="middle" font-size="9" fill="#6A6E73">Provisioning automation</text>
+  <rect x="520" y="680" width="210" height="70" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" stroke-dasharray="6,3" filter="url(#shadow)"/>
+  <text x="625" y="706" text-anchor="middle" font-size="11" font-weight="600" fill="#6A6E73">AAP Controller</text>
+  <text x="625" y="722" text-anchor="middle" font-size="9" fill="#6A6E73">Client built, v4.5</text>
+  <text x="625" y="736" text-anchor="middle" font-size="9" fill="#6A6E73">Not wired yet (Phase 2)</text>
 
   <rect x="760" y="680" width="250" height="70" rx="8" fill="white" stroke="#0068B5" stroke-width="2" filter="url(#shadow)"/>
   <text x="885" y="706" text-anchor="middle" font-size="11" font-weight="600" fill="#004A8F">LiteMaaS (LiteLLM)</text>
@@ -172,12 +172,12 @@
   <!-- Connection lines (vertical, no crossing) -->
   <line x1="145" y1="490" x2="145" y2="680" stroke="#D2D2D2" stroke-width="1.5" stroke-dasharray="4,3"/>
   <line x1="385" y1="460" x2="385" y2="680" stroke="#D2D2D2" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <line x1="625" y1="388" x2="625" y2="680" stroke="#D2D2D2" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <line x1="625" y1="388" x2="625" y2="680" stroke="#D2D2D2" stroke-width="1" stroke-dasharray="3,5"/>
   <line x1="657" y1="240" x2="885" y2="680" stroke="#0068B5" stroke-width="1.5" stroke-dasharray="4,3"/>
   <line x1="885" y1="750" x2="1150" y2="750" stroke="#0068B5" stroke-width="1.5"/>
 
   <!-- Footer -->
-  <text x="650" y="800" text-anchor="middle" font-size="11" fill="#6A6E73">420 tests • 28 local E2E • CI green • Branch protection • Secret scanning • Push protection</text>
+  <text x="650" y="800" text-anchor="middle" font-size="11" fill="#6A6E73">422 tests • 28 local E2E • CI green • Branch protection • Secret scanning • Push protection</text>
   <text x="650" y="820" text-anchor="middle" font-size="10" fill="#6A6E73">Launchpad creates and destroys. StarGate observes and heals. Clear separation. Zero overlap.</text>
 
   <!-- Legend -->
@@ -191,6 +191,9 @@
   <text x="510" y="875" font-size="9" fill="#6A6E73">Failure catch</text>
   <line x1="600" y1="871" x2="645" y2="871" stroke="#3E8635" stroke-width="2" stroke-dasharray="6,3"/>
   <text x="650" y="875" font-size="9" fill="#6A6E73">Success callback</text>
+
+  <line x1="780" y1="871" x2="825" y2="871" stroke="#D2D2D2" stroke-width="1.5" stroke-dasharray="3,5"/>
+  <text x="830" y="875" font-size="9" fill="#6A6E73">Phase 2 (client built, not wired)</text>
 
   <text x="65" y="895" font-size="10" font-weight="600" fill="#151515">Degradation:</text>
   <text x="165" y="895" font-size="9" fill="#6A6E73">StarGate down → Launchpad works alone</text>
