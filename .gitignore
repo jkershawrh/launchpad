@@ -23,9 +23,19 @@ demos/.env
 *.pem
 *.key
 *.cert
+*.crt
+*.token
 kubeconfig*
 *-kubeconfig
 .sandbox/
+secrets/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
 
 # Build artifacts
 www/
