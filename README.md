@@ -1,5 +1,7 @@
 # Intel x Red Hat AI Partner Launchpad
 
+![CI](https://github.com/rhpds/launchpad/actions/workflows/ci.yml/badge.svg)
+
 Self-service demo platform that provisions AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Integrates with the Red Hat Demo Platform (RHDP) to deliver repeatable, branded, time-boxed AI experiences for partners, customers, and internal teams.
 
 ## What It Does
@@ -176,8 +178,12 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [x] Live E2E test scripts — `scripts/live-e2e-test.sh` (28/28 local), `scripts/cluster-e2e-test.sh` (14/17 infra01)
 - [x] Test receipt system — JSON receipts with timestamps, commit hashes, per-test results in `test-receipts/`
 - [x] Repo live — https://github.com/rhpds/launchpad
-- [x] 406 backend tests passing — all features TDD red/green
+- [x] 420 backend tests passing — all features TDD red/green
 - [x] 11 StarGate remediation tests — catalog entries validated
+- [x] 8 AAP client tests — job template launch, poll, wait, error handling
+- [x] 6 AI brand generation tests — LLM-powered branding with graceful fallback
+- [x] GitHub Actions CI green — tests, lint, TypeScript, Helm, image builds on every push
+- [x] Security hardened — API keys rotated, git history scrubbed, secret scanning + push protection enabled
 - [x] Documentation — architecture, adapters, build matrix, provisioning lifecycle, tenancy, showback all current
 
 ### Waiting On (external)
@@ -193,8 +199,8 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [ ] Onboard a Launchpad base cluster — order `launchpad-cluster` from RHDP to provision shared infra
 - [ ] Full end-to-end test — order a demo from RHDP catalog, verify Showroom + frontend + gateway + inference
 - [ ] Showroom screenshots — capture from a running demo environment
-- [ ] AAP Job Template integration — use AAP for provisioning instead of direct oc/helm (Phase 2)
-- [ ] AI-powered brand generation — dynamic branding profiles per partner/customer
+- [ ] AAP Job Template provisioning — wire AAPClient into provisioning adapter (client built, needs job templates on AAP controller)
+- [ ] AI brand generation on live LLM — BrandGenerator built, needs LiteMaaS endpoint configured
 
 ## Development
 
