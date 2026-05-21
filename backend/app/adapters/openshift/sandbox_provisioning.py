@@ -188,9 +188,9 @@ class OpenShiftSandboxProvisioner:
         for name, data in [
             ("sandbox-credentials", {"SSH_USER": "lab-user", "SSH_PASSWORD": ssh_password}),
             ("maas-config", {
-                "MODEL_ENDPOINT": os.environ.get("LITELLM_API_BASE", "https://litellm-prod.apps.maas.redhatworkshops.io"),
+                "MODEL_ENDPOINT": os.environ.get("LITELLM_API_BASE", ""),
                 "LITELLM_API_KEY": litellm_key,
-                "LITELLM_API_BASE": os.environ.get("LITELLM_API_BASE", "https://litellm-prod.apps.maas.redhatworkshops.io"),
+                "LITELLM_API_BASE": os.environ.get("LITELLM_API_BASE", ""),
                 "MAAS_SESSION_KEY": maas_key,
                 "MAAS_RATE_LIMIT_RPM": os.environ.get("MAAS_RATE_LIMIT_RPM", "60"),
             }),
@@ -334,9 +334,11 @@ class OpenShiftSandboxProvisioner:
                 )
                 host = result.get("spec", {}).get("host", result.get("status", {}).get("ingress", [{}])[0].get("host", ""))
                 if not host:
-                    host = f"{rd['name']}-{namespace}.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
+                    ingress_domain = os.environ.get("OPENSHIFT_INGRESS_DOMAIN", "apps.cluster.example.com")
+                    host = f"{rd['name']}-{namespace}.{ingress_domain}"
                 routes[rd["name"]] = host
             except ApiException:
-                routes[rd["name"]] = f"{rd['name']}-{namespace}.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
+                ingress_domain = os.environ.get("OPENSHIFT_INGRESS_DOMAIN", "apps.cluster.example.com")
+                routes[rd["name"]] = f"{rd['name']}-{namespace}.{ingress_domain}"
 
         return routes
