@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 from typing import Optional
 
@@ -10,6 +11,12 @@ try:
     HAS_KUBERNETES = True
 except ImportError:  # pragma: no cover
     HAS_KUBERNETES = False
+
+logger = logging.getLogger("launchpad.openshift.cleanup")
+
+
+class CleanupTimeoutError(Exception):
+    pass
 
 
 class OpenShiftCleanupAdapter:
@@ -34,8 +41,9 @@ class OpenShiftCleanupAdapter:
                 ) from exc
 
         self._core_v1 = client.CoreV1Api()
+        self._rbac_v1 = client.RbacAuthorizationV1Api()
 
-    def cleanup(self, namespace: Optional[str] = None) -> bool:
+    def cleanup(self, namespace: Optional[str] = None, timeout: int = 60) -> bool:
         if not namespace:
             return False
 
@@ -43,13 +51,15 @@ class OpenShiftCleanupAdapter:
             self._core_v1.delete_namespace(name=namespace)
         except ApiException as exc:
             if exc.status == 404:
+                self._cleanup_role_binding(namespace)
                 self._active_namespaces.pop(namespace, None)
                 return True
             raise ValueError(
                 f"Failed to delete namespace '{namespace}': {exc.status} {exc.reason}"
             ) from exc
 
-        self._wait_for_deletion(namespace, timeout=60)
+        self._wait_for_deletion(namespace, timeout=timeout)
+        self._cleanup_role_binding(namespace)
         self._active_namespaces.pop(namespace, None)
         return True
 
@@ -65,3 +75,20 @@ class OpenShiftCleanupAdapter:
                 if exc.status == 404:
                     return
             time.sleep(3)
+        raise CleanupTimeoutError(
+            f"Namespace '{namespace}' stuck in Terminating after {timeout}s — manual intervention required"
+        )
+
+    def _cleanup_role_binding(self, namespace: str) -> None:
+        binding_name = f"{namespace}-image-puller"
+        try:
+            self._rbac_v1.delete_namespaced_role_binding(
+                name=binding_name,
+                namespace="partner-ai-launchpad",
+            )
+            logger.info("Deleted orphaned RoleBinding: %s", binding_name)
+        except ApiException as exc:
+            if exc.status == 404:
+                pass
+            else:
+                logger.warning("Failed to delete RoleBinding %s: %s", binding_name, exc.reason)

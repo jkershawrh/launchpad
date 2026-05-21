@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import threading
 import uuid as _uuid
 from datetime import datetime, timedelta
 from typing import Optional
@@ -58,6 +59,7 @@ class ProvisioningService:
         self._sessions: dict[str, LabSession] = {}
         self._plans: dict[str, ProvisioningPlan] = {}
         self._workshops: dict[str, Workshop] = {}
+        self._gw_locks: dict[str, threading.Lock] = {}
         self._load_from_db()
 
     def _load_from_db(self) -> None:
@@ -119,6 +121,11 @@ class ProvisioningService:
                 from app.adapters.local.sandbox_provisioner import LocalSandboxProvisioner
                 return LocalSandboxProvisioner()
         return self.provisioner
+
+    def _get_gw_lock(self, gw_namespace: str) -> threading.Lock:
+        if gw_namespace not in self._gw_locks:
+            self._gw_locks[gw_namespace] = threading.Lock()
+        return self._gw_locks[gw_namespace]
 
     def _save_request(self, request: LabRequest) -> None:
         self._requests[request.request_id] = request
