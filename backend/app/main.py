@@ -3,7 +3,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routers import admin, branding, catalog, lab_requests, lab_sessions, tenants, workshops
+from app.api.routers import admin, branding, callbacks, catalog, lab_requests, lab_sessions, tenants, workshops
 from app.storage.database import get_database_url, init_db
 
 app = FastAPI(
@@ -30,6 +30,7 @@ app.include_router(lab_sessions.router)
 app.include_router(branding.router)
 app.include_router(admin.router)
 app.include_router(workshops.router)
+app.include_router(callbacks.router)
 
 
 @app.on_event("startup")
