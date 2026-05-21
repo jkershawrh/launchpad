@@ -1,0 +1,43 @@
+{
+  "test_run_id": "b6d1c37e-32c9-4b36-a25f-595e636875b3",
+  "timestamp": "2026-05-21T16:30:50.982550Z",
+  "environment": "unit",
+  "launchpad_commit": "e308f7c",
+  "summary": {
+    "total": 377,
+    "passed": 377,
+    "failed": 0,
+    "skipped": 0
+  },
+  "test_suites": [
+    "test_lifecycle_matrix (54)",
+    "test_session_limits (7)",
+    "test_evidence_bundles (9)",
+    "test_duplicate_requests (3)",
+    "test_cleanup_hardening (12)",
+    "test_cleanup_openshift (8)",
+    "test_stargate_integration (7)",
+    "test_rhdp_adapters (29)",
+    "test_security_and_labels (13)",
+    "test_kubeconfig_security (3)",
+    "test_workshop_api (5)",
+    "test_callback (3)",
+    "test_adapters (6)",
+    "test_admin (23)",
+    "test_api (27)",
+    "test_workflow (48)",
+    "test_demo_provisioning (24)",
+    "test_e2e_provisioning (5)",
+    "test_reports (16)",
+    "test_branding (4)",
+    "test_lifecycle (8)",
+    "test_tenant (5)",
+    "test_lab_request (5)",
+    "test_lab_session (5)",
+    "test_catalog_item (5)",
+    "test_hardware_profile (5)",
+    "test_quota_profile (5)",
+    "test_demo_catalog (11)",
+    "test_demo_migration (27)"
+  ]
+}
