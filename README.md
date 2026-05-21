@@ -152,17 +152,20 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [x] Admin dashboard — session management, tenant management, catalog CRUD, system status, Official badges, RHDP column
 - [x] Demo frontend — runtime page filtering via ConfigMap, 10 demo pages
 - [x] Inference gateway — FastAPI routing policy across Gaudi/Xeon/CPU backends
-- [x] RHDP Sandbox API integration — client, pool adapter, provisioning adapter, cleanup (29 unit tests)
+- [x] RHDP Sandbox API integration — client, pool adapter, provisioning adapter, cleanup
 - [x] Catalog — 25 items (10 custom demos, 7 official quickstarts, 4 sandboxes, 4 originals), all wired to RHDP
 - [x] AgnosticV configs — cluster config + 11 tenant configs following RHDP pattern, PR submitted to `rhpds/agnosticv`
-- [x] Tenant bootstrap Helm chart — ArgoCD-deployable chart (frontend + gateway + postgres + route)
+- [x] Tenant bootstrap Helm chart — ArgoCD-deployable (frontend + gateway + postgres + route + NetworkPolicy)
 - [x] Per-demo model lists — each demo gets LiteLLM virtual keys for 1-5 models based on routing needs
 - [x] Showroom lab content — 12 AsciiDoc pages with step-by-step walkthroughs matching RHDP quickstart format
 - [x] Sandbox API verified — connected to real fleet (10 CNV clusters), login + cluster listing working
-- [x] Security — SSO (oauth-proxy), API key auth, session limits, resource quotas, no hardcoded secrets
-- [x] Repo live — https://github.com/rhpds/launchpad, branch protection enabled
 - [x] Container images built locally — `launchpad-demo-frontend` (363 MB) + `launchpad-gateway` (2.25 GB)
-- [x] 257 backend tests passing (all adapters covered)
+- [x] Workshop batch provisioning — Workshop model, `POST/GET/DELETE /api/workshops`, bulk provision/reclaim N sessions (TDD)
+- [x] Persistent demos — `persistence: persistent` → never expires, `reinitialize` resets without destroying (TDD)
+- [x] Labels — `launchpad.redhat.com/tenant`, `session-id`, `catalog-item`, `purpose`, `workshop-id` on all resources (TDD)
+- [x] Security hardening — PSS restricted on namespaces, egress/ingress NetworkPolicy, random PG passwords, kubeconfig (not --token CLI args), public session view hides MaaS keys (TDD)
+- [x] Repo live — https://github.com/rhpds/launchpad, branch protection enabled
+- [x] 278 backend tests passing — all features TDD red/green
 - [x] Documentation — architecture, adapters, build matrix, provisioning lifecycle, tenancy, showback all up to date
 
 ### Waiting On (external)
@@ -178,6 +181,7 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [ ] Onboard a Launchpad base cluster — order `launchpad-cluster` from RHDP to provision shared infra
 - [ ] Full end-to-end test — order a demo from RHDP catalog, verify Showroom + frontend + gateway + inference
 - [ ] Showroom screenshots — capture from a running demo environment
+- [ ] AAP Job Template integration — use AAP for provisioning instead of direct oc/helm (Phase 2)
 - [ ] AI-powered brand generation — dynamic branding profiles per partner/customer
 
 ## Development

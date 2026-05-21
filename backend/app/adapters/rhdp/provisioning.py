@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import logging
+import os
 import subprocess
+import tempfile
 from typing import Any, Dict, Optional
 
 from app.adapters.interfaces import ProvisionResult
@@ -116,36 +118,61 @@ class RHDPProvisioningAdapter:
         else:
             self._apply_kustomize(deploy_path, namespace, api_url, sa_token)
 
+    @staticmethod
+    def _write_kubeconfig(api_url: str, token: str) -> str:
+        kubeconfig = {
+            "apiVersion": "v1",
+            "kind": "Config",
+            "clusters": [{"cluster": {"server": api_url, "insecure-skip-tls-verify": True}, "name": "target"}],
+            "contexts": [{"context": {"cluster": "target", "user": "sa"}, "name": "target"}],
+            "current-context": "target",
+            "users": [{"name": "sa", "user": {"token": token}}],
+        }
+        import yaml
+        fd, path = tempfile.mkstemp(suffix=".kubeconfig", prefix="launchpad-")
+        try:
+            with os.fdopen(fd, "w") as f:
+                yaml.dump(kubeconfig, f)
+        except Exception:
+            os.close(fd)
+            raise
+        return path
+
     def _apply_kustomize(
         self, path: str, namespace: str, api_url: str, token: str
     ) -> None:
-        cmd = [
-            "oc", "--server", api_url, "--token", token,
-            "--insecure-skip-tls-verify",
-            "apply", "-k", path, "-n", namespace,
-        ]
-        logger.info("Applying kustomize: %s", " ".join(cmd[:6]))
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
-        if result.returncode != 0:
-            logger.error("Kustomize apply failed: %s", result.stderr)
-            raise RuntimeError(f"Kustomize apply failed: {result.stderr}")
+        kubeconfig_path = self._write_kubeconfig(api_url, token)
+        try:
+            cmd = [
+                "oc", "--kubeconfig", kubeconfig_path,
+                "apply", "-k", path, "-n", namespace,
+            ]
+            logger.info("Applying kustomize to %s", namespace)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            if result.returncode != 0:
+                logger.error("Kustomize apply failed: %s", result.stderr)
+                raise RuntimeError(f"Kustomize apply failed: {result.stderr}")
+        finally:
+            os.unlink(kubeconfig_path)
 
     def _deploy_helm(
         self, path: str, namespace: str, api_url: str, token: str
     ) -> None:
-        cmd = [
-            "helm", "upgrade", "--install", "demo", path,
-            "--namespace", namespace,
-            "--kube-apiserver", api_url,
-            "--kube-token", token,
-            "--kube-insecure-skip-tls-verify",
-            "--wait", "--timeout", "5m",
-        ]
-        logger.info("Deploying helm chart: %s", path)
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=360)
-        if result.returncode != 0:
-            logger.error("Helm deploy failed: %s", result.stderr)
-            raise RuntimeError(f"Helm deploy failed: {result.stderr}")
+        kubeconfig_path = self._write_kubeconfig(api_url, token)
+        try:
+            cmd = [
+                "helm", "upgrade", "--install", "demo", path,
+                "--namespace", namespace,
+                "--kubeconfig", kubeconfig_path,
+                "--wait", "--timeout", "5m",
+            ]
+            logger.info("Deploying helm chart: %s", path)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=360)
+            if result.returncode != 0:
+                logger.error("Helm deploy failed: %s", result.stderr)
+                raise RuntimeError(f"Helm deploy failed: {result.stderr}")
+        finally:
+            os.unlink(kubeconfig_path)
 
     @staticmethod
     def _infer_api_url(ingress_domain: str) -> str:
