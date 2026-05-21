@@ -206,10 +206,10 @@ LAUNCHPAD_MODE=mock uvicorn app.main:app --reload
 # Run tests
 cd backend && python -m pytest tests/ -q
 
-# Run with RHDP integration
+# Run with RHDP integration (requires VPN + Sandbox API token)
 LAUNCHPAD_MODE=rhdp \
-SANDBOX_API_URL=$SANDBOX_API_ROUTE \
+SANDBOX_API_URL=$SANDBOX_API_URL \
 SANDBOX_LOGIN_TOKEN=$(cat ~/.sandbox/token) \
-HTTPS_PROXY=http://squid.redhat.com:3128 \
+HTTPS_PROXY=$HTTPS_PROXY \
 uvicorn app.main:app --reload
 ```

@@ -181,8 +181,8 @@ echo ""
 # ── Step 8: Sandbox API ──────────────────────────────
 echo "Step 8: Sandbox API (read-only)"
 if [ -f ~/.sandbox/token ]; then
-  SANDBOX_RESULT=$(HTTPS_PROXY=http://squid.redhat.com:3128 \
-    SANDBOX_API_URL=https://restricted-babylon-sandbox-api.apps.infra-us-east-1.infra.demo.redhat.com \
+  SANDBOX_RESULT=$(HTTPS_PROXY="${HTTPS_PROXY:-http://squid.redhat.com:3128}" \
+    SANDBOX_API_URL="${SANDBOX_API_URL:-}" \
     SANDBOX_LOGIN_TOKEN="$(cat ~/.sandbox/token)" \
     python3 -c "
 from app.adapters.rhdp.sandbox_api import SandboxAPIClient

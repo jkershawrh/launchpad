@@ -69,7 +69,7 @@
 | Replay Comparison — Xeon vs Gaudi benchmarking | Done |
 | Screenshots | Pending |
 
-## Models (via LiteMaaS on ocp-rac-maas)
+## Models (via LiteMaaS)
 
 | Model | Hardware | Gaudi Cards | Status |
 |-------|----------|-------------|--------|
@@ -84,9 +84,9 @@
 
 | Cluster | Role | Status |
 |---------|------|--------|
-| ocp-rac-maas | Model serving (Gaudi 3 + Xeon 6) | Running — 5 models, RHOAI 2.25 |
-| ocpv-infra01 | Launchpad platform (backend, portal, admin) | Running — 4 pods |
-| CNV pool (ocpv01-10) | Demo deployment targets via Sandbox API | 10 clusters, 8 valid |
+| MaaS cluster | Model serving (Gaudi 3 + Xeon 6) | Running — 5 models, RHOAI 2.25 |
+| Launchpad cluster | Launchpad platform (backend, portal, admin) | Running — 4 pods |
+| CNV pool | Demo deployment targets via Sandbox API | 10+ clusters |
 | Launchpad base cluster | Shared infra for custom demos | Pending — needs onboarding |
 
 ## Backend Adapters

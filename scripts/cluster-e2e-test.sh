@@ -4,13 +4,14 @@ set -euo pipefail
 # Cluster E2E Test Script for Launchpad + StarGate on infra01
 # Requires: oc logged into infra01, VPN for Sandbox API
 
-LAUNCHPAD_API="https://launchpad-api.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
-LAUNCHPAD_PORTAL="https://launchpad.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
-LAUNCHPAD_ADMIN="https://launchpad-admin.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
-STARGATE_URL="https://stargate.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
+CLUSTER_DOMAIN="${CLUSTER_DOMAIN:?Set CLUSTER_DOMAIN env var (e.g. apps.cluster.example.com)}"
+LAUNCHPAD_API="https://launchpad-api.${CLUSTER_DOMAIN}"
+LAUNCHPAD_PORTAL="https://launchpad.${CLUSTER_DOMAIN}"
+LAUNCHPAD_ADMIN="https://launchpad-admin.${CLUSTER_DOMAIN}"
+STARGATE_URL="https://stargate.${CLUSTER_DOMAIN}"
 LP_NS="partner-ai-launchpad"
 SG_NS="stargate"
-API_KEY="${LAUNCHPAD_API_KEY:-REDACTED_API_KEY}"
+API_KEY="${LAUNCHPAD_API_KEY:?Set LAUNCHPAD_API_KEY env var}"
 AUTH="-H X-API-Key:$API_KEY"
 
 PASS=0
@@ -117,9 +118,9 @@ echo ""
 # ── Step 6: Sandbox API Connection ────────────────────
 echo "Step 6: Sandbox API (from cluster)"
 if [ -f ~/.sandbox/token ]; then
-  SB_RESULT=$(HTTPS_PROXY=http://squid.redhat.com:3128 curl -sk \
+  SB_RESULT=$(HTTPS_PROXY="${HTTPS_PROXY:-}" curl -sk \
     -H "Authorization: Bearer $(cat ~/.sandbox/token)" \
-    "https://restricted-babylon-sandbox-api.apps.infra-us-east-1.infra.demo.redhat.com/api/v1/login" 2>/dev/null)
+    "${SANDBOX_API_URL}/api/v1/login" 2>/dev/null)
   SB_TOKEN=$(echo "$SB_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token','')[:10])" 2>/dev/null || echo "")
   if [ -n "$SB_TOKEN" ]; then pass "Sandbox API login OK"; else fail "Sandbox API login failed"; fi
 else

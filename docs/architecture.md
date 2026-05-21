@@ -111,7 +111,7 @@ Each demo gets a filtered frontend view while sharing backend inference capacity
 
 ## MaaS Integration
 
-The gateway exposes a LiteLLM-compatible `/v1/chat/completions` endpoint. 5 models are currently served on the ocp-rac-maas cluster via KServe on OpenShift AI:
+The gateway exposes a LiteLLM-compatible `/v1/chat/completions` endpoint. 5 models are served via KServe on OpenShift AI:
 
 | Model | Hardware | Gaudi Cards |
 |-------|----------|-------------|
