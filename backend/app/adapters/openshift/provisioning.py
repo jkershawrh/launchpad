@@ -324,15 +324,22 @@ http {{
             if exc.status != 409:
                 pass
 
-    def _create_namespace(self, namespace: str) -> None:
+    def _create_namespace(self, namespace: str, extra_labels: dict = None) -> None:
+        labels = {
+            "app.kubernetes.io/part-of": "launchpad",
+            "app.kubernetes.io/managed-by": "launchpad",
+            "pod-security.kubernetes.io/enforce": "restricted",
+            "pod-security.kubernetes.io/warn": "restricted",
+        }
+        if extra_labels:
+            labels.update(extra_labels)
         body = client.V1Namespace(
-            metadata=client.V1ObjectMeta(name=namespace)
+            metadata=client.V1ObjectMeta(name=namespace, labels=labels)
         )
         try:
             self._core_v1.create_namespace(body=body)
         except ApiException as exc:
             if exc.status == 409:
-                # Namespace already exists – treat as success
                 pass
             else:
                 raise ValueError(

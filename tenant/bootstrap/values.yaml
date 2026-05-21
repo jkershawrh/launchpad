@@ -4,11 +4,18 @@ tenant:
     name: ""
     password: ""
 
+sessionId: ""
+workshopId: ""
+managedBy: "argocd"
+
 demo:
   namespace: ""
   name: "Intel x Red Hat AI Platform"
+  catalogItem: ""
   pages: "all"
   branding: "default"
+  purpose: "self-service"
+  persistence: "ephemeral"
 
   frontend:
     image: quay.io/rhpds/launchpad-demo-frontend:latest

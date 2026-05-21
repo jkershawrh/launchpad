@@ -100,8 +100,17 @@ class OpenShiftSandboxProvisioner:
         storage_size = res.get("storage_size", "20Gi")
         tier = RESOURCE_TIERS.get(compute_tier, RESOURCE_TIERS["light"])
 
-        # 1. Create namespace
-        self._create_namespace(namespace)
+        # 1. Create namespace with tracking labels
+        ns_labels = {
+            "launchpad.redhat.com/tenant": plan.required_resources.get("tenant_id", ""),
+            "launchpad.redhat.com/session-id": plan.request_id[:8],
+            "launchpad.redhat.com/catalog-item": plan.required_resources.get("catalog_item_id", ""),
+            "launchpad.redhat.com/purpose": plan.required_resources.get("purpose", "self-service"),
+        }
+        workshop_id = plan.required_resources.get("workshop_id")
+        if workshop_id:
+            ns_labels["launchpad.redhat.com/workshop-id"] = workshop_id
+        self._create_namespace(namespace, extra_labels=ns_labels)
 
         # 2. Grant image pull
         self._grant_image_pull(namespace)
@@ -161,10 +170,19 @@ class OpenShiftSandboxProvisioner:
             },
         )
 
-    def _create_namespace(self, namespace: str) -> None:
+    def _create_namespace(self, namespace: str, extra_labels: dict = None) -> None:
+        labels = {
+            "app": "launchpad-sandbox",
+            "app.kubernetes.io/part-of": "launchpad",
+            "app.kubernetes.io/managed-by": "launchpad",
+            "pod-security.kubernetes.io/enforce": "restricted",
+            "pod-security.kubernetes.io/warn": "restricted",
+        }
+        if extra_labels:
+            labels.update(extra_labels)
         try:
             self._core_v1.create_namespace(client.V1Namespace(
-                metadata=client.V1ObjectMeta(name=namespace, labels={"app": "launchpad-sandbox"})
+                metadata=client.V1ObjectMeta(name=namespace, labels=labels)
             ))
         except ApiException as e:
             if e.status != 409:

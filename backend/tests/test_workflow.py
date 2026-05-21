@@ -416,10 +416,12 @@ def test_reset_active_session():
     assert reset.status == SessionStatus.RESETTING
 
 
-def test_reset_raises_for_non_active_session():
+def test_reset_raises_for_reclaimed_session():
     svc, session = _provision_to_ready()
+    activated = svc.activate_session(session.session_id)
+    reclaimed = svc.force_reclaim_session(activated.session_id)
     with pytest.raises(Exception):
-        svc.reset_session(session.session_id)
+        svc.reset_session(reclaimed.session_id)
 
 
 # ─── STEP 22: Reclaim resetting session ──────────────────────────────────────

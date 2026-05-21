@@ -231,3 +231,20 @@ class ShowbackRecord(BaseModel):
     kafka_messages: int = 0
     cost_estimate: Optional[float] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Workshop(BaseModel):
+    workshop_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str
+    catalog_item_id: str
+    num_users: int
+    ttl: str = "8h"
+    ocp_version: str = "4.20"
+    purpose: str = "events"
+    status: str = "pending"
+    session_ids: List[str] = Field(default_factory=list)
+    cluster_ref: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    started_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)

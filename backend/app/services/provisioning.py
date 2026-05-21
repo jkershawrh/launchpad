@@ -16,7 +16,7 @@ from app.adapters.mock.pool import MockPoolAdapter
 from app.adapters.mock.provisioning import MockProvisioningAdapter
 from app.adapters.mock.showback import MockShowbackAdapter
 from app.adapters.mock.validation import MockValidationAdapter
-from app.domain.enums import LabRequestStatus, SessionStatus
+from app.domain.enums import CatalogCategory, LabRequestStatus, Persistence, SessionStatus
 from app.domain.lifecycle import transition
 from app.domain.models import (
     LabRequest,
@@ -24,6 +24,7 @@ from app.domain.models import (
     LifecycleEvent,
     ProvisioningPlan,
     ShowbackRecord,
+    Workshop,
 )
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
@@ -56,6 +57,7 @@ class ProvisioningService:
         self._requests: dict[str, LabRequest] = {}
         self._sessions: dict[str, LabSession] = {}
         self._plans: dict[str, ProvisioningPlan] = {}
+        self._workshops: dict[str, Workshop] = {}
         self._load_from_db()
 
     def _load_from_db(self) -> None:
@@ -219,9 +221,12 @@ class ProvisioningService:
 
         result = provisioner.provision(plan)
 
-        ttl_str = request.ttl or catalog_item.default_ttl or "4h"
-        hours = int(ttl_str.replace("h", ""))
-        expires_at = datetime.utcnow() + timedelta(hours=hours)
+        if request.persistence == Persistence.PERSISTENT:
+            expires_at = None
+        else:
+            ttl_str = request.ttl or catalog_item.default_ttl or "4h"
+            hours = int(ttl_str.replace("h", ""))
+            expires_at = datetime.utcnow() + timedelta(hours=hours)
 
         dashboard_url = self.observability.create_dashboard(
             LabSession(
@@ -234,6 +239,12 @@ class ProvisioningService:
 
         cluster_ref = getattr(result, "cluster_ref", None) or sandbox_data.get("ingress_domain")
 
+        session_labels = {
+            "launchpad.redhat.com/tenant": request.tenant_id,
+            "launchpad.redhat.com/catalog-item": request.catalog_item_id,
+            "launchpad.redhat.com/purpose": sandbox_data.get("purpose", "self-service"),
+        }
+
         session = LabSession(
             request_id=request.request_id,
             tenant_id=request.tenant_id,
@@ -245,6 +256,7 @@ class ProvisioningService:
             expires_at=expires_at,
             resources=result.resources,
             maas_api_key=maas_api_key,
+            metadata={"labels": session_labels},
         )
 
         session = transition(session, SessionStatus.PROVISIONING, reason="provisioning started")
@@ -462,5 +474,95 @@ class ProvisioningService:
     def get_session(self, session_id: str) -> Optional[LabSession]:
         return self._sessions.get(session_id)
 
+    def get_session_public(self, session_id: str) -> Optional[LabSession]:
+        session = self._sessions.get(session_id)
+        if not session:
+            return None
+        return session.model_copy(update={"maas_api_key": None})
+
+    def reinitialize_session(self, session_id: str) -> LabSession:
+        session = self._sessions.get(session_id)
+        if not session:
+            raise ValueError(f"Session {session_id} not found")
+        if session.status not in (SessionStatus.ACTIVE, SessionStatus.READY):
+            raise ValueError(f"Session {session_id} is not active/ready (status: {session.status.value})")
+        session = transition(session, SessionStatus.RESETTING, reason="reinitialize requested")
+        session = transition(session, SessionStatus.VALIDATING, reason="reinitialize in progress")
+        session = transition(session, SessionStatus.READY, reason="reinitialize complete")
+        self._save_session(session)
+        return session
+
     def get_request(self, request_id: str) -> Optional[LabRequest]:
         return self._requests.get(request_id)
+
+    # ── Workshop provisioning ─────────────────────────────────────
+
+    def provision_workshop(self, workshop: Workshop) -> Workshop:
+        workshop = workshop.model_copy(update={
+            "status": "provisioning",
+            "started_at": datetime.utcnow(),
+        })
+        self._workshops[workshop.workshop_id] = workshop
+
+        session_ids = []
+        for i in range(workshop.num_users):
+            user_id = f"workshop-{workshop.workshop_id[:8]}-user-{i+1}"
+            request = LabRequest(
+                tenant_id=workshop.tenant_id,
+                requester_id=user_id,
+                catalog_item_id=workshop.catalog_item_id,
+                requested_mode=CatalogCategory.QUICK_START,
+                ttl=workshop.ttl,
+                metadata={"workshop_id": workshop.workshop_id, "purpose": workshop.purpose},
+            )
+            accepted = self.submit_request(request)
+            if accepted.status != LabRequestStatus.ACCEPTED:
+                continue
+            try:
+                session = self.provision(accepted.request_id)
+                session = session.model_copy(update={
+                    "metadata": {
+                        **session.metadata,
+                        "purpose": workshop.purpose,
+                        "labels": {
+                            **session.metadata.get("labels", {}),
+                            "launchpad.redhat.com/workshop-id": workshop.workshop_id,
+                            "launchpad.redhat.com/purpose": workshop.purpose,
+                        },
+                    },
+                })
+                self._save_session(session)
+                session_ids.append(session.session_id)
+            except ValueError:
+                continue
+
+        workshop = workshop.model_copy(update={
+            "status": "ready",
+            "session_ids": session_ids,
+        })
+        self._workshops[workshop.workshop_id] = workshop
+        return workshop
+
+    def reclaim_workshop(self, workshop_id: str) -> Workshop:
+        workshop = self._workshops.get(workshop_id)
+        if not workshop:
+            raise ValueError(f"Workshop {workshop_id} not found")
+
+        for session_id in workshop.session_ids:
+            try:
+                self.reclaim_session(session_id)
+            except (ValueError, Exception):
+                try:
+                    self.force_reclaim_session(session_id)
+                except Exception:
+                    pass
+
+        workshop = workshop.model_copy(update={
+            "status": "completed",
+            "completed_at": datetime.utcnow(),
+        })
+        self._workshops[workshop.workshop_id] = workshop
+        return workshop
+
+    def get_workshop(self, workshop_id: str) -> Optional[Workshop]:
+        return self._workshops.get(workshop_id)

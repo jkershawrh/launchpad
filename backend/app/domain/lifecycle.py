@@ -33,6 +33,8 @@ VALID_TRANSITIONS: Set[Tuple[SessionStatus, SessionStatus]] = {
     (SessionStatus.EXPIRED, SessionStatus.RECLAIMED),
     (SessionStatus.RESETTING, SessionStatus.RECLAIMED),
     (SessionStatus.RESETTING, SessionStatus.CLEANUP_FAILED),
+    (SessionStatus.RESETTING, SessionStatus.VALIDATING),
+    (SessionStatus.READY, SessionStatus.RESETTING),
     (SessionStatus.FAILED, SessionStatus.RECLAIMED),
     (SessionStatus.VALIDATION_FAILED, SessionStatus.RECLAIMED),
     (SessionStatus.CLEANUP_FAILED, SessionStatus.RECLAIMED),

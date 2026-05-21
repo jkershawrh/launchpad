@@ -38,10 +38,11 @@ spec:
         image: {{ .Values.demo.postgres.image }}
         ports:
         - containerPort: 5432
+        envFrom:
+        - secretRef:
+            name: postgres-credentials
         env:
         - name: POSTGRESQL_USER
-          value: gateway
-        - name: POSTGRESQL_PASSWORD
           value: gateway
         - name: POSTGRESQL_DATABASE
           value: gateway
