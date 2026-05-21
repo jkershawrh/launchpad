@@ -5,6 +5,8 @@ import uuid as _uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
+from app.integrations.stargate_webhook import notify_stargate
+
 from app.adapters.interfaces import ConstraintResult
 from app.adapters.mock.branding import FileBrandingAdapter
 from app.adapters.mock.catalog import MockCatalogAdapter
@@ -270,6 +272,15 @@ class ProvisioningService:
             session = transition(session, SessionStatus.READY, reason="all checks passed")
 
         self._save_session(session)
+        notify_stargate(
+            session_id=session.session_id,
+            namespace=session.namespace,
+            status=session.status.value,
+            lab_code=session.catalog_item_id,
+            tenant_id=session.tenant_id,
+            error_summary="validation failed" if has_failure else "",
+            resources=session.resources,
+        )
         return session
 
     def activate_session(self, session_id: str) -> LabSession:
@@ -278,6 +289,14 @@ class ProvisioningService:
             raise ValueError(f"Session {session_id} not found")
         session = transition(session, SessionStatus.ACTIVE, reason="lab activated")
         self._save_session(session)
+        notify_stargate(
+            session_id=session.session_id,
+            namespace=session.namespace,
+            status="active",
+            lab_code=session.catalog_item_id,
+            tenant_id=session.tenant_id,
+            resources=session.resources,
+        )
         return session
 
     def get_handoff(self, session_id: str) -> HandoffPackage:
@@ -407,6 +426,13 @@ class ProvisioningService:
 
         session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed")
         self._save_session(session)
+        notify_stargate(
+            session_id=session.session_id,
+            namespace=session.namespace,
+            status="reclaimed",
+            lab_code=session.catalog_item_id,
+            tenant_id=session.tenant_id,
+        )
         return session
 
     def force_reclaim_session(self, session_id: str) -> LabSession:
