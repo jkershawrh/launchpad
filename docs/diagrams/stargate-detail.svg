@@ -1,0 +1,289 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 1050" font-family="'Red Hat Display', 'Segoe UI', sans-serif">
+  <defs>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.1"/>
+    </filter>
+    <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6B21A8"/>
+      <stop offset="100%" stop-color="#4C1D95"/>
+    </linearGradient>
+    <linearGradient id="rh" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EE0000"/>
+      <stop offset="100%" stop-color="#CC0000"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1300" height="1050" fill="#FAFAFA" rx="12"/>
+  <text x="650" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#151515">StarGate — AI-Powered Operations Platform</text>
+  <text x="650" y="60" text-anchor="middle" font-size="12" fill="#6A6E73">Observe. Classify. Remediate. Learn.</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ROW 1: DATA COLLECTION (10 collectors) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="40" y="100" font-size="14" font-weight="700" fill="#4C1D95">DATA COLLECTION</text>
+  <text x="380" y="100" font-size="10" fill="#6A6E73">10 collectors pulling live state from RHDP infrastructure</text>
+
+  <rect x="40" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="97" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">OpenShift</text>
+  <text x="97" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Pods • Services</text>
+  <text x="97" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Routes • Namespaces</text>
+
+  <rect x="165" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="222" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">Sandbox API</text>
+  <text x="222" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Placements</text>
+  <text x="222" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Cluster health</text>
+
+  <rect x="290" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="347" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">Babylon</text>
+  <text x="347" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Anarchy state</text>
+  <text x="347" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Provision jobs</text>
+
+  <rect x="415" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="472" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">Poolboy</text>
+  <text x="472" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Pool capacity</text>
+  <text x="472" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Resource claims</text>
+
+  <rect x="540" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="597" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">AAP</text>
+  <text x="597" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Job templates</text>
+  <text x="597" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Execution history</text>
+
+  <rect x="665" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="722" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">Showroom</text>
+  <text x="722" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Lab health</text>
+  <text x="722" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Content status</text>
+
+  <rect x="790" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="847" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">Demolition</text>
+  <text x="847" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">UAT results</text>
+  <text x="847" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Smoke tests</text>
+
+  <rect x="915" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="972" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">ZeroTouch</text>
+  <text x="972" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Automation</text>
+  <text x="972" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Validation</text>
+
+  <rect x="1040" y="112" width="115" height="60" rx="6" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1" filter="url(#shadow)"/>
+  <text x="1097" y="135" text-anchor="middle" font-size="9" font-weight="600" fill="#4C1D95">Labagator</text>
+  <text x="1097" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Schedule</text>
+  <text x="1097" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">Deployment state</text>
+
+  <rect x="1165" y="112" width="115" height="60" rx="6" fill="#FFF0F0" stroke="#EE0000" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1222" y="135" text-anchor="middle" font-size="9" font-weight="700" fill="#CC0000">Launchpad</text>
+  <text x="1222" y="149" text-anchor="middle" font-size="8" fill="#6A6E73">Lifecycle events</text>
+  <text x="1222" y="161" text-anchor="middle" font-size="8" fill="#6A6E73">External evidence</text>
+
+  <!-- Down arrows -->
+  <line x1="650" y1="172" x2="650" y2="195" stroke="#6B21A8" stroke-width="2"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ROW 2: EVIDENCE + ANALYSIS ENGINE -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="40" y="215" font-size="14" font-weight="700" fill="#4C1D95">ANALYSIS ENGINE</text>
+  <text x="260" y="215" font-size="10" fill="#6A6E73">LLM-powered understanding of cluster state</text>
+
+  <rect x="40" y="228" width="390" height="130" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="40" y="228" width="390" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="40" y="244" width="390" height="10" fill="#6B21A8"/>
+  <text x="235" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="white">Evidence Builder</text>
+
+  <text x="60" y="275" font-size="9" font-weight="600" fill="#151515">Cluster state snapshot</text>
+  <text x="60" y="290" font-size="8" fill="#6A6E73">• Normalize data from all 10 collectors</text>
+  <text x="60" y="303" font-size="8" fill="#6A6E73">• Build evidence bundles per namespace</text>
+  <text x="60" y="316" font-size="8" fill="#6A6E73">• Schema validation (JSON Schema)</text>
+  <text x="60" y="329" font-size="8" fill="#6A6E73">• Enrichment with metadata + history</text>
+  <text x="60" y="342" font-size="8" fill="#6A6E73">• Ground truth comparison</text>
+
+  <rect x="450" y="228" width="390" height="130" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="450" y="228" width="390" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="450" y="244" width="390" height="10" fill="#6B21A8"/>
+  <text x="645" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="white">Rubric Evaluator (11 rubrics)</text>
+
+  <text x="470" y="275" font-size="9" font-weight="600" fill="#151515">Per-namespace health assessment</text>
+  <text x="470" y="290" font-size="8" fill="#6A6E73">• namespace-ready         • deployment-ready</text>
+  <text x="470" y="303" font-size="8" fill="#6A6E73">• route-ready             • provision-complete</text>
+  <text x="470" y="316" font-size="8" fill="#6A6E73">• showroom-healthy        • model-endpoint-ready</text>
+  <text x="470" y="329" font-size="8" fill="#6A6E73">• vm-runtime-ready        • storage-clone-ready</text>
+  <text x="470" y="342" font-size="8" fill="#6A6E73">• smoke-test-ready        • cluster-health</text>
+
+  <rect x="860" y="228" width="420" height="130" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="860" y="228" width="420" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="860" y="244" width="420" height="10" fill="#6B21A8"/>
+  <text x="1070" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="white">LLM Analysis</text>
+
+  <text x="880" y="275" font-size="9" font-weight="600" fill="#151515">AI-powered failure understanding</text>
+  <text x="880" y="290" font-size="8" fill="#6A6E73">• Failure classification (named failure classes)</text>
+  <text x="880" y="303" font-size="8" fill="#6A6E73">• Root cause analysis with evidence context</text>
+  <text x="880" y="316" font-size="8" fill="#6A6E73">• Remediation recommendation</text>
+  <text x="880" y="329" font-size="8" fill="#6A6E73">• Confidence scoring + hallucination boundaries</text>
+  <text x="880" y="342" font-size="8" fill="#6A6E73">• Failure summarization for operators</text>
+
+  <!-- Down arrow -->
+  <line x1="650" y1="358" x2="650" y2="385" stroke="#6B21A8" stroke-width="2"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ROW 3: DECISION + EXECUTION -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="40" y="405" font-size="14" font-weight="700" fill="#4C1D95">DECISION + EXECUTION</text>
+  <text x="330" y="405" font-size="10" fill="#6A6E73">Risk-gated actions with policy enforcement</text>
+
+  <rect x="40" y="418" width="300" height="145" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="40" y="418" width="300" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="40" y="434" width="300" height="10" fill="#6B21A8"/>
+  <text x="190" y="436" text-anchor="middle" font-size="11" font-weight="700" fill="white">Policy Engine</text>
+
+  <text x="60" y="465" font-size="9" font-weight="600" fill="#151515">Rules + constraints</text>
+  <text x="60" y="480" font-size="8" fill="#6A6E73">• YAML policy rules (rules.yaml)</text>
+  <text x="60" y="493" font-size="8" fill="#6A6E73">• Substrate routing (substrate.yaml)</text>
+  <text x="60" y="506" font-size="8" fill="#6A6E73">• Forbidden namespace enforcement</text>
+  <text x="60" y="519" font-size="8" fill="#6A6E73">• Rate limiting per action type</text>
+  <text x="60" y="532" font-size="8" fill="#6A6E73">• AgnosticV constraint loading</text>
+  <text x="60" y="545" font-size="8" fill="#6A6E73">• Execution mode: recommend / auto / full</text>
+
+  <rect x="360" y="418" width="300" height="145" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="360" y="418" width="300" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="360" y="434" width="300" height="10" fill="#6B21A8"/>
+  <text x="510" y="436" text-anchor="middle" font-size="11" font-weight="700" fill="white">Remediation Catalog (45+ actions)</text>
+
+  <text x="380" y="465" font-size="9" font-weight="600" fill="#151515">YAML-defined actions with risk levels</text>
+  <text x="380" y="480" font-size="8" fill="#6A6E73">• inspect_*  (12) — read-only diagnostics</text>
+  <text x="380" y="493" font-size="8" fill="#6A6E73">• check_*   (8)  — manifest verification</text>
+  <text x="380" y="506" font-size="8" fill="#6A6E73">• restart_* (4)  — low-risk auto-execute</text>
+  <text x="380" y="519" font-size="8" fill="#6A6E73">• create_/fix_* (8) — TDD test generation</text>
+  <text x="380" y="532" font-size="8" fill="#6A6E73">• RHDP actions (5) — Anarchy, Poolboy, Sandbox</text>
+  <text x="380" y="545" font-size="8" fill="#CC0000" font-weight="600">• launchpad_* (3) — reclaim, release, workshop</text>
+
+  <rect x="680" y="418" width="300" height="145" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="680" y="418" width="300" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="680" y="434" width="300" height="10" fill="#6B21A8"/>
+  <text x="830" y="436" text-anchor="middle" font-size="11" font-weight="700" fill="white">OC Executor</text>
+
+  <text x="700" y="465" font-size="9" font-weight="600" fill="#151515">Real command execution</text>
+  <text x="700" y="480" font-size="8" fill="#6A6E73">• Maps actions → oc CLI commands</text>
+  <text x="700" y="493" font-size="8" fill="#6A6E73">• Parameter substitution ({namespace}, {pod})</text>
+  <text x="700" y="506" font-size="8" fill="#6A6E73">• Rollback capability on failure</text>
+  <text x="700" y="519" font-size="8" fill="#6A6E73">• Dry-run mode for safe testing</text>
+  <text x="700" y="532" font-size="8" fill="#6A6E73">• Full command + output logging</text>
+  <text x="700" y="545" font-size="8" fill="#6A6E73">• Callback to Launchpad on completion</text>
+
+  <rect x="1000" y="418" width="280" height="145" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="1000" y="418" width="280" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="1000" y="434" width="280" height="10" fill="#6B21A8"/>
+  <text x="1140" y="436" text-anchor="middle" font-size="11" font-weight="700" fill="white">Risk Gate</text>
+
+  <rect x="1020" y="460" width="240" height="28" rx="6" fill="#E8F0E8" stroke="#3E8635"/>
+  <text x="1140" y="479" text-anchor="middle" font-size="10" font-weight="600" fill="#2E6B2E">LOW → Auto-execute</text>
+
+  <rect x="1020" y="495" width="240" height="28" rx="6" fill="#FFF8E1" stroke="#F0AB00"/>
+  <text x="1140" y="514" text-anchor="middle" font-size="10" font-weight="600" fill="#996600">MEDIUM → Needs approval</text>
+
+  <rect x="1020" y="530" width="240" height="28" rx="6" fill="#FDE8E8" stroke="#C9190B"/>
+  <text x="1140" y="549" text-anchor="middle" font-size="10" font-weight="600" fill="#C9190B">HIGH / CRITICAL → Blocked</text>
+
+  <!-- Down arrow -->
+  <line x1="650" y1="563" x2="650" y2="590" stroke="#6B21A8" stroke-width="2"/>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ROW 4: LEARNING + PROPOSALS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="40" y="610" font-size="14" font-weight="700" fill="#4C1D95">LEARNING + PROPOSALS</text>
+  <text x="330" y="610" font-size="10" fill="#6A6E73">Continuous improvement from outcomes</text>
+
+  <rect x="40" y="623" width="240" height="100" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="40" y="623" width="240" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="40" y="639" width="240" height="10" fill="#6B21A8"/>
+  <text x="160" y="641" text-anchor="middle" font-size="11" font-weight="700" fill="white">Feedback Loop</text>
+  <text x="60" y="670" font-size="8" fill="#6A6E73">• Track what fixes work per failure class</text>
+  <text x="60" y="683" font-size="8" fill="#6A6E73">• HITL feedback integration</text>
+  <text x="60" y="696" font-size="8" fill="#6A6E73">• Success rate per remediation</text>
+  <text x="60" y="709" font-size="8" fill="#6A6E73">• Learner model improvements</text>
+
+  <rect x="300" y="623" width="240" height="100" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="300" y="623" width="240" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="300" y="639" width="240" height="10" fill="#6B21A8"/>
+  <text x="420" y="641" text-anchor="middle" font-size="11" font-weight="700" fill="white">Proposals</text>
+  <text x="320" y="670" font-size="8" fill="#6A6E73">• Failure summaries for operators</text>
+  <text x="320" y="683" font-size="8" fill="#6A6E73">• New rubric proposals from patterns</text>
+  <text x="320" y="696" font-size="8" fill="#6A6E73">• Runbook generation</text>
+  <text x="320" y="709" font-size="8" fill="#6A6E73">• PR generation for fixes</text>
+
+  <rect x="560" y="623" width="240" height="100" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="560" y="623" width="240" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="560" y="639" width="240" height="10" fill="#6B21A8"/>
+  <text x="680" y="641" text-anchor="middle" font-size="11" font-weight="700" fill="white">Capacity + Planning</text>
+  <text x="580" y="670" font-size="8" fill="#6A6E73">• Pool velocity tracking</text>
+  <text x="580" y="683" font-size="8" fill="#6A6E73">• Capacity projection</text>
+  <text x="580" y="696" font-size="8" fill="#6A6E73">• Workload complexity scoring</text>
+  <text x="580" y="709" font-size="8" fill="#6A6E73">• Substrate routing decisions</text>
+
+  <rect x="820" y="623" width="240" height="100" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="820" y="623" width="240" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="820" y="639" width="240" height="10" fill="#6B21A8"/>
+  <text x="940" y="641" text-anchor="middle" font-size="11" font-weight="700" fill="white">Synthetic Testing</text>
+  <text x="840" y="670" font-size="8" fill="#6A6E73">• Chaos scenarios</text>
+  <text x="840" y="683" font-size="8" fill="#6A6E73">• Action simulation (dry-run)</text>
+  <text x="840" y="696" font-size="8" fill="#6A6E73">• Confidence gating</text>
+  <text x="840" y="709" font-size="8" fill="#6A6E73">• Mock cluster testing</text>
+
+  <rect x="1080" y="623" width="200" height="100" rx="10" fill="white" stroke="#6B21A8" stroke-width="1.5" filter="url(#shadow)"/>
+  <rect x="1080" y="623" width="200" height="26" rx="10" fill="#6B21A8"/>
+  <rect x="1080" y="639" width="200" height="10" fill="#6B21A8"/>
+  <text x="1180" y="641" text-anchor="middle" font-size="11" font-weight="700" fill="white">Events + Notifications</text>
+  <text x="1100" y="670" font-size="8" fill="#6A6E73">• Event bus (pub/sub)</text>
+  <text x="1100" y="683" font-size="8" fill="#6A6E73">• Nanoagent pipeline</text>
+  <text x="1100" y="696" font-size="8" fill="#6A6E73">• Operator alerts</text>
+  <text x="1100" y="709" font-size="8" fill="#6A6E73">• Log consumers</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ROW 5: OUTPUTS -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <text x="40" y="755" font-size="14" font-weight="700" fill="#4C1D95">OUTPUTS</text>
+
+  <rect x="40" y="768" width="200" height="65" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="140" y="793" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">Dashboard</text>
+  <text x="140" y="809" text-anchor="middle" font-size="9" fill="#6A6E73">React UI • Fleet overview</text>
+  <text x="140" y="823" text-anchor="middle" font-size="9" fill="#6A6E73">Per-lab health • Trends</text>
+
+  <rect x="260" y="768" width="200" height="65" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="360" y="793" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">REST API</text>
+  <text x="360" y="809" text-anchor="middle" font-size="9" fill="#6A6E73">Runs • Health • Admin</text>
+  <text x="360" y="823" text-anchor="middle" font-size="9" fill="#6A6E73">Integration • Dashboard</text>
+
+  <rect x="480" y="768" width="200" height="65" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="580" y="793" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">CLI (stargate)</text>
+  <text x="580" y="809" text-anchor="middle" font-size="9" fill="#6A6E73">Scan • Schedule • Worker</text>
+  <text x="580" y="823" text-anchor="middle" font-size="9" fill="#6A6E73">Babylon worker mode</text>
+
+  <rect x="700" y="768" width="200" height="65" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="800" y="793" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">Receipts + Audit</text>
+  <text x="800" y="809" text-anchor="middle" font-size="9" fill="#6A6E73">JSON test receipts</text>
+  <text x="800" y="823" text-anchor="middle" font-size="9" fill="#6A6E73">Every action logged</text>
+
+  <rect x="920" y="768" width="200" height="65" rx="8" fill="white" stroke="#D2D2D2" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1020" y="793" text-anchor="middle" font-size="11" font-weight="600" fill="#151515">Prometheus Metrics</text>
+  <text x="1020" y="809" text-anchor="middle" font-size="9" fill="#6A6E73">LLM calls • Duration</text>
+  <text x="1020" y="823" text-anchor="middle" font-size="9" fill="#6A6E73">Token usage • Counters</text>
+
+  <!-- Launchpad callback -->
+  <rect x="1140" y="768" width="140" height="65" rx="8" fill="#FFF0F0" stroke="#EE0000" stroke-width="2" filter="url(#shadow)"/>
+  <text x="1210" y="793" text-anchor="middle" font-size="10" font-weight="700" fill="#CC0000">Launchpad</text>
+  <text x="1210" y="808" text-anchor="middle" font-size="10" font-weight="700" fill="#CC0000">Callback</text>
+  <text x="1210" y="823" text-anchor="middle" font-size="9" fill="#6A6E73">Finalize reclaim</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- FOOTER -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <rect x="40" y="860" width="1220" height="80" rx="10" fill="#F5F0FF" stroke="#6B21A8" stroke-width="1"/>
+  <text x="650" y="885" text-anchor="middle" font-size="13" font-weight="700" fill="#4C1D95">StarGate serves the entire RHDP fleet — Launchpad is one of many data sources</text>
+  <text x="650" y="905" text-anchor="middle" font-size="10" fill="#6A6E73">10 collectors • 11 rubrics • 45+ remediation actions • LLM-powered analysis • Risk-gated execution</text>
+  <text x="650" y="922" text-anchor="middle" font-size="10" fill="#6A6E73">Feedback loop • Capacity planning • Synthetic testing • Event pipeline • Full audit trail</text>
+
+  <!-- Stats bar -->
+  <rect x="40" y="960" width="1220" height="40" rx="8" fill="#F8F8F8" stroke="#D2D2D2"/>
+  <text x="150" y="985" text-anchor="middle" font-size="10" fill="#6A6E73">577 tests</text>
+  <text x="350" y="985" text-anchor="middle" font-size="10" fill="#6A6E73">65 test files</text>
+  <text x="550" y="985" text-anchor="middle" font-size="10" fill="#6A6E73">CI green</text>
+  <text x="750" y="985" text-anchor="middle" font-size="10" fill="#6A6E73">PostgreSQL backed</text>
+  <text x="950" y="985" text-anchor="middle" font-size="10" fill="#6A6E73">Deployed on infra01</text>
+  <text x="1150" y="985" text-anchor="middle" font-size="10" fill="#6A6E73">GitHub Actions CI</text>
+</svg>
