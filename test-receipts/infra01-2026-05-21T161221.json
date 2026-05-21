@@ -1,0 +1,116 @@
+{
+  "test_run_id": "6544b036-f5f9-417d-a2d2-cbf523daf15a",
+  "timestamp": "2026-05-21T16:12:21.759301Z",
+  "environment": "infra01",
+  "launchpad_commit": "d2666c7",
+  "tests": [
+    {
+      "step": 1,
+      "step_name": "Pod Health (oc get pods)",
+      "name": "Launchpad: 4 pods running",
+      "status": "pass"
+    },
+    {
+      "step": 1,
+      "step_name": "Pod Health (oc get pods)",
+      "name": "StarGate: 2 pods running",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Route Health (HTTPS)",
+      "name": "Launchpad API route (200)",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Route Health (HTTPS)",
+      "name": "Partner Portal route (403)",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Route Health (HTTPS)",
+      "name": "Admin Dashboard route (403)",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Route Health (HTTPS)",
+      "name": "StarGate route (403)",
+      "status": "pass"
+    },
+    {
+      "step": 3,
+      "step_name": "Launchpad API \u2014 Catalog",
+      "name": "Catalog: 21 items",
+      "status": "pass"
+    },
+    {
+      "step": 3,
+      "step_name": "Launchpad API \u2014 Catalog",
+      "name": "Official quickstarts: 3",
+      "status": "pass"
+    },
+    {
+      "step": 3,
+      "step_name": "Launchpad API \u2014 Catalog",
+      "name": "RHDP-wired items: 0 (new items need DB sync)",
+      "status": "pass"
+    },
+    {
+      "step": 4,
+      "step_name": "Full Self-Service Lifecycle (via API)",
+      "name": "Create tenant: active",
+      "status": "pass"
+    },
+    {
+      "step": 4,
+      "step_name": "Full Self-Service Lifecycle (via API)",
+      "name": "Submit request: accepted",
+      "status": "pass"
+    },
+    {
+      "step": 4,
+      "step_name": "Full Self-Service Lifecycle (via API)",
+      "name": "Provision failed",
+      "status": "fail"
+    },
+    {
+      "step": 5,
+      "step_name": "Workshop Batch Lifecycle",
+      "name": "Workshop: status= sessions=0",
+      "status": "fail"
+    },
+    {
+      "step": 6,
+      "step_name": "Sandbox API (from cluster)",
+      "name": "Sandbox API login OK",
+      "status": "pass"
+    },
+    {
+      "step": 7,
+      "step_name": "StarGate Integration (real cross-pod)",
+      "name": "Callback endpoint accessible (404)",
+      "status": "pass"
+    },
+    {
+      "step": 8,
+      "step_name": "Resource Verification",
+      "name": "Launchpad resource usage: CPU=6m MEM=306Mi",
+      "status": "pass"
+    },
+    {
+      "step": 8,
+      "step_name": "Resource Verification",
+      "name": "StarGate resource usage: CPU=4m MEM=357Mi",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "total": 17,
+    "passed": 15,
+    "failed": 2,
+    "skipped": 0
+  }
+}
