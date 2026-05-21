@@ -6,8 +6,11 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth.oauth import get_current_user
 
+from pydantic import BaseModel
+
 from app.api.deps import branding_adapter
 from app.domain.models import BrandingProfile
+from app.services.brand_generator import BrandGenerator
 
 router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/branding-profiles", tags=["branding"])
 
@@ -23,3 +26,14 @@ def get_branding_profile(branding_profile_id: str):
     if not profile:
         raise HTTPException(404, f"Branding profile {branding_profile_id} not found")
     return profile
+
+
+class BrandGenerateRequest(BaseModel):
+    company_name: str
+    partner_type: str = ""
+
+
+@router.post("/generate", response_model=BrandingProfile)
+def generate_branding_profile(body: BrandGenerateRequest):
+    gen = BrandGenerator()
+    return gen.generate(body.company_name, partner_type=body.partner_type or None)
