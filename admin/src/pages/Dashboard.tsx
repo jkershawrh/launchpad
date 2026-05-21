@@ -16,7 +16,8 @@ export default function Dashboard() {
   }, []);
 
   const active = sessions.filter((s) => ['ready', 'active', 'validating', 'provisioning'].includes(s.status));
-  const failed = sessions.filter((s) => ['failed', 'validation_failed'].includes(s.status));
+  const failed = sessions.filter((s) => ['failed', 'validation_failed', 'cleanup_failed'].includes(s.status));
+  const persistent = sessions.filter((s) => !s.expires_at && ['ready', 'active'].includes(s.status));
   const expiring = sessions.filter((s) => {
     if (!s.expires_at || s.status === 'reclaimed') return false;
     return new Date(s.expires_at).getTime() - Date.now() < 2 * 60 * 60 * 1000;
@@ -34,11 +35,12 @@ export default function Dashboard() {
       <h1 className="text-3xl font-bold text-[#151515] mb-2">Dashboard</h1>
       <p className="text-[#6A6E73] mb-8">Overview of lab sessions and platform health.</p>
 
-      <div className="grid sm:grid-cols-4 gap-4 mb-8">
+      <div className="grid sm:grid-cols-5 gap-4 mb-8">
         {[
           { label: 'Total Sessions', value: sessions.length, color: 'text-[#151515]' },
           { label: 'Active', value: active.length, color: 'text-[#3E8635]' },
           { label: 'Failed', value: failed.length, color: 'text-[#C9190B]' },
+          { label: 'Persistent', value: persistent.length, color: 'text-[#0068B5]' },
           { label: 'Expiring Soon', value: expiring.length, color: 'text-[#F0AB00]' },
         ].map((card) => (
           <div key={card.label} className="bg-white rounded border border-[#D2D2D2] p-5">
@@ -74,6 +76,60 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {persistent.length > 0 && (
+        <div className="bg-white rounded border border-[#D2D2D2] border-l-4 border-l-[#0068B5] p-6 mb-8">
+          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Persistent Demos (Always-On)</h2>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-[#6A6E73] text-xs uppercase border-b border-[#D2D2D2]">
+                <th className="pb-2 pr-4">Session</th>
+                <th className="pb-2 pr-4">Catalog Item</th>
+                <th className="pb-2 pr-4">Tenant</th>
+                <th className="pb-2 pr-4">Uptime</th>
+                <th className="pb-2 pr-4">Status</th>
+                <th className="pb-2">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {persistent.map((s) => {
+                const uptime = s.started_at
+                  ? `${Math.round((Date.now() - new Date(s.started_at).getTime()) / 3600000)}h`
+                  : '—';
+                return (
+                  <tr key={s.session_id} className="border-b border-[#F0F0F0] last:border-0">
+                    <td className="py-3 pr-4">
+                      <Link to={`/sessions/${s.session_id}`} className="text-[#0068B5] hover:underline font-mono text-xs">
+                        {s.session_id.slice(0, 8)}...
+                      </Link>
+                    </td>
+                    <td className="py-3 pr-4 text-[#151515]">{s.catalog_item_id}</td>
+                    <td className="py-3 pr-4 text-[#151515]">{s.tenant_id}</td>
+                    <td className="py-3 pr-4 text-[#151515] font-mono text-xs">{uptime}</td>
+                    <td className="py-3 pr-4"><StatusBadge status={s.status} /></td>
+                    <td className="py-3">
+                      <button
+                        onClick={async () => {
+                          if (!window.confirm(`Reinitialize ${s.session_id.slice(0, 8)}...? This resets the demo without destroying it.`)) return;
+                          try {
+                            await api.resetSession(s.session_id);
+                            api.listSessions().then(setSessions);
+                          } catch (err) {
+                            alert(`Failed: ${err}`);
+                          }
+                        }}
+                        className="px-2 py-1 text-xs font-medium rounded border border-[#0068B5] text-[#0068B5] hover:bg-[#0068B5] hover:text-white transition-colors"
+                      >
+                        Reset
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {sessions.length > 0 && (
         <div className="bg-white rounded border border-[#D2D2D2] p-6">

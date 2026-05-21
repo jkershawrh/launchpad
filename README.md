@@ -164,8 +164,10 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [x] Persistent demos — `persistence: persistent` → never expires, `reinitialize` resets without destroying (TDD)
 - [x] Labels — `launchpad.redhat.com/tenant`, `session-id`, `catalog-item`, `purpose`, `workshop-id` on all resources (TDD)
 - [x] Security hardening — PSS restricted on namespaces, egress/ingress NetworkPolicy, random PG passwords, kubeconfig (not --token CLI args), public session view hides MaaS keys (TDD)
+- [x] Cleanup hardening — TTL enforcement daemon, credential scrubbing on reclaim, force_reclaim calls cleanup adapter, workshop error tracking, gateway namespace lock, cleanup timeout fatal, orphaned RoleBinding cleanup, audit trail (TDD)
+- [x] StarGate integration — pre-flight constraint adapter, cleanup callback endpoint, remediation catalog entries in StarGate repo, graceful degradation when StarGate is down (TDD)
 - [x] Repo live — https://github.com/rhpds/launchpad, branch protection enabled
-- [x] 278 backend tests passing — all features TDD red/green
+- [x] 305 backend tests passing — all features TDD red/green
 - [x] Documentation — architecture, adapters, build matrix, provisioning lifecycle, tenancy, showback all up to date
 
 ### Waiting On (external)
@@ -180,6 +182,7 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [ ] End-to-end placement test — create a real namespace on a CNV cluster via Sandbox API
 - [ ] Onboard a Launchpad base cluster — order `launchpad-cluster` from RHDP to provision shared infra
 - [ ] Full end-to-end test — order a demo from RHDP catalog, verify Showroom + frontend + gateway + inference
+- [ ] Admin dashboard — persistent demos tab (uptime, reset button)
 - [ ] Showroom screenshots — capture from a running demo environment
 - [ ] AAP Job Template integration — use AAP for provisioning instead of direct oc/helm (Phase 2)
 - [ ] AI-powered brand generation — dynamic branding profiles per partner/customer

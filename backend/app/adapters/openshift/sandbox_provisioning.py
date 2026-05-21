@@ -155,6 +155,10 @@ class OpenShiftSandboxProvisioner:
             if ssh_route:
                 connection_info["ssh"] = f"ssh lab-user@{ssh_route} -p 2222"
 
+        aap_url = os.environ.get("AAP_URL")
+        if aap_url:
+            connection_info["aap_url"] = aap_url
+
         return ProvisionResult(
             namespace=namespace,
             lab_url=lab_url or f"https://{namespace}.apps.cluster.local",
