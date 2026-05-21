@@ -1,0 +1,182 @@
+{
+  "test_run_id": "d23e6a4a-a264-405d-935b-3124e351f35c",
+  "timestamp": "2026-05-21T16:06:01.640472Z",
+  "environment": "local",
+  "launchpad_commit": "3d979c2",
+  "tests": [
+    {
+      "step": 1,
+      "step_name": "Health Checks",
+      "name": "Gateway (8080) responds",
+      "status": "pass"
+    },
+    {
+      "step": 1,
+      "step_name": "Health Checks",
+      "name": "Frontend (8081) serves HTML",
+      "status": "pass"
+    },
+    {
+      "step": 1,
+      "step_name": "Health Checks",
+      "name": "Launchpad API (8000) mode=mock",
+      "status": "pass"
+    },
+    {
+      "step": 1,
+      "step_name": "Health Checks",
+      "name": "StarGate API (8090) responds",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Self-Service Lifecycle",
+      "name": "request accepted",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Self-Service Lifecycle",
+      "name": "provisioned with labels",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Self-Service Lifecycle",
+      "name": "validated (ready)",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Self-Service Lifecycle",
+      "name": "activated",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Self-Service Lifecycle",
+      "name": "handoff (title=Inference Overdrive Quick Start)",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Self-Service Lifecycle",
+      "name": "showback (tokens=75000)",
+      "status": "pass"
+    },
+    {
+      "step": 2,
+      "step_name": "Self-Service Lifecycle",
+      "name": "reclaimed + credentials scrubbed",
+      "status": "pass"
+    },
+    {
+      "step": 3,
+      "step_name": "Workshop Batch Lifecycle",
+      "name": "workshop created (3 sessions)",
+      "status": "pass"
+    },
+    {
+      "step": 3,
+      "step_name": "Workshop Batch Lifecycle",
+      "name": "all sessions labeled purpose=events",
+      "status": "pass"
+    },
+    {
+      "step": 3,
+      "step_name": "Workshop Batch Lifecycle",
+      "name": "workshop reclaimed (completed)",
+      "status": "pass"
+    },
+    {
+      "step": 4,
+      "step_name": "Persistent Demo",
+      "name": "persistent session (expires_at=None)",
+      "status": "pass"
+    },
+    {
+      "step": 4,
+      "step_name": "Persistent Demo",
+      "name": "reinitialize \u2192 ready, namespace preserved",
+      "status": "pass"
+    },
+    {
+      "step": 5,
+      "step_name": "Real Inference (Gateway + TinyLlama)",
+      "name": "Inference response with routing decision (backend=local)",
+      "status": "pass"
+    },
+    {
+      "step": 6,
+      "step_name": "Demo Frontend",
+      "name": "Frontend serves HTML",
+      "status": "pass"
+    },
+    {
+      "step": 6,
+      "step_name": "Demo Frontend",
+      "name": "config.json returns demo config",
+      "status": "pass"
+    },
+    {
+      "step": 7,
+      "step_name": "StarGate Integration",
+      "name": "pre-flight check (allowed)",
+      "status": "pass"
+    },
+    {
+      "step": 7,
+      "step_name": "StarGate Integration",
+      "name": "pre-flight check (blocked)",
+      "status": "pass"
+    },
+    {
+      "step": 7,
+      "step_name": "StarGate Integration",
+      "name": "pre-flight fallback (StarGate down \u2192 allowed)",
+      "status": "pass"
+    },
+    {
+      "step": 8,
+      "step_name": "Sandbox API (read-only)",
+      "name": "Sandbox API connected (12 clusters)",
+      "status": "pass"
+    },
+    {
+      "step": 9,
+      "step_name": "TTL Enforcement",
+      "name": "TTL enforcement auto-reclaimed 1 session(s)",
+      "status": "pass"
+    },
+    {
+      "step": 10,
+      "step_name": "Credential Security",
+      "name": "admin view has maas_key (sk-launchpad-d0...)",
+      "status": "pass"
+    },
+    {
+      "step": 10,
+      "step_name": "Credential Security",
+      "name": "public view hides maas_key",
+      "status": "pass"
+    },
+    {
+      "step": 10,
+      "step_name": "Credential Security",
+      "name": "credentials scrubbed after reclaim",
+      "status": "pass"
+    },
+    {
+      "step": 10,
+      "step_name": "Credential Security",
+      "name": "plan credentials scrubbed",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0,
+    "skipped": 0
+  }
+}
