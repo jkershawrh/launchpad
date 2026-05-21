@@ -5,9 +5,8 @@ Admin Observability + Sysadmin + Dynamic Catalog — TDD Red/Green Matrix
 import pytest
 from fastapi.testclient import TestClient
 
-from app.adapters.mock.catalog import MockCatalogAdapter
 from app.api.deps import catalog_adapter, provisioning_service
-from app.domain.enums import CatalogCategory, CatalogStatus, LabRequestStatus, Persistence, SessionStatus
+from app.domain.enums import CatalogCategory, CatalogStatus, Persistence, SessionStatus
 from app.domain.models import CatalogItem, LabRequest
 from app.main import app
 from app.services.system_monitor import SystemMonitor

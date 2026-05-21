@@ -24,7 +24,7 @@ class HandoffPackage(BaseModel):
 
     def to_markdown(self) -> str:
         lines = [
-            f"# Your AI Lab is Ready",
+            "# Your AI Lab is Ready",
             "",
             f"**Lab:** {self.lab_title}",
             f"**Tenant:** {self.tenant}",

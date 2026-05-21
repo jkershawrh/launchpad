@@ -4,7 +4,6 @@ Phase A — Demo Migration TDD Red/Green Matrix
 Verifies all demo components work in their new home under demos/.
 Each gate has a GREEN (success) and RED (failure) test.
 """
-import importlib
 import os
 import subprocess
 import sys

@@ -3,18 +3,14 @@ import pytest
 from app.domain.enums import (
     CatalogCategory,
     CatalogStatus,
-    GaudiMode,
     Persistence,
-    SessionStatus,
     TenantType,
     ValidationResultStatus,
 )
 from app.domain.models import (
     CatalogItem,
-    HardwareProfile,
     LabRequest,
     LabSession,
-    QuotaProfile,
     Tenant,
     ValidationResult,
 )

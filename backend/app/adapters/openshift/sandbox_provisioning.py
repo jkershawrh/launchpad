@@ -3,8 +3,7 @@ from __future__ import annotations
 import os
 import time
 import uuid
-from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 try:
     from kubernetes import client, config

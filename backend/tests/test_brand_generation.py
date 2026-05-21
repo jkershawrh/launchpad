@@ -2,7 +2,6 @@
 TDD: AI-powered brand generation.
 Generates BrandingProfile from a company name using LLM.
 """
-import pytest
 from unittest.mock import patch, MagicMock
 
 

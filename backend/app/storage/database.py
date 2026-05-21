@@ -11,7 +11,6 @@ from sqlalchemy import (
     Table,
     Text,
     create_engine,
-    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.engine import Engine

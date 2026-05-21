@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.api.deps import provisioning_service
 from app.domain.enums import SessionStatus
-from app.domain.lifecycle import transition
 from app.domain.models import LifecycleEvent
 
 router = APIRouter(prefix="/callbacks", tags=["callbacks"])

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional, Protocol
 
-from app.domain.enums import ValidationResultStatus
 from app.domain.models import (
     BrandingProfile,
     CatalogItem,
@@ -12,7 +11,6 @@ from app.domain.models import (
     ShowbackRecord,
     ValidationResult,
 )
-from app.domain.reports import SecurityPlan
 
 
 class CatalogAdapter(Protocol):

@@ -5,8 +5,6 @@ AAPClient calls AAP controller API to launch job templates for provisioning.
 import pytest
 from unittest.mock import patch, MagicMock
 
-from app.domain.enums import CatalogCategory
-from app.domain.models import LabRequest
 
 
 class TestAAPClient:

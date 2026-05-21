@@ -168,7 +168,7 @@ def test_sandbox_console_accessible():
 def test_sandbox_console_fails_after_reclaim():
     import httpx
     try:
-        resp = httpx.get("http://localhost:59997", timeout=2)
+        httpx.get("http://localhost:59997", timeout=2)
         pytest.fail("Should not connect")
     except httpx.RequestError:
         pass

@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 
 from app.adapters.mock.demo_provisioning import DemoProvisioningAdapter
 from app.adapters.mock.demo_validation import DemoFailingValidationAdapter, DemoValidationAdapter
-from app.api.deps import provisioning_service, tenant_store
+from app.api.deps import provisioning_service
 from app.domain.enums import (
     CatalogCategory,
     LabRequestStatus,

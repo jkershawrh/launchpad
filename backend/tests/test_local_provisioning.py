@@ -12,7 +12,7 @@ import httpx
 import pytest
 
 from app.adapters.local.cleanup import LocalCleanupAdapter
-from app.adapters.local.provisioning import COMPOSE_FILE, DEMOS_ROOT, LocalProvisioningAdapter
+from app.adapters.local.provisioning import COMPOSE_FILE, LocalProvisioningAdapter
 from app.adapters.local.validation import LocalValidationAdapter
 from app.domain.enums import CatalogCategory, Persistence, SessionStatus, ValidationResultStatus
 from app.domain.models import LabRequest, LabSession

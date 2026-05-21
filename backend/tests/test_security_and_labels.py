@@ -6,16 +6,13 @@ TDD Red/Green tests for:
 - Persistent demo support (expires_at = None)
 - Workshop batch provisioning
 """
-import pytest
-from unittest.mock import MagicMock, patch
 
 from app.domain.enums import (
     CatalogCategory,
-    LabRequestStatus,
     Persistence,
     SessionStatus,
 )
-from app.domain.models import CatalogItem, LabRequest, LabSession
+from app.domain.models import LabRequest
 from app.services.provisioning import ProvisioningService
 
 

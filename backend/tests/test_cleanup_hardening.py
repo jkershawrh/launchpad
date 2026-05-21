@@ -2,12 +2,11 @@
 TDD: Cleanup hardening tests.
 8 fixes, all RED first, then GREEN one at a time.
 """
-import pytest
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
-from app.domain.enums import CatalogCategory, LabRequestStatus, Persistence, SessionStatus
-from app.domain.models import LabRequest, LabSession, Workshop
+from app.domain.enums import CatalogCategory, Persistence, SessionStatus
+from app.domain.models import LabRequest, Workshop
 from app.services.provisioning import ProvisioningService
 
 
@@ -158,7 +157,7 @@ class TestForceReclaimCleanup:
         svc.force_reclaim_session(session.session_id)
 
         cleanup_calls = [str(c) for c in mock_cleanup.cleanup.call_args_list]
-        namespace_cleaned = any(session.namespace in str(c) for c in cleanup_calls) if session.namespace else True
+        any(session.namespace in str(c) for c in cleanup_calls) if session.namespace else True
         assert mock_cleanup.cleanup.called or session.namespace is None
 
 
@@ -194,7 +193,7 @@ class TestWorkshopErrorTracking:
         # Force one session into a state that can't be reclaimed and break force_reclaim
         if provisioned.session_ids:
             bad_sid = provisioned.session_ids[0]
-            bad_session = svc.get_session(bad_sid)
+            svc.get_session(bad_sid)
             # Remove from internal store so reclaim raises ValueError
             del svc._sessions[bad_sid]
 

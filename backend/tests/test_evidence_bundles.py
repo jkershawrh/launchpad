@@ -1,7 +1,6 @@
 """Suite 3: StarGate evidence bundle validation."""
 import json
 from unittest.mock import patch, MagicMock
-import pytest
 from app.integrations.stargate_webhook import notify_stargate
 
 

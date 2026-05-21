@@ -18,7 +18,7 @@ from app.adapters.rhdp.sandbox_api import (
     SandboxAPIError,
 )
 from app.adapters.rhdp.validation import RHDPValidationAdapter
-from app.domain.enums import CatalogCategory, LabRequestStatus, SessionStatus
+from app.domain.enums import CatalogCategory, SessionStatus
 from app.domain.models import CatalogItem, LabRequest, LabSession
 
 

@@ -7,8 +7,7 @@ from datetime import datetime, timedelta
 from fastapi.testclient import TestClient
 
 from app.domain.enums import CatalogCategory, Persistence, SessionStatus
-from app.domain.lifecycle import InvalidTransitionError
-from app.domain.models import LabRequest, LabSession, Workshop
+from app.domain.models import LabRequest, Workshop
 from app.main import app
 from app.services.provisioning import ProvisioningService
 

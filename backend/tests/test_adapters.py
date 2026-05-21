@@ -6,7 +6,7 @@ from app.adapters.mock.pool import MockPoolAdapter
 from app.adapters.mock.provisioning import MockProvisioningAdapter
 from app.adapters.mock.showback import MockShowbackAdapter
 from app.adapters.mock.validation import MockValidationAdapter
-from app.domain.enums import CatalogCategory, Persistence, SessionStatus
+from app.domain.enums import CatalogCategory
 from app.domain.models import LabRequest, LabSession
 
 

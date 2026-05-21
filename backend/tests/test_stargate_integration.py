@@ -2,7 +2,6 @@
 TDD: StarGate ↔ Launchpad integration tests.
 Callback endpoint, pre-flight checks, cleanup delegation.
 """
-import pytest
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
 

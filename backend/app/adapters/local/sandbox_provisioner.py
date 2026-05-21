@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import subprocess
-import sys
 import time
 import uuid
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict
 
-import httpx
 
 from app.adapters.interfaces import ProvisionResult
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
@@ -108,7 +106,7 @@ class LocalSandboxProvisioner:
         self._active_containers[container_name] = container_name
         self._wait_for_ssh(2222, timeout=60)
 
-        connection_info = {"ssh": f"ssh lab-user@localhost -p 2222"}
+        connection_info = {"ssh": "ssh lab-user@localhost -p 2222"}
         lab_url = "ssh://lab-user@localhost:2222"
 
         if "jupyter" in access_methods:

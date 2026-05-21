@@ -3,11 +3,10 @@ TDD: OpenShift-specific cleanup hardening.
 Fix 5: Gateway lock, Fix 6: Cleanup timeout, Fix 7: Orphaned RoleBinding.
 """
 import threading
-import time
 import pytest
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock
 
-from app.domain.enums import CatalogCategory, SessionStatus
+from app.domain.enums import CatalogCategory
 from app.domain.models import LabRequest
 from app.services.provisioning import ProvisioningService
 

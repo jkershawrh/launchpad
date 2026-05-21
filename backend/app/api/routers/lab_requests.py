@@ -5,8 +5,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import provisioning_service
-from app.auth.oauth import User, get_current_user
-from app.domain.enums import LabRequestStatus
+from app.auth.oauth import get_current_user
 from app.domain.models import LabRequest, LabSession
 
 router = APIRouter(prefix="/lab-requests", tags=["lab-requests"], dependencies=[Depends(get_current_user)])

@@ -5,7 +5,7 @@ import subprocess
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Optional
 
 try:
     from kubernetes import client, config
@@ -85,8 +85,8 @@ class OpenShiftProvisioningAdapter:
 
     def provision(self, plan: ProvisioningPlan) -> ProvisionResult:
         res = plan.required_resources
-        deploy_method = res.get("deploy_method", "kustomize-dir")
-        deploy_path = res.get("deploy_path", str(self._overlay_path))
+        res.get("deploy_method", "kustomize-dir")
+        res.get("deploy_path", str(self._overlay_path))
         demo_pages = res.get("demo_pages", "all")
         catalog_item_id = res.get("catalog_item_id", "demo")
         session_maas_key = res.get("maas_api_key", "")
@@ -351,7 +351,7 @@ http {{
         if helm is None:
             raise ValueError("'helm' not found on PATH")
 
-        dep_result = subprocess.run(
+        subprocess.run(
             [helm, "dependency", "build", chart_path],
             capture_output=True, text=True, timeout=120,
         )

@@ -2,7 +2,6 @@
 TDD: Workshop API endpoint tests.
 RED first, then GREEN by building the router.
 """
-import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app

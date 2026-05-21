@@ -2,7 +2,6 @@
 TDD: SA tokens must use kubeconfig files, not --token CLI args.
 Verifies the RHDP provisioner doesn't expose tokens in process arguments.
 """
-import pytest
 from unittest.mock import patch, MagicMock
 
 from app.adapters.rhdp.provisioning import RHDPProvisioningAdapter
@@ -50,7 +49,6 @@ class TestKubeconfigSecurity:
         adapter = RHDPProvisioningAdapter()
         kubeconfig_paths = []
 
-        original_run = None
         def capture_run(cmd, **kwargs):
             for i, arg in enumerate(cmd):
                 if arg == "--kubeconfig" and i + 1 < len(cmd):

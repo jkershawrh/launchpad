@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import catalog_adapter, provisioning_service
-from app.auth.oauth import User, require_admin
+from app.auth.oauth import require_admin
 from app.domain.enums import CatalogStatus
 from app.domain.models import CatalogItem, LabSession
 from app.services.system_monitor import SystemMonitor
