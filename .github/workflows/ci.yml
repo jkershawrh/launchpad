@@ -18,7 +18,9 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -e ".[dev]"
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install ".[dev]"
 
       - name: Lint
         run: |
@@ -26,6 +28,8 @@ jobs:
           ruff check app/ tests/
 
       - name: Unit tests
+        env:
+          PYTHONPATH: backend
         run: python -m pytest backend/tests/ -q --ignore=backend/tests/test_local_provisioning.py --ignore=backend/tests/test_sandbox.py --tb=short
 
       - name: Save test receipt
