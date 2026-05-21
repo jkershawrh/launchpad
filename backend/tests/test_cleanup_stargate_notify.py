@@ -32,8 +32,6 @@ class TestCleanupStarGateNotify:
                 svc.reclaim_session(reset.session_id)
             except Exception:
                 pass
-            calls = [c for c in mock_notify.call_args_list if c.kwargs.get("status") == "cleanup_failed" or (len(c.args) > 2 and c.args[2] == "cleanup_failed")]
-            # Check via kwargs
             cleanup_calls = [c for c in mock_notify.call_args_list if "cleanup_failed" in str(c)]
             assert len(cleanup_calls) > 0, f"notify_stargate not called with cleanup_failed. Calls: {mock_notify.call_args_list}"
 
