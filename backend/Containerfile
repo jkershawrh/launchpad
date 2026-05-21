@@ -14,18 +14,21 @@ RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/op
     | tar xz -C /usr/local/bin --strip-components=1 linux-amd64/helm \
     && chmod +x /usr/local/bin/helm
 
-RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy asyncpg psycopg2-binary kubernetes
+RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy asyncpg psycopg2-binary kubernetes requests
 
 COPY backend/app/ ./app/
 COPY deploy/ /opt/deploy/
 COPY demos/deploy/ /opt/demos-deploy/
-COPY demos/quickstarts/ /opt/quickstarts/
 
-# Pre-build Helm chart dependencies at image build time
-RUN helm repo add ai-quickstart https://rh-ai-quickstart.github.io/ai-architecture-charts 2>/dev/null || true \
-    && helm repo update 2>/dev/null || true \
-    && cd /opt/quickstarts/rag/deploy/helm/rag && helm dependency build . 2>&1 || true \
-    && cd /opt/quickstarts/llm-cpu-serving/helm && helm dependency build . 2>&1 || true
+# Quickstarts are optional — cloned upstream repos, not in git.
+# When present, pre-build Helm chart dependencies at image build time.
+COPY demos/quickstart[s]/ /opt/quickstarts/
+RUN if [ -d /opt/quickstarts/rag ]; then \
+      helm repo add ai-quickstart https://rh-ai-quickstart.github.io/ai-architecture-charts 2>/dev/null || true \
+      && helm repo update 2>/dev/null || true \
+      && cd /opt/quickstarts/rag/deploy/helm/rag && helm dependency build . 2>&1 || true \
+      && cd /opt/quickstarts/llm-cpu-serving/helm && helm dependency build . 2>&1 || true; \
+    else echo "Quickstarts not present — skipping Helm dependency build"; fi
 
 USER 1001
 

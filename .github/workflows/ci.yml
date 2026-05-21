@@ -122,5 +122,5 @@ jobs:
       - name: Build gateway
         run: docker build -t launchpad-gateway:ci -f demos/gateway/Containerfile demos/gateway/
 
-      - name: Build backend (skip — requires cloned quickstarts not in repo)
-        run: echo "Backend image build skipped in CI — requires demos/quickstarts/ which is gitignored"
+      - name: Build backend
+        run: docker build -t launchpad-backend:ci -f backend/Containerfile .
