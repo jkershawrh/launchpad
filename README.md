@@ -166,9 +166,19 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [x] Security hardening — PSS restricted on namespaces, egress/ingress NetworkPolicy, random PG passwords, kubeconfig (not --token CLI args), public session view hides MaaS keys (TDD)
 - [x] Cleanup hardening — TTL enforcement daemon, credential scrubbing on reclaim, force_reclaim calls cleanup adapter, workshop error tracking, gateway namespace lock, cleanup timeout fatal, orphaned RoleBinding cleanup, audit trail (TDD)
 - [x] StarGate integration — pre-flight constraint adapter, cleanup callback endpoint, remediation catalog entries in StarGate repo, graceful degradation when StarGate is down (TDD)
-- [x] Repo live — https://github.com/rhpds/launchpad, branch protection enabled
-- [x] 305 backend tests passing — all features TDD red/green
-- [x] Documentation — architecture, adapters, build matrix, provisioning lifecycle, tenancy, showback all up to date
+- [x] Cleanup hardening — TTL enforcement, credential scrubbing, force_reclaim cleanup, workshop error tracking, gateway lock, timeout fatal, orphaned RoleBinding cleanup, audit trail (TDD)
+- [x] StarGate integration — pre-flight constraint adapter, cleanup callback endpoint, remediation catalog entries in StarGate repo, graceful degradation (TDD)
+- [x] Edge case coverage — input validation, state edge cases, TTL boundaries, workshop boundaries, cleanup edge cases, credential edge cases, API error handling (TDD)
+- [x] Comprehensive test matrix — lifecycle state matrix (54 tests), session limits (7), evidence bundles (9), duplicates (3), edge cases (29)
+- [x] CI/CD gating — GitHub Actions: tests + lint on push/PR, TypeScript check, Helm validation, image build verification, manual deploy approval
+- [x] Admin persistent demos tab — uptime, reset button, cleanup_failed tracking
+- [x] AAP URL wiring (Phase 1) — aap_url populated from env var in sandbox provisioning
+- [x] Live E2E test scripts — `scripts/live-e2e-test.sh` (28/28 local), `scripts/cluster-e2e-test.sh` (14/17 infra01)
+- [x] Test receipt system — JSON receipts with timestamps, commit hashes, per-test results in `test-receipts/`
+- [x] Repo live — https://github.com/rhpds/launchpad
+- [x] 406 backend tests passing — all features TDD red/green
+- [x] 11 StarGate remediation tests — catalog entries validated
+- [x] Documentation — architecture, adapters, build matrix, provisioning lifecycle, tenancy, showback all current
 
 ### Waiting On (external)
 
@@ -182,7 +192,6 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - [ ] End-to-end placement test — create a real namespace on a CNV cluster via Sandbox API
 - [ ] Onboard a Launchpad base cluster — order `launchpad-cluster` from RHDP to provision shared infra
 - [ ] Full end-to-end test — order a demo from RHDP catalog, verify Showroom + frontend + gateway + inference
-- [ ] Admin dashboard — persistent demos tab (uptime, reset button)
 - [ ] Showroom screenshots — capture from a running demo environment
 - [ ] AAP Job Template integration — use AAP for provisioning instead of direct oc/helm (Phase 2)
 - [ ] AI-powered brand generation — dynamic branding profiles per partner/customer

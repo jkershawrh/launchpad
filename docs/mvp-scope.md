@@ -112,22 +112,67 @@
 |---------|--------|
 | SSO (oauth-proxy sidecar) | Done — Red Hat SSO on portal, admin, backend |
 | API key auth (X-API-Key) | Done — regular + admin tiers |
-| Session limits | Done — 2 per user, 5 per tenant |
+| Session limits | Done — 2 per user, 5 per tenant (tested: 7 tests) |
 | Resource quotas | Done — per-tier enforcement (light/medium/heavy) |
 | LiteLLM virtual keys | Done — per-tenant, 7-day duration, model-scoped |
-| Network policies | Done — namespace isolation |
+| Network policies | Done — egress + ingress in Helm chart |
+| PSS restricted profile | Done — applied via namespace labels |
+| Credential scrubbing | Done — maas_key nulled, plan scrubbed on reclaim |
+| Kubeconfig (not --token) | Done — temp kubeconfig files, cleaned up after use |
+| Public session view | Done — hides maas_api_key from non-admin |
 | No hardcoded secrets | Verified — all secrets via env vars or CHANGE-ME templates |
+
+## Testing
+
+| Layer | Tests | Status |
+|-------|-------|--------|
+| Unit tests (Launchpad) | 406 | All pass |
+| Lifecycle matrix | 54 | All 17 valid + 29 invalid transitions |
+| Edge cases | 29 | Input validation, state, TTL, cleanup, API |
+| Session limits | 7 | User + tenant limits, reclaim frees slots |
+| Evidence bundles | 9 | StarGate payload format validated |
+| RHDP adapters | 29 | Sandbox API client, pool, provisioning |
+| Cleanup hardening | 12 | TTL, credentials, force_reclaim, audit |
+| OpenShift cleanup | 8 | Gateway lock, timeout, RoleBinding |
+| StarGate integration | 7 | Callback, constraint adapter |
+| StarGate remediation (StarGate repo) | 11 | Catalog entries, risk, commands |
+| Local E2E | 28 | Real containers, real inference |
+| Cluster E2E (infra01) | 14/17 | 3 expected failures (need demo images) |
+| **Total** | **462** | |
+
+## CI/CD Gating
+
+| Gate | Launchpad | StarGate |
+|------|-----------|----------|
+| Tests on push/PR | GitHub Actions | GitHub Actions |
+| Lint (ruff) | On push/PR | — |
+| TypeScript check | 3 apps on push/PR | N/A |
+| Helm validation | 10 demos on push/PR | N/A |
+| Image build verification | On push/PR | — |
+| Remediation catalog validation | N/A | On push/PR |
+| Manual deploy approval | workflow_dispatch | — |
+
+## StarGate Integration
+
+| Integration Point | Direction | Status |
+|---|---|---|
+| Pre-flight check | Launchpad → StarGate | Built + tested |
+| Lifecycle evidence | Launchpad → StarGate | Built + tested (9 payload tests) |
+| Cleanup callback | StarGate → Launchpad | Built + tested |
+| Remediation catalog | StarGate | 3 entries + 11 tests |
+| Graceful degradation | Both | Falls back when other is down |
 
 ## What's Left
 
 | Priority | Item | Blocker |
 |----------|------|---------|
-| 1 | `app` role Sandbox API token | Need admin to issue |
-| 2 | Build + push container images | Need quay.io push access |
-| 3 | End-to-end placement test | Needs #1 |
-| 4 | Submit AgnosticV configs to `rhpds/agnosticv` | PR |
-| 5 | Onboard Launchpad base cluster | Needs RHDP catalog entry |
-| 6 | RHOAI install on infra01 | Manager approval |
-| 7 | Showroom screenshots | Need running demo for captures |
-| 8 | Admin dashboard — 4 new quickstarts | Small update |
+| 1 | Sandbox API `app` role token | Need admin to issue |
+| 2 | quay.io push access (`rhpds` org) | Need org admin |
+| 3 | AgnosticV PR review | Tony Kay / Nate Stephany |
+| 4 | Push container images | Needs #2 |
+| 5 | End-to-end placement test | Needs #1 |
+| 6 | Onboard Launchpad base cluster | Needs RHDP catalog entry |
+| 7 | Showroom screenshots | Need running demo |
+| 8 | AAP Job Template integration | Phase 2 |
+| 9 | AI-powered brand generation | Future |
 | 9 | AI-powered brand generation | Future |
