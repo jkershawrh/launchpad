@@ -1,0 +1,15 @@
+ifndef::showroom_primary_view_url[]
+Please wait.
+
+When your environment is deployed, access information will be displayed below.
+endif::[]
+
+ifdef::showroom_primary_view_url[]
+
+== Launchpad AI Partner Demo — Base Infrastructure
+
+This is the shared base cluster for Launchpad demo tenants.
+
+Individual demo environments are provisioned on top of this cluster via the Sandbox API.
+
+endif::[]
