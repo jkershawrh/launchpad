@@ -155,6 +155,7 @@ ocp4_workload_showroom_content_ui_config: |
 # Babylon meta variables
 # -------------------------------------------------------------------
 __meta__:
+  asset_uuid: TBD-assign-with-tony
   owners:
     maintainer:
       - name: Jack Kershaw
