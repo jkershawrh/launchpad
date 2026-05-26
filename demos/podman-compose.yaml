@@ -21,7 +21,7 @@ services:
     image: docker.io/library/postgres:15-alpine
     environment:
       POSTGRES_USER: gateway
-      POSTGRES_PASSWORD: REDACTED
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_DB: inference_platform
     ports:
       - "127.0.0.1:5432:5432"

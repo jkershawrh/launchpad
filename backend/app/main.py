@@ -19,8 +19,8 @@ cors_origins = os.environ.get(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in cors_origins],
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["Content-Type", "X-API-Key", "Authorization"],
 )
 
 # All routers mounted under /api/v1 prefix
@@ -49,10 +49,4 @@ async def shutdown():
 
 @app.get("/health")
 def health():
-    db_url = get_database_url()
-    mode = os.environ.get("LAUNCHPAD_MODE", "mock")
-    return {
-        "status": "ok",
-        "mode": mode,
-        "persistence": "postgresql" if db_url else "in-memory",
-    }
+    return {"status": "ok", "service": "launchpad"}

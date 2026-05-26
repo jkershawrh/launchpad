@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from app.api.deps import provisioning_service
@@ -10,6 +11,16 @@ from app.domain.enums import SessionStatus
 from app.domain.models import LifecycleEvent
 
 router = APIRouter(prefix="/callbacks", tags=["callbacks"])
+
+INTEGRATION_API_KEY = os.environ.get("INTEGRATION_API_KEY")
+
+
+def _verify_api_key(request: Request):
+    if not INTEGRATION_API_KEY:
+        return
+    key = request.headers.get("X-API-Key")
+    if key != INTEGRATION_API_KEY:
+        raise HTTPException(401, "Invalid or missing X-API-Key")
 
 
 class CleanupResult(BaseModel):
@@ -21,7 +32,8 @@ class CleanupResult(BaseModel):
 
 
 @router.post("/cleanup-result")
-def cleanup_callback(body: CleanupResult) -> Dict[str, Any]:
+def cleanup_callback(body: CleanupResult, request: Request) -> Dict[str, Any]:
+    _verify_api_key(request)
     session = provisioning_service.get_session(body.session_id)
     if not session:
         raise HTTPException(404, f"Session {body.session_id} not found")
@@ -55,7 +67,8 @@ class RemediationCallback(BaseModel):
 
 
 @router.post("/remediation")
-def receive_remediation(callback: RemediationCallback) -> Dict[str, Any]:
+def receive_remediation(callback: RemediationCallback, request: Request) -> Dict[str, Any]:
+    _verify_api_key(request)
     """Receive remediation suggestions from DeepField."""
     session = provisioning_service.get_session(callback.session_id)
     if not session:
