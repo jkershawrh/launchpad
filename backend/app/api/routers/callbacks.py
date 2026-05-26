@@ -98,7 +98,7 @@ def receive_remediation(callback: RemediationCallback, request: Request) -> Dict
                 "action": "reclaim",
                 "session_id": callback.session_id,
             }
-        except (ValueError, Exception) as e:
+        except (ValueError, Exception):
             try:
                 provisioning_service.force_reclaim_session(callback.session_id)
                 return {
