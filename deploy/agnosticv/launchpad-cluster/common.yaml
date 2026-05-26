@@ -131,7 +131,7 @@ __meta__:
   asset_uuid: TBD-assign-with-tony
   owners:
     maintainer:
-    - name: Jack Kershaw
+    - name: Jonathan Kershaw
       email: jkershaw@redhat.com
   catalog:
     display_name: "Launchpad AI Partner Demo Base Infra (CNV)"

@@ -165,7 +165,7 @@ __meta__:
   asset_uuid: 41068cca-b18f-42dc-99f9-4a864f42c95a
   owners:
     maintainer:
-      - name: Jack Kershaw
+      - name: Jonathan Kershaw
         email: jkershaw@redhat.com
 
   sandbox_api:
