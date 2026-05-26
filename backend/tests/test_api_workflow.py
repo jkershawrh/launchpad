@@ -36,13 +36,13 @@ REQUEST_PAYLOAD = {
 
 def test_api_workflow_submit_to_ready(client):
     # Step 1: Submit request
-    resp = client.post("/lab-requests", json=REQUEST_PAYLOAD)
+    resp = client.post("/api/v1/lab-requests", json=REQUEST_PAYLOAD)
     assert resp.status_code == 201
     request_id = resp.json()["request_id"]
     assert resp.json()["status"] == "accepted"
 
     # Step 2: Provision
-    resp = client.post(f"/lab-requests/{request_id}/provision")
+    resp = client.post(f"/api/v1/lab-requests/{request_id}/provision")
     assert resp.status_code == 201
     session_id = resp.json()["session_id"]
     assert resp.json()["status"] == "validating"
@@ -50,39 +50,39 @@ def test_api_workflow_submit_to_ready(client):
     assert resp.json()["lab_url"] is not None
 
     # Step 3: Validate
-    resp = client.post(f"/lab-sessions/{session_id}/validate")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/validate")
     assert resp.status_code == 200
     assert resp.json()["status"] == "ready"
     assert len(resp.json()["validation_results"]) == 3
 
     # Step 4: Verify handoff
-    resp = client.get(f"/lab-sessions/{session_id}/handoff")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}/handoff")
     assert resp.status_code == 200
     assert resp.json()["lab_url"] is not None
 
     # Step 5: Verify showback
-    resp = client.get(f"/lab-sessions/{session_id}/showback")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}/showback")
     assert resp.status_code == 200
     assert resp.json()["duration_seconds"] > 0
 
     # Step 6: Verify repeatability
-    resp = client.get(f"/lab-sessions/{session_id}/repeatability-report")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}/repeatability-report")
     assert resp.status_code == 200
     assert resp.json()["repeatability_score"] == 100
 
 
 def test_api_workflow_rejects_bad_request(client):
     bad_payload = {**REQUEST_PAYLOAD, "catalog_item_id": "nonexistent"}
-    resp = client.post("/lab-requests", json=bad_payload)
+    resp = client.post("/api/v1/lab-requests", json=bad_payload)
     assert resp.status_code == 201
     assert resp.json()["status"] == "rejected"
 
     # Cannot provision a rejected request
     request_id = resp.json()["request_id"]
-    resp = client.post(f"/lab-requests/{request_id}/provision")
+    resp = client.post(f"/api/v1/lab-requests/{request_id}/provision")
     assert resp.status_code == 400
 
 
 def test_api_workflow_provision_missing_request(client):
-    resp = client.post("/lab-requests/fake-id/provision")
+    resp = client.post("/api/v1/lab-requests/fake-id/provision")
     assert resp.status_code == 400

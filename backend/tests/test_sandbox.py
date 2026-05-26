@@ -273,18 +273,18 @@ def test_api_sandbox_launch():
         "persistence": "persistent",
         "ttl": "8h",
     }
-    resp = client.post("/lab-requests", json=payload)
+    resp = client.post("/api/v1/lab-requests", json=payload)
     assert resp.json()["status"] == "accepted"
     rid = resp.json()["request_id"]
 
-    resp = client.post(f"/lab-requests/{rid}/provision")
+    resp = client.post(f"/api/v1/lab-requests/{rid}/provision")
     assert resp.status_code == 201
     sid = resp.json()["session_id"]
 
-    resp = client.post(f"/lab-sessions/{sid}/validate")
+    resp = client.post(f"/api/v1/lab-sessions/{sid}/validate")
     assert resp.json()["status"] == "ready"
 
-    resp = client.get(f"/lab-sessions/{sid}/handoff")
+    resp = client.get(f"/api/v1/lab-sessions/{sid}/handoff")
     assert resp.status_code == 200
 
 
@@ -303,5 +303,5 @@ def test_api_sandbox_bad_config():
         "catalog_item_id": "sandbox-nonexistent",
         "requested_mode": "open_sandbox",
     }
-    resp = client.post("/lab-requests", json=payload)
+    resp = client.post("/api/v1/lab-requests", json=payload)
     assert resp.json()["status"] == "rejected"

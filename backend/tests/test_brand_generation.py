@@ -85,6 +85,6 @@ class TestBrandGeneration:
                     "choices": [{"message": {"content": '{"title": "TestCo Platform", "primary_color": "#333333", "secondary_color": "#666666", "theme": "default", "footer_text": "TestCo"}'}}]
                 }),
             )
-            resp = client.post("/branding-profiles/generate", json={"company_name": "TestCo"})
+            resp = client.post("/api/v1/branding-profiles/generate", json={"company_name": "TestCo"})
             assert resp.status_code == 200
             assert "TestCo" in resp.json()["title"]

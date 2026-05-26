@@ -333,14 +333,14 @@ DEMO_LAB_REQUEST_PAYLOAD = {
 
 def test_api_demo_launch_to_ready(demo_client):
     # Submit
-    resp = demo_client.post("/lab-requests", json=DEMO_LAB_REQUEST_PAYLOAD)
+    resp = demo_client.post("/api/v1/lab-requests", json=DEMO_LAB_REQUEST_PAYLOAD)
     assert resp.status_code == 201
     data = resp.json()
     assert data["status"] == "accepted"
     request_id = data["request_id"]
 
     # Provision
-    resp = demo_client.post(f"/lab-requests/{request_id}/provision")
+    resp = demo_client.post(f"/api/v1/lab-requests/{request_id}/provision")
     assert resp.status_code == 201
     session_data = resp.json()
     assert session_data["status"] == "validating"
@@ -348,14 +348,14 @@ def test_api_demo_launch_to_ready(demo_client):
     session_id = session_data["session_id"]
 
     # Validate
-    resp = demo_client.post(f"/lab-sessions/{session_id}/validate")
+    resp = demo_client.post(f"/api/v1/lab-sessions/{session_id}/validate")
     assert resp.status_code == 200
     validated = resp.json()
     assert validated["status"] == "ready"
     assert len(validated["validation_results"]) == 3
 
     # Handoff
-    resp = demo_client.get(f"/lab-sessions/{session_id}/handoff")
+    resp = demo_client.get(f"/api/v1/lab-sessions/{session_id}/handoff")
     assert resp.status_code == 200
     handoff = resp.json()
     assert handoff["lab_title"] == "Inference Overdrive"
@@ -364,6 +364,6 @@ def test_api_demo_launch_to_ready(demo_client):
 
 def test_api_demo_launch_bad_item(demo_client):
     payload = {**DEMO_LAB_REQUEST_PAYLOAD, "catalog_item_id": "nonexistent-demo"}
-    resp = demo_client.post("/lab-requests", json=payload)
+    resp = demo_client.post("/api/v1/lab-requests", json=payload)
     assert resp.status_code == 201
     assert resp.json()["status"] == "rejected"

@@ -262,25 +262,25 @@ def test_api_local_launch_to_reclaim():
         "requested_mode": "quick_start",
     }
 
-    resp = client.post("/lab-requests", json=payload)
+    resp = client.post("/api/v1/lab-requests", json=payload)
     assert resp.json()["status"] == "accepted"
     rid = resp.json()["request_id"]
 
-    resp = client.post(f"/lab-requests/{rid}/provision")
+    resp = client.post(f"/api/v1/lab-requests/{rid}/provision")
     assert resp.status_code == 201
     sid = resp.json()["session_id"]
     assert "localhost" in resp.json()["lab_url"]
 
-    resp = client.post(f"/lab-sessions/{sid}/validate")
+    resp = client.post(f"/api/v1/lab-sessions/{sid}/validate")
     assert resp.json()["status"] == "ready"
 
-    resp = client.post(f"/lab-sessions/{sid}/activate")
+    resp = client.post(f"/api/v1/lab-sessions/{sid}/activate")
     assert resp.json()["status"] == "active"
 
-    resp = client.post(f"/lab-sessions/{sid}/reset")
+    resp = client.post(f"/api/v1/lab-sessions/{sid}/reset")
     assert resp.json()["status"] == "resetting"
 
-    resp = client.post(f"/lab-sessions/{sid}/reclaim")
+    resp = client.post(f"/api/v1/lab-sessions/{sid}/reclaim")
     assert resp.json()["status"] == "reclaimed"
 
     os.environ["LAUNCHPAD_MODE"] = "mock"

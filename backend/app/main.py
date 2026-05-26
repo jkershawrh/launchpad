@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers import admin, branding, callbacks, catalog, lab_requests, lab_sessions, tenants, workshops
-from app.storage.database import get_database_url, init_db
+from app.storage.database import get_database_url, init_db, close_db
 
 app = FastAPI(
     title="Partner AI Launchpad",
@@ -23,20 +23,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(tenants.router)
-app.include_router(catalog.router)
-app.include_router(lab_requests.router)
-app.include_router(lab_sessions.router)
-app.include_router(branding.router)
-app.include_router(admin.router)
-app.include_router(workshops.router)
-app.include_router(callbacks.router)
+# All routers mounted under /api/v1 prefix
+API_PREFIX = "/api/v1"
+
+app.include_router(tenants.router, prefix=API_PREFIX)
+app.include_router(catalog.router, prefix=API_PREFIX)
+app.include_router(lab_requests.router, prefix=API_PREFIX)
+app.include_router(lab_sessions.router, prefix=API_PREFIX)
+app.include_router(branding.router, prefix=API_PREFIX)
+app.include_router(admin.router, prefix=API_PREFIX)
+app.include_router(workshops.router, prefix=API_PREFIX)
+app.include_router(callbacks.router, prefix=API_PREFIX)
 
 
 @app.on_event("startup")
-def startup():
+async def startup():
     if get_database_url():
-        init_db()
+        await init_db()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await close_db()
 
 
 @app.get("/health")

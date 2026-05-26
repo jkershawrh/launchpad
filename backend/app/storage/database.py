@@ -1,106 +1,106 @@
+"""
+Async PostgreSQL storage layer using asyncpg.
+
+Graceful degradation: works without a database if DATABASE_URL is not set,
+falling back to in-memory storage.
+"""
 from __future__ import annotations
 
+import logging
 import os
+from pathlib import Path
 from typing import Optional
 
-from sqlalchemy import (
-    Column,
-    DateTime,
-    MetaData,
-    String,
-    Table,
-    Text,
-    create_engine,
-)
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.engine import Engine
-from sqlalchemy.sql import func
+logger = logging.getLogger("launchpad.storage")
 
-metadata = MetaData()
+MIGRATIONS_DIR = Path(__file__).resolve().parent.parent.parent / "migrations"
 
-tenants_table = Table(
-    "tenants", metadata,
-    Column("tenant_id", String, primary_key=True),
-    Column("data", JSONB, nullable=False),
-    Column("created_at", DateTime(timezone=True), server_default=func.now()),
-)
-
-lab_requests_table = Table(
-    "lab_requests", metadata,
-    Column("request_id", String, primary_key=True),
-    Column("tenant_id", String, nullable=False, index=True),
-    Column("catalog_item_id", String, nullable=False),
-    Column("status", String, nullable=False, index=True),
-    Column("data", JSONB, nullable=False),
-    Column("created_at", DateTime(timezone=True), server_default=func.now()),
-)
-
-lab_sessions_table = Table(
-    "lab_sessions", metadata,
-    Column("session_id", String, primary_key=True),
-    Column("request_id", String, nullable=False),
-    Column("tenant_id", String, nullable=False, index=True),
-    Column("catalog_item_id", String, nullable=False),
-    Column("status", String, nullable=False, index=True),
-    Column("namespace", Text),
-    Column("data", JSONB, nullable=False),
-    Column("created_at", DateTime(timezone=True), server_default=func.now()),
-    Column("updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now()),
-)
-
-provisioning_plans_table = Table(
-    "provisioning_plans", metadata,
-    Column("plan_id", String, primary_key=True),
-    Column("request_id", String, nullable=False),
-    Column("data", JSONB, nullable=False),
-    Column("created_at", DateTime(timezone=True), server_default=func.now()),
-)
-
-showback_records_table = Table(
-    "showback_records", metadata,
-    Column("showback_id", String, primary_key=True),
-    Column("tenant_id", String, nullable=False, index=True),
-    Column("session_id", String, nullable=False, index=True),
-    Column("data", JSONB, nullable=False),
-    Column("created_at", DateTime(timezone=True), server_default=func.now()),
-)
-
-catalog_items_custom_table = Table(
-    "catalog_items_custom", metadata,
-    Column("catalog_item_id", String, primary_key=True),
-    Column("data", JSONB, nullable=False),
-    Column("created_at", DateTime(timezone=True), server_default=func.now()),
-    Column("updated_at", DateTime(timezone=True), server_default=func.now(), onupdate=func.now()),
-)
-
-_engine: Optional[Engine] = None
+_pool = None
 
 
 def get_database_url() -> Optional[str]:
     return os.environ.get("DATABASE_URL")
 
 
-def get_engine() -> Optional[Engine]:
-    global _engine
-    if _engine is not None:
-        return _engine
+def get_pool():
+    return _pool
+
+
+async def init_db() -> bool:
+    """Initialize the asyncpg connection pool and run migrations.
+
+    Returns True if connected, False if running without persistence.
+    """
+    global _pool
     url = get_database_url()
     if not url:
-        return None
-    _engine = create_engine(url, pool_size=5, max_overflow=10)
-    return _engine
-
-
-def init_db() -> bool:
-    engine = get_engine()
-    if not engine:
+        logger.info("DATABASE_URL not set — running without persistence")
         return False
-    metadata.create_all(engine)
-    return True
+    try:
+        import asyncpg
+    except ImportError:
+        logger.warning("asyncpg not installed — running without persistence")
+        return False
+    try:
+        _pool = await asyncpg.create_pool(
+            url, min_size=2, max_size=10,
+            server_settings={"statement_timeout": "30000"},
+        )
+        logger.info("Connected to PostgreSQL")
+        await _run_migrations()
+        return True
+    except Exception as e:
+        logger.warning("Failed to connect to PostgreSQL: %s — running without persistence", e)
+        _pool = None
+        return False
 
 
-def close_db() -> None:
-    global _engine
-    if _engine:
-        _engine.dispose()
-        _engine = None
+async def close_db() -> None:
+    """Close the connection pool."""
+    global _pool
+    if _pool:
+        await _pool.close()
+        _pool = None
+
+
+async def _run_migrations() -> None:
+    """Run numbered SQL migration files, tracking applied migrations."""
+    if not _pool:
+        return
+    if not MIGRATIONS_DIR.exists():
+        logger.debug("No migrations directory found at %s", MIGRATIONS_DIR)
+        return
+    sql_files = sorted(MIGRATIONS_DIR.glob("*.sql"))
+    if not sql_files:
+        return
+    async with _pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS applied_migrations (
+                id SERIAL PRIMARY KEY,
+                filename VARCHAR(255) NOT NULL UNIQUE,
+                applied_at TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        for sql_file in sql_files:
+            already = await conn.fetchval(
+                "SELECT COUNT(*) FROM applied_migrations WHERE filename = $1",
+                sql_file.name,
+            )
+            if already:
+                logger.debug("Migration %s already applied", sql_file.name)
+                continue
+            sql = sql_file.read_text()
+            try:
+                await conn.execute(sql)
+                await conn.execute(
+                    "INSERT INTO applied_migrations (filename) VALUES ($1)",
+                    sql_file.name,
+                )
+                logger.info("Applied migration: %s", sql_file.name)
+            except Exception as e:
+                err_msg = str(e).lower()
+                if "already exists" in err_msg or "duplicate" in err_msg:
+                    logger.debug("Migration %s already applied (idempotent)", sql_file.name)
+                else:
+                    logger.error("Migration %s failed: %s", sql_file.name, e)
+                    raise

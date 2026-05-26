@@ -494,25 +494,25 @@ def test_api_full_post_ready_workflow():
         "ttl": "4h",
     }
 
-    resp = client.post("/lab-requests", json=req_payload)
+    resp = client.post("/api/v1/lab-requests", json=req_payload)
     request_id = resp.json()["request_id"]
 
-    resp = client.post(f"/lab-requests/{request_id}/provision")
+    resp = client.post(f"/api/v1/lab-requests/{request_id}/provision")
     session_id = resp.json()["session_id"]
 
-    resp = client.post(f"/lab-sessions/{session_id}/validate")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/validate")
     assert resp.json()["status"] == "ready"
 
-    resp = client.post(f"/lab-sessions/{session_id}/activate")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/activate")
     assert resp.status_code == 200
     assert resp.json()["status"] == "active"
     assert resp.json()["started_at"] is not None
 
-    resp = client.post(f"/lab-sessions/{session_id}/reset")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/reset")
     assert resp.status_code == 200
     assert resp.json()["status"] == "resetting"
 
-    resp = client.post(f"/lab-sessions/{session_id}/reclaim")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/reclaim")
     assert resp.status_code == 200
     assert resp.json()["status"] == "reclaimed"
     assert resp.json()["completed_at"] is not None
@@ -536,10 +536,10 @@ def test_api_activate_wrong_status_returns_400():
         "requested_mode": "quick_start",
     }
 
-    resp = client.post("/lab-requests", json=req_payload)
+    resp = client.post("/api/v1/lab-requests", json=req_payload)
     request_id = resp.json()["request_id"]
-    resp = client.post(f"/lab-requests/{request_id}/provision")
+    resp = client.post(f"/api/v1/lab-requests/{request_id}/provision")
     session_id = resp.json()["session_id"]
 
-    resp = client.post(f"/lab-sessions/{session_id}/activate")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/activate")
     assert resp.status_code == 400

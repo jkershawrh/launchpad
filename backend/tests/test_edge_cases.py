@@ -241,17 +241,17 @@ class TestCredentialEdgeCases:
 class TestAPIEdgeCases:
 
     def test_invalid_json_body(self):
-        resp = client.post("/lab-requests", content="not json", headers={"Content-Type": "application/json"})
+        resp = client.post("/api/v1/lab-requests", content="not json", headers={"Content-Type": "application/json"})
         assert resp.status_code == 422
 
     def test_missing_required_fields(self):
-        resp = client.post("/lab-requests", json={"tenant_id": "t"})
+        resp = client.post("/api/v1/lab-requests", json={"tenant_id": "t"})
         assert resp.status_code == 422
 
     def test_get_nonexistent_session(self):
-        resp = client.get("/lab-sessions/nonexistent")
+        resp = client.get("/api/v1/lab-sessions/nonexistent")
         assert resp.status_code == 404
 
     def test_provision_nonexistent_request(self):
-        resp = client.post("/lab-requests/nonexistent/provision")
+        resp = client.post("/api/v1/lab-requests/nonexistent/provision")
         assert resp.status_code in (400, 404)

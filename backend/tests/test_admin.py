@@ -120,7 +120,7 @@ def test_force_reclaim_missing_session():
 
 def test_diagnostics_returns_health(client):
     session = _provision_session()
-    resp = client.get(f"/admin/sessions/{session.session_id}/diagnostics")
+    resp = client.get(f"/api/v1/admin/sessions/{session.session_id}/diagnostics")
     assert resp.status_code == 200
     data = resp.json()
     assert data["session_id"] == session.session_id
@@ -129,7 +129,7 @@ def test_diagnostics_returns_health(client):
 
 
 def test_diagnostics_missing_session(client):
-    resp = client.get("/admin/sessions/nonexistent/diagnostics")
+    resp = client.get("/api/v1/admin/sessions/nonexistent/diagnostics")
     assert resp.status_code == 404
 
 
@@ -146,7 +146,7 @@ def test_admin_add_catalog_item(client):
         "default_quota_profile": "standard",
         "default_ttl": "4h",
     }
-    resp = client.post("/admin/catalog", json=payload)
+    resp = client.post("/api/v1/admin/catalog", json=payload)
     assert resp.status_code == 201
     assert resp.json()["catalog_item_id"] == "test-new-demo"
     assert resp.json()["status"] == "draft"
@@ -154,7 +154,7 @@ def test_admin_add_catalog_item(client):
 
 
 def test_admin_add_duplicate_rejected(client):
-    resp = client.post("/admin/catalog", json={
+    resp = client.post("/api/v1/admin/catalog", json={
         "catalog_item_id": "inference-overdrive-quickstart",
         "display_name": "Duplicate",
         "category": "quick_start",
@@ -165,7 +165,7 @@ def test_admin_add_duplicate_rejected(client):
 # ─── A8: Update catalog item ─────────────────────────────────────────────────
 
 def test_admin_update_catalog_item(client):
-    resp = client.put("/admin/catalog/inference-overdrive-quickstart", json={
+    resp = client.put("/api/v1/admin/catalog/inference-overdrive-quickstart", json={
         "description": "Updated description for testing",
     })
     assert resp.status_code == 200
@@ -173,40 +173,40 @@ def test_admin_update_catalog_item(client):
 
 
 def test_admin_update_nonexistent(client):
-    resp = client.put("/admin/catalog/nonexistent-item", json={"description": "test"})
+    resp = client.put("/api/v1/admin/catalog/nonexistent-item", json={"description": "test"})
     assert resp.status_code == 404
 
 
 # ─── A9: Change catalog status ───────────────────────────────────────────────
 
 def test_admin_deprecate_catalog_item(client):
-    client.post("/admin/catalog", json={
+    client.post("/api/v1/admin/catalog", json={
         "catalog_item_id": "deprecate-test",
         "display_name": "Deprecate Test",
         "category": "quick_start",
         "status": "active",
     })
-    resp = client.patch("/admin/catalog/deprecate-test/status", json={"status": "deprecated"})
+    resp = client.patch("/api/v1/admin/catalog/deprecate-test/status", json={"status": "deprecated"})
     assert resp.status_code == 200
     assert resp.json()["status"] == "deprecated"
     catalog_adapter._items.pop("deprecate-test", None)
 
 
 def test_admin_invalid_status_change(client):
-    resp = client.patch("/admin/catalog/inference-overdrive-quickstart/status", json={"status": "invalid_xyz"})
+    resp = client.patch("/api/v1/admin/catalog/inference-overdrive-quickstart/status", json={"status": "invalid_xyz"})
     assert resp.status_code == 400
 
 
 # ─── A10: New item appears in catalog ─────────────────────────────────────────
 
 def test_new_item_visible_in_catalog(client):
-    client.post("/admin/catalog", json={
+    client.post("/api/v1/admin/catalog", json={
         "catalog_item_id": "visible-test",
         "display_name": "Visible Test",
         "category": "quick_start",
         "status": "active",
     })
-    resp = client.get("/catalog")
+    resp = client.get("/api/v1/catalog")
     ids = [i["catalog_item_id"] for i in resp.json()]
     assert "visible-test" in ids
     catalog_adapter._items.pop("visible-test", None)
@@ -225,7 +225,7 @@ def test_draft_item_hidden_from_partners():
 # ─── A11: API system status ──────────────────────────────────────────────────
 
 def test_api_system_status(client):
-    resp = client.get("/admin/system/status")
+    resp = client.get("/api/v1/admin/system/status")
     assert resp.status_code == 200
     data = resp.json()
     assert "healthy" in data
@@ -237,11 +237,11 @@ def test_api_system_status(client):
 
 def test_api_force_reclaim(client):
     session = _provision_session()
-    resp = client.post(f"/admin/sessions/{session.session_id}/force-reclaim")
+    resp = client.post(f"/api/v1/admin/sessions/{session.session_id}/force-reclaim")
     assert resp.status_code == 200
     assert resp.json()["status"] == "reclaimed"
 
 
 def test_api_force_reclaim_404(client):
-    resp = client.post("/admin/sessions/nonexistent/force-reclaim")
+    resp = client.post("/api/v1/admin/sessions/nonexistent/force-reclaim")
     assert resp.status_code == 404

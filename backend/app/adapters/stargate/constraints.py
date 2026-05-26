@@ -37,7 +37,7 @@ class StarGateConstraintAdapter:
                 headers["X-API-Key"] = self.api_key
 
             resp = requests.get(
-                f"{self.api_url}/api/evaluate-provision",
+                f"{self.api_url}/integration/evaluate",
                 params={
                     "catalog_item": request.catalog_item_id,
                     "tenant": request.tenant_id,

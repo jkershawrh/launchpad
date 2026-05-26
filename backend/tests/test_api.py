@@ -50,7 +50,7 @@ def test_api_health(client):
 # --- Tenant endpoints ---
 
 def test_api_can_create_tenant(client):
-    resp = client.post("/tenants", json=TENANT_PAYLOAD)
+    resp = client.post("/api/v1/tenants", json=TENANT_PAYLOAD)
     assert resp.status_code == 201
     data = resp.json()
     assert data["tenant_id"] == "partner-oem-a"
@@ -58,34 +58,34 @@ def test_api_can_create_tenant(client):
 
 
 def test_api_can_list_tenants(client):
-    client.post("/tenants", json=TENANT_PAYLOAD)
-    resp = client.get("/tenants")
+    client.post("/api/v1/tenants", json=TENANT_PAYLOAD)
+    resp = client.get("/api/v1/tenants")
     assert resp.status_code == 200
     assert len(resp.json()) == 1
 
 
 def test_api_can_get_tenant(client):
-    client.post("/tenants", json=TENANT_PAYLOAD)
-    resp = client.get("/tenants/partner-oem-a")
+    client.post("/api/v1/tenants", json=TENANT_PAYLOAD)
+    resp = client.get("/api/v1/tenants/partner-oem-a")
     assert resp.status_code == 200
     assert resp.json()["display_name"] == "Partner OEM A"
 
 
 def test_api_tenant_not_found(client):
-    resp = client.get("/tenants/nonexistent")
+    resp = client.get("/api/v1/tenants/nonexistent")
     assert resp.status_code == 404
 
 
 def test_api_tenant_duplicate(client):
-    client.post("/tenants", json=TENANT_PAYLOAD)
-    resp = client.post("/tenants", json=TENANT_PAYLOAD)
+    client.post("/api/v1/tenants", json=TENANT_PAYLOAD)
+    resp = client.post("/api/v1/tenants", json=TENANT_PAYLOAD)
     assert resp.status_code == 409
 
 
 # --- Catalog endpoints ---
 
 def test_api_can_list_catalog(client):
-    resp = client.get("/catalog")
+    resp = client.get("/api/v1/catalog")
     assert resp.status_code == 200
     items = resp.json()
     assert len(items) == 25
@@ -96,20 +96,20 @@ def test_api_can_list_catalog(client):
 
 
 def test_api_can_get_catalog_item(client):
-    resp = client.get("/catalog/inference-overdrive-quickstart")
+    resp = client.get("/api/v1/catalog/inference-overdrive-quickstart")
     assert resp.status_code == 200
     assert resp.json()["category"] == "quick_start"
 
 
 def test_api_catalog_not_found(client):
-    resp = client.get("/catalog/nonexistent")
+    resp = client.get("/api/v1/catalog/nonexistent")
     assert resp.status_code == 404
 
 
 # --- Lab Request endpoints ---
 
 def test_api_can_create_lab_request(client):
-    resp = client.post("/lab-requests", json=LAB_REQUEST_PAYLOAD)
+    resp = client.post("/api/v1/lab-requests", json=LAB_REQUEST_PAYLOAD)
     assert resp.status_code == 201
     data = resp.json()
     assert data["status"] == "accepted"
@@ -118,31 +118,31 @@ def test_api_can_create_lab_request(client):
 
 def test_api_lab_request_rejected_for_unknown_item(client):
     payload = {**LAB_REQUEST_PAYLOAD, "catalog_item_id": "nonexistent"}
-    resp = client.post("/lab-requests", json=payload)
+    resp = client.post("/api/v1/lab-requests", json=payload)
     assert resp.status_code == 201
     assert resp.json()["status"] == "rejected"
 
 
 def test_api_can_list_lab_requests(client):
-    client.post("/lab-requests", json=LAB_REQUEST_PAYLOAD)
-    resp = client.get("/lab-requests")
+    client.post("/api/v1/lab-requests", json=LAB_REQUEST_PAYLOAD)
+    resp = client.get("/api/v1/lab-requests")
     assert resp.status_code == 200
     assert len(resp.json()) == 1
 
 
 def test_api_can_get_lab_request(client):
-    create_resp = client.post("/lab-requests", json=LAB_REQUEST_PAYLOAD)
+    create_resp = client.post("/api/v1/lab-requests", json=LAB_REQUEST_PAYLOAD)
     request_id = create_resp.json()["request_id"]
-    resp = client.get(f"/lab-requests/{request_id}")
+    resp = client.get(f"/api/v1/lab-requests/{request_id}")
     assert resp.status_code == 200
 
 
 # --- Provisioning + Session lifecycle ---
 
 def _create_and_provision(client):
-    create_resp = client.post("/lab-requests", json=LAB_REQUEST_PAYLOAD)
+    create_resp = client.post("/api/v1/lab-requests", json=LAB_REQUEST_PAYLOAD)
     request_id = create_resp.json()["request_id"]
-    prov_resp = client.post(f"/lab-requests/{request_id}/provision")
+    prov_resp = client.post(f"/api/v1/lab-requests/{request_id}/provision")
     return prov_resp
 
 
@@ -157,7 +157,7 @@ def test_api_can_provision_mock_lab(client):
 
 def test_api_can_list_sessions(client):
     _create_and_provision(client)
-    resp = client.get("/lab-sessions")
+    resp = client.get("/api/v1/lab-sessions")
     assert resp.status_code == 200
     assert len(resp.json()) == 1
 
@@ -165,14 +165,14 @@ def test_api_can_list_sessions(client):
 def test_api_can_get_session(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    resp = client.get(f"/lab-sessions/{session_id}")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}")
     assert resp.status_code == 200
 
 
 def test_api_can_validate_lab_session(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    resp = client.post(f"/lab-sessions/{session_id}/validate")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/validate")
     assert resp.status_code == 200
     data = resp.json()
     assert data["status"] == "ready"
@@ -182,8 +182,8 @@ def test_api_can_validate_lab_session(client):
 def test_api_can_activate_session(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    client.post(f"/lab-sessions/{session_id}/validate")
-    resp = client.post(f"/lab-sessions/{session_id}/activate")
+    client.post(f"/api/v1/lab-sessions/{session_id}/validate")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/activate")
     assert resp.status_code == 200
     assert resp.json()["status"] == "active"
 
@@ -191,9 +191,9 @@ def test_api_can_activate_session(client):
 def test_api_can_reset_session(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    client.post(f"/lab-sessions/{session_id}/validate")
-    client.post(f"/lab-sessions/{session_id}/activate")
-    resp = client.post(f"/lab-sessions/{session_id}/reset")
+    client.post(f"/api/v1/lab-sessions/{session_id}/validate")
+    client.post(f"/api/v1/lab-sessions/{session_id}/activate")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/reset")
     assert resp.status_code == 200
     assert resp.json()["status"] == "resetting"
 
@@ -201,10 +201,10 @@ def test_api_can_reset_session(client):
 def test_api_can_reclaim_session(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    client.post(f"/lab-sessions/{session_id}/validate")
-    client.post(f"/lab-sessions/{session_id}/activate")
-    client.post(f"/lab-sessions/{session_id}/reset")
-    resp = client.post(f"/lab-sessions/{session_id}/reclaim")
+    client.post(f"/api/v1/lab-sessions/{session_id}/validate")
+    client.post(f"/api/v1/lab-sessions/{session_id}/activate")
+    client.post(f"/api/v1/lab-sessions/{session_id}/reset")
+    resp = client.post(f"/api/v1/lab-sessions/{session_id}/reclaim")
     assert resp.status_code == 200
     assert resp.json()["status"] == "reclaimed"
 
@@ -214,8 +214,8 @@ def test_api_can_reclaim_session(client):
 def test_api_can_get_handoff(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    client.post(f"/lab-sessions/{session_id}/validate")
-    resp = client.get(f"/lab-sessions/{session_id}/handoff")
+    client.post(f"/api/v1/lab-sessions/{session_id}/validate")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}/handoff")
     assert resp.status_code == 200
     data = resp.json()
     assert data["lab_title"] == "Inference Overdrive Quick Start"
@@ -225,7 +225,7 @@ def test_api_can_get_handoff(client):
 def test_api_can_get_showback(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    resp = client.get(f"/lab-sessions/{session_id}/showback")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}/showback")
     assert resp.status_code == 200
     data = resp.json()
     assert data["tenant_id"] == "partner-oem-a"
@@ -235,8 +235,8 @@ def test_api_can_get_showback(client):
 def test_api_can_get_repeatability_report(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    client.post(f"/lab-sessions/{session_id}/validate")
-    resp = client.get(f"/lab-sessions/{session_id}/repeatability-report")
+    client.post(f"/api/v1/lab-sessions/{session_id}/validate")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}/repeatability-report")
     assert resp.status_code == 200
     data = resp.json()
     assert data["repeatability_score"] == 100
@@ -245,7 +245,7 @@ def test_api_can_get_repeatability_report(client):
 def test_api_can_get_security_plan(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]
-    resp = client.get(f"/lab-sessions/{session_id}/security-plan")
+    resp = client.get(f"/api/v1/lab-sessions/{session_id}/security-plan")
     assert resp.status_code == 200
     data = resp.json()
     assert data["namespace"] is not None
@@ -255,17 +255,17 @@ def test_api_can_get_security_plan(client):
 # --- Branding endpoints ---
 
 def test_api_can_list_branding_profiles(client):
-    resp = client.get("/branding-profiles")
+    resp = client.get("/api/v1/branding-profiles")
     assert resp.status_code == 200
     assert len(resp.json()) == 3
 
 
 def test_api_can_get_branding_profile(client):
-    resp = client.get("/branding-profiles/redhat-intel-default")
+    resp = client.get("/api/v1/branding-profiles/redhat-intel-default")
     assert resp.status_code == 200
     assert resp.json()["title"] == "Partner AI Launchpad"
 
 
 def test_api_branding_profile_not_found(client):
-    resp = client.get("/branding-profiles/nonexistent")
+    resp = client.get("/api/v1/branding-profiles/nonexistent")
     assert resp.status_code == 404

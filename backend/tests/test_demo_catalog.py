@@ -144,7 +144,7 @@ def test_api_lists_demo_catalog_items():
     from fastapi.testclient import TestClient
     from app.main import app
     client = TestClient(app)
-    resp = client.get("/catalog")
+    resp = client.get("/api/v1/catalog")
     assert resp.status_code == 200
     items = resp.json()
     ids = {i["catalog_item_id"] for i in items}
@@ -156,7 +156,7 @@ def test_api_404_for_unknown_demo():
     from fastapi.testclient import TestClient
     from app.main import app
     client = TestClient(app)
-    resp = client.get("/catalog/nonexistent-demo-xyz")
+    resp = client.get("/api/v1/catalog/nonexistent-demo-xyz")
     assert resp.status_code == 404
 
 

@@ -45,3 +45,59 @@ def cleanup_callback(body: CleanupResult) -> Dict[str, Any]:
         return {"status": "reclaimed", "session_id": body.session_id}
     else:
         return {"status": "still_failed", "session_id": body.session_id, "errors": body.errors}
+
+
+class RemediationCallback(BaseModel):
+    session_id: str
+    action: str  # "reset" or "reclaim"
+    reason: str
+    evidence: Dict[str, Any] = {}
+
+
+@router.post("/remediation")
+def receive_remediation(callback: RemediationCallback) -> Dict[str, Any]:
+    """Receive remediation suggestions from DeepField."""
+    session = provisioning_service.get_session(callback.session_id)
+    if not session:
+        raise HTTPException(404, f"Session {callback.session_id} not found")
+
+    if callback.action == "reset":
+        if session.status not in (SessionStatus.ACTIVE, SessionStatus.READY):
+            return {
+                "status": "ignored",
+                "reason": f"Session not in resettable state (is {session.status.value})",
+            }
+        try:
+            provisioning_service.reset_session(callback.session_id)
+            return {
+                "status": "accepted",
+                "action": "reset",
+                "session_id": callback.session_id,
+            }
+        except (ValueError, Exception) as e:
+            return {"status": "error", "reason": str(e)}
+
+    elif callback.action == "reclaim":
+        try:
+            provisioning_service.reclaim_session(callback.session_id)
+            return {
+                "status": "accepted",
+                "action": "reclaim",
+                "session_id": callback.session_id,
+            }
+        except (ValueError, Exception) as e:
+            try:
+                provisioning_service.force_reclaim_session(callback.session_id)
+                return {
+                    "status": "accepted",
+                    "action": "force_reclaim",
+                    "session_id": callback.session_id,
+                }
+            except Exception as e2:
+                return {"status": "error", "reason": str(e2)}
+
+    else:
+        return {
+            "status": "ignored",
+            "reason": f"Unknown action: {callback.action}",
+        }

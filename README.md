@@ -4,6 +4,8 @@
 
 Self-service demo platform that provisions AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Integrates with the Red Hat Demo Platform (RHDP) to deliver repeatable, branded, time-boxed AI experiences for partners, customers, and internal teams.
 
+Part of the **Launchpad + StarGate + DeepField** platform — three separate products that integrate via webhook events. Launchpad is the provisioning and demo plane.
+
 ## What It Does
 
 One-click access to pre-built AI demos running on real hardware. Each demo provisions an isolated environment with its own namespace, inference gateway, model routing, and LiteLLM virtual API key — backed by Intel Gaudi 3 for accelerated inference and Intel Xeon 6 for CPU-optimized workloads.
@@ -98,6 +100,53 @@ One-click access to pre-built AI demos running on real hardware. Each demo provi
 2. Each **tenant config** (`launchpad-*-tenant`) creates an isolated per-user environment on the shared cluster
 3. The Sandbox API manages capacity, quotas, and lifecycle
 4. Each tenant gets its own LiteLLM virtual key for usage tracking and rate limiting
+
+## Platform Integration
+
+Launchpad integrates with StarGate (validation) and DeepField (fleet monitoring) via webhook events. All integrations fail silently when targets are not configured.
+
+```
+                    +-------------------+
+                    |     DeepField     |   OBSERVABILITY
+                    | Fleet signal intel|
+                    +--------+----------+
+                             |
+                  monitors clusters that
+                  Launchpad provisions on
+                             |
++------------------+    +----v----------------+
+|    StarGate      |    | Launchpad (you)     |   PROVISIONING + DEMOS
+| Rubric evaluator |<-->| 17-state lifecycle  |
+| Evidence bundles |    | Inference gateway   |
+| Failure classes  |    | Workshop batching   |
++------------------+    +---------------------+
+```
+
+| Direction | What | Trigger |
+|-----------|------|---------|
+| Launchpad → StarGate | Lifecycle events (session provisioned, failed, reclaimed) | Every session state transition |
+| Launchpad → StarGate | Pre-flight check before provisioning | Before each provision |
+| Launchpad → DeepField | Same lifecycle events (parallel push) | Every session state transition |
+| StarGate → Launchpad | Cleanup results after remediation | `POST /callbacks/cleanup-result` |
+| DeepField → Launchpad | Remediation suggestions | `POST /callbacks/remediation` |
+
+### Integration Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `STARGATE_API_URL` | No | StarGate base URL. Falls back to no-op if not set. |
+| `STARGATE_API_KEY` | No | API key for StarGate authentication. |
+| `STARGATE_SSL_VERIFY` | No | Set to `false` to skip TLS verification. Default: `true`. |
+| `DEEPFIELD_API_URL` | No | DeepField base URL for pushing lifecycle events. |
+| `DEEPFIELD_API_KEY` | No | API key for DeepField authentication. |
+
+## Tech Stack
+
+- **Backend:** Python >=3.11, FastAPI >=0.115, Pydantic >=2.10, asyncpg >=0.30
+- **Database:** PostgreSQL via asyncpg (with in-memory fallback for testing)
+- **Frontends:** React 19, Vite 8, TypeScript 6 — Tailwind (portal/admin) + PatternFly (demos)
+- **API prefix:** All routes under `/api/v1/` (integration routes under `/integration/`)
+- **Deployment:** AgnosticD + ArgoCD, Kustomize manifests, UBI9 containers, Podman
 
 ## Repository Structure
 

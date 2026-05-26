@@ -6,7 +6,7 @@ import uuid as _uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
-from app.integrations.stargate_webhook import notify_stargate
+from app.integrations.event_publisher import publish_event as notify_stargate
 
 from app.adapters.interfaces import ConstraintResult
 from app.adapters.mock.branding import FileBrandingAdapter

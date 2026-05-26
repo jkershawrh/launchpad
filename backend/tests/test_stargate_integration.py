@@ -41,7 +41,7 @@ class TestCleanupCallback:
 
     def test_callback_endpoint_exists(self):
         """RED: POST /callbacks/cleanup-result should exist and accept valid payloads."""
-        resp = client.post("/callbacks/cleanup-result", json={
+        resp = client.post("/api/v1/callbacks/cleanup-result", json={
             "session_id": "nonexistent",
             "result": "success",
         })
@@ -66,7 +66,7 @@ class TestCleanupCallback:
         })
         provisioning_service._sessions[failed.session_id] = failed
 
-        resp = client.post("/callbacks/cleanup-result", json={
+        resp = client.post("/api/v1/callbacks/cleanup-result", json={
             "session_id": failed.session_id,
             "result": "success",
             "namespace_deleted": True,
@@ -94,7 +94,7 @@ class TestCleanupCallback:
         })
         provisioning_service._sessions[failed.session_id] = failed
 
-        resp = client.post("/callbacks/cleanup-result", json={
+        resp = client.post("/api/v1/callbacks/cleanup-result", json={
             "session_id": failed.session_id,
             "result": "failure",
             "errors": ["namespace stuck in Terminating"],
