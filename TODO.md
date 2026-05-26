@@ -2,11 +2,7 @@
 
 ## What We Built
 
-Launchpad is a self-service AI demo platform for the Intel × Red Hat partnership. Partners and customers order demos through a branded portal, get isolated environments with real inference on Intel Gaudi 3 and Xeon 6 hardware, and everything cleans up automatically.
-
-StarGate is the AI operations layer that monitors what Launchpad provisions — catching cleanup failures, classifying issues with LLM analysis, and auto-remediating low-risk problems.
-
-### Launchpad (rhpds/launchpad)
+Launchpad is a self-service AI demo platform for the Intel x Red Hat partnership. Partners and customers order demos through a branded portal, get isolated environments with real inference on Intel Gaudi 3 and Xeon 6 hardware, and everything cleans up automatically.
 
 - **25 catalog items** — 10 custom Intel demos, 7 official Summit AI quickstarts, 4 sandboxes, 4 originals
 - **3 provisioning modes** — self-service (on-demand), workshops (40 users batch), persistent (always-on)
@@ -16,16 +12,9 @@ StarGate is the AI operations layer that monitors what Launchpad provisions — 
 - **RHDP integration** — Sandbox API client, AgnosticV configs, ArgoCD Helm chart, Showroom content
 - **AAP client** — ready to wire into job templates (AAP 4.5 on infra01)
 - **AI brand generation** — LLM-powered branding from company name
-- **StarGate integration** — pre-flight checks, lifecycle evidence, cleanup callback, remediation catalog
 - **422 unit tests** — all TDD red/green
 - **28 local E2E tests** — real containers, real inference
 - **GitHub Actions CI** — tests, lint, TypeScript, Helm validation, image builds on every push
-
-### StarGate (rhpds/stargate)
-
-- **3 Launchpad remediation entries** — reclaim_session, release_placement, reclaim_workshop
-- **11 tests** validating catalog entries
-- **CI pipeline** on every push
 
 ---
 
@@ -36,11 +25,10 @@ StarGate is the AI operations layer that monitors what Launchpad provisions — 
 | Backend API on infra01 | Running (4 pods) |
 | Partner portal | Running |
 | Admin dashboard | Running |
-| StarGate on infra01 | Running (2 pods) |
 | Sandbox API connection | Verified (12 CNV clusters) |
 | Container images | Built locally, tagged for quay.io/rhpds |
 | AgnosticV configs | Branch `launchpad-demos` in rhpds/agnosticv |
-| CI | Green on both repos |
+| CI | Green |
 | Security | Keys rotated, history scrubbed, push protection enabled |
 
 ---
@@ -95,11 +83,9 @@ StarGate is the AI operations layer that monitors what Launchpad provisions — 
 1. Push images to quay.io
 2. Create real Sandbox API placement on a dev CNV cluster
 3. Deploy demo end-to-end (namespace + gateway + frontend + real inference)
-4. Verify StarGate sees lifecycle evidence
-5. Test cleanup failure → StarGate remediation → callback
-6. Run cluster E2E → green receipt (17/17)
-7. Showroom screenshots from running demo
-8. Move from dev to integration to prod
+4. Run cluster E2E → green receipt
+5. Showroom screenshots from running demo
+6. Move from dev to integration to prod
 
 ---
 
@@ -120,11 +106,9 @@ StarGate is the AI operations layer that monitors what Launchpad provisions — 
 | Resource | URL |
 |----------|-----|
 | Launchpad repo | https://github.com/rhpds/launchpad |
-| StarGate repo | https://github.com/rhpds/stargate |
 | AgnosticV branch | https://github.com/rhpds/agnosticv/tree/launchpad-demos |
 | Launchpad on infra01 | https://launchpad.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
 | Admin on infra01 | https://launchpad-admin.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
-| StarGate on infra01 | https://stargate.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
 | Sandbox API | (via VPN + SANDBOX_API_URL env var) |
 
 ---
