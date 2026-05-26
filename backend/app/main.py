@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,10 +7,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routers import admin, branding, callbacks, catalog, lab_requests, lab_sessions, tenants, workshops
 from app.storage.database import get_database_url, init_db, close_db
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if get_database_url():
+        await init_db()
+    yield
+    await close_db()
+
+
 app = FastAPI(
     title="Partner AI Launchpad",
     description="Reusable Red Hat/Intel partner demo and lab platform",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 cors_origins = os.environ.get(
@@ -34,17 +45,6 @@ app.include_router(branding.router, prefix=API_PREFIX)
 app.include_router(admin.router, prefix=API_PREFIX)
 app.include_router(workshops.router, prefix=API_PREFIX)
 app.include_router(callbacks.router, prefix=API_PREFIX)
-
-
-@app.on_event("startup")
-async def startup():
-    if get_database_url():
-        await init_db()
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await close_db()
 
 
 @app.get("/health")
