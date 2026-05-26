@@ -78,14 +78,79 @@ Launchpad is a self-service AI demo platform for the Intel x Red Hat partnership
 
 ---
 
+## How the RHDP Pipeline Works (What We Integrate With)
+
+```
+User orders demo from RHDP catalog
+        │
+        ▼
+┌─ Babylon (Orchestration) ──────────────────────────────────┐
+│  Reads catalog item from AgnosticV                          │
+│  Provisions cluster from Sandbox API pool                   │
+│  Triggers AgnosticD deployer                                │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               ▼
+┌─ AgnosticD (Deployment Automation) ────────────────────────┐
+│  Runs Ansible workloads defined in AgnosticV common.yaml:   │
+│  1. ocp4_workload_authentication (Keycloak)                 │
+│  2. ocp4_workload_tenant_namespace (quotas, RBAC)           │
+│  3. ocp4_workload_litellm_virtual_keys (MaaS access)        │
+│  4. ocp4_workload_gitops_bootstrap (ArgoCD Application)     │
+│  5. ocp4_workload_showroom (lab UI)                         │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               ▼
+┌─ ArgoCD / GitOps ──────────────────────────────────────────┐
+│  Deploys tenant/bootstrap/ Helm chart from rhpds/launchpad  │
+│  Per-user namespace gets:                                    │
+│  - Demo frontend (filtered pages)                            │
+│  - Inference gateway (LiteLLM virtual key)                   │
+│  - PostgreSQL                                                │
+│  - NetworkPolicy + labels                                    │
+│  - Route                                                     │
+└──────────────┬──────────────────────────────────────────────┘
+               │
+               ▼
+┌─ Sandbox API (Cluster Pool) ───────────────────────────────┐
+│  Manages namespace placement on CNV clusters                 │
+│  Tracks capacity, quotas, placement lifecycle                │
+│  Provides SA token + ingress domain + console URL            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Where our code fits
+
+| RHDP Component | Our Integration |
+|----------------|-----------------|
+| **Babylon** | Reads our AgnosticV configs from `rhpds/agnosticv` branch `launchpad-demos` |
+| **AgnosticD** | Runs the workloads we defined in `common.yaml` (keycloak, namespace, litellm keys, gitops, showroom) |
+| **ArgoCD** | Deploys our Helm chart at `tenant/bootstrap/` in `rhpds/launchpad` |
+| **Sandbox API** | Our `RHDPPoolAdapter` calls it to claim/release namespaces. Connected and verified (12 clusters). |
+| **Showroom** | Our content at `content/` (12 AsciiDoc pages) is deployed by the showroom workload |
+| **LiteMaaS** | Per-tenant virtual keys provisioned by `litellm_virtual_keys` workload. Models accessed via MaaS, no GPU deployment. |
+
+### What we own vs what RHDP owns
+
+| We Own | RHDP Owns |
+|--------|-----------|
+| AgnosticV config files (what to deploy) | Babylon orchestration (when/where to deploy) |
+| Helm chart (what goes in the namespace) | AgnosticD execution engine (how to run the workloads) |
+| Showroom content (lab instructions) | Showroom runtime (the UI framework) |
+| Container images (frontend + gateway) | Cluster pool (Sandbox API + CNV fleet) |
+| Launchpad backend API (lifecycle, catalog) | RHDP catalog UI (demo.redhat.com) |
+
+---
+
 ## After Blockers Clear — Execution Sequence
 
 1. Push images to quay.io
-2. Create real Sandbox API placement on a dev CNV cluster
-3. Deploy demo end-to-end (namespace + gateway + frontend + real inference)
-4. Run cluster E2E → green receipt
-5. Showroom screenshots from running demo
-6. Move from dev to integration to prod
+2. Test CI on dev cluster: `purpose: dev` cloud_selector via Sandbox API
+3. AgnosticD runs our workloads → ArgoCD deploys Helm chart → namespace ready
+4. Verify Showroom + frontend + gateway + real inference end-to-end
+5. Run cluster E2E → green receipt
+6. Showroom screenshots from running demo
+7. Move from dev → integration → prod (with Tony's guidance)
 
 ---
 
