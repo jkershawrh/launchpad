@@ -1,3 +1,5 @@
+import asyncio
+import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -7,12 +9,34 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routers import admin, branding, callbacks, catalog, lab_requests, lab_sessions, tenants, workshops
 from app.storage.database import get_database_url, init_db, close_db
 
+logger = logging.getLogger(__name__)
+
+TTL_INTERVAL = int(os.environ.get("TTL_ENFORCEMENT_INTERVAL", "300"))
+_ttl_task = None
+
+
+async def _ttl_enforcement_loop():
+    """Background task that enforces TTL on expired sessions every 5 minutes."""
+    while True:
+        await asyncio.sleep(TTL_INTERVAL)
+        try:
+            from app.api.deps import provisioning_service
+            reclaimed = provisioning_service.enforce_ttl()
+            if reclaimed:
+                logger.info("TTL enforcement: reclaimed %d expired sessions", len(reclaimed))
+        except Exception as e:
+            logger.debug("TTL enforcement error (non-critical): %s", e)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global _ttl_task
     if get_database_url():
         await init_db()
+    _ttl_task = asyncio.create_task(_ttl_enforcement_loop())
     yield
+    if _ttl_task:
+        _ttl_task.cancel()
     await close_db()
 
 
