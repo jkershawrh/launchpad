@@ -69,7 +69,7 @@ class RemediationCallback(BaseModel):
 @router.post("/remediation")
 def receive_remediation(callback: RemediationCallback, request: Request) -> Dict[str, Any]:
     _verify_api_key(request)
-    """Receive remediation suggestions from DeepField."""
+    """Receive remediation suggestions from StarGate."""
     session = provisioning_service.get_session(callback.session_id)
     if not session:
         raise HTTPException(404, f"Session {callback.session_id} not found")

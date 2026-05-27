@@ -4,8 +4,6 @@ from app.integrations.event_publisher import (  # noqa: F401
     STARGATE_API_URL,
     STARGATE_API_KEY,
     STARGATE_SSL_VERIFY,
-    DEEPFIELD_API_URL,
-    DEEPFIELD_API_KEY,
     notify_stargate,
     publish_event,
     _push,

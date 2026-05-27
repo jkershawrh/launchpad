@@ -1,7 +1,7 @@
 """Multi-target event publisher for Launchpad lifecycle events.
 
-Pushes events to all configured integration targets (StarGate, DeepField).
-Graceful degradation: if a target URL is not configured, it is silently skipped.
+Pushes lifecycle events to StarGate for external evidence tracking.
+Graceful degradation: if StarGate URL is not configured, events are silently skipped.
 If a push fails, it logs at debug level and continues.
 """
 
@@ -20,8 +20,6 @@ STARGATE_API_URL = os.environ.get("STARGATE_API_URL", "")
 STARGATE_API_KEY = os.environ.get("STARGATE_API_KEY", "")
 STARGATE_SSL_VERIFY = os.environ.get("STARGATE_SSL_VERIFY", "true").lower() != "false"
 
-DEEPFIELD_API_URL = os.environ.get("DEEPFIELD_API_URL", "")
-DEEPFIELD_API_KEY = os.environ.get("DEEPFIELD_API_KEY", "")
 
 
 def publish_event(
@@ -60,13 +58,8 @@ def publish_event(
     # Push to StarGate
     _push(
         STARGATE_API_URL, STARGATE_API_KEY, payload,
-        endpoint="/integration/events",
+        endpoint="/integration/external-evidence",
         verify_ssl=STARGATE_SSL_VERIFY,
-    )
-    # Push to DeepField
-    _push(
-        DEEPFIELD_API_URL, DEEPFIELD_API_KEY, payload,
-        endpoint="/integration/events",
     )
 
 
