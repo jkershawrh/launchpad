@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from pathlib import Path
 from typing import Optional
 
 import requests
@@ -11,7 +12,24 @@ from app.domain.models import BrandingProfile
 
 logger = logging.getLogger("launchpad.brand_generator")
 
-BRAND_PROMPT = """Generate a branding profile for a company called "{company_name}".
+PROMPTS_DIR = str(Path(__file__).parent.parent / "prompts")
+
+
+def _load_brand_prompt() -> dict:
+    """Load brand generation prompt from YAML (same schema as StarGate)."""
+    try:
+        import yaml
+        path = os.path.join(PROMPTS_DIR, "brand-generation.yaml")
+        if os.path.exists(path):
+            with open(path) as f:
+                return yaml.safe_load(f)
+    except Exception:
+        pass
+    return {}
+
+
+_BRAND_PROMPT_YAML = _load_brand_prompt()
+BRAND_PROMPT = _BRAND_PROMPT_YAML.get("user_template", """Generate a branding profile for a company called "{company_name}".
 {partner_context}
 
 Return a JSON object with these exact fields:
@@ -21,7 +39,8 @@ Return a JSON object with these exact fields:
 - theme: One of "default", "cockpit_dark", or "partner_light"
 - footer_text: Short footer text for the platform
 
-Return ONLY the JSON object, no explanation."""
+Return ONLY the JSON object, no explanation.""")
+BRAND_PROMPT_VERSION = _BRAND_PROMPT_YAML.get("version", "1.0")
 
 
 class BrandGenerator:
@@ -60,13 +79,14 @@ class BrandGenerator:
                 json={
                     "model": self.model,
                     "messages": [
+                        {"role": "system", "content": _BRAND_PROMPT_YAML.get("system", "You are a branding expert. Generate professional branding profiles as JSON.")},
                         {"role": "user", "content": BRAND_PROMPT.format(
                             company_name=company_name,
                             partner_context=partner_context,
                         )},
                     ],
-                    "temperature": 0.3,
-                    "max_tokens": 200,
+                    "temperature": _BRAND_PROMPT_YAML.get("temperature", 0.3),
+                    "max_tokens": _BRAND_PROMPT_YAML.get("max_tokens", 200),
                 },
                 timeout=30,
             )

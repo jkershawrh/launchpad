@@ -1,0 +1,19 @@
+id: brand-generation
+version: "1.0"
+description: Generate branding profile (colors, theme, footer) from company name
+model: granite-3-2-8b-instruct
+max_tokens: 200
+temperature: 0.3
+system: |
+  You are a branding expert. Generate professional branding profiles as JSON.
+  Return ONLY the JSON object, no explanation.
+user_template: |
+  Generate a branding profile for a company called "{company_name}".
+  {partner_context}
+
+  Return a JSON object with these exact fields:
+  - title: A professional platform title (e.g., "CompanyName AI Platform")
+  - primary_color: Hex color code for the primary brand color
+  - secondary_color: Hex color code for the secondary brand color
+  - theme: One of "default", "cockpit_dark", or "partner_light"
+  - footer_text: Short footer text for the platform

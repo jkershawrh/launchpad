@@ -18,12 +18,16 @@ def log_llm_call(
     latency_ms: float,
     trace_id: str = "",
     caller: str = "",
+    prompt_id: str = "",
+    prompt_version: str = "",
 ):
     entry = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "trace_id": trace_id,
         "caller": caller,
         "model": model,
+        "prompt_id": prompt_id,
+        "prompt_version": prompt_version,
         "prompt_hash": hashlib.sha256(prompt.encode()).hexdigest()[:16],
         "prompt_length": len(prompt),
         "output_length": len(output),
