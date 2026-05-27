@@ -19,6 +19,7 @@ logger = logging.getLogger("launchpad.events")
 STARGATE_API_URL = os.environ.get("STARGATE_API_URL", "")
 STARGATE_API_KEY = os.environ.get("STARGATE_API_KEY", "")
 STARGATE_SSL_VERIFY = os.environ.get("STARGATE_SSL_VERIFY", "true").lower() != "false"
+DASHBOARD_AUDIT_URL = os.environ.get("DASHBOARD_AUDIT_URL", "")
 
 
 
@@ -58,9 +59,11 @@ def publish_event(
     # Push to StarGate
     _push(
         STARGATE_API_URL, STARGATE_API_KEY, payload,
-        endpoint="/integration/external-evidence",
+        endpoint="/integration/events",
         verify_ssl=STARGATE_SSL_VERIFY,
     )
+    # Push to Dashboard audit trail
+    _push(DASHBOARD_AUDIT_URL, "", payload, endpoint="/api/audit/append")
 
 
 def _push(
