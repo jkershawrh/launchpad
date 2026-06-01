@@ -128,7 +128,7 @@ ocp4_workload_gitops_bootstrap_helm_values:
 # -------------------------------------------------------------------
 
 __meta__:
-  asset_uuid: TBD-assign-with-tony
+  asset_uuid: f4582686-2114-4cd1-8200-6035bfacc233
   owners:
     maintainer:
     - name: Jonathan Kershaw
