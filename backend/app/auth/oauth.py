@@ -22,7 +22,7 @@ class User(BaseModel):
     is_admin: bool = False
 
 
-AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "false").lower() == "true"
+AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "true").lower() != "false"
 API_KEYS = set(filter(None, os.environ.get("API_KEYS", "").split(",")))
 ADMIN_API_KEYS = set(filter(None, os.environ.get("ADMIN_API_KEYS", "").split(",")))
 ADMIN_GROUPS = {"launchpad-admins", "system:cluster-admins", "dedicated-admins"}

@@ -2,8 +2,11 @@
 TDD: StarGate ↔ Launchpad integration tests.
 Callback endpoint, pre-flight checks, cleanup delegation.
 """
+import os
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
+
+os.environ.setdefault("INTEGRATION_API_KEY", "test-integration-key")
 
 from app.domain.enums import CatalogCategory, SessionStatus
 from app.domain.models import LabRequest
@@ -11,6 +14,7 @@ from app.main import app
 from app.services.provisioning import ProvisioningService
 
 client = TestClient(app)
+INTEGRATION_HEADERS = {"X-API-Key": "test-integration-key"}
 
 
 def _svc(**kw):
@@ -41,7 +45,7 @@ class TestCleanupCallback:
 
     def test_callback_endpoint_exists(self):
         """RED: POST /callbacks/cleanup-result should exist and accept valid payloads."""
-        resp = client.post("/api/v1/callbacks/cleanup-result", json={
+        resp = client.post("/api/v1/callbacks/cleanup-result", headers=INTEGRATION_HEADERS, json={
             "session_id": "nonexistent",
             "result": "success",
         })
@@ -66,7 +70,7 @@ class TestCleanupCallback:
         })
         provisioning_service._sessions[failed.session_id] = failed
 
-        resp = client.post("/api/v1/callbacks/cleanup-result", json={
+        resp = client.post("/api/v1/callbacks/cleanup-result", headers=INTEGRATION_HEADERS, json={
             "session_id": failed.session_id,
             "result": "success",
             "namespace_deleted": True,
@@ -94,7 +98,7 @@ class TestCleanupCallback:
         })
         provisioning_service._sessions[failed.session_id] = failed
 
-        resp = client.post("/api/v1/callbacks/cleanup-result", json={
+        resp = client.post("/api/v1/callbacks/cleanup-result", headers=INTEGRATION_HEADERS, json={
             "session_id": failed.session_id,
             "result": "failure",
             "errors": ["namespace stuck in Terminating"],

@@ -2,6 +2,7 @@
 
 import os
 import hashlib
+import hmac
 import logging
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -11,6 +12,7 @@ from fastapi import Request, HTTPException, Depends
 logger = logging.getLogger(__name__)
 
 LEGACY_API_KEY = os.getenv("API_KEY", "")
+JWT_SECRET = os.getenv("JWT_SECRET", "")
 
 INTERNAL_TENANT = {
     "tenant_id": "00000000-0000-0000-0000-000000000000",
@@ -49,25 +51,35 @@ async def resolve_tenant(request: Request) -> TenantContext:
         if ctx:
             return ctx
 
-    if LEGACY_API_KEY and api_key == LEGACY_API_KEY:
-        return TenantContext(**{k: v for k, v in INTERNAL_TENANT.items() if k != "slug"}, tenant_slug=INTERNAL_TENANT["slug"])
-
-    if LEGACY_API_KEY and not api_key:
-        return TenantContext(**{k: v for k, v in INTERNAL_TENANT.items() if k != "slug"}, tenant_slug=INTERNAL_TENANT["slug"])
-
-    if not LEGACY_API_KEY and not api_key:
-        return TenantContext(**{k: v for k, v in INTERNAL_TENANT.items() if k != "slug"}, tenant_slug=INTERNAL_TENANT["slug"])
+    if not LEGACY_API_KEY:
+        raise HTTPException(status_code=401, detail="No authentication configured — set API_KEY env var")
 
     raise HTTPException(status_code=401, detail="Invalid or missing authentication")
 
 
 async def _resolve_jwt(token: str) -> Optional[TenantContext]:
+    if not JWT_SECRET:
+        logger.warning("JWT received but JWT_SECRET not configured — rejecting")
+        return None
     try:
         import base64, json
         parts = token.split(".")
         if len(parts) != 3:
             return None
-        payload = parts[1] + "=" * (4 - len(parts[1]) % 4)
+
+        header_b64, payload_b64, signature_b64 = parts
+
+        signing_input = f"{header_b64}.{payload_b64}".encode()
+        expected_sig = hmac.new(
+            JWT_SECRET.encode(), signing_input, hashlib.sha256
+        ).digest()
+        sig_padded = signature_b64 + "=" * (4 - len(signature_b64) % 4)
+        actual_sig = base64.urlsafe_b64decode(sig_padded)
+        if not hmac.compare_digest(expected_sig, actual_sig):
+            logger.warning("JWT signature verification failed")
+            return None
+
+        payload = payload_b64 + "=" * (4 - len(payload_b64) % 4)
         claims = json.loads(base64.urlsafe_b64decode(payload))
         tenant_id = claims.get("tenant_id", INTERNAL_TENANT["tenant_id"])
         tenant_slug = claims.get("tenant_slug", "internal")

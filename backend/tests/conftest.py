@@ -1,4 +1,8 @@
+import os
 import pytest
+
+os.environ.setdefault("AUTH_ENABLED", "false")
+os.environ.setdefault("INTEGRATION_API_KEY", "test-integration-key")
 
 from app.domain.enums import (
     CatalogCategory,

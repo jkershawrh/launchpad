@@ -6,7 +6,7 @@ nav:
 asciidoc:
   attributes:
     user: user1
-    password: openshift
+    password: "{provided-at-login}"
     demo_pages: all
 
     openshift_api_url: "https://api.cluster-GUID.example.opentlc.com:6443"

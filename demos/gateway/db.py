@@ -588,7 +588,10 @@ async def create_api_key(tenant_id: str, label: str = "default",
 
 
 async def set_tenant_context(conn, tenant_id: str):
-    await conn.execute(f"SET app.current_tenant_id = '{tenant_id}'")
+    import re
+    if not re.match(r'^[a-zA-Z0-9_-]+$', tenant_id):
+        raise ValueError(f"Invalid tenant_id format")
+    await conn.execute("SET app.current_tenant_id = $1", tenant_id)
 
 
 # ─── Run Persistence ───

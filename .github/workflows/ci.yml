@@ -23,22 +23,11 @@ jobs:
             'BEGIN RSA'
             'BEGIN EC'
           )
-          KNOWN_KEYS=(
-            'd6d3ad6e4a3b4c68876919f2ac588782'
-            'e42626831e854fe0a1eeac160a87b4bd'
-            'sk-YgLaSn9ILTPxaUwdDbmpGQ'
-          )
           for pattern in "${PATTERNS[@]}"; do
-            matches=$(grep -rnE "$pattern" --include="*.py" --include="*.yaml" --include="*.yml" --include="*.json" --include="*.sh" --include="*.ts" --include="*.tsx" . 2>/dev/null | grep -v 'node_modules\|\.git/\|pre-commit' | grep -cv 'REDACTED\|example\|placeholder\|dummy\|changeme\|replace-with' || true)
+            matches=$(grep -rnE "$pattern" --include="*.py" --include="*.yaml" --include="*.yml" --include="*.json" --include="*.sh" --include="*.ts" --include="*.tsx" . 2>/dev/null | grep -v 'node_modules\|\.git/\|pre-commit\|ci\.yml' | grep -cv 'REDACTED\|example\|placeholder\|dummy\|changeme\|replace-with' || true)
             if [ "$matches" -gt 0 ]; then
               echo "::error::Found potential secret matching pattern: $pattern"
-              grep -rnE "$pattern" --include="*.py" --include="*.yaml" --include="*.yml" --include="*.json" --include="*.sh" --include="*.ts" --include="*.tsx" . 2>/dev/null | grep -v 'node_modules\|\.git/\|pre-commit' | grep -v 'REDACTED\|example\|placeholder\|dummy\|changeme\|replace-with' | head -5
-              FOUND=1
-            fi
-          done
-          for key in "${KNOWN_KEYS[@]}"; do
-            if grep -rq "$key" --include="*.py" --include="*.yaml" --include="*.yml" --include="*.json" --include="*.sh" . 2>/dev/null | grep -v 'pre-commit'; then
-              echo "::error::Found known leaked secret: ${key:0:8}..."
+              grep -rnE "$pattern" --include="*.py" --include="*.yaml" --include="*.yml" --include="*.json" --include="*.sh" --include="*.ts" --include="*.tsx" . 2>/dev/null | grep -v 'node_modules\|\.git/\|pre-commit\|ci\.yml' | grep -v 'REDACTED\|example\|placeholder\|dummy\|changeme\|replace-with' | head -5
               FOUND=1
             fi
           done

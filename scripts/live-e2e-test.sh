@@ -181,7 +181,7 @@ echo ""
 # ── Step 8: Sandbox API ──────────────────────────────
 echo "Step 8: Sandbox API (read-only)"
 if [ -f ~/.sandbox/token ]; then
-  SANDBOX_RESULT=$(HTTPS_PROXY="${HTTPS_PROXY:-http://squid.redhat.com:3128}" \
+  SANDBOX_RESULT=$(HTTPS_PROXY="${HTTPS_PROXY}" \
     SANDBOX_API_URL="${SANDBOX_API_URL:-}" \
     SANDBOX_LOGIN_TOKEN="$(cat ~/.sandbox/token)" \
     python3 -c "

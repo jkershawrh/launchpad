@@ -17,7 +17,7 @@ INTEGRATION_API_KEY = os.environ.get("INTEGRATION_API_KEY")
 
 def _verify_api_key(request: Request):
     if not INTEGRATION_API_KEY:
-        return
+        raise HTTPException(503, "INTEGRATION_API_KEY not configured — callbacks disabled")
     key = request.headers.get("X-API-Key")
     if key != INTEGRATION_API_KEY:
         raise HTTPException(401, "Invalid or missing X-API-Key")

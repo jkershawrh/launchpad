@@ -21,26 +21,31 @@ for pattern in "${PATTERNS[@]}"; do
     matches=$(git diff --cached --diff-filter=ACMR -U0 -- . ':!scripts/pre-commit-secret-scan.sh' ':!.github/workflows/ci.yml' | grep -E "^\+" | grep -v "^+++" | grep -cE "$pattern" 2>/dev/null)
     if [ "$matches" -gt 0 ]; then
         echo -e "${RED}BLOCKED: Found potential secret matching pattern: $pattern${NC}"
-        git diff --cached --diff-filter=ACMR -U0 | grep -E "^\+" | grep -v "^+++" | grep -E "$pattern" | head -3
+        git diff --cached --diff-filter=ACMR -U0 -- . ':!scripts/pre-commit-secret-scan.sh' ':!.github/workflows/ci.yml' | grep -E "^\+" | grep -v "^+++" | grep -E "$pattern" | head -3
         echo ""
         FOUND=1
     fi
 done
 
-# Check for known key values (add your specific keys here)
-KNOWN_KEYS=(
-    'd6d3ad6e4a3b4c68876919f2ac588782'
-    'e42626831e854fe0a1eeac160a87b4bd'
-    '324e9e1cd6cb94ff9b51b25e2ae09af1'
-    'sk-YgLaSn9ILTPxaUwdDbmpGQ'
+# Check for known leaked key values via SHA-256 hash comparison.
+# To add a new key: echo -n "the-secret-value" | shasum -a 256 | cut -d' ' -f1
+KNOWN_HASHES=(
+    '1663e133c58e4325d75d9f70840cb1f57245900c53fc598062c5560dd8ab28cd'
+    'e47d44e22ece2564e9765b5e236ba1e664912ff5a2b505a714009479195dbcab'
+    '1cf03a61fdb175275b59f8164761dff1bc88a2d605728dbc8ed686933684f709'
+    '77000f84d3cc7e52204c7d26b849196e117b3bd6a29828338539cfbb516f5b8f'
 )
 
-for key in "${KNOWN_KEYS[@]}"; do
-    matches=$(git diff --cached --diff-filter=ACMR -- . ':!scripts/pre-commit-secret-scan.sh' ':!.github/workflows/ci.yml' | grep -c "$key" 2>/dev/null)
-    if [ "$matches" -gt 0 ]; then
-        echo -e "${RED}BLOCKED: Found known secret value: ${key:0:8}...${NC}"
-        FOUND=1
-    fi
+DIFF_CONTENT=$(git diff --cached --diff-filter=ACMR -- . ':!scripts/pre-commit-secret-scan.sh' ':!.github/workflows/ci.yml' 2>/dev/null)
+for word in $(echo "$DIFF_CONTENT" | grep -E "^\+" | grep -v "^+++" | tr -cs 'A-Za-z0-9_-' '\n'); do
+    WORD_HASH=$(echo -n "$word" | shasum -a 256 | cut -d' ' -f1)
+    for known in "${KNOWN_HASHES[@]}"; do
+        if [ "$WORD_HASH" = "$known" ]; then
+            echo -e "${RED}BLOCKED: Found known leaked secret value (hash match)${NC}"
+            FOUND=1
+            break 2
+        fi
+    done
 done
 
 if [ "$FOUND" -eq 1 ]; then
