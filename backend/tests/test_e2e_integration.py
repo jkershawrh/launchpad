@@ -1,4 +1,4 @@
-"""E2E Integration tests — Launchpad ↔ StarGate ↔ DeepField.
+"""E2E Integration tests — Launchpad ↔ StarGate.
 
 These tests verify the integration contracts between products.
 Run with live services or skip if endpoints unavailable.
@@ -8,10 +8,8 @@ import os
 import pytest
 
 STARGATE_URL = os.environ.get("STARGATE_API_URL", "")
-DEEPFIELD_URL = os.environ.get("DEEPFIELD_API_URL", "")
 
 skip_no_stargate = pytest.mark.skipif(not STARGATE_URL, reason="STARGATE_API_URL not set")
-skip_no_deepfield = pytest.mark.skipif(not DEEPFIELD_URL, reason="DEEPFIELD_API_URL not set")
 
 
 class TestEventPublisher:

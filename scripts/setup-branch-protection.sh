@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Set up branch protection on all three platform repos.
+# Set up branch protection on platform repos.
 # Requires: gh CLI authenticated with admin access to rhpds org.
 #
 # Usage: bash scripts/setup-branch-protection.sh
@@ -7,7 +7,6 @@
 set -euo pipefail
 
 REPOS=("rhpds/launchpad" "rhpds/stargate")
-# Add "rhpds/deepfield" once the repo is created
 
 for REPO in "${REPOS[@]}"; do
   echo "Setting branch protection on $REPO..."
@@ -36,6 +35,3 @@ done
 
 echo ""
 echo "Branch protection configured on: ${REPOS[*]}"
-echo ""
-echo "To add DeepField later:"
-echo '  gh api --method PUT repos/rhpds/deepfield/branches/main/protection --input <same JSON>'

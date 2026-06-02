@@ -33,7 +33,6 @@ KNOWN_KEYS=(
     'e42626831e854fe0a1eeac160a87b4bd'
     '324e9e1cd6cb94ff9b51b25e2ae09af1'
     'sk-YgLaSn9ILTPxaUwdDbmpGQ'
-    'deepfield2026x'
 )
 
 for key in "${KNOWN_KEYS[@]}"; do
