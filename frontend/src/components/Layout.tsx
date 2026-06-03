@@ -13,7 +13,7 @@ export default function Layout() {
   const [healthy, setHealthy] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetch('/api/intelligence/fleet-health')
+    fetch('/api/intelligence/fleet-health', { credentials: 'same-origin' })
       .then(r => r.ok ? setHealthy(true) : setHealthy(false))
       .catch(() => setHealthy(false));
   }, []);

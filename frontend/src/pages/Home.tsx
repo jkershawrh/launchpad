@@ -35,11 +35,11 @@ export default function Home() {
   const [sessionCount, setSessionCount] = useState({ active: 0, total: 0 });
 
   useEffect(() => {
-    fetch('/api/intelligence/fleet-health')
+    fetch('/api/intelligence/fleet-health', { credentials: 'same-origin' })
       .then(r => r.ok ? r.json() : { clusters: [], alerts: [] })
       .then(d => { setClusters(d.clusters || []); setAlerts(d.alerts || []); })
       .catch(() => null);
-    fetch('/api/admin/feedback/summary')
+    fetch('/api/admin/feedback/summary', { credentials: 'same-origin' })
       .then(r => r.ok ? r.json() : { summaries: [] })
       .then(d => setFeedback(d.summaries || []))
       .catch(() => null);
