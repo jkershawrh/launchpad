@@ -75,11 +75,53 @@ def create_provisioning_service() -> ProvisioningService:
         from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
         from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
         from app.adapters.openshift.validation import OpenShiftValidationAdapter
+
+        classifier = None
+        if os.environ.get("WORKLOAD_PROFILING_ENABLED", "false").lower() == "true":
+            from app.services.workload_classifier import WorkloadClassifier
+            classifier = WorkloadClassifier()
+
+        feedback = None
+        if os.environ.get("FEEDBACK_TRACKING_ENABLED", "false").lower() == "true":
+            from app.services.feedback_tracker import FeedbackTracker
+            outcome_store = None
+            if db_stores:
+                from app.storage.stores import PostgresOutcomeStore
+                outcome_store = PostgresOutcomeStore()
+            feedback = FeedbackTracker(db_store=outcome_store)
+
+        placement = None
+        if os.environ.get("SMART_PLACEMENT_ENABLED", "true").lower() != "false":
+            from app.services.placement import PlacementService
+            placement = PlacementService(
+                stargate_url=os.environ.get("STARGATE_API_URL", ""),
+                stargate_api_key=os.environ.get("STARGATE_API_KEY", ""),
+            )
+
+        brain = None
+        if os.environ.get("ORCHESTRATION_BRAIN_ENABLED", "false").lower() == "true":
+            from app.services.orchestration_brain import OrchestrationBrain
+            deepfield = None
+            deepfield_url = os.environ.get("DEEPFIELD_API_URL", "")
+            if deepfield_url:
+                from app.adapters.deepfield.client import DeepFieldAdapter
+                deepfield = DeepFieldAdapter(api_url=deepfield_url)
+            brain = OrchestrationBrain(
+                classifier=classifier,
+                placement=placement,
+                feedback_tracker=feedback,
+                deepfield=deepfield,
+            )
+
         return ProvisioningService(
             provisioner=OpenShiftProvisioningAdapter(),
             validator=OpenShiftValidationAdapter(),
             cleanup=OpenShiftCleanupAdapter(),
             db_stores=db_stores,
+            placement=placement,
+            workload_classifier=classifier,
+            feedback_tracker=feedback,
+            brain=brain,
         )
     elif mode == "rhdp":
         from app.adapters.rhdp.cleanup import RHDPCleanupAdapter
