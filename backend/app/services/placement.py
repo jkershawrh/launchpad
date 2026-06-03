@@ -90,11 +90,12 @@ class PlacementService:
 
         new_cache = {}
         for c in clusters:
+            cpu_pct = c.get("cpu_pct")
             new_cache[c["cluster"]] = ClusterCapacity(
                 cluster_name=c["cluster"],
                 score=c.get("score", 0.0),
                 health_status=c.get("status", "unknown"),
-                cpu_utilization=c.get("cpu_utilization"),
+                cpu_utilization=cpu_pct / 100.0 if cpu_pct is not None else None,
                 gpu_available=c.get("gpu_available"),
             )
 
