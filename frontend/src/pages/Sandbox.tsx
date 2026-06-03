@@ -161,13 +161,13 @@ export default function Sandbox() {
 
       <div className="max-w-3xl mx-auto px-6 py-10">
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6 text-sm">
+          <div className="bg-[#C9190B]/10 border border-[#C9190B]/30 text-[#C9190B] px-4 py-3 rounded mb-6 text-sm">
             {error}
           </div>
         )}
 
         {/* Preset Selection */}
-        <h2 className="text-lg font-semibold text-[#151515] mb-4">Choose a Starting Point</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">Choose a Starting Point</h2>
         <div className="grid sm:grid-cols-2 gap-4 mb-10">
           {SANDBOX_PRESETS.map((preset) => (
             <button
@@ -176,12 +176,12 @@ export default function Sandbox() {
               onClick={() => handlePresetSelect(preset.id)}
               className={`text-left p-5 rounded border-2 transition-all ${
                 selectedPreset === preset.id
-                  ? 'border-[#0068B5] bg-[#0068B5]/5'
-                  : 'border-[#D2D2D2] bg-white hover:border-[#6A6E73]'
+                  ? 'border-[#0068B5] bg-[#0068B5]/15'
+                  : 'border-[#333] bg-[#212121] hover:border-[#555]'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-semibold text-[#151515]">{preset.label}</span>
+                <span className="font-semibold text-white">{preset.label}</span>
                 {selectedPreset === preset.id && (
                   <span className="w-5 h-5 rounded-full bg-[#0068B5] flex items-center justify-center">
                     <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
@@ -199,11 +199,11 @@ export default function Sandbox() {
           {/* Identity */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-[#3C3F42] mb-1">Tenant</label>
+              <label className="block text-sm font-medium text-[#e0e0e0] mb-1">Tenant</label>
               <select
                 value={form.tenant_id}
                 onChange={(e) => setForm({ ...form, tenant_id: e.target.value })}
-                className="w-full border border-[#D2D2D2] rounded px-3 py-2 text-sm"
+                className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                 required
               >
                 <option value="">Select tenant...</option>
@@ -216,13 +216,13 @@ export default function Sandbox() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#3C3F42] mb-1">Your Name / ID</label>
+              <label className="block text-sm font-medium text-[#e0e0e0] mb-1">Your Name / ID</label>
               <input
                 type="text"
                 value={form.requester_id}
                 onChange={(e) => setForm({ ...form, requester_id: e.target.value })}
                 placeholder="e.g., jane.doe"
-                className="w-full border border-[#D2D2D2] rounded px-3 py-2 text-sm"
+                className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                 required
               />
             </div>
@@ -230,15 +230,15 @@ export default function Sandbox() {
 
           {/* Configuration — always visible for custom, summary for presets */}
           {(isCustom || selectedPreset === 'sandbox-custom') && (
-            <div className="border border-[#D2D2D2] rounded p-6 bg-white space-y-5">
+            <div className="border border-[#333] rounded p-6 bg-[#212121] space-y-5">
               <h3 className="text-sm font-semibold text-[#6A6E73] uppercase">Configuration</h3>
 
               <div>
-                <label className="block text-sm font-medium text-[#3C3F42] mb-1">Stack Level</label>
+                <label className="block text-sm font-medium text-[#e0e0e0] mb-1">Stack Level</label>
                 <select
                   value={sandboxConfig.stack_level}
                   onChange={(e) => setSandboxConfig({ ...sandboxConfig, stack_level: e.target.value })}
-                  className="w-full border border-[#D2D2D2] rounded px-3 py-2 text-sm"
+                  className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                 >
                   <option value="minimal">Minimal — RHEL base, oc, podman, Python</option>
                   <option value="ai_dev">AI Developer — PyTorch, vLLM, Jupyter, Ansible</option>
@@ -247,7 +247,7 @@ export default function Sandbox() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[#3C3F42] mb-2">Access Methods</label>
+                <label className="block text-sm font-medium text-[#e0e0e0] mb-2">Access Methods</label>
                 <div className="flex flex-wrap gap-3">
                   {[
                     { value: 'web_console', label: 'Web Console' },
@@ -260,8 +260,8 @@ export default function Sandbox() {
                       key={method.value}
                       className={`flex items-center gap-2 px-3 py-2 rounded border text-sm cursor-pointer transition-colors ${
                         sandboxConfig.access_methods.includes(method.value)
-                          ? 'border-[#0068B5] bg-[#0068B5]/5 text-[#0068B5]'
-                          : 'border-[#D2D2D2] text-[#3C3F42] hover:border-[#6A6E73]'
+                          ? 'border-[#0068B5] bg-[#0068B5]/15 text-[#0068B5]'
+                          : 'border-[#333] text-[#e0e0e0] hover:border-[#555]'
                       }`}
                     >
                       <input
@@ -278,11 +278,11 @@ export default function Sandbox() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-[#3C3F42] mb-1">AAP</label>
+                  <label className="block text-sm font-medium text-[#e0e0e0] mb-1">AAP</label>
                   <select
                     value={sandboxConfig.aap_integration}
                     onChange={(e) => setSandboxConfig({ ...sandboxConfig, aap_integration: e.target.value })}
-                    className="w-full border border-[#D2D2D2] rounded px-3 py-2 text-sm"
+                    className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                   >
                     <option value="none">None</option>
                     <option value="playbook_library">Playbooks</option>
@@ -290,11 +290,11 @@ export default function Sandbox() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3C3F42] mb-1">Storage</label>
+                  <label className="block text-sm font-medium text-[#e0e0e0] mb-1">Storage</label>
                   <select
                     value={sandboxConfig.storage_size}
                     onChange={(e) => setSandboxConfig({ ...sandboxConfig, storage_size: e.target.value })}
-                    className="w-full border border-[#D2D2D2] rounded px-3 py-2 text-sm"
+                    className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                   >
                     <option value="20Gi">20 GB</option>
                     <option value="50Gi">50 GB</option>
@@ -302,11 +302,11 @@ export default function Sandbox() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#3C3F42] mb-1">TTL</label>
+                  <label className="block text-sm font-medium text-[#e0e0e0] mb-1">TTL</label>
                   <select
                     value={form.ttl}
                     onChange={(e) => setForm({ ...form, ttl: e.target.value })}
-                    className="w-full border border-[#D2D2D2] rounded px-3 py-2 text-sm"
+                    className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                   >
                     <option value="4h">4 hours</option>
                     <option value="8h">8 hours</option>
@@ -320,7 +320,7 @@ export default function Sandbox() {
 
           {/* Summary for non-custom presets */}
           {!isCustom && selectedPreset !== 'sandbox-custom' && (
-            <div className="border border-[#D2D2D2] rounded p-5 bg-white">
+            <div className="border border-[#333] rounded p-5 bg-[#212121]">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-[#6A6E73] uppercase">Your Sandbox</h3>
                 <button
@@ -334,19 +334,19 @@ export default function Sandbox() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                 <div>
                   <span className="text-[#6A6E73] text-xs block">Stack</span>
-                  <span className="text-[#151515] font-medium">{sandboxConfig.stack_level.replace('_', ' ')}</span>
+                  <span className="text-white font-medium">{sandboxConfig.stack_level.replace('_', ' ')}</span>
                 </div>
                 <div>
                   <span className="text-[#6A6E73] text-xs block">Access</span>
-                  <span className="text-[#151515] font-medium">{sandboxConfig.access_methods.length} methods</span>
+                  <span className="text-white font-medium">{sandboxConfig.access_methods.length} methods</span>
                 </div>
                 <div>
                   <span className="text-[#6A6E73] text-xs block">AAP</span>
-                  <span className="text-[#151515] font-medium">{sandboxConfig.aap_integration.replace('_', ' ')}</span>
+                  <span className="text-white font-medium">{sandboxConfig.aap_integration.replace('_', ' ')}</span>
                 </div>
                 <div>
                   <span className="text-[#6A6E73] text-xs block">Storage</span>
-                  <span className="text-[#151515] font-medium">{sandboxConfig.storage_size}</span>
+                  <span className="text-white font-medium">{sandboxConfig.storage_size}</span>
                 </div>
               </div>
             </div>

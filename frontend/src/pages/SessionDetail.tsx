@@ -15,7 +15,6 @@ function CopyButton({ text }: { text: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fallback for environments without clipboard API
       const textarea = document.createElement('textarea');
       textarea.value = text;
       document.body.appendChild(textarea);
@@ -30,7 +29,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="ml-2 px-2 py-1 text-xs rounded border border-[#D2D2D2] text-[#6A6E73] hover:bg-gray-100 transition-colors"
+      className="ml-2 px-2 py-1 text-xs rounded border border-[#333] text-[#6A6E73] hover:bg-white/10 transition"
       title="Copy to clipboard"
     >
       {copied ? 'Copied!' : 'Copy'}
@@ -198,8 +197,8 @@ export default function SessionDetail() {
     <div className="max-w-4xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#151515]">Lab Session</h1>
-          <p className="text-gray-400 text-sm font-mono mt-1">{session.session_id}</p>
+          <h1 className="text-3xl font-bold text-white">Lab Session</h1>
+          <p className="text-[#6A6E73] text-sm font-mono mt-1">{session.session_id}</p>
         </div>
         <StatusBadge status={session.status} />
       </div>
@@ -208,35 +207,35 @@ export default function SessionDetail() {
       {isSandbox && <SandboxConnectionPanel session={session} />}
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Details</h2>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+          <h2 className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Details</h2>
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between">
               <dt className="text-[#6A6E73]">Catalog Item</dt>
-              <dd className="text-[#151515] font-medium">{session.catalog_item_id}</dd>
+              <dd className="text-white font-medium">{session.catalog_item_id}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-[#6A6E73]">Tenant</dt>
-              <dd className="text-[#151515]">{session.tenant_id}</dd>
+              <dd className="text-white">{session.tenant_id}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-[#6A6E73]">Namespace</dt>
-              <dd className="text-[#151515] font-mono text-xs">{session.namespace}</dd>
+              <dd className="text-white font-mono text-xs">{session.namespace}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-[#6A6E73]">Expires</dt>
-              <dd className="text-[#151515]">{session.expires_at ? new Date(session.expires_at).toLocaleString() : '—'}</dd>
+              <dd className="text-white">{session.expires_at ? new Date(session.expires_at).toLocaleString() : '—'}</dd>
             </div>
             {session.maas_api_key && (
               <div className="flex justify-between items-center">
                 <dt className="text-[#6A6E73]">MaaS API Key</dt>
                 <dd className="flex items-center gap-1">
-                  <span className="text-[#151515] font-mono text-xs">
+                  <span className="text-white font-mono text-xs">
                     {showApiKey ? session.maas_api_key : `${session.maas_api_key.slice(0, 14)}****...`}
                   </span>
                   <button
                     onClick={() => setShowApiKey(!showApiKey)}
-                    className="px-2 py-0.5 text-xs rounded border border-[#D2D2D2] text-[#6A6E73] hover:bg-gray-100 transition-colors"
+                    className="px-2 py-0.5 text-xs rounded border border-[#333] text-[#6A6E73] hover:bg-white/10 transition"
                   >
                     {showApiKey ? 'Hide' : 'Show'}
                   </button>
@@ -247,8 +246,8 @@ export default function SessionDetail() {
           </dl>
         </div>
 
-        <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">URLs</h2>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+          <h2 className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">URLs</h2>
           <dl className="space-y-3 text-sm">
             <div>
               <dt className="text-[#6A6E73] mb-1">Lab URL</dt>
@@ -298,14 +297,14 @@ export default function SessionDetail() {
 
       {/* Validation Results */}
       {session.validation_results.length > 0 && (
-        <div className="bg-white rounded-lg border p-6 mb-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Validation Results</h2>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4 mb-6">
+          <h2 className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Validation Results</h2>
           <div className="space-y-2">
             {session.validation_results.map((vr) => (
-              <div key={vr.validation_id} className="flex items-center justify-between text-sm py-2 border-b border-gray-50 last:border-0">
-                <span className="text-gray-700">{vr.check_name}</span>
+              <div key={vr.validation_id} className="flex items-center justify-between text-sm py-2 border-b border-[#1a1a1a] last:border-0">
+                <span className="text-[#e0e0e0]">{vr.check_name}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-400 text-xs">{vr.message}</span>
+                  <span className="text-[#6A6E73] text-xs">{vr.message}</span>
                   <StatusBadge status={vr.result} />
                 </div>
               </div>
@@ -316,15 +315,15 @@ export default function SessionDetail() {
 
       {/* Handoff */}
       {handoff && (
-        <div className="bg-white rounded-lg border p-6 mb-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Handoff Package</h2>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4 mb-6">
+          <h2 className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Handoff Package</h2>
           <div className="text-sm space-y-2">
             <p><span className="text-[#6A6E73]">Lab:</span> <span className="font-medium">{handoff.lab_title}</span></p>
             <p><span className="text-[#6A6E73]">Tenant:</span> {handoff.tenant}</p>
             {handoff.access_instructions && (
               <div>
                 <span className="text-[#6A6E73]">Access:</span>
-                <p className="text-gray-700 mt-1">{handoff.access_instructions}</p>
+                <p className="text-[#e0e0e0] mt-1">{handoff.access_instructions}</p>
               </div>
             )}
           </div>
@@ -333,24 +332,24 @@ export default function SessionDetail() {
 
       {/* Showback */}
       {showback && (
-        <div className="bg-white rounded-lg border p-6 mb-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Showback</h2>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4 mb-6">
+          <h2 className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Showback</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <p className="text-xs text-gray-400">Duration</p>
-              <p className="text-lg font-semibold text-[#151515]">{(showback.duration_seconds / 3600).toFixed(1)}h</p>
+              <p className="text-xs text-[#6A6E73]">Duration</p>
+              <p className="text-lg font-semibold text-white">{(showback.duration_seconds / 3600).toFixed(1)}h</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400">CPU</p>
-              <p className="text-lg font-semibold text-[#151515]">{showback.cpu_used_estimate || '—'}</p>
+              <p className="text-xs text-[#6A6E73]">CPU</p>
+              <p className="text-lg font-semibold text-white">{showback.cpu_used_estimate || '—'}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400">Memory</p>
-              <p className="text-lg font-semibold text-[#151515]">{showback.memory_used_estimate || '—'}</p>
+              <p className="text-xs text-[#6A6E73]">Memory</p>
+              <p className="text-lg font-semibold text-white">{showback.memory_used_estimate || '—'}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-400">Model Requests</p>
-              <p className="text-lg font-semibold text-[#151515]">{showback.model_requests}</p>
+              <p className="text-xs text-[#6A6E73]">Model Requests</p>
+              <p className="text-lg font-semibold text-white">{showback.model_requests}</p>
             </div>
           </div>
         </div>
@@ -358,10 +357,10 @@ export default function SessionDetail() {
 
       {/* Repeatability Report */}
       {report && (
-        <div className="bg-white rounded-lg border p-6 mb-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Repeatability Report</h2>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4 mb-6">
+          <h2 className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Repeatability Report</h2>
           <div className="flex items-center gap-4 mb-4">
-            <div className="text-3xl font-bold text-[#151515]">{report.repeatability_score}</div>
+            <div className="text-3xl font-bold text-white">{report.repeatability_score}</div>
             <div className="text-sm text-[#6A6E73]">/ 100</div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
@@ -384,18 +383,18 @@ export default function SessionDetail() {
 
       {/* Lifecycle Events */}
       {session.lifecycle_events.length > 0 && (
-        <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Lifecycle Events</h2>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+          <h2 className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Lifecycle Events</h2>
           <div className="space-y-2">
             {session.lifecycle_events.map((evt, i) => (
               <div key={i} className="flex items-center gap-3 text-sm py-1">
-                <span className="text-gray-400 text-xs font-mono w-40 shrink-0">
+                <span className="text-[#6A6E73] text-xs font-mono w-40 shrink-0">
                   {new Date(evt.timestamp).toLocaleTimeString()}
                 </span>
                 <StatusBadge status={evt.from_status} />
-                <span className="text-gray-400">{"→"}</span>
+                <span className="text-[#6A6E73]">{"→"}</span>
                 <StatusBadge status={evt.to_status} />
-                {evt.reason && <span className="text-gray-400 text-xs ml-2">{evt.reason}</span>}
+                {evt.reason && <span className="text-[#6A6E73] text-xs ml-2">{evt.reason}</span>}
               </div>
             ))}
           </div>

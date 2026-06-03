@@ -1,12 +1,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700&family=Red+Hat+Text:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
+:root {
+  --brand-primary: #EE0000;
+  --brand-secondary: #0071C5;
+  --brand-dark: #151515;
+  --brand-surface: #212121;
+  --brand-border: #2e2e2e;
+  --brand-border-light: #333;
+  --brand-muted: #6A6E73;
+  --brand-green: #3E8635;
+  --brand-red: #C9190B;
+  --brand-amber: #F0AB00;
+}
+
 body {
   margin: 0;
   font-family: 'Red Hat Text', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #151515;
+  background: var(--brand-dark);
+  color: #e0e0e0;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -1,22 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { useBranding } from '../context/BrandingContext';
+import { Link } from 'react-router-dom';
 import { api } from '../api/client';
+import StatusBadge from '../components/StatusBadge';
 
-interface FleetHealth {
-  clusters: Array<{
-    cluster_name: string;
-    score: number;
-    health_status: string;
-    cpu_utilization?: number;
-    gpu_available?: boolean;
-  }>;
-  alerts: Array<{
-    alert_id: string;
-    cluster_name: string;
-    severity: string;
-    recommended_action: string;
-  }>;
+interface ClusterCapacity {
+  cluster_name: string;
+  score: number;
+  health_status: string;
+  cpu_utilization?: number;
+  gpu_available?: boolean;
+}
+
+interface HealthAlert {
+  alert_id: string;
+  cluster_name: string;
+  severity: string;
+  recommended_action: string;
 }
 
 interface FeedbackSummary {
@@ -25,62 +24,31 @@ interface FeedbackSummary {
   hardware_profile: string;
   total_attempts: number;
   success_rate: number;
+  avg_latency_ms: number;
   recommendation: string;
 }
 
-function HealthDot({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    healthy: '#3E8635',
-    degraded: '#F0AB00',
-    unhealthy: '#C9190B',
-    unknown: '#6A6E73',
-  };
-  return (
-    <span
-      className="inline-block w-2 h-2 rounded-full mr-2"
-      style={{ backgroundColor: colors[status] || colors.unknown }}
-    />
-  );
-}
-
-function ScoreBar({ value, color = '#0068B5' }: { value: number; color?: string }) {
-  return (
-    <div className="flex items-center gap-2 flex-1">
-      <div className="flex-1 h-1.5 bg-[#F0F0F0] rounded-full overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${Math.min(100, value)}%`, backgroundColor: color }} />
-      </div>
-      <span className="text-xs font-mono text-[#6A6E73] w-8 text-right">{Math.round(value)}</span>
-    </div>
-  );
-}
-
 export default function Home() {
-  const { profile } = useBranding();
-  const [searchParams] = useSearchParams();
-  const [fleet, setFleet] = useState<FleetHealth | null>(null);
+  const [clusters, setClusters] = useState<ClusterCapacity[]>([]);
+  const [alerts, setAlerts] = useState<HealthAlert[]>([]);
   const [feedback, setFeedback] = useState<FeedbackSummary[]>([]);
-  const [sessions, setSessions] = useState<{ active: number; total: number }>({ active: 0, total: 0 });
-
-  const primaryColor = profile?.primary_color || '#EE0000';
-  const headerBg = (profile?.metadata?.header_bg as string) || '#151515';
-  const title = profile?.title || 'Partner AI Launchpad';
-  const logoRefs = profile?.logo_refs || ['/logos/redhat.png', '/logos/intel.png'];
-  const brandParam = searchParams.get('brand');
-  const brandQuery = brandParam ? `?brand=${brandParam}` : '';
+  const [sessionCount, setSessionCount] = useState({ active: 0, total: 0 });
 
   useEffect(() => {
-    fetch('/api/intelligence/fleet-health').then(r => r.ok ? r.json() : null).then(setFleet).catch(() => null);
-    fetch('/api/admin/feedback/summary').then(r => r.ok ? r.json() : null).then(d => {
-      if (d?.summaries) setFeedback(d.summaries);
-    }).catch(() => null);
+    fetch('/api/intelligence/fleet-health')
+      .then(r => r.ok ? r.json() : { clusters: [], alerts: [] })
+      .then(d => { setClusters(d.clusters || []); setAlerts(d.alerts || []); })
+      .catch(() => null);
+    fetch('/api/admin/feedback/summary')
+      .then(r => r.ok ? r.json() : { summaries: [] })
+      .then(d => setFeedback(d.summaries || []))
+      .catch(() => null);
     api.listSessions().then(s => {
       const active = s.filter(x => ['ready', 'active', 'provisioning', 'validating'].includes(x.status)).length;
-      setSessions({ active, total: s.length });
+      setSessionCount({ active, total: s.length });
     }).catch(() => null);
   }, []);
 
-  const clusters = fleet?.clusters || [];
-  const alerts = fleet?.alerts || [];
   const healthyClusters = clusters.filter(c => c.health_status === 'healthy').length;
   const totalAttempts = feedback.reduce((s, f) => s + f.total_attempts, 0);
   const totalSuccess = feedback.reduce((s, f) => s + (f.success_rate * f.total_attempts), 0);
@@ -88,151 +56,169 @@ export default function Home() {
   const avoidCount = feedback.filter(f => f.recommendation === 'avoid').length;
 
   return (
-    <div>
-      {/* Hero */}
-      <section style={{ backgroundColor: headerBg }} className="text-white py-16 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex justify-center items-center gap-6 mb-6">
-            {logoRefs.map((logo, i) => (
-              <span key={i} className="flex items-center gap-6">
-                {i > 0 && <span className="text-white text-2xl font-bold mx-3">X</span>}
-                <img src={logo} alt="" style={{ height: i === 0 ? '40px' : '30px', width: 'auto' }} />
-              </span>
-            ))}
+    <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6">
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Active Sessions', value: sessionCount.active, sub: `${sessionCount.total} total`, color: '#3E8635' },
+          { label: 'Fleet Clusters', value: clusters.length > 0 ? `${healthyClusters}/${clusters.length}` : '—', sub: 'healthy / total', color: '#0071C5' },
+          { label: 'Success Rate', value: totalAttempts > 0 ? `${overallRate}%` : '—', sub: `${totalAttempts} decisions`, color: overallRate >= 80 ? '#3E8635' : '#F0AB00' },
+          { label: 'Avoid-Listed', value: avoidCount, sub: 'failing combos', color: avoidCount > 0 ? '#C9190B' : '#3E8635' },
+        ].map(card => (
+          <div key={card.label} className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+            <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold">{card.label}</p>
+            <p className="text-2xl font-bold mt-1" style={{ color: card.color }}>{card.value}</p>
+            <p className="text-xs text-[#6A6E73] mt-1">{card.sub}</p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-center mb-3 tracking-tight">{title}</h1>
-          <p className="text-center text-gray-400 max-w-xl mx-auto">
-            Intelligent provisioning for AI demo environments on Intel hardware.
-          </p>
-        </div>
-      </section>
+        ))}
+      </div>
 
-      {/* Intelligence Overview */}
-      <section className="max-w-5xl mx-auto px-6 -mt-8">
-        <div className="grid sm:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Active Sessions', value: sessions.active, color: '#3E8635' },
-            { label: 'Fleet Clusters', value: clusters.length > 0 ? `${healthyClusters}/${clusters.length}` : '—', color: '#0068B5' },
-            { label: 'Success Rate', value: totalAttempts > 0 ? `${overallRate}%` : '—', color: overallRate >= 80 ? '#3E8635' : '#F0AB00' },
-            { label: 'Avoid-Listed', value: avoidCount, color: avoidCount > 0 ? '#C9190B' : '#3E8635' },
-          ].map(card => (
-            <div key={card.label} className="bg-white rounded-lg border border-[#D2D2D2] p-5 shadow-sm">
-              <p className="text-xs text-[#6A6E73] uppercase font-medium">{card.label}</p>
-              <p className="text-2xl font-bold mt-1" style={{ color: card.color }}>{card.value}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Alerts */}
-        {alerts.length > 0 && (
-          <div className="bg-white rounded-lg border border-[#D2D2D2] border-l-4 border-l-[#C9190B] p-4 mb-6">
-            <p className="text-xs text-[#6A6E73] uppercase font-medium mb-2">Health Alerts</p>
+      {/* Alerts */}
+      {alerts.length > 0 && (
+        <div className="bg-[#212121] border border-[#C9190B]/30 rounded-lg p-4">
+          <p className="text-xs text-[#C9190B] uppercase tracking-wider font-bold mb-3">Health Alerts</p>
+          <div className="space-y-2">
             {alerts.map(a => (
-              <div key={a.alert_id} className="flex items-center justify-between text-sm py-1">
-                <span className="text-[#151515]">{a.cluster_name}</span>
+              <div key={a.alert_id} className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <StatusBadge status={a.severity} />
+                  <span className="text-white">{a.cluster_name}</span>
+                </div>
                 <span className="text-[#6A6E73] text-xs">{a.recommended_action}</span>
               </div>
             ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Fleet + Actions row */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Cluster Health */}
-          <div className="bg-white rounded-lg border border-[#D2D2D2] p-6">
-            <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Fleet Health</h2>
-            {clusters.length === 0 ? (
-              <p className="text-sm text-[#6A6E73]">No cluster data available. Enable SMART_PLACEMENT_ENABLED and configure STARGATE_API_URL.</p>
-            ) : (
-              <div className="space-y-3">
-                {clusters.map(c => (
-                  <div key={c.cluster_name} className="flex items-center gap-3">
-                    <HealthDot status={c.health_status} />
-                    <span className="text-sm text-[#151515] w-32 truncate">{c.cluster_name}</span>
-                    <ScoreBar
-                      value={c.score}
-                      color={c.health_status === 'healthy' ? '#0068B5' : '#C9190B'}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Fleet Health */}
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+          <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Fleet Health</p>
+          {clusters.length === 0 ? (
+            <div className="text-sm text-[#6A6E73] py-8 text-center">
+              No cluster data available
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {clusters.map(c => (
+                <div key={c.cluster_name} className="flex items-center gap-3">
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: c.health_status === 'healthy' ? '#3E8635' : c.health_status === 'degraded' ? '#F0AB00' : '#C9190B' }}
+                  />
+                  <span className="text-sm text-white w-36 truncate">{c.cluster_name}</span>
+                  <div className="flex-1 h-1.5 bg-[#333] rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${Math.min(100, c.score)}%`,
+                        backgroundColor: c.health_status === 'healthy' ? '#0071C5' : '#C9190B',
+                      }}
                     />
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-lg border border-[#D2D2D2] p-6">
-            <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Get Started</h2>
-            <div className="space-y-3">
-              <Link
-                to={`/demos${brandQuery}`}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-white transition-all hover:opacity-90"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <div>
-                  <div className="font-medium text-sm">Launch a Demo</div>
-                  <div className="text-xs opacity-80">10 custom demos + 7 AI quickstarts</div>
+                  <span className="text-xs font-mono text-[#6A6E73] w-8 text-right">{Math.round(c.score)}</span>
                 </div>
-              </Link>
-              <Link
-                to={`/sandbox${brandQuery}`}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-[#D2D2D2] text-[#151515] hover:bg-[#F0F0F0] transition-colors"
-              >
-                <svg className="w-5 h-5 text-[#0068B5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-                <div>
-                  <div className="font-medium text-sm">Open a Sandbox</div>
-                  <div className="text-xs text-[#6A6E73]">Configurable environments with full hardware access</div>
-                </div>
-              </Link>
-              <Link
-                to={`/catalog${brandQuery}`}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-[#D2D2D2] text-[#151515] hover:bg-[#F0F0F0] transition-colors"
-              >
-                <svg className="w-5 h-5 text-[#3E8635]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
-                <div>
-                  <div className="font-medium text-sm">Browse Catalog</div>
-                  <div className="text-xs text-[#6A6E73]">25 catalog items across 3 categories</div>
-                </div>
-              </Link>
+              ))}
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Intelligence Pipeline */}
-        <div className="bg-white rounded-lg border border-[#D2D2D2] p-6 mb-8">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">How It Works</h2>
-          <div className="flex justify-center gap-2 text-xs sm:text-sm overflow-x-auto">
-            {[
-              { step: 'Request', color: '#6A6E73' },
-              { step: 'Classify', color: '#0068B5' },
-              { step: 'Place', color: '#0068B5' },
-              { step: 'Provision', color: '#3E8635' },
-              { step: 'Validate', color: '#3E8635' },
-              { step: 'Learn', color: '#E67E22' },
-              { step: 'Ready', color: '#3E8635' },
-            ].map((s, i) => (
-              <div key={s.step} className="flex items-center gap-2 shrink-0">
-                <span
-                  className="px-3 py-1.5 rounded font-medium whitespace-nowrap text-white"
-                  style={{ backgroundColor: s.color }}
-                >
-                  {s.step}
-                </span>
-                {i < 6 && <span className="text-[#D2D2D2]">{"→"}</span>}
+        {/* Quick Launch */}
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+          <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Get Started</p>
+          <div className="space-y-3">
+            <Link to="/demos" className="flex items-center gap-3 px-4 py-3 rounded-lg text-white transition hover:opacity-90" style={{ backgroundColor: 'var(--brand-primary)' }}>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <div>
+                <div className="font-medium text-sm">Launch a Demo</div>
+                <div className="text-xs opacity-70">10 custom demos + 7 AI quickstarts</div>
               </div>
-            ))}
+            </Link>
+            <Link to="/sandbox" className="flex items-center gap-3 px-4 py-3 rounded-lg border border-[#333] text-white hover:border-[#555] transition">
+              <svg className="w-5 h-5 text-[#0071C5]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              <div>
+                <div className="font-medium text-sm">Open a Sandbox</div>
+                <div className="text-xs text-[#6A6E73]">Configurable environments with full hardware access</div>
+              </div>
+            </Link>
+            <Link to="/catalog" className="flex items-center gap-3 px-4 py-3 rounded-lg border border-[#333] text-white hover:border-[#555] transition">
+              <svg className="w-5 h-5 text-[#3E8635]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+              <div>
+                <div className="font-medium text-sm">Browse Catalog</div>
+                <div className="text-xs text-[#6A6E73]">25 catalog items across 3 categories</div>
+              </div>
+            </Link>
           </div>
-          <p className="text-center text-xs text-[#6A6E73] mt-3">
-            Every demo is classified, placed on the best cluster, provisioned, validated, and the outcome feeds back into future decisions.
-          </p>
         </div>
-      </section>
+      </div>
+
+      {/* Provisioning History */}
+      {feedback.length > 0 && (
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+          <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-4">Provisioning History</p>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-[#6A6E73] text-xs uppercase border-b border-[#333]">
+                <th className="pb-2 pr-4">Catalog Item</th>
+                <th className="pb-2 pr-4">Cluster</th>
+                <th className="pb-2 pr-4">Hardware</th>
+                <th className="pb-2 pr-4">Success</th>
+                <th className="pb-2 pr-4">Latency</th>
+                <th className="pb-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {feedback.slice(0, 8).map(f => {
+                const pct = Math.round(f.success_rate * 100);
+                return (
+                  <tr key={`${f.cluster_name}-${f.catalog_item_id}-${f.hardware_profile}`} className="border-b border-[#1a1a1a] last:border-0">
+                    <td className="py-2 pr-4 text-white text-xs font-mono">{f.catalog_item_id}</td>
+                    <td className="py-2 pr-4 text-[#e0e0e0]">{f.cluster_name}</td>
+                    <td className="py-2 pr-4 text-[#e0e0e0]">{f.hardware_profile}</td>
+                    <td className="py-2 pr-4">
+                      <span style={{ color: pct >= 80 ? '#3E8635' : pct >= 30 ? '#F0AB00' : '#C9190B' }} className="font-medium">
+                        {pct}%
+                      </span>
+                    </td>
+                    <td className="py-2 pr-4 text-[#6A6E73] font-mono text-xs">{Math.round(f.avg_latency_ms)}ms</td>
+                    <td className="py-2"><StatusBadge status={f.recommendation} /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Pipeline */}
+      <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+        <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-3">Intelligence Pipeline</p>
+        <div className="flex justify-center gap-2 text-xs overflow-x-auto py-2">
+          {[
+            { step: 'Request', color: '#6A6E73' },
+            { step: 'Classify', color: '#0071C5' },
+            { step: 'Place', color: '#0071C5' },
+            { step: 'Provision', color: '#3E8635' },
+            { step: 'Validate', color: '#3E8635' },
+            { step: 'Learn', color: '#F0AB00' },
+            { step: 'Ready', color: '#3E8635' },
+          ].map((s, i) => (
+            <div key={s.step} className="flex items-center gap-2 shrink-0">
+              <span className="px-3 py-1.5 rounded font-medium text-white" style={{ backgroundColor: s.color }}>
+                {s.step}
+              </span>
+              {i < 6 && <span className="text-[#333]">{"→"}</span>}
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -153,7 +153,7 @@ export default function Demos() {
               className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
                 filter === cat
                   ? 'bg-[#151515] text-white'
-                  : 'bg-white text-[#6A6E73] border border-[#D2D2D2] hover:bg-gray-50'
+                  : 'text-[#6A6E73] hover:text-white hover:bg-white/10'
               }`}
             >
               {cat === 'all' ? 'All Demos' : CATEGORY_LABELS[cat]}
@@ -183,7 +183,7 @@ export default function Demos() {
               return (
                 <div
                   key={item.catalog_item_id}
-                  className="bg-white rounded border border-[#D2D2D2] border-t-4 flex flex-col"
+                  className="bg-[#212121] rounded-lg border border-[#2e2e2e] border-t-4 flex flex-col hover:border-[#555] transition"
                   style={{ borderTopColor: accent }}
                 >
                   <div className="p-6 flex-1 flex flex-col">
@@ -204,7 +204,7 @@ export default function Demos() {
                     </div>
 
                     {/* Title and description */}
-                    <h3 className="text-lg font-semibold text-[#151515] mb-2">
+                    <h3 className="text-sm font-semibold text-white mb-2">
                       {item.display_name.replace(' — Official AI Quickstart', '')}
                     </h3>
                     <p className="text-[#6A6E73] text-sm leading-relaxed mb-4 flex-1">
@@ -216,7 +216,7 @@ export default function Demos() {
                       {item.required_capabilities.slice(0, 3).map((cap) => (
                         <span
                           key={cap}
-                          className="text-xs bg-[#F0F0F0] text-[#151515] px-2 py-0.5 rounded"
+                          className="text-xs bg-[#1a1a1a] text-[#6A6E73] px-2 py-0.5 rounded"
                         >
                           {cap}
                         </span>
@@ -256,8 +256,8 @@ export default function Demos() {
         )}
 
         {/* Bottom CTA */}
-        <div className="mt-12 bg-white border border-[#D2D2D2] rounded p-8 text-center">
-          <h2 className="text-xl font-semibold text-[#151515] mb-2">
+        <div className="mt-12 bg-[#212121] border border-[#2e2e2e] rounded-lg p-8 text-center">
+          <h2 className="text-xl font-semibold text-white mb-2">
             Need your own environment?
           </h2>
           <p className="text-[#6A6E73] text-sm mb-4">
