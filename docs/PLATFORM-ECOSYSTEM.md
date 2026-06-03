@@ -2,18 +2,22 @@
 
 ## Overview
 
-Two applications form the Intel x Red Hat AI demo and operations platform. They integrate via webhook events and graceful degradation — each works standalone.
+Three applications form the Intel x Red Hat AI platform. Launchpad is the orchestration brain; StarGate and DeepField are complementary signal sources that feed into Launchpad's intelligence layer.
 
 ```
-   +------------------+    +---------------------+
-   |    StarGate      |    |     Launchpad       |   PROVISIONING + DEMO PLANE
-   | Rubric evaluator |<-->| RHDP-native demos   |   Self-service AI labs on
-   | Evidence bundles |    | 10 demos + 7 QS     |   shared OpenShift with
-   | Failure classes  |    | Inference gateway   |   Intel Gaudi 3 / Xeon 6
-   | HITL proposals   |    | Workshop batching   |
-   | Provisioning     |    | Showroom content    |
-   |  intelligence    |    | ArgoCD Helm chart   |
-   +------------------+    +---------------------+
+   +------------------+    +---------------------+    +------------------+
+   |    StarGate      |    |     Launchpad       |    |    DeepField     |
+   | Rubric evaluator |───>| Orchestration Brain |<───| Fleet health     |
+   | Evidence bundles |    | Smart Placement     |    | CPU/GPU signals  |
+   | Failure classes  |    | Workload Profiling  |    | Error rates      |
+   | Capacity scores  |    | Feedback Loops      |    | Anomaly detect   |
+   | HITL proposals   |    | Intelligence API    |    | Inference metrics|
+   +------------------+    +---------------------+    +------------------+
+                           | 25 demos + 7 QS     |
+                           | 3 frontend apps     |
+                           | Celery beat (6 tasks)|
+                           | 507 tests           |
+                           +---------------------+
 ```
 
 ---
@@ -174,6 +178,12 @@ Per-user namespace with demo frontend + gateway + postgres
 | `AUTH_ENABLED` | No | `true` to enable OAuth/API key auth. |
 | `API_KEYS` | No | Comma-separated valid API keys. |
 | `ADMIN_API_KEYS` | No | Comma-separated admin API keys. |
+| `SMART_PLACEMENT_ENABLED` | No | `true` (default) to enable StarGate-informed cluster selection. |
+| `WORKLOAD_PROFILING_ENABLED` | No | `true` to enable workload classification and hardware matching. |
+| `FEEDBACK_TRACKING_ENABLED` | No | `true` to enable provisioning outcome tracking and avoid-list. |
+| `ORCHESTRATION_BRAIN_ENABLED` | No | `true` to enable the unified decision engine. |
+| `DEEPFIELD_API_URL` | No | DeepField base URL for fleet health signals. |
+| `DEEPFIELD_API_KEY` | No | API key for DeepField authentication. |
 
 ### StarGate
 

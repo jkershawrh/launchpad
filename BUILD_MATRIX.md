@@ -1,6 +1,6 @@
 # Build Red/Green Matrix
 
-> Generated: 2026-05-18 | All Phases Complete
+> Updated: 2026-06-03 | Intelligence Layer Complete
 
 ## Platform Gates
 
@@ -48,9 +48,26 @@ Every step has a GREEN (success) and RED (failure) test.
 | 19 | API: full workflow HTTP | PASS | PASS | GREEN |
 | 20 | API: bad request HTTP | PASS | PASS | GREEN |
 
+## Intelligence Layer Gates
+
+| # | Build Stage | Status | Evidence |
+|---|---|---|---|
+| 15 | Smart Placement | GREEN | test_smart_placement.py (23) |
+| 16 | Workload Profiling | GREEN | test_workload_classifier.py (33) |
+| 17 | Feedback Loops | GREEN | test_feedback_loops.py (27) |
+| 18 | Orchestration Brain | GREEN | test_orchestration_brain.py (23) |
+| 19 | Intelligence API | GREEN | test_intelligence_api.py (11) |
+| 20 | DecisionInsight (Portal) | GREEN | TypeScript clean |
+| 21 | ProvisioningAnalytics (Admin) | GREEN | TypeScript clean |
+| 22 | FleetIntelligence (Demos) | GREEN | TypeScript clean |
+| 23 | Celery Beat Tasks | GREEN | 6 tasks registered |
+| 24 | DB Migration 002 | GREEN | provisioning_outcomes + orchestration_decisions |
+
 ## Summary
 
-- **Total tests:** 125 passing
-- **Workflow rubric:** 20/20 steps GREEN (36 unit + 3 API tests)
-- **Platform gates:** 14/14 GREEN
-- **Frontend apps:** 2 (partner portal + admin), both build clean
+- **Total backend tests:** 507 passing
+- **Intelligence layer tests:** 117 (smart placement 23, workload 33, feedback 27, orchestration 23, API 11)
+- **Workflow rubric:** 20/20 steps GREEN
+- **Platform gates:** 24/24 GREEN
+- **Frontend apps:** 3 (partner portal + admin + demos), all TypeScript clean
+- **Deployed:** infra01 — all pods running

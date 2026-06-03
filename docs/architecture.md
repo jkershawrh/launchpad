@@ -7,7 +7,7 @@
 | **backend** | FastAPI app — domain models, adapters, services, API, storage | Python, Pydantic, PostgreSQL |
 | **frontend** | Partner portal — catalog browsing, lab requests, session detail | React, Vite, Tailwind |
 | **admin** | Admin dashboard — sessions, tenants, catalog CRUD, system status | React, Vite, Tailwind |
-| **demos/frontend** | Demo frontend — runtime page filtering, 10 demo pages | React, Vite, Tailwind |
+| **demos/frontend** | Demo frontend — 18+ pages including FleetIntelligence dashboard | React, Vite, PatternFly |
 | **demos/gateway** | Inference gateway — model routing policy across Intel hardware | Python, FastAPI |
 | **content** | Showroom lab content — step-by-step walkthroughs for each demo | Antora, AsciiDoc |
 | **tenant/bootstrap** | Helm chart deployed per-user by ArgoCD | Helm |
@@ -29,6 +29,8 @@ See [adapters.md](adapters.md) for the full interface catalog and per-tier detai
 
 ## Domain Models
 
+### Core Models (`domain/models.py`)
+
 | Model | Role |
 |-------|------|
 | **Tenant** | Company, partner, internal team, or client. Carries branding, quota defaults, TTL. |
@@ -42,43 +44,90 @@ See [adapters.md](adapters.md) for the full interface catalog and per-tier detai
 | **ShowbackRecord** | Usage tracking — duration, CPU, memory, storage, Gaudi, tokens, model requests. |
 | **ValidationResult** | Per-check outcome — pass, fail, warn, skipped — with evidence. |
 
+### Intelligence Models
+
+| Model | File | Role |
+|-------|------|------|
+| **WorkloadProfile** | `domain/workload.py` | Workload classification — type (CPU/GPU/training/RAG/agent/mixed/lightweight), compute/memory intensity, GPU mode, I/O pattern, confidence |
+| **HardwareMatch** | `domain/workload.py` | Scored hardware recommendation with reasons |
+| **ClusterCapacity** | `domain/placement.py` | Per-cluster capacity score, CPU utilization, GPU availability, health status |
+| **PlacementRecommendation** | `domain/placement.py` | Recommended cluster with score, reasoning, source (cache/live/none), fallback flag |
+| **PlacementDecision** | `domain/placement.py` | Audit record of the placement choice made for a request |
+| **ProvisioningOutcome** | `domain/feedback.py` | Success/failure record per session — cluster, hardware, latency, validation result |
+| **FeedbackSummary** | `domain/feedback.py` | Aggregated success rate, avg latency, recommendation (preferred/acceptable/avoid) per cluster×catalog×hardware |
+| **OrchestrationDecision** | `domain/orchestration.py` | Full decision record — workload profile, cluster, hardware, quota, confidence, rationale, signals used |
+| **DeepFieldSignal** | `domain/orchestration.py` | Fleet health metric — cluster, type (cpu_util, gpu_util, error_rate), value, threshold, status |
+| **HealthAlert** | `domain/orchestration.py` | Proactive alert — cluster, severity, recommended action, triggering signals |
+
+## Intelligence Layer
+
+### Services
+
+| Service | Purpose |
+|---------|---------|
+| **PlacementService** | Queries StarGate for cluster capacity scores, caches locally (120s TTL), recommends healthiest cluster. Filters by feedback avoid-list when FeedbackTracker is available. |
+| **WorkloadClassifier** | Rule-based classification from catalog metadata (`cpu_only`, `required_capabilities`, `default_hardware_profile`). Returns scored hardware matches and right-sized quotas. |
+| **FeedbackTracker** | Records ProvisioningOutcome after each validation. Computes success rates per cluster×catalog×hardware. Flags combinations with <30% success rate (>= 5 samples) as "avoid." Persists to PostgreSQL. |
+| **OrchestrationBrain** | Coordinates all signals: classify workload → get capacity → get fleet signals → check feedback → compute blended score → generate rationale. Confidence scales with signal diversity. |
+
+### Decision Flow
+
+```
+LabRequest arrives
+    │
+    ├── User specified hardware+quota? → use as-is (override)
+    │
+    ├── OrchestrationBrain available?
+    │   └── brain.decide(request, catalog_item)
+    │       ├── WorkloadClassifier.classify() → WorkloadProfile
+    │       ├── PlacementService cache + DeepField signals → scored clusters
+    │       ├── FeedbackTracker.should_avoid() → filter bad combos
+    │       └── → OrchestrationDecision (stored in session resources)
+    │
+    ├── WorkloadClassifier only?
+    │   └── classify → match_hardware → top match
+    │
+    └── Nothing? → static fallback (catalog default → "xeon-basic")
+```
+
+### Graceful Degradation
+
+Every intelligence component fails open:
+
+| Condition | Behavior |
+|-----------|----------|
+| Brain raises exception | Falls through to classifier, then static |
+| StarGate unreachable | Placement returns fallback, pool picks cluster |
+| DeepField unreachable | Signals excluded from scoring, decision continues |
+| FeedbackTracker empty | No avoid-list filtering, all clusters eligible |
+| All external systems down | Provisions exactly as a static system would |
+
 ## Provisioning Flow
 
-### Direct Mode (mock / local / openshift)
+### Provisioning Flow (all modes)
 
 ```
 submit request
-  -> evaluate constraints (allowed / warn / blocked)
+  -> evaluate constraints (StarGate pre-flight if configured)
   -> accept or reject
-  -> check pool capacity + reserve
+  -> _resolve_hardware():
+       brain.decide() OR classifier.classify() OR static fallback
+  -> _get_placement_recommendation():
+       PlacementService.recommend_cluster() with feedback filtering
+  -> pool.reserve(preferred_cluster=recommendation)
   -> generate provisioning plan
-  -> execute plan (create namespace, apply quota, deploy app, configure gateway)
+  -> execute plan
   -> transition to VALIDATING
   -> run validation checks
-  -> READY (all pass) or VALIDATION_FAILED
-  -> ACTIVE (user opens lab)
-  -> EXPIRED (TTL)
-  -> RESETTING -> RECLAIMED
+  -> _record_feedback(success or failure)
+  -> READY -> ACTIVE -> RECLAIMED
 ```
 
-### RHDP Mode
-
-```
-submit request
-  -> evaluate constraints
-  -> accept or reject
-  -> Sandbox API: claim namespace on shared CNV cluster
-  -> generate provisioning plan (references AgnosticV tenant config)
-  -> execute plan (AgnosticD deploys via ArgoCD)
-  -> populate cluster_ref on session
-  -> transition to VALIDATING
-  -> validate sandbox placement + namespace
-  -> READY -> ACTIVE
-  -> RECLAIMED (Sandbox API releases placement)
-```
+In RHDP mode, `pool.reserve()` calls the Sandbox API with `preferred_cluster` in the cloud selector. In mock/local/openshift modes, the placement recommendation is advisory.
 
 Every session gets a per-session MaaS API key (`sk-launchpad-*`) for model access.
 Session limits enforce max 2 active per user, 5 per tenant.
+OrchestrationDecision is stored in session `resources["decision"]` for frontend retrieval.
 
 ## RHDP Integration Architecture
 

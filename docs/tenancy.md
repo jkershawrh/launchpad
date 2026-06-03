@@ -51,6 +51,15 @@ A session counts as active if its status is one of: requested, provisioning, val
 | standard | 8 | 16Gi | 50Gi | 30 | 10 | -- | 12h |
 | large | 32 | 64Gi | 200Gi | 100 | 25 | 2 | 24h |
 
+## Intelligent Placement
+
+The intelligence layer influences tenancy at the cluster selection level:
+
+- **WorkloadClassifier** determines the hardware profile needed for a tenant's chosen demo
+- **PlacementService** selects the best cluster based on StarGate capacity, DeepField signals, and feedback history
+- **FeedbackTracker** avoids cluster×hardware combinations with poor success rates for this catalog item
+- Cluster preference is passed to the Sandbox API via `cloud_selector` — the pool respects the recommendation when possible
+
 ## Future: Stronger Isolation
 
 Namespace isolation is the starting point. Future iterations will add:

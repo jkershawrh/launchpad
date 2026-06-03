@@ -64,6 +64,26 @@ Deployments are manual, gated, and audited.
 - Integration API keys stored in dedicated secrets (optional, marked as such)
 - No secrets in container images, environment variables, or git history
 
+## Database Migrations
+
+Apply migrations in order after deployment:
+
+```bash
+psql $DATABASE_URL -f backend/migrations/001_initial_schema.sql
+psql $DATABASE_URL -f backend/migrations/002_provisioning_outcomes.sql
+```
+
+## Celery Beat Schedule
+
+| Task | Interval | Purpose |
+|------|----------|---------|
+| `ttl-enforcement` | 300s | Reclaim expired sessions |
+| `session-cleanup` | 3600s | Reclaim orphaned sessions stuck in transitional states |
+| `capacity-sync` | 60s | Refresh cluster capacity cache from StarGate |
+| `feedback-sync` | 300s | Reload feedback outcomes from PostgreSQL |
+| `proactive-health` | 120s | Check fleet health via DeepField, log alerts |
+| `rebalance-check` | 600s | Identify overloaded clusters, suggest migrations |
+
 ## Rollback
 
 If a deployment causes issues:

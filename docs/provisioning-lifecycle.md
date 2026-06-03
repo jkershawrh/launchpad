@@ -70,3 +70,17 @@ Every state transition is recorded as a `LifecycleEvent` with:
 - Reason (human-readable)
 
 The full event log is stored on the session and available via the API. Timestamps for `started_at` (first activation) and `completed_at` (reclaim) are set automatically by the transition function.
+
+## Intelligence Integration Points
+
+The intelligence layer integrates at two points in the lifecycle:
+
+**Before provisioning** (`_resolve_hardware` + `_get_placement_recommendation`):
+- `OrchestrationBrain.decide()` classifies the workload, selects hardware, recommends a cluster
+- The `OrchestrationDecision` is stored in `session.resources["decision"]`
+- If the brain is unavailable, falls back to static hardware selection
+
+**After validation** (`_record_feedback`):
+- `FeedbackTracker.record_outcome()` records success/failure, latency, cluster, hardware
+- Outcome is persisted to PostgreSQL (`provisioning_outcomes` table)
+- Future provisioning decisions use this history to avoid failing combinations

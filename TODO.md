@@ -2,19 +2,19 @@
 
 ## What We Built
 
-Launchpad is a self-service AI demo platform for the Intel x Red Hat partnership. Partners and customers order demos through RHDP, get isolated environments with real inference on Intel Gaudi 3 and Xeon 6 hardware via MaaS, and everything cleans up automatically.
+Launchpad is the intelligent provisioning platform for the Intel x Red Hat AI partnership. It classifies workloads, selects optimal hardware and clusters, learns from provisioning outcomes, and coordinates real-time signals from StarGate and DeepField into unified placement decisions.
 
 - **25 catalog items** — 10 custom Intel demos, 7 official Summit AI quickstarts, 4 sandboxes, 4 originals
 - **3 provisioning modes** — self-service (on-demand), workshops (40 users batch), persistent (always-on)
 - **Full lifecycle** — 17-state machine: request > provision > validate > ready > activate > reclaim
+- **Intelligence layer** — WorkloadClassifier, PlacementService, FeedbackTracker, OrchestrationBrain, DeepFieldAdapter
 - **4 adapter tiers** — mock (testing), local (podman), openshift (K8s API), rhdp (Sandbox API)
-- **Security** — SSO, API keys, session limits, PSS, NetworkPolicy, credential scrubbing, kubeconfig (not --token)
+- **Security** — SSO, API keys, session limits, PSS, NetworkPolicy, credential scrubbing
 - **RHDP integration** — Sandbox API client, AgnosticV configs, ArgoCD Helm chart, Showroom content
-- **AAP client** — ready to wire into job templates (AAP 4.5 on infra01)
-- **AI brand generation** — LLM-powered branding from company name
-- **422 unit tests** — all TDD red/green
-- **28 local E2E tests** — real containers, real inference
-- **GitHub Actions CI** — tests, lint, TypeScript, Helm validation, image builds on every push
+- **3 frontend apps** — Partner portal (DecisionInsight), Admin dashboard (ProvisioningAnalytics), Demo frontend (FleetIntelligence)
+- **507 backend tests** — all TDD red/green (117 intelligence layer tests)
+- **6 Celery beat tasks** — TTL enforcement, session cleanup, capacity sync, feedback sync, health check, rebalance
+- **Deployed to infra01** — all pods running, zero restarts
 
 ---
 
@@ -22,17 +22,20 @@ Launchpad is a self-service AI demo platform for the Intel x Red Hat partnership
 
 | Component | Status |
 |-----------|--------|
-| Backend API on infra01 | Running (4 pods) |
-| Partner portal | Running |
-| Admin dashboard | Running |
+| Backend API on infra01 | Running — https://launchpad-api.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
+| Partner portal on infra01 | Running — https://launchpad.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
+| Admin dashboard on infra01 | Running — https://launchpad-admin.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
+| Intelligence layer | Complete — PlacementService, WorkloadClassifier, FeedbackTracker, OrchestrationBrain |
+| Intelligence API | 7 endpoints — fleet-health, decision audit, simulate, cluster signals, feedback |
+| Intelligence UI | DecisionInsight (portal + admin), ProvisioningAnalytics (admin), FleetIntelligence (demos) |
+| Database migrations | 001 initial schema + 002 provisioning outcomes |
+| Celery beat | 6 tasks registered and scheduled |
 | Sandbox API connection | Verified (12 CNV clusters) |
-| Container images | Built locally, tagged for quay.io/rhpds |
 | AgnosticV configs | Branch `launchpad-demos` pushed, **ready for PR** (52 files, 12 catalog items) |
 | Tenant Helm chart | `tenant/bootstrap/` — ArgoCD deploys per-user namespaces |
 | Showroom content | `content/` — 12 AsciiDoc lab pages |
 | CI | Green on latest commit |
 | Security | Keys rotated, history scrubbed, push protection enabled |
-| README | Cleaned for public (no internal project references) |
 
 ---
 

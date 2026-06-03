@@ -63,3 +63,4 @@ A score of 100 means all artifacts were generated. Any score below 100 identifie
 - Every catalog item defines its inputs, capabilities, provisioning steps, validation checks, handoff outputs, observability profile, reset/reclaim steps, and showback metadata.
 - Every session is reproducible from its request + catalog item + tenant.
 - Request and plan hashes enable drift detection between runs.
+- Every provisioning decision is recorded as an `OrchestrationDecision` in session resources — the placement rationale, workload classification, confidence, and signals used are auditable artifacts.

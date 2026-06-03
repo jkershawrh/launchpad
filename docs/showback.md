@@ -50,3 +50,17 @@ Reports can be exported as JSON or Markdown via the API:
 The ShowbackAdapter also supports `export_report(session_id, fmt)` for formatted output.
 
 Showback is not billing. It tracks what was used and what it would cost. Real billing/chargeback is explicitly out of MVP scope.
+
+## Intelligence Metrics
+
+The intelligence layer tracks additional provisioning metrics via `ProvisioningOutcome` (stored in the `provisioning_outcomes` table):
+
+| Field | Description |
+|-------|-------------|
+| `provision_latency_ms` | Time from request to validation complete |
+| `success` | Whether provisioning + validation succeeded |
+| `failure_reason` | Why it failed (if applicable) |
+| `cluster_name` | Which cluster was selected |
+| `hardware_profile` | Which hardware was used |
+
+These feed into the FeedbackTracker for success rate computation and the ProvisioningAnalytics admin page.

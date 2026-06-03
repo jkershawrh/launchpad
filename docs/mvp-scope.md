@@ -152,27 +152,38 @@
 | Remediation catalog validation | N/A | On push/PR |
 | Manual deploy approval | workflow_dispatch | — |
 
+## Intelligence Layer
+
+| Component | Status | Tests |
+|-----------|--------|-------|
+| PlacementService (StarGate capacity) | Done | 23 |
+| WorkloadClassifier (rule-based) | Done | 33 |
+| FeedbackTracker (outcome tracking) | Done | 27 |
+| OrchestrationBrain (unified decisions) | Done | 23 |
+| DeepFieldAdapter (fleet signals) | Done | included in brain tests |
+| Intelligence API (7 endpoints) | Done | 11 |
+| DecisionInsight (portal + admin UI) | Done | TypeScript clean |
+| ProvisioningAnalytics (admin page) | Done | TypeScript clean |
+| FleetIntelligence (demo dashboard) | Done | TypeScript clean |
+| DB migration 002 | Done | provisioning_outcomes + orchestration_decisions |
+| Celery beat (6 tasks) | Done | registered in beat schedule |
+| Feature flags (4) | Done | wired in deps.py |
+
 ## StarGate Integration
 
 | Integration Point | Direction | Status |
 |---|---|---|
 | Pre-flight check | Launchpad → StarGate | Built + tested |
-| Lifecycle evidence | Launchpad → StarGate | Built + tested (9 payload tests) |
+| Lifecycle evidence | Launchpad → StarGate | Built + tested |
 | Cleanup callback | StarGate → Launchpad | Built + tested |
-| Remediation catalog | StarGate | 3 entries + 11 tests |
+| Capacity scores | StarGate → Launchpad PlacementService | Built — cached, polled every 60s |
 | Graceful degradation | Both | Falls back when other is down |
 
-## What's Left
+## Deployment
 
-| Priority | Item | Blocker |
-|----------|------|---------|
-| 1 | Sandbox API `app` role token | Need admin to issue |
-| 2 | quay.io push access (`rhpds` org) | Need org admin |
-| 3 | AgnosticV PR review | Tony Kay / Nate Stephany |
-| 4 | Push container images | Needs #2 |
-| 5 | End-to-end placement test | Needs #1 |
-| 6 | Onboard Launchpad base cluster | Needs RHDP catalog entry |
-| 7 | Showroom screenshots | Need running demo |
-| 8 | AAP Job Template integration | Phase 2 |
-| 9 | AI-powered brand generation | Future |
-| 9 | AI-powered brand generation | Future |
+| Target | Status |
+|--------|--------|
+| Backend on infra01 | Running |
+| Partner portal on infra01 | Running |
+| Admin dashboard on infra01 | Running |
+| Internal registry images | Built and pushed |

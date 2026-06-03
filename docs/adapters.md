@@ -103,14 +103,36 @@ Sandbox sessions run as Pods (or local containers) with configurable stack level
 
 Access methods: SSH (2222), Jupyter (8888), VS Code Server (8443), Web Console (6901), API (8080).
 
+## Intelligence Services (not adapters)
+
+These are standalone services injected into ProvisioningService, not adapter-pattern implementations:
+
+| Service | File | Purpose |
+|---------|------|---------|
+| **PlacementService** | `services/placement.py` | Cluster recommendations from StarGate capacity scores, cached locally |
+| **WorkloadClassifier** | `services/workload_classifier.py` | Rule-based workload classification, hardware matching, quota right-sizing |
+| **FeedbackTracker** | `services/feedback_tracker.py` | Outcome recording, success rate computation, avoid-list |
+| **OrchestrationBrain** | `services/orchestration_brain.py` | Composes all signals into unified decisions |
+
+## DeepField Adapter
+
+`adapters/deepfield/client.py` — fleet signal client for DeepField observability:
+
+| Method | Purpose |
+|--------|---------|
+| `get_cluster_signals(cluster_name)` | Per-cluster metrics (CPU, GPU utilization, error rate) |
+| `get_fleet_overview()` | All clusters with signals |
+
+Falls back to empty results if DeepField is unreachable. Mock variants: `MockDeepFieldAdapter`, `MockUnhealthyDeepFieldAdapter`, `MockDeepFieldDown`.
+
 ## Integration Status
 
 | System | Adapter role | Status |
 |--------|-------------|--------|
 | **RHDP Sandbox API** | PoolAdapter — claims namespaces from cluster pool | Integrated — client built, API verified |
-| **AgnosticD** | ProvisioningAdapter — deploys workloads via Ansible/ArgoCD | Configs written — 11 tenant configs in `deploy/agnosticv/` |
+| **StarGate** | ConstraintAdapter — pre-flight evaluation; capacity scores for PlacementService | Integrated — constraints + capacity |
+| **DeepField** | DeepFieldAdapter — fleet health signals for OrchestrationBrain | Integrated — adapter built, mock variants |
+| **AgnosticD** | ProvisioningAdapter — deploys workloads via Ansible/ArgoCD | Configs written — 11 tenant configs |
 | **ArgoCD** | Tenant deployment — Helm chart at `tenant/bootstrap/` | Built — parameterized by demo type |
 | **LiteMaaS** | Model access — LiteLLM virtual keys per tenant | Integrated — 5 models on Gaudi 3 |
 | **Showroom** | Lab UI — interactive instructions with terminal + console | Content written — 12 AsciiDoc pages |
-| **AAP** | ProvisioningAdapter — execute Ansible playbooks for setup | Interface defined, not yet integrated |
-| **Tekton** | ProvisioningAdapter — run pipelines for complex provisioning | Interface defined, not yet integrated |

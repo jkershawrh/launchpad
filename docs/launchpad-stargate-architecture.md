@@ -73,13 +73,42 @@
                                                        └────────────────────┘
 ```
 
+## Intelligence Layer (within Launchpad)
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         LAUNCHPAD INTELLIGENCE                               │
+│                                                                              │
+│   LabRequest ──► OrchestrationBrain.decide()                                │
+│                      │                                                       │
+│                      ├── WorkloadClassifier.classify()                       │
+│                      │     └── WorkloadProfile (type, GPU, intensity)        │
+│                      │                                                       │
+│                      ├── PlacementService.recommend_cluster()                │
+│                      │     ├── StarGate capacity scores (cached, 60s poll)   │
+│                      │     └── FeedbackTracker.should_avoid() filter         │
+│                      │                                                       │
+│                      ├── DeepFieldAdapter.get_fleet_overview()               │
+│                      │     └── Penalize clusters with critical signals       │
+│                      │                                                       │
+│                      └── OrchestrationDecision                               │
+│                            ├── recommended_cluster + hardware + quota        │
+│                            ├── confidence (scales with signal diversity)     │
+│                            ├── rationale (human-readable)                    │
+│                            └── stored in session.resources["decision"]       │
+│                                                                              │
+│   After validation ──► FeedbackTracker.record_outcome()                     │
+│                            └── ProvisioningOutcome → PostgreSQL             │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
 ## Launchpad ↔ StarGate Integration
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │                                                                              │
 │   LAUNCHPAD                                STARGATE                          │
-│   (Action Layer)                           (Intelligence Layer)              │
+│   (Orchestration Brain)                    (Validation + Capacity)           │
 │                                                                              │
 │   ┌────────────────────┐                   ┌────────────────────┐            │
 │   │                    │   1. PRE-FLIGHT   │                    │            │
@@ -204,15 +233,18 @@ Partner logs in
 ┌─ Launchpad Backend ────────────────────────────────────┐
 │  1. Pre-flight ──► StarGate: allowed                   │
 │  2. Submit request (check limits)                      │
-│  3. Sandbox API: claim namespace on CNV cluster        │
-│  4. ArgoCD: deploy tenant/bootstrap Helm chart         │
+│  3. Intelligence: classify workload, select hardware   │
+│  4. Intelligence: recommend cluster (capacity + history)│
+│  5. Sandbox API: claim namespace (preferred cluster)   │
+│  6. ArgoCD: deploy tenant/bootstrap Helm chart         │
 │     ├── Demo frontend (filtered pages)                 │
 │     ├── Inference gateway (LiteLLM virtual key)        │
 │     ├── PostgreSQL                                     │
 │     └── NetworkPolicy + labels                         │
-│  5. Validate (pod ready, route accessible)             │
-│  6. Post evidence ──► StarGate: "ready"                │
-│  7. Return Showroom URL to user                        │
+│  7. Validate (pod ready, route accessible)             │
+│  8. Record outcome ──► FeedbackTracker (PostgreSQL)    │
+│  9. Post evidence ──► StarGate: "ready"                │
+│  10. Return Showroom URL + DecisionInsight to user     │
 └────────────┬────────────────────────────────────────────┘
              │
              ▼

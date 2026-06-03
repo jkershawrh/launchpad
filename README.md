@@ -2,11 +2,11 @@
 
 ![CI](https://github.com/rhpds/launchpad/actions/workflows/ci.yml/badge.svg)
 
-Self-service demo platform that provisions AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Integrates with the Red Hat Demo Platform (RHDP) to deliver repeatable, branded, time-boxed AI experiences for partners, customers, and internal teams.
+Intelligent provisioning platform for AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Launchpad is the orchestration brain for the Intel x Red Hat AI ecosystem — it classifies workloads, selects optimal hardware and clusters, learns from provisioning outcomes, and coordinates real-time signals from StarGate (validation) and DeepField (fleet observability) into unified placement decisions.
 
 ## What It Does
 
-One-click access to pre-built AI demos running on real hardware. Each demo provisions an isolated environment with its own namespace, inference gateway, model routing, and LiteLLM virtual API key — backed by Intel Gaudi 3 for accelerated inference and Intel Xeon 6 for CPU-optimized workloads.
+One-click access to pre-built AI demos running on real hardware, with intelligent placement. Each demo provisions an isolated environment with its own namespace, inference gateway, model routing, and LiteLLM virtual API key. The intelligence layer automatically classifies the workload, matches it to the best hardware profile, selects the healthiest cluster, and records the outcome to improve future decisions.
 
 **10 custom demos** built by the Intel x Red Hat partnership:
 
@@ -36,21 +36,23 @@ One-click access to pre-built AI demos running on real hardware. Each demo provi
 ## Architecture
 
 ```
-User orders demo from RHDP catalog
-        │
-        ▼
-  Babylon (orchestration)
-        │
-        ▼
-  Sandbox API ──► Assigns namespace on shared CNV cluster
-        │
-        ▼
-  AgnosticD ──► Runs workloads (Keycloak, namespace, LiteLLM keys, GitOps)
-        │
-        ▼
-  ArgoCD ──► Deploys tenant/bootstrap/ Helm chart
-        │
-        ▼
+LabRequest
+    │
+    ▼
+OrchestrationBrain.decide()
+    ├── WorkloadClassifier  → workload type, GPU required, intensity
+    ├── PlacementService    → best cluster (StarGate capacity + feedback history)
+    ├── DeepFieldAdapter    → fleet health signals
+    └── FeedbackTracker     → historical success rates, avoid-list
+    │
+    ▼
+ProvisioningService.provision()
+    ├── pool.reserve(preferred_cluster=recommendation)
+    ├── Sandbox API → namespace on CNV cluster
+    ├── ArgoCD → tenant Helm chart
+    └── After validation → FeedbackTracker.record_outcome()
+    │
+    ▼
   ┌────────────────────────────────────────────────────────┐
   │  Per-Tenant Namespace                                  │
   │  ┌──────────────┐  ┌────────────┐  ┌──────────────┐   │
@@ -66,22 +68,31 @@ User orders demo from RHDP catalog
               ┌──────────────┼──────────────┐
               ▼              ▼              ▼
          Intel Gaudi 3  Intel Xeon 6   llama.cpp
-         (Granite, Phi, (embeddings,   (Llama 70B)
-          DeepSeek,      classification)
-          Qwen)
 ```
 
 ### Key Components
 
 | Component | Purpose |
 |-----------|---------|
+| **OrchestrationBrain** | Composes all intelligence signals into unified placement decisions |
+| **WorkloadClassifier** | Classifies workloads (CPU/GPU/training/RAG/agent/mixed) and matches to hardware |
+| **PlacementService** | Recommends clusters based on StarGate capacity scores with caching |
+| **FeedbackTracker** | Tracks provisioning outcomes, computes success rates, maintains avoid-list |
+| **DeepFieldAdapter** | Integrates fleet health signals (CPU, GPU utilization, error rates) |
 | **Sandbox API** | RHDP cluster pool manager — assigns namespaces on shared OpenShift clusters |
-| **AgnosticD** | Ansible-based deployment automation — installs operators and workloads |
-| **ArgoCD** | GitOps delivery — deploys the tenant Helm chart per user |
 | **Inference Gateway** | FastAPI service implementing model routing policy across Intel hardware |
 | **LiteMaaS** | LiteLLM proxy providing unified OpenAI-compatible API across all models |
 | **Showroom** | Interactive lab UI with step-by-step instructions, terminal, and console tabs |
-| **Demo Frontend** | React application with runtime page filtering via ConfigMap |
+
+### Intelligence Layer
+
+The intelligence layer makes provisioning decisions smarter over time:
+
+1. **Workload Profiling** — classifies each catalog item by compute type, GPU requirements, and I/O pattern
+2. **Smart Placement** — selects clusters based on capacity scores from StarGate, penalized by DeepField critical signals
+3. **Feedback Loops** — records success/failure per catalog×cluster×hardware tuple; avoids combinations with <30% success rate
+4. **Orchestration Brain** — coordinates all signals into a single decision with confidence scoring and rationale
+5. **Graceful Degradation** — each signal source fails open; if all external systems are down, Launchpad provisions exactly as a static system would
 
 ## How It Works
 
@@ -104,33 +115,36 @@ User orders demo from RHDP catalog
 
 - **Backend:** Python >=3.11, FastAPI >=0.115, Pydantic >=2.10, asyncpg >=0.30
 - **Database:** PostgreSQL via asyncpg (with in-memory fallback for testing)
+- **Background tasks:** Celery + Redis (6 beat tasks: TTL enforcement, session cleanup, capacity sync, feedback sync, health check, rebalance)
 - **Frontends:** React 19, Vite 8, TypeScript 6 — Tailwind (portal/admin) + PatternFly (demos)
 - **API prefix:** All routes under `/api/v1/`
-- **Deployment:** AgnosticD + ArgoCD, Kustomize manifests, UBI9 containers, Podman
+- **Deployment:** Kustomize manifests, UBI9 containers, internal OpenShift registry
+- **Complementary systems:** StarGate (rubric validation), DeepField (fleet observability)
 
 ## Repository Structure
 
 ```
 launchpad/
-├── backend/                    # FastAPI backend — lifecycle, provisioning, adapters
+├── backend/
 │   └── app/
-│       ├── adapters/           # Mock, local, OpenShift, and RHDP adapter tiers
-│       │   └── rhdp/           # Sandbox API client and RHDP provisioning
-│       ├── domain/             # Pydantic models, enums, state machine
-│       ├── services/           # Provisioning service, lifecycle management
-│       └── api/                # REST API endpoints
-├── frontend/                   # Partner portal (React/Vite/Tailwind)
-├── admin/                      # Admin dashboard (React/Vite/Tailwind)
+│       ├── adapters/           # Mock, local, OpenShift, RHDP, DeepField adapter tiers
+│       ├── domain/             # Pydantic models: lifecycle, placement, workload, feedback, orchestration
+│       ├── services/           # Provisioning, placement, workload classifier, feedback tracker, orchestration brain
+│       ├── api/routers/        # REST endpoints including intelligence API
+│       ├── integrations/       # Event publisher (StarGate, Kafka, Dashboard)
+│       └── prompts/            # YAML prompt templates (branding, workload classification, placement decision)
+│   ├── tasks/                  # Celery tasks: lifecycle, capacity sync, feedback sync, orchestration
+│   └── migrations/             # PostgreSQL schema (001 initial, 002 provisioning outcomes)
+├── frontend/                   # Partner portal — DecisionInsight on SessionDetail
+├── admin/                      # Admin dashboard — ProvisioningAnalytics page, DecisionInsight
 ├── demos/
-│   ├── frontend/               # Demo frontend (React, runtime page filtering)
+│   ├── frontend/               # Demo frontend — FleetIntelligence dashboard, 18+ pages
 │   └── gateway/                # Inference gateway (FastAPI, routing policy)
 ├── content/                    # Showroom lab content (Antora/AsciiDoc)
-│   └── modules/ROOT/pages/     # 12 lab guide pages
-├── tenant/
-│   └── bootstrap/              # Helm chart deployed per-user by ArgoCD
+├── tenant/bootstrap/           # Helm chart deployed per-user by ArgoCD
 ├── deploy/
-│   ├── agnosticv/              # RHDP catalog item configs (cluster + tenant)
-│   └── launchpad/              # Kustomize manifests for Launchpad platform
+│   ├── agnosticv/              # RHDP catalog item configs (12 items)
+│   └── launchpad/              # Kustomize manifests (infra01 overlay)
 └── docs/                       # Architecture and process documentation
 ```
 
@@ -154,37 +168,45 @@ All models served via KServe on OpenShift AI, accessed through LiteMaaS:
 - **Deployment:** AgnosticD + ArgoCD (GitOps)
 - **Auth:** Keycloak SSO + LiteLLM virtual keys per tenant
 
+## Deployed
+
+Live on infra01:
+
+| App | URL |
+|-----|-----|
+| Partner Portal | https://launchpad.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
+| Admin Dashboard | https://launchpad-admin.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
+| Backend API | https://launchpad-api.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
+
 ## Roadmap
 
 ### Done
 
 - [x] Backend — FastAPI with domain models, lifecycle state machine, adapter pattern (mock/local/openshift/rhdp)
-- [x] Partner portal — React frontend with branding, demo catalog, sandbox configuration
-- [x] Admin dashboard — session management, tenant management, catalog CRUD, system status
-- [x] Demo frontend — runtime page filtering via ConfigMap, 10 demo pages
+- [x] Intelligence layer — PlacementService, WorkloadClassifier, FeedbackTracker, OrchestrationBrain, DeepFieldAdapter
+- [x] Intelligence API — 7 endpoints (fleet-health, decision audit, simulate, cluster signals, feedback summary)
+- [x] Partner portal — React frontend with branding, demo catalog, sandbox configuration, DecisionInsight
+- [x] Admin dashboard — session management, tenant management, ProvisioningAnalytics page, DecisionInsight
+- [x] Demo frontend — 18+ pages including FleetIntelligence dashboard, CockpitDashboard, Operations
 - [x] Inference gateway — FastAPI routing policy across Gaudi/Xeon/CPU backends
-- [x] RHDP integration — Sandbox API client, AgnosticV configs (12), ArgoCD tenant Helm chart, Showroom content (12 pages)
+- [x] RHDP integration — Sandbox API client, AgnosticV configs (12), ArgoCD tenant Helm chart, Showroom content
 - [x] Catalog — 25 items (10 custom demos, 7 official quickstarts, 4 sandboxes, 4 originals)
-- [x] Workshop batch provisioning — bulk provision/reclaim N sessions
-- [x] Persistent demos — never expires, reinitialize without destroying
-- [x] Security — SSO, API keys, session limits, PSS, NetworkPolicy, credential scrubbing, kubeconfig
-- [x] Cleanup — TTL enforcement, gateway lock, timeout fatal, orphaned RoleBinding cleanup, audit trail
-- [x] 422 unit tests — all TDD red/green
-- [x] GitHub Actions CI — tests, lint, TypeScript, Helm, image builds on every push
+- [x] Celery beat — 6 scheduled tasks (TTL, cleanup, capacity sync, feedback sync, health check, rebalance)
+- [x] Database — PostgreSQL with migrations (001 initial schema, 002 provisioning outcomes)
+- [x] Security — SSO, API keys, session limits, PSS, NetworkPolicy, credential scrubbing
+- [x] 507 backend tests — all TDD red/green
+- [x] Deployed to infra01 — backend, portal, admin all running
 
-### Waiting On (external)
+### Configuration
 
-- [ ] Sandbox API `app` role token — need admin to issue
-- [ ] quay.io push access — need to be added to `rhpds` org
-- [ ] AgnosticV PR review — branch `launchpad-demos` in `rhpds/agnosticv`
-
-### To Do (once unblocked)
-
-- [ ] Push container images to quay.io
-- [ ] End-to-end test on dev CNV cluster via Sandbox API
-- [ ] Full RHDP pipeline test — Babylon → AgnosticD → ArgoCD → Showroom
-- [ ] Showroom screenshots from running demo
-- [ ] Move from dev → integration → prod
+| Flag | Default | Purpose |
+|------|---------|---------|
+| `SMART_PLACEMENT_ENABLED` | `true` | Cluster selection via StarGate capacity scores |
+| `WORKLOAD_PROFILING_ENABLED` | `false` | Workload classification and hardware matching |
+| `FEEDBACK_TRACKING_ENABLED` | `false` | Provisioning outcome tracking and avoid-list |
+| `ORCHESTRATION_BRAIN_ENABLED` | `false` | Unified decision engine composing all signals |
+| `DEEPFIELD_API_URL` | (empty) | DeepField fleet observability endpoint |
+| `STARGATE_API_URL` | (empty) | StarGate validation and capacity endpoint |
 
 ## Development
 
