@@ -4,6 +4,7 @@ import type {
   HandoffPackage,
   LabRequest,
   LabSession,
+  OrchestrationDecision,
   RepeatabilityReport,
   ShowbackRecord,
   Tenant,
@@ -63,4 +64,8 @@ export const api = {
   // Branding
   listBrandingProfiles: () => request<BrandingProfile[]>('/branding-profiles'),
   getBrandingProfile: (id: string) => request<BrandingProfile>(`/branding-profiles/${id}`),
+
+  // Intelligence
+  getDecision: (requestId: string) =>
+    request<OrchestrationDecision>(`/intelligence/decision/${requestId}`),
 };

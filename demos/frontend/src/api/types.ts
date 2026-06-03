@@ -121,3 +121,50 @@ export interface Route {
 
 export type Accelerator = 'xeon6' | 'gaudi' | 'local';
 export type TaskType = 'embeddings' | 'classification' | 'reranking' | 'completion' | 'batch_generation';
+
+// Intelligence layer types
+export interface ClusterCapacity {
+  cluster_name: string;
+  score: number;
+  cpu_utilization?: number;
+  gpu_available?: boolean;
+  health_status: string;
+  last_updated: string;
+}
+
+export interface DeepFieldSignal {
+  cluster_name: string;
+  metric_type: string;
+  value: number;
+  threshold: number;
+  status: 'normal' | 'warning' | 'critical';
+  timestamp: string;
+}
+
+export interface HealthAlert {
+  alert_id: string;
+  cluster_name: string;
+  alert_type: string;
+  severity: 'info' | 'warning' | 'critical';
+  recommended_action: string;
+  signals: DeepFieldSignal[];
+  created_at: string;
+}
+
+export interface FleetHealthResponse {
+  clusters: ClusterCapacity[];
+  alerts: HealthAlert[];
+}
+
+export interface FeedbackSummary {
+  catalog_item_id: string;
+  cluster_name: string;
+  hardware_profile: string;
+  total_attempts: number;
+  success_count: number;
+  success_rate: number;
+  avg_latency_ms: number;
+  last_failure_reason?: string;
+  confidence: number;
+  recommendation: 'preferred' | 'acceptable' | 'avoid';
+}

@@ -1,0 +1,20 @@
+id: placement-decision
+version: "1.0"
+description: Generate a human-readable rationale for a provisioning placement decision
+model: granite-3-2-8b-instruct
+max_tokens: 150
+temperature: 0.2
+system: |
+  You are a provisioning intelligence system for an AI demo platform.
+  Given the workload profile, cluster scores, and historical feedback,
+  generate a concise rationale explaining the placement decision.
+  Return ONLY the rationale text, no JSON or explanation.
+user_template: |
+  Explain this placement decision in 1-2 sentences:
+
+  Workload: {workload_type} ({compute_intensity} compute, {memory_intensity} memory, GPU: {gpu_required})
+  Selected cluster: {cluster_name} (score: {cluster_score})
+  Selected hardware: {hardware_profile}
+  Confidence: {confidence}%
+  Signals used: {signals_used}
+  Feedback: {feedback_summary}

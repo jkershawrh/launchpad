@@ -36,9 +36,28 @@ app.conf.beat_schedule = {
         "task": "tasks.lifecycle.reclaim_session",
         "schedule": 3600.0,
     },
+    "capacity-sync": {
+        "task": "tasks.capacity_sync.sync_cluster_capacity",
+        "schedule": 60.0,
+    },
+    "feedback-sync": {
+        "task": "tasks.feedback_sync.refresh_feedback_aggregates",
+        "schedule": 300.0,
+    },
+    "proactive-health": {
+        "task": "tasks.orchestration.run_proactive_health",
+        "schedule": 120.0,
+    },
+    "rebalance-check": {
+        "task": "tasks.orchestration.run_rebalance_check",
+        "schedule": 600.0,
+    },
 }
 
 app.autodiscover_tasks(["tasks"])
 
 # Explicit imports to ensure tasks register with shared_task
 import tasks.lifecycle  # noqa: F401, E402
+import tasks.capacity_sync  # noqa: F401, E402
+import tasks.feedback_sync  # noqa: F401, E402
+import tasks.orchestration  # noqa: F401, E402

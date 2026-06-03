@@ -43,6 +43,10 @@ class ProvisioningService:
         branding=None,
         cleanup=None,
         db_stores=None,
+        placement=None,
+        workload_classifier=None,
+        feedback_tracker=None,
+        brain=None,
     ):
         self.catalog = catalog or MockCatalogAdapter()
         self.pool = pool or MockPoolAdapter()
@@ -54,6 +58,10 @@ class ProvisioningService:
         self.branding = branding or FileBrandingAdapter()
         self.cleanup = cleanup
         self.db = db_stores
+        self.placement = placement
+        self.workload_classifier = workload_classifier
+        self.feedback_tracker = feedback_tracker
+        self.brain = brain
 
         self._requests: dict[str, LabRequest] = {}
         self._sessions: dict[str, LabSession] = {}
@@ -142,6 +150,50 @@ class ProvisioningService:
         if self.db and hasattr(self.db, 'plans'):
             self.db.plans.save(plan)
 
+    def _resolve_hardware(self, request: LabRequest, catalog_item) -> tuple:
+        if request.hardware_profile and request.quota_profile:
+            return request.hardware_profile, request.quota_profile
+
+        if self.brain:
+            try:
+                decision = self.brain.decide(request, catalog_item)
+                self._last_decision = decision.model_dump()
+                hw = request.hardware_profile or decision.recommended_hardware
+                qp = request.quota_profile or decision.recommended_quota
+                return hw, qp
+            except Exception:
+                pass
+
+        if self.workload_classifier:
+            try:
+                profile = self.workload_classifier.classify(catalog_item, request)
+                matches = self.workload_classifier.match_hardware(profile)
+                if matches:
+                    hw = request.hardware_profile or matches[0].hardware_profile
+                    qp = request.quota_profile or matches[0].right_sized_quota or catalog_item.default_quota_profile or "standard"
+                    return hw, qp
+            except Exception:
+                pass
+
+        hw = request.hardware_profile or catalog_item.default_hardware_profile or "xeon-basic"
+        qp = request.quota_profile or catalog_item.default_quota_profile or "standard"
+        return hw, qp
+
+    def _get_placement_recommendation(self, hardware_profile: str, catalog_item) -> Optional[str]:
+        if not self.placement:
+            return None
+        try:
+            rec = self.placement.recommend_cluster(
+                hardware_profile,
+                feedback_tracker=self.feedback_tracker,
+                catalog_item_id=catalog_item.catalog_item_id if catalog_item else None,
+            )
+            if rec and not rec.fallback and rec.cluster_name:
+                return rec.cluster_name
+        except Exception:
+            pass
+        return None
+
     def submit_request(self, request: LabRequest) -> LabRequest:
         catalog_item = self.catalog.get_item(request.catalog_item_id)
         if not catalog_item:
@@ -202,11 +254,17 @@ class ProvisioningService:
         if not catalog_item:
             raise ValueError(f"Catalog item {request.catalog_item_id} not found")
 
-        hw = request.hardware_profile or catalog_item.default_hardware_profile or "xeon-basic"
-        qp = request.quota_profile or catalog_item.default_quota_profile or "standard"
+        hw, qp = self._resolve_hardware(request, catalog_item)
         if not self.pool.check_capacity(hw, qp):
             raise ValueError(f"No capacity available for hardware={hw} quota={qp}")
-        reservation = self.pool.reserve(request.request_id, hw, qp)
+
+        preferred_cluster = self._get_placement_recommendation(hw, catalog_item)
+        reserve_kwargs = {"session_id": request.request_id, "hardware_profile": hw, "quota_profile": qp}
+        if preferred_cluster:
+            from app.adapters.rhdp.pool import RHDPPoolAdapter
+            if isinstance(self.pool, RHDPPoolAdapter):
+                reserve_kwargs["preferred_cluster"] = preferred_cluster
+        reservation = self.pool.reserve(**reserve_kwargs)
 
         maas_api_key = f"sk-launchpad-{_uuid.uuid4().hex[:24]}"
 
@@ -252,6 +310,12 @@ class ProvisioningService:
             "launchpad.redhat.com/purpose": sandbox_data.get("purpose", "self-service"),
         }
 
+        session_resources = dict(result.resources)
+        decision_data = getattr(self, "_last_decision", None)
+        if decision_data:
+            session_resources["decision"] = decision_data
+            self._last_decision = None
+
         session = LabSession(
             request_id=request.request_id,
             tenant_id=request.tenant_id,
@@ -261,7 +325,7 @@ class ProvisioningService:
             lab_url=result.lab_url,
             dashboard_url=dashboard_url,
             expires_at=expires_at,
-            resources=result.resources,
+            resources=session_resources,
             maas_api_key=maas_api_key,
             metadata={"labels": session_labels},
         )
@@ -300,7 +364,45 @@ class ProvisioningService:
             error_summary="validation failed" if has_failure else "",
             resources=session.resources,
         )
+        self._record_feedback(session, success=not has_failure,
+                              failure_reason="validation failed" if has_failure else None)
         return session
+
+    def _record_feedback(self, session: LabSession, success: bool,
+                         failure_reason: Optional[str] = None) -> None:
+        if not self.feedback_tracker:
+            return
+        try:
+            from app.domain.feedback import ProvisioningOutcome
+            request = self._requests.get(session.request_id)
+            hw = "unknown"
+            qp = "standard"
+            if request:
+                catalog_item = self.catalog.get_item(request.catalog_item_id)
+                hw = request.hardware_profile or (catalog_item.default_hardware_profile if catalog_item else "unknown") or "unknown"
+                qp = request.quota_profile or (catalog_item.default_quota_profile if catalog_item else "standard") or "standard"
+
+            latency = 0
+            if session.lifecycle_events and len(session.lifecycle_events) >= 2:
+                start = session.lifecycle_events[0].timestamp
+                end = session.lifecycle_events[-1].timestamp
+                latency = int((end - start).total_seconds() * 1000)
+
+            outcome = ProvisioningOutcome(
+                session_id=session.session_id,
+                request_id=session.request_id,
+                catalog_item_id=session.catalog_item_id,
+                cluster_name=session.cluster_ref,
+                hardware_profile=hw,
+                quota_profile=qp,
+                success=success,
+                failure_reason=failure_reason,
+                provision_latency_ms=latency,
+                validation_passed=success,
+            )
+            self.feedback_tracker.record_outcome(outcome)
+        except Exception:
+            pass
 
     def activate_session(self, session_id: str) -> LabSession:
         session = self._sessions.get(session_id)

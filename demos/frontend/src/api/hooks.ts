@@ -66,3 +66,27 @@ export function useRouteRequest() {
     },
   });
 }
+
+export function useFleetHealth(pollInterval = 15000) {
+  return useQuery({
+    queryKey: ['fleet-health'],
+    queryFn: api.fleetHealth,
+    refetchInterval: pollInterval,
+  });
+}
+
+export function useClusterSignals(clusterName: string) {
+  return useQuery({
+    queryKey: ['cluster-signals', clusterName],
+    queryFn: () => api.clusterSignals(clusterName),
+    enabled: !!clusterName,
+  });
+}
+
+export function useFeedbackSummary() {
+  return useQuery({
+    queryKey: ['feedback-summary'],
+    queryFn: api.feedbackSummary,
+    refetchInterval: 60000,
+  });
+}

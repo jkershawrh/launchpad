@@ -1,0 +1,292 @@
+.fi-page {
+  background: #0c0c0c;
+  min-height: 100vh;
+  color: #e8e8e8;
+  font-family: 'Red Hat Text', sans-serif;
+}
+
+.fi-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+.fi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.fi-title {
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #a0a0a0;
+}
+
+.fi-title-accent {
+  color: #0068b5;
+}
+
+.fi-live-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: #333;
+  color: #666;
+}
+
+.fi-live-badge--active {
+  background: rgba(62, 134, 53, 0.2);
+  color: #3e8635;
+  animation: fi-pulse 2s infinite;
+}
+
+@keyframes fi-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Alert banner */
+.fi-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.fi-alert--ok { background: rgba(62, 134, 53, 0.12); color: #3e8635; }
+.fi-alert--warning { background: rgba(240, 171, 0, 0.12); color: #f0ab00; }
+.fi-alert--critical { background: rgba(201, 25, 11, 0.12); color: #c9190b; }
+
+.fi-alert-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fi-alert-details {
+  display: flex;
+  gap: 12px;
+  margin-left: 8px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.fi-alert-item {
+  white-space: nowrap;
+}
+
+/* Section */
+.fi-section {
+  margin-bottom: 28px;
+}
+
+.fi-section-title {
+  font-family: 'Red Hat Display', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+/* Cluster grid */
+.fi-cluster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.fi-cluster-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-left: 3px solid #333;
+  border-radius: 6px;
+  padding: 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.fi-cluster-card:hover {
+  background: #222;
+}
+
+.fi-cluster-card--selected {
+  background: #1e2a1e;
+  border-color: #3e8635;
+}
+
+.fi-cluster-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.fi-health-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.fi-cluster-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8e8e8;
+}
+
+.fi-cluster-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fi-metric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fi-metric-label {
+  font-size: 11px;
+  color: #666;
+  width: 52px;
+  flex-shrink: 0;
+}
+
+/* Score bar */
+.fi-score-bar {
+  flex: 1;
+  height: 6px;
+  background: #2a2a2a;
+  border-radius: 3px;
+  position: relative;
+  overflow: visible;
+}
+
+.fi-score-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.fi-score-bar-label {
+  position: absolute;
+  right: -28px;
+  top: -3px;
+  font-size: 10px;
+  font-family: 'Red Hat Mono', monospace;
+  color: #888;
+}
+
+/* GPU badge */
+.fi-gpu-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: #2a2a2a;
+  color: #666;
+}
+
+.fi-gpu-badge--on {
+  background: rgba(230, 126, 34, 0.15);
+  color: #e67e22;
+}
+
+/* Table */
+.fi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.fi-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666;
+  padding: 8px 12px;
+  border-bottom: 1px solid #333;
+}
+
+.fi-table td {
+  padding: 10px 12px;
+  color: #ccc;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.fi-table tr:hover td {
+  background: #1a1a1a;
+}
+
+.fi-td-mono {
+  font-family: 'Red Hat Mono', monospace;
+  font-size: 11px;
+}
+
+/* Success bar */
+.fi-success-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 80px;
+}
+
+.fi-success-bar-fill {
+  height: 4px;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.fi-success-bar-label {
+  font-size: 11px;
+  font-family: 'Red Hat Mono', monospace;
+  color: #aaa;
+}
+
+/* Recommendation badge */
+.fi-rec-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Empty state */
+.fi-empty {
+  text-align: center;
+  padding: 40px;
+  color: #555;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .fi-cluster-grid {
+    grid-template-columns: 1fr;
+  }
+  .fi-table {
+    font-size: 11px;
+  }
+  .fi-table th, .fi-table td {
+    padding: 6px 8px;
+  }
+}

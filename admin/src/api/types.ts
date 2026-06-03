@@ -125,6 +125,57 @@ export interface BrandingProfile {
   theme: string;
 }
 
+export interface FeedbackSummary {
+  catalog_item_id: string;
+  cluster_name: string;
+  hardware_profile: string;
+  total_attempts: number;
+  success_count: number;
+  success_rate: number;
+  avg_latency_ms: number;
+  last_failure_reason?: string;
+  confidence: number;
+  recommendation: 'preferred' | 'acceptable' | 'avoid';
+}
+
+export interface OrchestrationDecision {
+  decision_id: string;
+  request_id: string;
+  workload_profile?: {
+    workload_type: string;
+    compute_intensity: string;
+    memory_intensity: string;
+    gpu_required: boolean;
+    confidence: number;
+  };
+  recommended_cluster?: string;
+  recommended_hardware: string;
+  recommended_quota: string;
+  confidence: number;
+  rationale: string;
+  signals_used: string[];
+  fallback_chain: string[];
+  decision_timestamp: string;
+}
+
+export interface ClusterCapacity {
+  cluster_name: string;
+  score: number;
+  cpu_utilization?: number;
+  gpu_available?: boolean;
+  health_status: string;
+  last_updated: string;
+}
+
+export interface HealthAlert {
+  alert_id: string;
+  cluster_name: string;
+  alert_type: string;
+  severity: 'info' | 'warning' | 'critical';
+  recommended_action: string;
+  created_at: string;
+}
+
 export interface ContainerInfo {
   name: string;
   image: string;

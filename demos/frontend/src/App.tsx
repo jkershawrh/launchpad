@@ -18,6 +18,7 @@ import SwarmDemo from './pages/SwarmDemo';
 import ReplayDemo from './pages/ReplayDemo';
 import RecoveryDemo from './pages/RecoveryDemo';
 import CockpitDashboard from './pages/CockpitDashboard';
+import FleetIntelligence from './pages/FleetIntelligence';
 import TenantAdmin from './pages/TenantAdmin';
 import CapacityDashboard from './pages/CapacityDashboard';
 import PublishingHouse from './pages/PublishingHouse';
@@ -52,6 +53,7 @@ function AppRoutes() {
         {enabled('replay') && <Route path="/replay" element={<ReplayDemo />} />}
         {enabled('recovery') && <Route path="/recovery" element={<RecoveryDemo />} />}
         {enabled('cockpit') && <Route path="/cockpit" element={<CockpitDashboard />} />}
+        {enabled('fleet-intel') && <Route path="/fleet-intel" element={<FleetIntelligence />} />}
         {enabled('capacity') && <Route path="/capacity" element={<CapacityDashboard />} />}
         {enabled('gallery') && <Route path="/gallery" element={<PublishingHouse />} />}
         {enabled('admin') && <Route path="/admin/tenants" element={<TenantAdmin />} />}

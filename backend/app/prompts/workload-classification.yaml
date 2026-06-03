@@ -1,0 +1,28 @@
+id: workload-classification
+version: "1.0"
+description: Classify a catalog item's workload type from its metadata and capabilities
+model: granite-3-2-8b-instruct
+max_tokens: 200
+temperature: 0.2
+system: |
+  You are a workload classification expert for AI demo environments on Intel hardware.
+  Classify the workload type based on its description, capabilities, and hardware requirements.
+  Return ONLY the JSON object, no explanation.
+user_template: |
+  Classify this catalog item's workload:
+
+  Name: {display_name}
+  Description: {description}
+  Required capabilities: {required_capabilities}
+  Hardware profile: {hardware_profile}
+  Quota profile: {quota_profile}
+  Metadata: {metadata}
+
+  Return a JSON object with these fields:
+  - workload_type: One of "cpu_inference", "gpu_inference", "training", "rag_pipeline", "agent", "mixed", "lightweight"
+  - compute_intensity: One of "low", "medium", "high"
+  - memory_intensity: One of "low", "medium", "high"
+  - gpu_required: boolean
+  - gpu_mode: One of "none", "endpoint", "direct"
+  - io_pattern: One of "batch", "streaming", "interactive"
+  - confidence: float 0.0-1.0

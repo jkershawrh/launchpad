@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { path: '/system', label: 'System' },
   { path: '/catalog', label: 'Catalog' },
   { path: '/reports', label: 'Reports' },
+  { path: '/analytics', label: 'Analytics' },
 ];
 
 export default function AdminLayout() {

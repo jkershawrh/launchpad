@@ -12,6 +12,7 @@ import json
 import logging
 from typing import List, Optional
 
+from app.domain.feedback import ProvisioningOutcome
 from app.domain.models import (
     CatalogItem,
     LabRequest,
@@ -301,3 +302,62 @@ class PostgresCatalogStore:
         async with pool.acquire() as conn:
             rows = await conn.fetch("SELECT data FROM catalog_items_custom")
             return [CatalogItem.model_validate(json.loads(r["data"])) for r in rows]
+
+
+class PostgresOutcomeStore:
+    def save(self, outcome: ProvisioningOutcome) -> None:
+        pool = get_pool()
+        if not pool:
+            return
+        _run(self._save(pool, outcome))
+
+    async def _save(self, pool, outcome: ProvisioningOutcome) -> None:
+        data = json.dumps(outcome.model_dump(mode="json"))
+        async with pool.acquire() as conn:
+            await conn.execute(
+                """INSERT INTO provisioning_outcomes
+                   (outcome_id, session_id, request_id, catalog_item_id, cluster_name, hardware_profile, data)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)
+                   ON CONFLICT (outcome_id) DO NOTHING""",
+                outcome.outcome_id, outcome.session_id, outcome.request_id,
+                outcome.catalog_item_id, outcome.cluster_name, outcome.hardware_profile, data,
+            )
+
+    def list_by_catalog(self, catalog_item_id: str) -> List[ProvisioningOutcome]:
+        pool = get_pool()
+        if not pool:
+            return []
+        return _run(self._list_by_catalog(pool, catalog_item_id))
+
+    async def _list_by_catalog(self, pool, catalog_item_id: str) -> List[ProvisioningOutcome]:
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                "SELECT data FROM provisioning_outcomes WHERE catalog_item_id = $1",
+                catalog_item_id,
+            )
+            return [ProvisioningOutcome.model_validate(json.loads(r["data"])) for r in rows]
+
+    def list_by_cluster(self, cluster_name: str) -> List[ProvisioningOutcome]:
+        pool = get_pool()
+        if not pool:
+            return []
+        return _run(self._list_by_cluster(pool, cluster_name))
+
+    async def _list_by_cluster(self, pool, cluster_name: str) -> List[ProvisioningOutcome]:
+        async with pool.acquire() as conn:
+            rows = await conn.fetch(
+                "SELECT data FROM provisioning_outcomes WHERE cluster_name = $1",
+                cluster_name,
+            )
+            return [ProvisioningOutcome.model_validate(json.loads(r["data"])) for r in rows]
+
+    def list_all(self) -> List[ProvisioningOutcome]:
+        pool = get_pool()
+        if not pool:
+            return []
+        return _run(self._list_all(pool))
+
+    async def _list_all(self, pool) -> List[ProvisioningOutcome]:
+        async with pool.acquire() as conn:
+            rows = await conn.fetch("SELECT data FROM provisioning_outcomes ORDER BY created_at DESC LIMIT 1000")
+            return [ProvisioningOutcome.model_validate(json.loads(r["data"])) for r in rows]

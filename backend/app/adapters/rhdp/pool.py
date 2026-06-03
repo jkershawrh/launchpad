@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from app.adapters.rhdp.sandbox_api import SandboxAPIClient, SandboxAPIError
 
@@ -27,9 +27,10 @@ class RHDPPoolAdapter:
         return True
 
     def reserve(
-        self, session_id: str, hardware_profile: str, quota_profile: str
+        self, session_id: str, hardware_profile: str, quota_profile: str,
+        preferred_cluster: Optional[str] = None,
     ) -> Dict[str, Any]:
-        cloud_selector = self._build_cloud_selector(hardware_profile)
+        cloud_selector = self._build_cloud_selector(hardware_profile, preferred_cluster=preferred_cluster)
 
         resources = [{
             "kind": "OcpSandbox",
@@ -83,8 +84,12 @@ class RHDPPoolAdapter:
         except SandboxAPIError:
             return {"total_sandboxes": 0, "reservations": dict(self._reservations)}
 
-    def _build_cloud_selector(self, hardware_profile: str) -> Dict[str, str]:
+    def _build_cloud_selector(
+        self, hardware_profile: str, preferred_cluster: Optional[str] = None,
+    ) -> Dict[str, str]:
         selector: dict[str, str] = {}
         caps = HARDWARE_TO_CAPABILITIES.get(hardware_profile, {})
         selector.update(caps)
+        if preferred_cluster:
+            selector["cluster_name"] = preferred_cluster
         return selector

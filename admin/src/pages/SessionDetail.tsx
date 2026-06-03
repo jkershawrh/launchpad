@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../api/client';
-import type { HandoffPackage, LabSession, RepeatabilityReport, ShowbackRecord } from '../api/types';
+import type { HandoffPackage, LabSession, OrchestrationDecision, RepeatabilityReport, ShowbackRecord } from '../api/types';
+import DecisionInsight from '../components/DecisionInsight';
 import StatusBadge from '../components/StatusBadge';
 
 export default function SessionDetail() {
@@ -10,6 +11,7 @@ export default function SessionDetail() {
   const [handoff, setHandoff] = useState<HandoffPackage | null>(null);
   const [showback, setShowback] = useState<ShowbackRecord | null>(null);
   const [report, setReport] = useState<RepeatabilityReport | null>(null);
+  const [decision, setDecision] = useState<OrchestrationDecision | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +27,9 @@ export default function SessionDetail() {
       setShowback(sb);
       setReport(r);
       setLoading(false);
+      if (s?.request_id) {
+        api.getDecision(s.request_id).then(setDecision).catch(() => null);
+      }
     });
   }, [sessionId]);
 
@@ -102,6 +107,9 @@ export default function SessionDetail() {
           </dl>
         </div>
       </div>
+
+      {/* Placement Decision */}
+      <DecisionInsight decision={decision} />
 
       {/* Actions */}
       <div className="flex gap-3 mb-8">

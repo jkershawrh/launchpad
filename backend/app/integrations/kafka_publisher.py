@@ -34,6 +34,9 @@ TOPIC_MAP = {
     "namespace.created": "launchpad-provisioning",
     "deployment.applied": "launchpad-provisioning",
     "route.created": "launchpad-provisioning",
+    "intelligence.decision": "launchpad-intelligence",
+    "intelligence.health_alert": "launchpad-intelligence",
+    "intelligence.rebalance": "launchpad-intelligence",
 }
 
 AUDIT_TOPIC = "audit-trail"

@@ -6,6 +6,8 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      '/api/v1/intelligence': 'http://localhost:8000',
+      '/api/v1/admin/feedback': 'http://localhost:8000',
       '/v1': 'http://localhost:8080',
       '/api': 'http://localhost:8080',
       '/health': 'http://localhost:8080',

@@ -116,6 +116,33 @@ export interface RepeatabilityReport {
   repeatability_score: number;
 }
 
+export type WorkloadType = 'cpu_inference' | 'gpu_inference' | 'training' | 'rag_pipeline' | 'agent' | 'mixed' | 'lightweight';
+
+export interface WorkloadProfile {
+  workload_type: WorkloadType;
+  compute_intensity: 'low' | 'medium' | 'high';
+  memory_intensity: 'low' | 'medium' | 'high';
+  gpu_required: boolean;
+  gpu_mode: string;
+  io_pattern: 'batch' | 'streaming' | 'interactive';
+  confidence: number;
+  classification_source: string;
+}
+
+export interface OrchestrationDecision {
+  decision_id: string;
+  request_id: string;
+  workload_profile?: WorkloadProfile;
+  recommended_cluster?: string;
+  recommended_hardware: string;
+  recommended_quota: string;
+  confidence: number;
+  rationale: string;
+  signals_used: string[];
+  fallback_chain: string[];
+  decision_timestamp: string;
+}
+
 export interface BrandingProfile {
   branding_profile_id: string;
   display_name: string;

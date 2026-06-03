@@ -73,6 +73,7 @@ export default function Dashboard() {
             <Link to="/sessions" className="block text-sm text-[#0068B5] hover:underline">View all sessions</Link>
             <Link to="/tenants" className="block text-sm text-[#0068B5] hover:underline">Manage tenants</Link>
             <Link to="/reports" className="block text-sm text-[#0068B5] hover:underline">View showback reports</Link>
+            <Link to="/analytics" className="block text-sm text-[#0068B5] hover:underline">Provisioning analytics</Link>
           </div>
         </div>
       </div>

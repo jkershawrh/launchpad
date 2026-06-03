@@ -52,6 +52,7 @@ const navSections = [
     title: 'Observe',
     items: [
       { path: '/cockpit', label: 'Cockpit' },
+      { path: '/fleet-intel', label: 'Fleet Intelligence' },
       { path: '/capacity', label: 'Capacity & Allocation' },
       { path: '/operations', label: 'Operations' },
       { path: '/governance', label: 'Governance Audit' },

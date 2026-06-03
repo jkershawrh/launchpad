@@ -167,4 +167,12 @@ export const api = {
     const qs = category ? `?category=${category}` : '';
     return request<Record<string, unknown>>(`/v1/gallery/pocs${qs}`);
   },
+
+  // Intelligence (routed to Launchpad backend)
+  fleetHealth: () =>
+    request<import('./types').FleetHealthResponse>('/api/v1/intelligence/fleet-health'),
+  clusterSignals: (clusterName: string) =>
+    request<{ cluster_name: string; signals: import('./types').DeepFieldSignal[] }>(`/api/v1/intelligence/cluster/${clusterName}/signals`),
+  feedbackSummary: () =>
+    request<{ summaries: import('./types').FeedbackSummary[] }>('/api/v1/admin/feedback/summary'),
 };

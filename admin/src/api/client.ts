@@ -1,11 +1,15 @@
 import type {
   BrandingProfile,
   CatalogItem,
+  ClusterCapacity,
   ContainerInfo,
   ContainerLogs,
+  FeedbackSummary,
   HandoffPackage,
+  HealthAlert,
   LabRequest,
   LabSession,
+  OrchestrationDecision,
   RepeatabilityReport,
   SessionDiagnostics,
   ShowbackRecord,
@@ -85,4 +89,14 @@ export const api = {
     request<CatalogItem>(`/admin/catalog/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   setCatalogStatus: (id: string, status: string) =>
     request<CatalogItem>(`/admin/catalog/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+
+  // Intelligence / Feedback
+  getFeedbackSummary: () =>
+    request<{ summaries: FeedbackSummary[] }>('/admin/feedback/summary'),
+  getFeedbackByCluster: (clusterName: string) =>
+    request<{ summaries: FeedbackSummary[] }>(`/admin/feedback/cluster/${clusterName}`),
+  getFleetHealth: () =>
+    request<{ clusters: ClusterCapacity[]; alerts: HealthAlert[] }>('/intelligence/fleet-health'),
+  getDecision: (requestId: string) =>
+    request<OrchestrationDecision>(`/intelligence/decision/${requestId}`),
 };
