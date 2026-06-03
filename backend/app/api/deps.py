@@ -58,14 +58,27 @@ def _create_db_stores():
     )
 
 
+def _create_catalog():
+    local = MockCatalogAdapter()
+    babylon_kc = os.environ.get("BABYLON_KUBECONFIG", "")
+    if babylon_kc and os.path.exists(babylon_kc):
+        from app.adapters.rhdp.babylon_catalog import BabylonCatalogAdapter
+        from app.adapters.rhdp.combined_catalog import CombinedCatalogAdapter
+        babylon = BabylonCatalogAdapter(kubeconfig_path=babylon_kc)
+        return CombinedCatalogAdapter(local_catalog=local, babylon_catalog=babylon)
+    return local
+
+
 def create_provisioning_service() -> ProvisioningService:
     mode = os.environ.get("LAUNCHPAD_MODE", "mock")
     db_stores = _create_db_stores()
+    catalog = _create_catalog()
     if mode == "local":
         from app.adapters.local.cleanup import LocalCleanupAdapter
         from app.adapters.local.provisioning import LocalProvisioningAdapter
         from app.adapters.local.validation import LocalValidationAdapter
         return ProvisioningService(
+            catalog=catalog,
             provisioner=LocalProvisioningAdapter(),
             validator=LocalValidationAdapter(),
             cleanup=LocalCleanupAdapter(),
@@ -114,6 +127,7 @@ def create_provisioning_service() -> ProvisioningService:
             )
 
         return ProvisioningService(
+            catalog=catalog,
             provisioner=OpenShiftProvisioningAdapter(),
             validator=OpenShiftValidationAdapter(),
             cleanup=OpenShiftCleanupAdapter(),
@@ -169,6 +183,7 @@ def create_provisioning_service() -> ProvisioningService:
             )
 
         return ProvisioningService(
+            catalog=catalog,
             pool=RHDPPoolAdapter(sandbox_api=sandbox_api),
             provisioner=RHDPProvisioningAdapter(),
             validator=RHDPValidationAdapter(),
@@ -202,14 +217,14 @@ def create_provisioning_service() -> ProvisioningService:
             feedback_tracker=feedback,
         )
 
-    return ProvisioningService(db_stores=db_stores, workload_classifier=classifier,
+    return ProvisioningService(catalog=catalog, db_stores=db_stores, workload_classifier=classifier,
                                feedback_tracker=feedback, brain=brain)
 
 
 db_stores = _create_db_stores()
 tenant_store = TenantStore(db_store=db_stores.tenants if db_stores else None)
 provisioning_service = create_provisioning_service()
-catalog_adapter = MockCatalogAdapter()
+catalog_adapter = _create_catalog()
 branding_adapter = FileBrandingAdapter()
 
 
