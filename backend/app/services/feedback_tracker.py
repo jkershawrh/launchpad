@@ -33,6 +33,9 @@ class FeedbackTracker:
             except Exception as e:
                 logger.debug("Failed to persist outcome: %s", e)
 
+        if not outcome.success:
+            self._check_tarsy_escalation(outcome)
+
     def get_outcomes(
         self,
         catalog_item_id: Optional[str] = None,
@@ -99,6 +102,40 @@ class FeedbackTracker:
         if summary.total_attempts < MIN_SAMPLES_FOR_AVOID:
             return False
         return summary.success_rate < AVOID_THRESHOLD
+
+    def _check_tarsy_escalation(self, outcome: ProvisioningOutcome) -> None:
+        """Escalate to TARSy if provisioning is repeatedly failing."""
+        try:
+            from app.integrations.tarsy_escalation import (
+                check_tarsy_escalation,
+                escalate_provision_failure,
+            )
+
+            summary = self.get_summary(
+                outcome.catalog_item_id,
+                outcome.cluster_name or "",
+                outcome.hardware_profile,
+            )
+            if not summary:
+                return
+
+            if check_tarsy_escalation(
+                catalog_item_id=outcome.catalog_item_id,
+                cluster_name=outcome.cluster_name or "",
+                hardware_profile=outcome.hardware_profile,
+                success_rate=summary.success_rate,
+                total_attempts=summary.total_attempts,
+            ):
+                escalate_provision_failure(
+                    session_id=outcome.session_id,
+                    catalog_item_id=outcome.catalog_item_id,
+                    cluster_name=outcome.cluster_name or "",
+                    hardware_profile=outcome.hardware_profile,
+                    error_summary=outcome.failure_reason or "Unknown failure",
+                    feedback_summary=summary.model_dump(),
+                )
+        except Exception as e:
+            logger.debug("TARSy escalation failed (non-critical): %s", e)
 
     def _compute_summary(
         self,

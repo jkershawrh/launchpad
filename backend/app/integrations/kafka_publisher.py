@@ -37,6 +37,8 @@ TOPIC_MAP = {
     "intelligence.decision": "launchpad-intelligence",
     "intelligence.health_alert": "launchpad-intelligence",
     "intelligence.rebalance": "launchpad-intelligence",
+    "tarsy.request": "tarsy-investigation-requested",
+    "session.tarsy_investigation_completed": "launchpad-lifecycle",
 }
 
 AUDIT_TOPIC = "audit-trail"
@@ -102,3 +104,12 @@ def publish_event(event_type: str, payload: dict) -> None:
     payload["_published_at"] = datetime.now(timezone.utc).isoformat()
     publish_to_kafka(topic, payload, key=payload.get("session_id"))
     publish_to_kafka(AUDIT_TOPIC, payload, key=payload.get("session_id"))
+
+
+def publish_tarsy_request(request_dict: dict) -> None:
+    """Publish a TARSy investigation request. Fails silently."""
+    topic = TOPIC_MAP.get("tarsy.request", "ecosystem-tarsy-requests")
+    request_dict["_kafka_topic"] = topic
+    request_dict["_published_at"] = datetime.now(timezone.utc).isoformat()
+    publish_to_kafka(topic, request_dict, key=request_dict.get("originator_id"))
+    publish_to_kafka(AUDIT_TOPIC, request_dict, key=request_dict.get("originator_id"))
