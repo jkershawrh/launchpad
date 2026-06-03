@@ -1,9 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import { BrandingProvider } from './context/BrandingContext';
+import Decisions from './pages/Decisions';
+import Fleet from './pages/Fleet';
+import Workloads from './pages/Workloads';
+import Feedback from './pages/Feedback';
 import Catalog from './pages/Catalog';
 import Demos from './pages/Demos';
-import Home from './pages/Home';
 import Sandbox from './pages/Sandbox';
 import SessionDetail from './pages/SessionDetail';
 
@@ -13,7 +16,10 @@ export default function App() {
       <BrandingProvider>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Decisions />} />
+            <Route path="/fleet" element={<Fleet />} />
+            <Route path="/workloads" element={<Workloads />} />
+            <Route path="/feedback" element={<Feedback />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/demos" element={<Demos />} />
             <Route path="/sandbox" element={<Sandbox />} />

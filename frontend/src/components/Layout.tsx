@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { path: '/', label: 'Platform' },
-  { path: '/catalog', label: 'Catalog' },
-  { path: '/demos', label: 'Demos' },
-  { path: '/sandbox', label: 'Sandbox' },
+  { path: '/', label: 'Decisions' },
+  { path: '/fleet', label: 'Fleet' },
+  { path: '/workloads', label: 'Workloads' },
+  { path: '/feedback', label: 'Feedback' },
 ];
 
 export default function Layout() {
@@ -31,7 +31,7 @@ export default function Layout() {
               </Link>
               <span className="text-[#333] mx-2">|</span>
               <span className="text-white text-sm font-semibold" style={{ fontFamily: 'Red Hat Display' }}>
-                Launchpad
+                Launchpad Intelligence
               </span>
             </div>
 
@@ -81,7 +81,7 @@ export default function Layout() {
             <span className="text-white text-sm font-bold">X</span>
             <img src="/logos/intel.png" alt="" style={{ height: '12px' }} />
           </div>
-          <span className="text-[#6A6E73] text-xs">Partner AI Launchpad</span>
+          <span className="text-[#6A6E73] text-xs">Launchpad Intelligence Engine</span>
         </div>
       </footer>
     </div>
