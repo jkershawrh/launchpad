@@ -15,6 +15,8 @@ def fleet_health() -> Dict[str, Any]:
     clusters = []
     placement = get_placement_service()
     if placement:
+        if not placement.get_capacity_snapshot():
+            placement.refresh_capacity_cache()
         clusters = [c.model_dump() for c in placement.get_capacity_snapshot()]
 
     alerts = []

@@ -70,14 +70,17 @@ class PlacementService:
         )
 
     def refresh_capacity_cache(self) -> int:
+        if not self.stargate_url:
+            return 0
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                import concurrent.futures
-                with concurrent.futures.ThreadPoolExecutor() as pool:
-                    clusters = pool.submit(asyncio.run, get_cluster_capacity()).result()
-            else:
-                clusters = asyncio.run(get_cluster_capacity())
+            import httpx
+            resp = httpx.get(
+                f"{self.stargate_url}/api/v1/clusters/capacity",
+                timeout=10,
+                verify=False,
+            )
+            resp.raise_for_status()
+            clusters = resp.json().get("clusters", [])
         except Exception as e:
             logger.debug("Failed to refresh capacity cache: %s", e)
             return 0

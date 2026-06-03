@@ -155,11 +155,16 @@ class TestPlacementService:
         from app.services.placement import PlacementService
         svc = PlacementService(stargate_url="https://stargate.test")
 
-        mock_clusters = [
-            {"cluster": "cluster-a", "score": 85.0, "status": "healthy"},
-            {"cluster": "cluster-b", "score": 70.0, "status": "healthy"},
-        ]
-        with patch("app.services.placement.get_cluster_capacity", new_callable=AsyncMock, return_value=mock_clusters):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.raise_for_status = MagicMock()
+        mock_response.json.return_value = {
+            "clusters": [
+                {"cluster": "cluster-a", "score": 85.0, "status": "healthy"},
+                {"cluster": "cluster-b", "score": 70.0, "status": "healthy"},
+            ]
+        }
+        with patch("httpx.get", return_value=mock_response):
             count = svc.refresh_capacity_cache()
 
         assert count == 2
