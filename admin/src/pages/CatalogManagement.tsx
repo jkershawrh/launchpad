@@ -258,7 +258,7 @@ export default function CatalogManagement() {
                   <td className="py-3 px-4 font-mono text-xs text-[#151515]">{item.catalog_item_id}</td>
                   <td className="py-3 px-4 text-[#151515]">
                     <span>{item.display_name}</span>
-                    {(item.metadata as Record<string, unknown>)?.official_quickstart && (
+                    {!!(item.metadata as Record<string, unknown>)?.official_quickstart && (
                       <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#EE0000] text-white uppercase">Official</span>
                     )}
                   </td>
