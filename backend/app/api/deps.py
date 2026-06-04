@@ -209,16 +209,31 @@ def create_provisioning_service() -> ProvisioningService:
             outcome_store = PostgresOutcomeStore()
         feedback = FeedbackTracker(db_store=outcome_store)
 
+    placement = None
+    if os.environ.get("SMART_PLACEMENT_ENABLED", "true").lower() != "false":
+        from app.services.placement import PlacementService
+        placement = PlacementService(
+            stargate_url=os.environ.get("STARGATE_API_URL", ""),
+            stargate_api_key=os.environ.get("STARGATE_API_KEY", ""),
+        )
+
     brain = None
     if os.environ.get("ORCHESTRATION_BRAIN_ENABLED", "false").lower() == "true":
         from app.services.orchestration_brain import OrchestrationBrain
+        deepfield = None
+        deepfield_url = os.environ.get("DEEPFIELD_API_URL", "")
+        if deepfield_url:
+            from app.adapters.deepfield.client import DeepFieldAdapter
+            deepfield = DeepFieldAdapter(api_url=deepfield_url)
         brain = OrchestrationBrain(
             classifier=classifier,
+            placement=placement,
             feedback_tracker=feedback,
+            deepfield=deepfield,
         )
 
     return ProvisioningService(catalog=catalog, db_stores=db_stores, workload_classifier=classifier,
-                               feedback_tracker=feedback, brain=brain)
+                               feedback_tracker=feedback, placement=placement, brain=brain)
 
 
 db_stores = _create_db_stores()
