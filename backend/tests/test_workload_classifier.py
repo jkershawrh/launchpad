@@ -479,7 +479,7 @@ class TestSeedCatalogClassification:
         profile = clf.classify(item, _request(catalog_item_id="enterprise-rag"))
         assert profile.workload_type == WorkloadType.RAG_PIPELINE
 
-    def test_sandbox_minimal_classified_as_lightweight(self):
+    def test_sandbox_minimal_classified_as_sandbox(self):
         from app.adapters.mock.catalog import MockCatalogAdapter
         from app.services.workload_classifier import WorkloadClassifier
 
@@ -489,4 +489,4 @@ class TestSeedCatalogClassification:
         assert item is not None
 
         profile = clf.classify(item, _request(catalog_item_id="sandbox-minimal"))
-        assert profile.workload_type == WorkloadType.LIGHTWEIGHT
+        assert profile.workload_type == WorkloadType.SANDBOX

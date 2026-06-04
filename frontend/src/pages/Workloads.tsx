@@ -12,6 +12,7 @@ interface ClassifiedItem {
     gpu_required: boolean;
     gpu_mode: string;
     io_pattern: string;
+    resource_profile: string;
     confidence: number;
     classification_source: string;
   };
@@ -27,10 +28,18 @@ interface ClassifiedItem {
 const TYPE_COLORS: Record<string, string> = {
   gpu_inference: '#0071C5', cpu_inference: '#3E8635', training: '#F0AB00',
   rag_pipeline: '#6A3D9A', agent: '#0071C5', mixed: '#F0AB00', lightweight: '#6A6E73',
+  virtualization: '#E67E22', automation: '#C9190B', platform_ops: '#0071C5',
+  developer: '#3E8635', security: '#C9190B', edge: '#F0AB00',
+  infrastructure: '#6A6E73', cloud_env: '#0071C5', integration: '#3E8635',
+  sandbox: '#6A6E73', workshop: '#F0AB00',
 };
 const TYPE_LABELS: Record<string, string> = {
   gpu_inference: 'GPU Inference', cpu_inference: 'CPU Inference', training: 'Training',
   rag_pipeline: 'RAG Pipeline', agent: 'Agent', mixed: 'Mixed', lightweight: 'Lightweight',
+  virtualization: 'Virtualization', automation: 'Automation', platform_ops: 'Platform Ops',
+  developer: 'Developer', security: 'Security', edge: 'Edge',
+  infrastructure: 'Infrastructure', cloud_env: 'Cloud', integration: 'Integration',
+  sandbox: 'Sandbox', workshop: 'Workshop',
 };
 const SOURCE_COLORS: Record<string, string> = {
   catalog_metadata: '#0071C5', rules: '#3E8635', llm: '#F0AB00', history: '#6A3D9A',
@@ -148,8 +157,8 @@ export default function Workloads() {
                           <div><span className="text-[#6A6E73] block">Memory</span><span className="text-white">{wp.memory_intensity}</span></div>
                           <div><span className="text-[#6A6E73] block">GPU</span><span className={wp.gpu_required ? 'text-[#F0AB00]' : 'text-[#6A6E73]'}>{wp.gpu_required ? wp.gpu_mode : 'none'}</span></div>
                           <div><span className="text-[#6A6E73] block">I/O</span><span className="text-white">{wp.io_pattern}</span></div>
+                          <div><span className="text-[#6A6E73] block">Resource</span><span className="text-white">{wp.resource_profile?.replace(/_/g, ' ') || '—'}</span></div>
                           <div><span className="text-[#6A6E73] block">Hardware</span><span className="text-white font-medium">{item.recommended_hardware}</span></div>
-                          <div><span className="text-[#6A6E73] block">Quota</span><span className="text-white">{item.recommended_quota}</span></div>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
                           <span className="text-[#6A6E73] w-16">Confidence</span>
