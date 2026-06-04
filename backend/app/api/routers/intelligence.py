@@ -69,7 +69,18 @@ def simulate_placement(body: SimulateRequest) -> Dict[str, Any]:
     )
 
     decision = brain.decide(request, catalog_item)
-    return decision.model_dump()
+    result = decision.model_dump()
+
+    if brain.classifier and decision.workload_profile:
+        try:
+            matches = brain.classifier.match_hardware(decision.workload_profile)
+            result["hardware_matches"] = [m.model_dump() for m in matches[:5]]
+        except Exception:
+            result["hardware_matches"] = []
+    else:
+        result["hardware_matches"] = []
+
+    return result
 
 
 @router.get("/intelligence/cluster/{cluster_name}/signals")
@@ -146,3 +157,19 @@ def feedback_by_catalog(catalog_item_id: str) -> Dict[str, Any]:
             summaries.append(s.model_dump())
 
     return {"summaries": summaries}
+
+
+@router.get("/admin/feedback/outcomes")
+def feedback_outcomes(
+    catalog_item_id: Optional[str] = None,
+    cluster_name: Optional[str] = None,
+) -> Dict[str, Any]:
+    tracker = get_feedback_tracker()
+    if not tracker:
+        return {"outcomes": []}
+
+    outcomes = tracker.get_outcomes(
+        catalog_item_id=catalog_item_id,
+        cluster_name=cluster_name,
+    )
+    return {"outcomes": [o.model_dump() for o in outcomes[:100]]}

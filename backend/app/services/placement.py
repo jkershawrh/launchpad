@@ -97,6 +97,10 @@ class PlacementService:
                 health_status=c.get("status", "unknown"),
                 cpu_utilization=cpu_pct / 100.0 if cpu_pct is not None else None,
                 gpu_available=c.get("gpu_available"),
+                active_sandboxes=c.get("sandbox_active", 0),
+                vm_density=c.get("vms_per_node"),
+                hot_nodes=c.get("hot_nodes", 0),
+                health_rate=c.get("health_rate"),
             )
 
         self._capacity_cache = new_cache

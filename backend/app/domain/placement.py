@@ -13,6 +13,10 @@ class ClusterCapacity(BaseModel):
     cpu_utilization: Optional[float] = None
     gpu_available: Optional[bool] = None
     health_status: str = "unknown"
+    active_sandboxes: int = 0
+    vm_density: Optional[float] = None
+    hot_nodes: int = 0
+    health_rate: Optional[float] = None
     last_updated: datetime = Field(default_factory=datetime.utcnow)
 
 

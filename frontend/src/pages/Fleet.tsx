@@ -7,13 +7,20 @@ interface ClusterCapacity {
   health_status: string;
   cpu_utilization?: number;
   gpu_available?: boolean;
+  active_sandboxes: number;
+  vm_density?: number;
+  hot_nodes: number;
+  health_rate?: number;
+  last_updated: string;
 }
 
 interface HealthAlert {
   alert_id: string;
   cluster_name: string;
+  alert_type: string;
   severity: string;
   recommended_action: string;
+  created_at: string;
 }
 
 interface DeepFieldSignal {
@@ -62,11 +69,16 @@ export default function Fleet() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
           <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold">Clusters</p>
           <p className="text-2xl font-bold text-white mt-1">{clusters.length > 0 ? `${healthyCt}/${clusters.length}` : '—'}</p>
           <p className="text-xs text-[#6A6E73] mt-1">healthy / total</p>
+        </div>
+        <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+          <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold">Active Sandboxes</p>
+          <p className="text-2xl font-bold text-[#0071C5] mt-1">{clusters.reduce((s, c) => s + c.active_sandboxes, 0) || '—'}</p>
+          <p className="text-xs text-[#6A6E73] mt-1">across fleet</p>
         </div>
         <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
           <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold">Alerts</p>
@@ -74,9 +86,11 @@ export default function Fleet() {
           <p className="text-xs text-[#6A6E73] mt-1">{alerts.length === 0 ? 'all clear' : 'active'}</p>
         </div>
         <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
-          <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold">Data Source</p>
-          <p className="text-sm text-white mt-2">StarGate capacity + DeepField signals</p>
-          <p className="text-xs text-[#6A6E73] mt-1">polling every 15s</p>
+          <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold">Hot Nodes</p>
+          <p className="text-2xl font-bold mt-1" style={{ color: clusters.some(c => c.hot_nodes > 0) ? '#F0AB00' : '#3E8635' }}>
+            {clusters.reduce((s, c) => s + c.hot_nodes, 0)}
+          </p>
+          <p className="text-xs text-[#6A6E73] mt-1">overloaded nodes</p>
         </div>
       </div>
 
@@ -86,11 +100,15 @@ export default function Fleet() {
           <p className="text-xs text-[#C9190B] uppercase tracking-wider font-bold mb-3">Health Alerts</p>
           {alerts.map(a => (
             <div key={a.alert_id} className="flex items-center justify-between text-sm py-2 border-b border-[#1a1a1a] last:border-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <StatusBadge status={a.severity} />
                 <span className="text-white">{a.cluster_name}</span>
+                <span className="text-xs bg-[#1a1a1a] text-[#6A6E73] px-2 py-0.5 rounded">{a.alert_type?.replace(/_/g, ' ') || 'unknown'}</span>
               </div>
-              <span className="text-[#6A6E73] text-xs">{a.recommended_action}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-[#6A6E73] text-xs">{a.recommended_action}</span>
+                {a.created_at && <span className="text-[#6A6E73] text-xs font-mono">{new Date(a.created_at).toLocaleTimeString()}</span>}
+              </div>
             </div>
           ))}
         </div>
@@ -116,9 +134,14 @@ export default function Fleet() {
                   style={{ borderLeftWidth: '3px', borderLeftColor: hColor }}
                   onClick={() => setSelectedCluster(isSelected ? null : c.cluster_name)}
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: hColor }} />
-                    <span className="text-sm font-medium text-white">{c.cluster_name}</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: hColor }} />
+                      <span className="text-sm font-medium text-white">{c.cluster_name}</span>
+                    </div>
+                    <span className="text-xs font-mono text-[#6A6E73]">
+                      {c.last_updated ? `${Math.round((Date.now() - new Date(c.last_updated).getTime()) / 1000)}s ago` : ''}
+                    </span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -137,11 +160,21 @@ export default function Fleet() {
                         <span className="text-xs font-mono text-[#6A6E73] w-8 text-right">{Math.round(c.cpu_utilization * 100)}%</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-[#6A6E73] w-14">GPU</span>
-                      <span className={`text-xs px-2 py-0.5 rounded ${c.gpu_available ? 'bg-[#F0AB00]/15 text-[#F0AB00]' : 'bg-[#1a1a1a] text-[#6A6E73]'}`}>
-                        {c.gpu_available ? 'Available' : 'N/A'}
-                      </span>
+                    <div className="grid grid-cols-3 gap-2 mt-2 pt-2 border-t border-[#333]">
+                      <div>
+                        <p className="text-xs text-[#6A6E73]">Sandboxes</p>
+                        <p className="text-sm font-medium text-white">{c.active_sandboxes}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[#6A6E73]">VM/Node</p>
+                        <p className="text-sm font-medium text-white">{c.vm_density != null ? c.vm_density.toFixed(1) : '—'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-[#6A6E73]">Health</p>
+                        <p className="text-sm font-medium" style={{ color: (c.health_rate ?? 100) >= 80 ? '#3E8635' : '#F0AB00' }}>
+                          {c.health_rate != null ? `${c.health_rate}%` : '—'}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

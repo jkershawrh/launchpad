@@ -12,7 +12,23 @@ interface SimulateResult {
   confidence: number;
   rationale: string;
   signals_used: string[];
-  workload_profile?: { workload_type: string };
+  fallback_chain: string[];
+  decision_timestamp: string;
+  workload_profile?: {
+    workload_type: string;
+    compute_intensity: string;
+    memory_intensity: string;
+    gpu_required: boolean;
+    gpu_mode: string;
+    io_pattern: string;
+    classification_source: string;
+    confidence: number;
+  };
+  hardware_matches?: Array<{
+    hardware_profile: string;
+    score: number;
+    reasons: string[];
+  }>;
 }
 
 export default function Decisions() {
@@ -87,32 +103,76 @@ export default function Decisions() {
           </button>
         </div>
         {simResult && (
-          <div className="mt-4 grid md:grid-cols-4 gap-4">
-            <div>
-              <p className="text-xs text-[#6A6E73]">Workload</p>
-              <p className="text-sm text-white font-medium">{simResult.workload_profile?.workload_type?.replace(/_/g, ' ') || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-[#6A6E73]">Hardware</p>
-              <p className="text-sm text-white font-medium">{simResult.recommended_hardware}</p>
-            </div>
-            <div>
-              <p className="text-xs text-[#6A6E73]">Cluster</p>
-              <p className="text-sm text-white font-medium">{simResult.recommended_cluster || 'auto-select'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-[#6A6E73]">Confidence</p>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-1.5 bg-[#333] rounded-full overflow-hidden">
-                  <div className="h-full rounded-full" style={{
-                    width: `${Math.round(simResult.confidence * 100)}%`,
-                    backgroundColor: simResult.confidence >= 0.7 ? '#3E8635' : simResult.confidence >= 0.4 ? '#F0AB00' : '#C9190B',
-                  }} />
+          <div className="mt-4 space-y-4">
+            {/* Primary decision */}
+            <div className="grid md:grid-cols-5 gap-4">
+              <div>
+                <p className="text-xs text-[#6A6E73]">Workload</p>
+                <p className="text-sm text-white font-medium">{simResult.workload_profile?.workload_type?.replace(/_/g, ' ') || '—'}</p>
+                {simResult.workload_profile?.classification_source && (
+                  <p className="text-xs text-[#6A6E73] mt-0.5">via {simResult.workload_profile.classification_source.replace(/_/g, ' ')}</p>
+                )}
+              </div>
+              <div>
+                <p className="text-xs text-[#6A6E73]">Hardware</p>
+                <p className="text-sm text-white font-medium">{simResult.recommended_hardware}</p>
+                <p className="text-xs text-[#6A6E73] mt-0.5">quota: {simResult.recommended_quota}</p>
+              </div>
+              <div>
+                <p className="text-xs text-[#6A6E73]">Cluster</p>
+                <p className="text-sm text-white font-medium">{simResult.recommended_cluster || 'auto-select'}</p>
+                {simResult.fallback_chain?.length > 0 && (
+                  <p className="text-xs text-[#6A6E73] mt-0.5">fallback: {simResult.fallback_chain.join(', ')}</p>
+                )}
+              </div>
+              <div>
+                <p className="text-xs text-[#6A6E73]">Profile</p>
+                <p className="text-xs text-white mt-1">
+                  {simResult.workload_profile?.compute_intensity} compute, {simResult.workload_profile?.memory_intensity} memory
+                </p>
+                <p className="text-xs text-[#6A6E73] mt-0.5">
+                  GPU: {simResult.workload_profile?.gpu_required ? simResult.workload_profile.gpu_mode : 'none'} | I/O: {simResult.workload_profile?.io_pattern}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-[#6A6E73]">Confidence</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <div className="flex-1 h-1.5 bg-[#333] rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" style={{
+                      width: `${Math.round(simResult.confidence * 100)}%`,
+                      backgroundColor: simResult.confidence >= 0.7 ? '#3E8635' : simResult.confidence >= 0.4 ? '#F0AB00' : '#C9190B',
+                    }} />
+                  </div>
+                  <span className="text-xs font-mono text-[#6A6E73]">{Math.round(simResult.confidence * 100)}%</span>
                 </div>
-                <span className="text-xs font-mono text-[#6A6E73]">{Math.round(simResult.confidence * 100)}%</span>
               </div>
             </div>
-            <div className="md:col-span-4 border-t border-[#333] pt-3">
+
+            {/* Hardware match ranking */}
+            {simResult.hardware_matches && simResult.hardware_matches.length > 0 && (
+              <div className="border-t border-[#333] pt-3">
+                <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-2">Hardware Match Ranking</p>
+                <div className="flex gap-3">
+                  {simResult.hardware_matches.slice(0, 4).map((m, i) => (
+                    <div key={m.hardware_profile} className={`flex items-center gap-2 text-xs ${i === 0 ? 'text-white' : 'text-[#6A6E73]'}`}>
+                      <span className="font-mono">{i + 1}.</span>
+                      <span className="font-medium">{m.hardware_profile}</span>
+                      <span className="font-mono">({Math.round(m.score)})</span>
+                    </div>
+                  ))}
+                </div>
+                {simResult.hardware_matches[0]?.reasons?.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {simResult.hardware_matches[0].reasons.map((r, i) => (
+                      <span key={i} className="text-xs bg-[#1a1a1a] text-[#6A6E73] px-2 py-0.5 rounded">{r}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Rationale + Signals */}
+            <div className="border-t border-[#333] pt-3">
               <p className="text-sm text-[#e0e0e0]">{simResult.rationale}</p>
               <div className="flex gap-1 mt-2">
                 {simResult.signals_used.map(s => (
