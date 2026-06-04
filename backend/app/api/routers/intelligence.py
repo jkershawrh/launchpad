@@ -175,6 +175,45 @@ def feedback_outcomes(
     return {"outcomes": [o.model_dump() for o in outcomes[:100]]}
 
 
+@router.post("/intelligence/seed")
+def seed_from_babylon() -> Dict[str, Any]:
+    import os
+    kubeconfig = os.environ.get("BABYLON_KUBECONFIG", "")
+    if not kubeconfig:
+        raise HTTPException(503, "BABYLON_KUBECONFIG not configured")
+
+    from app.services.data_seeder import DataSeeder
+    seeder = DataSeeder(kubeconfig_path=kubeconfig)
+    result = seeder.seed_from_babylon()
+
+    if "error" in result:
+        raise HTTPException(500, result["error"])
+
+    tracker = get_feedback_tracker()
+    seeded = 0
+    if tracker:
+        for outcome in seeder.get_provisioning_outcomes():
+            tracker.record_outcome(outcome)
+            seeded += 1
+
+    outcomes = result.get("outcomes", [])
+    event_outcomes = [o for o in outcomes if o.get("stage") == "event"]
+    prod_outcomes = [o for o in outcomes if o.get("stage") == "prod"]
+
+    return {
+        "seeded": seeded,
+        "total_subjects": result.get("total_subjects", 0),
+        "breakdown": {
+            "prod": len(prod_outcomes),
+            "event": len(event_outcomes),
+            "dev": result.get("dev", 0),
+        },
+        "success_rate": round(result.get("success", 0) / max(1, result.get("total_outcomes", 1)) * 100, 1),
+        "catalog_items": result.get("catalog_items", 0),
+        "event_catalog_items": list(set(o["catalog_item"] for o in event_outcomes)),
+    }
+
+
 @router.get("/intelligence/enrichment")
 def fleet_enrichment_data() -> Dict[str, Any]:
     enrichment = get_fleet_enrichment()
