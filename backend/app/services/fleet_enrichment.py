@@ -22,9 +22,11 @@ class FleetEnrichment:
     def __init__(
         self,
         stargate_url: Optional[str] = None,
+        stargate_api_key: Optional[str] = None,
         deepfield_url: Optional[str] = None,
     ):
         self.stargate_url = stargate_url or os.environ.get("STARGATE_API_URL", "")
+        self.stargate_api_key = stargate_api_key or os.environ.get("STARGATE_API_KEY", "")
         self.deepfield_url = deepfield_url or os.environ.get("DEEPFIELD_API_URL", "")
         self._failure_classes: Dict[str, int] = {}
         self._cluster_observatory: Dict[str, Dict] = {}
@@ -85,7 +87,8 @@ class FleetEnrichment:
         if not self.stargate_url:
             return 0
         try:
-            resp = httpx.get(f"{self.stargate_url}/api/failure-classes", timeout=10, verify=False)
+            headers = {"X-API-Key": self.stargate_api_key} if self.stargate_api_key else {}
+            resp = httpx.get(f"{self.stargate_url}/api/failure-classes", timeout=10, verify=False, headers=headers)
             resp.raise_for_status()
             data = resp.json()
             classes = data if isinstance(data, list) else data.get("failure_classes", [])
@@ -179,7 +182,8 @@ class FleetEnrichment:
         if not self.stargate_url:
             return 0
         try:
-            resp = httpx.get(f"{self.stargate_url}/dashboard/overview", timeout=10, verify=False)
+            headers = {"X-API-Key": self.stargate_api_key} if self.stargate_api_key else {}
+            resp = httpx.get(f"{self.stargate_url}/dashboard/overview", timeout=10, verify=False, headers=headers)
             resp.raise_for_status()
             data = resp.json()
             prov = data.get("provisioning", {})
