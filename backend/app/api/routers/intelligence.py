@@ -214,6 +214,65 @@ def seed_from_babylon() -> Dict[str, Any]:
     }
 
 
+_classification_cache: Dict[str, Any] = {}
+_classification_cache_time: float = 0
+
+
+@router.get("/intelligence/classifications")
+def batch_classifications() -> Dict[str, Any]:
+    import time
+    global _classification_cache, _classification_cache_time
+
+    if _classification_cache and time.time() - _classification_cache_time < 300:
+        return _classification_cache
+
+    brain = get_brain()
+    classifier = brain.classifier if brain else None
+    if not classifier:
+        return {"items": [], "classified": 0, "total": 0}
+
+    from app.domain.enums import CatalogCategory
+    from app.domain.models import LabRequest
+
+    catalog_items = provisioning_service.catalog.list_items()
+    results = []
+
+    for item in catalog_items:
+        try:
+            profile = classifier.classify(item, LabRequest(
+                tenant_id="classify", requester_id="batch",
+                catalog_item_id=item.catalog_item_id,
+                requested_mode=CatalogCategory.QUICK_START,
+            ))
+            matches = classifier.match_hardware(profile)
+            results.append({
+                "catalog_item_id": item.catalog_item_id,
+                "display_name": item.display_name,
+                "description": item.description[:200] if item.description else "",
+                "category": item.category.value if hasattr(item.category, 'value') else str(item.category),
+                "workload_profile": profile.model_dump(),
+                "recommended_hardware": matches[0].hardware_profile if matches else "unknown",
+                "recommended_quota": matches[0].right_sized_quota if matches else "standard",
+                "hardware_matches": [m.model_dump() for m in matches[:5]],
+            })
+        except Exception:
+            results.append({
+                "catalog_item_id": item.catalog_item_id,
+                "display_name": item.display_name,
+                "description": item.description[:200] if item.description else "",
+                "category": item.category.value if hasattr(item.category, 'value') else str(item.category),
+                "workload_profile": None,
+                "recommended_hardware": item.default_hardware_profile or "unknown",
+                "recommended_quota": item.default_quota_profile or "standard",
+                "hardware_matches": [],
+            })
+
+    classified = len([r for r in results if r["workload_profile"]])
+    _classification_cache = {"items": results, "classified": classified, "total": len(results)}
+    _classification_cache_time = time.time()
+    return _classification_cache
+
+
 @router.get("/intelligence/enrichment")
 def fleet_enrichment_data() -> Dict[str, Any]:
     enrichment = get_fleet_enrichment()
