@@ -19,6 +19,7 @@ RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy 
 COPY backend/app/ ./app/
 COPY backend/celery_app.py ./celery_app.py
 COPY backend/tasks/ ./tasks/
+COPY backend/scripts/ ./scripts/
 COPY deploy/ /opt/deploy/
 COPY demos/deploy/ /opt/demos-deploy/
 
