@@ -25,6 +25,11 @@ export default function Overview() {
   const [catalogCount, setCatalogCount] = useState(0);
   const [sessionCount, setSessionCount] = useState(0);
   const [brainStatus, setBrainStatus] = useState<'connected' | 'degraded' | 'offline'>('offline');
+  const [enrichment, setEnrichment] = useState<{
+    summary?: { failure_classes?: number; top_failure?: string; open_incidents?: number; total_provisions?: number; provision_failure_rate?: number; pools_available?: number; active_signals?: number };
+    failure_classes?: Record<string, number>;
+    clusters?: Record<string, { total_pods?: number; pods_running?: number; pods_failed?: number; warning_events?: number; total_nodes?: number }>;
+  } | null>(null);
 
   useEffect(() => {
     fetch('/api/intelligence/fleet-health', { credentials: 'same-origin' })
@@ -42,6 +47,11 @@ export default function Overview() {
       .catch(() => null);
 
     api.listCatalog().then(items => setCatalogCount(items.length)).catch(() => null);
+
+    fetch('/api/intelligence/enrichment', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : null)
+      .then(setEnrichment)
+      .catch(() => null);
     api.listSessions().then(s => setSessionCount(s.length)).catch(() => null);
   }, []);
 
@@ -151,6 +161,88 @@ export default function Overview() {
           </div>
         </div>
       </div>
+
+      {/* Enrichment insights */}
+      {enrichment?.summary && (enrichment.summary.total_provisions || 0) > 0 && (
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Provisioning health */}
+          <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+            <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-3">Provisioning Health</p>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-[#6A6E73]">Total provisions</span>
+                <span className="text-white font-medium">{enrichment.summary.total_provisions?.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-[#6A6E73]">Failure rate</span>
+                <span style={{ color: (enrichment.summary.provision_failure_rate || 0) < 2 ? '#3E8635' : '#F0AB00' }} className="font-medium">
+                  {enrichment.summary.provision_failure_rate}%
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-[#6A6E73]">Pools available</span>
+                <span className="text-white">{enrichment.summary.pools_available}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-[#6A6E73]">Open incidents</span>
+                <span style={{ color: (enrichment.summary.open_incidents || 0) > 0 ? '#F0AB00' : '#3E8635' }}>
+                  {enrichment.summary.open_incidents}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Top failure classes */}
+          <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+            <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-3">Top Failure Classes</p>
+            {enrichment.failure_classes && Object.keys(enrichment.failure_classes).length > 0 ? (
+              <div className="space-y-2">
+                {Object.entries(enrichment.failure_classes)
+                  .sort(([, a], [, b]) => b - a)
+                  .slice(0, 5)
+                  .map(([name, count]) => (
+                    <div key={name} className="flex items-center gap-2 text-xs">
+                      <span className="text-[#e0e0e0] flex-1 truncate">{name.replace(/_/g, ' ')}</span>
+                      <div className="w-16 h-1 bg-[#333] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-[#C9190B]" style={{
+                          width: `${Math.min(100, (count / (Object.values(enrichment.failure_classes!)[0] || 1)) * 100)}%`
+                        }} />
+                      </div>
+                      <span className="text-[#6A6E73] font-mono w-12 text-right">{count.toLocaleString()}</span>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <p className="text-sm text-[#6A6E73]">No failure data</p>
+            )}
+          </div>
+
+          {/* Cluster pod health */}
+          <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
+            <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-3">Fleet Pod Health</p>
+            {enrichment.clusters && Object.keys(enrichment.clusters).length > 0 ? (
+              <div className="space-y-2">
+                {Object.entries(enrichment.clusters).slice(0, 6).map(([name, info]) => {
+                  const total = info.total_pods || 0;
+                  const running = info.pods_running || 0;
+                  const pct = total > 0 ? Math.round((running / total) * 100) : 0;
+                  return (
+                    <div key={name} className="flex items-center gap-2 text-xs">
+                      <span className="text-[#e0e0e0] w-20 truncate">{name}</span>
+                      <div className="flex-1 h-1 bg-[#333] rounded-full overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: pct >= 80 ? '#3E8635' : '#F0AB00' }} />
+                      </div>
+                      <span className="text-[#6A6E73] font-mono w-16 text-right">{running}/{total}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-[#6A6E73]">Waiting for DeepField...</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Quick actions */}
       <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">

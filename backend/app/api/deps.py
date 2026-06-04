@@ -260,3 +260,17 @@ def get_deepfield_adapter():
 
 def get_brain():
     return getattr(provisioning_service, "brain", None)
+
+
+_fleet_enrichment = None
+
+def get_fleet_enrichment():
+    global _fleet_enrichment
+    if _fleet_enrichment is None:
+        import os
+        stargate = os.environ.get("STARGATE_API_URL", "")
+        deepfield = os.environ.get("DEEPFIELD_API_URL", "")
+        if stargate or deepfield:
+            from app.services.fleet_enrichment import FleetEnrichment
+            _fleet_enrichment = FleetEnrichment(stargate_url=stargate, deepfield_url=deepfield)
+    return _fleet_enrichment

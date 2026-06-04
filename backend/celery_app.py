@@ -52,6 +52,10 @@ app.conf.beat_schedule = {
         "task": "tasks.orchestration.run_rebalance_check",
         "schedule": 600.0,
     },
+    "fleet-enrichment": {
+        "task": "tasks.fleet_enrichment.refresh_fleet_enrichment",
+        "schedule": 300.0,
+    },
 }
 
 app.autodiscover_tasks(["tasks"])
@@ -61,3 +65,4 @@ import tasks.lifecycle  # noqa: F401, E402
 import tasks.capacity_sync  # noqa: F401, E402
 import tasks.feedback_sync  # noqa: F401, E402
 import tasks.orchestration  # noqa: F401, E402
+import tasks.fleet_enrichment  # noqa: F401, E402

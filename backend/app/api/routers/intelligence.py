@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.api.deps import get_placement_service, get_feedback_tracker, get_deepfield_adapter, get_brain, provisioning_service
+from app.api.deps import get_placement_service, get_feedback_tracker, get_deepfield_adapter, get_brain, get_fleet_enrichment, provisioning_service
 
 router = APIRouter(tags=["intelligence"])
 
@@ -173,3 +173,23 @@ def feedback_outcomes(
         cluster_name=cluster_name,
     )
     return {"outcomes": [o.model_dump() for o in outcomes[:100]]}
+
+
+@router.get("/intelligence/enrichment")
+def fleet_enrichment_data() -> Dict[str, Any]:
+    enrichment = get_fleet_enrichment()
+    if not enrichment:
+        return {"summary": {}, "failure_classes": {}, "clusters": {}, "incidents": [], "signals": []}
+
+    if enrichment.is_stale():
+        enrichment.refresh()
+
+    return {
+        "summary": enrichment.get_summary(),
+        "failure_classes": enrichment.get_failure_classes(),
+        "clusters": enrichment.get_cluster_observatory(),
+        "incidents": enrichment.get_incidents(),
+        "signals": enrichment.get_signals(),
+        "provisioning": enrichment.get_provisioning_stats(),
+        "pools": enrichment.get_pool_summary()[:20],
+    }
