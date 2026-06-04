@@ -78,17 +78,25 @@ class DataSeeder:
             return []
 
         all_items = []
+        cols = "NAME:.metadata.name,STATE:.status.state,CREATED:.metadata.creationTimestamp"
         for ns in namespaces:
             try:
                 result = subprocess.run(
-                    ["oc", "get", "anarchysubjects", "-n", ns, "-o", "json",
-                     "--sort-by=.metadata.creationTimestamp"],
+                    ["oc", "get", "anarchysubjects", "-n", ns, "--no-headers",
+                     "-o", f"custom-columns={cols}"],
                     capture_output=True, text=True, timeout=30,
                     env={**os.environ, "KUBECONFIG": self._kubeconfig},
                 )
                 if result.returncode == 0:
-                    data = json.loads(result.stdout)
-                    all_items.extend(data.get("items", []))
+                    for line in result.stdout.strip().split("\n"):
+                        if not line.strip():
+                            continue
+                        parts = line.split()
+                        if len(parts) >= 3:
+                            all_items.append({
+                                "metadata": {"name": parts[0], "creationTimestamp": parts[2]},
+                                "status": {"state": parts[1] if parts[1] != "<none>" else "unknown"},
+                            })
             except Exception:
                 continue
         return all_items
