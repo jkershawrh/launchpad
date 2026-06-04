@@ -142,24 +142,35 @@ export default function Workloads() {
                     ) : (
                       <span className="text-xs text-[#6A6E73] px-2 py-0.5 rounded bg-[#1a1a1a]">unclassified</span>
                     )}
-                    <span className="text-xs text-[#6A6E73] w-24 text-right hidden sm:inline">{item.recommended_hardware}</span>
+                    {wp && ['gpu_inference','cpu_inference','training','rag_pipeline','agent','mixed'].includes(wp.workload_type) && (
+                      <span className="text-xs text-[#6A6E73] w-24 text-right hidden sm:inline">{item.recommended_hardware}</span>
+                    )}
                     <span className="text-[#6A6E73] text-xs">{isExpanded ? '▲' : '▼'}</span>
                   </div>
                 </div>
 
-                {isExpanded && (
+                {isExpanded && (() => {
+                  const isAI = wp && ['gpu_inference', 'cpu_inference', 'training', 'rag_pipeline', 'agent', 'mixed'].includes(wp.workload_type);
+                  return (
                   <div className="px-4 pb-4 border-t border-[#333] pt-3">
                     {item.description && <p className="text-xs text-[#6A6E73] mb-3">{item.description}</p>}
                     {wp ? (
                       <div className="space-y-3">
-                        <div className="grid grid-cols-3 md:grid-cols-6 gap-3 text-xs">
-                          <div><span className="text-[#6A6E73] block">Compute</span><span className="text-white">{wp.compute_intensity}</span></div>
-                          <div><span className="text-[#6A6E73] block">Memory</span><span className="text-white">{wp.memory_intensity}</span></div>
-                          <div><span className="text-[#6A6E73] block">GPU</span><span className={wp.gpu_required ? 'text-[#F0AB00]' : 'text-[#6A6E73]'}>{wp.gpu_required ? wp.gpu_mode : 'none'}</span></div>
-                          <div><span className="text-[#6A6E73] block">I/O</span><span className="text-white">{wp.io_pattern}</span></div>
+                        {/* Classification details */}
+                        <div className={`grid gap-3 text-xs ${isAI ? 'grid-cols-3 md:grid-cols-6' : 'grid-cols-2 md:grid-cols-4'}`}>
+                          <div><span className="text-[#6A6E73] block">Type</span><span className="text-white font-medium">{TYPE_LABELS[wp.workload_type] || wp.workload_type}</span></div>
                           <div><span className="text-[#6A6E73] block">Resource</span><span className="text-white">{wp.resource_profile?.replace(/_/g, ' ') || '—'}</span></div>
-                          <div><span className="text-[#6A6E73] block">Hardware</span><span className="text-white font-medium">{item.recommended_hardware}</span></div>
+                          <div><span className="text-[#6A6E73] block">Source</span><span className="text-white">{wp.classification_source?.replace(/_/g, ' ')}</span></div>
+                          <div><span className="text-[#6A6E73] block">Category</span><span className="text-white">{item.category?.replace(/_/g, ' ')}</span></div>
+                          {isAI && (
+                            <>
+                              <div><span className="text-[#6A6E73] block">GPU</span><span className={wp.gpu_required ? 'text-[#F0AB00]' : 'text-[#6A6E73]'}>{wp.gpu_required ? wp.gpu_mode : 'none'}</span></div>
+                              <div><span className="text-[#6A6E73] block">Compute</span><span className="text-white">{wp.compute_intensity}</span></div>
+                            </>
+                          )}
                         </div>
+
+                        {/* Confidence */}
                         <div className="flex items-center gap-2 text-xs">
                           <span className="text-[#6A6E73] w-16">Confidence</span>
                           <div className="flex-1 h-1 bg-[#333] rounded-full overflow-hidden">
@@ -167,9 +178,11 @@ export default function Workloads() {
                           </div>
                           <span className="text-[#6A6E73] font-mono w-8 text-right">{Math.round(wp.confidence * 100)}%</span>
                         </div>
-                        {item.hardware_matches && item.hardware_matches.length > 0 && (
+
+                        {/* Hardware match — only for AI workloads */}
+                        {isAI && item.hardware_matches && item.hardware_matches.length > 0 && (
                           <div>
-                            <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-2">Hardware Match Ranking</p>
+                            <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold mb-2">Intel Hardware Match</p>
                             <div className="space-y-1">
                               {item.hardware_matches.map((m, i) => (
                                 <div key={m.hardware_profile} className={`flex items-center gap-3 text-xs ${i === 0 ? 'text-white' : 'text-[#6A6E73]'}`}>
@@ -193,10 +206,11 @@ export default function Workloads() {
                         )}
                       </div>
                     ) : (
-                      <p className="text-xs text-[#6A6E73]">No classification available — this item lacks hardware profile and capability metadata.</p>
+                      <p className="text-xs text-[#6A6E73]">No classification available — this item lacks metadata for workload classification.</p>
                     )}
                   </div>
-                )}
+                  );
+                })()}
               </div>
             );
           })}
