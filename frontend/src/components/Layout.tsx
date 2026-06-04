@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { path: '/', label: 'Decisions' },
+  { path: '/', label: 'Overview' },
+  { path: '/decisions', label: 'Decisions' },
   { path: '/fleet', label: 'Fleet' },
   { path: '/workloads', label: 'Workloads' },
   { path: '/feedback', label: 'Feedback' },

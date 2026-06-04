@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import { BrandingProvider } from './context/BrandingContext';
+import Overview from './pages/Overview';
 import Decisions from './pages/Decisions';
 import Fleet from './pages/Fleet';
 import Workloads from './pages/Workloads';
@@ -16,7 +17,8 @@ export default function App() {
       <BrandingProvider>
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<Decisions />} />
+            <Route path="/" element={<Overview />} />
+            <Route path="/decisions" element={<Decisions />} />
             <Route path="/fleet" element={<Fleet />} />
             <Route path="/workloads" element={<Workloads />} />
             <Route path="/feedback" element={<Feedback />} />
