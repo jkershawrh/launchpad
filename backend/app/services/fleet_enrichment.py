@@ -72,7 +72,7 @@ class FleetEnrichment:
     def get_summary(self) -> Dict[str, Any]:
         return {
             "failure_classes": len(self._failure_classes),
-            "top_failure": max(self._failure_classes, key=self._failure_classes.get) if self._failure_classes else None,
+            "top_failure": self._provisioning_stats.get("top_class"),
             "clusters_observed": len(self._cluster_observatory),
             "open_incidents": len([i for i in self._incidents if i.get("status") == "open"]),
             "active_signals": len(self._signals),
@@ -91,13 +91,17 @@ class FleetEnrichment:
             resp = httpx.get(f"{self.stargate_url}/api/failure-classes", timeout=10, verify=False, headers=headers)
             resp.raise_for_status()
             data = resp.json()
-            classes = data if isinstance(data, list) else data.get("failure_classes", [])
+            classes = data if isinstance(data, list) else data.get("classes", data.get("failure_classes", []))
             self._failure_classes = {}
             for fc in classes:
                 if isinstance(fc, dict):
                     name = fc.get("name", fc.get("class_name", "unknown"))
-                    count = fc.get("count", fc.get("total", 0))
-                    self._failure_classes[name] = count
+                    self._failure_classes[name] = {
+                        "severity": fc.get("severity", "unknown"),
+                        "category": fc.get("category", "general"),
+                        "source": fc.get("source", "unknown"),
+                        "remediation_count": len(fc.get("remediation", [])),
+                    }
             return len(self._failure_classes)
         except Exception as e:
             logger.debug("Failed to pull failure classes: %s", e)
@@ -187,12 +191,16 @@ class FleetEnrichment:
             resp.raise_for_status()
             data = resp.json()
             prov = data.get("provisioning", {})
+            errors = data.get("errors", {})
             self._provisioning_stats = {
                 "total": prov.get("total", 0),
                 "started": prov.get("started", 0),
                 "failed": prov.get("failed", 0),
                 "failure_rate": prov.get("failure_rate", 0),
                 "by_state": prov.get("by_state", {}),
+                "total_failures": errors.get("total_failures", 0),
+                "top_class": errors.get("top_class"),
+                "failure_counts": errors.get("failure_classes", {}),
             }
             pools = data.get("pools", {})
             pool_list = pools.get("all_pools", [])
