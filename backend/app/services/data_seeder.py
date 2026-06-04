@@ -73,19 +73,38 @@ class DataSeeder:
         return outcomes
 
     def _fetch_anarchy_subjects(self) -> List[Dict]:
+        namespaces = self._get_anarchy_namespaces()
+        if not namespaces:
+            return []
+
+        all_items = []
+        for ns in namespaces:
+            try:
+                result = subprocess.run(
+                    ["oc", "get", "anarchysubjects", "-n", ns, "-o", "json",
+                     "--sort-by=.metadata.creationTimestamp"],
+                    capture_output=True, text=True, timeout=30,
+                    env={**os.environ, "KUBECONFIG": self._kubeconfig},
+                )
+                if result.returncode == 0:
+                    data = json.loads(result.stdout)
+                    all_items.extend(data.get("items", []))
+            except Exception:
+                continue
+        return all_items
+
+    def _get_anarchy_namespaces(self) -> List[str]:
         try:
             result = subprocess.run(
-                ["oc", "get", "anarchysubjects", "-A", "-o", "json"],
-                capture_output=True, text=True, timeout=60,
+                ["oc", "get", "ns", "--no-headers", "-o", "custom-columns=NAME:.metadata.name"],
+                capture_output=True, text=True, timeout=15,
                 env={**os.environ, "KUBECONFIG": self._kubeconfig},
             )
             if result.returncode != 0:
-                logger.warning("Failed to fetch AnarchySubjects: %s", result.stderr[:200])
                 return []
-            data = json.loads(result.stdout)
-            return data.get("items", [])
-        except Exception as e:
-            logger.warning("AnarchySubject fetch error: %s", e)
+            return [ns.strip() for ns in result.stdout.strip().split("\n")
+                    if ns.strip().startswith("babylon-anarchy")]
+        except Exception:
             return []
 
     def _parse_outcomes(self, subjects: List[Dict]) -> List[Dict]:
