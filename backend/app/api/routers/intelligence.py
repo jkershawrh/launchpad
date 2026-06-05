@@ -307,11 +307,21 @@ def _get_timing():
     return _timing_service
 
 
+_timing_refresh_started = False
+
+
 @router.get("/intelligence/timing")
 def provisioning_timing() -> Dict[str, Any]:
+    global _timing_refresh_started
     svc = _get_timing()
     if not svc:
         return {"stats": {}, "recent": []}
+
+    if not svc.get_all() and not _timing_refresh_started:
+        _timing_refresh_started = True
+        import threading
+        threading.Thread(target=svc.refresh, daemon=True).start()
+        return {"stats": {}, "recent": [], "status": "loading"}
 
     stats = svc.get_stats()
     recent = svc.get_all()[-20:]

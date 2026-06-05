@@ -68,7 +68,9 @@ export default function Timing() {
         <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-16 bg-[#212121] rounded-lg animate-pulse" />)}</div>
       ) : !stats?.total_provisions ? (
         <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-12 text-center">
-          <p className="text-[#6A6E73]">No timing data available. Configure BABYLON_KUBECONFIG to pull provisioning history.</p>
+          <p className="text-white mb-2">Loading provisioning timing data...</p>
+          <p className="text-[#6A6E73] text-sm">Pulling from ~29 Babylon namespaces. This takes about 90 seconds on first load.</p>
+          <p className="text-[#6A6E73] text-xs mt-2">Refresh this page in a minute to see results.</p>
         </div>
       ) : (
         <>
