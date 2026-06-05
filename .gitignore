@@ -47,3 +47,4 @@ local-*.json
 secret.yaml
 gateway-secret.yaml
 postgres-secret.yaml
+test-receipts/
