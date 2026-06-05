@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -17,41 +18,55 @@ spec:
     spec:
       serviceAccountName: intel-rh-demo-proxy
       containers:
-        - name: oauth-proxy
-          image: openshift/oauth-proxy:v4.4
-          ports:
-            - containerPort: 8443
-              name: proxy
-              protocol: TCP
-          args:
-            - --https-address=:8443
-            - --provider=openshift
-            - --openshift-service-account=intel-rh-demo-proxy
-            - --upstream=http://localhost:8080
-            - --cookie-secret-file=/etc/proxy/secrets/session_secret
-            - --tls-cert=/etc/tls/private/tls.crt
-            - --tls-key=/etc/tls/private/tls.key
-            - --cookie-name=_intel_rh_demo
-          volumeMounts:
-            - name: proxy-tls
-              mountPath: /etc/tls/private
-              readOnly: true
-            - name: cookie-secret
-              mountPath: /etc/proxy/secrets
-              readOnly: true
-        - name: frontend
-          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-frontend:latest
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-      volumes:
+      - name: oauth-proxy
+        image: openshift/oauth-proxy:v4.4
+        ports:
+        - containerPort: 8443
+          name: proxy
+          protocol: TCP
+        args:
+        - --https-address=:8443
+        - --provider=openshift
+        - --openshift-service-account=intel-rh-demo-proxy
+        - --upstream=http://localhost:8080
+        - --cookie-secret-file=/etc/proxy/secrets/session_secret
+        - --tls-cert=/etc/tls/private/tls.crt
+        - --tls-key=/etc/tls/private/tls.key
+        - --cookie-name=_intel_rh_demo
+        volumeMounts:
         - name: proxy-tls
-          secret:
-            secretName: frontend-tls
+          mountPath: /etc/tls/private
+          readOnly: true
         - name: cookie-secret
-          secret:
-            secretName: proxy-cookie-secret
+          mountPath: /etc/proxy/secrets
+          readOnly: true
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      - name: frontend
+        image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-frontend:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: proxy-tls
+        secret:
+          secretName: frontend-tls
+      - name: cookie-secret
+        secret:
+          secretName: proxy-cookie-secret
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

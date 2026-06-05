@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,64 +17,77 @@ spec:
         app: inference-gateway
     spec:
       initContainers:
-        - name: wait-for-postgres
-          image: postgres:15-alpine
-          command: ['sh', '-c', 'until pg_isready -h postgres -p 5432; do echo "Waiting for postgres..."; sleep 2; done']
+      - name: wait-for-postgres
+        image: postgres:15-alpine
+        command:
+        - sh
+        - -c
+        - until pg_isready -h postgres -p 5432; do echo "Waiting for postgres...";
+          sleep 2; done
       containers:
-        - name: gateway
-          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-gateway:latest
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-          env:
-            - name: PORT
-              value: "8080"
-            - name: CONFIG_PATH
-              value: /config/config.local.yaml
-            - name: LOCAL_FALLBACK_ENABLED
-              value: "true"
-          envFrom:
-            - secretRef:
-                name: gateway-config
-            - secretRef:
-                name: postgres-credentials
-                optional: true
-          volumeMounts:
-            - name: config
-              mountPath: /config
-              readOnly: true
-            - name: tmp
-              mountPath: /tmp
-            - name: model-cache
-              mountPath: /model-cache
-          resources:
-            requests:
-              cpu: 500m
-              memory: 2Gi
-            limits:
-              cpu: "2"
-              memory: 4Gi
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            failureThreshold: 30
-            periodSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 10
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 60
-      volumes:
+      - name: gateway
+        image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-gateway:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        env:
+        - name: PORT
+          value: '8080'
+        - name: CONFIG_PATH
+          value: /config/config.local.yaml
+        - name: LOCAL_FALLBACK_ENABLED
+          value: 'true'
+        envFrom:
+        - secretRef:
+            name: gateway-config
+        - secretRef:
+            name: postgres-credentials
+            optional: true
+        volumeMounts:
         - name: config
-          configMap:
-            name: gateway-routing-config
+          mountPath: /config
+          readOnly: true
         - name: tmp
-          emptyDir: {}
+          mountPath: /tmp
         - name: model-cache
-          emptyDir: {}
+          mountPath: /model-cache
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2Gi
+          limits:
+            cpu: '2'
+            memory: 4Gi
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 60
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: config
+        configMap:
+          name: gateway-routing-config
+      - name: tmp
+        emptyDir: {}
+      - name: model-cache
+        emptyDir: {}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,34 +19,43 @@ spec:
         app: postgres
     spec:
       containers:
-        - name: postgres
-          image: docker.io/library/postgres:15-alpine
-          ports:
-            - containerPort: 5432
-              protocol: TCP
-          env:
-            - name: PGDATA
-              value: /data/pgdata
-          envFrom:
-            - secretRef:
-                name: postgres-credentials
-          volumeMounts:
-            - name: data
-              mountPath: /data
-          resources:
-            requests:
-              cpu: 250m
-              memory: 256Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
-          readinessProbe:
-            exec:
-              command:
-                - pg_isready
-                - -U
-                - gateway
-      volumes:
+      - name: postgres
+        image: docker.io/library/postgres:15-alpine
+        ports:
+        - containerPort: 5432
+          protocol: TCP
+        env:
+        - name: PGDATA
+          value: /data/pgdata
+        envFrom:
+        - secretRef:
+            name: postgres-credentials
+        volumeMounts:
         - name: data
-          persistentVolumeClaim:
-            claimName: postgres-data
+          mountPath: /data
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - gateway
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: postgres-data
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
