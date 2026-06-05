@@ -5,4 +5,4 @@ pyyaml>=6.0.2
 asyncpg>=0.30.0
 prometheus-client>=0.21.0
 slowapi>=0.1.9
-transformers>=4.47.0
+transformers>=4.53.0
