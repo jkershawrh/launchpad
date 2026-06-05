@@ -31,6 +31,8 @@ async def init_db() -> bool:
 
     Returns True if connected, False if running without persistence.
     In mock mode, skip DB entirely so services use in-memory fallback.
+    The pool is created on a dedicated DB event loop (from stores._get_db_loop)
+    to avoid event loop conflicts with FastAPI/uvicorn.
     """
     global _pool
     mode = os.environ.get("LAUNCHPAD_MODE", "mock")
@@ -48,12 +50,25 @@ async def init_db() -> bool:
         logger.warning("asyncpg not installed — running without persistence")
         return False
     try:
-        _pool = await asyncpg.create_pool(
-            url, min_size=2, max_size=10,
-            server_settings={"statement_timeout": "30000"},
-        )
-        logger.info("Connected to PostgreSQL")
-        await _run_migrations()
+        import asyncio
+        from app.storage.stores import _get_db_loop
+        db_loop = _get_db_loop()
+
+        async def _create_pool():
+            return await asyncpg.create_pool(
+                url, min_size=2, max_size=10,
+                server_settings={"statement_timeout": "30000"},
+            )
+
+        future = asyncio.run_coroutine_threadsafe(_create_pool(), db_loop)
+        _pool = future.result(timeout=30)
+        logger.info("Connected to PostgreSQL (on dedicated DB loop)")
+
+        async def _do_migrations():
+            await _run_migrations()
+
+        future = asyncio.run_coroutine_threadsafe(_do_migrations(), db_loop)
+        future.result(timeout=60)
         return True
     except Exception as e:
         logger.warning("Failed to connect to PostgreSQL: %s — running without persistence", e)

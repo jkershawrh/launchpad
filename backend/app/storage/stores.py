@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import threading
 from typing import List, Optional
 
 from app.domain.feedback import ProvisioningOutcome
@@ -26,19 +27,36 @@ from app.storage.database import get_pool
 logger = logging.getLogger("launchpad.stores")
 
 
+_db_loop = None
+_db_thread = None
+
+
+def _get_db_loop():
+    """Get a dedicated event loop for DB operations running in a background thread."""
+    global _db_loop, _db_thread
+    if _db_loop is None or not _db_thread.is_alive():
+        _db_loop = asyncio.new_event_loop()
+        _db_thread = threading.Thread(
+            target=_db_loop.run_forever, daemon=True, name="db-event-loop"
+        )
+        _db_thread.start()
+    return _db_loop
+
+
 def _run(coro):
     """Run an async coroutine from synchronous code.
 
-    When called from inside an async framework (FastAPI/uvicorn), schedule
-    the coroutine on the existing event loop rather than creating a new one.
-    This avoids asyncpg 'Future attached to a different loop' errors.
+    Uses a dedicated background event loop for DB operations to avoid
+    conflicts with the FastAPI/uvicorn event loop. The asyncpg pool is
+    created on this loop, so all DB operations run on it consistently.
     """
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
         loop = None
     if loop and loop.is_running():
-        future = asyncio.run_coroutine_threadsafe(coro, loop)
+        db_loop = _get_db_loop()
+        future = asyncio.run_coroutine_threadsafe(coro, db_loop)
         return future.result(timeout=30)
     return asyncio.run(coro)
 
