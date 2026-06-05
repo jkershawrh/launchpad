@@ -313,9 +313,6 @@ def provisioning_timing() -> Dict[str, Any]:
     if not svc:
         return {"stats": {}, "recent": []}
 
-    if svc.is_stale():
-        svc.refresh()
-
     stats = svc.get_stats()
     recent = svc.get_all()[-20:]
 
@@ -330,9 +327,6 @@ def timing_by_catalog(catalog_item_id: str) -> Dict[str, Any]:
     svc = _get_timing()
     if not svc:
         return {"provisions": []}
-
-    if svc.is_stale():
-        svc.refresh()
 
     provisions = [t for t in svc.get_all() if t["catalog_item"] == catalog_item_id]
     provisions.sort(key=lambda t: t["created"], reverse=True)

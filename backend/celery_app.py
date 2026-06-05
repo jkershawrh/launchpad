@@ -56,6 +56,10 @@ app.conf.beat_schedule = {
         "task": "tasks.fleet_enrichment.refresh_fleet_enrichment",
         "schedule": 300.0,
     },
+    "timing-sync": {
+        "task": "tasks.timing_sync.refresh_provisioning_timing",
+        "schedule": 600.0,
+    },
 }
 
 app.autodiscover_tasks(["tasks"])
@@ -66,3 +70,4 @@ import tasks.capacity_sync  # noqa: F401, E402
 import tasks.feedback_sync  # noqa: F401, E402
 import tasks.orchestration  # noqa: F401, E402
 import tasks.fleet_enrichment  # noqa: F401, E402
+import tasks.timing_sync  # noqa: F401, E402
