@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { path: '/fleet', label: 'Fleet' },
   { path: '/workloads', label: 'Workloads' },
   { path: '/feedback', label: 'Feedback' },
+  { path: '/timing', label: 'Timing' },
 ];
 
 export default function Layout() {

@@ -291,3 +291,63 @@ def fleet_enrichment_data() -> Dict[str, Any]:
         "provisioning": enrichment.get_provisioning_stats(),
         "pools": enrichment.get_pool_summary()[:20],
     }
+
+
+_timing_service = None
+
+
+def _get_timing():
+    global _timing_service
+    if _timing_service is None:
+        import os
+        kc = os.environ.get("BABYLON_KUBECONFIG", "")
+        if kc:
+            from app.services.provisioning_timing import ProvisioningTiming
+            _timing_service = ProvisioningTiming(kubeconfig_path=kc)
+    return _timing_service
+
+
+@router.get("/intelligence/timing")
+def provisioning_timing() -> Dict[str, Any]:
+    svc = _get_timing()
+    if not svc:
+        return {"stats": {}, "recent": []}
+
+    if svc.is_stale():
+        svc.refresh()
+
+    stats = svc.get_stats()
+    recent = svc.get_all()[-20:]
+
+    return {
+        "stats": stats,
+        "recent": recent,
+    }
+
+
+@router.get("/intelligence/timing/catalog/{catalog_item_id}")
+def timing_by_catalog(catalog_item_id: str) -> Dict[str, Any]:
+    svc = _get_timing()
+    if not svc:
+        return {"provisions": []}
+
+    if svc.is_stale():
+        svc.refresh()
+
+    provisions = [t for t in svc.get_all() if t["catalog_item"] == catalog_item_id]
+    provisions.sort(key=lambda t: t["created"], reverse=True)
+
+    durations = [t["duration_seconds"] for t in provisions]
+    stats = {}
+    if durations:
+        durations_sorted = sorted(durations)
+        n = len(durations_sorted)
+        stats = {
+            "count": n,
+            "avg_minutes": round(sum(durations) / n / 60, 1),
+            "median_minutes": round(durations_sorted[n // 2] / 60, 1),
+            "min_minutes": round(durations_sorted[0] / 60, 1),
+            "max_minutes": round(durations_sorted[-1] / 60, 1),
+        }
+
+    return {"catalog_item": catalog_item_id, "stats": stats, "provisions": provisions[:50]}

@@ -6,6 +6,7 @@ import Decisions from './pages/Decisions';
 import Fleet from './pages/Fleet';
 import Workloads from './pages/Workloads';
 import Feedback from './pages/Feedback';
+import Timing from './pages/Timing';
 import Catalog from './pages/Catalog';
 import Demos from './pages/Demos';
 import Sandbox from './pages/Sandbox';
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/fleet" element={<Fleet />} />
             <Route path="/workloads" element={<Workloads />} />
             <Route path="/feedback" element={<Feedback />} />
+            <Route path="/timing" element={<Timing />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/demos" element={<Demos />} />
             <Route path="/sandbox" element={<Sandbox />} />
