@@ -103,10 +103,10 @@ class PlacementService:
                 health_rate=c.get("health_rate"),
             )
 
-        self._capacity_cache = new_cache
+        self._capacity_cache.update(new_cache)
         self._cache_updated_at = datetime.utcnow()
-        logger.info("Refreshed capacity cache: %d clusters", len(new_cache))
-        return len(new_cache)
+        logger.info("Capacity cache updated: %d new, %d total", len(new_cache), len(self._capacity_cache))
+        return len(self._capacity_cache)
 
     def get_capacity_snapshot(self) -> List[ClusterCapacity]:
         return list(self._capacity_cache.values())
