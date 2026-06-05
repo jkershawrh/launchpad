@@ -7,7 +7,7 @@ RUN npm ci && chmod -R g+w node_modules
 COPY . .
 RUN npm run build
 
-FROM registry.access.redhat.com/ubi9/nginx-122:latest  # TODO: pin to specific version
+FROM registry.access.redhat.com/ubi9/nginx-122:latest
 
 LABEL name="partner-ai-launchpad-admin" \
       version="0.1.0" \

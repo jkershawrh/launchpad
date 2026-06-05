@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311:latest  # TODO: pin to specific version
+FROM registry.access.redhat.com/ubi9/python-311:latest
 
 LABEL name="partner-ai-launchpad-backend" \
       version="0.1.0" \

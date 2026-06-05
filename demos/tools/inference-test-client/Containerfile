@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311:latest  # TODO: pin to specific version
+FROM registry.access.redhat.com/ubi9/python-311:latest
 
 # Metadata
 LABEL name="inference-test-client" \

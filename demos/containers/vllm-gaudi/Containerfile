@@ -11,7 +11,7 @@
 #
 # For now, V1 builds successfully and tests the inference API structure.
 
-FROM registry.access.redhat.com/ubi9/python-311:latest  # TODO: pin to specific version
+FROM registry.access.redhat.com/ubi9/python-311:latest
 
 # Metadata
 LABEL name="vllm-gaudi-inference" \

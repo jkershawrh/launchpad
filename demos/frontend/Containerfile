@@ -9,7 +9,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve with nginx
-FROM registry.access.redhat.com/ubi9/nginx-124:latest  # TODO: pin to specific version
+FROM registry.access.redhat.com/ubi9/nginx-124:latest
 
 COPY --from=builder /build/dist /opt/app-root/src
 COPY nginx.conf /etc/nginx/nginx.conf
