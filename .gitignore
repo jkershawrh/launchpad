@@ -43,3 +43,7 @@ www/
 
 # Cloned upstream quickstart repos — reference by URL, don't vendor
 demos/quickstarts/
+local-*.json
+secret.yaml
+gateway-secret.yaml
+postgres-secret.yaml

@@ -9,7 +9,7 @@ pytest-timeout>=2.2.0
 pyyaml>=6.0
 
 # HTTP requests for API testing
-requests>=2.31.0
+requests>=2.32.0
 
 # Code quality
 flake8>=7.0.0
