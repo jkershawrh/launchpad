@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,40 +21,61 @@ spec:
     spec:
       serviceAccountName: launchpad-portal
       containers:
-        - name: partner-portal
-          image: partner-portal:latest
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 256Mi
-        - name: oauth-proxy
-          image: registry.redhat.io/openshift4/ose-oauth-proxy:latest
-          args:
-            - --https-address=:8443
-            - --provider=openshift
-            - --openshift-service-account=launchpad-portal
-            - --upstream=http://localhost:8080
-            - --cookie-secret-file=/var/run/secrets/oauth/cookie-secret
-            - --tls-cert=/etc/tls/private/tls.crt
-            - --tls-key=/etc/tls/private/tls.key
-          ports:
-            - containerPort: 8443
-              name: oauth-proxy
-          volumeMounts:
-            - name: tls
-              mountPath: /etc/tls/private
-            - name: oauth-cookie
-              mountPath: /var/run/secrets/oauth
-      volumes:
+      - name: partner-portal
+        image: partner-portal:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          allowPrivilegeEscalation: false
+      - name: oauth-proxy
+        image: registry.redhat.io/openshift4/ose-oauth-proxy:latest
+        args:
+        - --https-address=:8443
+        - --provider=openshift
+        - --openshift-service-account=launchpad-portal
+        - --upstream=http://localhost:8080
+        - --cookie-secret-file=/var/run/secrets/oauth/cookie-secret
+        - --tls-cert=/etc/tls/private/tls.crt
+        - --tls-key=/etc/tls/private/tls.key
+        ports:
+        - containerPort: 8443
+          name: oauth-proxy
+        volumeMounts:
         - name: tls
-          secret:
-            secretName: portal-tls
+          mountPath: /etc/tls/private
         - name: oauth-cookie
-          secret:
-            secretName: portal-oauth-cookie
+          mountPath: /var/run/secrets/oauth
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          allowPrivilegeEscalation: false
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      volumes:
+      - name: tls
+        secret:
+          secretName: portal-tls
+      - name: oauth-cookie
+        secret:
+          secretName: portal-oauth-cookie
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

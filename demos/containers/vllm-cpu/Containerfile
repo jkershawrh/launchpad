@@ -2,7 +2,7 @@
 # Optimized for CPU-based LLM inference on OpenShift AI
 # V1: Simplified version using transformers (will refactor to full vLLM)
 
-FROM registry.access.redhat.com/ubi9/python-311:latest
+FROM registry.access.redhat.com/ubi9/python-311:latest  # TODO: pin to specific version
 
 # Metadata labels
 LABEL org.opencontainers.image.title="vLLM CPU Inference Runtime" \

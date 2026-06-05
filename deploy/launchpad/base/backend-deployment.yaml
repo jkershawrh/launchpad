@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,72 +21,93 @@ spec:
     spec:
       serviceAccountName: launchpad-backend
       containers:
-        - name: backend
-          image: backend:latest
-          ports:
-            - containerPort: 8000
-              protocol: TCP
-          envFrom:
-            - configMapRef:
-                name: launchpad-config
-            - secretRef:
-                name: launchpad-litellm
-                optional: true
-            - secretRef:
-                name: launchpad-api-keys
-                optional: true
-          env:
-            - name: DATABASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: launchpad-db-secret
-                  key: DATABASE_URL
-            - name: AUTH_ENABLED
-              value: "true"
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8000
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            timeoutSeconds: 5
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8000
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            timeoutSeconds: 5
-          resources:
-            requests:
-              cpu: 250m
-              memory: 256Mi
-            limits:
-              cpu: "1"
-              memory: 512Mi
-        - name: oauth-proxy
-          image: registry.redhat.io/openshift4/ose-oauth-proxy:latest
-          args:
-            - --https-address=:8443
-            - --provider=openshift
-            - --openshift-service-account=launchpad-backend
-            - --upstream=http://localhost:8000
-            - --cookie-secret-file=/var/run/secrets/oauth/cookie-secret
-            - --tls-cert=/etc/tls/private/tls.crt
-            - --tls-key=/etc/tls/private/tls.key
-            - --pass-user-headers=true
-          ports:
-            - containerPort: 8443
-              name: oauth-proxy
-          volumeMounts:
-            - name: tls
-              mountPath: /etc/tls/private
-            - name: oauth-cookie
-              mountPath: /var/run/secrets/oauth
-      volumes:
+      - name: backend
+        image: backend:latest
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: launchpad-config
+        - secretRef:
+            name: launchpad-litellm
+            optional: true
+        - secretRef:
+            name: launchpad-api-keys
+            optional: true
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: launchpad-db-secret
+              key: DATABASE_URL
+        - name: AUTH_ENABLED
+          value: 'true'
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          allowPrivilegeEscalation: false
+      - name: oauth-proxy
+        image: registry.redhat.io/openshift4/ose-oauth-proxy:latest
+        args:
+        - --https-address=:8443
+        - --provider=openshift
+        - --openshift-service-account=launchpad-backend
+        - --upstream=http://localhost:8000
+        - --cookie-secret-file=/var/run/secrets/oauth/cookie-secret
+        - --tls-cert=/etc/tls/private/tls.crt
+        - --tls-key=/etc/tls/private/tls.key
+        - --pass-user-headers=true
+        ports:
+        - containerPort: 8443
+          name: oauth-proxy
+        volumeMounts:
         - name: tls
-          secret:
-            secretName: backend-tls
+          mountPath: /etc/tls/private
         - name: oauth-cookie
-          secret:
-            secretName: backend-oauth-cookie
+          mountPath: /var/run/secrets/oauth
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          allowPrivilegeEscalation: false
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+      volumes:
+      - name: tls
+        secret:
+          secretName: backend-tls
+      - name: oauth-cookie
+        secret:
+          secretName: backend-oauth-cookie
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
