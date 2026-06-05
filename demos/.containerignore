@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+node_modules
+__pycache__
+tests
+docs
+*.md
+.pytest_cache
+.coverage

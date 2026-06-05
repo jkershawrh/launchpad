@@ -45,6 +45,13 @@ spec:
           capabilities:
             drop:
             - ALL
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
       - name: frontend
         image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-frontend:latest
         ports:
@@ -59,6 +66,13 @@ spec:
           capabilities:
             drop:
             - ALL
+        resources:
+          limits:
+            cpu: '1'
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
       volumes:
       - name: proxy-tls
         secret:
