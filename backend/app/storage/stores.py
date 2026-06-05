@@ -27,18 +27,19 @@ logger = logging.getLogger("launchpad.stores")
 
 
 def _run(coro):
-    """Run an async coroutine from synchronous code."""
+    """Run an async coroutine from synchronous code.
+
+    When called from inside an async framework (FastAPI/uvicorn), schedule
+    the coroutine on the existing event loop rather than creating a new one.
+    This avoids asyncpg 'Future attached to a different loop' errors.
+    """
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
         loop = None
     if loop and loop.is_running():
-        # We're inside an already-running event loop (e.g. during tests
-        # or within an async framework). Create a new loop in a thread.
-        import concurrent.futures
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(asyncio.run, coro)
-            return future.result()
+        future = asyncio.run_coroutine_threadsafe(coro, loop)
+        return future.result(timeout=30)
     return asyncio.run(coro)
 
 

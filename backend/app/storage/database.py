@@ -30,8 +30,14 @@ async def init_db() -> bool:
     """Initialize the asyncpg connection pool and run migrations.
 
     Returns True if connected, False if running without persistence.
+    In mock mode, skip DB entirely so services use in-memory fallback.
     """
     global _pool
+    mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+    if mode == "mock":
+        logger.info("LAUNCHPAD_MODE=mock — skipping database, using in-memory storage")
+        _pool = None
+        return False
     url = get_database_url()
     if not url:
         logger.info("DATABASE_URL not set — running without persistence")
