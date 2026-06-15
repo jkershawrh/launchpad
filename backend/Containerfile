@@ -17,6 +17,7 @@ RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/op
 RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy asyncpg psycopg2-binary kubernetes requests "celery[redis]" kafka-python-ng
 
 COPY backend/app/ ./app/
+COPY backend/migrations/ ./migrations/
 COPY backend/celery_app.py ./celery_app.py
 COPY backend/tasks/ ./tasks/
 COPY backend/scripts/ ./scripts/
