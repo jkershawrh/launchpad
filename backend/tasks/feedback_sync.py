@@ -30,5 +30,5 @@ def refresh_feedback_aggregates(self):
         logger.info("Feedback sync: loaded %d outcomes from database", len(outcomes))
         return {"status": "ok", "outcomes": len(outcomes)}
     except Exception as e:
-        logger.warning("Feedback sync failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("Feedback sync failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)

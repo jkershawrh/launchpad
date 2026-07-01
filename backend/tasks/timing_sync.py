@@ -25,5 +25,5 @@ def refresh_provisioning_timing(self):
         logger.info("Timing sync: %d provisions", count)
         return {"status": "ok", "provisions": count}
     except Exception as e:
-        logger.warning("Timing sync failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("Timing sync failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)

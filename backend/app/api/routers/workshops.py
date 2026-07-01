@@ -14,7 +14,7 @@ router = APIRouter(prefix="/workshops", tags=["workshops"])
 class WorkshopCreate(BaseModel):
     tenant_id: str
     catalog_item_id: str
-    num_users: int
+    num_users: int  # capped at 100 to prevent resource exhaustion
     ttl: str = "8h"
     ocp_version: str = "4.20"
     purpose: str = "events"
@@ -22,6 +22,8 @@ class WorkshopCreate(BaseModel):
 
 @router.post("", response_model=Workshop, status_code=201)
 def create_workshop(body: WorkshopCreate):
+    if body.num_users > 100:
+        raise HTTPException(400, f"num_users must be <= 100 (got {body.num_users})")
     workshop = Workshop(
         tenant_id=body.tenant_id,
         catalog_item_id=body.catalog_item_id,

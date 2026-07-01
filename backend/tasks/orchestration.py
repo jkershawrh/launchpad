@@ -29,8 +29,8 @@ def run_proactive_health(self):
 
         return {"status": "ok", "alerts": len(alerts)}
     except Exception as e:
-        logger.warning("Proactive health check failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("Proactive health check failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)
 
 
 @shared_task(bind=True, max_retries=3, retry_backoff=True)
@@ -54,5 +54,5 @@ def run_rebalance_check(self):
 
         return {"status": "ok", "suggestions": len(actions)}
     except Exception as e:
-        logger.warning("Rebalance check failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("Rebalance check failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)

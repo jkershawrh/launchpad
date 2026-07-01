@@ -22,8 +22,8 @@ def enforce_ttl(self):
         logger.info("TTL enforcement: reclaimed %d expired sessions", reclaimed)
         return {"status": "ok", "reclaimed": reclaimed}
     except Exception as e:
-        logger.warning("TTL enforcement failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("TTL enforcement failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)
 
 
 @shared_task(bind=True, max_retries=3, retry_backoff=True, soft_time_limit=600)
@@ -72,8 +72,8 @@ def reclaim_session(self, session_id=None):
         logger.info("Orphan scan: reclaimed %d orphaned sessions", len(reclaimed))
         return {"status": "ok", "reclaimed": reclaimed}
     except Exception as e:
-        logger.warning("Session reclaim failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("Session reclaim failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)
 
 
 @shared_task

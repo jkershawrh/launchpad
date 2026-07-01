@@ -24,5 +24,5 @@ def refresh_fleet_enrichment(self):
         logger.info("Fleet enrichment: %s", counts)
         return {"status": "ok", **counts}
     except Exception as e:
-        logger.warning("Fleet enrichment failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("Fleet enrichment failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)

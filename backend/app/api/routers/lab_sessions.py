@@ -15,14 +15,21 @@ router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/lab-sessio
 
 
 @router.get("", response_model=List[LabSession])
-def list_lab_sessions():
-    return list(provisioning_service._sessions.values())
+def list_lab_sessions(user: dict = Depends(get_current_user)):
+    tenant_id = user.get("tenant_id") or user.get("username", "")
+    return [
+        s for s in provisioning_service._sessions.values()
+        if s.tenant_id == tenant_id
+    ]
 
 
 @router.get("/{session_id}", response_model=LabSession)
-def get_lab_session(session_id: str):
+def get_lab_session(session_id: str, user: dict = Depends(get_current_user)):
     session = provisioning_service.get_session(session_id)
     if not session:
+        raise HTTPException(404, f"Session {session_id} not found")
+    tenant_id = user.get("tenant_id") or user.get("username", "")
+    if session.tenant_id != tenant_id:
         raise HTTPException(404, f"Session {session_id} not found")
     return session
 

@@ -25,5 +25,5 @@ def sync_cluster_capacity(self):
         logger.info("Capacity sync: refreshed %d clusters", count)
         return {"status": "ok", "clusters": count}
     except Exception as e:
-        logger.warning("Capacity sync failed: %s", e)
-        return {"status": "error", "error": str(e)}
+        logger.warning("Capacity sync failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
+        raise self.retry(exc=e)
