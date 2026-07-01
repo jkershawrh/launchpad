@@ -2,7 +2,7 @@
 
 ![CI](https://github.com/rhpds/launchpad/actions/workflows/ci.yml/badge.svg)
 
-Intelligent provisioning platform for AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Launchpad is the orchestration brain for the Intel x Red Hat AI ecosystem — it classifies workloads, selects optimal hardware and clusters, learns from provisioning outcomes, and coordinates real-time signals from StarGate (validation) and DeepField (fleet observability) into unified placement decisions.
+Intelligent provisioning platform for AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Launchpad sits on top of the existing RHDP ecosystem (Sandbox API, Babylon, AgnosticD, ArgoCD) and adds an orchestration layer — it classifies workloads via rule-based pattern matching, selects optimal hardware and clusters, tracks provisioning history to avoid failing combinations, and coordinates real-time signals from StarGate (validation) and DeepField (fleet observability) into unified placement decisions.
 
 ## What It Does
 
@@ -75,9 +75,9 @@ ProvisioningService.provision()
 | Component | Purpose |
 |-----------|---------|
 | **OrchestrationBrain** | Composes all intelligence signals into unified placement decisions |
-| **WorkloadClassifier** | Classifies workloads (CPU/GPU/training/RAG/agent/mixed) and matches to hardware |
+| **WorkloadClassifier** | Rule-based workload classification (CPU/GPU/training/RAG/agent/mixed) using catalog metadata and name pattern matching |
 | **PlacementService** | Recommends clusters based on StarGate capacity scores with caching |
-| **FeedbackTracker** | Tracks provisioning outcomes, computes success rates, maintains avoid-list |
+| **FeedbackTracker** | Tracks provisioning outcomes, computes statistical success rates per catalog×cluster×hardware tuple, maintains avoid-list |
 | **DeepFieldAdapter** | Integrates fleet health signals (CPU, GPU utilization, error rates) |
 | **Sandbox API** | RHDP cluster pool manager — assigns namespaces on shared OpenShift clusters |
 | **Inference Gateway** | FastAPI service implementing model routing policy across Intel hardware |
@@ -88,11 +88,12 @@ ProvisioningService.provision()
 
 The intelligence layer makes provisioning decisions smarter over time:
 
-1. **Workload Profiling** — classifies each catalog item by compute type, GPU requirements, and I/O pattern
+1. **Workload Profiling** — rule-based classification using catalog item metadata and name patterns (not LLM-powered)
 2. **Smart Placement** — selects clusters based on capacity scores from StarGate, penalized by DeepField critical signals
-3. **Feedback Loops** — records success/failure per catalog×cluster×hardware tuple; avoids combinations with <30% success rate
+3. **Feedback Tracking** — records success/failure per catalog×cluster×hardware tuple; avoids combinations with <30% success rate (statistical, not ML)
 4. **Orchestration Brain** — coordinates all signals into a single decision with confidence scoring and rationale
 5. **Graceful Degradation** — each signal source fails open; if all external systems are down, Launchpad provisions exactly as a static system would
+6. **Workshop Provisioning** — bulk provision N users via a single API call with per-user session tracking and cleanup
 
 ## How It Works
 
@@ -148,9 +149,24 @@ launchpad/
 └── docs/                       # Architecture and process documentation
 ```
 
+## Intelligence API
+
+Endpoints for inspecting placement decisions, fleet health, and provisioning performance:
+
+| Endpoint | Purpose |
+|----------|---------|
+| `GET /intelligence/fleet-health` | Cluster health + brain alerts |
+| `GET /intelligence/decision/{request_id}` | Audit a specific placement decision |
+| `POST /intelligence/simulate` | Simulate placement without provisioning |
+| `GET /intelligence/cluster/{name}/signals` | DeepField signals for a cluster |
+| `GET /intelligence/classifications` | Batch workload classification (all catalog items) |
+| `GET /intelligence/enrichment` | Fleet enrichment summary (failure classes, incidents) |
+| `GET /intelligence/timing` | Provisioning timing stats and aggregates |
+| `POST /workshops` | Bulk provision N users for an event or workshop |
+
 ## Models
 
-All models served via KServe on OpenShift AI, accessed through LiteMaaS:
+All models served via KServe on OpenShift AI, accessed through LiteMaaS. Launchpad itself only uses Granite 3.2 8B for brand generation — the other models are available to tenant demos via the inference gateway:
 
 | Model | Hardware | Use Case |
 |-------|----------|----------|
@@ -196,6 +212,13 @@ Live on infra01:
 - [x] Security — SSO, API keys, session limits, PSS, NetworkPolicy, credential scrubbing
 - [x] 507 backend tests — all TDD red/green
 - [x] Deployed to infra01 — backend, portal, admin all running
+
+### In Progress / Known Limitations
+
+- **Showback:** Currently simulated via MockShowbackAdapter (synthetic cost data from session metadata). Real Prometheus-based metrics planned.
+- **Rebalancing:** `rebalance_check()` identifies overloaded clusters and suggests session migrations, but does not execute them (advisory only).
+- **RHDP end-to-end:** Sandbox API integration built and tested, but live deployment blocked on app role token from RHDP team.
+- **Validation:** Launchpad checks that Sandbox API returned a namespace. Deeper validation (pod readiness, route health) is StarGate's responsibility.
 
 ### Configuration
 

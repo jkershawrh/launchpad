@@ -7,7 +7,7 @@ from celery import shared_task
 logger = logging.getLogger("launchpad.tasks.timing_sync")
 
 
-@shared_task(bind=True, max_retries=1, soft_time_limit=120)
+@shared_task(bind=True, max_retries=3, retry_backoff=True, soft_time_limit=120)
 def refresh_provisioning_timing(self):
     """Pull provisioning timing from Babylon AnarchySubjects.
 

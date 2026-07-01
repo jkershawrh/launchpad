@@ -7,7 +7,7 @@ from celery import shared_task
 logger = logging.getLogger("launchpad.tasks.capacity_sync")
 
 
-@shared_task(bind=True, max_retries=1)
+@shared_task(bind=True, max_retries=3, retry_backoff=True)
 def sync_cluster_capacity(self):
     """Refresh the PlacementService capacity cache from StarGate.
 

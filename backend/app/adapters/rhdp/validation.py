@@ -10,7 +10,12 @@ logger = logging.getLogger(__name__)
 
 
 class RHDPValidationAdapter:
-    """Validates sessions provisioned via the RHDP Sandbox API."""
+    """Validates sessions provisioned via the RHDP Sandbox API.
+
+    Scope: checks that Sandbox API returned a placement, namespace, and lab URL.
+    Deeper validation (pod readiness, route accessibility, workload health) is
+    StarGate's responsibility via rubric evaluation and event-driven monitoring.
+    """
 
     def validate(self, session: LabSession) -> List[ValidationResult]:
         results = []

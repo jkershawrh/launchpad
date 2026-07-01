@@ -46,7 +46,7 @@ class DeepFieldAdapter:
                     for s in data
                 ]
         except Exception as e:
-            logger.debug("DeepField signals unavailable for %s: %s", cluster_name, e)
+            logger.warning("DeepField signals unavailable for %s: %s", cluster_name, e)
             return []
 
     def get_fleet_overview(self) -> Dict[str, List[DeepFieldSignal]]:
@@ -75,7 +75,7 @@ class DeepFieldAdapter:
                     ]
                 return result
         except Exception as e:
-            logger.debug("DeepField fleet overview unavailable: %s", e)
+            logger.warning("DeepField fleet overview unavailable: %s", e)
             return {}
 
     def _headers(self) -> Dict[str, str]:

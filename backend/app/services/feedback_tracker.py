@@ -22,8 +22,8 @@ class FeedbackTracker:
         if self._db:
             try:
                 self._outcomes = self._db.list_all()
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("Failed to load feedback outcomes from database, starting with empty history: %s", e)
 
     def record_outcome(self, outcome: ProvisioningOutcome) -> None:
         self._outcomes.append(outcome)

@@ -29,6 +29,8 @@ from app.domain.models import (
 )
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
+logger = __import__("logging").getLogger("launchpad.provisioning")
+
 
 class ProvisioningService:
     def __init__(
@@ -63,6 +65,13 @@ class ProvisioningService:
         self.feedback_tracker = feedback_tracker
         self.brain = brain
 
+        mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+        if mode != "mock":
+            if isinstance(self.pool, MockPoolAdapter):
+                logger.warning("MockPoolAdapter used in %s mode — check adapter wiring in deps.py", mode)
+            if isinstance(self.provisioner, MockProvisioningAdapter):
+                logger.warning("MockProvisioningAdapter used in %s mode — check adapter wiring in deps.py", mode)
+
         self._requests: dict[str, LabRequest] = {}
         self._sessions: dict[str, LabSession] = {}
         self._plans: dict[str, ProvisioningPlan] = {}
@@ -95,7 +104,8 @@ class ProvisioningService:
                         core = client.CoreV1Api()
                         try:
                             core.read_namespace(session.namespace)
-                        except Exception:
+                        except Exception as e:
+                            logger.info("Namespace %s gone, reclaiming orphaned session %s: %s", session.namespace, session.session_id, e)
                             event = LifecycleEvent(
                                 from_status=session.status,
                                 to_status=SessionStatus.RECLAIMED,
@@ -109,8 +119,8 @@ class ProvisioningService:
                                 }
                             )
                             self._save_session(session)
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning("Failed to check orphaned session %s: %s", session.session_id, e)
 
     def _get_provisioner(self, catalog_item):
         from app.domain.enums import CatalogCategory
@@ -161,8 +171,8 @@ class ProvisioningService:
                 hw = request.hardware_profile or decision.recommended_hardware
                 qp = request.quota_profile or decision.recommended_quota
                 return hw, qp
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("OrchestrationBrain.decide() failed, falling back to classifier: %s", e)
 
         if self.workload_classifier:
             try:
@@ -172,8 +182,8 @@ class ProvisioningService:
                     hw = request.hardware_profile or matches[0].hardware_profile
                     qp = request.quota_profile or matches[0].right_sized_quota or catalog_item.default_quota_profile or "standard"
                     return hw, qp
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("WorkloadClassifier failed, falling back to defaults: %s", e)
 
         hw = request.hardware_profile or catalog_item.default_hardware_profile or "xeon-basic"
         qp = request.quota_profile or catalog_item.default_quota_profile or "standard"
@@ -190,8 +200,8 @@ class ProvisioningService:
             )
             if rec and not rec.fallback and rec.cluster_name:
                 return rec.cluster_name
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("Placement recommendation failed: %s", e)
         return None
 
     def submit_request(self, request: LabRequest) -> LabRequest:
@@ -401,8 +411,8 @@ class ProvisioningService:
                 validation_passed=success,
             )
             self.feedback_tracker.record_outcome(outcome)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error("Failed to record provisioning feedback for session %s: %s", session.session_id, e)
 
     def activate_session(self, session_id: str) -> LabSession:
         session = self._sessions.get(session_id)
@@ -595,8 +605,8 @@ class ProvisioningService:
         if self.cleanup and session.namespace:
             try:
                 self.cleanup.cleanup(session.namespace)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error("Cleanup failed during force-reclaim of session %s namespace %s: %s", session_id, session.namespace, e)
         event = LifecycleEvent(
             from_status=session.status,
             to_status=SessionStatus.RECLAIMED,
@@ -745,10 +755,11 @@ class ProvisioningService:
                 try:
                     self.reclaim_session(session.session_id)
                     reclaimed_count += 1
-                except Exception:
+                except Exception as e:
+                    logger.warning("TTL reclaim failed for session %s, attempting force-reclaim: %s", session.session_id, e)
                     try:
                         self.force_reclaim_session(session.session_id)
                         reclaimed_count += 1
-                    except Exception:
-                        pass
+                    except Exception as e2:
+                        logger.error("Force-reclaim also failed for session %s: %s", session.session_id, e2)
         return reclaimed_count

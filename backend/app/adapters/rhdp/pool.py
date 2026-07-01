@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any, Dict, Optional
 
 from app.adapters.rhdp.sandbox_api import SandboxAPIClient, SandboxAPIError
 
 logger = logging.getLogger(__name__)
+
+SANDBOX_PLACEMENT_TIMEOUT = int(os.environ.get("SANDBOX_PLACEMENT_TIMEOUT", "300"))
 
 HARDWARE_TO_CAPABILITIES = {
     "gaudi-endpoint": {"gaudi": "true"},
@@ -47,7 +50,7 @@ class RHDPPoolAdapter:
             logger.error("Sandbox API placement failed: %s", e)
             raise ValueError(f"Failed to reserve sandbox: {e.message}") from e
 
-        result = self._api.wait_for_placement(session_id, timeout=300)
+        result = self._api.wait_for_placement(session_id, timeout=SANDBOX_PLACEMENT_TIMEOUT)
 
         if not result.resources:
             raise ValueError("Placement succeeded but returned no resources")

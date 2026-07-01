@@ -7,7 +7,7 @@ from celery import shared_task
 logger = logging.getLogger("launchpad.tasks.orchestration")
 
 
-@shared_task(bind=True, max_retries=1)
+@shared_task(bind=True, max_retries=3, retry_backoff=True)
 def run_proactive_health(self):
     """Check fleet health via OrchestrationBrain and log alerts.
 
@@ -33,7 +33,7 @@ def run_proactive_health(self):
         return {"status": "error", "error": str(e)}
 
 
-@shared_task(bind=True, max_retries=1)
+@shared_task(bind=True, max_retries=3, retry_backoff=True)
 def run_rebalance_check(self):
     """Check for overloaded clusters and suggest session migrations.
 

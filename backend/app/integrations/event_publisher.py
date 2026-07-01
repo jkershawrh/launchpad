@@ -98,7 +98,7 @@ def _push(
         resp = urllib.request.urlopen(req, timeout=10, context=ctx)
         logger.debug("Event pushed to %s: %s -> %s", base_url, payload.get("event_type"), resp.status)
     except Exception as e:
-        logger.debug("Event push to %s failed (non-critical): %s", base_url, e)
+        logger.warning("Event push to %s failed (non-critical): %s", base_url, e)
 
 
 def _push_kafka(event_type: str, payload: dict) -> None:
@@ -107,7 +107,7 @@ def _push_kafka(event_type: str, payload: dict) -> None:
         from app.integrations.kafka_publisher import publish_event as kafka_publish
         kafka_publish(event_type, payload)
     except Exception as e:
-        logger.debug("Kafka push failed (non-critical): %s", e)
+        logger.warning("Kafka push failed (non-critical): %s", e)
 
 
 # Backward-compatible alias: existing callers use notify_stargate()

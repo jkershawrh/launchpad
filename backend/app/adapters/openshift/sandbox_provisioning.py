@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import logging
 import os
 import time
 import uuid
 from typing import Dict, List
+
+logger = logging.getLogger("launchpad.openshift.sandbox")
 
 try:
     from kubernetes import client, config
@@ -15,6 +18,7 @@ from app.adapters.interfaces import ProvisionResult
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
 
 SANDBOX_IMAGE = "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-sandbox:latest"
+OPERATOR_NAMESPACE = os.environ.get("OPERATOR_NAMESPACE", "partner-ai-launchpad")
 
 RESOURCE_TIERS = {
     "light": {"cpu_request": "500m", "cpu_limit": "2", "memory_request": "1Gi", "memory_limit": "4Gi", "storage": "20Gi"},
@@ -194,15 +198,16 @@ class OpenShiftSandboxProvisioner:
     def _grant_image_pull(self, namespace: str) -> None:
         try:
             self._rbac_v1.create_namespaced_role_binding(
-                namespace="partner-ai-launchpad",
+                namespace=OPERATOR_NAMESPACE,
                 body=client.V1RoleBinding(
-                    metadata=client.V1ObjectMeta(name=f"{namespace}-image-puller", namespace="partner-ai-launchpad"),
+                    metadata=client.V1ObjectMeta(name=f"{namespace}-image-puller", namespace=OPERATOR_NAMESPACE),
                     role_ref=client.V1RoleRef(api_group="rbac.authorization.k8s.io", kind="ClusterRole", name="system:image-puller"),
                     subjects=[client.RbacV1Subject(kind="Group", name=f"system:serviceaccounts:{namespace}", api_group="rbac.authorization.k8s.io")],
                 ),
             )
-        except ApiException:
-            pass
+        except ApiException as e:
+            if e.status != 409:
+                logger.warning("Failed to create image-pull RoleBinding for %s: %s", namespace, e.reason)
 
     def _create_secrets(self, namespace: str, ssh_password: str, maas_key: str = "") -> None:
         litellm_key = maas_key or os.environ.get("LITELLM_API_KEY", "")
@@ -223,7 +228,7 @@ class OpenShiftSandboxProvisioner:
                 ))
             except ApiException as e:
                 if e.status != 409:
-                    pass
+                    logger.warning("Failed to create secret '%s' in namespace %s: %s", name, namespace, e.reason)
 
     def _create_pvc(self, namespace: str, storage_size: str) -> None:
         try:
@@ -236,7 +241,7 @@ class OpenShiftSandboxProvisioner:
             ))
         except ApiException as e:
             if e.status != 409:
-                pass
+                logger.warning("Failed to create PVC in namespace %s: %s", namespace, e.reason)
 
     def _create_deployment(self, namespace: str, stack_level: str, tier: Dict) -> None:
         container = client.V1Container(
@@ -303,7 +308,7 @@ class OpenShiftSandboxProvisioner:
             ))
         except ApiException as e:
             if e.status != 409:
-                pass
+                logger.warning("Failed to create service in namespace %s: %s", namespace, e.reason)
 
     def _create_routes(self, namespace: str, access_methods: List[str]) -> Dict[str, str]:
         routes = {}

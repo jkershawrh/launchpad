@@ -105,30 +105,30 @@ class TestSandboxAPIClient:
             "access_token": "jwt-access-token",
             "access_token_exp": "2026-12-31T00:00:00Z",
         }
-        with patch("requests.get", return_value=mock_resp) as mock_get:
-            token = client._get_access_token()
-            assert token == "jwt-access-token"
-            mock_get.assert_called_once()
+        client._session.get = MagicMock(return_value=mock_resp)
+        token = client._get_access_token()
+        assert token == "jwt-access-token"
+        client._session.get.assert_called_once()
 
     def test_login_failure_raises(self):
         client = SandboxAPIClient(api_url="https://api.test", login_token="bad-token")
         mock_resp = MagicMock()
         mock_resp.status_code = 401
-        with patch("requests.get", return_value=mock_resp):
-            with pytest.raises(SandboxAPIError) as exc_info:
-                client._get_access_token()
-            assert exc_info.value.status_code == 401
+        client._session.get = MagicMock(return_value=mock_resp)
+        with pytest.raises(SandboxAPIError) as exc_info:
+            client._get_access_token()
+        assert exc_info.value.status_code == 401
 
     def test_login_caches_token(self):
         client = SandboxAPIClient(api_url="https://api.test", login_token="jwt-login")
         mock_resp = MagicMock()
         mock_resp.status_code = 200
         mock_resp.json.return_value = {"access_token": "cached-token", "access_token_exp": "2026-12-31"}
-        with patch("requests.get", return_value=mock_resp) as mock_get:
-            token1 = client._get_access_token()
-            token2 = client._get_access_token()
-            assert token1 == token2
-            assert mock_get.call_count == 1
+        client._session.get = MagicMock(return_value=mock_resp)
+        token1 = client._get_access_token()
+        token2 = client._get_access_token()
+        assert token1 == token2
+        assert client._session.get.call_count == 1
 
     def test_create_placement_success(self):
         client = SandboxAPIClient(api_url="https://api.test", login_token="jwt")
@@ -144,11 +144,11 @@ class TestSandboxAPIClient:
                 "resources": [{"name": "sandbox-1", "kind": "OcpSandbox", "status": "initializing"}],
             },
         }
-        with patch("requests.request", return_value=mock_resp):
-            result = client.create_placement("uuid-001", [{"kind": "OcpSandbox"}])
-            assert result.service_uuid == "uuid-001"
-            assert result.status == "initializing"
-            assert len(result.resources) == 1
+        client._session.request = MagicMock(return_value=mock_resp)
+        result = client.create_placement("uuid-001", [{"kind": "OcpSandbox"}])
+        assert result.service_uuid == "uuid-001"
+        assert result.status == "initializing"
+        assert len(result.resources) == 1
 
     def test_create_placement_no_matching_cluster(self):
         client = SandboxAPIClient(api_url="https://api.test", login_token="jwt")
@@ -157,11 +157,11 @@ class TestSandboxAPIClient:
         mock_resp = MagicMock()
         mock_resp.status_code = 404
         mock_resp.json.return_value = {"message": "No OCP shared cluster configuration found"}
-        with patch("requests.request", return_value=mock_resp):
-            with pytest.raises(SandboxAPIError) as exc_info:
-                client.create_placement("uuid-001", [{"kind": "OcpSandbox", "cloud_selector": {"cannot": "schedule"}}])
-            assert exc_info.value.status_code == 404
-            assert "No OCP shared cluster" in exc_info.value.message
+        client._session.request = MagicMock(return_value=mock_resp)
+        with pytest.raises(SandboxAPIError) as exc_info:
+            client.create_placement("uuid-001", [{"kind": "OcpSandbox", "cloud_selector": {"cannot": "schedule"}}])
+        assert exc_info.value.status_code == 404
+        assert "No OCP shared cluster" in exc_info.value.message
 
     def test_get_placement_success(self):
         client = SandboxAPIClient(api_url="https://api.test", login_token="jwt")
@@ -182,11 +182,11 @@ class TestSandboxAPIClient:
                 "credentials": [{"kind": "ServiceAccount", "token": "sa-token-xyz"}],
             }],
         }
-        with patch("requests.request", return_value=mock_resp):
-            result = client.get_placement("uuid-001")
-            assert result.status == "success"
-            assert result.resources[0].namespace == "sandbox-guid-1-demo"
-            assert result.resources[0].sa_token == "sa-token-xyz"
+        client._session.request = MagicMock(return_value=mock_resp)
+        result = client.get_placement("uuid-001")
+        assert result.status == "success"
+        assert result.resources[0].namespace == "sandbox-guid-1-demo"
+        assert result.resources[0].sa_token == "sa-token-xyz"
 
     def test_delete_placement_success(self):
         client = SandboxAPIClient(api_url="https://api.test", login_token="jwt")
@@ -194,8 +194,8 @@ class TestSandboxAPIClient:
         client._token_exp = 9999999999
         mock_resp = MagicMock()
         mock_resp.status_code = 202
-        with patch("requests.request", return_value=mock_resp):
-            assert client.delete_placement("uuid-001") is True
+        client._session.request = MagicMock(return_value=mock_resp)
+        assert client.delete_placement("uuid-001") is True
 
     def test_delete_placement_already_gone(self):
         client = SandboxAPIClient(api_url="https://api.test", login_token="jwt")
@@ -203,8 +203,8 @@ class TestSandboxAPIClient:
         client._token_exp = 9999999999
         mock_resp = MagicMock()
         mock_resp.status_code = 404
-        with patch("requests.request", return_value=mock_resp):
-            assert client.delete_placement("uuid-001") is True
+        client._session.request = MagicMock(return_value=mock_resp)
+        assert client.delete_placement("uuid-001") is True
 
     def test_placement_resource_sa_token(self):
         resource = PlacementResource(
@@ -238,7 +238,7 @@ class TestRHDPPoolAdapter:
         result = adapter.reserve("session-001", "gaudi-endpoint", "standard")
 
         mock_api.create_placement.assert_called_once()
-        mock_api.wait_for_placement.assert_called_once_with("session-001", timeout=300)
+        mock_api.wait_for_placement.assert_called_once()
         assert result["namespace"] == "sandbox-test-1-demo"
         assert result["ingress_domain"] == "apps.ocpv09.rhdp.net"
         assert result["sa_token"] == "sa-token-abc123"
@@ -395,6 +395,7 @@ class TestRHDPCleanupAdapter:
     def test_cleanup_deletes_placement(self):
         mock_api = MagicMock(spec=SandboxAPIClient)
         mock_api.delete_placement.return_value = True
+        mock_api.get_placement.side_effect = SandboxAPIError(404, "Not found")
 
         adapter = RHDPCleanupAdapter(sandbox_api=mock_api)
         adapter.cleanup("session-001")

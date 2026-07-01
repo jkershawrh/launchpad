@@ -8,7 +8,7 @@ from celery import shared_task
 logger = logging.getLogger("launchpad.tasks.lifecycle")
 
 
-@shared_task(bind=True, max_retries=1)
+@shared_task(bind=True, max_retries=3, retry_backoff=True)
 def enforce_ttl(self):
     """Reclaim sessions whose TTL has expired.
 
@@ -26,7 +26,7 @@ def enforce_ttl(self):
         return {"status": "error", "error": str(e)}
 
 
-@shared_task(bind=True, max_retries=1, soft_time_limit=600)
+@shared_task(bind=True, max_retries=3, retry_backoff=True, soft_time_limit=600)
 def reclaim_session(self, session_id=None):
     """Reclaim a specific session, or find and reclaim orphaned sessions.
 

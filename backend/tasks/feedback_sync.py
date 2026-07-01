@@ -7,7 +7,7 @@ from celery import shared_task
 logger = logging.getLogger("launchpad.tasks.feedback_sync")
 
 
-@shared_task(bind=True, max_retries=1)
+@shared_task(bind=True, max_retries=3, retry_backoff=True)
 def refresh_feedback_aggregates(self):
     """Reload feedback outcomes from PostgreSQL into the in-memory tracker.
 

@@ -7,8 +7,18 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 logger = logging.getLogger(__name__)
+
+def _build_session() -> requests.Session:
+    session = requests.Session()
+    retry = Retry(total=3, backoff_factor=1, status_forcelist=[502, 503, 504])
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
 
 
 @dataclass
@@ -57,12 +67,13 @@ class SandboxAPIClient:
         self._login_token = login_token or os.environ.get("SANDBOX_LOGIN_TOKEN", "")
         self._access_token: Optional[str] = None
         self._token_exp: Optional[float] = None
+        self._session = _build_session()
 
     def _get_access_token(self) -> str:
         if self._access_token and self._token_exp and time.time() < self._token_exp:
             return self._access_token
 
-        resp = requests.get(
+        resp = self._session.get(
             f"{self.api_url}/api/v1/login",
             headers={"Authorization": f"Bearer {self._login_token}"},
             timeout=30,
@@ -84,7 +95,7 @@ class SandboxAPIClient:
         kwargs.setdefault("headers", self._headers())
         kwargs.setdefault("timeout", 30)
         kwargs.setdefault("verify", True)
-        resp = requests.request(method, url, **kwargs)
+        resp = self._session.request(method, url, **kwargs)
         return resp
 
     # ── Placements ────────────────────────────────────────────────

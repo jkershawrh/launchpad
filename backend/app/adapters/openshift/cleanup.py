@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import time
 from typing import Optional
 
@@ -84,7 +85,7 @@ class OpenShiftCleanupAdapter:
         try:
             self._rbac_v1.delete_namespaced_role_binding(
                 name=binding_name,
-                namespace="partner-ai-launchpad",
+                namespace=os.environ.get("OPERATOR_NAMESPACE", "partner-ai-launchpad"),
             )
             logger.info("Deleted orphaned RoleBinding: %s", binding_name)
         except ApiException as exc:

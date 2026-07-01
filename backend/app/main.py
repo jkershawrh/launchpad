@@ -15,6 +15,25 @@ TTL_INTERVAL = int(os.environ.get("TTL_ENFORCEMENT_INTERVAL", "300"))
 _ttl_task = None
 
 
+REQUIRED_ENV_VARS = {
+    "rhdp": ["SANDBOX_API_URL", "SANDBOX_LOGIN_TOKEN"],
+    "openshift": [],
+}
+
+
+def _validate_config() -> None:
+    """Validate mode-specific required env vars at startup."""
+    mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+    required = REQUIRED_ENV_VARS.get(mode, [])
+    missing = [v for v in required if not os.environ.get(v)]
+    if missing:
+        raise RuntimeError(
+            f"LAUNCHPAD_MODE={mode} requires env vars: {', '.join(missing)}"
+        )
+    if mode != "mock":
+        logger.info("Launchpad starting in %s mode", mode)
+
+
 async def _ttl_enforcement_loop():
     """Background task that enforces TTL on expired sessions every 5 minutes."""
     while True:
@@ -31,6 +50,7 @@ async def _ttl_enforcement_loop():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _ttl_task
+    _validate_config()
     if get_database_url():
         await init_db()
     _ttl_task = asyncio.create_task(_ttl_enforcement_loop())
