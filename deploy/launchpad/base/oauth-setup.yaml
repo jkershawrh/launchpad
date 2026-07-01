@@ -31,7 +31,7 @@ metadata:
   name: backend-oauth-cookie
 type: Opaque
 stringData:
-  cookie-secret: GENERATE-RANDOM-SECRET-BACKEND
+  cookie-secret: "${BACKEND_COOKIE_SECRET}"
 ---
 apiVersion: v1
 kind: Secret
@@ -39,7 +39,7 @@ metadata:
   name: portal-oauth-cookie
 type: Opaque
 stringData:
-  cookie-secret: GENERATE-RANDOM-SECRET-PORTAL
+  cookie-secret: "${PORTAL_COOKIE_SECRET}"
 ---
 apiVersion: v1
 kind: Secret
@@ -47,4 +47,4 @@ metadata:
   name: admin-oauth-cookie
 type: Opaque
 stringData:
-  cookie-secret: GENERATE-RANDOM-SECRET-ADMIN
+  cookie-secret: "${ADMIN_COOKIE_SECRET}"

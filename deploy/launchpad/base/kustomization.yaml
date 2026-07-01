@@ -17,6 +17,7 @@ resources:
   - routes.yaml
   - oauth-setup.yaml
   - rbac.yaml
+  - network-policy.yaml
 
 commonLabels:
   app.kubernetes.io/managed-by: kustomize

@@ -11,6 +11,7 @@ from app.domain.placement import ClusterCapacity, PlacementRecommendation
 logger = logging.getLogger("launchpad.placement")
 
 DEFAULT_CACHE_TTL = 120
+STALE_CACHE_MAX_AGE = 600
 
 
 class PlacementService:
@@ -43,7 +44,9 @@ class PlacementService:
                     exclude.append(name)
 
         if not self._cache_is_valid():
-            return PlacementRecommendation(fallback=True, reasoning="no capacity data available")
+            if self._cache_is_stale():
+                return PlacementRecommendation(fallback=True, reasoning="capacity data too stale (>10m)")
+            logger.debug("Using stale capacity cache (%ds old)", (datetime.utcnow() - self._cache_updated_at).total_seconds() if self._cache_updated_at else 0)
 
         candidates = [
             c for c in self._capacity_cache.values()
@@ -116,3 +119,9 @@ class PlacementService:
             return False
         age = (datetime.utcnow() - self._cache_updated_at).total_seconds()
         return age < self.cache_ttl_seconds
+
+    def _cache_is_stale(self) -> bool:
+        if not self._cache_updated_at:
+            return True
+        age = (datetime.utcnow() - self._cache_updated_at).total_seconds()
+        return age > STALE_CACHE_MAX_AGE

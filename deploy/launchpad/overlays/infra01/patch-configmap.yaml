@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: launchpad-config
 data:
-  CORS_ORIGINS: "https://launchpad.apps.CLUSTER_DOMAIN,https://launchpad-admin.apps.CLUSTER_DOMAIN"
+  CORS_ORIGINS: "https://launchpad.apps.ocpv-infra01.dal12.infra.demo.redhat.com,https://launchpad-admin.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
