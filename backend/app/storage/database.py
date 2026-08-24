@@ -56,7 +56,7 @@ async def init_db() -> bool:
 
         async def _create_pool():
             return await asyncpg.create_pool(
-                url, min_size=2, max_size=10,
+                url, min_size=5, max_size=5,
                 server_settings={"statement_timeout": "30000"},
                 ssl=False,
             )
