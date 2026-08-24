@@ -44,7 +44,14 @@ class OpenShiftCleanupAdapter:
         self._core_v1 = client.CoreV1Api()
         self._rbac_v1 = client.RbacAuthorizationV1Api()
 
-    def cleanup(self, namespace: Optional[str] = None, timeout: int = 60) -> bool:
+    def cleanup(self, namespace: Optional[str] = None, timeout: int = 0) -> bool:
+        """Request namespace deletion and optionally wait for completion.
+
+        API-triggered cleanup uses the non-blocking default so OpenShift router
+        timeouts do not turn a successful deletion request into a 504 response.
+        Administrative callers can pass a positive timeout to wait and detect
+        namespaces stuck in Terminating.
+        """
         if not namespace:
             return False
 
@@ -59,7 +66,8 @@ class OpenShiftCleanupAdapter:
                 f"Failed to delete namespace '{namespace}': {exc.status} {exc.reason}"
             ) from exc
 
-        self._wait_for_deletion(namespace, timeout=timeout)
+        if timeout > 0:
+            self._wait_for_deletion(namespace, timeout=timeout)
         self._cleanup_role_binding(namespace)
         self._active_namespaces.pop(namespace, None)
         return True

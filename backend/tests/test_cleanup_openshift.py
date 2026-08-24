@@ -95,6 +95,21 @@ class TestCleanupTimeoutFatal:
         with pytest.raises(CleanupTimeoutError):
             adapter.cleanup("stuck-namespace", timeout=1)
 
+    def test_default_cleanup_does_not_wait(self):
+        from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+
+        adapter = OpenShiftCleanupAdapter.__new__(OpenShiftCleanupAdapter)
+        adapter._active_namespaces = {}
+        adapter._core_v1 = MagicMock()
+        adapter._rbac_v1 = MagicMock()
+        adapter._wait_for_deletion = MagicMock()
+
+        assert adapter.cleanup("async-delete-namespace") is True
+        adapter._core_v1.delete_namespace.assert_called_once_with(
+            name="async-delete-namespace"
+        )
+        adapter._wait_for_deletion.assert_not_called()
+
 
 @pytest.mark.skipif(not HAS_KUBERNETES, reason="kubernetes package not installed")
 class TestOrphanedRoleBindingCleanup:
