@@ -92,6 +92,7 @@ def create_provisioning_service() -> ProvisioningService:
         )
     elif mode == "openshift":
         from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+        from app.adapters.openshift.pool import OpenShiftPoolAdapter
         from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
         from app.adapters.openshift.validation import OpenShiftValidationAdapter
 
@@ -140,6 +141,7 @@ def create_provisioning_service() -> ProvisioningService:
 
         return ProvisioningService(
             catalog=catalog,
+            pool=OpenShiftPoolAdapter(),
             provisioner=OpenShiftProvisioningAdapter(),
             validator=OpenShiftValidationAdapter(),
             cleanup=OpenShiftCleanupAdapter(),
