@@ -10,7 +10,7 @@ set -euo pipefail
 
 LAUNCHPAD_API="${LAUNCHPAD_API:-https://launchpad-api.apps.oberon.fm2aihpcsed.com}"
 API_KEY="${API_KEY:?Set API_KEY environment variable}"
-CURL="curl -sf -H X-API-Key:${API_KEY} -H Content-Type:application/json"
+CURL="curl -sfk -H X-API-Key:${API_KEY} -H Content-Type:application/json"
 
 echo "=== Oberon Smoke Test ==="
 echo "API: ${LAUNCHPAD_API}"

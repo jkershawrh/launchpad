@@ -23,6 +23,6 @@ metadata:
     - jupyter
     - vscode
   required_models:
-    - granite-2b-cpu
-    - granite-350m
+    - smollm2-360m
+    - smollm3-3b
   inference_endpoint: litellm

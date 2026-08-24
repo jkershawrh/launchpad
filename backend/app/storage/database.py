@@ -58,6 +58,7 @@ async def init_db() -> bool:
             return await asyncpg.create_pool(
                 url, min_size=2, max_size=10,
                 server_settings={"statement_timeout": "30000"},
+                ssl=False,
             )
 
         future = asyncio.run_coroutine_threadsafe(_create_pool(), db_loop)
@@ -77,10 +78,21 @@ async def init_db() -> bool:
 
 
 async def close_db() -> None:
-    """Close the connection pool."""
+    """Close the connection pool on the dedicated DB loop."""
     global _pool
     if _pool:
-        await _pool.close()
+        import asyncio
+        from app.storage.stores import _get_db_loop
+
+        async def _do_close():
+            await _pool.close()
+
+        db_loop = _get_db_loop()
+        try:
+            future = asyncio.run_coroutine_threadsafe(_do_close(), db_loop)
+            future.result(timeout=10)
+        except Exception as e:
+            logger.warning("Error closing DB pool: %s", e)
         _pool = None
 
 

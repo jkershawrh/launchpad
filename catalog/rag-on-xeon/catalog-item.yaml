@@ -21,6 +21,6 @@ metadata:
   deploy_method: helm
   deploy_path: demos/quickstarts/rag/deploy/helm/rag
   required_models:
-    - granite-2b-cpu
+    - smollm2-360m
   inference_endpoint: litellm
   cpu_only: true
