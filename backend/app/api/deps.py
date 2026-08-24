@@ -59,7 +59,13 @@ def _create_db_stores():
 
 
 def _create_catalog():
-    local = MockCatalogAdapter()
+    catalog_dir = os.environ.get("CATALOG_DIR", "")
+    if catalog_dir and os.path.isdir(catalog_dir):
+        from app.adapters.file.catalog import FileCatalogAdapter
+        local = FileCatalogAdapter(catalog_dir)
+    else:
+        local = MockCatalogAdapter()
+
     babylon_kc = os.environ.get("BABYLON_KUBECONFIG", "")
     if babylon_kc and os.path.exists(babylon_kc):
         from app.adapters.rhdp.babylon_catalog import BabylonCatalogAdapter
@@ -88,6 +94,12 @@ def create_provisioning_service() -> ProvisioningService:
         from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
         from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
         from app.adapters.openshift.validation import OpenShiftValidationAdapter
+
+        preflight = None
+        litellm_base = os.environ.get("LITELLM_API_BASE", "")
+        if litellm_base:
+            from app.adapters.openshift.preflight import LiteLLMPreflightChecker
+            preflight = LiteLLMPreflightChecker(api_base=litellm_base)
 
         classifier = None
         if os.environ.get("WORKLOAD_PROFILING_ENABLED", "false").lower() == "true":
@@ -136,6 +148,7 @@ def create_provisioning_service() -> ProvisioningService:
             workload_classifier=classifier,
             feedback_tracker=feedback,
             brain=brain,
+            preflight=preflight,
         )
     elif mode == "rhdp":
         from app.adapters.rhdp.cleanup import RHDPCleanupAdapter

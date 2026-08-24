@@ -1,0 +1,21 @@
+catalog_item_id: smoke-test
+display_name: "Smoke Test Demo"
+description: "Minimal demo for platform validation. Deploys a single nginx pod. No model dependency. 10 minute TTL."
+category: quick_start
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+default_hardware_profile: xeon-basic
+default_quota_profile: small
+default_ttl: "10m"
+provisioner_refs:
+  - demo-provisioner
+validation_refs:
+  - pod-ready
+supported_branding:
+  - intel-internal
+metadata:
+  deploy_method: kustomize-dir
+  cpu_only: true
+  smoke_test: true

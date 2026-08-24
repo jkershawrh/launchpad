@@ -1,0 +1,28 @@
+catalog_item_id: ai-sandbox
+display_name: "AI Developer Sandbox"
+description: "Interactive development sandbox with Jupyter, VS Code, and access to the Oberon model fleet via LiteLLM. Experiment freely with Intel Xeon CPU inference."
+category: open_sandbox
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+  - model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: standard
+default_ttl: "8h"
+provisioner_refs:
+  - sandbox-provisioner
+validation_refs:
+  - pod-ready
+supported_branding:
+  - intel-internal
+metadata:
+  sandbox_type: ai_dev
+  stack_level: ai_dev
+  access_methods:
+    - jupyter
+    - vscode
+  required_models:
+    - granite-2b-cpu
+    - granite-350m
+  inference_endpoint: litellm

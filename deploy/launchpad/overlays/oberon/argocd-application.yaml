@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: launchpad
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jkershawrh/launchpad.git
+    targetRevision: main
+    path: deploy/launchpad/overlays/oberon
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: partner-ai-launchpad
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

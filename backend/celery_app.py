@@ -60,6 +60,14 @@ app.conf.beat_schedule = {
         "task": "tasks.timing_sync.refresh_provisioning_timing",
         "schedule": 600.0,
     },
+    "catalog-sync-loop": {
+        "task": "tasks.catalog_sync.sync_catalog",
+        "schedule": 60.0,
+    },
+    "model-health-check": {
+        "task": "tasks.model_health.check_model_health",
+        "schedule": 120.0,
+    },
 }
 
 app.autodiscover_tasks(["tasks"])
@@ -71,3 +79,5 @@ import tasks.feedback_sync  # noqa: F401, E402
 import tasks.orchestration  # noqa: F401, E402
 import tasks.fleet_enrichment  # noqa: F401, E402
 import tasks.timing_sync  # noqa: F401, E402
+import tasks.catalog_sync  # noqa: F401, E402
+import tasks.model_health  # noqa: F401, E402

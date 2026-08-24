@@ -1,0 +1,26 @@
+catalog_item_id: rag-on-xeon
+display_name: "RAG on Intel Xeon"
+description: "Retrieval-augmented generation chatbot running entirely on CPU. Uses Granite 2B for generation and vector search for document retrieval."
+category: quick_start
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+  - model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: standard
+default_ttl: "4h"
+provisioner_refs:
+  - helm-provisioner
+validation_refs:
+  - pod-ready
+  - route-accessible
+supported_branding:
+  - intel-internal
+metadata:
+  deploy_method: helm
+  deploy_path: demos/quickstarts/rag/deploy/helm/rag
+  required_models:
+    - granite-2b-cpu
+  inference_endpoint: litellm
+  cpu_only: true

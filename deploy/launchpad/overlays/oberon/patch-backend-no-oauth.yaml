@@ -1,0 +1,5 @@
+- op: remove
+  path: /spec/template/spec/containers/1
+- op: replace
+  path: /spec/template/spec/volumes
+  value: []

@@ -57,10 +57,10 @@ class TestSessionLimits:
         _provision(svc, requester_id="ub")
         _provision(svc, requester_id="ub")
 
-    def test_workshop_respects_tenant_limit(self):
+    def test_workshop_bypasses_tenant_limit_uses_workshop_limit(self):
         svc = _svc()
         for i in range(4):
             _provision(svc, requester_id=f"wu{i}", tenant_id="ws-tenant")
         w = Workshop(tenant_id="ws-tenant", catalog_item_id="inference-overdrive-quickstart", num_users=3, ttl="4h")
         result = svc.provision_workshop(w)
-        assert len(result.session_ids) <= 1
+        assert len(result.session_ids) == 3

@@ -111,6 +111,7 @@ class OpenShiftProvisioningAdapter:
         # --- Step 2: Create demo namespace ---
         self._create_namespace(demo_namespace)
         self._grant_image_pull(demo_namespace)
+        self._apply_network_policy(demo_namespace)
 
         # --- Step 3: Deploy filtered frontend in demo namespace ---
         gateway_url = f"http://gateway.{gw_namespace}.svc.cluster.local:8080"
@@ -345,6 +346,52 @@ http {{
                 raise ValueError(
                     f"Failed to create namespace '{namespace}': {exc.status} {exc.reason}"
                 ) from exc
+
+    @staticmethod
+    def _build_demo_network_policy(namespace: str) -> dict:
+        return {
+            "apiVersion": "networking.k8s.io/v1",
+            "kind": "NetworkPolicy",
+            "metadata": {
+                "name": "demo-egress-restrict",
+                "namespace": namespace,
+            },
+            "spec": {
+                "podSelector": {},
+                "policyTypes": ["Egress"],
+                "egress": [
+                    {
+                        "to": [
+                            {
+                                "namespaceSelector": {
+                                    "matchLabels": {
+                                        "kubernetes.io/metadata.name": "intel-inference",
+                                    }
+                                }
+                            }
+                        ],
+                        "ports": [
+                            {"protocol": "TCP", "port": 4000},
+                        ],
+                    },
+                    {
+                        "ports": [
+                            {"protocol": "UDP", "port": 53},
+                            {"protocol": "TCP", "port": 53},
+                        ],
+                    },
+                ],
+            },
+        }
+
+    def _apply_network_policy(self, namespace: str) -> None:
+        policy = self._build_demo_network_policy(namespace)
+        try:
+            from kubernetes import client as k8s_client
+            net_v1 = k8s_client.NetworkingV1Api()
+            net_v1.create_namespaced_network_policy(namespace=namespace, body=policy)
+        except Exception as e:
+            logger.warning("Failed to create NetworkPolicy in %s: %s", namespace, e)
 
     def _deploy_helm(self, chart_path: str, namespace: str, release_name: str) -> None:
         helm = shutil.which("helm")

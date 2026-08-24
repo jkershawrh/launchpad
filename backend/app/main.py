@@ -12,7 +12,11 @@ from app.storage.database import get_database_url, init_db, close_db
 logger = logging.getLogger(__name__)
 
 TTL_INTERVAL = int(os.environ.get("TTL_ENFORCEMENT_INTERVAL", "300"))
+CATALOG_SYNC_INTERVAL = int(os.environ.get("CATALOG_SYNC_INTERVAL", "60"))
+MODEL_HEALTH_INTERVAL = int(os.environ.get("MODEL_HEALTH_INTERVAL", "120"))
 _ttl_task = None
+_catalog_sync_task = None
+_model_health_task = None
 
 
 REQUIRED_ENV_VARS = {
@@ -47,16 +51,46 @@ async def _ttl_enforcement_loop():
             logger.debug("TTL enforcement error (non-critical): %s", e)
 
 
+async def _catalog_sync_loop():
+    """Background task that rescans catalog directory every 60 seconds."""
+    while True:
+        await asyncio.sleep(CATALOG_SYNC_INTERVAL)
+        try:
+            from app.api.deps import catalog_adapter
+            if hasattr(catalog_adapter, "reload"):
+                catalog_adapter.reload()
+        except Exception as e:
+            logger.debug("Catalog sync error (non-critical): %s", e)
+
+
+async def _model_health_loop():
+    """Background task that checks model health every 120 seconds."""
+    while True:
+        await asyncio.sleep(MODEL_HEALTH_INTERVAL)
+        try:
+            litellm_base = os.environ.get("LITELLM_API_BASE", "")
+            if not litellm_base:
+                continue
+            from app.api.deps import catalog_adapter
+            from tasks.model_health import _do_model_health_check
+            _do_model_health_check(catalog_adapter, litellm_base)
+        except Exception as e:
+            logger.debug("Model health check error (non-critical): %s", e)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global _ttl_task
+    global _ttl_task, _catalog_sync_task, _model_health_task
     _validate_config()
     if get_database_url():
         await init_db()
     _ttl_task = asyncio.create_task(_ttl_enforcement_loop())
+    _catalog_sync_task = asyncio.create_task(_catalog_sync_loop())
+    _model_health_task = asyncio.create_task(_model_health_loop())
     yield
-    if _ttl_task:
-        _ttl_task.cancel()
+    for task in (_ttl_task, _catalog_sync_task, _model_health_task):
+        if task:
+            task.cancel()
     await close_db()
 
 
@@ -95,3 +129,9 @@ app.include_router(intelligence.router, prefix=API_PREFIX)
 @app.get("/health")
 def health():
     return {"status": "ok", "service": "launchpad"}
+
+
+@app.get("/health/detailed")
+def health_detailed():
+    from app.services.health import check_health_detailed
+    return check_health_detailed()

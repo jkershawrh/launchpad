@@ -49,6 +49,7 @@ class ProvisioningService:
         workload_classifier=None,
         feedback_tracker=None,
         brain=None,
+        preflight=None,
     ):
         self.catalog = catalog or MockCatalogAdapter()
         self.pool = pool or MockPoolAdapter()
@@ -64,6 +65,7 @@ class ProvisioningService:
         self.workload_classifier = workload_classifier
         self.feedback_tracker = feedback_tracker
         self.brain = brain
+        self.preflight = preflight
 
         mode = os.environ.get("LAUNCHPAD_MODE", "mock")
         if mode != "mock":
@@ -221,12 +223,26 @@ class ProvisioningService:
         self._save_request(request)
         return request
 
-    # Session limits per user/tenant
+    # Session limits per user/tenant/workshop
     MAX_ACTIVE_PER_USER = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_USER", "2"))
     MAX_ACTIVE_PER_TENANT = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_TENANT", "5"))
+    MAX_ACTIVE_PER_WORKSHOP = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_WORKSHOP", "50"))
 
-    def _check_session_limits(self, request: LabRequest) -> None:
+    def _check_session_limits(self, request: LabRequest, workshop_id: str = None) -> None:
         active_statuses = {"requested", "provisioning", "validating", "ready", "active"}
+
+        if workshop_id:
+            workshop_active = sum(
+                1 for s in self._sessions.values()
+                if s.status.value in active_statuses
+                and s.metadata.get("labels", {}).get("launchpad.redhat.com/workshop-id") == workshop_id
+            )
+            if workshop_active >= self.MAX_ACTIVE_PER_WORKSHOP:
+                raise ValueError(
+                    f"Workshop limit reached: {workshop_id} has "
+                    f"{workshop_active} active session(s) (max {self.MAX_ACTIVE_PER_WORKSHOP})."
+                )
+            return
 
         user_active = sum(
             1 for s in self._sessions.values()
@@ -251,18 +267,25 @@ class ProvisioningService:
                 f"Reclaim existing sessions before requesting new ones."
             )
 
-    def provision(self, request_id: str) -> LabSession:
+    def provision(self, request_id: str, workshop_id: str = None) -> LabSession:
         request = self._requests.get(request_id)
         if not request:
             raise ValueError(f"Request {request_id} not found")
         if request.status != LabRequestStatus.ACCEPTED:
             raise ValueError(f"Request {request_id} is not accepted (status: {request.status.value})")
 
-        self._check_session_limits(request)
+        self._check_session_limits(request, workshop_id=workshop_id)
 
         catalog_item = self.catalog.get_item(request.catalog_item_id)
         if not catalog_item:
             raise ValueError(f"Catalog item {request.catalog_item_id} not found")
+
+        if self.preflight:
+            preflight_result = self.preflight.check(catalog_item)
+            if not preflight_result.passed:
+                failed = [c for c in preflight_result.checks if c.status == "fail"]
+                reasons = "; ".join(c.message for c in failed)
+                raise ValueError(f"Preflight failed for {catalog_item.catalog_item_id}: {reasons}")
 
         hw, qp = self._resolve_hardware(request, catalog_item)
         if not self.pool.check_capacity(hw, qp):
@@ -676,8 +699,45 @@ class ProvisioningService:
         })
         self._workshops[workshop.workshop_id] = workshop
 
+        catalog_item = self.catalog.get_item(workshop.catalog_item_id)
+        if not catalog_item:
+            workshop = workshop.model_copy(update={"status": "failed", "metadata": {**workshop.metadata, "error": "catalog item not found"}})
+            self._workshops[workshop.workshop_id] = workshop
+            return workshop
+
+        if self.preflight:
+            preflight_result = self.preflight.check(catalog_item)
+            if not preflight_result.passed:
+                failed = [c for c in preflight_result.checks if c.status == "fail"]
+                reasons = "; ".join(c.message for c in failed)
+                workshop = workshop.model_copy(update={
+                    "status": "preflight_failed",
+                    "metadata": {**workshop.metadata, "preflight_failure": reasons},
+                })
+                self._workshops[workshop.workshop_id] = workshop
+                return workshop
+
+        can_provision, cap_reason = self.check_workshop_capacity(workshop)
+        max_seats = workshop.num_users
+        if not can_provision:
+            max_seats = self._estimate_max_seats(workshop)
+            if max_seats <= 0:
+                workshop = workshop.model_copy(update={
+                    "status": "failed",
+                    "metadata": {**workshop.metadata, "error": f"Insufficient capacity: {cap_reason}"},
+                })
+                self._workshops[workshop.workshop_id] = workshop
+                return workshop
+            logger.warning(
+                "Workshop %s: requested %d seats but cluster can support %d. Provisioning %d.",
+                workshop.workshop_id, workshop.num_users, max_seats, max_seats,
+            )
+
+        workshop_limit = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_WORKSHOP", str(self.MAX_ACTIVE_PER_WORKSHOP)))
+        seats_to_provision = min(max_seats, workshop_limit)
+
         session_ids = []
-        for i in range(workshop.num_users):
+        for i in range(seats_to_provision):
             user_id = f"workshop-{workshop.workshop_id[:8]}-user-{i+1}"
             request = LabRequest(
                 tenant_id=workshop.tenant_id,
@@ -691,7 +751,7 @@ class ProvisioningService:
             if accepted.status != LabRequestStatus.ACCEPTED:
                 continue
             try:
-                session = self.provision(accepted.request_id)
+                session = self.provision(accepted.request_id, workshop_id=workshop.workshop_id)
                 session = session.model_copy(update={
                     "metadata": {
                         **session.metadata,
@@ -705,15 +765,128 @@ class ProvisioningService:
                 })
                 self._save_session(session)
                 session_ids.append(session.session_id)
-            except ValueError:
+            except ValueError as e:
+                logger.warning("Workshop %s seat %d failed: %s", workshop.workshop_id, i + 1, e)
                 continue
 
+        status = "ready" if session_ids else "failed"
         workshop = workshop.model_copy(update={
-            "status": "ready",
+            "status": status,
             "session_ids": session_ids,
+            "metadata": {
+                **workshop.metadata,
+                "seats_requested": workshop.num_users,
+                "seats_provisioned": len(session_ids),
+            },
         })
         self._workshops[workshop.workshop_id] = workshop
         return workshop
+
+    def get_workshop_users(self, workshop_id: str) -> list:
+        workshop = self._workshops.get(workshop_id)
+        if not workshop:
+            raise ValueError(f"Workshop {workshop_id} not found")
+        users = []
+        for session_id in workshop.session_ids:
+            session = self._sessions.get(session_id)
+            if not session:
+                continue
+            request = self._requests.get(session.request_id)
+            users.append({
+                "session_id": session.session_id,
+                "user_id": request.requester_id if request else "unknown",
+                "lab_url": session.lab_url,
+                "dashboard_url": session.dashboard_url,
+                "status": session.status.value,
+                "expires_at": session.expires_at.isoformat() if session.expires_at else None,
+            })
+        return users
+
+    def check_workshop_capacity(self, workshop: Workshop) -> tuple:
+        mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+        if mode == "mock":
+            return True, "mock mode — capacity checks skipped"
+
+        try:
+            from kubernetes import client, config
+            try:
+                config.load_incluster_config()
+            except Exception:
+                config.load_kube_config()
+            v1 = client.CoreV1Api()
+            nodes = v1.list_node()
+
+            total_cpu_m = 0
+            total_mem_mi = 0
+            for node in nodes.items:
+                alloc = node.status.allocatable or {}
+                cpu_str = alloc.get("cpu", "0")
+                if cpu_str.endswith("m"):
+                    total_cpu_m += int(cpu_str[:-1])
+                else:
+                    total_cpu_m += int(float(cpu_str) * 1000)
+                mem_str = alloc.get("memory", "0")
+                if mem_str.endswith("Ki"):
+                    total_mem_mi += int(mem_str[:-2]) // 1024
+                elif mem_str.endswith("Mi"):
+                    total_mem_mi += int(mem_str[:-2])
+                elif mem_str.endswith("Gi"):
+                    total_mem_mi += int(mem_str[:-2]) * 1024
+
+            per_seat_cpu_m = int(os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"))
+            per_seat_mem_mi = int(os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"))
+            headroom_pct = float(os.environ.get("WORKSHOP_CAPACITY_HEADROOM_PCT", "20"))
+
+            usable_cpu = int(total_cpu_m * (1 - headroom_pct / 100))
+            usable_mem = int(total_mem_mi * (1 - headroom_pct / 100))
+
+            max_by_cpu = usable_cpu // per_seat_cpu_m if per_seat_cpu_m > 0 else 999
+            max_by_mem = usable_mem // per_seat_mem_mi if per_seat_mem_mi > 0 else 999
+            max_seats = min(max_by_cpu, max_by_mem)
+
+            if workshop.num_users <= max_seats:
+                return True, f"Cluster can support {max_seats} seats ({total_cpu_m}m CPU, {total_mem_mi}Mi memory, {headroom_pct}% headroom)"
+            else:
+                return False, f"Requested {workshop.num_users} seats but cluster supports {max_seats} (CPU: {max_by_cpu}, Memory: {max_by_mem})"
+        except ImportError:
+            return True, "kubernetes package not available — capacity check skipped"
+        except Exception as e:
+            logger.warning("Capacity check failed, allowing provisioning: %s", e)
+            return True, f"Capacity check failed: {e}"
+
+    def _estimate_max_seats(self, workshop: Workshop) -> int:
+        per_seat_cpu_m = int(os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"))
+        per_seat_mem_mi = int(os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"))
+        try:
+            from kubernetes import client, config
+            try:
+                config.load_incluster_config()
+            except Exception:
+                config.load_kube_config()
+            v1 = client.CoreV1Api()
+            nodes = v1.list_node()
+            total_cpu_m = 0
+            total_mem_mi = 0
+            for node in nodes.items:
+                alloc = node.status.allocatable or {}
+                cpu_str = alloc.get("cpu", "0")
+                if cpu_str.endswith("m"):
+                    total_cpu_m += int(cpu_str[:-1])
+                else:
+                    total_cpu_m += int(float(cpu_str) * 1000)
+                mem_str = alloc.get("memory", "0")
+                if mem_str.endswith("Ki"):
+                    total_mem_mi += int(mem_str[:-2]) // 1024
+                elif mem_str.endswith("Mi"):
+                    total_mem_mi += int(mem_str[:-2])
+                elif mem_str.endswith("Gi"):
+                    total_mem_mi += int(mem_str[:-2]) * 1024
+            headroom_pct = float(os.environ.get("WORKSHOP_CAPACITY_HEADROOM_PCT", "20"))
+            usable_cpu = int(total_cpu_m * (1 - headroom_pct / 100))
+            usable_mem = int(total_mem_mi * (1 - headroom_pct / 100))
+            return min(usable_cpu // per_seat_cpu_m, usable_mem // per_seat_mem_mi)
+        except Exception:
+            return workshop.num_users
 
     def reclaim_workshop(self, workshop_id: str) -> Workshop:
         workshop = self._workshops.get(workshop_id)

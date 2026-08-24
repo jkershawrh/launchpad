@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: partner-portal
+spec:
+  replicas: 0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+spec:
+  replicas: 0
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad
+  annotations:
+    skip: "true"
+spec:
+  host: unused.apps.oberon.fm2aihpcsed.com
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: launchpad-admin
+  annotations:
+    skip: "true"
+spec:
+  host: unused-admin.apps.oberon.fm2aihpcsed.com

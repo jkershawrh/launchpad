@@ -51,6 +51,23 @@ def get_workshop(workshop_id: str):
     return workshop
 
 
+@router.get("/{workshop_id}/users")
+def get_workshop_users(workshop_id: str):
+    try:
+        return provisioning_service.get_workshop_users(workshop_id)
+    except ValueError as e:
+        raise HTTPException(404, str(e))
+
+
+@router.get("/{workshop_id}/capacity")
+def get_workshop_capacity(workshop_id: str):
+    workshop = provisioning_service.get_workshop(workshop_id)
+    if not workshop:
+        raise HTTPException(404, f"Workshop {workshop_id} not found")
+    can, reason = provisioning_service.check_workshop_capacity(workshop)
+    return {"can_provision": can, "reason": reason, "seats_provisioned": len(workshop.session_ids)}
+
+
 @router.delete("/{workshop_id}", response_model=Workshop)
 def delete_workshop(workshop_id: str):
     try:

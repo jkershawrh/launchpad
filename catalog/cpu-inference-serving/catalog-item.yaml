@@ -1,0 +1,22 @@
+catalog_item_id: cpu-inference-serving
+display_name: "LLM CPU Serving on Xeon"
+description: "Deploy and serve an LLM entirely on Intel Xeon CPU. Demonstrates vLLM CPU inference with AMX acceleration. No GPU required."
+category: quick_start
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+default_hardware_profile: xeon-basic
+default_quota_profile: small
+default_ttl: "4h"
+provisioner_refs:
+  - helm-provisioner
+validation_refs:
+  - pod-ready
+supported_branding:
+  - intel-internal
+metadata:
+  deploy_method: helm
+  deploy_path: demos/quickstarts/llm-cpu-serving/helm
+  cpu_only: true
+  inference_endpoint: litellm
