@@ -22,10 +22,13 @@ class ValidationRequiredError(Exception):
 
 VALID_TRANSITIONS: Set[Tuple[SessionStatus, SessionStatus]] = {
     (SessionStatus.REQUESTED, SessionStatus.PROVISIONING),
+    (SessionStatus.REQUESTED, SessionStatus.RESETTING),
     (SessionStatus.PROVISIONING, SessionStatus.VALIDATING),
     (SessionStatus.PROVISIONING, SessionStatus.FAILED),
+    (SessionStatus.PROVISIONING, SessionStatus.RESETTING),
     (SessionStatus.VALIDATING, SessionStatus.READY),
     (SessionStatus.VALIDATING, SessionStatus.VALIDATION_FAILED),
+    (SessionStatus.VALIDATING, SessionStatus.RESETTING),
     (SessionStatus.READY, SessionStatus.ACTIVE),
     (SessionStatus.ACTIVE, SessionStatus.EXPIRED),
     (SessionStatus.ACTIVE, SessionStatus.RESETTING),
@@ -36,7 +39,9 @@ VALID_TRANSITIONS: Set[Tuple[SessionStatus, SessionStatus]] = {
     (SessionStatus.RESETTING, SessionStatus.VALIDATING),
     (SessionStatus.READY, SessionStatus.RESETTING),
     (SessionStatus.FAILED, SessionStatus.RECLAIMED),
+    (SessionStatus.FAILED, SessionStatus.RESETTING),
     (SessionStatus.VALIDATION_FAILED, SessionStatus.RECLAIMED),
+    (SessionStatus.VALIDATION_FAILED, SessionStatus.RESETTING),
     (SessionStatus.CLEANUP_FAILED, SessionStatus.RECLAIMED),
 }
 

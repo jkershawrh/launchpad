@@ -29,3 +29,36 @@ metadata:
   labels:
     app.kubernetes.io/name: launchpad-backend
     app.kubernetes.io/part-of: partner-ai-launchpad
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: inference-frontend
+  labels:
+    app.kubernetes.io/name: inference-frontend
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/jkershawrh/launchpad.git
+      ref: main
+    contextDir: demos/frontend
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Containerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: inference-frontend:latest
+  triggers:
+    - type: ConfigChange
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: inference-frontend
+  labels:
+    app.kubernetes.io/name: inference-frontend
+    app.kubernetes.io/part-of: partner-ai-launchpad

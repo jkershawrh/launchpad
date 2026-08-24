@@ -576,6 +576,9 @@ class ProvisioningService:
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
+        if session.status not in (SessionStatus.RESETTING, SessionStatus.CLEANUP_FAILED):
+            session = transition(session, SessionStatus.RESETTING, reason="cleanup started")
+            self._save_session(session)
         self.pool.release(session.request_id)
 
         cleanup_errors = []
@@ -609,8 +612,9 @@ class ProvisioningService:
         session = self._scrub_credentials(session)
 
         if cleanup_errors:
-            session = transition(session, SessionStatus.CLEANUP_FAILED,
-                                 reason=f"cleanup failed — credentials scrubbed — errors: {'; '.join(cleanup_errors)}")
+            reason = f"cleanup failed — credentials scrubbed — errors: {'; '.join(cleanup_errors)}"
+            if session.status != SessionStatus.CLEANUP_FAILED:
+                session = transition(session, SessionStatus.CLEANUP_FAILED, reason=reason)
             self._save_session(session)
             notify_stargate(
                 session_id=session.session_id,

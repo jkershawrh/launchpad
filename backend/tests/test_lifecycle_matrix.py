@@ -23,7 +23,7 @@ def _session_with_validation(status=SessionStatus.VALIDATING, passing=True):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# ALL 17 VALID TRANSITIONS
+# ALL VALID TRANSITIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class TestValidTransitions:
@@ -98,8 +98,19 @@ class TestValidTransitions:
         s = transition(_session(SessionStatus.CLEANUP_FAILED), SessionStatus.RECLAIMED)
         assert s.status == SessionStatus.RECLAIMED
 
+    @pytest.mark.parametrize("status", [
+        SessionStatus.REQUESTED,
+        SessionStatus.PROVISIONING,
+        SessionStatus.VALIDATING,
+        SessionStatus.FAILED,
+        SessionStatus.VALIDATION_FAILED,
+    ])
+    def test_incomplete_session_can_enter_cleanup(self, status):
+        s = transition(_session(status), SessionStatus.RESETTING)
+        assert s.status == SessionStatus.RESETTING
+
     def test_all_valid_transitions_covered(self):
-        assert len(VALID_TRANSITIONS) == 17
+        assert len(VALID_TRANSITIONS) == 22
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
