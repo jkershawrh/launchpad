@@ -126,7 +126,7 @@ Both products use the same versions to avoid drift:
 | Python | >=3.11 |
 | FastAPI | >=0.115 |
 | Pydantic | >=2.10 |
-| asyncpg | >=0.30 |
+| psycopg2-binary | >=2.9 |
 | httpx | >=0.28 |
 | Base image | UBI9/python-311 |
 | Container tool | Podman |

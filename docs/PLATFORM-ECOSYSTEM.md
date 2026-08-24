@@ -120,7 +120,7 @@ Every integration fails open. Each product works fully standalone.
 | Python | >=3.11 |
 | FastAPI | >=0.115 |
 | Pydantic | >=2.10 |
-| asyncpg | >=0.30 |
+| psycopg2-binary | >=2.9 |
 | httpx | >=0.28 |
 | API prefix | `/api/v1/` (product routes), `/integration/` (cross-product) |
 | Base image | UBI9/python-311 |

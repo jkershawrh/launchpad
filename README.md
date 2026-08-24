@@ -114,8 +114,8 @@ The intelligence layer makes provisioning decisions smarter over time:
 
 ## Tech Stack
 
-- **Backend:** Python >=3.11, FastAPI >=0.115, Pydantic >=2.10, asyncpg >=0.30
-- **Database:** PostgreSQL via asyncpg (with in-memory fallback for testing)
+- **Backend:** Python >=3.11, FastAPI >=0.115, Pydantic >=2.10, psycopg2 >=2.9
+- **Database:** PostgreSQL via psycopg2 (with in-memory fallback for testing)
 - **Background tasks:** Celery + Redis (6 beat tasks: TTL enforcement, session cleanup, capacity sync, feedback sync, health check, rebalance)
 - **Frontends:** React 19, Vite 8, TypeScript 6 — Tailwind (portal/admin) + PatternFly (demos)
 - **API prefix:** All routes under `/api/v1/`

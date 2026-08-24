@@ -14,7 +14,7 @@ dependencies = [
     "uvicorn>=0.34",
     "requests>=2.31",
     "kubernetes>=28.0",
-    "asyncpg>=0.30",
+    "psycopg2-binary>=2.9",
 ]
 
 [project.optional-dependencies]
