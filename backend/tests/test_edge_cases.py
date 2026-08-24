@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from app.domain.enums import CatalogCategory, Persistence, SessionStatus
 from app.domain.models import LabRequest, Workshop
 from app.main import app
-from app.services.provisioning import ProvisioningService
+from app.services.provisioning import ProvisioningService, parse_ttl
 
 client = TestClient(app)
 
@@ -122,6 +122,18 @@ class TestStateEdgeCases:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class TestTTLEdgeCases:
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            ("30s", timedelta(seconds=30)),
+            ("10m", timedelta(minutes=10)),
+            ("4h", timedelta(hours=4)),
+            ("1d", timedelta(days=1)),
+        ],
+    )
+    def test_ttl_units(self, value, expected):
+        assert parse_ttl(value) == expected
 
     def test_ttl_zero_hours(self):
         svc = _svc()

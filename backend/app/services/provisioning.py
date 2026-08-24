@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import threading
 import uuid as _uuid
 from datetime import datetime, timedelta
@@ -30,6 +31,22 @@ from app.domain.models import (
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
 logger = __import__("logging").getLogger("launchpad.provisioning")
+
+
+def parse_ttl(value: str) -> timedelta:
+    """Parse a positive integer TTL with seconds, minutes, hours, or days."""
+    match = re.fullmatch(r"\s*(\d+)\s*([smhd])\s*", value, re.IGNORECASE)
+    if not match:
+        raise ValueError(f"Invalid TTL '{value}'; expected formats such as 10m, 4h, or 1d")
+    amount = int(match.group(1))
+    unit = match.group(2).lower()
+    keyword = {
+        "s": "seconds",
+        "m": "minutes",
+        "h": "hours",
+        "d": "days",
+    }[unit]
+    return timedelta(**{keyword: amount})
 
 
 class ProvisioningService:
@@ -323,8 +340,7 @@ class ProvisioningService:
             expires_at = None
         else:
             ttl_str = request.ttl or catalog_item.default_ttl or "4h"
-            hours = int(ttl_str.replace("h", ""))
-            expires_at = datetime.utcnow() + timedelta(hours=hours)
+            expires_at = datetime.utcnow() + parse_ttl(ttl_str)
 
         dashboard_url = self.observability.create_dashboard(
             LabSession(
