@@ -24,9 +24,11 @@ COPY backend/scripts/ ./scripts/
 COPY deploy/ /opt/deploy/
 COPY demos/deploy/ /opt/demos-deploy/
 
-# Quickstarts are optional — cloned upstream repos, not in git.
-# When present, pre-build Helm chart dependencies at image build time.
-COPY demos/quickstart[s]/ /opt/quickstarts/
+# Catalog items (YAML-driven demo definitions)
+COPY catalog/ /opt/catalog/
+
+# Quickstarts are optional — cloned upstream repos, not always in git.
+RUN mkdir -p /opt/quickstarts
 RUN if [ -d /opt/quickstarts/rag ]; then \
       helm repo add ai-quickstart https://rh-ai-quickstart.github.io/ai-architecture-charts 2>/dev/null || true \
       && helm repo update 2>/dev/null || true \

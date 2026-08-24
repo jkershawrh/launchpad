@@ -11,6 +11,7 @@ patches:
   - path: patch-routes.yaml
   - path: patch-configmap.yaml
   - path: patch-remove-frontend.yaml
+  - path: patch-postgres-pvc.yaml
   - target:
       group: apps
       version: v1
