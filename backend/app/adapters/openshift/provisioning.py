@@ -353,7 +353,8 @@ http {{
 
     def _wait_for_showroom_route(self, namespace: str) -> dict[str, str]:
         """Wait for Argo CD to sync far enough for the chart route to exist."""
-        deadline = time.time() + HEALTH_TIMEOUT
+        timeout = int(os.environ.get("SHOWROOM_ROUTE_TIMEOUT", "300"))
+        deadline = time.time() + timeout
         routes: dict[str, str] = {}
         while time.time() < deadline:
             routes = self._get_routes(namespace)
@@ -361,7 +362,7 @@ http {{
                 return routes
             time.sleep(HEALTH_INTERVAL)
         raise ValueError(
-            f"Showroom route was not created in namespace '{namespace}' within {HEALTH_TIMEOUT}s"
+            f"Showroom route was not created in namespace '{namespace}' within {timeout}s"
         )
 
     @staticmethod

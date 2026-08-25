@@ -10,5 +10,6 @@ data:
   SHOWROOM_CHART_VERSION: "2.2.*"
   SHOWROOM_CONTENT_REPO_URL: https://github.com/jkershawrh/launchpad.git
   SHOWROOM_CONTENT_REF: main
+  SHOWROOM_ROUTE_TIMEOUT: "300"
   LAUNCHPAD_MODE: "openshift"
   CORS_ORIGINS: "https://launchpad.apps.example.com,https://launchpad-admin.apps.example.com"

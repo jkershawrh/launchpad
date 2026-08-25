@@ -89,4 +89,6 @@ export const api = {
   getWorkshop: (id: string) => request<Workshop>(`/workshops/${id}`),
   reclaimWorkshop: (id: string) =>
     request<Workshop>(`/workshops/${id}`, { method: 'DELETE' }),
+  retryFailedWorkshopSeats: (id: string) =>
+    request<Workshop>(`/workshops/${id}/retry-failed`, { method: 'POST' }),
 };

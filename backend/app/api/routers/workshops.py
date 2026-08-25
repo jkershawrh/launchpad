@@ -94,6 +94,18 @@ def get_workshop(workshop_id: str):
     return workshop
 
 
+@router.post("/{workshop_id}/retry-failed", response_model=Workshop, status_code=202)
+def retry_failed_workshop_seats(workshop_id: str, background_tasks: BackgroundTasks):
+    try:
+        workshop = provisioning_service.queue_failed_workshop_seats(workshop_id)
+        background_tasks.add_task(provisioning_service.run_queued_workshop, workshop_id)
+        return workshop
+    except ValueError as e:
+        if "not found" in str(e):
+            raise HTTPException(404, str(e))
+        raise HTTPException(409, str(e))
+
+
 @router.get("/{workshop_id}/users")
 def get_workshop_users(workshop_id: str):
     try:

@@ -872,6 +872,25 @@ class ProvisioningService:
             )
         return self.provision_workshop(workshop)
 
+    def queue_failed_workshop_seats(self, workshop_id: str) -> Workshop:
+        workshop = self._workshops.get(workshop_id)
+        if not workshop:
+            raise ValueError(f"Workshop {workshop_id} not found")
+        failed = [seat for seat in workshop.seats if seat.status == WorkshopSeatStatus.FAILED]
+        if not failed:
+            raise ValueError(f"Workshop {workshop_id} has no failed seats to retry")
+        seats = [
+            seat.model_copy(update={
+                "status": WorkshopSeatStatus.PENDING,
+                "error": None,
+                "updated_at": datetime.utcnow(),
+            }) if seat.status == WorkshopSeatStatus.FAILED else seat
+            for seat in workshop.seats
+        ]
+        queued = workshop.model_copy(update={"status": WorkshopStatus.QUEUED, "seats": seats})
+        self._save_workshop(queued)
+        return queued
+
     def provision_workshop(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:

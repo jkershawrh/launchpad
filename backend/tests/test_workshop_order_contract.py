@@ -224,3 +224,32 @@ def test_queued_order_can_resume_after_service_restart():
 
     assert completed.status == WorkshopStatus.READY
     assert len(completed.session_ids) == 2
+
+
+def test_failed_workshop_seats_can_be_requeued_without_resetting_ready_seats():
+    service = ProvisioningService()
+    order = service.create_workshop_order(
+        Workshop(
+            tenant_id="retry-tenant",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=2,
+        )
+    )
+    seats = [
+        order.seats[0].model_copy(update={"status": WorkshopSeatStatus.READY}),
+        order.seats[1].model_copy(update={
+            "status": WorkshopSeatStatus.FAILED,
+            "error": "route timed out",
+        }),
+    ]
+    service._save_workshop(order.model_copy(update={
+        "status": WorkshopStatus.PARTIALLY_READY,
+        "seats": seats,
+    }))
+
+    queued = service.queue_failed_workshop_seats(order.workshop_id)
+
+    assert queued.status == WorkshopStatus.QUEUED
+    assert queued.seats[0].status == WorkshopSeatStatus.READY
+    assert queued.seats[1].status == WorkshopSeatStatus.PENDING
+    assert queued.seats[1].error is None
