@@ -98,13 +98,13 @@ def test_guided_lab_namespace_keeps_generated_showroom_host_label_valid():
 
 def test_guided_seat_namespace_can_use_stable_seat_suffix():
     seat_id = "003606bd-5b75-40dc-8eb8-8b7533c5de04"
-    suffix = seat_id.replace("-", "")[:8]
+    suffix = seat_id.replace("-", "")[:6]
 
     namespace = OpenShiftProvisioningAdapter._demo_namespace(
         "smoke-test-tenant", "guided-rag-on-xeon", suffix
     )
 
-    assert namespace.endswith("-003606bd")
+    assert namespace.endswith("-003606")
 
 
 def test_gateway_pvc_uses_configured_storage_class():
