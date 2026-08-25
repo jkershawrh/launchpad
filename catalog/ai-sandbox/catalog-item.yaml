@@ -1,6 +1,6 @@
 catalog_item_id: ai-sandbox
-display_name: "AI Developer Sandbox"
-description: "Interactive development sandbox with Jupyter, VS Code, and access to the Oberon model fleet via LiteLLM. Experiment freely with Intel Xeon CPU inference."
+display_name: "OpenShift Developer Sandbox"
+description: "A namespace-scoped OpenShift environment with the Red Hat web console, web terminal, browser IDE, and access to the Oberon model fleet."
 category: open_sandbox
 version: "1.0.0"
 status: active
@@ -17,11 +17,19 @@ validation_refs:
 supported_branding:
   - intel-internal
 metadata:
-  sandbox_type: ai_dev
+  sandbox_type: openshift_dev
   stack_level: ai_dev
   access_methods:
-    - jupyter
+    - openshift_console
+    - web_terminal
     - vscode
+  optional_capabilities:
+    - openshift-ai
+    - openshift-serverless
+    - openshift-service-mesh
+    - cluster-observability
+    - openshift-gitops
+    - intel-device-plugins
   required_models:
     - smollm2-360m
     - smollm3-3b

@@ -1,6 +1,8 @@
 export interface SandboxConnections {
   accessMethods: string[];
   webConsoleUrl?: string;
+  openshiftConsoleUrl?: string;
+  webTerminalUrl?: string;
   vscodeUrl?: string;
   jupyterUrl?: string;
   sshCommand?: string;
@@ -15,6 +17,8 @@ export function sandboxConnections(resources: Record<string, unknown>): SandboxC
       ? resources.access_methods.map(String)
       : [],
     ...(typeof info.web_console_url === 'string' ? { webConsoleUrl: info.web_console_url } : {}),
+    ...(typeof info.openshift_console_url === 'string' ? { openshiftConsoleUrl: info.openshift_console_url } : {}),
+    ...(typeof info.web_terminal_url === 'string' ? { webTerminalUrl: info.web_terminal_url } : {}),
     ...(typeof info.vscode_url === 'string' ? { vscodeUrl: info.vscode_url } : {}),
     ...(typeof info.jupyter_url === 'string' ? { jupyterUrl: info.jupyter_url } : {}),
     ...(typeof info.ssh === 'string' ? { sshCommand: info.ssh } : {}),

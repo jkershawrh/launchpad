@@ -74,13 +74,14 @@ class OpenShiftSandboxProvisioner:
             target_namespace=namespace,
             steps=[
                 ProvisioningStep(name="create-namespace", adapter="openshift-sandbox", action="create_namespace", order=1),
-                ProvisioningStep(name="grant-image-pull", adapter="openshift-sandbox", action="grant_image_pull", order=2),
-                ProvisioningStep(name="create-secrets", adapter="openshift-sandbox", action="create_secrets", order=3),
-                ProvisioningStep(name="create-pvc", adapter="openshift-sandbox", action="create_pvc", order=4),
-                ProvisioningStep(name="create-deployment", adapter="openshift-sandbox", action="create_deployment", order=5),
-                ProvisioningStep(name="create-service", adapter="openshift-sandbox", action="create_service", order=6),
-                ProvisioningStep(name="create-routes", adapter="openshift-sandbox", action="create_routes", order=7),
-                ProvisioningStep(name="wait-for-ready", adapter="openshift-sandbox", action="wait_ready", order=8),
+                ProvisioningStep(name="grant-requester-access", adapter="openshift-sandbox", action="grant_requester_access", order=2),
+                ProvisioningStep(name="grant-image-pull", adapter="openshift-sandbox", action="grant_image_pull", order=3),
+                ProvisioningStep(name="create-secrets", adapter="openshift-sandbox", action="create_secrets", order=4),
+                ProvisioningStep(name="create-pvc", adapter="openshift-sandbox", action="create_pvc", order=5),
+                ProvisioningStep(name="create-deployment", adapter="openshift-sandbox", action="create_deployment", order=6),
+                ProvisioningStep(name="create-service", adapter="openshift-sandbox", action="create_service", order=7),
+                ProvisioningStep(name="create-routes", adapter="openshift-sandbox", action="create_routes", order=8),
+                ProvisioningStep(name="wait-for-ready", adapter="openshift-sandbox", action="wait_ready", order=9),
             ],
             adapters_required=["openshift-sandbox"],
             validation_steps=["pod-ready", "ssh-reachable"],
@@ -91,6 +92,9 @@ class OpenShiftSandboxProvisioner:
                 "access_methods": access_methods,
                 "compute_tier": compute_tier,
                 "storage_size": storage_size,
+                "tenant_id": request.tenant_id,
+                "requester_id": request.requester_id,
+                "catalog_item_id": request.catalog_item_id,
             },
         )
 
@@ -114,6 +118,9 @@ class OpenShiftSandboxProvisioner:
         if workshop_id:
             ns_labels["launchpad.redhat.com/workshop-id"] = workshop_id
         self._create_namespace(namespace, extra_labels=ns_labels)
+
+        # Give the requesting OpenShift identity access only to this sandbox.
+        self._grant_requester_access(namespace, str(res.get("requester_id", "")))
 
         # 2. Grant image pull
         self._grant_image_pull(namespace)
@@ -143,7 +150,14 @@ class OpenShiftSandboxProvisioner:
             "stack_level": stack_level,
             "compute_tier": compute_tier,
         }
-        lab_url = ""
+        console_base = os.environ.get("OPENSHIFT_CONSOLE_URL", "").rstrip("/")
+        console_url = f"{console_base}/topology/ns/{namespace}" if console_base else ""
+        lab_url = console_url
+
+        if console_url and "openshift_console" in access_methods:
+            connection_info["openshift_console_url"] = console_url
+        if console_url and "web_terminal" in access_methods:
+            connection_info["web_terminal_url"] = console_url
 
         for name, host in routes.items():
             url = f"https://{host}"
@@ -216,6 +230,26 @@ class OpenShiftSandboxProvisioner:
         except ApiException as e:
             if e.status != 409:
                 logger.warning("Failed to create image-pull RoleBinding for %s: %s", namespace, e.reason)
+
+    def _grant_requester_access(self, namespace: str, requester_id: str) -> None:
+        if not requester_id:
+            return
+        try:
+            self._rbac_v1.create_namespaced_role_binding(
+                namespace=namespace,
+                body=client.V1RoleBinding(
+                    metadata=client.V1ObjectMeta(name="launchpad-requester", namespace=namespace),
+                    role_ref=client.V1RoleRef(
+                        api_group="rbac.authorization.k8s.io", kind="ClusterRole", name="edit"
+                    ),
+                    subjects=[client.RbacV1Subject(
+                        kind="User", name=requester_id, api_group="rbac.authorization.k8s.io"
+                    )],
+                ),
+            )
+        except ApiException as e:
+            if e.status != 409:
+                raise ValueError(f"Failed to grant sandbox access to {requester_id}: {e.reason}")
 
     def _create_secrets(self, namespace: str, ssh_password: str, maas_key: str = "") -> None:
         litellm_key = maas_key or os.environ.get("LITELLM_API_KEY", "")

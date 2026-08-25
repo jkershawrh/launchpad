@@ -9,25 +9,25 @@ const SANDBOX_PRESETS = [
   {
     id: 'sandbox-minimal',
     label: 'Minimal',
-    description: 'RHEL base with oc CLI, podman, Python. Quick experimentation.',
+    description: 'OpenShift Console and web terminal with oc, kubectl, and Helm.',
     stack: 'minimal',
-    access: ['web_console', 'ssh'],
+    access: ['openshift_console', 'web_terminal'],
     aap: 'none',
   },
   {
     id: 'sandbox-ai-dev',
-    label: 'AI Developer',
-    description: 'PyTorch, vLLM, Jupyter, VS Code Server, model endpoint access, Ansible playbooks.',
+    label: 'OpenShift Developer',
+    description: 'Namespace-scoped OpenShift Console, web terminal, browser IDE, and model endpoint access.',
     stack: 'ai_dev',
-    access: ['web_console', 'ssh', 'jupyter', 'vscode'],
+    access: ['openshift_console', 'web_terminal', 'vscode'],
     aap: 'playbook_library',
   },
   {
     id: 'sandbox-full-stack',
-    label: 'Full Red Hat AI',
-    description: 'Everything — OpenVINO, Intel toolkits, Kafka, Tekton, full AAP. The complete platform.',
+    label: 'Automation & GitOps',
+    description: 'OpenShift development plus Ansible playbooks and Pipelines/GitOps tooling when available.',
     stack: 'full_redhat_ai',
-    access: ['web_console', 'ssh', 'vscode', 'jupyter', 'api'],
+    access: ['openshift_console', 'web_terminal', 'vscode', 'api'],
     aap: 'full_aap',
   },
   {
@@ -35,9 +35,18 @@ const SANDBOX_PRESETS = [
     label: 'Custom',
     description: 'Configure exactly what you need.',
     stack: 'minimal',
-    access: ['ssh'],
+    access: ['openshift_console', 'web_terminal'],
     aap: 'none',
   },
+];
+
+const OBERON_CAPABILITIES = [
+  'Red Hat OpenShift AI',
+  'OpenShift Serverless',
+  'OpenShift Service Mesh',
+  'Cluster Observability',
+  'Argo CD / GitOps',
+  'Intel Device Plugins',
 ];
 
 export default function Sandbox() {
@@ -66,7 +75,7 @@ export default function Sandbox() {
 
   const [sandboxConfig, setSandboxConfig] = useState({
     stack_level: 'ai_dev',
-    access_methods: ['web_console', 'ssh', 'jupyter', 'vscode'] as string[],
+    access_methods: ['openshift_console', 'web_terminal', 'vscode'] as string[],
     aap_integration: 'playbook_library',
     storage_size: '50Gi',
   });
@@ -168,7 +177,7 @@ export default function Sandbox() {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl sm:text-4xl font-bold mb-3 tracking-tight">Open Sandbox</h1>
           <p className="text-gray-300 text-lg leading-relaxed">
-            Configure your own AI development environment. Choose your stack, access methods, and tools.
+            Work directly in OpenShift with namespace-scoped access, Red Hat tooling, and optional automation capabilities.
           </p>
         </div>
       </section>
@@ -181,6 +190,14 @@ export default function Sandbox() {
             {error}
           </div>
         )}
+
+        <section className="mb-8 rounded border border-[#333] bg-[#212121] p-5">
+          <h2 className="text-sm font-semibold text-white">Available on the shared Oberon platform</h2>
+          <p className="mt-1 text-xs leading-5 text-[#A3A3A3]">Your sandbox receives a private namespace and access to applicable cluster services. Operators remain centrally managed.</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {OBERON_CAPABILITIES.map((capability) => <span key={capability} className="rounded-full border border-[#555] px-3 py-1 text-xs text-[#D2D2D2]">{capability}</span>)}
+          </div>
+        </section>
 
         {/* Preset Selection */}
         <h2 className="text-lg font-semibold text-white mb-4">Choose a Starting Point</h2>
@@ -229,7 +246,7 @@ export default function Sandbox() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#e0e0e0] mb-1">Your Name / ID</label>
+              <label className="block text-sm font-medium text-[#e0e0e0] mb-1">OpenShift Username</label>
               <input
                 type="text"
                 value={form.requester_id}
@@ -238,6 +255,7 @@ export default function Sandbox() {
                 className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                 required
               />
+              <p className="mt-1 text-xs text-[#6A6E73]">Used to grant edit access only to your new sandbox namespace.</p>
             </div>
           </div>
 
@@ -254,8 +272,8 @@ export default function Sandbox() {
                   className="w-full border border-[#333] rounded px-3 py-2 text-sm"
                 >
                   <option value="minimal">Minimal — RHEL base, oc, podman, Python</option>
-                  <option value="ai_dev">AI Developer — PyTorch, vLLM, Jupyter, Ansible</option>
-                  <option value="full_redhat_ai">Full Red Hat AI — Everything + Intel toolkits</option>
+                  <option value="ai_dev">OpenShift Developer — oc, browser IDE, model endpoint</option>
+                  <option value="full_redhat_ai">Automation &amp; GitOps — Ansible, Pipelines, GitOps tooling</option>
                 </select>
               </div>
 
@@ -263,10 +281,9 @@ export default function Sandbox() {
                 <label className="block text-sm font-medium text-[#e0e0e0] mb-2">Access Methods</label>
                 <div className="flex flex-wrap gap-3">
                   {[
-                    { value: 'web_console', label: 'Web Console' },
-                    { value: 'ssh', label: 'SSH' },
+                    { value: 'openshift_console', label: 'OpenShift Console' },
+                    { value: 'web_terminal', label: 'Web Terminal' },
                     { value: 'vscode', label: 'VS Code Server' },
-                    { value: 'jupyter', label: 'Jupyter' },
                     { value: 'api', label: 'API' },
                   ].map((method) => (
                     <label

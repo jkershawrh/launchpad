@@ -23,4 +23,18 @@ describe('sandboxConnections', () => {
       accessMethods: ['ssh'],
     });
   });
+
+  it('exposes the real OpenShift console and web terminal entry points', () => {
+    expect(sandboxConnections({
+      access_methods: ['openshift_console', 'web_terminal'],
+      connection_info: {
+        openshift_console_url: 'https://console.example.test/topology/ns/lab-a',
+        web_terminal_url: 'https://console.example.test/topology/ns/lab-a',
+      },
+    })).toEqual({
+      accessMethods: ['openshift_console', 'web_terminal'],
+      openshiftConsoleUrl: 'https://console.example.test/topology/ns/lab-a',
+      webTerminalUrl: 'https://console.example.test/topology/ns/lab-a',
+    });
+  });
 });

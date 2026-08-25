@@ -286,6 +286,39 @@ def test_openshift_sandbox_readiness_checks_requested_services():
     assert next(e.value for e in container.env if e.name == "ACCESS_METHODS") == "jupyter,vscode"
 
 
+def test_openshift_sandbox_plan_defaults_to_red_hat_console_access():
+    from app.adapters.openshift.sandbox_provisioning import OpenShiftSandboxProvisioner
+    from app.domain.enums import CatalogCategory, Persistence
+    from app.domain.models import CatalogItem, LabRequest
+
+    provisioner = object.__new__(OpenShiftSandboxProvisioner)
+    item = CatalogItem(
+        catalog_item_id="ai-sandbox",
+        display_name="OpenShift Developer Sandbox",
+        description="Red Hat aligned sandbox",
+        category=CatalogCategory.OPEN_SANDBOX,
+        metadata={
+            "stack_level": "openshift_dev",
+            "access_methods": ["openshift_console", "web_terminal", "vscode"],
+        },
+    )
+    request = LabRequest(
+        tenant_id="tenant-a",
+        requester_id="jane.doe",
+        catalog_item_id="ai-sandbox",
+        requested_mode=CatalogCategory.OPEN_SANDBOX,
+        persistence=Persistence.EPHEMERAL,
+    )
+
+    plan = provisioner.create_plan(request, item)
+
+    assert plan.required_resources["requester_id"] == "jane.doe"
+    assert plan.required_resources["access_methods"] == [
+        "openshift_console", "web_terminal", "vscode",
+    ]
+    assert "grant-requester-access" in [step.name for step in plan.steps]
+
+
 # ─── S12: API end-to-end ─────────────────────────────────────────────────────
 
 def test_api_sandbox_launch():
