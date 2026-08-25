@@ -13,7 +13,7 @@ export default function Workshops() {
   }, []);
 
   return <div className="mx-auto max-w-6xl px-4 py-10">
-    <div className="flex items-center justify-between gap-4"><div><h1 className="text-3xl font-bold">Workshops</h1><p className="mt-1 text-[#6A6E73]">Organizer view for multi-seat lab orders.</p></div><Link to="/workshops/new" className="rounded bg-[#EE0000] px-4 py-2 font-semibold text-white">Create workshop</Link></div>
+    <div className="flex items-center justify-between gap-4"><div><h1 className="text-3xl font-bold">Workshops</h1><p className="mt-1 text-[#6A6E73]">Each order is one workshop with isolated participant seats.</p></div><Link to="/workshops/new" className="rounded bg-[#EE0000] px-4 py-2 font-semibold text-white">Create workshop</Link></div>
     {error && <div className="mt-6 rounded border border-red-200 bg-red-50 p-3 text-red-700">{error}</div>}
     <div className="mt-8 grid gap-4">
       {items.map((workshop) => {

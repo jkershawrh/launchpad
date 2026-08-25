@@ -5,12 +5,12 @@ describe('workshop order contract', () => {
   it('accepts supported seat counts', () => {
     expect(validateSeatCount(1)).toBeNull();
     expect(validateSeatCount(20)).toBeNull();
-    expect(validateSeatCount(100)).toBeNull();
+    expect(validateSeatCount(20)).toBeNull();
   });
 
   it('rejects unsafe seat counts', () => {
-    expect(validateSeatCount(0)).toMatch(/between 1 and 100/);
-    expect(validateSeatCount(101)).toMatch(/between 1 and 100/);
+    expect(validateSeatCount(0)).toMatch(/between 1 and 20/);
+    expect(validateSeatCount(21)).toMatch(/between 1 and 20/);
     expect(validateSeatCount(2.5)).toMatch(/whole number/);
   });
 

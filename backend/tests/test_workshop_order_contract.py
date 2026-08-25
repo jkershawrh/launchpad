@@ -1,4 +1,7 @@
 """Workshop ordering contract: seats, lifecycle, and idempotent creation."""
+import os
+from unittest.mock import patch
+
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 import pytest
@@ -280,3 +283,16 @@ def test_interrupted_workshop_seats_can_be_requeued_without_resetting_ready_seat
     assert queued.seats[0].status == WorkshopSeatStatus.READY
     assert queued.seats[1].status == WorkshopSeatStatus.PENDING
     assert queued.seats[2].status == WorkshopSeatStatus.PENDING
+
+
+def test_workshop_order_rejects_more_than_supported_seat_limit():
+    service = ProvisioningService()
+    with patch.dict(os.environ, {"MAX_ACTIVE_SESSIONS_PER_WORKSHOP": "20"}):
+        with pytest.raises(ValueError, match="supported limit of 20"):
+            service.create_workshop_order(
+                Workshop(
+                    tenant_id="limit-tenant",
+                    catalog_item_id="inference-overdrive-quickstart",
+                    num_users=21,
+                )
+            )

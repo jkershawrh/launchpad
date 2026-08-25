@@ -784,6 +784,13 @@ class ProvisioningService:
     def create_workshop_order(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:
+        workshop_limit = int(os.environ.get(
+            "MAX_ACTIVE_SESSIONS_PER_WORKSHOP", str(self.MAX_ACTIVE_PER_WORKSHOP)
+        ))
+        if workshop.num_users > workshop_limit:
+            raise ValueError(
+                f"Workshop seat count exceeds the supported limit of {workshop_limit}"
+            )
         fingerprint = self._workshop_order_fingerprint(workshop)
         if idempotency_key:
             lookup_key = (workshop.tenant_id, idempotency_key)

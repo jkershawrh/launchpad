@@ -1,6 +1,6 @@
 export function validateSeatCount(value: number): string | null {
   if (!Number.isInteger(value)) return 'Seat count must be a whole number.';
-  if (value < 1 || value > 100) return 'Seat count must be between 1 and 100.';
+  if (value < 1 || value > 20) return 'Seat count must be between 1 and 20.';
   return null;
 }
 
