@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import time
 import uuid
+import yaml
 from pathlib import Path
 from typing import Optional
 
@@ -117,7 +118,9 @@ class OpenShiftProvisioningAdapter:
             self._grant_image_pull(gw_namespace)
             self._create_demo_secrets(gw_namespace, session_maas_key)
             self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
-            time.sleep(5)
+            self._wait_for_deployments(
+                gw_namespace, deployments={"postgres", "gateway"}
+            )
 
         # --- Step 2: Create demo namespace ---
         self._create_namespace(demo_namespace)
@@ -596,6 +599,11 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
                 line for line in content.splitlines()
                 if not line.strip().startswith("namespace:")
             )
+            cleaned = self._inject_storage_class(
+                cleaned,
+                os.environ.get("DEMO_STORAGE_CLASS")
+                or os.environ.get("SANDBOX_STORAGE_CLASS", ""),
+            )
             result = subprocess.run(
                 [kubectl, "apply", "-f", "-", "-n", namespace],
                 input=cleaned,
@@ -609,13 +617,29 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
                     f"in namespace '{namespace}':\n{result.stderr}"
                 )
 
+    @staticmethod
+    def _inject_storage_class(content: str, storage_class: str) -> str:
+        if not storage_class:
+            return content
+        documents = list(yaml.safe_load_all(content))
+        changed = False
+        for document in documents:
+            if not isinstance(document, dict) or document.get("kind") != "PersistentVolumeClaim":
+                continue
+            spec = document.setdefault("spec", {})
+            if not spec.get("storageClassName"):
+                spec["storageClassName"] = storage_class
+                changed = True
+        return yaml.safe_dump_all(documents, sort_keys=False) if changed else content
+
     def _wait_for_deployments(
         self,
         namespace: str,
         timeout: int = WAIT_TIMEOUT,
+        deployments: set[str] | None = None,
     ) -> None:
         deadline = time.time() + timeout
-        pending = set(WATCHED_DEPLOYMENTS)
+        pending = set(deployments or WATCHED_DEPLOYMENTS)
 
         while pending and time.time() < deadline:
             for name in list(pending):

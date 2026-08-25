@@ -71,3 +71,17 @@ def test_guided_lab_namespace_keeps_generated_showroom_host_label_valid():
 
     assert namespace == "launchpad-smoke-test-tenant-guided-rag-on-xeon-af85a6"
     assert len(f"showroom-{namespace}") <= 63
+
+
+def test_gateway_pvc_uses_configured_storage_class():
+    manifest = """apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data
+spec:
+  accessModes: [ReadWriteOnce]
+"""
+
+    rendered = OpenShiftProvisioningAdapter._inject_storage_class(manifest, "nfs-storage")
+
+    assert "storageClassName: nfs-storage" in rendered

@@ -66,6 +66,39 @@ metadata:
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
+  name: inference-gateway
+  labels:
+    app.kubernetes.io/name: inference-gateway
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/rhpds/launchpad.git
+      ref: main
+    contextDir: demos/gateway
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Containerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: inference-gateway:latest
+  triggers:
+    - type: ConfigChange
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: inference-gateway
+  labels:
+    app.kubernetes.io/name: inference-gateway
+    app.kubernetes.io/part-of: partner-ai-launchpad
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
   name: launchpad-sandbox
   labels:
     app.kubernetes.io/name: launchpad-sandbox
