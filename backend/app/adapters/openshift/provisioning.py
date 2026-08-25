@@ -351,8 +351,8 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
                 period_seconds=5,
             ),
             resources=client.V1ResourceRequirements(
-                requests={"cpu": "25m", "memory": "32Mi"},
-                limits={"cpu": "200m", "memory": "128Mi"},
+                requests={"cpu": "100m", "memory": "128Mi"},
+                limits={"cpu": "500m", "memory": "256Mi"},
             ),
         )
         deployment = client.V1Deployment(
