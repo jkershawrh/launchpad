@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import json
 import logging
 import os
 import re
@@ -85,6 +86,7 @@ class OpenShiftProvisioningAdapter:
                 "overlay_path": str(self._overlay_path),
                 "catalog_item_id": catalog_item.catalog_item_id,
                 "demo_pages": meta.get("demo_pages", "all"),
+                "workspace_path": meta.get("workspace_path", ""),
                 "showroom_enabled": bool(meta.get("showroom", False)),
                 "showroom_title": meta.get("showroom_title", catalog_item.display_name),
                 "showroom_steps": meta.get("showroom_steps", []),
@@ -130,7 +132,9 @@ class OpenShiftProvisioningAdapter:
 
         # --- Step 4: Retrieve routes from demo namespace ---
         routes = self._get_routes(demo_namespace)
-        workspace_url = routes.get("demo", "")
+        workspace_url = self._workspace_url(
+            routes.get("demo", ""), res.get("workspace_path", "")
+        )
 
         if showroom_enabled:
             self._deploy_showroom(
@@ -223,7 +227,11 @@ http {{
 }}"""
 
         config_data = {
-            "config.json": f'{{"pages": "{pages}", "gateway_url": "{gateway_url}", "demo_name": "{demo_name}"}}',
+            "config.json": json.dumps({
+                "pages": [pages] if isinstance(pages, str) else pages,
+                "gateway_url": gateway_url,
+                "demo_name": demo_name,
+            }),
             "nginx.conf": nginx_conf,
         }
         try:
@@ -292,6 +300,15 @@ http {{
                 [oc, "create", "route", "edge", "demo", "--service=demo-frontend", "--port=8080", "-n", namespace],
                 capture_output=True, text=True, timeout=30,
             )
+
+    @staticmethod
+    def _workspace_url(base_url: str, workspace_path: str) -> str:
+        if not base_url:
+            return ""
+        path = str(workspace_path or "").strip()
+        if not path:
+            return base_url
+        return f"{base_url.rstrip('/')}/{path.lstrip('/')}"
 
     @staticmethod
     def _showroom_html(title: str, steps: list, workspace_url: str) -> str:

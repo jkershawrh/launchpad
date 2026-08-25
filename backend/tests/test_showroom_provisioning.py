@@ -10,6 +10,8 @@ def _guided_item() -> CatalogItem:
         category=CatalogCategory.GUIDED_BUILD,
         status=CatalogStatus.ACTIVE,
         metadata={
+            "demo_pages": "try-it",
+            "workspace_path": "/try-it",
             "showroom": True,
             "showroom_title": "Build a RAG Assistant",
             "showroom_steps": [
@@ -35,6 +37,16 @@ def test_guided_catalog_item_adds_showroom_to_plan():
     assert plan.required_resources["showroom_enabled"] is True
     assert plan.required_resources["showroom_title"] == "Build a RAG Assistant"
     assert len(plan.required_resources["showroom_steps"]) == 2
+    assert plan.required_resources["demo_pages"] == "try-it"
+    assert plan.required_resources["workspace_path"] == "/try-it"
+
+
+def test_guided_workspace_deep_links_to_the_rag_experience():
+    url = OpenShiftProvisioningAdapter._workspace_url(
+        "https://workspace.example.test", "/try-it"
+    )
+
+    assert url == "https://workspace.example.test/try-it"
 
 
 def test_showroom_html_contains_safe_steps_and_workspace_link():

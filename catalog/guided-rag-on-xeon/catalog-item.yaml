@@ -19,7 +19,8 @@ validation_refs:
 supported_branding:
   - intel-internal
 metadata:
-  demo_pages: rag
+  demo_pages: try-it
+  workspace_path: /try-it
   required_models:
     - smollm2-360m
   inference_endpoint: litellm
