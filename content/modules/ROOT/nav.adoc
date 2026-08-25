@@ -1,3 +1,9 @@
+ifeval::["{showroom_journey}" == "guided-rag"]
+* xref:01-guided-rag-welcome.adoc[Guided RAG Welcome]
+* xref:04-enterprise-rag.adoc[Enterprise RAG Lab]
+endif::[]
+
+ifeval::["{showroom_journey}" != "guided-rag"]
 * xref:index.adoc[Intel x Red Hat AI Launchpad]
 * xref:02-accessing-the-cluster.adoc[Accessing the Cluster]
 * xref:03-inference-overdrive.adoc[Inference Overdrive]
@@ -10,3 +16,4 @@
 * xref:10-workload-generator.adoc[Workload Generator]
 * xref:11-training-demo.adoc[Model Training]
 * xref:12-replay-comparison.adoc[Replay Comparison]
+endif::[]

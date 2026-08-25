@@ -1,0 +1,12 @@
+{
+  "name": "launchpad-showroom-content",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "build:showroom": "antora --clean site.yml"
+  },
+  "devDependencies": {
+    "@antora/cli": "3.1.12",
+    "@antora/site-generator": "3.1.12"
+  }
+}

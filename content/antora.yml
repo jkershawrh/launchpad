@@ -6,10 +6,13 @@ nav:
 asciidoc:
   attributes:
     user: user1
-    password: "{provided-at-login}"
+    password: local-development-password
     demo_pages: all
+    showroom_journey: all
+    namespace: "user-{user}-guided-rag"
 
     openshift_api_url: "https://api.cluster-GUID.example.opentlc.com:6443"
     openshift_console_url: "https://console-openshift-console.apps.cluster-GUID.example.opentlc.com"
     openshift_cluster_ingress_domain: apps.cluster-GUID.example.opentlc.com
     demo_url: "https://demo-{user}-demo.{openshift_cluster_ingress_domain}"
+    workspace_url: "https://demo-{user}-demo.{openshift_cluster_ingress_domain}/try-it"

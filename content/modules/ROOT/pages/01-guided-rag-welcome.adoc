@@ -1,0 +1,39 @@
+= Guided RAG on Intel Xeon
+:navtitle: Welcome
+
+Welcome to your personalized Guided RAG lab. The instructions stay on the left while your own live environment opens in the tabs on the right.
+
+== What you will build
+
+You will run a grounded question through four observable stages:
+
+. Embed the question on Intel Xeon.
+. Retrieve relevant knowledge.
+. Rerank the candidate passages.
+. Generate an answer backed by the retrieved context.
+
+== Your assigned environment
+
+Workshop seat:: `{user}`
+Workspace:: `{workspace_url}`
+OpenShift namespace:: `{namespace}`
+
+IMPORTANT: Each workshop participant receives separate credentials and workspace state. Do not share access information with another seat.
+
+== Verify access
+
+. Select the *RAG Workspace* tab.
+. Confirm that the Enterprise RAG page loads.
+. Select the *Terminal* tab.
+. Run the following command:
++
+[source,bash,role=execute]
+----
+oc project {namespace}
+----
+. Confirm that OpenShift reports your assigned namespace.
+
+If either tab fails, stop and ask the instructor to retry this seat. Do not continue using another participant's URL.
+
+[.next-nav]
+xref:04-enterprise-rag.adoc[Next: Run the Enterprise RAG workflow →]
