@@ -65,6 +65,9 @@ export interface LabSession {
   expires_at?: string;
   completed_at?: string;
   resources: Record<string, unknown>;
+  metadata?: Record<string, unknown> & {
+    labels?: Record<string, unknown>;
+  };
   validation_results: ValidationResult[];
   lifecycle_events: Array<{
     from_status: string;

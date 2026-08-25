@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useBranding } from '../context/BrandingContext';
 import type { HandoffPackage, LabSession, OrchestrationDecision, RepeatabilityReport, ShowbackRecord } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
+import { canReclaimSession, workshopIdForSession } from '../labSessionContract';
 import DecisionInsight from '../components/DecisionInsight';
 import { guidedLabLinks } from '../guidedLabContract';
 import { sandboxConnections } from '../sandboxConnectionContract';
@@ -162,6 +163,8 @@ export default function SessionDetail() {
   const [decision, setDecision] = useState<OrchestrationDecision | null>(null);
   const [loading, setLoading] = useState(true);
   const [showApiKey, setShowApiKey] = useState(false);
+  const [actionError, setActionError] = useState('');
+  const [actionBusy, setActionBusy] = useState(false);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -184,14 +187,25 @@ export default function SessionDetail() {
 
   const handleAction = async (action: string) => {
     if (!sessionId) return;
-    let updated: LabSession;
-    switch (action) {
-      case 'activate': updated = await api.activateSession(sessionId); break;
-      case 'reset': updated = await api.resetSession(sessionId); break;
-      case 'reclaim': updated = await api.reclaimSession(sessionId); break;
-      default: return;
+    setActionBusy(true);
+    setActionError('');
+    try {
+      let updated: LabSession;
+      switch (action) {
+        case 'activate': updated = await api.activateSession(sessionId); break;
+        case 'reset': updated = await api.resetSession(sessionId); break;
+        case 'reclaim':
+          if (!window.confirm('Reclaim this lab and remove its environment?')) return;
+          updated = await api.reclaimSession(sessionId);
+          break;
+        default: return;
+      }
+      setSession(updated);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Lab action failed');
+    } finally {
+      setActionBusy(false);
     }
-    setSession(updated);
   };
 
   if (loading) return <div className="max-w-4xl mx-auto px-4 py-10 text-[#6A6E73]">Loading session...</div>;
@@ -201,6 +215,7 @@ export default function SessionDetail() {
     session.catalog_item_id.startsWith('sandbox-') ||
     'sandbox_type' in session.resources;
   const guidedLinks = guidedLabLinks(session.resources || {});
+  const parentWorkshopId = workshopIdForSession(session);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
@@ -304,22 +319,25 @@ export default function SessionDetail() {
       <DecisionInsight decision={decision} />
 
       {/* Actions */}
+      {actionError && <div className="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">{actionError}</div>}
       <div className="flex gap-3 mb-8">
         {session.status === 'ready' && (
-          <button onClick={() => handleAction('activate')} className="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700">
+          <button disabled={actionBusy} onClick={() => handleAction('activate')} className="px-4 py-2 bg-green-600 text-white rounded text-sm hover:bg-green-700 disabled:opacity-50">
             Activate
           </button>
         )}
         {session.status === 'active' && (
-          <button onClick={() => handleAction('reset')} className="px-4 py-2 bg-orange-500 text-white rounded text-sm hover:bg-orange-600">
+          <button disabled={actionBusy} onClick={() => handleAction('reset')} className="px-4 py-2 bg-orange-500 text-white rounded text-sm hover:bg-orange-600 disabled:opacity-50">
             Reset
           </button>
         )}
-        {(session.status === 'resetting' || session.status === 'expired') && (
-          <button onClick={() => handleAction('reclaim')} className="px-4 py-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700">
-            Reclaim
+        {parentWorkshopId && canReclaimSession(session.status) ? (
+          <Link to={`/workshops/${parentWorkshopId}`} className="px-4 py-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700">Manage workshop cleanup</Link>
+        ) : canReclaimSession(session.status) ? (
+          <button disabled={actionBusy} onClick={() => handleAction('reclaim')} className="px-4 py-2 bg-gray-600 text-white rounded text-sm hover:bg-gray-700 disabled:opacity-50">
+            {actionBusy ? 'Reclaiming…' : 'Reclaim lab'}
           </button>
-        )}
+        ) : null}
       </div>
 
       {/* Validation Results */}
