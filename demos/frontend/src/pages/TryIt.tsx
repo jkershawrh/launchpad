@@ -14,6 +14,8 @@ import {
 import LiveWorkflow, { type WorkflowStep } from '../components/LiveWorkflow';
 import BuildYourOwn from '../components/BuildYourOwn';
 import HardwareBadge from '../components/HardwareBadge';
+import { useConfig } from '../context/LaunchpadConfig';
+import { scenarioKeysForDemo } from './scenarioSelection';
 
 interface Prompt {
   label: string;
@@ -85,11 +87,17 @@ const scenarios: WorkflowScenario[] = [
 ];
 
 export default function TryIt() {
+  const config = useConfig();
   const [activeTab, setActiveTab] = useState(0);
   const [selectedPrompt, setSelectedPrompt] = useState<Prompt | null>(null);
   const [runTrigger, setRunTrigger] = useState(0);
 
-  const scenario = scenarios[activeTab];
+  const enabledKeys = scenarioKeysForDemo(config.demo_name);
+  const visibleScenarios = scenarios.filter(({ key }) => enabledKeys.includes(key));
+  const showCustom = enabledKeys.includes('custom');
+  const scenario = visibleScenarios[activeTab] ?? visibleScenarios[0];
+  const customTabKey = visibleScenarios.length;
+  const isCustom = showCustom && activeTab === customTabKey;
 
   return (
     <>
@@ -105,18 +113,22 @@ export default function TryIt() {
       </PageSection>
 
       <PageSection variant="secondary">
-        <Tabs
+        {enabledKeys.length > 1 && <Tabs
           activeKey={activeTab}
           onSelect={(_e, key) => { setActiveTab(key as number); setSelectedPrompt(null); }}
           aria-label="Workflow scenarios"
         >
-          <Tab key="rag" eventKey={0} title={<TabTitleText>Enterprise RAG</TabTitleText>} />
-          <Tab key="aiops" eventKey={1} title={<TabTitleText>AIOps Copilot</TabTitleText>} />
-          <Tab key="agent" eventKey={2} title={<TabTitleText>Governed Agent</TabTitleText>} />
-          <Tab key="custom" eventKey={3} title={<TabTitleText>Build Your Own</TabTitleText>} />
-        </Tabs>
+          <>
+            {visibleScenarios.map((item, index) => (
+              <Tab key={item.key} eventKey={index} title={<TabTitleText>{item.title}</TabTitleText>} />
+            ))}
+          </>
+          {showCustom && (
+            <Tab key="custom" eventKey={customTabKey} title={<TabTitleText>Build Your Own</TabTitleText>} />
+          )}
+        </Tabs>}
 
-        {activeTab === scenarios.length ? (
+        {isCustom ? (
           <div style={{ marginTop: '1.5rem' }}>
             <BuildYourOwn />
           </div>
@@ -159,7 +171,7 @@ export default function TryIt() {
         )}
       </PageSection>
 
-      {activeTab < scenarios.length && (
+      {!isCustom && scenario && (
       <PageSection>
         <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 500px' }}>
