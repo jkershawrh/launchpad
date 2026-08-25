@@ -160,6 +160,20 @@ class TestForceReclaimCleanup:
         any(session.namespace in str(c) for c in cleanup_calls) if session.namespace else True
         assert mock_cleanup.cleanup.called or session.namespace is None
 
+    def test_force_reclaim_can_require_successful_cleanup(self):
+        """A workshop reclaim must not report success when cleanup still fails."""
+        mock_cleanup = MagicMock()
+        mock_cleanup.cleanup.side_effect = RuntimeError("Argo deletion timed out")
+        svc = _svc(cleanup=mock_cleanup)
+        session = _provision(svc)
+
+        result = svc.force_reclaim_session(
+            session.session_id, require_cleanup_success=True
+        )
+
+        assert result.status == SessionStatus.CLEANUP_FAILED
+        assert "Argo deletion timed out" in result.lifecycle_events[-1].reason
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # FIX 4: Workshop Error Tracking
@@ -200,6 +214,23 @@ class TestWorkshopErrorTracking:
         reclaimed = svc.reclaim_workshop(provisioned.workshop_id)
         assert reclaimed.status == "completed_with_errors"
         assert len(reclaimed.metadata.get("failed_reclaims", [])) > 0
+
+    def test_workshop_does_not_hide_force_cleanup_failure(self):
+        mock_cleanup = MagicMock()
+        mock_cleanup.cleanup.side_effect = RuntimeError("Argo deletion timed out")
+        svc = _svc(cleanup=mock_cleanup)
+        workshop = svc.provision_workshop(Workshop(
+            tenant_id="ws-cleanup-fail-test",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=1,
+            ttl="4h",
+        ))
+
+        reclaimed = svc.reclaim_workshop(workshop.workshop_id)
+
+        assert reclaimed.status == "completed_with_errors"
+        assert reclaimed.seats[0].status == "failed"
+        assert "Argo deletion timed out" in reclaimed.seats[0].error
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

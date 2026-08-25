@@ -63,7 +63,12 @@ class OpenShiftCleanupAdapter:
         # will self-heal by recreating the lab namespace after reclamation.
         showroom_gitops = getattr(self, "_showroom_gitops", None)
         if showroom_gitops is not None:
-            showroom_gitops.delete_for_namespace(namespace)
+            showroom_delete_timeout = max(
+                1, int(os.environ.get("SHOWROOM_DELETE_TIMEOUT", "60"))
+            )
+            showroom_gitops.delete_for_namespace(
+                namespace, timeout=showroom_delete_timeout
+            )
 
         try:
             self._core_v1.delete_namespace(name=namespace)

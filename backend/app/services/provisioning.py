@@ -665,7 +665,9 @@ class ProvisioningService:
             )
         return session
 
-    def force_reclaim_session(self, session_id: str) -> LabSession:
+    def force_reclaim_session(
+        self, session_id: str, *, require_cleanup_success: bool = False
+    ) -> LabSession:
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
@@ -679,6 +681,23 @@ class ProvisioningService:
                 self.cleanup.cleanup(session.namespace)
             except Exception as e:
                 logger.error("Cleanup failed during force-reclaim of session %s namespace %s: %s", session_id, session.namespace, e)
+                if require_cleanup_success:
+                    reason = (
+                        "force-reclaim cleanup failed — credentials scrubbed — "
+                        f"error: {e}"
+                    )
+                    event = LifecycleEvent(
+                        from_status=session.status,
+                        to_status=SessionStatus.CLEANUP_FAILED,
+                        reason=reason,
+                    )
+                    session = session.model_copy(update={
+                        "status": SessionStatus.CLEANUP_FAILED,
+                        "lifecycle_events": session.lifecycle_events + [event],
+                    })
+                    session = self._scrub_credentials(session)
+                    self._save_session(session)
+                    return session
         event = LifecycleEvent(
             from_status=session.status,
             to_status=SessionStatus.RECLAIMED,
@@ -1268,14 +1287,22 @@ class ProvisioningService:
         try:
             reclaimed_session = self.reclaim_session(session_id)
             if reclaimed_session.status == SessionStatus.CLEANUP_FAILED:
-                self.force_reclaim_session(session_id)
+                reclaimed_session = self.force_reclaim_session(
+                    session_id, require_cleanup_success=True
+                )
+            if reclaimed_session.status != SessionStatus.RECLAIMED:
+                return reclaimed_session.lifecycle_events[-1].reason
             return None
-        except Exception:
+        except Exception as initial_exc:
             try:
-                self.force_reclaim_session(session_id)
+                reclaimed_session = self.force_reclaim_session(
+                    session_id, require_cleanup_success=True
+                )
+                if reclaimed_session.status != SessionStatus.RECLAIMED:
+                    return reclaimed_session.lifecycle_events[-1].reason
                 return None
             except Exception as exc:
-                return str(exc)
+                return f"{initial_exc}; force-reclaim failed: {exc}"
 
     def queue_workshop_reclaim(self, workshop_id: str) -> Workshop:
         workshop = self._workshops.get(workshop_id)

@@ -110,6 +110,23 @@ class TestCleanupTimeoutFatal:
         )
         adapter._wait_for_deletion.assert_not_called()
 
+    def test_showroom_delete_timeout_is_configurable(self):
+        from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+
+        adapter = OpenShiftCleanupAdapter.__new__(OpenShiftCleanupAdapter)
+        adapter._active_namespaces = {}
+        adapter._core_v1 = MagicMock()
+        adapter._rbac_v1 = MagicMock()
+        adapter._showroom_gitops = MagicMock()
+
+        with pytest.MonkeyPatch.context() as monkeypatch:
+            monkeypatch.setenv("SHOWROOM_DELETE_TIMEOUT", "180")
+            assert adapter.cleanup("slow-argo-namespace") is True
+
+        adapter._showroom_gitops.delete_for_namespace.assert_called_once_with(
+            "slow-argo-namespace", timeout=180
+        )
+
 
 @pytest.mark.skipif(not HAS_KUBERNETES, reason="kubernetes package not installed")
 class TestOrphanedRoleBindingCleanup:
