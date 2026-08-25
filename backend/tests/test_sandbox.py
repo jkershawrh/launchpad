@@ -253,6 +253,20 @@ def test_sandbox_reclaim_idempotent():
     assert result1 == result2
 
 
+def test_openshift_sandbox_pvc_uses_configured_storage_class(monkeypatch):
+    from unittest.mock import MagicMock
+    from app.adapters.openshift.sandbox_provisioning import OpenShiftSandboxProvisioner
+
+    monkeypatch.setenv("SANDBOX_STORAGE_CLASS", "nfs-storage")
+    provisioner = object.__new__(OpenShiftSandboxProvisioner)
+    provisioner._core_v1 = MagicMock()
+
+    provisioner._create_pvc("sandbox-test", "20Gi")
+
+    pvc = provisioner._core_v1.create_namespaced_persistent_volume_claim.call_args.args[1]
+    assert pvc.spec.storage_class_name == "nfs-storage"
+
+
 # ─── S12: API end-to-end ─────────────────────────────────────────────────────
 
 def test_api_sandbox_launch():

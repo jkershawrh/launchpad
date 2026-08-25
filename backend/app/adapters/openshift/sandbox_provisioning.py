@@ -236,6 +236,7 @@ class OpenShiftSandboxProvisioner:
                 metadata=client.V1ObjectMeta(name="sandbox-home"),
                 spec=client.V1PersistentVolumeClaimSpec(
                     access_modes=["ReadWriteOnce"],
+                    storage_class_name=os.environ.get("SANDBOX_STORAGE_CLASS") or None,
                     resources=client.V1VolumeResourceRequirements(requests={"storage": storage_size}),
                 ),
             ))
