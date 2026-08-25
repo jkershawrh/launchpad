@@ -27,6 +27,7 @@ API_KEYS = set(filter(None, os.environ.get("API_KEYS", "").split(",")))
 ADMIN_API_KEYS = set(filter(None, os.environ.get("ADMIN_API_KEYS", "").split(",")))
 ADMIN_GROUPS = {"launchpad-admins", "system:cluster-admins", "dedicated-admins"}
 ADMIN_USERS = set(filter(None, os.environ.get("ADMIN_USERS", "kube:admin,kubeadmin").split(",")))
+TRUSTED_OAUTH_HOSTS = set(filter(None, os.environ.get("TRUSTED_OAUTH_HOSTS", "").split(",")))
 
 
 def get_current_user(request: Request) -> User:
@@ -53,6 +54,9 @@ def get_current_user(request: Request) -> User:
 
     if not username:
         raise HTTPException(401, "Not authenticated — provide X-API-Key header or authenticate via SSO")
+    request_host = (request.url.hostname or "").lower()
+    if request_host not in TRUSTED_OAUTH_HOSTS:
+        raise HTTPException(401, "OAuth identity headers are not accepted on this endpoint")
 
     is_admin = username in ADMIN_USERS or bool(ADMIN_GROUPS & set(groups))
 

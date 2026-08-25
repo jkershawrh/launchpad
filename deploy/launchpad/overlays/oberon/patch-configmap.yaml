@@ -7,6 +7,7 @@ data:
   CATALOG_DIR: "/opt/catalog"
   LITELLM_API_BASE: "http://inference-proxy.intel-inference.svc:4000"
   CORS_ORIGINS: "https://launchpad-api.apps.oberon.fm2aihpcsed.com"
+  TRUSTED_OAUTH_HOSTS: "launchpad.apps.oberon.fm2aihpcsed.com,launchpad-admin.apps.oberon.fm2aihpcsed.com"
   OPENSHIFT_INGRESS_DOMAIN: "apps.oberon.fm2aihpcsed.com"
   SMART_PLACEMENT_ENABLED: "false"
   ORCHESTRATION_BRAIN_ENABLED: "false"
