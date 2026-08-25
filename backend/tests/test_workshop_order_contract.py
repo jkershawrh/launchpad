@@ -1,5 +1,7 @@
 """Workshop ordering contract: seats, lifecycle, and idempotent creation."""
 import os
+import threading
+import time
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
@@ -300,3 +302,67 @@ def test_workshop_order_rejects_more_than_supported_seat_limit():
                     num_users=21,
                 )
             )
+
+
+def test_workshop_provisioning_respects_bounded_concurrency():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="parallel-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=4,
+    )
+    original = service._provision_workshop_seat
+    lock = threading.Lock()
+    active = 0
+    peak = 0
+
+    def tracked(workshop, index):
+        nonlocal active, peak
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        try:
+            time.sleep(0.03)
+            return original(workshop, index)
+        finally:
+            with lock:
+                active -= 1
+
+    with patch.object(service, "_provision_workshop_seat", side_effect=tracked):
+        with patch.dict(os.environ, {"WORKSHOP_PROVISION_CONCURRENCY": "2"}):
+            provisioned = service.provision_workshop(workshop)
+
+    assert provisioned.status == WorkshopStatus.READY
+    assert peak == 2
+
+
+def test_workshop_reclaim_respects_bounded_concurrency():
+    service = ProvisioningService()
+    workshop = service.provision_workshop(Workshop(
+        tenant_id="parallel-reclaim-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=4,
+    ))
+    original = service._reclaim_workshop_session
+    lock = threading.Lock()
+    active = 0
+    peak = 0
+
+    def tracked(session_id):
+        nonlocal active, peak
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        try:
+            time.sleep(0.03)
+            return original(session_id)
+        finally:
+            with lock:
+                active -= 1
+
+    with patch.object(service, "_reclaim_workshop_session", side_effect=tracked):
+        with patch.dict(os.environ, {"WORKSHOP_RECLAIM_CONCURRENCY": "3"}):
+            reclaimed = service.reclaim_workshop(workshop.workshop_id)
+
+    assert reclaimed.status == WorkshopStatus.COMPLETED
+    assert peak == 3

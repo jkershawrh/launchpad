@@ -6,6 +6,7 @@ import os
 import re
 import threading
 import uuid as _uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -967,64 +968,56 @@ class ProvisioningService:
         seats_to_provision = min(max_seats, workshop_limit)
 
         session_ids = []
+        pending_indexes = []
         for i in range(seats_to_provision):
             seat = workshop.seats[i]
             if seat.status == WorkshopSeatStatus.READY and seat.session_id:
                 session_ids.append(seat.session_id)
                 continue
-            user_id = seat.participant_id
             workshop.seats[i] = seat.model_copy(update={
                 "status": WorkshopSeatStatus.PROVISIONING,
                 "updated_at": datetime.utcnow(),
             })
-            request = LabRequest(
-                tenant_id=workshop.tenant_id,
-                requester_id=user_id,
-                catalog_item_id=workshop.catalog_item_id,
-                requested_mode=CatalogCategory.QUICK_START,
-                ttl=workshop.ttl,
-                metadata={
-                    "workshop_id": workshop.workshop_id,
-                    "seat_id": seat.seat_id,
-                    "seat_number": seat.seat_number,
-                    "participant_id": seat.participant_id,
-                    "purpose": workshop.purpose,
-                },
-            )
-            accepted = self.submit_request(request)
-            if accepted.status != LabRequestStatus.ACCEPTED:
-                continue
-            try:
-                session = self.provision(accepted.request_id, workshop_id=workshop.workshop_id)
-                session = session.model_copy(update={
-                    "metadata": {
-                        **session.metadata,
-                        "purpose": workshop.purpose,
-                        "labels": {
-                            **session.metadata.get("labels", {}),
-                            "launchpad.redhat.com/workshop-id": workshop.workshop_id,
-                            "launchpad.redhat.com/purpose": workshop.purpose,
-                        },
-                    },
-                })
-                self._save_session(session)
-                session_ids.append(session.session_id)
-                workshop.seats[i] = workshop.seats[i].model_copy(update={
-                    "status": WorkshopSeatStatus.READY,
-                    "session_id": session.session_id,
-                    "request_id": accepted.request_id,
-                    "lab_url": session.lab_url,
-                    "showroom_url": session.metadata.get("showroom_url") or session.lab_url,
-                    "updated_at": datetime.utcnow(),
-                })
-            except ValueError as e:
-                logger.warning("Workshop %s seat %d failed: %s", workshop.workshop_id, i + 1, e)
-                workshop.seats[i] = workshop.seats[i].model_copy(update={
-                    "status": WorkshopSeatStatus.FAILED,
-                    "error": str(e),
-                    "updated_at": datetime.utcnow(),
-                })
-                continue
+            pending_indexes.append(i)
+        self._save_workshop(workshop)
+
+        concurrency = max(
+            1, int(os.environ.get("WORKSHOP_PROVISION_CONCURRENCY", "5"))
+        )
+        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+            futures = {
+                executor.submit(self._provision_workshop_seat, workshop, i): i
+                for i in pending_indexes
+            }
+            for future in as_completed(futures):
+                i = futures[future]
+                try:
+                    updated_seat, session_id = future.result()
+                except Exception as exc:
+                    logger.exception(
+                        "Workshop %s seat %d failed unexpectedly",
+                        workshop.workshop_id,
+                        i + 1,
+                    )
+                    updated_seat = workshop.seats[i].model_copy(update={
+                        "status": WorkshopSeatStatus.FAILED,
+                        "error": str(exc),
+                        "updated_at": datetime.utcnow(),
+                    })
+                    session_id = None
+                workshop.seats[i] = updated_seat
+                if session_id:
+                    session_ids.append(session_id)
+                self._save_workshop(workshop)
+
+        session_ids.sort(key=lambda session_id: next(
+            (
+                seat.seat_number
+                for seat in workshop.seats
+                if seat.session_id == session_id
+            ),
+            workshop.num_users + 1,
+        ))
 
         if len(session_ids) == workshop.num_users:
             status = WorkshopStatus.READY
@@ -1043,6 +1036,68 @@ class ProvisioningService:
         })
         self._save_workshop(workshop)
         return workshop
+
+    def _provision_workshop_seat(
+        self, workshop: Workshop, index: int
+    ) -> tuple[WorkshopSeat, Optional[str]]:
+        seat = workshop.seats[index]
+        request = LabRequest(
+            tenant_id=workshop.tenant_id,
+            requester_id=seat.participant_id,
+            catalog_item_id=workshop.catalog_item_id,
+            requested_mode=CatalogCategory.QUICK_START,
+            ttl=workshop.ttl,
+            metadata={
+                "workshop_id": workshop.workshop_id,
+                "seat_id": seat.seat_id,
+                "seat_number": seat.seat_number,
+                "participant_id": seat.participant_id,
+                "purpose": workshop.purpose,
+            },
+        )
+        accepted = self.submit_request(request)
+        if accepted.status != LabRequestStatus.ACCEPTED:
+            return seat.model_copy(update={
+                "status": WorkshopSeatStatus.FAILED,
+                "error": "seat request was rejected",
+                "updated_at": datetime.utcnow(),
+            }), None
+        try:
+            session = self.provision(
+                accepted.request_id, workshop_id=workshop.workshop_id
+            )
+            session = session.model_copy(update={
+                "metadata": {
+                    **session.metadata,
+                    "purpose": workshop.purpose,
+                    "labels": {
+                        **session.metadata.get("labels", {}),
+                        "launchpad.redhat.com/workshop-id": workshop.workshop_id,
+                        "launchpad.redhat.com/purpose": workshop.purpose,
+                    },
+                },
+            })
+            self._save_session(session)
+            return seat.model_copy(update={
+                "status": WorkshopSeatStatus.READY,
+                "session_id": session.session_id,
+                "request_id": accepted.request_id,
+                "lab_url": session.lab_url,
+                "showroom_url": session.metadata.get("showroom_url") or session.lab_url,
+                "updated_at": datetime.utcnow(),
+            }), session.session_id
+        except ValueError as exc:
+            logger.warning(
+                "Workshop %s seat %d failed: %s",
+                workshop.workshop_id,
+                index + 1,
+                exc,
+            )
+            return seat.model_copy(update={
+                "status": WorkshopSeatStatus.FAILED,
+                "error": str(exc),
+                "updated_at": datetime.utcnow(),
+            }), None
 
     def get_workshop_users(self, workshop_id: str) -> list:
         workshop = self._workshops.get(workshop_id)
@@ -1168,35 +1223,33 @@ class ProvisioningService:
                     "status": WorkshopSeatStatus.RECLAIMING,
                     "updated_at": datetime.utcnow(),
                 })
-                self._save_workshop(workshop)
-            try:
-                reclaimed_session = self.reclaim_session(session_id)
-                if reclaimed_session.status == SessionStatus.CLEANUP_FAILED:
-                    reclaimed_session = self.force_reclaim_session(session_id)
+        self._save_workshop(workshop)
+
+        concurrency = max(
+            1, int(os.environ.get("WORKSHOP_RECLAIM_CONCURRENCY", "10"))
+        )
+        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+            futures = {
+                executor.submit(self._reclaim_workshop_session, session_id): session_id
+                for session_id in workshop.session_ids
+            }
+            for future in as_completed(futures):
+                session_id = futures[future]
+                seat_index = seats_by_session.get(session_id)
+                error = future.result()
+                if error:
+                    failed_reclaims.append({"session_id": session_id, "error": error})
                 if seat_index is not None:
                     workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
-                        "status": WorkshopSeatStatus.RECLAIMED,
+                        "status": (
+                            WorkshopSeatStatus.FAILED
+                            if error
+                            else WorkshopSeatStatus.RECLAIMED
+                        ),
+                        "error": error,
                         "updated_at": datetime.utcnow(),
                     })
                     self._save_workshop(workshop)
-            except (ValueError, Exception):
-                try:
-                    self.force_reclaim_session(session_id)
-                    if seat_index is not None:
-                        workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
-                            "status": WorkshopSeatStatus.RECLAIMED,
-                            "updated_at": datetime.utcnow(),
-                        })
-                        self._save_workshop(workshop)
-                except Exception as e:
-                    failed_reclaims.append({"session_id": session_id, "error": str(e)})
-                    if seat_index is not None:
-                        workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
-                            "status": WorkshopSeatStatus.FAILED,
-                            "error": str(e),
-                            "updated_at": datetime.utcnow(),
-                        })
-                        self._save_workshop(workshop)
 
         status = (
             WorkshopStatus.COMPLETED
@@ -1210,6 +1263,19 @@ class ProvisioningService:
         })
         self._save_workshop(workshop)
         return workshop
+
+    def _reclaim_workshop_session(self, session_id: str) -> Optional[str]:
+        try:
+            reclaimed_session = self.reclaim_session(session_id)
+            if reclaimed_session.status == SessionStatus.CLEANUP_FAILED:
+                self.force_reclaim_session(session_id)
+            return None
+        except Exception:
+            try:
+                self.force_reclaim_session(session_id)
+                return None
+            except Exception as exc:
+                return str(exc)
 
     def queue_workshop_reclaim(self, workshop_id: str) -> Workshop:
         workshop = self._workshops.get(workshop_id)

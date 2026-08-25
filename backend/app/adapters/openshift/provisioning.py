@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import subprocess
+import threading
 import time
 import uuid
 import yaml
@@ -45,6 +46,7 @@ class OpenShiftProvisioningAdapter:
     def __init__(self, overlay_path: Optional[Path] = None):
         self._overlay_path = overlay_path or DEMO_DEPLOY_ROOT
         self._active_namespaces: dict[str, str] = {}
+        self._gateway_bootstrap_lock = threading.Lock()
 
         if not HAS_KUBERNETES:
             raise ValueError(
@@ -134,15 +136,16 @@ class OpenShiftProvisioningAdapter:
         demo_namespace = self._demo_namespace(tenant_id, catalog_item_id, suffix or uuid.uuid4().hex[:6])
 
         # --- Step 1: Ensure tenant gateway exists ---
-        gw_existed = self._namespace_exists(gw_namespace)
-        if not gw_existed:
-            self._create_namespace(gw_namespace)
-            self._grant_image_pull(gw_namespace)
-            self._create_demo_secrets(gw_namespace, session_maas_key)
-            self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
-            self._wait_for_deployments(
-                gw_namespace, deployments={"postgres", "gateway"}
-            )
+        with self._gateway_bootstrap_lock:
+            gw_existed = self._namespace_exists(gw_namespace)
+            if not gw_existed:
+                self._create_namespace(gw_namespace)
+                self._grant_image_pull(gw_namespace)
+                self._create_demo_secrets(gw_namespace, session_maas_key)
+                self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
+                self._wait_for_deployments(
+                    gw_namespace, deployments={"postgres", "gateway"}
+                )
 
         # --- Step 2: Create demo namespace ---
         self._create_namespace(

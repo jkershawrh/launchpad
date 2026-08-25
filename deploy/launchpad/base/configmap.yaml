@@ -12,5 +12,7 @@ data:
   SHOWROOM_CONTENT_REF: main
   SHOWROOM_ROUTE_TIMEOUT: "300"
   MAX_ACTIVE_SESSIONS_PER_WORKSHOP: "20"
+  WORKSHOP_PROVISION_CONCURRENCY: "5"
+  WORKSHOP_RECLAIM_CONCURRENCY: "10"
   LAUNCHPAD_MODE: "openshift"
   CORS_ORIGINS: "https://launchpad.apps.example.com,https://launchpad-admin.apps.example.com"
