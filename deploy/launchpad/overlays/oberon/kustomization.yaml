@@ -23,3 +23,9 @@ images:
   - name: backend
     newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend
     newTag: latest
+  - name: partner-portal
+    newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-portal
+    newTag: latest
+  - name: admin
+    newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-portal
+    newTag: latest

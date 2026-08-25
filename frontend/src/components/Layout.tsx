@@ -1,17 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-
-const NAV_ITEMS = [
-  { path: '/', label: 'Overview' },
-  { path: '/decisions', label: 'Decisions' },
-  { path: '/fleet', label: 'Fleet' },
-  { path: '/workloads', label: 'Workloads' },
-  { path: '/feedback', label: 'Feedback' },
-  { path: '/timing', label: 'Timing' },
-];
+import { getAppSurface, getNavigation } from '../appSurface';
 
 export default function Layout() {
   const location = useLocation();
+  const surface = getAppSurface(window.location.hostname, new URLSearchParams(location.search).get('surface'));
+  const navigation = getNavigation(surface);
   const [healthy, setHealthy] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -33,12 +27,12 @@ export default function Layout() {
               </Link>
               <span className="text-[#333] mx-2">|</span>
               <span className="text-white text-sm font-semibold" style={{ fontFamily: 'Red Hat Display' }}>
-                Launchpad Intelligence
+                {surface === 'operations' ? 'Launchpad Operations' : 'Partner AI Launchpad'}
               </span>
             </div>
 
             <nav className="flex items-center gap-1">
-              {NAV_ITEMS.map((item) => (
+              {navigation.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
@@ -83,7 +77,9 @@ export default function Layout() {
             <span className="text-white text-sm font-bold">X</span>
             <img src="/logos/intel.png" alt="" style={{ height: '12px' }} />
           </div>
-          <span className="text-[#6A6E73] text-xs">Launchpad Intelligence Engine</span>
+          <span className="text-[#6A6E73] text-xs">
+            {surface === 'operations' ? 'Internal operations and administration' : 'Self-service AI lab platform'}
+          </span>
         </div>
       </footer>
     </div>

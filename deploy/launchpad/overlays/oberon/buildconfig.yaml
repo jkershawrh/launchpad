@@ -62,3 +62,36 @@ metadata:
   labels:
     app.kubernetes.io/name: inference-frontend
     app.kubernetes.io/part-of: partner-ai-launchpad
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: launchpad-portal
+  labels:
+    app.kubernetes.io/name: launchpad-portal
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/jkershawrh/launchpad.git
+      ref: main
+    contextDir: frontend
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Containerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: launchpad-portal:latest
+  triggers:
+    - type: ConfigChange
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: launchpad-portal
+  labels:
+    app.kubernetes.io/name: launchpad-portal
+    app.kubernetes.io/part-of: partner-ai-launchpad
