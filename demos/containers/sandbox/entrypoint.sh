@@ -11,6 +11,20 @@ if ! mkdir -p "$WORKSPACE" 2>/dev/null || [[ ! -w "$WORKSPACE" ]]; then
 fi
 mkdir -p /tmp/launchpad-sshd
 
+if [[ -n "${SANDBOX_NAMESPACE:-}" && -r /var/run/secrets/kubernetes.io/serviceaccount/token ]]; then
+  export KUBECONFIG="${KUBECONFIG:-/tmp/launchpad-kubeconfig}"
+  oc config set-cluster in-cluster \
+    --server="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT_HTTPS}" \
+    --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+    --embed-certs=true >/dev/null
+  oc config set-credentials sandbox-user \
+    --token="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" >/dev/null
+  oc config set-context sandbox \
+    --cluster=in-cluster --user=sandbox-user --namespace="$SANDBOX_NAMESPACE" >/dev/null
+  oc config use-context sandbox >/dev/null
+  chmod 600 "$KUBECONFIG"
+fi
+
 if [[ "$ACCESS_METHODS" == *,ssh,* ]]; then
   echo "Starting SSH server on port 2222..."
   ssh-keygen -q -t ed25519 -N '' -f /tmp/launchpad-sshd/host_key

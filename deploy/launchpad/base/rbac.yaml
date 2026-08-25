@@ -12,7 +12,7 @@ rules:
     resources: [nodes]
     verbs: [get, list]
   - apiGroups: [""]
-    resources: [pods, services, configmaps, persistentvolumeclaims]
+    resources: [pods, services, configmaps, persistentvolumeclaims, serviceaccounts]
     verbs: [get, list, create, update, delete]
   - apiGroups: [""]
     resources: [secrets]

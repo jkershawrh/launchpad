@@ -120,7 +120,9 @@ class OpenShiftSandboxProvisioner:
             ns_labels["launchpad.redhat.com/workshop-id"] = workshop_id
         self._create_namespace(namespace, extra_labels=ns_labels)
 
-        # Give the requesting OpenShift identity access only to this sandbox.
+        # Give both the requesting human and the in-workspace CLI identity
+        # access only to this sandbox namespace.
+        self._create_sandbox_identity(namespace)
         self._grant_requester_access(namespace, str(res.get("requester_id", "")))
 
         # 2. Grant image pull
@@ -150,6 +152,8 @@ class OpenShiftSandboxProvisioner:
             "ssh_password": ssh_password,
             "stack_level": stack_level,
             "compute_tier": compute_tier,
+            "openshift_cli_user": f"system:serviceaccount:{namespace}:sandbox-user",
+            "openshift_cli_namespace": namespace,
         }
         console_base = os.environ.get("OPENSHIFT_CONSOLE_URL", "").rstrip("/")
         console_url = f"{console_base}/topology/ns/{namespace}" if console_base else ""
@@ -253,6 +257,41 @@ class OpenShiftSandboxProvisioner:
             if e.status != 409:
                 raise ValueError(f"Failed to grant sandbox access to {requester_id}: {e.reason}")
 
+    def _create_sandbox_identity(self, namespace: str) -> None:
+        try:
+            self._core_v1.create_namespaced_service_account(
+                namespace=namespace,
+                body=client.V1ServiceAccount(
+                    metadata=client.V1ObjectMeta(name="sandbox-user", namespace=namespace)
+                ),
+            )
+        except ApiException as e:
+            if e.status != 409:
+                raise ValueError(f"Failed to create sandbox CLI identity: {e.reason}")
+
+        try:
+            self._rbac_v1.create_namespaced_role_binding(
+                namespace=namespace,
+                body=client.V1RoleBinding(
+                    metadata=client.V1ObjectMeta(
+                        name="sandbox-user-edit", namespace=namespace
+                    ),
+                    role_ref=client.V1RoleRef(
+                        api_group="rbac.authorization.k8s.io",
+                        kind="ClusterRole",
+                        name="edit",
+                    ),
+                    subjects=[client.RbacV1Subject(
+                        kind="ServiceAccount",
+                        name="sandbox-user",
+                        namespace=namespace,
+                    )],
+                ),
+            )
+        except ApiException as e:
+            if e.status != 409:
+                raise ValueError(f"Failed to grant sandbox CLI access: {e.reason}")
+
     def _create_secrets(self, namespace: str, ssh_password: str, maas_key: str = "") -> None:
         litellm_key = maas_key or os.environ.get("LITELLM_API_KEY", "")
         for name, data in [
@@ -300,6 +339,8 @@ class OpenShiftSandboxProvisioner:
             env=[
                 client.V1EnvVar(name="STACK_LEVEL", value=stack_level),
                 client.V1EnvVar(name="ACCESS_METHODS", value=",".join(access_methods)),
+                client.V1EnvVar(name="SANDBOX_NAMESPACE", value=namespace),
+                client.V1EnvVar(name="KUBECONFIG", value="/tmp/launchpad-kubeconfig"),
             ],
             env_from=[
                 client.V1EnvFromSource(secret_ref=client.V1SecretEnvSource(name="maas-config", optional=True)),
@@ -335,6 +376,7 @@ class OpenShiftSandboxProvisioner:
                     metadata=client.V1ObjectMeta(labels={"app": "sandbox"}),
                     spec=client.V1PodSpec(
                         containers=[container],
+                        service_account_name="sandbox-user",
                         volumes=[
                             client.V1Volume(name="home", persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(claim_name="sandbox-home")),
                         ],

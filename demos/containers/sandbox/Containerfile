@@ -16,6 +16,10 @@ RUN dnf install -y \
     && dnf clean all \
     && rm -rf /var/cache/dnf
 
+RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz \
+    | tar xz -C /usr/local/bin oc kubectl \
+    && chmod +x /usr/local/bin/oc /usr/local/bin/kubectl
+
 RUN ssh-keygen -A \
     && mkdir -p /run/sshd \
     && sed -i 's/#PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config \
