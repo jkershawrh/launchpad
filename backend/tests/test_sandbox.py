@@ -319,6 +319,16 @@ def test_openshift_sandbox_plan_defaults_to_red_hat_console_access():
     assert "grant-requester-access" in [step.name for step in plan.steps]
 
 
+def test_console_only_sandbox_entrypoint_stays_alive():
+    from pathlib import Path
+
+    entrypoint = (
+        Path(__file__).parents[2] / "demos/containers/sandbox/entrypoint.sh"
+    ).read_text()
+    assert "if (( ${#service_pids[@]} > 0 ))" in entrypoint
+    assert "sleep infinity" in entrypoint
+
+
 # ─── S12: API end-to-end ─────────────────────────────────────────────────────
 
 def test_api_sandbox_launch():

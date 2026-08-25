@@ -3,6 +3,7 @@
 set -euo pipefail
 
 ACCESS_METHODS=",${ACCESS_METHODS:-ssh},"
+service_pids=()
 WORKSPACE=/home/lab-user/workspace
 if ! mkdir -p "$WORKSPACE" 2>/dev/null || [[ ! -w "$WORKSPACE" ]]; then
   echo "Persistent workspace is not writable for this OpenShift UID; using an ephemeral workspace."
@@ -41,6 +42,7 @@ AuthorizedKeysFile none
 Subsystem sftp internal-sftp
 EOF
   /usr/sbin/sshd -D -e -f /tmp/launchpad-sshd/sshd_config &
+  service_pids+=("$!")
 fi
 
 if [[ "$ACCESS_METHODS" == *,jupyter,* || "$ACCESS_METHODS" == *,web_console,* ]]; then
@@ -49,12 +51,14 @@ if [[ "$ACCESS_METHODS" == *,jupyter,* || "$ACCESS_METHODS" == *,web_console,* ]
     --ServerApp.root_dir="$WORKSPACE" \
     --ServerApp.token="${SSH_PASSWORD:-launchpad}" \
     --ServerApp.allow_remote_access=True &
+  service_pids+=("$!")
 fi
 
 if [[ "$ACCESS_METHODS" == *,vscode,* ]]; then
   echo "Starting code-server on port 8443..."
   PASSWORD="${SSH_PASSWORD:-launchpad}" code-server \
     --bind-addr 0.0.0.0:8443 --auth password --disable-telemetry "$WORKSPACE" &
+  service_pids+=("$!")
 fi
 
 STACK_LEVEL="${STACK_LEVEL:-minimal}"
@@ -69,4 +73,10 @@ echo "  MaaS:  $MODEL_ENDPOINT"
 echo "============================================"
 echo ""
 
-wait -n
+if (( ${#service_pids[@]} > 0 )); then
+  wait -n "${service_pids[@]}"
+else
+  # Console and Web Terminal are hosted by OpenShift, not this pod. Keep the
+  # namespace workspace alive when no local access service was requested.
+  sleep infinity
+fi
