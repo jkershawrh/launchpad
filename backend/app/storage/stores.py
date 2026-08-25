@@ -20,6 +20,7 @@ from app.domain.models import (
     ProvisioningPlan,
     ShowbackRecord,
     Tenant,
+    Workshop,
 )
 from app.storage.database import get_database_url
 
@@ -133,6 +134,7 @@ class PostgresSessionStore:
         finally:
             conn.close()
 
+
     def get(self, session_id: str) -> Optional[LabSession]:
         conn = _get_sync_conn()
         if not conn:
@@ -178,6 +180,76 @@ class PostgresSessionStore:
                 return [LabSession.model_validate(_decode_json(r[0])) for r in rows]
         except Exception as e:
             logger.warning("DB list sessions by tenant error: %s", e)
+            return []
+        finally:
+            conn.close()
+
+
+class PostgresWorkshopStore:
+    def save(self, workshop: Workshop) -> None:
+        conn = _get_sync_conn()
+        if not conn:
+            return
+        try:
+            data = json.dumps(workshop.model_dump(mode="json"))
+            with conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO workshops
+                       (workshop_id, tenant_id, catalog_item_id, status,
+                        idempotency_key, order_fingerprint, data)
+                       VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb)
+                       ON CONFLICT (workshop_id) DO UPDATE SET
+                         status = EXCLUDED.status,
+                         data = EXCLUDED.data,
+                         updated_at = NOW()""",
+                    (
+                        workshop.workshop_id,
+                        workshop.tenant_id,
+                        workshop.catalog_item_id,
+                        workshop.status.value,
+                        workshop.idempotency_key,
+                        workshop.order_fingerprint,
+                        data,
+                    ),
+                )
+            conn.commit()
+        except Exception as e:
+            logger.warning("DB save workshop error: %s", e)
+            conn.rollback()
+        finally:
+            conn.close()
+
+    def get(self, workshop_id: str) -> Optional[Workshop]:
+        conn = _get_sync_conn()
+        if not conn:
+            return None
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT data FROM workshops WHERE workshop_id = %s",
+                    (workshop_id,),
+                )
+                row = cur.fetchone()
+                return Workshop.model_validate(_decode_json(row[0])) if row else None
+        except Exception as e:
+            logger.warning("DB get workshop error: %s", e)
+            return None
+        finally:
+            conn.close()
+
+    def list_all(self) -> List[Workshop]:
+        conn = _get_sync_conn()
+        if not conn:
+            return []
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT data FROM workshops")
+                return [
+                    Workshop.model_validate(_decode_json(row[0]))
+                    for row in cur.fetchall()
+                ]
+        except Exception as e:
+            logger.warning("DB list workshops error: %s", e)
             return []
         finally:
             conn.close()

@@ -258,6 +258,8 @@ class Workshop(BaseModel):
     num_users: int = Field(ge=1, le=100)
     name: Optional[str] = None
     owner_id: Optional[str] = None
+    idempotency_key: Optional[str] = None
+    order_fingerprint: Optional[str] = None
     ttl: str = "8h"
     ocp_version: str = "4.20"
     purpose: str = "events"

@@ -47,6 +47,7 @@ def _create_db_stores():
         PostgresSessionStore,
         PostgresShowbackStore,
         PostgresTenantStore,
+        PostgresWorkshopStore,
     )
     return SimpleNamespace(
         tenants=PostgresTenantStore(),
@@ -55,6 +56,7 @@ def _create_db_stores():
         plans=PostgresPlanStore(),
         showback=PostgresShowbackStore(),
         catalog=PostgresCatalogStore(),
+        workshops=PostgresWorkshopStore(),
     )
 
 

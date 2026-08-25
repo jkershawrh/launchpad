@@ -6,6 +6,8 @@ import pytest
 from app.domain.enums import WorkshopSeatStatus, WorkshopStatus
 from app.domain.models import Workshop, WorkshopSeat
 from app.main import app
+from app.services.provisioning import ProvisioningService
+from types import SimpleNamespace
 
 
 client = TestClient(app)
@@ -100,3 +102,40 @@ def test_group_reclaim_updates_every_seat():
     assert reclaimed.status_code == 200
     assert reclaimed.json()["status"] == "completed"
     assert {seat["status"] for seat in reclaimed.json()["seats"]} == {"reclaimed"}
+
+
+class InMemoryWorkshopStore:
+    def __init__(self):
+        self.items = {}
+
+    def save(self, workshop):
+        self.items[workshop.workshop_id] = workshop
+
+    def list_all(self):
+        return list(self.items.values())
+
+
+def test_idempotency_survives_service_restart():
+    store = InMemoryWorkshopStore()
+    db = SimpleNamespace(workshops=store)
+    order = Workshop(
+        tenant_id="restart-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=2,
+    )
+
+    first_service = ProvisioningService(db_stores=db)
+    first = first_service.provision_workshop(order, idempotency_key="restart-safe")
+
+    restarted_service = ProvisioningService(db_stores=db)
+    duplicate = restarted_service.provision_workshop(
+        Workshop(
+            tenant_id="restart-tenant",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=2,
+        ),
+        idempotency_key="restart-safe",
+    )
+
+    assert duplicate.workshop_id == first.workshop_id
+    assert len(store.items) == 1

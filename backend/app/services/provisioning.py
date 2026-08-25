@@ -118,6 +118,13 @@ class ProvisioningService:
         if hasattr(self.db, 'requests'):
             for request in self.db.requests.list_all():
                 self._requests[request.request_id] = request
+        if hasattr(self.db, 'workshops'):
+            for workshop in self.db.workshops.list_all():
+                self._workshops[workshop.workshop_id] = workshop
+                if workshop.idempotency_key and workshop.order_fingerprint:
+                    self._workshop_idempotency[
+                        (workshop.tenant_id, workshop.idempotency_key)
+                    ] = (workshop.order_fingerprint, workshop.workshop_id)
         self._cleanup_orphaned_sessions()
 
     def _cleanup_orphaned_sessions(self) -> None:
@@ -189,6 +196,11 @@ class ProvisioningService:
         self._plans[plan.plan_id] = plan
         if self.db and hasattr(self.db, 'plans'):
             self.db.plans.save(plan)
+
+    def _save_workshop(self, workshop: Workshop) -> None:
+        self._workshops[workshop.workshop_id] = workshop
+        if self.db and hasattr(self.db, 'workshops'):
+            self.db.workshops.save(workshop)
 
     def _resolve_hardware(self, request: LabRequest, catalog_item) -> tuple:
         if request.hardware_profile and request.quota_profile:
@@ -757,6 +769,10 @@ class ProvisioningService:
                     )
                 return self._workshops[workshop_id]
             self._workshop_idempotency[lookup_key] = (fingerprint, workshop.workshop_id)
+            workshop = workshop.model_copy(update={
+                "idempotency_key": idempotency_key,
+                "order_fingerprint": fingerprint,
+            })
 
         seats = [
             WorkshopSeat(
@@ -771,12 +787,12 @@ class ProvisioningService:
             "started_at": datetime.utcnow(),
             "seats": seats,
         })
-        self._workshops[workshop.workshop_id] = workshop
+        self._save_workshop(workshop)
 
         catalog_item = self.catalog.get_item(workshop.catalog_item_id)
         if not catalog_item:
             workshop = workshop.model_copy(update={"status": WorkshopStatus.FAILED, "metadata": {**workshop.metadata, "error": "catalog item not found"}})
-            self._workshops[workshop.workshop_id] = workshop
+            self._save_workshop(workshop)
             return workshop
 
         if self.preflight:
@@ -788,7 +804,7 @@ class ProvisioningService:
                     "status": WorkshopStatus.PREFLIGHT_FAILED,
                     "metadata": {**workshop.metadata, "preflight_failure": reasons},
                 })
-                self._workshops[workshop.workshop_id] = workshop
+                self._save_workshop(workshop)
                 return workshop
 
         can_provision, cap_reason = self.check_workshop_capacity(workshop)
@@ -800,7 +816,7 @@ class ProvisioningService:
                     "status": WorkshopStatus.FAILED,
                     "metadata": {**workshop.metadata, "error": f"Insufficient capacity: {cap_reason}"},
                 })
-                self._workshops[workshop.workshop_id] = workshop
+                self._save_workshop(workshop)
                 return workshop
             logger.warning(
                 "Workshop %s: requested %d seats but cluster can support %d. Provisioning %d.",
@@ -876,7 +892,7 @@ class ProvisioningService:
                 "seats_provisioned": len(session_ids),
             },
         })
-        self._workshops[workshop.workshop_id] = workshop
+        self._save_workshop(workshop)
         return workshop
 
     def get_workshop_users(self, workshop_id: str) -> list:
@@ -1037,7 +1053,7 @@ class ProvisioningService:
             "completed_at": datetime.utcnow(),
             "metadata": {**workshop.metadata, "failed_reclaims": failed_reclaims},
         })
-        self._workshops[workshop.workshop_id] = workshop
+        self._save_workshop(workshop)
         return workshop
 
     def get_workshop(self, workshop_id: str) -> Optional[Workshop]:
