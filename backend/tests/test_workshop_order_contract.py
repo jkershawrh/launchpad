@@ -181,9 +181,11 @@ def test_order_waits_for_confirmation_before_provisioning():
     assert order["metadata"]["capacity_preview"]["can_provision"] is True
 
     confirmed = client.post(f"/api/v1/workshops/{order['workshop_id']}/confirm")
-    assert confirmed.status_code == 200
-    assert confirmed.json()["status"] == "ready"
-    assert len(confirmed.json()["session_ids"]) == 3
+    assert confirmed.status_code == 202
+    assert confirmed.json()["status"] == "queued"
+    completed = client.get(f"/api/v1/workshops/{order['workshop_id']}")
+    assert completed.json()["status"] == "ready"
+    assert len(completed.json()["session_ids"]) == 3
 
 
 def test_confirm_is_idempotent_after_workshop_is_ready():
@@ -198,6 +200,27 @@ def test_confirm_is_idempotent_after_workshop_is_ready():
     first = client.post(f"/api/v1/workshops/{order['workshop_id']}/confirm")
     second = client.post(f"/api/v1/workshops/{order['workshop_id']}/confirm")
 
-    assert first.status_code == 200
-    assert second.status_code == 200
-    assert second.json()["session_ids"] == first.json()["session_ids"]
+    assert first.status_code == 202
+    assert second.status_code == 202
+    completed = client.get(f"/api/v1/workshops/{order['workshop_id']}").json()
+    assert second.json()["session_ids"] == completed["session_ids"]
+
+
+def test_queued_order_can_resume_after_service_restart():
+    store = InMemoryWorkshopStore()
+    db = SimpleNamespace(workshops=store)
+    service = ProvisioningService(db_stores=db)
+    order = service.create_workshop_order(
+        Workshop(
+            tenant_id="queued-restart-tenant",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=2,
+        )
+    )
+    service.queue_workshop(order.workshop_id)
+
+    restarted = ProvisioningService(db_stores=db)
+    completed = restarted.run_queued_workshop(order.workshop_id)
+
+    assert completed.status == WorkshopStatus.READY
+    assert len(completed.session_ids) == 2

@@ -833,6 +833,45 @@ class ProvisioningService:
             )
         return self.provision_workshop(workshop)
 
+    def queue_workshop(self, workshop_id: str) -> Workshop:
+        workshop = self._workshops.get(workshop_id)
+        if not workshop:
+            raise ValueError(f"Workshop {workshop_id} not found")
+        if workshop.status in {
+            WorkshopStatus.QUEUED,
+            WorkshopStatus.PROVISIONING,
+            WorkshopStatus.PARTIALLY_READY,
+            WorkshopStatus.READY,
+            WorkshopStatus.ACTIVE,
+        }:
+            return workshop
+        if workshop.status != WorkshopStatus.AWAITING_CONFIRMATION:
+            raise ValueError(
+                f"Workshop {workshop_id} cannot be queued from status {workshop.status.value}"
+            )
+        queued = workshop.model_copy(update={"status": WorkshopStatus.QUEUED})
+        self._save_workshop(queued)
+        return queued
+
+    def run_queued_workshop(self, workshop_id: str) -> Workshop:
+        workshop = self._workshops.get(workshop_id)
+        if not workshop:
+            raise ValueError(f"Workshop {workshop_id} not found")
+        if workshop.status in {
+            WorkshopStatus.PARTIALLY_READY,
+            WorkshopStatus.READY,
+            WorkshopStatus.ACTIVE,
+        }:
+            return workshop
+        if workshop.status not in {
+            WorkshopStatus.QUEUED,
+            WorkshopStatus.PROVISIONING,
+        }:
+            raise ValueError(
+                f"Workshop {workshop_id} cannot run from status {workshop.status.value}"
+            )
+        return self.provision_workshop(workshop)
+
     def provision_workshop(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:
@@ -901,6 +940,9 @@ class ProvisioningService:
         session_ids = []
         for i in range(seats_to_provision):
             seat = workshop.seats[i]
+            if seat.status == WorkshopSeatStatus.READY and seat.session_id:
+                session_ids.append(seat.session_id)
+                continue
             user_id = seat.participant_id
             workshop.seats[i] = seat.model_copy(update={
                 "status": WorkshopSeatStatus.PROVISIONING,

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from app.api.deps import provisioning_service
+from app.domain.enums import WorkshopStatus
 from app.domain.models import Workshop
 
 router = APIRouter(prefix="/workshops", tags=["workshops"])
@@ -70,10 +71,15 @@ def create_workshop_order(
         raise HTTPException(400, str(e))
 
 
-@router.post("/{workshop_id}/confirm", response_model=Workshop)
-def confirm_workshop(workshop_id: str):
+@router.post("/{workshop_id}/confirm", response_model=Workshop, status_code=202)
+def confirm_workshop(workshop_id: str, background_tasks: BackgroundTasks):
     try:
-        return provisioning_service.confirm_workshop(workshop_id)
+        workshop = provisioning_service.queue_workshop(workshop_id)
+        if workshop.status == WorkshopStatus.QUEUED:
+            background_tasks.add_task(
+                provisioning_service.run_queued_workshop, workshop_id
+            )
+        return workshop
     except ValueError as e:
         if "not found" in str(e):
             raise HTTPException(404, str(e))

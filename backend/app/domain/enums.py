@@ -54,6 +54,7 @@ class WorkshopStatus(str, Enum):
     DRAFT = "draft"
     CAPACITY_CHECKING = "capacity_checking"
     AWAITING_CONFIRMATION = "awaiting_confirmation"
+    QUEUED = "queued"
     PROVISIONING = "provisioning"
     PARTIALLY_READY = "partially_ready"
     READY = "ready"
