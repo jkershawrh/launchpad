@@ -10,6 +10,7 @@ const PORTAL_NAVIGATION: NavigationItem[] = [
   { path: '/catalog', label: 'Catalog' },
   { path: '/request', label: 'Request a Lab' },
   { path: '/workshops/new', label: 'Create Workshop' },
+  { path: '/workshops', label: 'Workshops' },
   { path: '/sessions', label: 'My Labs' },
 ];
 

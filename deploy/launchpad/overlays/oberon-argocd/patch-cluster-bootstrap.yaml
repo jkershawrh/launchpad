@@ -1,0 +1,41 @@
+$patch: delete
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: partner-ai-launchpad
+---
+$patch: delete
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: launchpad-provisioner
+---
+$patch: delete
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: launchpad-provisioner-binding
+---
+$patch: delete
+apiVersion: v1
+kind: Secret
+metadata:
+  name: launchpad-db-secret
+---
+$patch: delete
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-oauth-cookie
+---
+$patch: delete
+apiVersion: v1
+kind: Secret
+metadata:
+  name: portal-oauth-cookie
+---
+$patch: delete
+apiVersion: v1
+kind: Secret
+metadata:
+  name: admin-oauth-cookie

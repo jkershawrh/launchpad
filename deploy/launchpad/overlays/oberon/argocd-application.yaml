@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/jkershawrh/launchpad.git
     targetRevision: main
-    path: deploy/launchpad/overlays/oberon
+    path: deploy/launchpad/overlays/oberon-argocd
   destination:
     server: https://kubernetes.default.svc
     namespace: partner-ai-launchpad

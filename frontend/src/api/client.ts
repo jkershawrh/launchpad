@@ -85,5 +85,8 @@ export const api = {
     }),
   confirmWorkshop: (id: string) =>
     request<Workshop>(`/workshops/${id}/confirm`, { method: 'POST' }),
+  listWorkshops: () => request<Workshop[]>('/workshops'),
   getWorkshop: (id: string) => request<Workshop>(`/workshops/${id}`),
+  reclaimWorkshop: (id: string) =>
+    request<Workshop>(`/workshops/${id}`, { method: 'DELETE' }),
 };

@@ -16,6 +16,8 @@ import Sessions from './pages/Sessions';
 import LabRequestForm from './pages/LabRequestForm';
 import Admin from './pages/Admin';
 import WorkshopOrderForm from './pages/WorkshopOrderForm';
+import Workshops from './pages/Workshops';
+import WorkshopDetail from './pages/WorkshopDetail';
 import { getAppSurface } from './appSurface';
 
 export default function App() {
@@ -46,6 +48,8 @@ export default function App() {
                 <Route path="/sandbox" element={<Sandbox />} />
                 <Route path="/request" element={<LabRequestForm />} />
                 <Route path="/workshops/new" element={<WorkshopOrderForm />} />
+                <Route path="/workshops" element={<Workshops />} />
+                <Route path="/workshops/:workshopId" element={<WorkshopDetail />} />
                 <Route path="/sessions" element={<Sessions />} />
               </>
             )}
