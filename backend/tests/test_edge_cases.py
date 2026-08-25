@@ -41,17 +41,12 @@ class TestInputValidation:
         assert s.session_id
 
     def test_negative_num_users_workshop(self):
-        w = Workshop(tenant_id="t", catalog_item_id="inference-overdrive-quickstart", num_users=-1, ttl="4h")
-        svc = _svc()
-        result = svc.provision_workshop(w)
-        assert len(result.session_ids) == 0
+        with pytest.raises(Exception):
+            Workshop(tenant_id="t", catalog_item_id="inference-overdrive-quickstart", num_users=-1, ttl="4h")
 
     def test_zero_num_users_workshop(self):
-        w = Workshop(tenant_id="t", catalog_item_id="inference-overdrive-quickstart", num_users=0, ttl="4h")
-        svc = _svc()
-        result = svc.provision_workshop(w)
-        assert len(result.session_ids) == 0
-        assert result.status == "ready"
+        with pytest.raises(Exception):
+            Workshop(tenant_id="t", catalog_item_id="inference-overdrive-quickstart", num_users=0, ttl="4h")
 
     def test_invalid_ttl_format(self):
         svc = _svc()

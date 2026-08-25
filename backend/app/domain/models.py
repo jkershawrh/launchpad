@@ -17,6 +17,8 @@ from app.domain.enums import (
     TenantStatus,
     TenantType,
     ValidationResultStatus,
+    WorkshopSeatStatus,
+    WorkshopStatus,
 )
 
 
@@ -233,15 +235,34 @@ class ShowbackRecord(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class WorkshopSeat(BaseModel):
+    seat_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    workshop_id: str
+    seat_number: int = Field(ge=1)
+    participant_id: Optional[str] = None
+    status: WorkshopSeatStatus = WorkshopSeatStatus.PENDING
+    session_id: Optional[str] = None
+    request_id: Optional[str] = None
+    lab_url: Optional[str] = None
+    showroom_url: Optional[str] = None
+    error: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class Workshop(BaseModel):
     workshop_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     tenant_id: str
     catalog_item_id: str
-    num_users: int
+    num_users: int = Field(ge=1, le=100)
+    name: Optional[str] = None
+    owner_id: Optional[str] = None
     ttl: str = "8h"
     ocp_version: str = "4.20"
     purpose: str = "events"
-    status: str = "pending"
+    status: WorkshopStatus = WorkshopStatus.DRAFT
+    seats: List[WorkshopSeat] = Field(default_factory=list)
     session_ids: List[str] = Field(default_factory=list)
     cluster_ref: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)

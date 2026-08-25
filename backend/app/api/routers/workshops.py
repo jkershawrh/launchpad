@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from fastapi import APIRouter, Header, HTTPException
+from pydantic import BaseModel, Field
 
 from app.api.deps import provisioning_service
 from app.domain.models import Workshop
@@ -14,27 +14,31 @@ router = APIRouter(prefix="/workshops", tags=["workshops"])
 class WorkshopCreate(BaseModel):
     tenant_id: str
     catalog_item_id: str
-    num_users: int  # capped at 100 to prevent resource exhaustion
+    num_users: int = Field(ge=1, le=100)
+    name: str | None = None
+    owner_id: str | None = None
     ttl: str = "8h"
     ocp_version: str = "4.20"
     purpose: str = "events"
 
 
 @router.post("", response_model=Workshop, status_code=201)
-def create_workshop(body: WorkshopCreate):
-    if body.num_users > 100:
-        raise HTTPException(400, f"num_users must be <= 100 (got {body.num_users})")
+def create_workshop(body: WorkshopCreate, idempotency_key: str | None = Header(default=None)):
     workshop = Workshop(
         tenant_id=body.tenant_id,
         catalog_item_id=body.catalog_item_id,
         num_users=body.num_users,
+        name=body.name,
+        owner_id=body.owner_id,
         ttl=body.ttl,
         ocp_version=body.ocp_version,
         purpose=body.purpose,
     )
     try:
-        return provisioning_service.provision_workshop(workshop)
+        return provisioning_service.provision_workshop(workshop, idempotency_key=idempotency_key)
     except ValueError as e:
+        if "Idempotency key" in str(e):
+            raise HTTPException(409, str(e))
         raise HTTPException(400, str(e))
 
 

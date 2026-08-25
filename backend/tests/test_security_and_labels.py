@@ -125,7 +125,7 @@ class TestWorkshopProvisioning:
         )
         assert w.workshop_id
         assert w.num_users == 5
-        assert w.status == "pending"
+        assert w.status == "draft"
         assert w.session_ids == []
 
     def test_provision_workshop_creates_multiple_sessions(self):

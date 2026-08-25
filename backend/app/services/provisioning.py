@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import re
 import threading
@@ -18,7 +20,14 @@ from app.adapters.mock.pool import MockPoolAdapter
 from app.adapters.mock.provisioning import MockProvisioningAdapter
 from app.adapters.mock.showback import MockShowbackAdapter
 from app.adapters.mock.validation import MockValidationAdapter
-from app.domain.enums import CatalogCategory, LabRequestStatus, Persistence, SessionStatus
+from app.domain.enums import (
+    CatalogCategory,
+    LabRequestStatus,
+    Persistence,
+    SessionStatus,
+    WorkshopSeatStatus,
+    WorkshopStatus,
+)
 from app.domain.lifecycle import transition
 from app.domain.models import (
     LabRequest,
@@ -27,6 +36,7 @@ from app.domain.models import (
     ProvisioningPlan,
     ShowbackRecord,
     Workshop,
+    WorkshopSeat,
 )
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
@@ -95,6 +105,7 @@ class ProvisioningService:
         self._sessions: dict[str, LabSession] = {}
         self._plans: dict[str, ProvisioningPlan] = {}
         self._workshops: dict[str, Workshop] = {}
+        self._workshop_idempotency: dict[tuple[str, str], tuple[str, str]] = {}
         self._gw_locks: dict[str, threading.Lock] = {}
         self._load_from_db()
 
@@ -717,16 +728,54 @@ class ProvisioningService:
 
     # ── Workshop provisioning ─────────────────────────────────────
 
-    def provision_workshop(self, workshop: Workshop) -> Workshop:
+    @staticmethod
+    def _workshop_order_fingerprint(workshop: Workshop) -> str:
+        order = {
+            "tenant_id": workshop.tenant_id,
+            "catalog_item_id": workshop.catalog_item_id,
+            "num_users": workshop.num_users,
+            "name": workshop.name,
+            "owner_id": workshop.owner_id,
+            "ttl": workshop.ttl,
+            "ocp_version": workshop.ocp_version,
+            "purpose": workshop.purpose,
+        }
+        return hashlib.sha256(json.dumps(order, sort_keys=True).encode()).hexdigest()
+
+    def provision_workshop(
+        self, workshop: Workshop, idempotency_key: str = None
+    ) -> Workshop:
+        if idempotency_key:
+            lookup_key = (workshop.tenant_id, idempotency_key)
+            fingerprint = self._workshop_order_fingerprint(workshop)
+            existing = self._workshop_idempotency.get(lookup_key)
+            if existing:
+                existing_fingerprint, workshop_id = existing
+                if existing_fingerprint != fingerprint:
+                    raise ValueError(
+                        "Idempotency key was already used for a different workshop order"
+                    )
+                return self._workshops[workshop_id]
+            self._workshop_idempotency[lookup_key] = (fingerprint, workshop.workshop_id)
+
+        seats = [
+            WorkshopSeat(
+                workshop_id=workshop.workshop_id,
+                seat_number=index,
+                participant_id=f"workshop-{workshop.workshop_id[:8]}-user-{index}",
+            )
+            for index in range(1, workshop.num_users + 1)
+        ]
         workshop = workshop.model_copy(update={
-            "status": "provisioning",
+            "status": WorkshopStatus.PROVISIONING,
             "started_at": datetime.utcnow(),
+            "seats": seats,
         })
         self._workshops[workshop.workshop_id] = workshop
 
         catalog_item = self.catalog.get_item(workshop.catalog_item_id)
         if not catalog_item:
-            workshop = workshop.model_copy(update={"status": "failed", "metadata": {**workshop.metadata, "error": "catalog item not found"}})
+            workshop = workshop.model_copy(update={"status": WorkshopStatus.FAILED, "metadata": {**workshop.metadata, "error": "catalog item not found"}})
             self._workshops[workshop.workshop_id] = workshop
             return workshop
 
@@ -736,7 +785,7 @@ class ProvisioningService:
                 failed = [c for c in preflight_result.checks if c.status == "fail"]
                 reasons = "; ".join(c.message for c in failed)
                 workshop = workshop.model_copy(update={
-                    "status": "preflight_failed",
+                    "status": WorkshopStatus.PREFLIGHT_FAILED,
                     "metadata": {**workshop.metadata, "preflight_failure": reasons},
                 })
                 self._workshops[workshop.workshop_id] = workshop
@@ -748,7 +797,7 @@ class ProvisioningService:
             max_seats = self._estimate_max_seats(workshop)
             if max_seats <= 0:
                 workshop = workshop.model_copy(update={
-                    "status": "failed",
+                    "status": WorkshopStatus.FAILED,
                     "metadata": {**workshop.metadata, "error": f"Insufficient capacity: {cap_reason}"},
                 })
                 self._workshops[workshop.workshop_id] = workshop
@@ -763,7 +812,12 @@ class ProvisioningService:
 
         session_ids = []
         for i in range(seats_to_provision):
-            user_id = f"workshop-{workshop.workshop_id[:8]}-user-{i+1}"
+            seat = workshop.seats[i]
+            user_id = seat.participant_id
+            workshop.seats[i] = seat.model_copy(update={
+                "status": WorkshopSeatStatus.PROVISIONING,
+                "updated_at": datetime.utcnow(),
+            })
             request = LabRequest(
                 tenant_id=workshop.tenant_id,
                 requester_id=user_id,
@@ -790,11 +844,29 @@ class ProvisioningService:
                 })
                 self._save_session(session)
                 session_ids.append(session.session_id)
+                workshop.seats[i] = workshop.seats[i].model_copy(update={
+                    "status": WorkshopSeatStatus.READY,
+                    "session_id": session.session_id,
+                    "request_id": accepted.request_id,
+                    "lab_url": session.lab_url,
+                    "showroom_url": session.metadata.get("showroom_url") or session.lab_url,
+                    "updated_at": datetime.utcnow(),
+                })
             except ValueError as e:
                 logger.warning("Workshop %s seat %d failed: %s", workshop.workshop_id, i + 1, e)
+                workshop.seats[i] = workshop.seats[i].model_copy(update={
+                    "status": WorkshopSeatStatus.FAILED,
+                    "error": str(e),
+                    "updated_at": datetime.utcnow(),
+                })
                 continue
 
-        status = "ready" if session_ids else "failed"
+        if len(session_ids) == workshop.num_users:
+            status = WorkshopStatus.READY
+        elif session_ids:
+            status = WorkshopStatus.PARTIALLY_READY
+        else:
+            status = WorkshopStatus.FAILED
         workshop = workshop.model_copy(update={
             "status": status,
             "session_ids": session_ids,
@@ -919,16 +991,47 @@ class ProvisioningService:
             raise ValueError(f"Workshop {workshop_id} not found")
 
         failed_reclaims = []
+        seats_by_session = {
+            seat.session_id: index
+            for index, seat in enumerate(workshop.seats)
+            if seat.session_id
+        }
         for session_id in workshop.session_ids:
+            seat_index = seats_by_session.get(session_id)
+            if seat_index is not None:
+                workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
+                    "status": WorkshopSeatStatus.RECLAIMING,
+                    "updated_at": datetime.utcnow(),
+                })
             try:
                 self.reclaim_session(session_id)
+                if seat_index is not None:
+                    workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
+                        "status": WorkshopSeatStatus.RECLAIMED,
+                        "updated_at": datetime.utcnow(),
+                    })
             except (ValueError, Exception):
                 try:
                     self.force_reclaim_session(session_id)
+                    if seat_index is not None:
+                        workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
+                            "status": WorkshopSeatStatus.RECLAIMED,
+                            "updated_at": datetime.utcnow(),
+                        })
                 except Exception as e:
                     failed_reclaims.append({"session_id": session_id, "error": str(e)})
+                    if seat_index is not None:
+                        workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
+                            "status": WorkshopSeatStatus.FAILED,
+                            "error": str(e),
+                            "updated_at": datetime.utcnow(),
+                        })
 
-        status = "completed" if not failed_reclaims else "completed_with_errors"
+        status = (
+            WorkshopStatus.COMPLETED
+            if not failed_reclaims
+            else WorkshopStatus.COMPLETED_WITH_ERRORS
+        )
         workshop = workshop.model_copy(update={
             "status": status,
             "completed_at": datetime.utcnow(),

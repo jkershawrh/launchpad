@@ -50,6 +50,32 @@ class SessionStatus(str, Enum):
     CLEANUP_FAILED = "cleanup_failed"
 
 
+class WorkshopStatus(str, Enum):
+    DRAFT = "draft"
+    CAPACITY_CHECKING = "capacity_checking"
+    AWAITING_CONFIRMATION = "awaiting_confirmation"
+    PROVISIONING = "provisioning"
+    PARTIALLY_READY = "partially_ready"
+    READY = "ready"
+    ACTIVE = "active"
+    PREFLIGHT_FAILED = "preflight_failed"
+    FAILED = "failed"
+    RECLAIMING = "reclaiming"
+    COMPLETED = "completed"
+    COMPLETED_WITH_ERRORS = "completed_with_errors"
+
+
+class WorkshopSeatStatus(str, Enum):
+    PENDING = "pending"
+    PROVISIONING = "provisioning"
+    VALIDATING = "validating"
+    READY = "ready"
+    ACTIVE = "active"
+    FAILED = "failed"
+    RECLAIMING = "reclaiming"
+    RECLAIMED = "reclaimed"
+
+
 class Persistence(str, Enum):
     EPHEMERAL = "ephemeral"
     PERSISTENT = "persistent"
