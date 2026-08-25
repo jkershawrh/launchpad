@@ -48,6 +48,7 @@ RUN chown -R 0:0 /home/lab-user/playbooks && chmod -R g+r /home/lab-user/playboo
 
 # Ensure SSH + home writable by OpenShift random UID
 RUN chmod -R g+w /run/sshd && chmod g+w /etc/ssh/sshd_config \
+    && chown -R 0:0 /home/lab-user \
     && chmod -R g+rwX /home/lab-user
 
 EXPOSE 2222 8888 8443
