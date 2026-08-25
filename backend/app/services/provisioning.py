@@ -1168,13 +1168,17 @@ class ProvisioningService:
                     "status": WorkshopSeatStatus.RECLAIMING,
                     "updated_at": datetime.utcnow(),
                 })
+                self._save_workshop(workshop)
             try:
-                self.reclaim_session(session_id)
+                reclaimed_session = self.reclaim_session(session_id)
+                if reclaimed_session.status == SessionStatus.CLEANUP_FAILED:
+                    reclaimed_session = self.force_reclaim_session(session_id)
                 if seat_index is not None:
                     workshop.seats[seat_index] = workshop.seats[seat_index].model_copy(update={
                         "status": WorkshopSeatStatus.RECLAIMED,
                         "updated_at": datetime.utcnow(),
                     })
+                    self._save_workshop(workshop)
             except (ValueError, Exception):
                 try:
                     self.force_reclaim_session(session_id)
@@ -1183,6 +1187,7 @@ class ProvisioningService:
                             "status": WorkshopSeatStatus.RECLAIMED,
                             "updated_at": datetime.utcnow(),
                         })
+                        self._save_workshop(workshop)
                 except Exception as e:
                     failed_reclaims.append({"session_id": session_id, "error": str(e)})
                     if seat_index is not None:
@@ -1191,6 +1196,7 @@ class ProvisioningService:
                             "error": str(e),
                             "updated_at": datetime.utcnow(),
                         })
+                        self._save_workshop(workshop)
 
         status = (
             WorkshopStatus.COMPLETED
@@ -1204,6 +1210,33 @@ class ProvisioningService:
         })
         self._save_workshop(workshop)
         return workshop
+
+    def queue_workshop_reclaim(self, workshop_id: str) -> Workshop:
+        workshop = self._workshops.get(workshop_id)
+        if not workshop:
+            raise ValueError(f"Workshop {workshop_id} not found")
+        if workshop.status == WorkshopStatus.RECLAIMING:
+            return workshop
+        if workshop.status in {
+            WorkshopStatus.COMPLETED,
+            WorkshopStatus.COMPLETED_WITH_ERRORS,
+        }:
+            return workshop
+
+        seats = [
+            seat.model_copy(update={
+                "status": WorkshopSeatStatus.RECLAIMING,
+                "error": None,
+                "updated_at": datetime.utcnow(),
+            }) if seat.session_id else seat
+            for seat in workshop.seats
+        ]
+        queued = workshop.model_copy(update={
+            "status": WorkshopStatus.RECLAIMING,
+            "seats": seats,
+        })
+        self._save_workshop(queued)
+        return queued
 
     def get_workshop(self, workshop_id: str) -> Optional[Workshop]:
         return self._workshops.get(workshop_id)

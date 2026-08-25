@@ -66,6 +66,9 @@ class TestWorkshopAPI:
         wid = create.json()["workshop_id"]
 
         resp = client.delete(f"/api/v1/workshops/{wid}")
-        assert resp.status_code == 200
+        assert resp.status_code == 202
         data = resp.json()
-        assert data["status"] == "completed"
+        assert data["status"] == "reclaiming"
+
+        completed = client.get(f"/api/v1/workshops/{wid}")
+        assert completed.json()["status"] == "completed"

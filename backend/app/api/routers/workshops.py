@@ -123,9 +123,19 @@ def get_workshop_capacity(workshop_id: str):
     return {"can_provision": can, "reason": reason, "seats_provisioned": len(workshop.session_ids)}
 
 
-@router.delete("/{workshop_id}", response_model=Workshop)
-def delete_workshop(workshop_id: str):
+@router.delete("/{workshop_id}", response_model=Workshop, status_code=202)
+def delete_workshop(workshop_id: str, background_tasks: BackgroundTasks):
     try:
-        return provisioning_service.reclaim_workshop(workshop_id)
+        current = provisioning_service.get_workshop(workshop_id)
+        if not current:
+            raise ValueError(f"Workshop {workshop_id} not found")
+        if current.status == WorkshopStatus.RECLAIMING:
+            return current
+        workshop = provisioning_service.queue_workshop_reclaim(workshop_id)
+        if workshop.status == WorkshopStatus.RECLAIMING:
+            background_tasks.add_task(
+                provisioning_service.reclaim_workshop, workshop_id
+            )
+        return workshop
     except ValueError as e:
         raise HTTPException(404, str(e))

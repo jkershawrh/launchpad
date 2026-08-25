@@ -38,6 +38,10 @@ large API/CRD discovery surface.
 ## Release posture
 
 The platform is ready for controlled internal Intel workshops of up to 20
-participants. Before broad unscheduled self-service, add concurrent-workshop
-admission policy, load-test two simultaneous workshops, and publish organizer
-support/SLO guidance.
+participants. Workshop reclaim is asynchronous: the organizer receives an
+immediate accepted response and can follow persisted per-seat cleanup progress
+until the workshop reaches `completed` or `completed_with_errors`.
+
+Before broad unscheduled self-service, add concurrent-workshop admission policy,
+load-test two simultaneous workshops, and publish organizer support/SLO
+guidance.

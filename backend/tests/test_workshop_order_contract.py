@@ -102,9 +102,13 @@ def test_group_reclaim_updates_every_seat():
 
     reclaimed = client.delete(f"/api/v1/workshops/{workshop_id}")
 
-    assert reclaimed.status_code == 200
-    assert reclaimed.json()["status"] == "completed"
-    assert {seat["status"] for seat in reclaimed.json()["seats"]} == {"reclaimed"}
+    assert reclaimed.status_code == 202
+    assert reclaimed.json()["status"] == "reclaiming"
+    assert {seat["status"] for seat in reclaimed.json()["seats"]} == {"reclaiming"}
+
+    completed = client.get(f"/api/v1/workshops/{workshop_id}")
+    assert completed.json()["status"] == "completed"
+    assert {seat["status"] for seat in completed.json()["seats"]} == {"reclaimed"}
 
 
 class InMemoryWorkshopStore:
