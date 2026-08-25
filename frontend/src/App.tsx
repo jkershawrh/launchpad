@@ -15,6 +15,7 @@ import PortalDashboard from './pages/PortalDashboard';
 import Sessions from './pages/Sessions';
 import LabRequestForm from './pages/LabRequestForm';
 import Admin from './pages/Admin';
+import WorkshopOrderForm from './pages/WorkshopOrderForm';
 import { getAppSurface } from './appSurface';
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
                 <Route path="/demos" element={<Demos />} />
                 <Route path="/sandbox" element={<Sandbox />} />
                 <Route path="/request" element={<LabRequestForm />} />
+                <Route path="/workshops/new" element={<WorkshopOrderForm />} />
                 <Route path="/sessions" element={<Sessions />} />
               </>
             )}

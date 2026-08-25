@@ -116,6 +116,41 @@ export interface RepeatabilityReport {
   repeatability_score: number;
 }
 
+export interface WorkshopSeat {
+  seat_id: string;
+  seat_number: number;
+  participant_id?: string;
+  status: string;
+  session_id?: string;
+  lab_url?: string;
+  showroom_url?: string;
+  error?: string;
+}
+
+export interface Workshop {
+  workshop_id: string;
+  tenant_id: string;
+  catalog_item_id: string;
+  num_users: number;
+  name?: string;
+  owner_id?: string;
+  ttl: string;
+  status: string;
+  seats: WorkshopSeat[];
+  session_ids: string[];
+  metadata: Record<string, unknown>;
+}
+
+export interface WorkshopCapacityPreview {
+  can_provision: boolean;
+  reason: string;
+  seats_requested: number;
+  estimated_resources: {
+    cpu_millicores: number;
+    memory_mib: number;
+  };
+}
+
 export type WorkloadType = 'cpu_inference' | 'gpu_inference' | 'training' | 'rag_pipeline' | 'agent' | 'mixed' | 'lightweight';
 
 export interface WorkloadProfile {

@@ -9,6 +9,7 @@ const PORTAL_NAVIGATION: NavigationItem[] = [
   { path: '/', label: 'Dashboard' },
   { path: '/catalog', label: 'Catalog' },
   { path: '/request', label: 'Request a Lab' },
+  { path: '/workshops/new', label: 'Create Workshop' },
   { path: '/sessions', label: 'My Labs' },
 ];
 
@@ -31,4 +32,3 @@ export function getAppSurface(hostname: string, override?: string | null): AppSu
 export function getNavigation(surface: AppSurface): NavigationItem[] {
   return surface === 'operations' ? OPERATIONS_NAVIGATION : PORTAL_NAVIGATION;
 }
-

@@ -8,6 +8,8 @@ import type {
   RepeatabilityReport,
   ShowbackRecord,
   Tenant,
+  Workshop,
+  WorkshopCapacityPreview,
 } from './types';
 
 const BASE = '/api';
@@ -69,4 +71,19 @@ export const api = {
   // Intelligence
   getDecision: (requestId: string) =>
     request<OrchestrationDecision>(`/intelligence/decision/${requestId}`),
+
+  // Workshops
+  previewWorkshop: (data: Record<string, unknown>) =>
+    request<WorkshopCapacityPreview>('/workshops/capacity-preview', {
+      method: 'POST', body: JSON.stringify(data),
+    }),
+  createWorkshopOrder: (data: Record<string, unknown>, idempotencyKey: string) =>
+    request<Workshop>('/workshops/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey },
+      body: JSON.stringify(data),
+    }),
+  confirmWorkshop: (id: string) =>
+    request<Workshop>(`/workshops/${id}/confirm`, { method: 'POST' }),
+  getWorkshop: (id: string) => request<Workshop>(`/workshops/${id}`),
 };
