@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import List
+import time
 
 import httpx
 
@@ -36,8 +37,30 @@ class OpenShiftValidationAdapter:
                 ) from exc
 
         self._core_v1 = client.CoreV1Api()
+        self._validation_attempts = 13
+        self._validation_interval = 5
+        self._sleep = time.sleep
 
     def validate(self, session: LabSession) -> List[ValidationResult]:
+        results: List[ValidationResult] = []
+        for attempt in range(self._validation_attempts):
+            results = self._validate_once(session)
+            transient = any(
+                result.result == ValidationResultStatus.FAIL
+                and (
+                    "phase Pending" in result.message
+                    or "returned 502" in result.message
+                    or "returned 503" in result.message
+                    or "returned 504" in result.message
+                )
+                for result in results
+            )
+            if not transient or attempt == self._validation_attempts - 1:
+                return results
+            self._sleep(self._validation_interval)
+        return results
+
+    def _validate_once(self, session: LabSession) -> List[ValidationResult]:
         results: List[ValidationResult] = []
         namespace = session.namespace
 

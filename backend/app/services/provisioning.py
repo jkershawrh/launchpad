@@ -394,6 +394,11 @@ class ProvisioningService:
         if not session:
             raise ValueError(f"Session {session_id} not found")
 
+        if session.status == SessionStatus.VALIDATION_FAILED:
+            session = transition(
+                session, SessionStatus.VALIDATING, reason="validation retried"
+            )
+
         results = self.validator.validate(session)
         session = session.model_copy(update={"validation_results": results})
 

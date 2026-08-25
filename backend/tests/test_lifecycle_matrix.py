@@ -94,6 +94,10 @@ class TestValidTransitions:
         s = transition(_session(SessionStatus.VALIDATION_FAILED), SessionStatus.RECLAIMED)
         assert s.status == SessionStatus.RECLAIMED
 
+    def test_validation_failed_to_validating(self):
+        s = transition(_session(SessionStatus.VALIDATION_FAILED), SessionStatus.VALIDATING)
+        assert s.status == SessionStatus.VALIDATING
+
     def test_cleanup_failed_to_reclaimed(self):
         s = transition(_session(SessionStatus.CLEANUP_FAILED), SessionStatus.RECLAIMED)
         assert s.status == SessionStatus.RECLAIMED
@@ -110,7 +114,7 @@ class TestValidTransitions:
         assert s.status == SessionStatus.RESETTING
 
     def test_all_valid_transitions_covered(self):
-        assert len(VALID_TRANSITIONS) == 22
+        assert len(VALID_TRANSITIONS) == 23
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

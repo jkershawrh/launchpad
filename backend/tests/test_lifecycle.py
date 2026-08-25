@@ -93,6 +93,12 @@ def test_failed_to_reclaimed():
     assert updated.status == SessionStatus.RECLAIMED
 
 
+def test_validation_failed_session_can_retry_validation():
+    session = _make_session(SessionStatus.VALIDATION_FAILED)
+    updated = transition(session, SessionStatus.VALIDATING, reason="validation retried")
+    assert updated.status == SessionStatus.VALIDATING
+
+
 def test_transition_records_reason():
     session = _make_session()
     updated = transition(session, SessionStatus.PROVISIONING, reason="user requested")
