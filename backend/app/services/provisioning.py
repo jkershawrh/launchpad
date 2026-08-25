@@ -5,6 +5,7 @@ import json
 import os
 import re
 import threading
+import time
 import uuid as _uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
@@ -801,6 +802,75 @@ class ProvisioningService:
             },
         }
 
+    def _wait_for_workshop_stability(
+        self, seats: list[WorkshopSeat]
+    ) -> dict[int, str]:
+        """Require every Showroom endpoint to be healthy at the same time.
+
+        Per-seat provisioning checks prove that each route worked once. This
+        final sweep prevents an early seat that later regresses from being
+        hidden by subsequent provisioning waves.
+        """
+        if os.environ.get("LAUNCHPAD_MODE", "mock") != "openshift":
+            return {}
+
+        import requests
+
+        candidates = {
+            seat.seat_number: seat.showroom_url or seat.lab_url
+            for seat in seats
+            if seat.status == WorkshopSeatStatus.READY
+            and (seat.showroom_url or seat.lab_url)
+        }
+        if not candidates:
+            return {}
+
+        timeout = max(
+            1, int(os.environ.get("WORKSHOP_STABILITY_TIMEOUT", "120"))
+        )
+        interval = max(
+            0.1, float(os.environ.get("WORKSHOP_STABILITY_INTERVAL", "5"))
+        )
+        required_passes = max(
+            1, int(os.environ.get("WORKSHOP_STABILITY_PASSES", "3"))
+        )
+        deadline = time.monotonic() + timeout
+        consecutive_passes = 0
+        failures: dict[int, str] = {}
+
+        while time.monotonic() < deadline:
+            failures = {}
+
+            def check_endpoint(item: tuple[int, str]) -> tuple[int, str | None]:
+                seat_number, url = item
+                try:
+                    response = requests.get(url, timeout=10, verify=False)
+                    if response.status_code == 200:
+                        return seat_number, None
+                    return seat_number, f"showroom endpoint returned HTTP {response.status_code}"
+                except requests.RequestException as exc:
+                    return seat_number, f"showroom endpoint check failed: {exc}"
+
+            with ThreadPoolExecutor(max_workers=min(10, len(candidates))) as executor:
+                for seat_number, error in executor.map(
+                    check_endpoint, candidates.items()
+                ):
+                    if error:
+                        failures[seat_number] = error
+
+            if not failures:
+                consecutive_passes += 1
+                if consecutive_passes >= required_passes:
+                    return {}
+            else:
+                consecutive_passes = 0
+            time.sleep(interval)
+
+        return failures or {
+            seat_number: "showroom endpoint did not remain stable"
+            for seat_number in candidates
+        }
+
     def create_workshop_order(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:
@@ -993,6 +1063,14 @@ class ProvisioningService:
             if seat.status == WorkshopSeatStatus.READY and seat.session_id:
                 session_ids.append(seat.session_id)
                 continue
+            if seat.session_id and self._sessions.get(seat.session_id):
+                workshop.seats[i] = seat.model_copy(update={
+                    "status": WorkshopSeatStatus.READY,
+                    "error": None,
+                    "updated_at": datetime.utcnow(),
+                })
+                session_ids.append(seat.session_id)
+                continue
             workshop.seats[i] = seat.model_copy(update={
                 "status": WorkshopSeatStatus.PROVISIONING,
                 "updated_at": datetime.utcnow(),
@@ -1029,6 +1107,20 @@ class ProvisioningService:
                     session_ids.append(session_id)
                 self._save_workshop(workshop)
 
+        readiness_failures = self._wait_for_workshop_stability(workshop.seats)
+        if readiness_failures:
+            for index, seat in enumerate(workshop.seats):
+                error = readiness_failures.get(seat.seat_number)
+                if not error:
+                    continue
+                workshop.seats[index] = seat.model_copy(update={
+                    "status": WorkshopSeatStatus.FAILED,
+                    "error": error,
+                    "updated_at": datetime.utcnow(),
+                })
+                if seat.session_id in session_ids:
+                    session_ids.remove(seat.session_id)
+
         session_ids.sort(key=lambda session_id: next(
             (
                 seat.seat_number
@@ -1051,6 +1143,10 @@ class ProvisioningService:
                 **workshop.metadata,
                 "seats_requested": workshop.num_users,
                 "seats_provisioned": len(session_ids),
+                "readiness_failures": {
+                    str(seat_number): error
+                    for seat_number, error in readiness_failures.items()
+                },
             },
         })
         self._save_workshop(workshop)

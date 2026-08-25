@@ -366,3 +366,51 @@ def test_workshop_reclaim_respects_bounded_concurrency():
 
     assert reclaimed.status == WorkshopStatus.COMPLETED
     assert peak == 3
+
+
+def test_collective_readiness_failure_prevents_workshop_ready():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="collective-readiness-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=2,
+    )
+
+    with patch.object(
+        service,
+        "_wait_for_workshop_stability",
+        return_value={2: "showroom endpoint was not stable"},
+    ):
+        result = service.provision_workshop(workshop)
+
+    assert result.status == WorkshopStatus.PARTIALLY_READY
+    assert result.seats[0].status == WorkshopSeatStatus.READY
+    assert result.seats[1].status == WorkshopSeatStatus.FAILED
+    assert len(result.session_ids) == 1
+    assert result.metadata["readiness_failures"] == {
+        "2": "showroom endpoint was not stable"
+    }
+
+
+def test_collective_readiness_retry_reuses_existing_session():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="collective-retry-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=1,
+    )
+    with patch.object(
+        service,
+        "_wait_for_workshop_stability",
+        return_value={1: "showroom endpoint was not stable"},
+    ):
+        first = service.provision_workshop(workshop)
+    original_session_id = first.seats[0].session_id
+    queued = service.queue_failed_workshop_seats(first.workshop_id)
+
+    with patch.object(service, "_wait_for_workshop_stability", return_value={}):
+        retried = service.provision_workshop(queued)
+
+    assert retried.status == WorkshopStatus.READY
+    assert retried.seats[0].session_id == original_session_id
+    assert len(service._sessions) == 1
