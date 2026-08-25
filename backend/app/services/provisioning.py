@@ -1082,10 +1082,10 @@ class ProvisioningService:
             else:
                 return False, f"Requested {workshop.num_users} seats but cluster supports {max_seats} (CPU: {max_by_cpu}, Memory: {max_by_mem})"
         except ImportError:
-            return True, "kubernetes package not available — capacity check skipped"
+            return False, "kubernetes package not available — capacity cannot be verified"
         except Exception as e:
-            logger.warning("Capacity check failed, allowing provisioning: %s", e)
-            return True, f"Capacity check failed: {e}"
+            logger.warning("Capacity check failed closed: %s", e)
+            return False, f"Capacity check failed: {e}"
 
     def _estimate_max_seats(self, workshop: Workshop) -> int:
         per_seat_cpu_m = int(os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"))

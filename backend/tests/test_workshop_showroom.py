@@ -197,3 +197,22 @@ class TestCapacityGuard:
         )
         can, reason = svc.check_workshop_capacity(workshop)
         assert can is True
+
+    def test_capacity_check_fails_closed_when_cluster_read_fails(self):
+        svc = _make_service()
+        workshop = Workshop(
+            tenant_id="test-tenant",
+            catalog_item_id="demo-a",
+            num_users=3,
+            ttl="4h",
+        )
+        with (
+            patch.dict(os.environ, {"LAUNCHPAD_MODE": "openshift"}, clear=False),
+            patch("kubernetes.config.load_incluster_config"),
+            patch("kubernetes.client.CoreV1Api") as core_api,
+        ):
+            core_api.return_value.list_node.side_effect = PermissionError("forbidden")
+            can, reason = svc.check_workshop_capacity(workshop)
+
+        assert can is False
+        assert "failed" in reason.lower()

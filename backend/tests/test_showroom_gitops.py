@@ -61,6 +61,24 @@ def test_content_revision_is_required():
 
 def test_cleanup_deletes_stable_argocd_application_before_namespace():
     custom_objects = MagicMock()
+    missing = Exception("not found")
+    missing.status = 404
+    custom_objects.get_namespaced_custom_object.side_effect = missing
     ShowroomGitOpsAdapter(custom_objects).delete_for_namespace("launchpad-seat-123")
     args = custom_objects.delete_namespaced_custom_object.call_args.args
     assert args[-1] == application_name("launchpad-seat-123")
+
+
+def test_cleanup_waits_until_argocd_application_is_gone(monkeypatch):
+    custom_objects = MagicMock()
+    missing = Exception("not found")
+    missing.status = 404
+    custom_objects.get_namespaced_custom_object.side_effect = [
+        {"metadata": {"deletionTimestamp": "now"}},
+        missing,
+    ]
+    monkeypatch.setattr("app.adapters.openshift.showroom_gitops.time.sleep", lambda _: None)
+
+    ShowroomGitOpsAdapter(custom_objects).delete_for_namespace("lab")
+
+    assert custom_objects.get_namespaced_custom_object.call_count == 2

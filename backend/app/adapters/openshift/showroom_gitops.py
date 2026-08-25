@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import time
 from dataclasses import dataclass
 
 import yaml
@@ -146,11 +147,28 @@ class ShowroomGitOpsAdapter:
                 ARGO_GROUP, ARGO_VERSION, self.namespace, ARGO_PLURAL, name, application
             )
 
-    def delete_for_namespace(self, namespace: str) -> None:
+    def delete_for_namespace(self, namespace: str, timeout: int = 60) -> None:
+        name = application_name(namespace)
         try:
             self.custom_objects.delete_namespaced_custom_object(
-                ARGO_GROUP, ARGO_VERSION, self.namespace, ARGO_PLURAL, application_name(namespace)
+                ARGO_GROUP, ARGO_VERSION, self.namespace, ARGO_PLURAL, name
             )
         except Exception as exc:
-            if getattr(exc, "status", None) != 404:
+            if getattr(exc, "status", None) == 404:
+                return
+            raise
+
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            try:
+                self.custom_objects.get_namespaced_custom_object(
+                    ARGO_GROUP, ARGO_VERSION, self.namespace, ARGO_PLURAL, name
+                )
+            except Exception as exc:
+                if getattr(exc, "status", None) == 404:
+                    return
                 raise
+            time.sleep(1)
+        raise TimeoutError(
+            f"Argo CD Application '{name}' was not deleted within {timeout}s"
+        )
