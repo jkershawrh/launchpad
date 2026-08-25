@@ -22,9 +22,6 @@ spec:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: intel-inference
-          podSelector:
-            matchLabels:
-              app: inference-proxy
       ports:
         - port: 5432
           protocol: TCP
