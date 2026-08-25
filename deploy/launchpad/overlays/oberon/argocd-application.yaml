@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/rhpds/launchpad.git
+    repoURL: https://github.com/jkershawrh/launchpad.git
     targetRevision: main
     path: deploy/launchpad/overlays/oberon
   destination:
