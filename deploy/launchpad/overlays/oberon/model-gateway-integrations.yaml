@@ -33,6 +33,31 @@ data:
         model: openai/granite-2b-cpu
         api_base: http://ovms-granite-2b.fleet-llm-d.svc:8080/v1
         api_key: unused
+    - model_name: llama32-1b
+      litellm_params:
+        model: openai/llama32-1b
+        api_base: http://llama-llama32-1b.intel-inference.svc:8080/v1
+        api_key: unused
+    - model_name: granite-3b
+      litellm_params:
+        model: openai/granite-3b
+        api_base: http://llama-granite-3b.intel-inference.svc:8080/v1
+        api_key: unused
+    - model_name: gemma3-4b
+      litellm_params:
+        model: openai/gemma3-4b
+        api_base: http://llama-gemma3-4b.intel-inference.svc:8080/v1
+        api_key: unused
+    - model_name: phi4-mini
+      litellm_params:
+        model: openai/phi4-mini
+        api_base: http://llama-phi4-mini.intel-inference.svc:8080/v1
+        api_key: unused
+    - model_name: gemma-4-e4b
+      litellm_params:
+        model: openai/bench
+        api_base: http://bench-model.intel-inference.svc:8080/v1
+        api_key: unused
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
