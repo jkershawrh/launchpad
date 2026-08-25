@@ -26,8 +26,9 @@ class PreflightResult(BaseModel):
 
 class LiteLLMPreflightChecker:
 
-    def __init__(self, api_base: str) -> None:
+    def __init__(self, api_base: str, api_key: str = "") -> None:
         self._api_base = api_base.rstrip("/")
+        self._api_key = api_key
 
     def check(self, catalog_item: CatalogItem) -> PreflightResult:
         required_models = catalog_item.metadata.get("required_models", [])
@@ -35,7 +36,8 @@ class LiteLLMPreflightChecker:
             return PreflightResult(passed=True, checks=[])
 
         try:
-            resp = httpx.get(f"{self._api_base}/models", timeout=10)
+            headers = {"Authorization": f"Bearer {self._api_key}"} if self._api_key else {}
+            resp = httpx.get(f"{self._api_base}/models", timeout=10, headers=headers)
             resp.raise_for_status()
             available = {m["id"] for m in resp.json().get("data", [])}
         except Exception as e:

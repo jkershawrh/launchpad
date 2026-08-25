@@ -100,7 +100,10 @@ def create_provisioning_service() -> ProvisioningService:
         litellm_base = os.environ.get("LITELLM_API_BASE", "")
         if litellm_base:
             from app.adapters.openshift.preflight import LiteLLMPreflightChecker
-            preflight = LiteLLMPreflightChecker(api_base=litellm_base)
+            preflight = LiteLLMPreflightChecker(
+                api_base=litellm_base,
+                api_key=os.environ.get("LITELLM_API_KEY", ""),
+            )
 
         classifier = None
         if os.environ.get("WORKLOAD_PROFILING_ENABLED", "false").lower() == "true":

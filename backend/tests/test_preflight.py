@@ -48,6 +48,25 @@ class TestPassesWhenModelsHealthy:
         assert result.passed is True
         assert all(c.status == "pass" for c in result.checks)
 
+    def test_sends_bearer_token_when_api_key_is_configured(self):
+        from app.adapters.openshift.preflight import LiteLLMPreflightChecker
+
+        checker = LiteLLMPreflightChecker(api_base="http://fake:4000", api_key="test-key")
+        item = _make_item(required_models=["granite-2b-cpu"])
+
+        with patch("app.adapters.openshift.preflight.httpx") as mock_httpx:
+            mock_response = MagicMock()
+            mock_response.json.return_value = {"data": [{"id": "granite-2b-cpu"}]}
+            mock_httpx.get.return_value = mock_response
+
+            checker.check(item)
+
+        mock_httpx.get.assert_called_once_with(
+            "http://fake:4000/models",
+            timeout=10,
+            headers={"Authorization": "Bearer test-key"},
+        )
+
 
 # ── Gate 3.2: test_fails_when_model_missing ──────────────────────────
 
