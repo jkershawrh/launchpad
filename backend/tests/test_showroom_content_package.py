@@ -13,6 +13,17 @@ def test_antora_playbook_builds_content_from_this_repository():
     assert source["url"] == "."
     assert source["start_path"] == "content"
     assert "rhdp_showroom_theme" in playbook["ui"]["bundle"]["url"]
+
+
+def test_operator_workshop_playbook_starts_on_operator_journey():
+    playbook = yaml.safe_load((ROOT / "site-openshift-operators.yml").read_text())
+
+    assert playbook["site"]["start_page"] == (
+        "modules::01-openshift-operators-welcome.adoc"
+    )
+    assert playbook["asciidoc"]["attributes"]["showroom_journey"] == (
+        "openshift-operators"
+    )
     assert playbook["output"]["dir"] == "./www"
 
 
