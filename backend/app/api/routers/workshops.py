@@ -22,9 +22,8 @@ class WorkshopCreate(BaseModel):
     purpose: str = "events"
 
 
-@router.post("", response_model=Workshop, status_code=201)
-def create_workshop(body: WorkshopCreate, idempotency_key: str | None = Header(default=None)):
-    workshop = Workshop(
+def _to_workshop(body: WorkshopCreate) -> Workshop:
+    return Workshop(
         tenant_id=body.tenant_id,
         catalog_item_id=body.catalog_item_id,
         num_users=body.num_users,
@@ -34,6 +33,11 @@ def create_workshop(body: WorkshopCreate, idempotency_key: str | None = Header(d
         ocp_version=body.ocp_version,
         purpose=body.purpose,
     )
+
+
+@router.post("", response_model=Workshop, status_code=201)
+def create_workshop(body: WorkshopCreate, idempotency_key: str | None = Header(default=None)):
+    workshop = _to_workshop(body)
     try:
         return provisioning_service.provision_workshop(workshop, idempotency_key=idempotency_key)
     except ValueError as e:
@@ -45,6 +49,35 @@ def create_workshop(body: WorkshopCreate, idempotency_key: str | None = Header(d
 @router.get("", response_model=List[Workshop])
 def list_workshops():
     return list(provisioning_service._workshops.values())
+
+
+@router.post("/capacity-preview")
+def preview_workshop_capacity(body: WorkshopCreate):
+    return provisioning_service.preview_workshop_capacity(_to_workshop(body))
+
+
+@router.post("/orders", response_model=Workshop, status_code=201)
+def create_workshop_order(
+    body: WorkshopCreate, idempotency_key: str | None = Header(default=None)
+):
+    try:
+        return provisioning_service.create_workshop_order(
+            _to_workshop(body), idempotency_key=idempotency_key
+        )
+    except ValueError as e:
+        if "Idempotency key" in str(e):
+            raise HTTPException(409, str(e))
+        raise HTTPException(400, str(e))
+
+
+@router.post("/{workshop_id}/confirm", response_model=Workshop)
+def confirm_workshop(workshop_id: str):
+    try:
+        return provisioning_service.confirm_workshop(workshop_id)
+    except ValueError as e:
+        if "not found" in str(e):
+            raise HTTPException(404, str(e))
+        raise HTTPException(409, str(e))
 
 
 @router.get("/{workshop_id}", response_model=Workshop)

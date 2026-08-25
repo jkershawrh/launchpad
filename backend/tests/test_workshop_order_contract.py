@@ -139,3 +139,65 @@ def test_idempotency_survives_service_restart():
 
     assert duplicate.workshop_id == first.workshop_id
     assert len(store.items) == 1
+
+
+def test_capacity_preview_does_not_create_workshop():
+    before = client.get("/api/v1/workshops").json()
+    response = client.post(
+        "/api/v1/workshops/capacity-preview",
+        json={
+            "tenant_id": "preview-tenant",
+            "catalog_item_id": "inference-overdrive-quickstart",
+            "num_users": 20,
+            "ttl": "4h",
+        },
+    )
+    after = client.get("/api/v1/workshops").json()
+
+    assert response.status_code == 200
+    assert response.json()["seats_requested"] == 20
+    assert response.json()["can_provision"] is True
+    assert response.json()["estimated_resources"]["cpu_millicores"] == 20000
+    assert len(after) == len(before)
+
+
+def test_order_waits_for_confirmation_before_provisioning():
+    response = client.post(
+        "/api/v1/workshops/orders",
+        json={
+            "tenant_id": "confirmation-tenant",
+            "catalog_item_id": "inference-overdrive-quickstart",
+            "num_users": 3,
+            "ttl": "4h",
+        },
+        headers={"Idempotency-Key": "confirmation-order"},
+    )
+
+    assert response.status_code == 201
+    order = response.json()
+    assert order["status"] == "awaiting_confirmation"
+    assert len(order["seats"]) == 3
+    assert order["session_ids"] == []
+    assert order["metadata"]["capacity_preview"]["can_provision"] is True
+
+    confirmed = client.post(f"/api/v1/workshops/{order['workshop_id']}/confirm")
+    assert confirmed.status_code == 200
+    assert confirmed.json()["status"] == "ready"
+    assert len(confirmed.json()["session_ids"]) == 3
+
+
+def test_confirm_is_idempotent_after_workshop_is_ready():
+    order = client.post(
+        "/api/v1/workshops/orders",
+        json={
+            "tenant_id": "confirm-twice-tenant",
+            "catalog_item_id": "inference-overdrive-quickstart",
+            "num_users": 1,
+        },
+    ).json()
+    first = client.post(f"/api/v1/workshops/{order['workshop_id']}/confirm")
+    second = client.post(f"/api/v1/workshops/{order['workshop_id']}/confirm")
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert second.json()["session_ids"] == first.json()["session_ids"]

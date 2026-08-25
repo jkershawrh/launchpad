@@ -754,6 +754,85 @@ class ProvisioningService:
         }
         return hashlib.sha256(json.dumps(order, sort_keys=True).encode()).hexdigest()
 
+    @staticmethod
+    def _workshop_seats(workshop: Workshop) -> list[WorkshopSeat]:
+        if len(workshop.seats) == workshop.num_users:
+            return workshop.seats
+        return [
+            WorkshopSeat(
+                workshop_id=workshop.workshop_id,
+                seat_number=index,
+                participant_id=f"workshop-{workshop.workshop_id[:8]}-user-{index}",
+            )
+            for index in range(1, workshop.num_users + 1)
+        ]
+
+    def preview_workshop_capacity(self, workshop: Workshop) -> dict:
+        can_provision, reason = self.check_workshop_capacity(workshop)
+        cpu_per_seat = int(os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"))
+        memory_per_seat = int(os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"))
+        return {
+            "can_provision": can_provision,
+            "reason": reason,
+            "seats_requested": workshop.num_users,
+            "estimated_resources": {
+                "cpu_millicores": cpu_per_seat * workshop.num_users,
+                "memory_mib": memory_per_seat * workshop.num_users,
+            },
+        }
+
+    def create_workshop_order(
+        self, workshop: Workshop, idempotency_key: str = None
+    ) -> Workshop:
+        fingerprint = self._workshop_order_fingerprint(workshop)
+        if idempotency_key:
+            lookup_key = (workshop.tenant_id, idempotency_key)
+            existing = self._workshop_idempotency.get(lookup_key)
+            if existing:
+                existing_fingerprint, workshop_id = existing
+                if existing_fingerprint != fingerprint:
+                    raise ValueError(
+                        "Idempotency key was already used for a different workshop order"
+                    )
+                return self._workshops[workshop_id]
+            self._workshop_idempotency[lookup_key] = (
+                fingerprint,
+                workshop.workshop_id,
+            )
+
+        preview = self.preview_workshop_capacity(workshop)
+        status = (
+            WorkshopStatus.AWAITING_CONFIRMATION
+            if preview["can_provision"]
+            else WorkshopStatus.FAILED
+        )
+        order = workshop.model_copy(update={
+            "status": status,
+            "seats": self._workshop_seats(workshop),
+            "idempotency_key": idempotency_key,
+            "order_fingerprint": fingerprint if idempotency_key else None,
+            "metadata": {**workshop.metadata, "capacity_preview": preview},
+        })
+        self._save_workshop(order)
+        return order
+
+    def confirm_workshop(self, workshop_id: str) -> Workshop:
+        workshop = self._workshops.get(workshop_id)
+        if not workshop:
+            raise ValueError(f"Workshop {workshop_id} not found")
+        if workshop.status in {
+            WorkshopStatus.PROVISIONING,
+            WorkshopStatus.PARTIALLY_READY,
+            WorkshopStatus.READY,
+            WorkshopStatus.ACTIVE,
+        }:
+            return workshop
+        if workshop.status != WorkshopStatus.AWAITING_CONFIRMATION:
+            raise ValueError(
+                f"Workshop {workshop_id} cannot be confirmed from status {workshop.status.value}"
+            )
+        return self.provision_workshop(workshop)
+
     def provision_workshop(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:
@@ -774,14 +853,7 @@ class ProvisioningService:
                 "order_fingerprint": fingerprint,
             })
 
-        seats = [
-            WorkshopSeat(
-                workshop_id=workshop.workshop_id,
-                seat_number=index,
-                participant_id=f"workshop-{workshop.workshop_id[:8]}-user-{index}",
-            )
-            for index in range(1, workshop.num_users + 1)
-        ]
+        seats = self._workshop_seats(workshop)
         workshop = workshop.model_copy(update={
             "status": WorkshopStatus.PROVISIONING,
             "started_at": datetime.utcnow(),
