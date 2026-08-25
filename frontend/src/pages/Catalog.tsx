@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { CatalogItem } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
+import { catalogLaunchPath } from '../catalogNavigation';
 
 const CATEGORY_LABELS: Record<string, string> = {
   quick_start: 'Quick Start',
@@ -78,7 +79,7 @@ export default function Catalog() {
                   </div>
                 </div>
                 <Link
-                  to={item.category === 'open_sandbox' ? '/sandbox' : `/demos?launch=${item.catalog_item_id}`}
+                  to={catalogLaunchPath(item.category, item.catalog_item_id)}
                   className="ml-4 px-4 py-2 rounded text-xs font-medium text-white transition hover:opacity-90 shrink-0"
                   style={{ backgroundColor: 'var(--brand-primary)' }}
                 >
