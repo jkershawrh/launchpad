@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useBranding } from '../context/BrandingContext';
 import type { CatalogItem, Tenant } from '../api/types';
+import { resolveOpenSandbox } from '../sandboxContract';
 
 const SANDBOX_PRESETS = [
   {
@@ -79,6 +80,15 @@ export default function Sandbox() {
       ([tens, cats]) => {
         setTenants(tens);
         setCatalogs(cats);
+        const sandbox = resolveOpenSandbox(cats);
+        const defaultTenant = tens.find((tenant) => tenant.status === 'active');
+        setForm((current) => ({
+          ...current,
+          tenant_id: current.tenant_id || defaultTenant?.tenant_id || '',
+          hardware_profile: sandbox?.default_hardware_profile || current.hardware_profile,
+          quota_profile: sandbox?.default_quota_profile || current.quota_profile,
+          ttl: sandbox?.default_ttl || current.ttl,
+        }));
         setLoading(false);
       }
     );
@@ -122,9 +132,15 @@ export default function Sandbox() {
     setError('');
 
     try {
+      const sandboxCatalog = resolveOpenSandbox(catalogs);
+      if (!sandboxCatalog) {
+        setError('No active open sandbox is available in the catalog.');
+        setSubmitting(false);
+        return;
+      }
       const request = await api.createLabRequest({
         ...form,
-        catalog_item_id: selectedPreset,
+        catalog_item_id: sandboxCatalog.catalog_item_id,
         requested_mode: 'open_sandbox',
         metadata: { sandbox_config: sandboxConfig },
       });
@@ -207,12 +223,9 @@ export default function Sandbox() {
                 required
               >
                 <option value="">Select tenant...</option>
-                {tenants.map((t) => (
+                {tenants.filter((t) => t.status === 'active').map((t) => (
                   <option key={t.tenant_id} value={t.tenant_id}>{t.display_name}</option>
                 ))}
-                <option value="partner-oem-a">Partner OEM A</option>
-                <option value="redhat-internal">Red Hat Internal</option>
-                <option value="intel-internal">Intel Internal</option>
               </select>
             </div>
             <div>

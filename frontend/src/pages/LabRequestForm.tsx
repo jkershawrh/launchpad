@@ -152,14 +152,11 @@ export default function LabRequestForm() {
             required
           >
             <option value="">Select a tenant...</option>
-            {tenants.map((t) => (
+            {tenants.filter((t) => t.status === 'active').map((t) => (
               <option key={t.tenant_id} value={t.tenant_id}>
                 {t.display_name}
               </option>
             ))}
-            <option value="partner-oem-a">Partner OEM A</option>
-            <option value="redhat-internal">Red Hat Internal</option>
-            <option value="intel-internal">Intel Internal</option>
           </select>
         </div>
 
