@@ -55,7 +55,7 @@ export default function Admin() {
             <h2 className="text-sm font-semibold text-gray-500 uppercase">AI Model Portfolio</h2>
             <p className="text-sm text-gray-500 mt-1">Curated models configured on Oberon. Stopped models consume no serving capacity.</p>
           </div>
-          <span className="text-xs text-gray-500 whitespace-nowrap">89 models discoverable in the RHOAI catalog</span>
+          <span className="text-xs text-gray-500 whitespace-nowrap">Additional models are discoverable in the RHOAI catalog</span>
         </div>
         {!modelInventory ? (
           <p className="text-sm text-gray-400">Model inventory is unavailable.</p>
