@@ -127,7 +127,7 @@ class OpenShiftSandboxProvisioner:
         self._create_pvc(namespace, storage_size)
 
         # 5. Create Deployment
-        self._create_deployment(namespace, stack_level, tier)
+        self._create_deployment(namespace, stack_level, tier, access_methods)
 
         # 6. Create Service
         self._create_service(namespace, access_methods)
@@ -153,10 +153,18 @@ class OpenShiftSandboxProvisioner:
             elif not lab_url:
                 lab_url = url
 
+        if routes.get("sandbox-jupyter"):
+            connection_info["jupyter_url"] = f"https://{routes['sandbox-jupyter']}"
+        if routes.get("sandbox-vscode"):
+            connection_info["vscode_url"] = f"https://{routes['sandbox-vscode']}"
+        if routes.get("sandbox-console"):
+            connection_info["web_console_url"] = f"https://{routes['sandbox-console']}"
+
         if "ssh" in [m for m in access_methods]:
-            ssh_route = routes.get("sandbox-ssh", "")
-            if ssh_route:
-                connection_info["ssh"] = f"ssh lab-user@{ssh_route} -p 2222"
+            connection_info["ssh"] = "ssh lab-user@localhost -p 2222"
+            connection_info["ssh_instructions"] = (
+                f"First run: oc -n {namespace} port-forward service/sandbox 2222:2222"
+            )
 
         aap_url = os.environ.get("AAP_URL")
         if aap_url:
@@ -173,6 +181,7 @@ class OpenShiftSandboxProvisioner:
                 "access_methods": access_methods,
                 "compute_tier": compute_tier,
                 "connection_info": connection_info,
+                "routes": {name.removeprefix("sandbox-"): f"https://{host}" for name, host in routes.items()},
                 "container_name": f"sandbox-{namespace}",
             },
         )
@@ -244,7 +253,7 @@ class OpenShiftSandboxProvisioner:
             if e.status != 409:
                 logger.warning("Failed to create PVC in namespace %s: %s", namespace, e.reason)
 
-    def _create_deployment(self, namespace: str, stack_level: str, tier: Dict) -> None:
+    def _create_deployment(self, namespace: str, stack_level: str, tier: Dict, access_methods: List[str]) -> None:
         container = client.V1Container(
             name="sandbox",
             image=SANDBOX_IMAGE,
@@ -255,9 +264,11 @@ class OpenShiftSandboxProvisioner:
             ],
             env=[
                 client.V1EnvVar(name="STACK_LEVEL", value=stack_level),
+                client.V1EnvVar(name="ACCESS_METHODS", value=",".join(access_methods)),
             ],
             env_from=[
                 client.V1EnvFromSource(secret_ref=client.V1SecretEnvSource(name="maas-config", optional=True)),
+                client.V1EnvFromSource(secret_ref=client.V1SecretEnvSource(name="sandbox-credentials", optional=False)),
             ],
             volume_mounts=[
                 client.V1VolumeMount(name="home", mount_path="/home/lab-user/workspace"),
@@ -265,6 +276,18 @@ class OpenShiftSandboxProvisioner:
             resources=client.V1ResourceRequirements(
                 requests={"cpu": tier["cpu_request"], "memory": tier["memory_request"]},
                 limits={"cpu": tier["cpu_limit"], "memory": tier["memory_limit"]},
+            ),
+            readiness_probe=client.V1Probe(
+                exec=client.V1ExecAction(command=[
+                    "python", "-c",
+                    "import os,socket; ports={'ssh':2222,'jupyter':8888,'web_console':8888,'vscode':8443}; "
+                    "methods=os.environ.get('ACCESS_METHODS','').split(','); "
+                    "socks=[socket.create_connection(('127.0.0.1',ports[m]),2) for m in methods if m in ports]; "
+                    "[s.close() for s in socks]",
+                ]),
+                initial_delay_seconds=5,
+                period_seconds=5,
+                failure_threshold=12,
             ),
         )
 
@@ -297,6 +320,8 @@ class OpenShiftSandboxProvisioner:
             ports.append(client.V1ServicePort(name="jupyter", port=8888, target_port=8888))
         if "vscode" in access_methods:
             ports.append(client.V1ServicePort(name="vscode", port=8443, target_port=8443))
+        if "web_console" in access_methods:
+            ports.append(client.V1ServicePort(name="console", port=6901, target_port=8888))
 
         try:
             self._core_v1.create_namespaced_service(namespace, client.V1Service(
@@ -315,13 +340,6 @@ class OpenShiftSandboxProvisioner:
         routes = {}
         route_defs = []
 
-        if "ssh" in access_methods:
-            route_defs.append({
-                "name": "sandbox-ssh",
-                "port": "ssh",
-                "tls_termination": "passthrough",
-            })
-
         if "jupyter" in access_methods:
             route_defs.append({
                 "name": "sandbox-jupyter",
@@ -333,6 +351,13 @@ class OpenShiftSandboxProvisioner:
             route_defs.append({
                 "name": "sandbox-vscode",
                 "port": "vscode",
+                "tls_termination": "edge",
+            })
+
+        if "web_console" in access_methods:
+            route_defs.append({
+                "name": "sandbox-console",
+                "port": "console",
                 "tls_termination": "edge",
             })
 

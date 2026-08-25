@@ -6,6 +6,7 @@ import type { HandoffPackage, LabSession, OrchestrationDecision, RepeatabilityRe
 import StatusBadge from '../components/StatusBadge';
 import DecisionInsight from '../components/DecisionInsight';
 import { guidedLabLinks } from '../guidedLabContract';
+import { sandboxConnections } from '../sandboxConnectionContract';
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -42,23 +43,15 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
   const { profile: brandingProfile } = useBranding();
   const primaryColor = brandingProfile?.primary_color || '#EE0000';
 
-  const resources = session.resources || {};
-
-  const webConsoleUrl = (resources.web_console_url as string) || 'http://localhost:6901';
-  const sshHost = (resources.ssh_host as string) || 'localhost';
-  const sshPort = (resources.ssh_port as string) || '2222';
-  const sshUser = (resources.ssh_user as string) || 'lab-user';
-  const vscodeUrl = (resources.vscode_url as string) || 'http://localhost:8443';
-  const jupyterUrl = (resources.jupyter_url as string) || 'http://localhost:8888';
-
-  const sshCommand = `ssh ${sshUser}@${sshHost} -p ${sshPort}`;
+  const connections = sandboxConnections(session.resources || {});
 
   const accessMethods = [
     {
       key: 'console',
+      method: 'web_console',
       label: 'Open Console',
       description: 'Web-based terminal and desktop environment',
-      url: webConsoleUrl,
+      url: connections.webConsoleUrl,
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -68,9 +61,10 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
     },
     {
       key: 'vscode',
+      method: 'vscode',
       label: 'Open IDE',
       description: 'VS Code Server in your browser',
-      url: vscodeUrl,
+      url: connections.vscodeUrl,
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -80,9 +74,10 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
     },
     {
       key: 'jupyter',
+      method: 'jupyter',
       label: 'Open Notebooks',
       description: 'Jupyter notebooks for interactive development',
-      url: jupyterUrl,
+      url: connections.jupyterUrl,
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -90,7 +85,7 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
       ),
       color: '#E87F2B',
     },
-  ];
+  ].filter((method) => connections.accessMethods.includes(method.method) && method.url);
 
   return (
     <div className="bg-[#151515] rounded-lg border border-[#3C3F42] p-6 mb-8">
@@ -130,6 +125,7 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
       </div>
 
       {/* SSH connection */}
+      {connections.accessMethods.includes('ssh') && (
       <div className="bg-[#1E1E1E] rounded-lg p-4 border border-[#3C3F42]">
         <div className="flex items-center gap-2 mb-2">
           <svg className="w-4 h-4 text-[#6A6E73]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -138,10 +134,12 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
           <span className="text-sm font-medium text-[#6A6E73]">SSH Connection</span>
         </div>
         <div className="flex items-center justify-between">
-          <code className="text-sm text-green-400 font-mono">{sshCommand}</code>
-          <CopyButton text={sshCommand} />
+          <code className="text-sm text-green-400 font-mono">{connections.sshCommand || 'SSH access is not ready'}</code>
+          {connections.sshCommand && <CopyButton text={connections.sshCommand} />}
         </div>
+        {connections.sshInstructions && <p className="text-xs text-[#6A6E73] mt-2">{connections.sshInstructions}</p>}
       </div>
+      )}
     </div>
   );
 }
