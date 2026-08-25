@@ -1,0 +1,36 @@
+catalog_item_id: guided-rag-on-xeon
+display_name: "Guided RAG on Intel Xeon"
+description: "A visual, step-by-step lab for building and testing a retrieval-augmented assistant on Intel Xeon CPU inference."
+category: guided_build
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+  - model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: standard
+default_ttl: "4h"
+provisioner_refs:
+  - openshift-provisioner
+  - showroom
+validation_refs:
+  - pod-ready
+  - route-accessible
+supported_branding:
+  - intel-internal
+metadata:
+  demo_pages: rag
+  required_models:
+    - smollm2-360m
+  inference_endpoint: litellm
+  showroom: true
+  showroom_title: "Build a RAG Assistant on Intel Xeon"
+  showroom_steps:
+    - title: "Understand the architecture"
+      description: "Review how the browser workspace, retrieval flow, and shared model endpoint fit together."
+    - title: "Explore the knowledge source"
+      description: "Inspect the supplied documents and identify facts the assistant should ground its answers in."
+    - title: "Run a grounded prompt"
+      description: "Open the live workspace, submit a question, and compare the response with retrieved context."
+    - title: "Validate and hand off"
+      description: "Confirm the route and workload checks pass, then capture the repeatability and showback reports."

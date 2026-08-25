@@ -5,6 +5,7 @@ import { useBranding } from '../context/BrandingContext';
 import type { HandoffPackage, LabSession, OrchestrationDecision, RepeatabilityReport, ShowbackRecord } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
 import DecisionInsight from '../components/DecisionInsight';
+import { guidedLabLinks } from '../guidedLabContract';
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -192,6 +193,7 @@ export default function SessionDetail() {
   const isSandbox =
     session.catalog_item_id.startsWith('sandbox-') ||
     'sandbox_type' in session.resources;
+  const guidedLinks = guidedLabLinks(session.resources || {});
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
@@ -205,6 +207,24 @@ export default function SessionDetail() {
 
       {/* Sandbox Connection Panel */}
       {isSandbox && <SandboxConnectionPanel session={session} />}
+
+      {guidedLinks.showroomUrl && (
+        <div className="bg-gradient-to-r from-[#300] to-[#001f33] rounded-lg border border-[#5f5f5f] p-6 mb-8">
+          <p className="text-xs uppercase tracking-[0.16em] text-red-300 font-bold">Guided experience</p>
+          <h2 className="text-2xl font-semibold text-white mt-2">Your visual lab guide is ready</h2>
+          <p className="text-sm text-[#c7c7c7] mt-2">Follow the Showroom journey while working in the provisioned environment.</p>
+          <div className="flex flex-wrap gap-3 mt-5">
+            <a href={guidedLinks.showroomUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#EE0000] text-white rounded text-sm font-semibold hover:bg-[#b50000]">
+              Open Visual Guide
+            </a>
+            {guidedLinks.workspaceUrl && (
+              <a href={guidedLinks.workspaceUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-[#0068B5] text-white rounded text-sm font-semibold hover:bg-[#00518d]">
+                Open Live Workspace
+              </a>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4">
