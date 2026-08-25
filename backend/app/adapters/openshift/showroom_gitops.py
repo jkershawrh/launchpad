@@ -74,7 +74,7 @@ def build_showroom_application(
     ]
     if seat.workspace_url:
         tabs.insert(1, {"name": "RAG Workspace", "url": seat.workspace_url})
-    if seat.console_url:
+    if seat.console_url and seat.journey != "openshift-operators":
         tabs.append({"name": "OpenShift Console", "url": seat.console_url})
     ui_config = {
         "type": "showroom",

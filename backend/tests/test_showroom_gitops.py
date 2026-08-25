@@ -40,7 +40,7 @@ def test_builds_official_chart_application_with_personalized_git_content():
     assert any(tab.get("name") == "RAG Workspace" for tab in ui["tabs"])
 
 
-def test_operator_workshop_uses_terminal_and_console_without_demo_workspace():
+def test_operator_workshop_uses_terminal_and_external_console_without_demo_workspace():
     app = build_showroom_application(ShowroomSeat(
         namespace="operator-seat-1", workshop_id="workshop-1", seat_id="seat-1",
         participant_id="user-1", workspace_url="",
@@ -50,9 +50,9 @@ def test_operator_workshop_uses_terminal_and_console_without_demo_workspace():
     ))
     values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
     ui = yaml.safe_load(values["content"]["uiConfig"])
-    assert [tab["name"] for tab in ui["tabs"]] == [
-        "Instructions", "Terminal", "OpenShift Console",
-    ]
+    assert [tab["name"] for tab in ui["tabs"]] == ["Instructions", "Terminal"]
+    user_data = yaml.safe_load(values["content"]["user_data"])
+    assert user_data["openshift_console_url"] == "https://console.example.com"
     assert values["terminal"]["storage"]["setup"] == "false"
     assert values["terminal"]["resources"]["requests"]["cpu"] == "100m"
     assert values["wetty"]["resources"]["requests"]["cpu"] == "50m"

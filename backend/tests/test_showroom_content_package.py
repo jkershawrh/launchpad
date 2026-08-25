@@ -28,6 +28,7 @@ def test_operator_workshop_playbook_starts_on_operator_journey():
     operator_index = ROOT / "content-operators/modules/ROOT/pages/index.adoc"
     assert "OpenShift AI Operator Workshop" in operator_index.read_text()
     assert "Inference Overdrive" not in operator_index.read_text()
+    assert "link:{openshift_console_url}" in operator_index.read_text()
 
 
 def test_nookbag_config_has_guided_workspace_tabs():

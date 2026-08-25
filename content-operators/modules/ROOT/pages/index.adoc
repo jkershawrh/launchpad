@@ -25,7 +25,9 @@ oc get pods -n {namespace}
 ----
 . Confirm the authorization result is `yes` and the active project is your assigned namespace.
 
-The *OpenShift Console* tab opens the shared cluster console. Select your assigned namespace before changing any resource.
+Open the link below in a separate browser tab, authenticate to Oberon, and select your assigned namespace before changing any resource. The OpenShift Console cannot be embedded because its security policy blocks iframe access.
+
+link:{openshift_console_url}[Open the OpenShift Console,window=_blank,role=button]
 
 [.next-nav]
 xref:02-operator-discovery.adoc[Next: Discover platform operators →]
