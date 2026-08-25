@@ -1,0 +1,12 @@
+name: modules
+title: OpenShift AI Operator Workshop
+version: ~
+nav:
+  - modules/ROOT/nav.adoc
+asciidoc:
+  attributes:
+    user: user1
+    workshop_id: workshop
+    seat_id: seat
+    namespace: user1-operator-workshop
+    openshift_console_url: "https://console-openshift-console.apps.example.com"

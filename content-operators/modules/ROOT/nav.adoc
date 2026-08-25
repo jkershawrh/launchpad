@@ -1,0 +1,3 @@
+* xref:index.adoc[Welcome and Verify Access]
+* xref:02-operator-discovery.adoc[Discover Platform Operators]
+* xref:03-deploy-and-observe.adoc[Deploy and Observe a Workload]

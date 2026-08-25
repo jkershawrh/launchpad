@@ -18,13 +18,16 @@ def test_antora_playbook_builds_content_from_this_repository():
 def test_operator_workshop_playbook_starts_on_operator_journey():
     playbook = yaml.safe_load((ROOT / "site-openshift-operators.yml").read_text())
 
-    assert playbook["site"]["start_page"] == (
-        "modules::01-openshift-operators-welcome.adoc"
-    )
+    assert playbook["site"]["start_page"] == "modules::index.adoc"
+    assert playbook["content"]["sources"][0]["start_path"] == "content-operators"
     assert playbook["asciidoc"]["attributes"]["showroom_journey"] == (
         "openshift-operators"
     )
     assert playbook["output"]["dir"] == "./www"
+
+    operator_index = ROOT / "content-operators/modules/ROOT/pages/index.adoc"
+    assert "OpenShift AI Operator Workshop" in operator_index.read_text()
+    assert "Inference Overdrive" not in operator_index.read_text()
 
 
 def test_nookbag_config_has_guided_workspace_tabs():

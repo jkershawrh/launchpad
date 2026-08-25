@@ -1,0 +1,28 @@
+= Discover Platform Operators
+:navtitle: Discover Operators
+
+Oberon centrally manages Red Hat and Intel Operators. In this exercise you inspect their APIs and learn which capabilities can be consumed from your namespace.
+
+== Inspect available APIs
+
+[source,bash,role=execute]
+----
+oc api-resources | grep -E 'ServingRuntime|InferenceService|Knative|ServiceMesh|Telemetry|Pipeline|Application'
+----
+
+== Inspect installed Operators
+
+Operator installation is cluster-scoped and read access may be restricted. Try:
+
+[source,bash,role=execute]
+----
+oc get clusterserviceversions.operators.coreos.com -A \
+  -o custom-columns=NAME:.spec.display,STATUS:.status.phase 2>/dev/null | sort -u
+----
+
+If access is denied, use *Ecosystem → Installed Operators* in the OpenShift Console. Expected shared capabilities include Red Hat OpenShift AI, Serverless, Service Mesh, cluster observability, Argo CD, and Intel device plugins. Availability is validated by Launchpad and can change as the cluster is upgraded.
+
+IMPORTANT: Do not create Operator `Subscription` resources. Participant seats consume centrally managed capabilities; they do not install or upgrade Operators.
+
+[.next-nav]
+xref:03-deploy-and-observe.adoc[Next: Deploy and observe →]

@@ -1,12 +1,12 @@
 site:
   title: Operate AI Workloads on Red Hat OpenShift
   url: https://github.com/jkershawrh/launchpad
-  start_page: modules::01-openshift-operators-welcome.adoc
+  start_page: modules::index.adoc
 
 content:
   sources:
     - url: .
-      start_path: content
+      start_path: content-operators
 
 ui:
   bundle:

@@ -1,0 +1,31 @@
+= OpenShift AI Operator Workshop
+:navtitle: Welcome and Verify Access
+
+Welcome to your isolated workshop seat. The instructions remain visible while you work in a terminal authenticated to your seat namespace.
+
+== Your environment
+
+Participant:: `{user}`
+Namespace:: `{namespace}`
+Workshop:: `{workshop_id}`
+Seat:: `{seat_id}`
+
+This workshop uses operators already managed on the shared Oberon platform. It does not install cluster-wide Operators for each participant.
+
+== Verify access
+
+. Open the *Terminal* tab.
+. Run:
++
+[source,bash,role=execute,subs=attributes+]
+----
+oc project {namespace}
+oc auth can-i create deployments.apps -n {namespace}
+oc get pods -n {namespace}
+----
+. Confirm the authorization result is `yes` and the active project is your assigned namespace.
+
+The *OpenShift Console* tab opens the shared cluster console. Select your assigned namespace before changing any resource.
+
+[.next-nav]
+xref:02-operator-discovery.adoc[Next: Discover platform operators →]
