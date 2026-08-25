@@ -4,7 +4,12 @@ set -euo pipefail
 
 ACCESS_METHODS=",${ACCESS_METHODS:-ssh},"
 WORKSPACE=/home/lab-user/workspace
-mkdir -p "$WORKSPACE" /tmp/launchpad-sshd
+if ! mkdir -p "$WORKSPACE" 2>/dev/null || [[ ! -w "$WORKSPACE" ]]; then
+  echo "Persistent workspace is not writable for this OpenShift UID; using an ephemeral workspace."
+  WORKSPACE=/tmp/launchpad-workspace
+  mkdir -p "$WORKSPACE"
+fi
+mkdir -p /tmp/launchpad-sshd
 
 if [[ "$ACCESS_METHODS" == *,ssh,* ]]; then
   echo "Starting SSH server on port 2222..."
