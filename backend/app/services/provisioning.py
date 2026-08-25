@@ -801,6 +801,7 @@ class ProvisioningService:
             "seat_memory_mib",
             os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"),
         ))
+        pods_per_seat = int(metadata.get("seat_pods", 1))
         return {
             "can_provision": can_provision,
             "reason": reason,
@@ -808,6 +809,7 @@ class ProvisioningService:
             "estimated_resources": {
                 "cpu_millicores": cpu_per_seat * workshop.num_users,
                 "memory_mib": memory_per_seat * workshop.num_users,
+                "pods": pods_per_seat * workshop.num_users,
             },
         }
 
@@ -1288,40 +1290,21 @@ class ProvisioningService:
             except Exception:
                 config.load_kube_config()
             v1 = client.CoreV1Api()
-            nodes = v1.list_node()
-
-            total_cpu_m = 0
-            total_mem_mi = 0
-            for node in nodes.items:
-                alloc = node.status.allocatable or {}
-                cpu_str = alloc.get("cpu", "0")
-                if cpu_str.endswith("m"):
-                    total_cpu_m += int(cpu_str[:-1])
-                else:
-                    total_cpu_m += int(float(cpu_str) * 1000)
-                mem_str = alloc.get("memory", "0")
-                if mem_str.endswith("Ki"):
-                    total_mem_mi += int(mem_str[:-2]) // 1024
-                elif mem_str.endswith("Mi"):
-                    total_mem_mi += int(mem_str[:-2])
-                elif mem_str.endswith("Gi"):
-                    total_mem_mi += int(mem_str[:-2]) * 1024
-
-            per_seat_cpu_m = int(os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"))
-            per_seat_mem_mi = int(os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"))
-            headroom_pct = float(os.environ.get("WORKSHOP_CAPACITY_HEADROOM_PCT", "20"))
-
-            usable_cpu = int(total_cpu_m * (1 - headroom_pct / 100))
-            usable_mem = int(total_mem_mi * (1 - headroom_pct / 100))
-
-            max_by_cpu = usable_cpu // per_seat_cpu_m if per_seat_cpu_m > 0 else 999
-            max_by_mem = usable_mem // per_seat_mem_mi if per_seat_mem_mi > 0 else 999
-            max_seats = min(max_by_cpu, max_by_mem)
+            capacity = self._workshop_capacity(v1, workshop)
+            max_seats = capacity["max_seats"]
 
             if workshop.num_users <= max_seats:
-                return True, f"Cluster can support {max_seats} seats ({total_cpu_m}m CPU, {total_mem_mi}Mi memory, {headroom_pct}% headroom)"
+                return True, (
+                    f"Cluster can support {max_seats} seats "
+                    f"(CPU: {capacity['max_by_cpu']}, Memory: {capacity['max_by_mem']}, "
+                    f"Pods: {capacity['max_by_pods']}; {capacity['headroom_pct']}% headroom)"
+                )
             else:
-                return False, f"Requested {workshop.num_users} seats but cluster supports {max_seats} (CPU: {max_by_cpu}, Memory: {max_by_mem})"
+                return False, (
+                    f"Requested {workshop.num_users} seats but cluster supports {max_seats} "
+                    f"(CPU: {capacity['max_by_cpu']}, Memory: {capacity['max_by_mem']}, "
+                    f"Pods: {capacity['max_by_pods']})"
+                )
         except ImportError:
             return False, "kubernetes package not available — capacity cannot be verified"
         except Exception as e:
@@ -1329,8 +1312,6 @@ class ProvisioningService:
             return False, f"Capacity check failed: {e}"
 
     def _estimate_max_seats(self, workshop: Workshop) -> int:
-        per_seat_cpu_m = int(os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"))
-        per_seat_mem_mi = int(os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"))
         try:
             from kubernetes import client, config
             try:
@@ -1338,29 +1319,70 @@ class ProvisioningService:
             except Exception:
                 config.load_kube_config()
             v1 = client.CoreV1Api()
-            nodes = v1.list_node()
-            total_cpu_m = 0
-            total_mem_mi = 0
-            for node in nodes.items:
-                alloc = node.status.allocatable or {}
-                cpu_str = alloc.get("cpu", "0")
-                if cpu_str.endswith("m"):
-                    total_cpu_m += int(cpu_str[:-1])
-                else:
-                    total_cpu_m += int(float(cpu_str) * 1000)
-                mem_str = alloc.get("memory", "0")
-                if mem_str.endswith("Ki"):
-                    total_mem_mi += int(mem_str[:-2]) // 1024
-                elif mem_str.endswith("Mi"):
-                    total_mem_mi += int(mem_str[:-2])
-                elif mem_str.endswith("Gi"):
-                    total_mem_mi += int(mem_str[:-2]) * 1024
-            headroom_pct = float(os.environ.get("WORKSHOP_CAPACITY_HEADROOM_PCT", "20"))
-            usable_cpu = int(total_cpu_m * (1 - headroom_pct / 100))
-            usable_mem = int(total_mem_mi * (1 - headroom_pct / 100))
-            return min(usable_cpu // per_seat_cpu_m, usable_mem // per_seat_mem_mi)
+            return self._workshop_capacity(v1, workshop)["max_seats"]
         except Exception:
-            return workshop.num_users
+            return 0
+
+    @staticmethod
+    def _cpu_millicores(value) -> int:
+        value = str(value or "0")
+        if value.endswith("m"):
+            return int(value[:-1])
+        if value.endswith("n"):
+            return int(value[:-1]) // 1_000_000
+        return int(float(value) * 1000)
+
+    @staticmethod
+    def _memory_mib(value) -> int:
+        value = str(value or "0")
+        units = {"Ki": 1 / 1024, "Mi": 1, "Gi": 1024, "Ti": 1024 * 1024}
+        for suffix, multiplier in units.items():
+            if value.endswith(suffix):
+                return int(float(value[:-len(suffix)]) * multiplier)
+        return int(value) // (1024 * 1024)
+
+    def _workshop_capacity(self, v1, workshop: Workshop) -> dict:
+        total_cpu_m = total_mem_mi = total_pods = 0
+        for node in v1.list_node().items:
+            alloc = node.status.allocatable or {}
+            total_cpu_m += self._cpu_millicores(alloc.get("cpu"))
+            total_mem_mi += self._memory_mib(alloc.get("memory"))
+            total_pods += int(alloc.get("pods", 0))
+
+        requested_cpu_m = requested_mem_mi = active_pods = 0
+        for pod in v1.list_pod_for_all_namespaces().items:
+            if pod.status.phase in ("Succeeded", "Failed"):
+                continue
+            active_pods += 1
+            for container in pod.spec.containers or []:
+                requests = container.resources.requests or {}
+                requested_cpu_m += self._cpu_millicores(requests.get("cpu"))
+                requested_mem_mi += self._memory_mib(requests.get("memory"))
+
+        item = self.catalog.get_item(workshop.catalog_item_id)
+        metadata = item.metadata if item else {}
+        per_seat_cpu_m = int(metadata.get(
+            "seat_cpu_millicores", os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000")
+        ))
+        per_seat_mem_mi = int(metadata.get(
+            "seat_memory_mib", os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048")
+        ))
+        per_seat_pods = int(metadata.get("seat_pods", 1))
+        headroom_pct = float(os.environ.get("WORKSHOP_CAPACITY_HEADROOM_PCT", "20"))
+        fraction = 1 - headroom_pct / 100
+        available_cpu = max(0, int(total_cpu_m * fraction) - requested_cpu_m)
+        available_mem = max(0, int(total_mem_mi * fraction) - requested_mem_mi)
+        available_pods = max(0, int(total_pods * fraction) - active_pods)
+        max_by_cpu = available_cpu // per_seat_cpu_m if per_seat_cpu_m else 999
+        max_by_mem = available_mem // per_seat_mem_mi if per_seat_mem_mi else 999
+        max_by_pods = available_pods // per_seat_pods if per_seat_pods else 999
+        return {
+            "max_seats": min(max_by_cpu, max_by_mem, max_by_pods),
+            "max_by_cpu": max_by_cpu,
+            "max_by_mem": max_by_mem,
+            "max_by_pods": max_by_pods,
+            "headroom_pct": headroom_pct,
+        }
 
     def reclaim_workshop(self, workshop_id: str) -> Workshop:
         provision_event = self._workshop_provision_events.get(workshop_id)

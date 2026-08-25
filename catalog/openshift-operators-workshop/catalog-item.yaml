@@ -24,6 +24,7 @@ metadata:
   operator_workshop: true
   seat_cpu_millicores: 165
   seat_memory_mib: 464
+  seat_pods: 1
   showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
   showroom_content_ref: "main"
   showroom_content_playbook: "site-openshift-operators.yml"

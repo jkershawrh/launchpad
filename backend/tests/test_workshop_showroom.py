@@ -175,6 +175,21 @@ class TestWorkshopPreflight:
 # ── Task 11: Capacity guard ─────────────────────────────────────────
 
 class TestCapacityGuard:
+    @staticmethod
+    def _node(cpu="10", memory="20Gi", pods="100"):
+        node = MagicMock()
+        node.status.allocatable = {"cpu": cpu, "memory": memory, "pods": pods}
+        return node
+
+    @staticmethod
+    def _pod(phase="Running", cpu="0", memory="0"):
+        pod = MagicMock()
+        pod.status.phase = phase
+        container = MagicMock()
+        container.resources.requests = {"cpu": cpu, "memory": memory}
+        pod.spec.containers = [container]
+        return pod
+
     def test_workshop_checks_capacity(self):
         svc = _make_service()
         workshop = Workshop(
@@ -216,3 +231,64 @@ class TestCapacityGuard:
 
         assert can is False
         assert "failed" in reason.lower()
+
+    def test_live_pod_slots_limit_workshop_capacity(self):
+        item = _make_catalog_item()
+        item.metadata = {
+            "seat_cpu_millicores": 100,
+            "seat_memory_mib": 100,
+            "seat_pods": 1,
+        }
+        svc = _make_service(catalog_item=item)
+        workshop = Workshop(
+            tenant_id="test-tenant", catalog_item_id="demo-a",
+            num_users=2, ttl="4h",
+        )
+        pods = [self._pod() for _ in range(8)]
+        pods += [self._pod("Succeeded"), self._pod("Failed")]
+        with (
+            patch.dict(os.environ, {
+                "LAUNCHPAD_MODE": "openshift",
+                "WORKSHOP_CAPACITY_HEADROOM_PCT": "10",
+            }, clear=False),
+            patch("kubernetes.config.load_incluster_config"),
+            patch("kubernetes.client.CoreV1Api") as core_api,
+        ):
+            core_api.return_value.list_node.return_value.items = [self._node(pods="10")]
+            core_api.return_value.list_pod_for_all_namespaces.return_value.items = pods
+            can, reason = svc.check_workshop_capacity(workshop)
+
+        assert can is False
+        assert "supports 1" in reason
+        assert "Pods: 1" in reason
+
+    def test_existing_resource_requests_reduce_capacity(self):
+        item = _make_catalog_item()
+        item.metadata = {
+            "seat_cpu_millicores": 1000,
+            "seat_memory_mib": 1024,
+            "seat_pods": 1,
+        }
+        svc = _make_service(catalog_item=item)
+        workshop = Workshop(
+            tenant_id="test-tenant", catalog_item_id="demo-a",
+            num_users=3, ttl="4h",
+        )
+        pods = [self._pod(cpu="3500m", memory="2Gi")]
+        with (
+            patch.dict(os.environ, {
+                "LAUNCHPAD_MODE": "openshift",
+                "WORKSHOP_CAPACITY_HEADROOM_PCT": "20",
+            }, clear=False),
+            patch("kubernetes.config.load_incluster_config"),
+            patch("kubernetes.client.CoreV1Api") as core_api,
+        ):
+            core_api.return_value.list_node.return_value.items = [
+                self._node(cpu="5", memory="8Gi", pods="100")
+            ]
+            core_api.return_value.list_pod_for_all_namespaces.return_value.items = pods
+            can, reason = svc.check_workshop_capacity(workshop)
+
+        assert can is False
+        assert "supports 0" in reason
+        assert "CPU: 0" in reason
