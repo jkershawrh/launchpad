@@ -62,7 +62,9 @@ spec:
           httpGet:
             path: /health
             port: 8080
-          failureThreshold: 30
+          # First boot downloads and loads the local fallback model. On a cold
+          # node that can take several minutes, so do not restart it mid-load.
+          failureThreshold: 120
           periodSeconds: 5
         readinessProbe:
           httpGet:
