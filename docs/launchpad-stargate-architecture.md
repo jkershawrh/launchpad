@@ -1,4 +1,6 @@
-# Launchpad + StarGate Architecture
+# Launchpad + StarGate Architecture (Historical Design)
+
+> This is a design reference for a broader StarGate integration. It is not the current Oberon production contract.
 
 ## System Overview
 

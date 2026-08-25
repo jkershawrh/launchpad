@@ -1,4 +1,6 @@
-# Build Matrix
+# Historical Build Matrix
+
+> This document captures the earlier RHDP/infra01 target and is retained for design history. It is not the current Oberon deployment contract. See the repository README and `oberon-workshop-readiness.md` for current behavior.
 
 ## Catalog (25 items)
 

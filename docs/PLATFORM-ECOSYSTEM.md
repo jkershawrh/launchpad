@@ -1,4 +1,6 @@
-# Intel x Red Hat AI Platform Ecosystem
+# Intel x Red Hat AI Platform Ecosystem (Historical Design)
+
+> This document describes the broader planned RHDP ecosystem, not the currently deployed Oberon catalog. See the repository README for current production scope.
 
 ## Overview
 

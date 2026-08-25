@@ -34,7 +34,7 @@ See [adapters.md](adapters.md) for the full interface catalog and per-tier detai
 | Model | Role |
 |-------|------|
 | **Tenant** | Company, partner, internal team, or client. Carries branding, quota defaults, TTL. |
-| **CatalogItem** | Reusable lab/demo definition. Category: quick_start, guided_build, open_sandbox. 25 items in catalog. |
+| **CatalogItem** | Reusable lab/demo definition. Category: quick_start, guided_build, open_sandbox. Five active file-backed items currently ship in `catalog/`. |
 | **LabRequest** | User request for a catalog item. Evaluated against constraints before acceptance. |
 | **LabSession** | Provisioned lab environment. Tracks namespace, cluster_ref, URLs, status, validation, showback. |
 | **ProvisioningPlan** | Generated steps to stand up a session — namespace, quota, RBAC, deploy, gateway. |

@@ -1,250 +1,102 @@
 # Intel x Red Hat AI Partner Launchpad
 
-![CI](https://github.com/rhpds/launchpad/actions/workflows/ci.yml/badge.svg)
+Launchpad is an internal self-service lab platform running on the **Oberon OpenShift cluster**. It provisions individual environments and multi-seat workshops, validates them before handoff, exposes participant access, and reclaims generated resources at the end of a session.
 
-Intelligent provisioning platform for AI lab environments on Red Hat OpenShift, powered by Intel Gaudi 3 accelerators and Xeon 6 processors. Launchpad sits on top of the existing RHDP ecosystem (Sandbox API, Babylon, AgnosticD, ArgoCD) and adds an orchestration layer — it classifies workloads via rule-based pattern matching, selects optimal hardware and clusters, tracks provisioning history to avoid failing combinations, and coordinates real-time signals from StarGate (validation) and DeepField (fleet observability) into unified placement decisions.
+## Current deployment
 
-## What It Does
+| Surface | URL |
+|---|---|
+| Partner portal | <https://launchpad.apps.oberon.fm2aihpcsed.com> |
+| Admin dashboard | <https://launchpad-admin.apps.oberon.fm2aihpcsed.com> |
+| Backend API | <https://launchpad-api.apps.oberon.fm2aihpcsed.com> |
 
-One-click access to pre-built AI demos running on real hardware, with intelligent placement. Each demo provisions an isolated environment with its own namespace, inference gateway, model routing, and LiteLLM virtual API key. The intelligence layer automatically classifies the workload, matches it to the best hardware profile, selects the healthiest cluster, and records the outcome to improve future decisions.
+The portal and API are protected by OpenShift OAuth. The deployment is managed by the `launchpad` Argo CD Application using `deploy/launchpad/overlays/oberon`.
 
-**10 custom demos** built by the Intel x Red Hat partnership:
+## Supported user journeys
 
-| Demo | What It Shows |
-|------|--------------|
-| **Inference Overdrive** | Real-time model routing across 5 models — compare Gaudi vs Xeon latency and throughput |
-| **Enterprise RAG** | Retrieval-augmented generation with vector search, embedding on Xeon, generation on Gaudi |
-| **Agent Swarm** | Multi-agent parallel execution — multiple models coordinate on complex tasks |
-| **Research Agent** | Multi-step document analysis with query decomposition, reranking, and citations |
-| **AIOps Copilot** | Alert classification, root cause analysis, and governance-gated remediation |
-| **Governed Agent** | Risk-gated AI agent execution with policy enforcement and audit logging |
-| **Hardware Recovery** | Graceful failover from Gaudi to CPU — transparent to the caller |
-| **Workload Generator** | Load testing with storm, barrage, and token-cannon modes |
-| **Model Training** | Fine-tuning workflows on Intel Gaudi with evaluation |
-| **Replay Comparison** | Side-by-side Xeon vs Gaudi performance benchmarking |
+### Individual environment
 
-**7 official Red Hat AI Quickstarts** from Summit, deployed via existing RHDP catalog items:
+Use **Request Environment → Individual Lab** to provision one catalog item for one user.
 
-- Enterprise RAG Chatbot
-- Data Governance
-- PPE Compliance Monitor
-- Product Recommendation
-- IT Self-Service
-- LLM CPU Serving (Intel Xeon)
-- vLLM Tool Calling (Granite 3.2)
+### Multi-seat workshop
+
+Use **Request Environment → Multi-seat Workshop** to order one workshop containing 1–25 isolated participant seats. Launchpad performs a capacity preview before confirmation, provisions seats concurrently, requires collective endpoint stability before declaring the workshop ready, and supports failed-seat retry and group reclaim.
+
+### OpenShift Developer Sandbox
+
+The `ai-sandbox` catalog item is OpenShift-first. Its primary access is the real OpenShift Console scoped to the generated namespace, with Web Terminal and browser IDE access where available. The requester receives the namespace-level `edit` role; Launchpad does not grant cluster-admin. Jupyter is not a default access method.
+
+The shared Oberon platform currently provides Red Hat OpenShift AI, Serverless, Service Mesh, cluster observability, Argo CD, and Intel device plugins. These operators are centrally managed; a sandbox order does not install cluster-wide operators.
+
+## Active file-backed catalog
+
+| ID | Name | Category |
+|---|---|---|
+| `ai-sandbox` | OpenShift Developer Sandbox | Open sandbox |
+| `cpu-inference-serving` | LLM CPU Serving on Xeon | Quick start |
+| `guided-rag-on-xeon` | Guided RAG on Intel Xeon | Guided build |
+| `rag-on-xeon` | RAG on Intel Xeon | Quick start |
+| `smoke-test` | Smoke Test Demo | Quick start |
+
+Catalog definitions live under `catalog/*/catalog-item.yaml`. The Guided RAG item is still a provisional demonstration experience; its Antora journey and deployed workload must be corrected before it is treated as the canonical operator workshop.
 
 ## Architecture
 
-```
-LabRequest
+```text
+React portal
     │
     ▼
-OrchestrationBrain.decide()
-    ├── WorkloadClassifier  → workload type, GPU required, intensity
-    ├── PlacementService    → best cluster (StarGate capacity + feedback history)
-    ├── DeepFieldAdapter    → fleet health signals
-    └── FeedbackTracker     → historical success rates, avoid-list
+FastAPI provisioning service
+    ├── catalog and policy validation
+    ├── capacity/admission checks
+    ├── per-session MaaS key
+    └── persisted lifecycle state
     │
     ▼
-ProvisioningService.provision()
-    ├── pool.reserve(preferred_cluster=recommendation)
-    ├── Sandbox API → namespace on CNV cluster
-    ├── ArgoCD → tenant Helm chart
-    └── After validation → FeedbackTracker.record_outcome()
-    │
-    ▼
-  ┌────────────────────────────────────────────────────────┐
-  │  Per-Tenant Namespace                                  │
-  │  ┌──────────────┐  ┌────────────┐  ┌──────────────┐   │
-  │  │ Demo Frontend │  │  Gateway   │  │  PostgreSQL  │   │
-  │  │ (filtered     │─▶│ (routing   │  │  (state)     │   │
-  │  │  pages)       │  │  policy)   │  └──────────────┘   │
-  │  └──────────────┘  └─────┬──────┘                      │
-  └──────────────────────────┼─────────────────────────────┘
-                             │
-                             ▼
-                    LiteMaaS (LiteLLM)
-                             │
-              ┌──────────────┼──────────────┐
-              ▼              ▼              ▼
-         Intel Gaudi 3  Intel Xeon 6   llama.cpp
+Oberon OpenShift adapters
+    ├── namespace and namespace-scoped RBAC
+    ├── workload/service/route deployment
+    ├── per-seat Showroom Argo CD Application
+    ├── readiness and route validation
+    └── deterministic retry and cleanup
 ```
 
-### Key Components
+Launchpad has adapters for mock, local, direct OpenShift, and RHDP modes. **Direct OpenShift mode is the deployed Oberon path.** RHDP/AgnosticD integration remains repository capability and historical design context; it is not required for the internal Intel deployment.
 
-| Component | Purpose |
-|-----------|---------|
-| **OrchestrationBrain** | Composes all intelligence signals into unified placement decisions |
-| **WorkloadClassifier** | Rule-based workload classification (CPU/GPU/training/RAG/agent/mixed) using catalog metadata and name pattern matching |
-| **PlacementService** | Recommends clusters based on StarGate capacity scores with caching |
-| **FeedbackTracker** | Tracks provisioning outcomes, computes statistical success rates per catalog×cluster×hardware tuple, maintains avoid-list |
-| **DeepFieldAdapter** | Integrates fleet health signals (CPU, GPU utilization, error rates) |
-| **Sandbox API** | RHDP cluster pool manager — assigns namespaces on shared OpenShift clusters |
-| **Inference Gateway** | FastAPI service implementing model routing policy across Intel hardware |
-| **LiteMaaS** | LiteLLM proxy providing unified OpenAI-compatible API across all models |
-| **Showroom** | Interactive lab UI with step-by-step instructions, terminal, and console tabs |
+## Repository layout
 
-### Intelligence Layer
-
-The intelligence layer makes provisioning decisions smarter over time:
-
-1. **Workload Profiling** — rule-based classification using catalog item metadata and name patterns (not LLM-powered)
-2. **Smart Placement** — selects clusters based on capacity scores from StarGate, penalized by DeepField critical signals
-3. **Feedback Tracking** — records success/failure per catalog×cluster×hardware tuple; avoids combinations with <30% success rate (statistical, not ML)
-4. **Orchestration Brain** — coordinates all signals into a single decision with confidence scoring and rationale
-5. **Graceful Degradation** — each signal source fails open; if all external systems are down, Launchpad provisions exactly as a static system would
-6. **Workshop Provisioning** — bulk provision N users via a single API call with per-user session tracking and cleanup
-
-## How It Works
-
-### For Users
-
-1. Order a demo from the RHDP catalog at demo.redhat.com
-2. Receive a Showroom URL with SSO credentials
-3. Follow the step-by-step lab instructions in the left panel
-4. Interact with the demo in the right panel (terminal, console, or demo portal)
-5. Environment automatically reclaims after the configured TTL
-
-### For Operators
-
-1. The **cluster config** (`launchpad-cluster`) provisions shared base infrastructure once — RHOAI, GitOps, Keycloak on a CNV pool cluster
-2. Each **tenant config** (`launchpad-*-tenant`) creates an isolated per-user environment on the shared cluster
-3. The Sandbox API manages capacity, quotas, and lifecycle
-4. Each tenant gets its own LiteLLM virtual key for usage tracking and rate limiting
-
-## Tech Stack
-
-- **Backend:** Python >=3.11, FastAPI >=0.115, Pydantic >=2.10, psycopg2 >=2.9
-- **Database:** PostgreSQL via psycopg2 (with in-memory fallback for testing)
-- **Background tasks:** Celery + Redis (6 beat tasks: TTL enforcement, session cleanup, capacity sync, feedback sync, health check, rebalance)
-- **Frontends:** React 19, Vite 8, TypeScript 6 — Tailwind (portal/admin) + PatternFly (demos)
-- **API prefix:** All routes under `/api/v1/`
-- **Deployment:** Kustomize manifests, UBI9 containers, internal OpenShift registry
-- **Complementary systems:** StarGate (rubric validation), DeepField (fleet observability)
-
-## Repository Structure
-
-```
-launchpad/
-├── backend/
-│   └── app/
-│       ├── adapters/           # Mock, local, OpenShift, RHDP, DeepField adapter tiers
-│       ├── domain/             # Pydantic models: lifecycle, placement, workload, feedback, orchestration
-│       ├── services/           # Provisioning, placement, workload classifier, feedback tracker, orchestration brain
-│       ├── api/routers/        # REST endpoints including intelligence API
-│       ├── integrations/       # Event publisher (StarGate, Kafka, Dashboard)
-│       └── prompts/            # YAML prompt templates (branding, workload classification, placement decision)
-│   ├── tasks/                  # Celery tasks: lifecycle, capacity sync, feedback sync, orchestration
-│   └── migrations/             # PostgreSQL schema (001 initial, 002 provisioning outcomes)
-├── frontend/                   # Partner portal — DecisionInsight on SessionDetail
-├── admin/                      # Admin dashboard — ProvisioningAnalytics page, DecisionInsight
-├── demos/
-│   ├── frontend/               # Demo frontend — FleetIntelligence dashboard, 18+ pages
-│   └── gateway/                # Inference gateway (FastAPI, routing policy)
-├── content/                    # Showroom lab content (Antora/AsciiDoc)
-├── tenant/bootstrap/           # Helm chart deployed per-user by ArgoCD
-├── deploy/
-│   ├── agnosticv/              # RHDP catalog item configs (12 items)
-│   └── launchpad/              # Kustomize manifests (infra01 overlay)
-└── docs/                       # Architecture and process documentation
+```text
+backend/       FastAPI API, domain models, services, and adapters
+frontend/      Partner portal
+admin/         Internal operations UI
+catalog/       Active file-backed catalog definitions
+content/       Antora/AsciiDoc Showroom content
+demos/         Demo frontend, gateway, and sandbox image
+deploy/        Kustomize, build, and optional RHDP/AgnosticV assets
+docs/          Current runbooks plus historical design documents
 ```
 
-## Intelligence API
-
-Endpoints for inspecting placement decisions, fleet health, and provisioning performance:
-
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /intelligence/fleet-health` | Cluster health + brain alerts |
-| `GET /intelligence/decision/{request_id}` | Audit a specific placement decision |
-| `POST /intelligence/simulate` | Simulate placement without provisioning |
-| `GET /intelligence/cluster/{name}/signals` | DeepField signals for a cluster |
-| `GET /intelligence/classifications` | Batch workload classification (all catalog items) |
-| `GET /intelligence/enrichment` | Fleet enrichment summary (failure classes, incidents) |
-| `GET /intelligence/timing` | Provisioning timing stats and aggregates |
-| `POST /workshops` | Bulk provision N users for an event or workshop |
-
-## Models
-
-All models served via KServe on OpenShift AI, accessed through LiteMaaS. Launchpad itself only uses Granite 3.2 8B for brand generation — the other models are available to tenant demos via the inference gateway:
-
-| Model | Hardware | Use Case |
-|-------|----------|----------|
-| Granite 3.2 8B Instruct | Intel Gaudi 3 | General-purpose generation, classification |
-| Llama 3.1 70B | CPU (llama.cpp) | Large-scale reasoning |
-| DeepSeek R1 Distill Qwen 14B | Intel Gaudi 3 | Deep reasoning, chain-of-thought |
-| Microsoft Phi-4 | Intel Gaudi 3 | Efficient small-model inference |
-| Qwen3 14B | Intel Gaudi 3 | Multilingual generation, tool calling |
-
-## Infrastructure
-
-- **Compute:** Intel Gaudi 3 (24 cards across 3 nodes) + Intel Xeon 6
-- **Platform:** Red Hat OpenShift 4.18+ with OpenShift AI 2.25
-- **Cluster pools:** Managed by RHDP Sandbox API across CNV clusters
-- **Deployment:** AgnosticD + ArgoCD (GitOps)
-- **Auth:** Keycloak SSO + LiteLLM virtual keys per tenant
-
-## Deployed
-
-Live on infra01:
-
-| App | URL |
-|-----|-----|
-| Partner Portal | https://launchpad.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
-| Admin Dashboard | https://launchpad-admin.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
-| Backend API | https://launchpad-api.apps.ocpv-infra01.dal12.infra.demo.redhat.com |
-
-## Roadmap
-
-### Done
-
-- [x] Backend — FastAPI with domain models, lifecycle state machine, adapter pattern (mock/local/openshift/rhdp)
-- [x] Intelligence layer — PlacementService, WorkloadClassifier, FeedbackTracker, OrchestrationBrain, DeepFieldAdapter
-- [x] Intelligence API — 7 endpoints (fleet-health, decision audit, simulate, cluster signals, feedback summary)
-- [x] Partner portal — React frontend with branding, demo catalog, sandbox configuration, DecisionInsight
-- [x] Admin dashboard — session management, tenant management, ProvisioningAnalytics page, DecisionInsight
-- [x] Demo frontend — 18+ pages including FleetIntelligence dashboard, CockpitDashboard, Operations
-- [x] Inference gateway — FastAPI routing policy across Gaudi/Xeon/CPU backends
-- [x] RHDP integration — Sandbox API client, AgnosticV configs (12), ArgoCD tenant Helm chart, Showroom content
-- [x] Catalog — 25 items (10 custom demos, 7 official quickstarts, 4 sandboxes, 4 originals)
-- [x] Celery beat — 6 scheduled tasks (TTL, cleanup, capacity sync, feedback sync, health check, rebalance)
-- [x] Database — PostgreSQL with migrations (001 initial schema, 002 provisioning outcomes)
-- [x] Security — SSO, API keys, session limits, PSS, NetworkPolicy, credential scrubbing
-- [x] 507 backend tests — all TDD red/green
-- [x] Deployed to infra01 — backend, portal, admin all running
-
-### In Progress / Known Limitations
-
-- **Showback:** Currently simulated via MockShowbackAdapter (synthetic cost data from session metadata). Real Prometheus-based metrics planned.
-- **Rebalancing:** `rebalance_check()` identifies overloaded clusters and suggests session migrations, but does not execute them (advisory only).
-- **RHDP end-to-end:** Sandbox API integration built and tested, but live deployment blocked on app role token from RHDP team.
-- **Validation:** Launchpad checks that Sandbox API returned a namespace. Deeper validation (pod readiness, route health) is StarGate's responsibility.
-
-### Configuration
-
-| Flag | Default | Purpose |
-|------|---------|---------|
-| `SMART_PLACEMENT_ENABLED` | `true` | Cluster selection via StarGate capacity scores |
-| `WORKLOAD_PROFILING_ENABLED` | `false` | Workload classification and hardware matching |
-| `FEEDBACK_TRACKING_ENABLED` | `false` | Provisioning outcome tracking and avoid-list |
-| `ORCHESTRATION_BRAIN_ENABLED` | `false` | Unified decision engine composing all signals |
-| `DEEPFIELD_API_URL` | (empty) | DeepField fleet observability endpoint |
-| `STARGATE_API_URL` | (empty) | StarGate validation and capacity endpoint |
-
-## Development
+## Development and verification
 
 ```bash
-# Run locally with mock adapters
-cd backend
-LAUNCHPAD_MODE=mock uvicorn app.main:app --reload
+.venv/bin/pytest -q backend/tests
 
-# Run tests
-python -m pytest tests/ -q
-
-# Run with RHDP integration (requires VPN + Sandbox API token)
-LAUNCHPAD_MODE=rhdp \
-SANDBOX_API_URL=$SANDBOX_API_URL \
-SANDBOX_LOGIN_TOKEN=$(cat ~/.sandbox/token) \
-HTTPS_PROXY=$HTTPS_PROXY \
-uvicorn app.main:app --reload
+cd frontend
+npm test -- --run
+npm run build
 ```
+
+Use an explicit Oberon context for every cluster command; do not change the current kubeconfig context:
+
+```bash
+oc --context='default/api-oberon-fm2aihpcsed-com:6443/kube:admin' ...
+```
+
+## Current limitations
+
+- The Guided RAG Showroom content and runtime are provisional and currently being realigned to the intended operator-focused workshop.
+- Operator availability is cluster-wide and centrally managed; catalog items should detect and use installed capabilities rather than install an Operator per participant seat.
+- Some older files in `docs/` describe the original RHDP/infra01 target. Files explicitly labeled **historical** are design references, not the Oberon production contract.
+- Repository-wide lint currently includes pre-existing React purity errors in `BrandingContext.tsx` and `Fleet.tsx`.
+
+For certified multi-seat behavior, see [docs/oberon-workshop-readiness.md](docs/oberon-workshop-readiness.md). For adapter behavior, see [docs/adapters.md](docs/adapters.md).

@@ -59,7 +59,7 @@ Located in `backend/app/adapters/openshift/`. Used on live OCP clusters for dire
 
 | Adapter | What it does |
 |---------|-------------|
-| `OpenShiftSandboxProvisioner` | Creates namespace, applies quota/RBAC/NetworkPolicy, deploys Pod with SSH |
+| `OpenShiftSandboxProvisioner` | Creates a namespace, grants the requester namespace-scoped `edit`, deploys optional workspace services, and returns the OpenShift Console URL |
 | OpenShift provisioning | Creates namespaces, applies kustomize/helm manifests via Kubernetes API |
 | OpenShift cleanup | Deletes namespaces and associated resources |
 | OpenShift validation | Checks pod readiness, route accessibility, service endpoints |
@@ -91,17 +91,17 @@ Located in `backend/app/adapters/rhdp/`. Used for Red Hat Demo Platform integrat
 
 When `LAUNCHPAD_MODE=rhdp`, the provisioning service checks each catalog item's `provisioner_mode` metadata. Items with `provisioner_mode: "rhdp"` route to `RHDPProvisioningAdapter`; others use the default provisioner. This allows mixed mode — official quickstarts use RHDP while sandboxes use direct OpenShift provisioning.
 
-## Sandbox Provisioner (Pod-Based)
+## Sandbox Provisioner (OpenShift-first)
 
-Sandbox sessions run as Pods (or local containers) with configurable stack levels:
+Sandbox sessions receive a private OpenShift namespace. Optional workspace services run as Pods (or local containers) with configurable stack levels:
 
 | Stack Level | Packages |
 |-------------|----------|
 | `minimal` | python3.11, oc, podman, git, vim |
-| `ai_dev` | + pytorch, vllm, jupyter, ansible-navigator, huggingface-cli |
+| `ai_dev` | + pytorch, vllm, ansible-navigator, huggingface-cli |
 | `full_redhat_ai` | + openvino, intel-extension-for-pytorch, kafka-client, tekton-cli, helm |
 
-Access methods: SSH (2222), Jupyter (8888), VS Code Server (8443), Web Console (6901), API (8080).
+Default access methods are the real OpenShift Console, the console Web Terminal, and optional VS Code Server. Jupyter remains a legacy implementation capability but is not exposed by the current `ai-sandbox` catalog item or default portal presets.
 
 ## Intelligence Services (not adapters)
 
