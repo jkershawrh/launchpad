@@ -414,3 +414,56 @@ def test_collective_readiness_retry_reuses_existing_session():
     assert retried.status == WorkshopStatus.READY
     assert retried.seats[0].session_id == original_session_id
     assert len(service._sessions) == 1
+
+
+def test_reclaim_waits_for_inflight_provisioning_without_status_overwrite():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="cancel-inflight-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=2,
+    )
+    seat_started = threading.Event()
+    allow_seats_to_finish = threading.Event()
+    original = service._provision_workshop_seat
+
+    def blocked_seat(target_workshop, index):
+        seat_started.set()
+        assert allow_seats_to_finish.wait(timeout=2)
+        return original(target_workshop, index)
+
+    provision_result = {}
+    reclaim_result = {}
+
+    def provision():
+        provision_result["workshop"] = service.provision_workshop(workshop)
+
+    def reclaim():
+        reclaim_result["workshop"] = service.reclaim_workshop(workshop.workshop_id)
+
+    with (
+        patch.object(service, "_provision_workshop_seat", side_effect=blocked_seat),
+        patch.dict(os.environ, {"WORKSHOP_PROVISION_CONCURRENCY": "2"}),
+    ):
+        provision_thread = threading.Thread(target=provision)
+        provision_thread.start()
+        assert seat_started.wait(timeout=2)
+
+        queued = service.queue_workshop_reclaim(workshop.workshop_id)
+        assert queued.status == WorkshopStatus.RECLAIMING
+        reclaim_thread = threading.Thread(target=reclaim)
+        reclaim_thread.start()
+        assert reclaim_thread.is_alive()
+
+        allow_seats_to_finish.set()
+        provision_thread.join(timeout=5)
+        reclaim_thread.join(timeout=5)
+
+    assert not provision_thread.is_alive()
+    assert not reclaim_thread.is_alive()
+    assert provision_result["workshop"].status == WorkshopStatus.RECLAIMING
+    assert reclaim_result["workshop"].status == WorkshopStatus.COMPLETED
+    assert all(
+        seat.status == WorkshopSeatStatus.RECLAIMED
+        for seat in reclaim_result["workshop"].seats
+    )

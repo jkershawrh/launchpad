@@ -108,6 +108,7 @@ class ProvisioningService:
         self._plans: dict[str, ProvisioningPlan] = {}
         self._workshops: dict[str, Workshop] = {}
         self._workshop_idempotency: dict[tuple[str, str], tuple[str, str]] = {}
+        self._workshop_provision_events: dict[str, threading.Event] = {}
         self._gw_locks: dict[str, threading.Lock] = {}
         self._load_from_db()
 
@@ -994,6 +995,10 @@ class ProvisioningService:
     def provision_workshop(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:
+        provision_event = self._workshop_provision_events.setdefault(
+            workshop.workshop_id, threading.Event()
+        )
+        provision_event.clear()
         if idempotency_key:
             lookup_key = (workshop.tenant_id, idempotency_key)
             fingerprint = self._workshop_order_fingerprint(workshop)
@@ -1023,6 +1028,7 @@ class ProvisioningService:
         if not catalog_item:
             workshop = workshop.model_copy(update={"status": WorkshopStatus.FAILED, "metadata": {**workshop.metadata, "error": "catalog item not found"}})
             self._save_workshop(workshop)
+            provision_event.set()
             return workshop
 
         if self.preflight:
@@ -1035,6 +1041,7 @@ class ProvisioningService:
                     "metadata": {**workshop.metadata, "preflight_failure": reasons},
                 })
                 self._save_workshop(workshop)
+                provision_event.set()
                 return workshop
 
         can_provision, cap_reason = self.check_workshop_capacity(workshop)
@@ -1047,6 +1054,7 @@ class ProvisioningService:
                     "metadata": {**workshop.metadata, "error": f"Insufficient capacity: {cap_reason}"},
                 })
                 self._save_workshop(workshop)
+                provision_event.set()
                 return workshop
             logger.warning(
                 "Workshop %s: requested %d seats but cluster can support %d. Provisioning %d.",
@@ -1105,7 +1113,32 @@ class ProvisioningService:
                 workshop.seats[i] = updated_seat
                 if session_id:
                     session_ids.append(session_id)
+                current = self._workshops.get(workshop.workshop_id)
+                if current and current.status == WorkshopStatus.RECLAIMING:
+                    workshop = current.model_copy(update={
+                        "seats": workshop.seats,
+                        "session_ids": list(dict.fromkeys(session_ids)),
+                    })
+                else:
+                    workshop = workshop.model_copy(update={
+                        "session_ids": list(dict.fromkeys(session_ids)),
+                    })
                 self._save_workshop(workshop)
+
+        current = self._workshops.get(workshop.workshop_id)
+        if current and current.status == WorkshopStatus.RECLAIMING:
+            workshop = current.model_copy(update={
+                "seats": workshop.seats,
+                "session_ids": list(dict.fromkeys(session_ids)),
+                "metadata": {
+                    **current.metadata,
+                    "seats_requested": workshop.num_users,
+                    "seats_provisioned": len(session_ids),
+                },
+            })
+            self._save_workshop(workshop)
+            provision_event.set()
+            return workshop
 
         readiness_failures = self._wait_for_workshop_stability(workshop.seats)
         if readiness_failures:
@@ -1150,6 +1183,7 @@ class ProvisioningService:
             },
         })
         self._save_workshop(workshop)
+        provision_event.set()
         return workshop
 
     def _provision_workshop_seat(
@@ -1321,6 +1355,16 @@ class ProvisioningService:
             return workshop.num_users
 
     def reclaim_workshop(self, workshop_id: str) -> Workshop:
+        provision_event = self._workshop_provision_events.get(workshop_id)
+        if provision_event and not provision_event.is_set():
+            wait_timeout = max(
+                1, int(os.environ.get("WORKSHOP_CANCEL_WAIT_TIMEOUT", "900"))
+            )
+            if not provision_event.wait(timeout=wait_timeout):
+                raise TimeoutError(
+                    f"Workshop {workshop_id} provisioning did not stop within "
+                    f"{wait_timeout}s"
+                )
         workshop = self._workshops.get(workshop_id)
         if not workshop:
             raise ValueError(f"Workshop {workshop_id} not found")

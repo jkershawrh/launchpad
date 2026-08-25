@@ -17,6 +17,7 @@ data:
   WORKSHOP_STABILITY_TIMEOUT: "120"
   WORKSHOP_STABILITY_INTERVAL: "5"
   WORKSHOP_STABILITY_PASSES: "3"
+  WORKSHOP_CANCEL_WAIT_TIMEOUT: "900"
   WORKSHOP_RECLAIM_CONCURRENCY: "10"
   LAUNCHPAD_MODE: "openshift"
   CORS_ORIGINS: "https://launchpad.apps.example.com,https://launchpad-admin.apps.example.com"
