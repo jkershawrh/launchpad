@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+import pytest
 import yaml
 
 from app.adapters.openshift.showroom_gitops import (
@@ -101,3 +102,38 @@ def test_cleanup_waits_until_argocd_application_is_gone(monkeypatch):
     ShowroomGitOpsAdapter(custom_objects).delete_for_namespace("lab")
 
     assert custom_objects.get_namespaced_custom_object.call_count == 2
+
+
+def test_cleanup_recovers_stale_finalizer_only_for_owned_deleting_application(monkeypatch):
+    custom_objects = MagicMock()
+    custom_objects.get_namespaced_custom_object.return_value = {
+        "metadata": {
+            "deletionTimestamp": "now",
+            "labels": {"app.kubernetes.io/managed-by": "launchpad"},
+            "finalizers": ["resources-finalizer.argocd.argoproj.io"],
+        },
+        "spec": {"destination": {"namespace": "lab"}},
+    }
+    monkeypatch.setattr("app.adapters.openshift.showroom_gitops.time.sleep", lambda _: None)
+
+    ShowroomGitOpsAdapter(custom_objects).delete_for_namespace("lab", timeout=0)
+
+    patch = custom_objects.patch_namespaced_custom_object.call_args.args
+    assert patch[-1] == {"metadata": {"finalizers": []}}
+
+
+def test_cleanup_does_not_force_finalizer_for_unowned_application(monkeypatch):
+    custom_objects = MagicMock()
+    custom_objects.get_namespaced_custom_object.return_value = {
+        "metadata": {
+            "deletionTimestamp": "now",
+            "labels": {"app.kubernetes.io/managed-by": "someone-else"},
+        },
+        "spec": {"destination": {"namespace": "lab"}},
+    }
+    monkeypatch.setattr("app.adapters.openshift.showroom_gitops.time.sleep", lambda _: None)
+
+    with pytest.raises(TimeoutError):
+        ShowroomGitOpsAdapter(custom_objects).delete_for_namespace("lab", timeout=0)
+
+    custom_objects.patch_namespaced_custom_object.assert_not_called()

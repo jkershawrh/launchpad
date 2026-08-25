@@ -120,11 +120,11 @@ class TestCleanupTimeoutFatal:
         adapter._showroom_gitops = MagicMock()
 
         with pytest.MonkeyPatch.context() as monkeypatch:
-            monkeypatch.setenv("SHOWROOM_DELETE_TIMEOUT", "180")
+            monkeypatch.setenv("SHOWROOM_DELETE_TIMEOUT", "30")
             assert adapter.cleanup("slow-argo-namespace") is True
 
         adapter._showroom_gitops.delete_for_namespace.assert_called_once_with(
-            "slow-argo-namespace", timeout=180
+            "slow-argo-namespace", timeout=30
         )
 
 

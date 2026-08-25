@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import re
 import time
 from dataclasses import dataclass
 
 import yaml
+
+logger = logging.getLogger("launchpad.openshift.showroom_gitops")
 
 ARGO_GROUP = "argoproj.io"
 ARGO_VERSION = "v1alpha1"
@@ -176,9 +179,10 @@ class ShowroomGitOpsAdapter:
             raise
 
         deadline = time.time() + timeout
+        application = None
         while time.time() < deadline:
             try:
-                self.custom_objects.get_namespaced_custom_object(
+                application = self.custom_objects.get_namespaced_custom_object(
                     ARGO_GROUP, ARGO_VERSION, self.namespace, ARGO_PLURAL, name
                 )
             except Exception as exc:
@@ -186,6 +190,41 @@ class ShowroomGitOpsAdapter:
                     return
                 raise
             time.sleep(1)
+
+        # Argo can leave its resources finalizer attached indefinitely even
+        # after accepting deletion. Recover only Applications that Launchpad
+        # owns, are already deleting, and target this exact seat namespace.
+        if application is None:
+            try:
+                application = self.custom_objects.get_namespaced_custom_object(
+                    ARGO_GROUP, ARGO_VERSION, self.namespace, ARGO_PLURAL, name
+                )
+            except Exception as exc:
+                if getattr(exc, "status", None) == 404:
+                    return
+                raise
+        metadata = application.get("metadata", {})
+        labels = metadata.get("labels", {})
+        destination = application.get("spec", {}).get("destination", {})
+        recoverable = (
+            labels.get("app.kubernetes.io/managed-by") == "launchpad"
+            and metadata.get("deletionTimestamp")
+            and destination.get("namespace") == namespace
+        )
+        if recoverable:
+            self.custom_objects.patch_namespaced_custom_object(
+                ARGO_GROUP,
+                ARGO_VERSION,
+                self.namespace,
+                ARGO_PLURAL,
+                name,
+                {"metadata": {"finalizers": []}},
+            )
+            logger.warning(
+                "Recovered stale Argo finalizer for Launchpad Application %s",
+                name,
+            )
+            return
         raise TimeoutError(
             f"Argo CD Application '{name}' was not deleted within {timeout}s"
         )
