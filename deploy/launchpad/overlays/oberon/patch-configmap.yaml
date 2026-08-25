@@ -9,6 +9,7 @@ data:
   SANDBOX_STORAGE_CLASS: "nfs-storage"
   CORS_ORIGINS: "https://launchpad-api.apps.oberon.fm2aihpcsed.com"
   TRUSTED_OAUTH_HOSTS: "launchpad.apps.oberon.fm2aihpcsed.com,launchpad-admin.apps.oberon.fm2aihpcsed.com"
+  TENANT_USER_MAP: '{"api-user":["smoke-test-tenant"],"partner-smoke":["smoke-test-tenant"]}'
   OPENSHIFT_INGRESS_DOMAIN: "apps.oberon.fm2aihpcsed.com"
   SMART_PLACEMENT_ENABLED: "false"
   ORCHESTRATION_BRAIN_ENABLED: "false"

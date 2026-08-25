@@ -4,7 +4,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.auth.oauth import User, get_current_user
+from app.auth.oauth import User, can_access_tenant, get_current_user
 
 from app.api.deps import provisioning_service
 from app.domain.lifecycle import InvalidTransitionError, ValidationRequiredError
@@ -18,10 +18,9 @@ router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/lab-sessio
 def list_lab_sessions(user: User = Depends(get_current_user)):
     if user.is_admin:
         return list(provisioning_service._sessions.values())
-    tenant_id = user.username
     return [
         s for s in provisioning_service._sessions.values()
-        if s.tenant_id == tenant_id
+        if can_access_tenant(user, s.tenant_id)
     ]
 
 
@@ -30,13 +29,21 @@ def get_lab_session(session_id: str, user: User = Depends(get_current_user)):
     session = provisioning_service.get_session(session_id)
     if not session:
         raise HTTPException(404, f"Session {session_id} not found")
-    if not user.is_admin and session.tenant_id != user.username:
+    if not can_access_tenant(user, session.tenant_id):
+        raise HTTPException(404, f"Session {session_id} not found")
+    return session
+
+
+def _authorized_session(session_id: str, user: User) -> LabSession:
+    session = provisioning_service.get_session(session_id)
+    if not session or not can_access_tenant(user, session.tenant_id):
         raise HTTPException(404, f"Session {session_id} not found")
     return session
 
 
 @router.post("/{session_id}/validate", response_model=LabSession)
-def validate_session(session_id: str):
+def validate_session(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.validate_session(session_id)
     except (ValueError, InvalidTransitionError, ValidationRequiredError) as e:
@@ -44,7 +51,8 @@ def validate_session(session_id: str):
 
 
 @router.post("/{session_id}/activate", response_model=LabSession)
-def activate_session(session_id: str):
+def activate_session(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.activate_session(session_id)
     except (ValueError, InvalidTransitionError) as e:
@@ -52,7 +60,8 @@ def activate_session(session_id: str):
 
 
 @router.post("/{session_id}/reset", response_model=LabSession)
-def reset_session(session_id: str):
+def reset_session(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.reset_session(session_id)
     except (ValueError, InvalidTransitionError) as e:
@@ -60,7 +69,8 @@ def reset_session(session_id: str):
 
 
 @router.post("/{session_id}/reclaim", response_model=LabSession)
-def reclaim_session(session_id: str):
+def reclaim_session(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.reclaim_session(session_id)
     except (ValueError, InvalidTransitionError) as e:
@@ -68,7 +78,8 @@ def reclaim_session(session_id: str):
 
 
 @router.get("/{session_id}/handoff", response_model=HandoffPackage)
-def get_handoff(session_id: str):
+def get_handoff(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.get_handoff(session_id)
     except ValueError as e:
@@ -76,7 +87,8 @@ def get_handoff(session_id: str):
 
 
 @router.get("/{session_id}/showback", response_model=ShowbackRecord)
-def get_showback(session_id: str):
+def get_showback(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.get_showback(session_id)
     except ValueError as e:
@@ -84,7 +96,8 @@ def get_showback(session_id: str):
 
 
 @router.get("/{session_id}/repeatability-report", response_model=RepeatabilityReport)
-def get_repeatability_report(session_id: str):
+def get_repeatability_report(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.get_repeatability_report(session_id)
     except ValueError as e:
@@ -92,7 +105,8 @@ def get_repeatability_report(session_id: str):
 
 
 @router.get("/{session_id}/security-plan", response_model=SecurityPlan)
-def get_security_plan(session_id: str):
+def get_security_plan(session_id: str, user: User = Depends(get_current_user)):
+    _authorized_session(session_id, user)
     try:
         return provisioning_service.get_security_plan(session_id)
     except ValueError as e:

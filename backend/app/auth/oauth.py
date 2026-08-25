@@ -9,6 +9,7 @@ Three auth methods supported:
 from __future__ import annotations
 
 import os
+import json
 from typing import Optional
 
 from fastapi import Depends, HTTPException, Request
@@ -19,6 +20,7 @@ class User(BaseModel):
     username: str
     email: Optional[str] = None
     groups: list[str] = []
+    tenant_ids: list[str] = []
     is_admin: bool = False
 
 
@@ -28,6 +30,23 @@ ADMIN_API_KEYS = set(filter(None, os.environ.get("ADMIN_API_KEYS", "").split(","
 ADMIN_GROUPS = {"launchpad-admins", "system:cluster-admins", "dedicated-admins"}
 ADMIN_USERS = set(filter(None, os.environ.get("ADMIN_USERS", "kube:admin,kubeadmin").split(",")))
 TRUSTED_OAUTH_HOSTS = set(filter(None, os.environ.get("TRUSTED_OAUTH_HOSTS", "").split(",")))
+
+
+def _tenant_user_map() -> dict[str, list[str]]:
+    try:
+        value = json.loads(os.environ.get("TENANT_USER_MAP", "{}"))
+        return {str(user): [str(tenant) for tenant in tenants] for user, tenants in value.items()}
+    except (TypeError, ValueError, AttributeError):
+        return {}
+
+
+def can_access_tenant(user: User, tenant_id: str) -> bool:
+    return user.is_admin or tenant_id in user.tenant_ids
+
+
+def require_tenant_access(user: User, tenant_id: str) -> None:
+    if not can_access_tenant(user, tenant_id):
+        raise HTTPException(403, f"User {user.username} is not assigned to tenant {tenant_id}.")
 
 
 def get_current_user(request: Request) -> User:
@@ -44,7 +63,7 @@ def get_current_user(request: Request) -> User:
         if api_key in ADMIN_API_KEYS:
             return User(username="api-admin", is_admin=True)
         if api_key in API_KEYS or api_key in ADMIN_API_KEYS:
-            return User(username="api-user", is_admin=False)
+            return User(username="api-user", tenant_ids=_tenant_user_map().get("api-user", []), is_admin=False)
         raise HTTPException(401, "Invalid API key")
 
     username = request.headers.get("X-Forwarded-User")
@@ -59,8 +78,10 @@ def get_current_user(request: Request) -> User:
         raise HTTPException(401, "OAuth identity headers are not accepted on this endpoint")
 
     is_admin = username in ADMIN_USERS or bool(ADMIN_GROUPS & set(groups))
+    tenant_ids = set(_tenant_user_map().get(username, []))
+    tenant_ids.update(group.removeprefix("launchpad-tenant:") for group in groups if group.startswith("launchpad-tenant:"))
 
-    return User(username=username, email=email, groups=groups, is_admin=is_admin)
+    return User(username=username, email=email, groups=groups, tenant_ids=sorted(tenant_ids), is_admin=is_admin)
 
 
 def require_admin(user: User = Depends(get_current_user)) -> User:
