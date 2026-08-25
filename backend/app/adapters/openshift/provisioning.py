@@ -127,7 +127,9 @@ class OpenShiftProvisioningAdapter:
         parts = namespace.split("-")
         tenant_id = "-".join(parts[1:-1]) if len(parts) > 2 else "default"
         gw_namespace = f"launchpad-gw-{tenant_id}"
-        demo_namespace = self._demo_namespace(tenant_id, catalog_item_id, uuid.uuid4().hex[:6])
+        seat_id = str(res.get("seat_id", ""))
+        suffix = re.sub(r"[^a-z0-9]", "", seat_id.lower())[:8] if showroom_enabled and seat_id else uuid.uuid4().hex[:6]
+        demo_namespace = self._demo_namespace(tenant_id, catalog_item_id, suffix or uuid.uuid4().hex[:6])
 
         # --- Step 1: Ensure tenant gateway exists ---
         gw_existed = self._namespace_exists(gw_namespace)
