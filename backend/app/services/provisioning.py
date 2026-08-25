@@ -791,8 +791,16 @@ class ProvisioningService:
 
     def preview_workshop_capacity(self, workshop: Workshop) -> dict:
         can_provision, reason = self.check_workshop_capacity(workshop)
-        cpu_per_seat = int(os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"))
-        memory_per_seat = int(os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"))
+        catalog_item = self.catalog.get_item(workshop.catalog_item_id)
+        metadata = catalog_item.metadata if catalog_item else {}
+        cpu_per_seat = int(metadata.get(
+            "seat_cpu_millicores",
+            os.environ.get("WORKSHOP_SEAT_CPU_MILLICORES", "1000"),
+        ))
+        memory_per_seat = int(metadata.get(
+            "seat_memory_mib",
+            os.environ.get("WORKSHOP_SEAT_MEMORY_MI", "2048"),
+        ))
         return {
             "can_provision": can_provision,
             "reason": reason,

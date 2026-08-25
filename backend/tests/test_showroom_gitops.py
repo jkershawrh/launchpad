@@ -22,6 +22,7 @@ def test_builds_official_chart_application_with_personalized_git_content():
         content_ref="327da5a",
         apps_domain="apps.example.com",
         console_url="https://console-openshift-console.apps.example.com",
+        journey="guided-rag",
     ))
 
     assert app["spec"]["source"]["chart"] == SHOWROOM_CHART
@@ -37,6 +38,24 @@ def test_builds_official_chart_application_with_personalized_git_content():
     assert user_data["workspace_url"].endswith("/rag")
     ui = yaml.safe_load(values["content"]["uiConfig"])
     assert any(tab.get("name") == "RAG Workspace" for tab in ui["tabs"])
+
+
+def test_operator_workshop_uses_terminal_and_console_without_demo_workspace():
+    app = build_showroom_application(ShowroomSeat(
+        namespace="operator-seat-1", workshop_id="workshop-1", seat_id="seat-1",
+        participant_id="user-1", workspace_url="",
+        content_repo_url="https://github.com/jkershawrh/launchpad.git",
+        content_ref="main", apps_domain="apps.example.com",
+        console_url="https://console.example.com", journey="openshift-operators",
+    ))
+    values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
+    ui = yaml.safe_load(values["content"]["uiConfig"])
+    assert [tab["name"] for tab in ui["tabs"]] == [
+        "Instructions", "Terminal", "OpenShift Console",
+    ]
+    assert values["terminal"]["storage"]["setup"] == "false"
+    assert values["terminal"]["resources"]["requests"]["cpu"] == "100m"
+    assert values["wetty"]["resources"]["requests"]["cpu"] == "50m"
 
 
 def test_application_name_is_stable_dns_safe_and_bounded():

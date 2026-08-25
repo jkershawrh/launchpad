@@ -34,11 +34,11 @@ The shared Oberon platform currently provides Red Hat OpenShift AI, Serverless, 
 |---|---|---|
 | `ai-sandbox` | OpenShift Developer Sandbox | Open sandbox |
 | `cpu-inference-serving` | LLM CPU Serving on Xeon | Quick start |
-| `guided-rag-on-xeon` | Guided RAG on Intel Xeon | Guided build |
+| `openshift-operators-workshop` | OpenShift AI Operator Workshop | Guided build |
 | `rag-on-xeon` | RAG on Intel Xeon | Quick start |
 | `smoke-test` | Smoke Test Demo | Quick start |
 
-Catalog definitions live under `catalog/*/catalog-item.yaml`. The Guided RAG item is still a provisional demonstration experience; its Antora journey and deployed workload must be corrected before it is treated as the canonical operator workshop.
+Catalog definitions live under `catalog/*/catalog-item.yaml`. The previous `guided-rag-on-xeon` item is deprecated; new workshop orders use the operator-focused experience.
 
 ## Architecture
 
@@ -94,7 +94,7 @@ oc --context='default/api-oberon-fm2aihpcsed-com:6443/kube:admin' ...
 
 ## Current limitations
 
-- The Guided RAG Showroom content and runtime are provisional and currently being realigned to the intended operator-focused workshop.
+- Existing Guided RAG sessions retain their original content; new orders use the OpenShift AI Operator Workshop.
 - Operator availability is cluster-wide and centrally managed; catalog items should detect and use installed capabilities rather than install an Operator per participant seat.
 - Some older files in `docs/` describe the original RHDP/infra01 target. Files explicitly labeled **historical** are design references, not the Oberon production contract.
 - Repository-wide lint currently includes pre-existing React purity errors in `BrandingContext.tsx` and `Fleet.tsx`.

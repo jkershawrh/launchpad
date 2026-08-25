@@ -14,12 +14,12 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
-    name: '', owner_id: '', tenant_id: '', catalog_item_id: 'guided-rag-on-xeon', num_users: 25, ttl: '4h',
+    name: '', owner_id: '', tenant_id: '', catalog_item_id: 'openshift-operators-workshop', num_users: 25, ttl: '4h',
   });
 
   useEffect(() => {
     Promise.all([api.listCatalog(), api.listTenants()]).then(([items, tenantItems]) => {
-      setCatalog(items.filter((item) => item.category !== 'open_sandbox'));
+      setCatalog(items.filter((item) => item.category !== 'open_sandbox' && item.status === 'active'));
       setTenants(tenantItems.filter((tenant) => tenant.status === 'active'));
     });
   }, []);

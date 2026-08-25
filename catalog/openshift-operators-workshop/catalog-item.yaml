@@ -1,0 +1,37 @@
+catalog_item_id: openshift-operators-workshop
+display_name: "OpenShift AI Operator Workshop"
+description: "A guided, seat-isolated OpenShift workshop using the web console and terminal to explore Red Hat AI, application, observability, and Intel operators on Oberon."
+category: guided_build
+version: "1.0.0"
+status: active
+required_capabilities:
+  - openshift
+  - showroom
+default_hardware_profile: xeon-basic
+default_quota_profile: standard
+default_ttl: "4h"
+provisioner_refs:
+  - openshift-provisioner
+  - showroom
+validation_refs:
+  - pod-ready
+  - route-accessible
+supported_branding:
+  - intel-internal
+metadata:
+  showroom: true
+  showroom_journey: openshift-operators
+  operator_workshop: true
+  seat_cpu_millicores: 165
+  seat_memory_mib: 464
+  showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
+  showroom_content_ref: "main"
+  showroom_content_playbook: "site.yml"
+  showroom_title: "Operate AI Workloads on Red Hat OpenShift"
+  operator_capabilities:
+    - openshift-ai
+    - openshift-serverless
+    - openshift-service-mesh
+    - cluster-observability
+    - openshift-gitops
+    - intel-device-plugins

@@ -101,6 +101,8 @@ class OpenShiftProvisioningAdapter:
                 "showroom_enabled": bool(meta.get("showroom", False)),
                 "showroom_title": meta.get("showroom_title", catalog_item.display_name),
                 "showroom_steps": meta.get("showroom_steps", []),
+                "showroom_journey": meta.get("showroom_journey", "guided-rag"),
+                "operator_workshop": bool(meta.get("operator_workshop", False)),
                 "workshop_id": request.metadata.get("workshop_id", request.request_id),
                 "seat_id": request.metadata.get("seat_id", request.request_id),
                 "participant_id": request.metadata.get("participant_id", request.requester_id),
@@ -122,6 +124,7 @@ class OpenShiftProvisioningAdapter:
         demo_pages = res.get("demo_pages", "all")
         catalog_item_id = res.get("catalog_item_id", "demo")
         showroom_enabled = bool(res.get("showroom_enabled", False))
+        operator_workshop = bool(res.get("operator_workshop", False))
         session_maas_key = res.get("maas_api_key", "")
 
         # Extract tenant from namespace name
@@ -137,16 +140,17 @@ class OpenShiftProvisioningAdapter:
         demo_namespace = self._demo_namespace(tenant_id, catalog_item_id, suffix or uuid.uuid4().hex[:6])
 
         # --- Step 1: Ensure tenant gateway exists ---
-        with self._gateway_bootstrap_lock:
-            gw_existed = self._namespace_exists(gw_namespace)
-            if not gw_existed:
-                self._create_namespace(gw_namespace)
-                self._grant_image_pull(gw_namespace)
-                self._create_demo_secrets(gw_namespace, session_maas_key)
-                self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
-                self._wait_for_deployments(
-                    gw_namespace, deployments={"postgres", "gateway"}
-                )
+        if not operator_workshop:
+            with self._gateway_bootstrap_lock:
+                gw_existed = self._namespace_exists(gw_namespace)
+                if not gw_existed:
+                    self._create_namespace(gw_namespace)
+                    self._grant_image_pull(gw_namespace)
+                    self._create_demo_secrets(gw_namespace, session_maas_key)
+                    self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
+                    self._wait_for_deployments(
+                        gw_namespace, deployments={"postgres", "gateway"}
+                    )
 
         # --- Step 2: Create demo namespace ---
         self._create_namespace(
@@ -161,10 +165,11 @@ class OpenShiftProvisioningAdapter:
             self._apply_network_policy(demo_namespace)
 
         # --- Step 3: Deploy filtered frontend in demo namespace ---
-        gateway_url = f"http://gateway.{gw_namespace}.svc.cluster.local:8080"
-        self._deploy_demo_frontend(demo_namespace, demo_pages, gateway_url, catalog_item_id)
-
-        time.sleep(5)
+        gateway_url = ""
+        if not operator_workshop:
+            gateway_url = f"http://gateway.{gw_namespace}.svc.cluster.local:8080"
+            self._deploy_demo_frontend(demo_namespace, demo_pages, gateway_url, catalog_item_id)
+            time.sleep(5)
 
         # --- Step 4: Retrieve routes from demo namespace ---
         routes = self._get_routes(demo_namespace)
@@ -186,6 +191,7 @@ class OpenShiftProvisioningAdapter:
                     apps_domain=apps_domain,
                     console_url=os.environ.get("OPENSHIFT_CONSOLE_URL", ""),
                     content_playbook=str(res.get("showroom_content_playbook", "site.yml")),
+                    journey=str(res.get("showroom_journey", "guided-rag")),
                 ),
                 argocd_namespace=os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd"),
                 argocd_project=os.environ.get("SHOWROOM_ARGOCD_PROJECT", "default"),
@@ -198,7 +204,8 @@ class OpenShiftProvisioningAdapter:
         fallback_url = f"https://{demo_namespace}.apps.cluster.local"
         lab_url = routes.get("showroom") or routes.get("showroom-proxy") or routes.get("demo") or (routes.get(route_names[0]) if route_names else fallback_url)
 
-        self._active_namespaces[demo_namespace] = gw_namespace
+        if not operator_workshop:
+            self._active_namespaces[demo_namespace] = gw_namespace
 
         return ProvisionResult(
             namespace=demo_namespace,
@@ -206,7 +213,7 @@ class OpenShiftProvisioningAdapter:
             dashboard_url=f"https://{gw_namespace}.apps.cluster.local",
             resources={
                 "namespace": demo_namespace,
-                "gateway_namespace": gw_namespace,
+                "gateway_namespace": None if operator_workshop else gw_namespace,
                 "demo_pages": demo_pages,
                 "catalog_item_id": catalog_item_id,
                 "routes": routes,

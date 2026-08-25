@@ -37,6 +37,7 @@ class ShowroomSeat:
     console_url: str = ""
     content_playbook: str = "site.yml"
     ui_config_path: str = "ui-config.yml"
+    journey: str = "guided-rag"
 
     def __post_init__(self) -> None:
         if not self.content_ref.strip():
@@ -65,7 +66,7 @@ def build_showroom_application(
         "workspace_url": seat.workspace_url,
         "openshift_console_url": seat.console_url,
         "content_revision": seat.content_ref,
-        "showroom_journey": "guided-rag",
+        "showroom_journey": seat.journey,
     }
     tabs = [
         {"name": "Instructions", "path": "/instructions", "port": 443},
@@ -103,6 +104,22 @@ def build_showroom_application(
             "zero_touch_bundle": "https://github.com/rhpds/nookbag/releases/download/nookbag-v0.4.0/nookbag-v0.4.0.zip",
         },
     }
+    if seat.journey == "openshift-operators":
+        # Operator workshops need an oc terminal, not a heavyweight development
+        # workstation. Keep each seat ephemeral and small enough for cohorts.
+        values["terminal"]["storage"] = {"setup": "false"}
+        values["terminal"]["resources"] = {
+            "requests": {"cpu": "100m", "memory": "256Mi"},
+            "limits": {"cpu": "500m", "memory": "512Mi"},
+        }
+        values["wetty"] = {
+            "setup": "true",
+            "image": "quay.io/rhpds/wetty:v3.2.1",
+            "resources": {
+                "requests": {"cpu": "50m", "memory": "128Mi"},
+                "limits": {"cpu": "250m", "memory": "256Mi"},
+            },
+        }
     return {
         "apiVersion": f"{ARGO_GROUP}/{ARGO_VERSION}",
         "kind": "Application",

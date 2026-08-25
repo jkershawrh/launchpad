@@ -3,7 +3,7 @@ display_name: "Guided RAG on Intel Xeon"
 description: "A visual, step-by-step lab for building and testing a retrieval-augmented assistant on Intel Xeon CPU inference."
 category: guided_build
 version: "1.0.0"
-status: active
+status: deprecated
 required_capabilities:
   - openshift
   - model_endpoint

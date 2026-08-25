@@ -95,6 +95,7 @@ class OpenShiftSandboxProvisioner:
                 "tenant_id": request.tenant_id,
                 "requester_id": request.requester_id,
                 "catalog_item_id": request.catalog_item_id,
+                "operator_capabilities": meta.get("optional_capabilities", []),
             },
         )
 
@@ -193,6 +194,7 @@ class OpenShiftSandboxProvisioner:
                 "stack_level": stack_level,
                 "access_methods": access_methods,
                 "compute_tier": compute_tier,
+                "operator_capabilities": res.get("operator_capabilities", []),
                 "connection_info": connection_info,
                 "routes": {name.removeprefix("sandbox-"): f"https://{host}" for name, host in routes.items()},
                 "container_name": f"sandbox-{namespace}",

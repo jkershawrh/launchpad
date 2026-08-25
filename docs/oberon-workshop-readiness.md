@@ -3,7 +3,7 @@
 ## Supported envelope
 
 The internal Intel Launchpad on Oberon supports one ordered workshop with up to
-25 participant seats. Each seat receives an isolated namespace, demo workspace,
+25 participant seats. Each seat receives an isolated namespace, Showroom guide,
 Showroom instance, persistent terminal home, and participant URL. The organizer
 view exposes per-seat readiness, access URLs, CSV export, retry, and reclaim.
 
@@ -48,4 +48,4 @@ Before broad unscheduled self-service, add concurrent-workshop admission policy,
 load-test two simultaneous workshops, and publish organizer support/SLO
 guidance.
 
-The 20-seat certification proves the collective lifecycle implementation but does not certify the current Guided RAG content as the final operator workshop. Showroom instructions and runtime selection are being realigned separately.
+The 20-seat certification proves the collective lifecycle implementation. New orders use `openshift-operators-workshop`; the earlier Guided RAG catalog item is deprecated and is not the canonical operator workshop.

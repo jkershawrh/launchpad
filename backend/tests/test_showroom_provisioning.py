@@ -43,6 +43,32 @@ def test_guided_catalog_item_adds_showroom_to_plan():
     assert plan.required_resources["workspace_path"] == "/try-it"
 
 
+def test_operator_workshop_plan_skips_generic_demo_runtime():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._overlay_path = "/tmp/demo"
+    item = CatalogItem(
+        catalog_item_id="openshift-operators-workshop",
+        display_name="OpenShift AI Operator Workshop",
+        category=CatalogCategory.GUIDED_BUILD,
+        status=CatalogStatus.ACTIVE,
+        metadata={
+            "showroom": True,
+            "showroom_journey": "openshift-operators",
+            "operator_workshop": True,
+        },
+    )
+    request = LabRequest(
+        tenant_id="partner-a", requester_id="user-a",
+        catalog_item_id=item.catalog_item_id,
+        requested_mode=CatalogCategory.GUIDED_BUILD,
+    )
+
+    plan = adapter.create_plan(request, item)
+
+    assert plan.required_resources["operator_workshop"] is True
+    assert plan.required_resources["showroom_journey"] == "openshift-operators"
+
+
 def test_guided_workspace_deep_links_to_the_rag_experience():
     url = OpenShiftProvisioningAdapter._workspace_url(
         "https://workspace.example.test", "/try-it"
