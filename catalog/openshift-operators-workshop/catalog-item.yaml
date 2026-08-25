@@ -25,7 +25,7 @@ metadata:
   seat_cpu_millicores: 165
   seat_memory_mib: 464
   showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
-  showroom_content_ref: "6754153fecdd7b827aa9a02003f025cbdc87fea1"
+  showroom_content_ref: "main"
   showroom_content_playbook: "site-openshift-operators.yml"
   showroom_title: "Operate AI Workloads on Red Hat OpenShift"
   operator_capabilities:
