@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
 from app.domain.enums import CatalogCategory, CatalogStatus
 from app.domain.models import CatalogItem, LabRequest
@@ -69,6 +71,18 @@ def test_wait_for_showroom_route_accepts_chart_proxy_route(monkeypatch):
     routes = adapter._wait_for_showroom_route("lab-namespace")
 
     assert routes["showroom-proxy"] == "https://showroom.example.test"
+
+
+def test_showroom_namespace_is_labeled_for_namespaced_argocd():
+    adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
+    adapter._core_v1 = MagicMock()
+
+    adapter._create_namespace(
+        "lab-showroom", {"argocd.argoproj.io/managed-by": "argocd"}
+    )
+
+    body = adapter._core_v1.create_namespace.call_args.kwargs["body"]
+    assert body.metadata.labels["argocd.argoproj.io/managed-by"] == "argocd"
 
 
 def test_guided_lab_namespace_keeps_generated_showroom_host_label_valid():

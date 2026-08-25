@@ -64,6 +64,7 @@ def build_showroom_application(
         "workspace_url": seat.workspace_url,
         "openshift_console_url": seat.console_url,
         "content_revision": seat.content_ref,
+        "showroom_journey": "guided-rag",
     }
     tabs = [
         {"name": "Instructions", "path": "/instructions", "port": 443},
@@ -86,6 +87,11 @@ def build_showroom_application(
         "terminal": {
             "setup": "true",
             "image": "quay.io/rhpds/openshift-showroom-terminal-ocp:4.20",
+            "storage": {
+                "setup": "true",
+                "storageClass": "nfs-storage",
+                "pvcSize": "5Gi",
+            },
         },
         "content": {
             "repoUrl": seat.content_repo_url,

@@ -141,9 +141,16 @@ class OpenShiftProvisioningAdapter:
             )
 
         # --- Step 2: Create demo namespace ---
-        self._create_namespace(demo_namespace)
+        self._create_namespace(
+            demo_namespace,
+            {"argocd.argoproj.io/managed-by": "argocd"} if showroom_enabled else None,
+        )
         self._grant_image_pull(demo_namespace)
-        self._apply_network_policy(demo_namespace)
+        # The official Showroom chart clones Git content and builds Antora at
+        # startup. Keep the restricted egress policy for ordinary demos, but
+        # do not attach it to guided Showroom namespaces.
+        if not showroom_enabled:
+            self._apply_network_policy(demo_namespace)
 
         # --- Step 3: Deploy filtered frontend in demo namespace ---
         gateway_url = f"http://gateway.{gw_namespace}.svc.cluster.local:8080"
@@ -406,7 +413,7 @@ http {{
                 ),
                 "LITELLM_API_KEY": litellm_key,
                 "API_KEY": "",
-                "LOCAL_FALLBACK_ENABLED": "true",
+                "LOCAL_FALLBACK_ENABLED": "false",
                 "MAAS_SESSION_KEY": session_maas_key,
             },
         )

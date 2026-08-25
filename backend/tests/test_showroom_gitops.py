@@ -28,10 +28,12 @@ def test_builds_official_chart_application_with_personalized_git_content():
     assert app["spec"]["syncPolicy"]["automated"] == {"prune": True, "selfHeal": True}
     values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
     assert values["content"]["repoRef"] == "327da5a"
+    assert values["terminal"]["storage"]["storageClass"] == "nfs-storage"
     assert values["content"]["repoUrl"].endswith("launchpad.git")
     user_data = yaml.safe_load(values["content"]["user_data"])
     assert user_data["workshop_id"] == "workshop-1"
     assert user_data["seat_id"] == "seat-07"
+    assert user_data["showroom_journey"] == "guided-rag"
     assert user_data["workspace_url"].endswith("/rag")
     ui = yaml.safe_load(values["content"]["uiConfig"])
     assert any(tab.get("name") == "RAG Workspace" for tab in ui["tabs"])

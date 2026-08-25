@@ -36,7 +36,7 @@ spec:
         - name: CONFIG_PATH
           value: /config/config.local.yaml
         - name: LOCAL_FALLBACK_ENABLED
-          value: 'true'
+          value: 'false'
         envFrom:
         - secretRef:
             name: gateway-config
