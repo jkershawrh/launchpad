@@ -25,6 +25,9 @@ metadata:
     - smollm2-360m
   inference_endpoint: litellm
   showroom: true
+  showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
+  showroom_content_ref: "main"
+  showroom_content_playbook: "site.yml"
   showroom_title: "Build a RAG Assistant on Intel Xeon"
   showroom_steps:
     - title: "Understand the architecture"

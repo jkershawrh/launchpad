@@ -954,7 +954,13 @@ class ProvisioningService:
                 catalog_item_id=workshop.catalog_item_id,
                 requested_mode=CatalogCategory.QUICK_START,
                 ttl=workshop.ttl,
-                metadata={"workshop_id": workshop.workshop_id, "purpose": workshop.purpose},
+                metadata={
+                    "workshop_id": workshop.workshop_id,
+                    "seat_id": seat.seat_id,
+                    "seat_number": seat.seat_number,
+                    "participant_id": seat.participant_id,
+                    "purpose": workshop.purpose,
+                },
             )
             accepted = self.submit_request(request)
             if accepted.status != LabRequestStatus.ACCEPTED:

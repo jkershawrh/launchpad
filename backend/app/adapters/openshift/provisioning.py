@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import html
 import json
 import logging
 import os
@@ -22,6 +21,11 @@ except ImportError:  # pragma: no cover
     HAS_KUBERNETES = False
 
 from app.adapters.interfaces import ProvisionResult
+from app.adapters.openshift.showroom_gitops import (
+    ShowroomGitOpsAdapter,
+    ShowroomSeat,
+    build_showroom_application,
+)
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
 
 _CONTAINER_DEMOS = Path("/opt/demos-deploy/cluster")
@@ -61,6 +65,9 @@ class OpenShiftProvisioningAdapter:
         self._core_v1 = client.CoreV1Api()
         self._apps_v1 = client.AppsV1Api()
         self._custom_objects = client.CustomObjectsApi()
+        self._showroom_gitops = ShowroomGitOpsAdapter(
+            self._custom_objects, os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd")
+        )
 
     def create_plan(self, request: LabRequest, catalog_item: CatalogItem) -> ProvisioningPlan:
         meta = catalog_item.metadata or {}
@@ -91,6 +98,17 @@ class OpenShiftProvisioningAdapter:
                 "showroom_enabled": bool(meta.get("showroom", False)),
                 "showroom_title": meta.get("showroom_title", catalog_item.display_name),
                 "showroom_steps": meta.get("showroom_steps", []),
+                "workshop_id": request.metadata.get("workshop_id", request.request_id),
+                "seat_id": request.metadata.get("seat_id", request.request_id),
+                "participant_id": request.metadata.get("participant_id", request.requester_id),
+                "showroom_content_repo_url": meta.get(
+                    "showroom_content_repo_url",
+                    os.environ.get("SHOWROOM_CONTENT_REPO_URL", "https://github.com/jkershawrh/launchpad.git"),
+                ),
+                "showroom_content_ref": meta.get(
+                    "showroom_content_ref", os.environ.get("SHOWROOM_CONTENT_REF", "main")
+                ),
+                "showroom_content_playbook": meta.get("showroom_content_playbook", "site.yml"),
             },
         )
 
@@ -140,18 +158,30 @@ class OpenShiftProvisioningAdapter:
         )
 
         if showroom_enabled:
-            self._deploy_showroom(
-                demo_namespace,
-                res.get("showroom_title", catalog_item_id),
-                res.get("showroom_steps", []),
-                workspace_url,
+            apps_domain = os.environ.get("OPENSHIFT_APPS_DOMAIN", "apps.oberon.fm2aihpcsed.com")
+            showroom_app = build_showroom_application(
+                ShowroomSeat(
+                    namespace=demo_namespace,
+                    workshop_id=str(res.get("workshop_id", plan.request_id)),
+                    seat_id=str(res.get("seat_id", plan.request_id)),
+                    participant_id=str(res.get("participant_id", "lab-user")),
+                    workspace_url=workspace_url,
+                    content_repo_url=str(res["showroom_content_repo_url"]),
+                    content_ref=str(res["showroom_content_ref"]),
+                    apps_domain=apps_domain,
+                    console_url=os.environ.get("OPENSHIFT_CONSOLE_URL", ""),
+                    content_playbook=str(res.get("showroom_content_playbook", "site.yml")),
+                ),
+                argocd_namespace=os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd"),
+                argocd_project=os.environ.get("SHOWROOM_ARGOCD_PROJECT", "default"),
+                chart_version=os.environ.get("SHOWROOM_CHART_VERSION", "2.2.*"),
             )
-            time.sleep(3)
-            routes = self._get_routes(demo_namespace)
+            self._showroom_gitops.apply(showroom_app)
+            routes = self._wait_for_showroom_route(demo_namespace)
 
         route_names = list(routes.keys())
         fallback_url = f"https://{demo_namespace}.apps.cluster.local"
-        lab_url = routes.get("showroom") or routes.get("demo") or (routes.get(route_names[0]) if route_names else fallback_url)
+        lab_url = routes.get("showroom") or routes.get("showroom-proxy") or routes.get("demo") or (routes.get(route_names[0]) if route_names else fallback_url)
 
         self._active_namespaces[demo_namespace] = gw_namespace
 
@@ -165,7 +195,8 @@ class OpenShiftProvisioningAdapter:
                 "demo_pages": demo_pages,
                 "catalog_item_id": catalog_item_id,
                 "routes": routes,
-                "showroom_url": routes.get("showroom"),
+                "showroom_url": routes.get("showroom") or routes.get("showroom-proxy"),
+                "showroom_application": showroom_app["metadata"]["name"] if showroom_enabled else None,
                 "workspace_url": workspace_url,
                 "gateway_url": gateway_url,
             },
@@ -313,29 +344,18 @@ http {{
             return base_url
         return f"{base_url.rstrip('/')}/{path.lstrip('/')}"
 
-    @staticmethod
-    def _showroom_html(title: str, steps: list, workspace_url: str) -> str:
-        safe_title = html.escape(str(title))
-        safe_workspace = html.escape(workspace_url, quote=True)
-        step_cards = "".join(
-            f'<article class="step"><span>{index}</span><div><h2>{html.escape(str(step.get("title", f"Step {index}")))}</h2>'
-            f'<p>{html.escape(str(step.get("description", "")))}</p></div></article>'
-            for index, step in enumerate(steps, start=1)
+    def _wait_for_showroom_route(self, namespace: str) -> dict[str, str]:
+        """Wait for Argo CD to sync far enough for the chart route to exist."""
+        deadline = time.time() + HEALTH_TIMEOUT
+        routes: dict[str, str] = {}
+        while time.time() < deadline:
+            routes = self._get_routes(namespace)
+            if routes.get("showroom") or routes.get("showroom-proxy"):
+                return routes
+            time.sleep(HEALTH_INTERVAL)
+        raise ValueError(
+            f"Showroom route was not created in namespace '{namespace}' within {HEALTH_TIMEOUT}s"
         )
-        return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{safe_title}</title><style>
-:root{{--red:#ee0000;--blue:#0068b5;--ink:#151515;--panel:#212121;--muted:#a3a3a3}}
-*{{box-sizing:border-box}}body{{margin:0;background:var(--ink);color:#fff;font:16px/1.5 system-ui,sans-serif}}
-header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f33)}}main{{max-width:960px;margin:auto;padding:2rem}}
-.eyebrow{{color:#ff8a8a;font-weight:700;text-transform:uppercase;letter-spacing:.12em}}h1{{font-size:clamp(2rem,5vw,4rem);margin:.4rem 0}}
-.actions{{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem}}a{{background:var(--red);color:#fff;padding:.8rem 1.1rem;border-radius:.35rem;text-decoration:none;font-weight:700}}
-.step{{display:flex;gap:1rem;background:var(--panel);border:1px solid #3c3f42;border-radius:.5rem;padding:1.25rem;margin:1rem 0}}
-.step span{{display:grid;place-items:center;min-width:2.5rem;height:2.5rem;border-radius:50%;background:var(--blue);font-weight:800}}h2{{margin:0 0 .35rem}}p{{color:var(--muted);margin:0}}
-</style></head><body><header><div class="eyebrow">Partner AI Launchpad · Guided Lab</div><h1>{safe_title}</h1>
-<p>Follow the guided workflow, use the live workspace, and return to Launchpad when you are ready to reclaim the lab.</p>
-<div class="actions"><a href="{safe_workspace}" target="_blank" rel="noopener">Open live workspace</a></div></header>
-<main><h2>Lab journey</h2>{step_cards}</main></body></html>"""
 
     @staticmethod
     def _demo_namespace(tenant_id: str, catalog_item_id: str, suffix: str) -> str:
@@ -345,73 +365,6 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
         tenant = slug(tenant_id)[:18].rstrip("-") or "tenant"
         catalog = slug(catalog_item_id)[:18].rstrip("-") or "lab"
         return f"launchpad-{tenant}-{catalog}-{suffix}"
-
-    def _deploy_showroom(self, namespace: str, title: str, steps: list, workspace_url: str) -> None:
-        content = self._showroom_html(title, steps, workspace_url)
-        try:
-            self._core_v1.create_namespaced_config_map(namespace, client.V1ConfigMap(
-                metadata=client.V1ObjectMeta(name="showroom-content"),
-                data={"index.html": content},
-            ))
-        except ApiException as exc:
-            if exc.status != 409:
-                raise
-
-        container = client.V1Container(
-            name="showroom",
-            image="registry.access.redhat.com/ubi9/nginx-122:latest",
-            command=["nginx", "-g", "daemon off;"],
-            ports=[client.V1ContainerPort(container_port=8080)],
-            volume_mounts=[client.V1VolumeMount(
-                name="content", mount_path="/opt/app-root/src/index.html", sub_path="index.html"
-            )],
-            readiness_probe=client.V1Probe(
-                http_get=client.V1HTTPGetAction(path="/", port=8080),
-                initial_delay_seconds=3,
-                period_seconds=5,
-            ),
-            resources=client.V1ResourceRequirements(
-                requests={"cpu": "100m", "memory": "128Mi"},
-                limits={"cpu": "500m", "memory": "256Mi"},
-            ),
-        )
-        deployment = client.V1Deployment(
-            metadata=client.V1ObjectMeta(name="showroom", labels={"app": "showroom"}),
-            spec=client.V1DeploymentSpec(
-                replicas=1,
-                selector=client.V1LabelSelector(match_labels={"app": "showroom"}),
-                template=client.V1PodTemplateSpec(
-                    metadata=client.V1ObjectMeta(labels={"app": "showroom"}),
-                    spec=client.V1PodSpec(
-                        containers=[container],
-                        volumes=[client.V1Volume(
-                            name="content",
-                            config_map=client.V1ConfigMapVolumeSource(name="showroom-content"),
-                        )],
-                    ),
-                ),
-            ),
-        )
-        self._apps_v1.create_namespaced_deployment(namespace, deployment)
-        self._core_v1.create_namespaced_service(namespace, client.V1Service(
-            metadata=client.V1ObjectMeta(name="showroom"),
-            spec=client.V1ServiceSpec(
-                selector={"app": "showroom"},
-                ports=[client.V1ServicePort(name="http", port=8080, target_port=8080)],
-            ),
-        ))
-        oc = shutil.which("oc") or shutil.which("kubectl")
-        if not oc:
-            raise ValueError("Neither 'oc' nor 'kubectl' found on PATH for Showroom route creation")
-        route = subprocess.run(
-            [
-                oc, "create", "route", "edge", "showroom", "--service=showroom", "--port=8080",
-                "-n", namespace,
-            ],
-            capture_output=True, text=True, timeout=30, check=False,
-        )
-        if route.returncode != 0 and "AlreadyExists" not in route.stderr:
-            raise ValueError(f"Failed to create Showroom route: {route.stderr[:300]}")
 
     def _grant_image_pull(self, namespace: str) -> None:
         body = client.V1RoleBinding(

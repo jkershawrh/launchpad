@@ -43,6 +43,10 @@ class OpenShiftCleanupAdapter:
 
         self._core_v1 = client.CoreV1Api()
         self._rbac_v1 = client.RbacAuthorizationV1Api()
+        from app.adapters.openshift.showroom_gitops import ShowroomGitOpsAdapter
+        self._showroom_gitops = ShowroomGitOpsAdapter(
+            client.CustomObjectsApi(), os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd")
+        )
 
     def cleanup(self, namespace: Optional[str] = None, timeout: int = 0) -> bool:
         """Request namespace deletion and optionally wait for completion.
@@ -54,6 +58,12 @@ class OpenShiftCleanupAdapter:
         """
         if not namespace:
             return False
+
+        # Argo owns the Showroom resources. Delete its Application first or it
+        # will self-heal by recreating the lab namespace after reclamation.
+        showroom_gitops = getattr(self, "_showroom_gitops", None)
+        if showroom_gitops is not None:
+            showroom_gitops.delete_for_namespace(namespace)
 
         try:
             self._core_v1.delete_namespace(name=namespace)

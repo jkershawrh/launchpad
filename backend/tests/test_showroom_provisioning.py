@@ -49,17 +49,26 @@ def test_guided_workspace_deep_links_to_the_rag_experience():
     assert url == "https://workspace.example.test/try-it"
 
 
-def test_showroom_html_contains_safe_steps_and_workspace_link():
-    document = OpenShiftProvisioningAdapter._showroom_html(
-        "RAG <Lab>",
-        [{"title": "Test retrieval", "description": "Run <script>alert(1)</script>"}],
-        "https://workspace.example.test",
-    )
+def test_showroom_is_deployed_by_gitops_not_inline_html():
+    assert not hasattr(OpenShiftProvisioningAdapter, "_showroom_html")
+    assert not hasattr(OpenShiftProvisioningAdapter, "_deploy_showroom")
 
-    assert "RAG &lt;Lab&gt;" in document
-    assert "Test retrieval" in document
-    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in document
-    assert 'href="https://workspace.example.test"' in document
+
+def test_wait_for_showroom_route_accepts_chart_proxy_route(monkeypatch):
+    adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
+    route_snapshots = iter([
+        {"demo": "https://demo.example.test"},
+        {
+            "demo": "https://demo.example.test",
+            "showroom-proxy": "https://showroom.example.test",
+        },
+    ])
+    adapter._get_routes = lambda _namespace: next(route_snapshots)
+    monkeypatch.setattr("app.adapters.openshift.provisioning.time.sleep", lambda _seconds: None)
+
+    routes = adapter._wait_for_showroom_route("lab-namespace")
+
+    assert routes["showroom-proxy"] == "https://showroom.example.test"
 
 
 def test_guided_lab_namespace_keeps_generated_showroom_host_label_valid():
