@@ -4,7 +4,7 @@ import { api } from '../api/client';
 import { useBranding } from '../context/BrandingContext';
 import type { BrandingProfile, CatalogItem, Tenant } from '../api/types';
 
-export default function LabRequestForm() {
+export default function LabRequestForm({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { profile: brandingProfile } = useBranding();
@@ -104,12 +104,11 @@ export default function LabRequestForm() {
     }
   };
 
-  if (loading) return <div className="max-w-2xl mx-auto px-4 py-10 text-[#6A6E73]">Loading...</div>;
+  if (loading) return <div className={embedded ? 'text-[#6A6E73]' : 'max-w-2xl mx-auto px-4 py-10 text-[#6A6E73]'}>Loading...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-[#151515] mb-2">Request a Lab</h1>
-      <p className="text-[#6A6E73] mb-8">Configure and launch a new lab environment.</p>
+    <div className={embedded ? '' : 'max-w-2xl mx-auto px-4 py-10'}>
+      {!embedded && <><h1 className="mb-2 text-3xl font-bold text-white">Request an Environment</h1><p className="mb-8 text-[#6A6E73]">Configure and launch a new lab environment.</p></>}
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6 text-sm">

@@ -13,11 +13,10 @@ import Sandbox from './pages/Sandbox';
 import SessionDetail from './pages/SessionDetail';
 import PortalDashboard from './pages/PortalDashboard';
 import Sessions from './pages/Sessions';
-import LabRequestForm from './pages/LabRequestForm';
 import Admin from './pages/Admin';
-import WorkshopOrderForm from './pages/WorkshopOrderForm';
 import Workshops from './pages/Workshops';
 import WorkshopDetail from './pages/WorkshopDetail';
+import EnvironmentRequest from './pages/EnvironmentRequest';
 import { getAppSurface } from './appSurface';
 
 export default function App() {
@@ -46,8 +45,8 @@ export default function App() {
                 <Route path="/catalog" element={<Catalog />} />
                 <Route path="/demos" element={<Demos />} />
                 <Route path="/sandbox" element={<Sandbox />} />
-                <Route path="/request" element={<LabRequestForm />} />
-                <Route path="/workshops/new" element={<WorkshopOrderForm />} />
+                <Route path="/request" element={<EnvironmentRequest />} />
+                <Route path="/workshops/new" element={<Navigate to="/request?type=workshop" replace />} />
                 <Route path="/workshops" element={<Workshops />} />
                 <Route path="/workshops/:workshopId" element={<WorkshopDetail />} />
                 <Route path="/sessions" element={<Sessions />} />

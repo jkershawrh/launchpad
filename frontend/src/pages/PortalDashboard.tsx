@@ -45,7 +45,7 @@ export default function PortalDashboard() {
           </p>
         </div>
         <Link to="/request" className="rounded bg-[#EE0000] px-5 py-3 text-sm font-semibold text-white hover:bg-[#B80000]">
-          Request a lab
+          Request environment
         </Link>
       </section>
 

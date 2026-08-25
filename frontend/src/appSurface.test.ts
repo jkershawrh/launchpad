@@ -12,7 +12,7 @@ describe('application surface contract', () => {
 
   it('keeps internal navigation out of the external portal', () => {
     const paths = getNavigation('portal').map((item) => item.path);
-    expect(paths).toEqual(['/', '/catalog', '/request', '/workshops/new', '/workshops', '/sessions']);
+    expect(paths).toEqual(['/', '/catalog', '/request', '/workshops', '/sessions']);
     expect(paths).not.toContain('/fleet');
     expect(paths).not.toContain('/admin');
   });
