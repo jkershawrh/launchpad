@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import type { LabSession } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
+import { newestSessionsFirst } from '../sessionSort';
 
 export default function Sessions() {
   const [sessions, setSessions] = useState<LabSession[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.listSessions().then(setSessions).finally(() => setLoading(false));
+    api.listSessions().then((items) => setSessions(newestSessionsFirst(items))).finally(() => setLoading(false));
   }, []);
 
   return (
@@ -39,4 +40,3 @@ export default function Sessions() {
     </div>
   );
 }
-
