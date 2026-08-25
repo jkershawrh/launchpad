@@ -10,6 +10,7 @@ from app.domain.enums import CatalogStatus
 from app.domain.models import CatalogItem, LabSession
 from app.services.system_monitor import SystemMonitor
 from app.services.health import check_health_detailed
+from app.services.model_inventory import get_model_inventory
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 monitor = SystemMonitor()
@@ -18,6 +19,12 @@ monitor = SystemMonitor()
 @router.get("/system/health")
 def detailed_system_health() -> Dict[str, Any]:
     return check_health_detailed()
+
+
+@router.get("/models")
+def model_inventory() -> Dict[str, Any]:
+    """Return the curated Oberon portfolio and its current operational state."""
+    return get_model_inventory()
 
 
 @router.get("/system/status")

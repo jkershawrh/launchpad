@@ -4,15 +4,28 @@ import { api } from '../api/client';
 import type { LabSession } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
 
+interface ModelInventory {
+  summary: { configured: number; running: number; exposed: number; healthy: number };
+  models: Array<{
+    id: string; display_name: string; namespace: string; hardware: string; use_case: string;
+    desired_replicas: number; ready_replicas: number; litellm_exposed: boolean; status: string;
+  }>;
+}
+
 export default function Admin() {
   const [sessions, setSessions] = useState<LabSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modelInventory, setModelInventory] = useState<ModelInventory | null>(null);
 
   useEffect(() => {
     api.listSessions().then((data) => {
-      setSessions(data);
+      setSessions([...data].sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()));
       setLoading(false);
     });
+    fetch('/api/admin/models', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : null)
+      .then(setModelInventory)
+      .catch(() => setModelInventory(null));
   }, []);
 
   const activeSessions = sessions.filter((s) => ['ready', 'active', 'validating', 'provisioning'].includes(s.status));
@@ -35,6 +48,51 @@ export default function Admin() {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin / Reports</h1>
       <p className="text-gray-500 mb-8">Overview of lab sessions, usage, and tenant activity.</p>
+
+      <div className="bg-white rounded-lg border p-6 mb-8">
+        <div className="flex items-start justify-between gap-4 mb-5">
+          <div>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase">AI Model Portfolio</h2>
+            <p className="text-sm text-gray-500 mt-1">Curated models configured on Oberon. Stopped models consume no serving capacity.</p>
+          </div>
+          <span className="text-xs text-gray-500 whitespace-nowrap">89 models discoverable in the RHOAI catalog</span>
+        </div>
+        {!modelInventory ? (
+          <p className="text-sm text-gray-400">Model inventory is unavailable.</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+              {[
+                ['Configured', modelInventory.summary.configured],
+                ['Running', modelInventory.summary.running],
+                ['LiteMaaS exposed', modelInventory.summary.exposed],
+                ['End-to-end healthy', modelInventory.summary.healthy],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-md bg-gray-50 border px-4 py-3">
+                  <p className="text-xs uppercase text-gray-400">{label}</p>
+                  <p className="text-2xl font-bold text-gray-900">{value}</p>
+                </div>
+              ))}
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead><tr className="text-left text-gray-400 text-xs uppercase border-b">
+                  <th className="pb-2 pr-4">Model</th><th className="pb-2 pr-4">Purpose</th><th className="pb-2 pr-4">Hardware</th><th className="pb-2 pr-4">Replicas</th><th className="pb-2">Status</th>
+                </tr></thead>
+                <tbody>{modelInventory.models.map(model => (
+                  <tr key={model.id} className="border-b border-gray-50 last:border-0">
+                    <td className="py-3 pr-4"><p className="font-medium text-gray-900">{model.display_name}</p><p className="font-mono text-xs text-gray-400">{model.namespace}</p></td>
+                    <td className="py-3 pr-4 text-gray-600">{model.use_case}</td>
+                    <td className="py-3 pr-4 text-gray-600">{model.hardware}</td>
+                    <td className="py-3 pr-4 text-gray-600">{model.ready_replicas}/{model.desired_replicas}</td>
+                    <td className="py-3"><span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${model.status === 'healthy' ? 'bg-green-100 text-green-700' : model.status === 'stopped' ? 'bg-gray-100 text-gray-600' : model.status === 'running_not_exposed' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>{model.status.replaceAll('_', ' ')}</span></td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
 
       {/* Summary Cards */}
       <div className="grid sm:grid-cols-4 gap-4 mb-8">
