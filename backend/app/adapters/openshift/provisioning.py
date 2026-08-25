@@ -153,6 +153,20 @@ class OpenShiftProvisioningAdapter:
             return False
 
     def _deploy_demo_frontend(self, namespace: str, pages: str, gateway_url: str, demo_name: str) -> None:
+        gateway = gateway_url.removeprefix("http://").removeprefix("https://")
+        gw_host, _, gw_port = gateway.partition(":")
+        gw_port = gw_port or "8080"
+        dns_resolver = "172.30.0.10"
+        try:
+            with open("/etc/resolv.conf", encoding="utf-8") as resolv_conf:
+                dns_resolver = next(
+                    line.split()[1]
+                    for line in resolv_conf
+                    if line.startswith("nameserver ")
+                )
+        except (OSError, StopIteration, IndexError):
+            pass
+
         nginx_conf = f"""worker_processes auto;
 error_log /dev/stderr;
 pid /tmp/nginx.pid;
@@ -162,18 +176,20 @@ http {{
     default_type application/octet-stream;
     sendfile on;
     keepalive_timeout 65;
+    resolver {dns_resolver} valid=10s;
     server {{
         listen 8080;
         root /opt/app-root/src;
         index index.html;
+        set $gateway {gw_host};
         location /v1/ {{
-            proxy_pass {gateway_url}/v1/;
+            proxy_pass http://$gateway:{gw_port}/v1/;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_read_timeout 300s;
         }}
         location /api/ {{
-            proxy_pass {gateway_url}/api/;
+            proxy_pass http://$gateway:{gw_port}/api/;
             proxy_set_header Host $host;
             proxy_read_timeout 300s;
         }}
