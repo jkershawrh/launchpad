@@ -9,7 +9,7 @@ spec:
   source:
     type: Git
     git:
-      uri: https://github.com/rhpds/launchpad.git
+      uri: https://github.com/jkershawrh/launchpad.git
       ref: main
   strategy:
     type: Docker
@@ -41,7 +41,7 @@ spec:
   source:
     type: Git
     git:
-      uri: https://github.com/rhpds/launchpad.git
+      uri: https://github.com/jkershawrh/launchpad.git
       ref: main
     contextDir: demos/frontend
   strategy:
@@ -74,7 +74,7 @@ spec:
   source:
     type: Git
     git:
-      uri: https://github.com/rhpds/launchpad.git
+      uri: https://github.com/jkershawrh/launchpad.git
       ref: main
     contextDir: demos/gateway
   strategy:
@@ -107,7 +107,7 @@ spec:
   source:
     type: Git
     git:
-      uri: https://github.com/rhpds/launchpad.git
+      uri: https://github.com/jkershawrh/launchpad.git
       ref: main
     contextDir: demos/containers/sandbox
   strategy:
@@ -140,7 +140,7 @@ spec:
   source:
     type: Git
     git:
-      uri: https://github.com/rhpds/launchpad.git
+      uri: https://github.com/jkershawrh/launchpad.git
       ref: main
     contextDir: frontend
   strategy:
