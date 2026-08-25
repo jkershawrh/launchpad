@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import logging
+import os
 import shutil
 import subprocess
 import time
@@ -315,6 +316,11 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
 <div class="actions"><a href="{safe_workspace}" target="_blank" rel="noopener">Open live workspace</a></div></header>
 <main><h2>Lab journey</h2>{step_cards}</main></body></html>"""
 
+    @staticmethod
+    def _showroom_hostname(namespace: str, ingress_domain: str) -> str:
+        session_suffix = namespace.rsplit("-", 1)[-1]
+        return f"showroom-{session_suffix}.{ingress_domain}"
+
     def _deploy_showroom(self, namespace: str, title: str, steps: list, workspace_url: str) -> None:
         content = self._showroom_html(title, steps, workspace_url)
         try:
@@ -329,6 +335,7 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
         container = client.V1Container(
             name="showroom",
             image="registry.access.redhat.com/ubi9/nginx-122:latest",
+            command=["nginx", "-g", "daemon off;"],
             ports=[client.V1ContainerPort(container_port=8080)],
             volume_mounts=[client.V1VolumeMount(
                 name="content", mount_path="/opt/app-root/src/index.html", sub_path="index.html"
@@ -372,7 +379,11 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
         if not oc:
             raise ValueError("Neither 'oc' nor 'kubectl' found on PATH for Showroom route creation")
         route = subprocess.run(
-            [oc, "create", "route", "edge", "showroom", "--service=showroom", "--port=8080", "-n", namespace],
+            [
+                oc, "create", "route", "edge", "showroom", "--service=showroom", "--port=8080",
+                f"--hostname={self._showroom_hostname(namespace, os.environ.get('OPENSHIFT_INGRESS_DOMAIN', 'apps.cluster.example.com'))}",
+                "-n", namespace,
+            ],
             capture_output=True, text=True, timeout=30, check=False,
         )
         if route.returncode != 0 and "AlreadyExists" not in route.stderr:
