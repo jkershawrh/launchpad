@@ -267,6 +267,25 @@ def test_openshift_sandbox_pvc_uses_configured_storage_class(monkeypatch):
     assert pvc.spec.storage_class_name == "nfs-storage"
 
 
+def test_openshift_sandbox_readiness_checks_requested_services():
+    from unittest.mock import MagicMock
+    from app.adapters.openshift.sandbox_provisioning import OpenShiftSandboxProvisioner
+
+    provisioner = object.__new__(OpenShiftSandboxProvisioner)
+    provisioner._apps_v1 = MagicMock()
+    tier = {
+        "cpu_request": "500m", "cpu_limit": "2",
+        "memory_request": "1Gi", "memory_limit": "4Gi",
+    }
+
+    provisioner._create_deployment("sandbox-test", "ai_dev", tier, ["jupyter", "vscode"])
+
+    deployment = provisioner._apps_v1.create_namespaced_deployment.call_args.args[1]
+    container = deployment.spec.template.spec.containers[0]
+    assert container.readiness_probe._exec.command[0:2] == ["python", "-c"]
+    assert next(e.value for e in container.env if e.name == "ACCESS_METHODS") == "jupyter,vscode"
+
+
 # ─── S12: API end-to-end ─────────────────────────────────────────────────────
 
 def test_api_sandbox_launch():

@@ -277,7 +277,7 @@ class OpenShiftSandboxProvisioner:
                 limits={"cpu": tier["cpu_limit"], "memory": tier["memory_limit"]},
             ),
             readiness_probe=client.V1Probe(
-                exec=client.V1ExecAction(command=[
+                _exec=client.V1ExecAction(command=[
                     "python", "-c",
                     "import os,socket; ports={'ssh':2222,'jupyter':8888,'web_console':8888,'vscode':8443}; "
                     "methods=os.environ.get('ACCESS_METHODS','').split(','); "
