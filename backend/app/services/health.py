@@ -29,7 +29,11 @@ def check_health_detailed() -> Dict[str, Any]:
 
         litellm_base = os.environ.get("LITELLM_API_BASE", "")
         if litellm_base:
-            checks["litellm"] = _check_litellm(litellm_base)
+            checks["litellm"] = _check_litellm(
+                litellm_base,
+                os.environ.get("LITELLM_API_KEY", ""),
+                os.environ.get("MAAS_HEALTH_CANARY_MODEL", ""),
+            )
 
     checks["catalog"] = _check_catalog()
     checks["sessions"] = _check_sessions()
@@ -80,12 +84,35 @@ def _check_k8s() -> Dict[str, Any]:
         return {"status": "fail", "message": str(e)}
 
 
-def _check_litellm(api_base: str) -> Dict[str, Any]:
+def _check_litellm(api_base: str, api_key: str = "", canary_model: str = "") -> Dict[str, Any]:
     try:
-        resp = httpx.get(f"{api_base.rstrip('/')}/health", timeout=3)
-        if resp.status_code < 500:
-            return {"status": "pass"}
-        return {"status": "fail", "message": f"HTTP {resp.status_code}"}
+        headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+        resp = httpx.get(
+            f"{api_base.rstrip('/')}/v1/models", headers=headers, timeout=5
+        )
+        resp.raise_for_status()
+        models = resp.json().get("data", [])
+        if not models:
+            return {"status": "fail", "message": "authenticated model list is empty"}
+        result: Dict[str, Any] = {"status": "pass", "models_available": len(models)}
+        if canary_model:
+            canary = httpx.post(
+                f"{api_base.rstrip('/')}/v1/chat/completions",
+                headers=headers,
+                json={
+                    "model": canary_model,
+                    "messages": [{"role": "user", "content": "Reply only: OK"}],
+                    "max_tokens": 3,
+                },
+                timeout=15,
+            )
+            canary.raise_for_status()
+            choices = canary.json().get("choices", [])
+            if not choices:
+                return {"status": "fail", "message": "inference canary returned no choices"}
+            result["inference_canary"] = "pass"
+            result["canary_model"] = canary_model
+        return result
     except Exception as e:
         return {"status": "fail", "message": str(e)}
 

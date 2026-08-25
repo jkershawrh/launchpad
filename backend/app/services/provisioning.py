@@ -79,6 +79,7 @@ class ProvisioningService:
         feedback_tracker=None,
         brain=None,
         preflight=None,
+        maas_key_broker=None,
     ):
         self.catalog = catalog or MockCatalogAdapter()
         self.pool = pool or MockPoolAdapter()
@@ -95,6 +96,7 @@ class ProvisioningService:
         self.feedback_tracker = feedback_tracker
         self.brain = brain
         self.preflight = preflight
+        self.maas_key_broker = maas_key_broker
 
         mode = os.environ.get("LAUNCHPAD_MODE", "mock")
         if mode != "mock":
@@ -342,7 +344,29 @@ class ProvisioningService:
                 reserve_kwargs["preferred_cluster"] = preferred_cluster
         reservation = self.pool.reserve(**reserve_kwargs)
 
-        maas_api_key = f"sk-launchpad-{_uuid.uuid4().hex[:24]}"
+        ttl_str = request.ttl or catalog_item.default_ttl or "4h"
+        if self.maas_key_broker:
+            metadata = catalog_item.metadata or {}
+            try:
+                issued_key = self.maas_key_broker.create_key(
+                    alias=f"launchpad-{request.request_id}",
+                    duration=ttl_str,
+                    models=metadata.get("required_models", []),
+                    rpm_limit=int(metadata.get(
+                        "maas_rpm_limit", os.environ.get("MAAS_RATE_LIMIT_RPM", "60")
+                    )),
+                    metadata={
+                        "session_id": request.request_id,
+                        "tenant_id": request.tenant_id,
+                        "catalog_item_id": request.catalog_item_id,
+                    },
+                )
+                maas_api_key = issued_key.key
+            except Exception as exc:
+                self.pool.release(request.request_id)
+                raise ValueError(f"Failed to issue MaaS access key: {exc}") from exc
+        else:
+            maas_api_key = f"sk-launchpad-{_uuid.uuid4().hex[:24]}"
 
         provisioner = self._get_provisioner(catalog_item)
         plan = provisioner.create_plan(request, catalog_item)
@@ -365,7 +389,6 @@ class ProvisioningService:
         if request.persistence == Persistence.PERSISTENT:
             expires_at = None
         else:
-            ttl_str = request.ttl or catalog_item.default_ttl or "4h"
             expires_at = datetime.utcnow() + parse_ttl(ttl_str)
 
         dashboard_url = self.observability.create_dashboard(
@@ -613,6 +636,11 @@ class ProvisioningService:
         self.pool.release(session.request_id)
 
         cleanup_errors = []
+        if self.maas_key_broker and session.maas_api_key:
+            try:
+                self.maas_key_broker.revoke_key(session.maas_api_key)
+            except Exception as e:
+                cleanup_errors.append(f"MaaS key revocation failed: {e}")
         if self.cleanup and session.resources.get("compose_file"):
             try:
                 self.cleanup.cleanup(session.resources["compose_file"])
@@ -673,6 +701,12 @@ class ProvisioningService:
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
+        key_revocation_error = None
+        if self.maas_key_broker and session.maas_api_key:
+            try:
+                self.maas_key_broker.revoke_key(session.maas_api_key)
+            except Exception as exc:
+                key_revocation_error = str(exc)
         self.pool.release(session.request_id)
         if self.cleanup and session.resources.get("compose_file"):
             self.cleanup.cleanup(session.resources["compose_file"])
@@ -700,6 +734,19 @@ class ProvisioningService:
                     session = self._scrub_credentials(session)
                     self._save_session(session)
                     return session
+        if key_revocation_error and require_cleanup_success:
+            event = LifecycleEvent(
+                from_status=session.status,
+                to_status=SessionStatus.CLEANUP_FAILED,
+                reason=f"force-reclaim MaaS key revocation failed: {key_revocation_error}",
+            )
+            session = session.model_copy(update={
+                "status": SessionStatus.CLEANUP_FAILED,
+                "lifecycle_events": session.lifecycle_events + [event],
+            })
+            session = self._scrub_credentials(session)
+            self._save_session(session)
+            return session
         event = LifecycleEvent(
             from_status=session.status,
             to_status=SessionStatus.RECLAIMED,

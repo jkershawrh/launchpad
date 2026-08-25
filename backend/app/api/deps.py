@@ -107,6 +107,15 @@ def create_provisioning_service() -> ProvisioningService:
                 api_key=os.environ.get("LITELLM_API_KEY", ""),
             )
 
+        maas_key_broker = None
+        litellm_master_key = os.environ.get("LITELLM_API_KEY", "")
+        if litellm_base and litellm_master_key:
+            from app.adapters.openshift.maas_keys import LiteLLMVirtualKeyBroker
+            maas_key_broker = LiteLLMVirtualKeyBroker(
+                api_base=litellm_base,
+                master_key=litellm_master_key,
+            )
+
         classifier = None
         if os.environ.get("WORKLOAD_PROFILING_ENABLED", "false").lower() == "true":
             from app.services.workload_classifier import WorkloadClassifier
@@ -156,6 +165,7 @@ def create_provisioning_service() -> ProvisioningService:
             feedback_tracker=feedback,
             brain=brain,
             preflight=preflight,
+            maas_key_broker=maas_key_broker,
         )
     elif mode == "rhdp":
         from app.adapters.rhdp.cleanup import RHDPCleanupAdapter

@@ -25,6 +25,11 @@ export default function Overview() {
   const [catalogCount, setCatalogCount] = useState(0);
   const [sessionCount, setSessionCount] = useState(0);
   const [brainStatus, setBrainStatus] = useState<'connected' | 'degraded' | 'offline'>('offline');
+  const [aiHealth, setAiHealth] = useState<{
+    status?: string;
+    models_available?: number;
+    inference_canary?: string;
+  } | null>(null);
   const [enrichment, setEnrichment] = useState<{
     summary?: { failure_classes?: number; top_failure?: string; open_incidents?: number; total_provisions?: number; provision_failure_rate?: number; pools_available?: number; active_signals?: number };
     failure_classes?: Record<string, number>;
@@ -53,6 +58,10 @@ export default function Overview() {
       .then(setEnrichment)
       .catch(() => null);
     api.listSessions().then(s => setSessionCount(s.length)).catch(() => null);
+    fetch('/api/admin/system/health', { credentials: 'same-origin' })
+      .then(r => r.ok ? r.json() : null)
+      .then(d => setAiHealth(d?.checks?.litellm || null))
+      .catch(() => setAiHealth(null));
   }, []);
 
   const healthyClusters = clusters.filter(c => c.health_status === 'healthy').length;
@@ -82,13 +91,22 @@ export default function Overview() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {[
           { label: 'Fleet Clusters', value: clusters.length > 0 ? `${healthyClusters}/${clusters.length}` : '—', sub: 'healthy', color: '#0071C5', link: '/fleet' },
           { label: 'Active Sandboxes', value: totalSandboxes || '—', sub: 'across fleet', color: '#0071C5', link: '/fleet' },
           { label: 'Catalog Items', value: catalogCount || '—', sub: `${sessionCount} sessions`, color: '#3E8635', link: '/workloads' },
           { label: 'Outcomes Tracked', value: totalOutcomes || '—', sub: 'decisions recorded', color: totalOutcomes > 0 ? '#3E8635' : '#6A6E73', link: '/feedback' },
           { label: 'Avoid-Listed', value: avoidCount, sub: 'failing combos', color: avoidCount > 0 ? '#C9190B' : '#3E8635', link: '/feedback' },
+          {
+            label: 'AI Gateway',
+            value: aiHealth?.status === 'pass' ? 'Healthy' : aiHealth ? 'Degraded' : '—',
+            sub: aiHealth?.models_available != null
+              ? `${aiHealth.models_available} models${aiHealth.inference_canary === 'pass' ? ' · canary passed' : ''}`
+              : 'awaiting authenticated check',
+            color: aiHealth?.status === 'pass' ? '#3E8635' : aiHealth ? '#C9190B' : '#6A6E73',
+            link: '/admin',
+          },
         ].map(card => (
           <Link key={card.label} to={card.link} className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4 hover:border-[#555] transition">
             <p className="text-xs text-[#6A6E73] uppercase tracking-wider font-bold">{card.label}</p>
