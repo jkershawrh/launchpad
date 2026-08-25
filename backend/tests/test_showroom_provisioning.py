@@ -67,10 +67,30 @@ def test_wait_for_showroom_route_accepts_chart_proxy_route(monkeypatch):
     ])
     adapter._get_routes = lambda _namespace: next(route_snapshots)
     monkeypatch.setattr("app.adapters.openshift.provisioning.time.sleep", lambda _seconds: None)
+    monkeypatch.setattr(
+        "app.adapters.openshift.provisioning.requests.get",
+        lambda *_args, **_kwargs: MagicMock(status_code=200),
+    )
 
     routes = adapter._wait_for_showroom_route("lab-namespace")
 
     assert routes["showroom-proxy"] == "https://showroom.example.test"
+
+
+def test_wait_for_showroom_route_requires_http_200(monkeypatch):
+    adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
+    adapter._get_routes = lambda _namespace: {
+        "showroom": "https://showroom.example.test"
+    }
+    responses = iter([MagicMock(status_code=503), MagicMock(status_code=200)])
+    request = MagicMock(side_effect=lambda *_args, **_kwargs: next(responses))
+    monkeypatch.setattr("app.adapters.openshift.provisioning.requests.get", request)
+    monkeypatch.setattr("app.adapters.openshift.provisioning.time.sleep", lambda _seconds: None)
+
+    routes = adapter._wait_for_showroom_route("lab-namespace")
+
+    assert routes["showroom"] == "https://showroom.example.test"
+    assert request.call_count == 2
 
 
 def test_showroom_namespace_is_labeled_for_namespaced_argocd():

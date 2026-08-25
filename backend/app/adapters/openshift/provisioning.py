@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import requests
 import shutil
 import subprocess
 import threading
@@ -365,11 +366,22 @@ http {{
         routes: dict[str, str] = {}
         while time.time() < deadline:
             routes = self._get_routes(namespace)
-            if routes.get("showroom") or routes.get("showroom-proxy"):
-                return routes
+            showroom_url = routes.get("showroom") or routes.get("showroom-proxy")
+            if showroom_url:
+                try:
+                    response = requests.get(
+                        showroom_url,
+                        timeout=5,
+                        verify=False,
+                        allow_redirects=True,
+                    )
+                    if response.status_code == 200:
+                        return routes
+                except requests.RequestException:
+                    pass
             time.sleep(HEALTH_INTERVAL)
         raise ValueError(
-            f"Showroom route was not created in namespace '{namespace}' within {timeout}s"
+            f"Showroom endpoint was not ready in namespace '{namespace}' within {timeout}s"
         )
 
     @staticmethod
