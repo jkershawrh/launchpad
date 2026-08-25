@@ -163,7 +163,7 @@ class OpenShiftProvisioningAdapter:
                 "catalog_item_id": catalog_item_id,
                 "routes": routes,
                 "showroom_url": routes.get("showroom"),
-                "workspace_url": routes.get("demo"),
+                "workspace_url": workspace_url,
                 "gateway_url": gateway_url,
             },
         )
