@@ -876,15 +876,18 @@ class ProvisioningService:
         workshop = self._workshops.get(workshop_id)
         if not workshop:
             raise ValueError(f"Workshop {workshop_id} not found")
-        failed = [seat for seat in workshop.seats if seat.status == WorkshopSeatStatus.FAILED]
-        if not failed:
-            raise ValueError(f"Workshop {workshop_id} has no failed seats to retry")
+        incomplete = [
+            seat for seat in workshop.seats
+            if seat.status != WorkshopSeatStatus.READY
+        ]
+        if not incomplete:
+            raise ValueError(f"Workshop {workshop_id} has no incomplete seats to retry")
         seats = [
             seat.model_copy(update={
                 "status": WorkshopSeatStatus.PENDING,
                 "error": None,
                 "updated_at": datetime.utcnow(),
-            }) if seat.status == WorkshopSeatStatus.FAILED else seat
+            }) if seat.status != WorkshopSeatStatus.READY else seat
             for seat in workshop.seats
         ]
         queued = workshop.model_copy(update={"status": WorkshopStatus.QUEUED, "seats": seats})

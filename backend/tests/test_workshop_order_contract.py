@@ -253,3 +253,30 @@ def test_failed_workshop_seats_can_be_requeued_without_resetting_ready_seats():
     assert queued.seats[0].status == WorkshopSeatStatus.READY
     assert queued.seats[1].status == WorkshopSeatStatus.PENDING
     assert queued.seats[1].error is None
+
+
+def test_interrupted_workshop_seats_can_be_requeued_without_resetting_ready_seats():
+    service = ProvisioningService()
+    order = service.create_workshop_order(
+        Workshop(
+            tenant_id="retry-tenant",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=3,
+        )
+    )
+    seats = [
+        order.seats[0].model_copy(update={"status": WorkshopSeatStatus.READY}),
+        order.seats[1].model_copy(update={"status": WorkshopSeatStatus.PROVISIONING}),
+        order.seats[2].model_copy(update={"status": WorkshopSeatStatus.PENDING}),
+    ]
+    service._save_workshop(order.model_copy(update={
+        "status": WorkshopStatus.PROVISIONING,
+        "seats": seats,
+    }))
+
+    queued = service.queue_failed_workshop_seats(order.workshop_id)
+
+    assert queued.status == WorkshopStatus.QUEUED
+    assert queued.seats[0].status == WorkshopSeatStatus.READY
+    assert queued.seats[1].status == WorkshopSeatStatus.PENDING
+    assert queued.seats[2].status == WorkshopSeatStatus.PENDING
