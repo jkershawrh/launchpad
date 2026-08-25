@@ -1,0 +1,58 @@
+# Oberon-only integration resources for models owned outside the Launchpad namespace.
+# Apply this file directly; it intentionally spans multiple namespaces.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-config
+  namespace: intel-inference
+data:
+  config.yaml: |
+    model_list:
+    - model_name: smollm2-360m
+      litellm_params:
+        model: openai/smollm2-360m
+        api_base: http://llama-smollm2-360m.intel-inference.svc:8080/v1
+        api_key: unused
+    - model_name: smollm3-3b
+      litellm_params:
+        model: openai/smollm3-3b
+        api_base: http://llama-smollm3-3b:8080
+        api_key: unused
+    - model_name: qwen36-moe
+      litellm_params:
+        model: openai/qwen36-moe
+        api_base: http://llama-qwen36-moe:8080
+        api_key: unused
+    - model_name: llama31-8b-w8a8
+      litellm_params:
+        model: openai/llama31-8b-w8a8
+        api_base: http://llama31-8b-w8a8-predictor.rhoai-learning.svc.cluster.local:8080/v1
+        api_key: unused
+    - model_name: granite-2b
+      litellm_params:
+        model: openai/granite-2b-cpu
+        api_base: http://ovms-granite-2b.fleet-llm-d.svc:8080/v1
+        api_key: unused
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-litellm-to-ovms
+  namespace: fleet-llm-d
+spec:
+  podSelector:
+    matchLabels:
+      app: ovms-granite-2b
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: intel-inference
+      podSelector:
+        matchLabels:
+          app: inference-proxy
+    ports:
+    - protocol: TCP
+      port: 8080
