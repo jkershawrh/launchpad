@@ -3,6 +3,7 @@ from __future__ import annotations
 import html
 import logging
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -105,7 +106,7 @@ class OpenShiftProvisioningAdapter:
         parts = namespace.split("-")
         tenant_id = "-".join(parts[1:-1]) if len(parts) > 2 else "default"
         gw_namespace = f"launchpad-gw-{tenant_id}"
-        demo_namespace = f"launchpad-demo-{tenant_id}-{catalog_item_id}-{uuid.uuid4().hex[:6]}"
+        demo_namespace = self._demo_namespace(tenant_id, catalog_item_id, uuid.uuid4().hex[:6])
 
         # --- Step 1: Ensure tenant gateway exists ---
         gw_existed = self._namespace_exists(gw_namespace)
@@ -317,9 +318,13 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
 <main><h2>Lab journey</h2>{step_cards}</main></body></html>"""
 
     @staticmethod
-    def _showroom_hostname(namespace: str, ingress_domain: str) -> str:
-        session_suffix = namespace.rsplit("-", 1)[-1]
-        return f"showroom-{session_suffix}.{ingress_domain}"
+    def _demo_namespace(tenant_id: str, catalog_item_id: str, suffix: str) -> str:
+        def slug(value: str) -> str:
+            return re.sub(r"[^a-z0-9-]+", "-", value.lower()).strip("-")
+
+        tenant = slug(tenant_id)[:18].rstrip("-") or "tenant"
+        catalog = slug(catalog_item_id)[:18].rstrip("-") or "lab"
+        return f"launchpad-{tenant}-{catalog}-{suffix}"
 
     def _deploy_showroom(self, namespace: str, title: str, steps: list, workspace_url: str) -> None:
         content = self._showroom_html(title, steps, workspace_url)
@@ -381,7 +386,6 @@ header{{padding:3rem max(6vw,2rem);background:linear-gradient(120deg,#300,#001f3
         route = subprocess.run(
             [
                 oc, "create", "route", "edge", "showroom", "--service=showroom", "--port=8080",
-                f"--hostname={self._showroom_hostname(namespace, os.environ.get('OPENSHIFT_INGRESS_DOMAIN', 'apps.cluster.example.com'))}",
                 "-n", namespace,
             ],
             capture_output=True, text=True, timeout=30, check=False,

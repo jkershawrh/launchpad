@@ -50,11 +50,12 @@ def test_showroom_html_contains_safe_steps_and_workspace_link():
     assert 'href="https://workspace.example.test"' in document
 
 
-def test_showroom_hostname_stays_short_for_long_lab_namespaces():
-    hostname = OpenShiftProvisioningAdapter._showroom_hostname(
-        "launchpad-demo-smoke-test-tenant-guided-rag-on-xeon-af85a6",
-        "apps.oberon.example.com",
+def test_guided_lab_namespace_keeps_generated_showroom_host_label_valid():
+    namespace = OpenShiftProvisioningAdapter._demo_namespace(
+        "smoke-test-tenant",
+        "guided-rag-on-xeon",
+        "af85a6",
     )
 
-    assert hostname == "showroom-af85a6.apps.oberon.example.com"
-    assert len(hostname.split(".", 1)[0]) <= 63
+    assert namespace == "launchpad-smoke-test-tenant-guided-rag-on-xeon-af85a6"
+    assert len(f"showroom-{namespace}") <= 63
