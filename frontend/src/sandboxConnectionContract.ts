@@ -5,6 +5,7 @@ export interface SandboxConnections {
   jupyterUrl?: string;
   sshCommand?: string;
   sshInstructions?: string;
+  accessPassword?: string;
 }
 
 export function sandboxConnections(resources: Record<string, unknown>): SandboxConnections {
@@ -18,5 +19,6 @@ export function sandboxConnections(resources: Record<string, unknown>): SandboxC
     ...(typeof info.jupyter_url === 'string' ? { jupyterUrl: info.jupyter_url } : {}),
     ...(typeof info.ssh === 'string' ? { sshCommand: info.ssh } : {}),
     ...(typeof info.ssh_instructions === 'string' ? { sshInstructions: info.ssh_instructions } : {}),
+    ...(typeof info.ssh_password === 'string' ? { accessPassword: info.ssh_password } : {}),
   };
 }

@@ -140,6 +140,15 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
         {connections.sshInstructions && <p className="text-xs text-[#6A6E73] mt-2">{connections.sshInstructions}</p>}
       </div>
       )}
+      {connections.accessPassword && (
+        <div className="mt-3 bg-[#1E1E1E] rounded-lg p-4 border border-[#3C3F42] flex items-center justify-between">
+          <div>
+            <div className="text-sm font-medium text-[#6A6E73]">Workspace password</div>
+            <code className="text-sm text-green-400 font-mono">{connections.accessPassword}</code>
+          </div>
+          <CopyButton text={connections.accessPassword} />
+        </div>
+      )}
     </div>
   );
 }

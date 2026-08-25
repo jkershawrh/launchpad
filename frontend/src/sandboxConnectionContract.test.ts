@@ -8,11 +8,13 @@ describe('sandboxConnections', () => {
       connection_info: {
         jupyter_url: 'https://jupyter.example.test',
         vscode_url: 'https://code.example.test',
+        ssh_password: 'generated-password',
       },
     })).toEqual({
       accessMethods: ['jupyter', 'vscode'],
       jupyterUrl: 'https://jupyter.example.test',
       vscodeUrl: 'https://code.example.test',
+      accessPassword: 'generated-password',
     });
   });
 

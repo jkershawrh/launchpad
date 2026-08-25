@@ -154,16 +154,15 @@ class OpenShiftSandboxProvisioner:
                 lab_url = url
 
         if routes.get("sandbox-jupyter"):
-            connection_info["jupyter_url"] = f"https://{routes['sandbox-jupyter']}"
+            connection_info["jupyter_url"] = f"https://{routes['sandbox-jupyter']}/lab?token={ssh_password}"
         if routes.get("sandbox-vscode"):
             connection_info["vscode_url"] = f"https://{routes['sandbox-vscode']}"
         if routes.get("sandbox-console"):
             connection_info["web_console_url"] = f"https://{routes['sandbox-console']}"
 
         if "ssh" in [m for m in access_methods]:
-            connection_info["ssh"] = "ssh lab-user@localhost -p 2222"
             connection_info["ssh_instructions"] = (
-                f"First run: oc -n {namespace} port-forward service/sandbox 2222:2222"
+                "Use the terminal in JupyterLab or the browser IDE. Direct SSH login is disabled by the OpenShift restricted security policy."
             )
 
         aap_url = os.environ.get("AAP_URL")
