@@ -17,7 +17,10 @@ except ImportError:
 from app.adapters.interfaces import ProvisionResult
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
 
-SANDBOX_IMAGE = "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-sandbox:latest"
+SANDBOX_IMAGE = os.environ.get(
+    "SANDBOX_IMAGE",
+    "quay.io/jkershawrh/launchpad-sandbox:latest",
+)
 OPERATOR_NAMESPACE = os.environ.get("OPERATOR_NAMESPACE", "partner-ai-launchpad")
 
 RESOURCE_TIERS = {
@@ -38,15 +41,22 @@ TIER_ORDER = ["light", "medium", "heavy"]
 
 
 class OpenShiftSandboxProvisioner:
-    def __init__(self) -> None:
-        try:
+    def __init__(self, *, clients=None, target=None) -> None:
+        self._target = target
+        if clients is None:
+          try:
             config.load_incluster_config()
-        except Exception:
+          except Exception:
             config.load_kube_config()
-        self._core_v1 = client.CoreV1Api()
-        self._apps_v1 = client.AppsV1Api()
-        self._custom = client.CustomObjectsApi()
-        self._rbac_v1 = client.RbacAuthorizationV1Api()
+          self._core_v1 = client.CoreV1Api()
+          self._apps_v1 = client.AppsV1Api()
+          self._custom = client.CustomObjectsApi()
+          self._rbac_v1 = client.RbacAuthorizationV1Api()
+        else:
+          self._core_v1 = clients.core
+          self._apps_v1 = clients.apps
+          self._custom = clients.custom
+          self._rbac_v1 = clients.rbac
 
     def create_plan(self, request: LabRequest, catalog_item: CatalogItem) -> ProvisioningPlan:
         meta = catalog_item.metadata or {}
@@ -72,6 +82,7 @@ class OpenShiftSandboxProvisioner:
         return ProvisioningPlan(
             request_id=request.request_id,
             target_namespace=namespace,
+            target_cluster=self._target.cluster_id if self._target else request.metadata.get("target_cluster"),
             steps=[
                 ProvisioningStep(name="create-namespace", adapter="openshift-sandbox", action="create_namespace", order=1),
                 ProvisioningStep(name="grant-requester-access", adapter="openshift-sandbox", action="grant_requester_access", order=2),
@@ -96,6 +107,9 @@ class OpenShiftSandboxProvisioner:
                 "requester_id": request.requester_id,
                 "catalog_item_id": request.catalog_item_id,
                 "operator_capabilities": meta.get("optional_capabilities", []),
+                "storage_class": self._target.storage_class if self._target else "nfs-storage",
+                "ingress_domain": self._target.ingress_domain if self._target else os.environ.get("OPENSHIFT_APPS_DOMAIN", "apps.oberon.fm2aihpcsed.com"),
+                "console_url": self._target.console_url if self._target else os.environ.get("OPENSHIFT_CONSOLE_URL", ""),
             },
         )
 
@@ -114,6 +128,7 @@ class OpenShiftSandboxProvisioner:
             "launchpad.redhat.com/session-id": plan.request_id[:8],
             "launchpad.redhat.com/catalog-item": plan.required_resources.get("catalog_item_id", ""),
             "launchpad.redhat.com/purpose": plan.required_resources.get("purpose", "self-service"),
+            "launchpad.redhat.com/cluster-id": plan.target_cluster or "oberon",
         }
         workshop_id = plan.required_resources.get("workshop_id")
         if workshop_id:
@@ -155,7 +170,7 @@ class OpenShiftSandboxProvisioner:
             "openshift_cli_user": f"system:serviceaccount:{namespace}:sandbox-user",
             "openshift_cli_namespace": namespace,
         }
-        console_base = os.environ.get("OPENSHIFT_CONSOLE_URL", "").rstrip("/")
+        console_base = str(res.get("console_url", "")).rstrip("/")
         console_url = f"{console_base}/topology/ns/{namespace}" if console_base else ""
         lab_url = console_url
 
@@ -202,7 +217,9 @@ class OpenShiftSandboxProvisioner:
                 "connection_info": connection_info,
                 "routes": {name.removeprefix("sandbox-"): f"https://{host}" for name, host in routes.items()},
                 "container_name": f"sandbox-{namespace}",
+                "cluster_id": plan.target_cluster,
             },
+            cluster_ref=plan.target_cluster,
         )
 
     def _create_namespace(self, namespace: str, extra_labels: dict = None) -> None:
@@ -319,7 +336,10 @@ class OpenShiftSandboxProvisioner:
                 metadata=client.V1ObjectMeta(name="sandbox-home"),
                 spec=client.V1PersistentVolumeClaimSpec(
                     access_modes=["ReadWriteOnce"],
-                    storage_class_name=os.environ.get("SANDBOX_STORAGE_CLASS") or None,
+                    storage_class_name=(
+                        self._target.storage_class if self._target
+                        else os.environ.get("SANDBOX_STORAGE_CLASS") or None
+                    ),
                     resources=client.V1VolumeResourceRequirements(requests={"storage": storage_size}),
                 ),
             ))

@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from app.api.deps import provisioning_service
 from app.domain.enums import WorkshopStatus
 from app.domain.models import Workshop
+from app.auth.oauth import User, get_current_user
 
 router = APIRouter(prefix="/workshops", tags=["workshops"])
 
@@ -21,6 +22,7 @@ class WorkshopCreate(BaseModel):
     ttl: str = "8h"
     ocp_version: str = "4.20"
     purpose: str = "events"
+    target_cluster: str | None = None
 
 
 def _to_workshop(body: WorkshopCreate) -> Workshop:
@@ -33,11 +35,14 @@ def _to_workshop(body: WorkshopCreate) -> Workshop:
         ttl=body.ttl,
         ocp_version=body.ocp_version,
         purpose=body.purpose,
+        target_cluster=body.target_cluster,
     )
 
 
 @router.post("", response_model=Workshop, status_code=201)
-def create_workshop(body: WorkshopCreate, idempotency_key: str | None = Header(default=None)):
+def create_workshop(body: WorkshopCreate, idempotency_key: str | None = Header(default=None), user: User = Depends(get_current_user)):
+    if body.target_cluster and not user.is_admin:
+        raise HTTPException(403, "Only administrators can override workshop placement")
     workshop = _to_workshop(body)
     try:
         return provisioning_service.provision_workshop(workshop, idempotency_key=idempotency_key)
@@ -53,14 +58,18 @@ def list_workshops():
 
 
 @router.post("/capacity-preview")
-def preview_workshop_capacity(body: WorkshopCreate):
+def preview_workshop_capacity(body: WorkshopCreate, user: User = Depends(get_current_user)):
+    if body.target_cluster and not user.is_admin:
+        raise HTTPException(403, "Only administrators can override workshop placement")
     return provisioning_service.preview_workshop_capacity(_to_workshop(body))
 
 
 @router.post("/orders", response_model=Workshop, status_code=201)
 def create_workshop_order(
-    body: WorkshopCreate, idempotency_key: str | None = Header(default=None)
+    body: WorkshopCreate, idempotency_key: str | None = Header(default=None), user: User = Depends(get_current_user)
 ):
+    if body.target_cluster and not user.is_admin:
+        raise HTTPException(403, "Only administrators can override workshop placement")
     try:
         return provisioning_service.create_workshop_order(
             _to_workshop(body), idempotency_key=idempotency_key

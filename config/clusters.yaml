@@ -1,0 +1,22 @@
+clusters:
+  - cluster_id: arena
+    display_name: Arena CPU Execution
+    api_url: https://api.arena.fm2aihpcsed.com:6443
+    ingress_domain: apps.arena.fm2aihpcsed.com
+    console_url: https://console-openshift-console.apps.arena.fm2aihpcsed.com
+    storage_class: nfs-storage
+    credential_secret: partner-ai-launchpad/launchpad-arena-kubeconfig
+    priority: 10
+    capabilities: [cpu, openshift, operators, openshift-ai, showroom, model_endpoint]
+    model_endpoints:
+      granite-2b: https://ovms-granite-2b-fleet-llm-d.apps.arena.fm2aihpcsed.com
+  - cluster_id: oberon
+    display_name: Oberon Primary
+    api_url: https://kubernetes.default.svc
+    ingress_domain: apps.oberon.fm2aihpcsed.com
+    console_url: https://console-openshift-console.apps.oberon.fm2aihpcsed.com
+    storage_class: nfs-storage
+    local: true
+    priority: 50
+    capabilities: [cpu, gaudi, gaudi_direct, openshift, operators, openshift-ai, showroom, model_endpoint, vector_db, kafka, workbench, control-plane]
+    model_endpoints: {}

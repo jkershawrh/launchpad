@@ -21,7 +21,7 @@ class CleanupTimeoutError(Exception):
 
 
 class OpenShiftCleanupAdapter:
-    def __init__(self) -> None:
+    def __init__(self, *, clients=None, argocd_custom_objects=None) -> None:
         self._active_namespaces: dict[str, str] = {}
 
         if not HAS_KUBERNETES:
@@ -30,9 +30,10 @@ class OpenShiftCleanupAdapter:
                 "Install it with: pip install kubernetes"
             )
 
-        try:
+        if clients is None:
+          try:
             config.load_incluster_config()
-        except config.ConfigException:
+          except config.ConfigException:
             try:
                 config.load_kube_config()
             except config.ConfigException as exc:
@@ -41,11 +42,16 @@ class OpenShiftCleanupAdapter:
                     f"(tried in-cluster and kubeconfig): {exc}"
                 ) from exc
 
-        self._core_v1 = client.CoreV1Api()
-        self._rbac_v1 = client.RbacAuthorizationV1Api()
+          self._core_v1 = client.CoreV1Api()
+          self._rbac_v1 = client.RbacAuthorizationV1Api()
+          custom_objects = client.CustomObjectsApi()
+        else:
+          self._core_v1 = clients.core
+          self._rbac_v1 = clients.rbac
+          custom_objects = argocd_custom_objects or clients.custom
         from app.adapters.openshift.showroom_gitops import ShowroomGitOpsAdapter
         self._showroom_gitops = ShowroomGitOpsAdapter(
-            client.CustomObjectsApi(), os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd")
+            custom_objects, os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd")
         )
 
     def cleanup(self, namespace: Optional[str] = None, timeout: int = 0) -> bool:

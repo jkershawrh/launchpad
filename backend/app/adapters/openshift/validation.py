@@ -18,16 +18,17 @@ from app.domain.models import LabSession, ValidationResult
 
 
 class OpenShiftValidationAdapter:
-    def __init__(self) -> None:
+    def __init__(self, *, clients=None) -> None:
         if not HAS_KUBERNETES:
             raise ValueError(
                 "The 'kubernetes' Python package is required for OpenShiftValidationAdapter. "
                 "Install it with: pip install kubernetes"
             )
 
-        try:
+        if clients is None:
+          try:
             config.load_incluster_config()
-        except config.ConfigException:
+          except config.ConfigException:
             try:
                 config.load_kube_config()
             except config.ConfigException as exc:
@@ -36,7 +37,9 @@ class OpenShiftValidationAdapter:
                     f"(tried in-cluster and kubeconfig): {exc}"
                 ) from exc
 
-        self._core_v1 = client.CoreV1Api()
+          self._core_v1 = client.CoreV1Api()
+        else:
+          self._core_v1 = clients.core
         self._validation_attempts = 13
         self._validation_interval = 5
         self._sleep = time.sleep

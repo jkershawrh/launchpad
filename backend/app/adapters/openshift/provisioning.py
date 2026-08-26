@@ -44,7 +44,7 @@ logger = logging.getLogger("launchpad.openshift.provisioning")
 
 
 class OpenShiftProvisioningAdapter:
-    def __init__(self, overlay_path: Optional[Path] = None):
+    def __init__(self, overlay_path: Optional[Path] = None, *, clients=None, target=None, argocd_custom_objects=None):
         self._overlay_path = overlay_path or DEMO_DEPLOY_ROOT
         self._active_namespaces: dict[str, str] = {}
         self._gateway_bootstrap_lock = threading.Lock()
@@ -55,21 +55,27 @@ class OpenShiftProvisioningAdapter:
                 "Install it with: pip install kubernetes"
             )
 
-        try:
-            config.load_incluster_config()
-        except config.ConfigException:
+        self._target = target
+        if clients is None:
             try:
-                config.load_kube_config()
-            except config.ConfigException as exc:
-                raise ValueError(
-                    f"Unable to load Kubernetes configuration (tried in-cluster and kubeconfig): {exc}"
-                ) from exc
-
-        self._core_v1 = client.CoreV1Api()
-        self._apps_v1 = client.AppsV1Api()
-        self._custom_objects = client.CustomObjectsApi()
+                config.load_incluster_config()
+            except config.ConfigException:
+                try:
+                    config.load_kube_config()
+                except config.ConfigException as exc:
+                    raise ValueError(
+                        f"Unable to load Kubernetes configuration (tried in-cluster and kubeconfig): {exc}"
+                    ) from exc
+            self._core_v1 = client.CoreV1Api()
+            self._apps_v1 = client.AppsV1Api()
+            self._custom_objects = client.CustomObjectsApi()
+        else:
+            self._core_v1 = clients.core
+            self._apps_v1 = clients.apps
+            self._custom_objects = clients.custom
         self._showroom_gitops = ShowroomGitOpsAdapter(
-            self._custom_objects, os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd")
+            argocd_custom_objects or self._custom_objects,
+            os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd")
         )
 
     def create_plan(self, request: LabRequest, catalog_item: CatalogItem) -> ProvisioningPlan:
@@ -82,6 +88,11 @@ class OpenShiftProvisioningAdapter:
         return ProvisioningPlan(
             request_id=request.request_id,
             target_namespace=namespace,
+            target_cluster=(
+                getattr(self, "_target", None).cluster_id
+                if getattr(self, "_target", None)
+                else request.metadata.get("target_cluster")
+            ),
             steps=[
                 ProvisioningStep(name="create-project", adapter="openshift", action="create_namespace", order=1),
                 ProvisioningStep(name="deploy", adapter="openshift", action="deploy", order=2),
@@ -155,7 +166,14 @@ class OpenShiftProvisioningAdapter:
         # --- Step 2: Create demo namespace ---
         self._create_namespace(
             demo_namespace,
-            {"argocd.argoproj.io/managed-by": "argocd"} if showroom_enabled else None,
+            {
+                **({"argocd.argoproj.io/managed-by": "argocd"} if showroom_enabled else {}),
+                "launchpad.redhat.com/session-id": plan.request_id,
+                "launchpad.redhat.com/workshop-id": str(res.get("workshop_id", "")),
+                "launchpad.redhat.com/seat-id": str(res.get("seat_id", "")),
+                "launchpad.redhat.com/tenant": tenant_id,
+                "launchpad.redhat.com/cluster-id": plan.target_cluster or "oberon",
+            },
         )
         self._grant_image_pull(demo_namespace)
         # The official Showroom chart clones Git content and builds Antora at
@@ -178,7 +196,7 @@ class OpenShiftProvisioningAdapter:
         )
 
         if showroom_enabled:
-            apps_domain = os.environ.get("OPENSHIFT_APPS_DOMAIN", "apps.oberon.fm2aihpcsed.com")
+            apps_domain = self._target.ingress_domain if self._target else os.environ.get("OPENSHIFT_APPS_DOMAIN", "apps.oberon.fm2aihpcsed.com")
             showroom_app = build_showroom_application(
                 ShowroomSeat(
                     namespace=demo_namespace,
@@ -189,7 +207,10 @@ class OpenShiftProvisioningAdapter:
                     content_repo_url=str(res["showroom_content_repo_url"]),
                     content_ref=str(res["showroom_content_ref"]),
                     apps_domain=apps_domain,
-                    console_url=os.environ.get("OPENSHIFT_CONSOLE_URL", ""),
+                    console_url=self._target.console_url if self._target else os.environ.get("OPENSHIFT_CONSOLE_URL", ""),
+                    destination_server=self._target.api_url if self._target else "https://kubernetes.default.svc",
+                    storage_class=self._target.storage_class if self._target else "nfs-storage",
+                    cluster_id=self._target.cluster_id if self._target else "oberon",
                     content_playbook=str(res.get("showroom_content_playbook", "site.yml")),
                     journey=str(res.get("showroom_journey", "guided-rag")),
                 ),
@@ -221,7 +242,9 @@ class OpenShiftProvisioningAdapter:
                 "showroom_application": showroom_app["metadata"]["name"] if showroom_enabled else None,
                 "workspace_url": workspace_url,
                 "gateway_url": gateway_url,
+                "cluster_id": plan.target_cluster,
             },
+            cluster_ref=plan.target_cluster,
         )
 
     # ------------------------------------------------------------------
@@ -368,7 +391,10 @@ http {{
 
     def _wait_for_showroom_route(self, namespace: str) -> dict[str, str]:
         """Wait for Argo CD to sync far enough for the chart route to exist."""
-        timeout = int(os.environ.get("SHOWROOM_ROUTE_TIMEOUT", "300"))
+        # Large concurrent workshops can queue dozens of Applications behind
+        # one Argo controller. Five minutes proved too short for the final
+        # wave even though every Application subsequently became healthy.
+        timeout = int(os.environ.get("SHOWROOM_ROUTE_TIMEOUT", "600"))
         deadline = time.time() + timeout
         routes: dict[str, str] = {}
         while time.time() < deadline:

@@ -80,6 +80,8 @@ class ProvisioningService:
         brain=None,
         preflight=None,
         maas_key_broker=None,
+        cluster_registry=None,
+        cluster_client_factory=None,
     ):
         self.catalog = catalog or MockCatalogAdapter()
         self.pool = pool or MockPoolAdapter()
@@ -97,6 +99,8 @@ class ProvisioningService:
         self.brain = brain
         self.preflight = preflight
         self.maas_key_broker = maas_key_broker
+        self.cluster_registry = cluster_registry
+        self.cluster_client_factory = cluster_client_factory
 
         mode = os.environ.get("LAUNCHPAD_MODE", "mock")
         if mode != "mock":
@@ -143,7 +147,11 @@ class ProvisioningService:
                             config.load_incluster_config()
                         except Exception:
                             config.load_kube_config()
-                        core = client.CoreV1Api()
+                        core = (
+                            self._target_clients(session.cluster_ref).core
+                            if session.cluster_ref and self.cluster_client_factory
+                            else client.CoreV1Api()
+                        )
                         try:
                             core.read_namespace(session.namespace)
                         except client.exceptions.ApiException as e:
@@ -180,7 +188,12 @@ class ProvisioningService:
             except Exception as exc:
                 logger.warning("Resource reconciliation failed: %s", exc)
 
-    def _get_provisioner(self, catalog_item):
+    def _target_clients(self, cluster_ref: Optional[str]):
+        if not cluster_ref or not self.cluster_client_factory:
+            return None
+        return self.cluster_client_factory.clients(cluster_ref)
+
+    def _get_provisioner(self, catalog_item, cluster_ref: Optional[str] = None):
         from app.domain.enums import CatalogCategory
 
         mode = os.environ.get("LAUNCHPAD_MODE", "mock")
@@ -192,11 +205,62 @@ class ProvisioningService:
             mode = os.environ.get("LAUNCHPAD_MODE", "mock")
             if mode == "openshift":
                 from app.adapters.openshift.sandbox_provisioning import OpenShiftSandboxProvisioner
+                if cluster_ref and self.cluster_registry:
+                    return OpenShiftSandboxProvisioner(
+                        clients=self._target_clients(cluster_ref),
+                        target=self.cluster_registry.get(cluster_ref),
+                    )
                 return OpenShiftSandboxProvisioner()
             elif mode == "local":
                 from app.adapters.local.sandbox_provisioner import LocalSandboxProvisioner
                 return LocalSandboxProvisioner()
+        if mode == "openshift" and cluster_ref and self.cluster_registry:
+            from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
+            target = self.cluster_registry.get(cluster_ref)
+            clients = self._target_clients(cluster_ref)
+            control_clients = self._target_clients("oberon")
+            return OpenShiftProvisioningAdapter(
+                clients=clients,
+                target=target,
+                argocd_custom_objects=control_clients.custom if control_clients else None,
+            )
         return self.provisioner
+
+    def _get_validator(self, cluster_ref: Optional[str]):
+        if os.environ.get("LAUNCHPAD_MODE") == "openshift" and cluster_ref and self.cluster_client_factory:
+            from app.adapters.openshift.validation import OpenShiftValidationAdapter
+            return OpenShiftValidationAdapter(clients=self._target_clients(cluster_ref))
+        return self.validator
+
+    def _get_pool(self, cluster_ref: Optional[str]):
+        if os.environ.get("LAUNCHPAD_MODE") == "openshift" and cluster_ref and self.cluster_client_factory:
+            from app.adapters.openshift.pool import OpenShiftPoolAdapter
+            return OpenShiftPoolAdapter(clients=self._target_clients(cluster_ref))
+        return self.pool
+
+    def _get_cleanup(self, cluster_ref: Optional[str]):
+        if os.environ.get("LAUNCHPAD_MODE") == "openshift" and cluster_ref and self.cluster_client_factory:
+            from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+            control_clients = self._target_clients("oberon")
+            return OpenShiftCleanupAdapter(
+                clients=self._target_clients(cluster_ref),
+                argocd_custom_objects=control_clients.custom if control_clients else None,
+            )
+        return self.cleanup
+
+    def _select_target_cluster(self, request: LabRequest, catalog_item) -> Optional[str]:
+        override = request.metadata.get("target_cluster")
+        if not self.cluster_registry:
+            return override or self._get_placement_recommendation(
+                request.hardware_profile or catalog_item.default_hardware_profile or "xeon-basic",
+                catalog_item,
+            )
+        target = self.cluster_registry.select(
+            required_capabilities=catalog_item.required_capabilities,
+            required_models=(catalog_item.metadata or {}).get("required_models", []),
+            override=override,
+        )
+        return target.cluster_id
 
     def _get_gw_lock(self, gw_namespace: str) -> threading.Lock:
         if gw_namespace not in self._gw_locks:
@@ -349,16 +413,17 @@ class ProvisioningService:
                 raise ValueError(f"Preflight failed for {catalog_item.catalog_item_id}: {reasons}")
 
         hw, qp = self._resolve_hardware(request, catalog_item)
-        if not self.pool.check_capacity(hw, qp):
+        preferred_cluster = self._select_target_cluster(request, catalog_item)
+        target_pool = self._get_pool(preferred_cluster)
+        if not target_pool.check_capacity(hw, qp):
             raise ValueError(f"No capacity available for hardware={hw} quota={qp}")
 
-        preferred_cluster = self._get_placement_recommendation(hw, catalog_item)
         reserve_kwargs = {"session_id": request.request_id, "hardware_profile": hw, "quota_profile": qp}
         if preferred_cluster:
             from app.adapters.rhdp.pool import RHDPPoolAdapter
-            if isinstance(self.pool, RHDPPoolAdapter):
+            if isinstance(target_pool, RHDPPoolAdapter):
                 reserve_kwargs["preferred_cluster"] = preferred_cluster
-        reservation = self.pool.reserve(**reserve_kwargs)
+        reservation = target_pool.reserve(**reserve_kwargs)
 
         ttl_str = request.ttl or catalog_item.default_ttl or "4h"
         if self.maas_key_broker:
@@ -379,12 +444,12 @@ class ProvisioningService:
                 )
                 maas_api_key = issued_key.key
             except Exception as exc:
-                self.pool.release(request.request_id)
+                target_pool.release(request.request_id)
                 raise ValueError(f"Failed to issue MaaS access key: {exc}") from exc
         else:
             maas_api_key = f"sk-launchpad-{_uuid.uuid4().hex[:24]}"
 
-        provisioner = self._get_provisioner(catalog_item)
+        provisioner = self._get_provisioner(catalog_item, preferred_cluster)
         plan = provisioner.create_plan(request, catalog_item)
 
         sandbox_data = {}
@@ -392,6 +457,7 @@ class ProvisioningService:
             sandbox_data = reservation
 
         plan = plan.model_copy(update={
+            "target_cluster": preferred_cluster,
             "required_resources": {
                 **plan.required_resources,
                 "maas_api_key": maas_api_key,
@@ -400,7 +466,37 @@ class ProvisioningService:
         })
         self._save_plan(plan)
 
-        result = provisioner.provision(plan)
+        # Persist the target before the first cluster mutation. This makes
+        # retry, reconciliation, and cleanup deterministic after interruption.
+        session = LabSession(
+            request_id=request.request_id,
+            tenant_id=request.tenant_id,
+            catalog_item_id=request.catalog_item_id,
+            namespace=plan.target_namespace,
+            cluster_ref=preferred_cluster,
+            maas_api_key=maas_api_key,
+            resources={"cluster_id": preferred_cluster},
+            metadata={
+                "labels": {
+                    "launchpad.redhat.com/tenant": request.tenant_id,
+                    "launchpad.redhat.com/catalog-item": request.catalog_item_id,
+                    "launchpad.redhat.com/cluster-id": preferred_cluster or "local",
+                }
+            },
+        )
+        session = transition(session, SessionStatus.PROVISIONING, reason="target selected; provisioning started")
+        self._save_session(session)
+        self._save_request(request.model_copy(update={"status": LabRequestStatus.PROVISIONING}))
+
+        try:
+            result = provisioner.provision(plan)
+        except Exception:
+            logger.exception(
+                "Provisioning failed for request %s on cluster %s",
+                request.request_id,
+                preferred_cluster,
+            )
+            raise
 
         if request.persistence == Persistence.PERSISTENT:
             expires_at = None
@@ -430,28 +526,18 @@ class ProvisioningService:
             session_resources["decision"] = decision_data
             self._last_decision = None
 
-        session = LabSession(
-            request_id=request.request_id,
-            tenant_id=request.tenant_id,
-            catalog_item_id=request.catalog_item_id,
-            namespace=result.namespace,
-            cluster_ref=cluster_ref,
-            lab_url=result.lab_url,
-            dashboard_url=dashboard_url,
-            expires_at=expires_at,
-            resources=session_resources,
-            maas_api_key=maas_api_key,
-            metadata={"labels": session_labels},
-        )
-
-        session = transition(session, SessionStatus.PROVISIONING, reason="provisioning started")
+        session = session.model_copy(update={
+            "namespace": result.namespace,
+            "cluster_ref": cluster_ref,
+            "lab_url": result.lab_url,
+            "dashboard_url": dashboard_url,
+            "expires_at": expires_at,
+            "resources": session_resources,
+            "metadata": {"labels": {**session.metadata.get("labels", {}), **session_labels}},
+        })
         session = transition(session, SessionStatus.VALIDATING, reason="provisioning complete")
 
         self._save_session(session)
-        self._save_request(request.model_copy(
-            update={"status": LabRequestStatus.PROVISIONING}
-        ))
-
         return session
 
     def validate_session(self, session_id: str) -> LabSession:
@@ -464,7 +550,7 @@ class ProvisioningService:
                 session, SessionStatus.VALIDATING, reason="validation retried"
             )
 
-        results = self.validator.validate(session)
+        results = self._get_validator(session.cluster_ref).validate(session)
         session = session.model_copy(update={"validation_results": results})
 
         has_failure = any(r.result.value == "fail" for r in results)
@@ -657,19 +743,20 @@ class ProvisioningService:
                 self.maas_key_broker.revoke_key(session.maas_api_key)
             except Exception as e:
                 cleanup_errors.append(f"MaaS key revocation failed: {e}")
-        if self.cleanup and session.resources.get("compose_file"):
+        cleanup_adapter = self._get_cleanup(session.cluster_ref)
+        if cleanup_adapter and session.resources.get("compose_file"):
             try:
-                self.cleanup.cleanup(session.resources["compose_file"])
+                cleanup_adapter.cleanup(session.resources["compose_file"])
             except Exception as e:
                 cleanup_errors.append(str(e))
 
-        if self.cleanup and session.namespace:
+        if cleanup_adapter and session.namespace:
             try:
-                self.cleanup.cleanup(session.namespace)
+                cleanup_adapter.cleanup(session.namespace)
             except Exception as e:
                 cleanup_errors.append(str(e))
 
-        if self.cleanup and session.resources.get("gateway_namespace"):
+        if cleanup_adapter and session.resources.get("gateway_namespace"):
             gw_ns = session.resources["gateway_namespace"]
             with self._get_gw_lock(gw_ns):
                 active_demos_for_gw = sum(
@@ -680,7 +767,7 @@ class ProvisioningService:
                 )
                 if active_demos_for_gw == 0:
                     try:
-                        self.cleanup.cleanup(gw_ns)
+                        cleanup_adapter.cleanup(gw_ns)
                     except Exception as e:
                         cleanup_errors.append(str(e))
 
@@ -724,13 +811,14 @@ class ProvisioningService:
             except Exception as exc:
                 key_revocation_error = str(exc)
         self.pool.release(session.request_id)
-        if self.cleanup and session.resources.get("compose_file"):
-            self.cleanup.cleanup(session.resources["compose_file"])
-        if self.cleanup and session.resources.get("container_name"):
-            self.cleanup.cleanup(session.resources["container_name"])
-        if self.cleanup and session.namespace:
+        cleanup_adapter = self._get_cleanup(session.cluster_ref)
+        if cleanup_adapter and session.resources.get("compose_file"):
+            cleanup_adapter.cleanup(session.resources["compose_file"])
+        if cleanup_adapter and session.resources.get("container_name"):
+            cleanup_adapter.cleanup(session.resources["container_name"])
+        if cleanup_adapter and session.namespace:
             try:
-                self.cleanup.cleanup(session.namespace)
+                cleanup_adapter.cleanup(session.namespace)
             except Exception as e:
                 logger.error("Cleanup failed during force-reclaim of session %s namespace %s: %s", session_id, session.namespace, e)
                 if require_cleanup_success:
@@ -853,8 +941,26 @@ class ProvisioningService:
         ]
 
     def preview_workshop_capacity(self, workshop: Workshop) -> dict:
-        can_provision, reason = self.check_workshop_capacity(workshop)
         catalog_item = self.catalog.get_item(workshop.catalog_item_id)
+        selected_cluster = workshop.cluster_ref or workshop.target_cluster
+        if self.cluster_registry and catalog_item:
+            try:
+                selected_cluster = self.cluster_registry.select(
+                    required_capabilities=catalog_item.required_capabilities,
+                    required_models=(catalog_item.metadata or {}).get("required_models", []),
+                    override=workshop.target_cluster,
+                ).cluster_id
+            except ValueError as exc:
+                return {
+                    "can_provision": False,
+                    "reason": str(exc),
+                    "selected_cluster": None,
+                    "placement_reason": str(exc),
+                    "seats_requested": workshop.num_users,
+                    "estimated_resources": {"cpu_millicores": 0, "memory_mib": 0, "pods": 0},
+                }
+            workshop = workshop.model_copy(update={"cluster_ref": selected_cluster})
+        can_provision, reason = self.check_workshop_capacity(workshop)
         metadata = catalog_item.metadata if catalog_item else {}
         cpu_per_seat = int(metadata.get(
             "seat_cpu_millicores",
@@ -868,6 +974,11 @@ class ProvisioningService:
         return {
             "can_provision": can_provision,
             "reason": reason,
+            "selected_cluster": selected_cluster,
+            "placement_reason": (
+                f"Entire workshop assigned to {selected_cluster}; seats will not be split"
+                if selected_cluster else "single-cluster placement"
+            ),
             "seats_requested": workshop.num_users,
             "estimated_resources": {
                 "cpu_millicores": cpu_per_seat * workshop.num_users,
@@ -982,6 +1093,7 @@ class ProvisioningService:
             "seats": self._workshop_seats(workshop),
             "idempotency_key": idempotency_key,
             "order_fingerprint": fingerprint if idempotency_key else None,
+            "cluster_ref": preview.get("selected_cluster"),
             "metadata": {**workshop.metadata, "capacity_preview": preview},
         })
         self._save_workshop(order)
@@ -1117,11 +1229,21 @@ class ProvisioningService:
                 provision_event.set()
                 return workshop
 
-        can_provision, cap_reason = self.check_workshop_capacity(workshop)
-        max_seats = workshop.num_users
-        if not can_provision:
-            max_seats = self._estimate_max_seats(workshop)
-            if max_seats <= 0:
+        # Capacity is revalidated immediately before mutations. On retry,
+        # existing seat sessions already consume cluster capacity, so only
+        # seats that still require a new session belong in this calculation.
+        seats_requiring_capacity = sum(
+            1
+            for seat in workshop.seats
+            if seat.status != WorkshopSeatStatus.READY
+            and not (seat.session_id and self._sessions.get(seat.session_id))
+        )
+        if seats_requiring_capacity:
+            capacity_request = workshop.model_copy(
+                update={"num_users": seats_requiring_capacity}
+            )
+            can_provision, cap_reason = self.check_workshop_capacity(capacity_request)
+            if not can_provision:
                 workshop = workshop.model_copy(update={
                     "status": WorkshopStatus.FAILED,
                     "metadata": {**workshop.metadata, "error": f"Insufficient capacity: {cap_reason}"},
@@ -1129,13 +1251,9 @@ class ProvisioningService:
                 self._save_workshop(workshop)
                 provision_event.set()
                 return workshop
-            logger.warning(
-                "Workshop %s: requested %d seats but cluster can support %d. Provisioning %d.",
-                workshop.workshop_id, workshop.num_users, max_seats, max_seats,
-            )
 
         workshop_limit = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_WORKSHOP", str(self.MAX_ACTIVE_PER_WORKSHOP)))
-        seats_to_provision = min(max_seats, workshop_limit)
+        seats_to_provision = min(workshop.num_users, workshop_limit)
 
         session_ids = []
         pending_indexes = []
@@ -1275,6 +1393,7 @@ class ProvisioningService:
                 "seat_number": seat.seat_number,
                 "participant_id": seat.participant_id,
                 "purpose": workshop.purpose,
+                "target_cluster": workshop.cluster_ref,
             },
         )
         accepted = self.submit_request(request)
@@ -1341,18 +1460,77 @@ class ProvisioningService:
             })
         return users
 
+    def get_cluster_fleet_health(self) -> list[dict]:
+        if not self.cluster_registry or not self.cluster_client_factory:
+            return []
+        active_states = {"requested", "provisioning", "validating", "ready", "active", "resetting"}
+        results = []
+        for target in self.cluster_registry.list_enabled():
+            sessions = [s for s in self._sessions.values() if s.cluster_ref == target.cluster_id and s.status.value in active_states]
+            workshops = [w for w in self._workshops.values() if w.cluster_ref == target.cluster_id and w.status.value not in {"completed", "completed_with_errors", "failed"}]
+            try:
+                core = self._target_clients(target.cluster_id).core
+                nodes = core.list_node().items
+                pods = [p for p in core.list_pod_for_all_namespaces().items if p.status.phase not in ("Succeeded", "Failed")]
+                cpu = sum(self._cpu_millicores((n.status.allocatable or {}).get("cpu")) for n in nodes)
+                memory = sum(self._memory_mib((n.status.allocatable or {}).get("memory")) for n in nodes)
+                pod_slots = sum(int((n.status.allocatable or {}).get("pods", 0)) for n in nodes)
+                used_cpu = used_memory = 0
+                for pod in pods:
+                    for container in pod.spec.containers or []:
+                        requests = container.resources.requests or {}
+                        used_cpu += self._cpu_millicores(requests.get("cpu"))
+                        used_memory += self._memory_mib(requests.get("memory"))
+                results.append({
+                    "cluster_id": target.cluster_id,
+                    "cluster_name": target.display_name,
+                    "health_status": "healthy",
+                    "healthy": True,
+                    "eligible": True,
+                    "reason": "eligible",
+                    "available_cpu_millicores": max(0, cpu - used_cpu),
+                    "available_memory_mib": max(0, memory - used_memory),
+                    "available_pods": max(0, pod_slots - len(pods)),
+                    "active_sessions": len(sessions),
+                    "active_workshops": len(workshops),
+                    "active_seats": sum(len(w.session_ids) for w in workshops),
+                    "capabilities": target.capabilities,
+                    "ingress_domain": target.ingress_domain,
+                })
+            except Exception as exc:
+                results.append({
+                    "cluster_id": target.cluster_id,
+                    "cluster_name": target.display_name,
+                    "health_status": "unreachable",
+                    "healthy": False,
+                    "eligible": False,
+                    "reason": str(exc),
+                    "available_cpu_millicores": 0,
+                    "available_memory_mib": 0,
+                    "available_pods": 0,
+                    "active_sessions": len(sessions),
+                    "active_workshops": len(workshops),
+                    "active_seats": sum(len(w.session_ids) for w in workshops),
+                    "capabilities": target.capabilities,
+                    "ingress_domain": target.ingress_domain,
+                })
+        return results
+
     def check_workshop_capacity(self, workshop: Workshop) -> tuple:
         mode = os.environ.get("LAUNCHPAD_MODE", "mock")
         if mode == "mock":
             return True, "mock mode — capacity checks skipped"
 
         try:
-            from kubernetes import client, config
-            try:
-                config.load_incluster_config()
-            except Exception:
-                config.load_kube_config()
-            v1 = client.CoreV1Api()
+            if workshop.cluster_ref and self.cluster_client_factory:
+                v1 = self._target_clients(workshop.cluster_ref).core
+            else:
+                from kubernetes import client, config
+                try:
+                    config.load_incluster_config()
+                except Exception:
+                    config.load_kube_config()
+                v1 = client.CoreV1Api()
             capacity = self._workshop_capacity(v1, workshop)
             max_seats = capacity["max_seats"]
 
@@ -1376,12 +1554,15 @@ class ProvisioningService:
 
     def _estimate_max_seats(self, workshop: Workshop) -> int:
         try:
-            from kubernetes import client, config
-            try:
-                config.load_incluster_config()
-            except Exception:
-                config.load_kube_config()
-            v1 = client.CoreV1Api()
+            if workshop.cluster_ref and self.cluster_client_factory:
+                v1 = self._target_clients(workshop.cluster_ref).core
+            else:
+                from kubernetes import client, config
+                try:
+                    config.load_incluster_config()
+                except Exception:
+                    config.load_kube_config()
+                v1 = client.CoreV1Api()
             return self._workshop_capacity(v1, workshop)["max_seats"]
         except Exception:
             return 0

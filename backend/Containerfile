@@ -23,6 +23,7 @@ COPY backend/tasks/ ./tasks/
 COPY backend/scripts/ ./scripts/
 COPY deploy/ /opt/deploy/
 COPY demos/deploy/ /opt/demos-deploy/
+COPY config/ /opt/config/
 
 # Catalog items (YAML-driven demo definitions)
 COPY catalog/ /opt/catalog/

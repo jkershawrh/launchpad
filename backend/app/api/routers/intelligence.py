@@ -12,9 +12,9 @@ router = APIRouter(tags=["intelligence"])
 
 @router.get("/intelligence/fleet-health")
 def fleet_health() -> Dict[str, Any]:
-    clusters = []
+    clusters = provisioning_service.get_cluster_fleet_health()
     placement = get_placement_service()
-    if placement:
+    if placement and not clusters:
         if not placement.get_capacity_snapshot():
             placement.refresh_capacity_cache()
         clusters = [c.model_dump() for c in placement.get_capacity_snapshot()]

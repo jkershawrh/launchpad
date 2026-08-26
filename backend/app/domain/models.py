@@ -206,6 +206,7 @@ class ProvisioningPlan(BaseModel):
     request_id: str
     steps: List[ProvisioningStep] = Field(default_factory=list)
     target_namespace: Optional[str] = None
+    target_cluster: Optional[str] = None
     required_resources: Dict[str, Any] = Field(default_factory=dict)
     adapters_required: List[str] = Field(default_factory=list)
     validation_steps: List[str] = Field(default_factory=list)
@@ -267,6 +268,7 @@ class Workshop(BaseModel):
     seats: List[WorkshopSeat] = Field(default_factory=list)
     session_ids: List[str] = Field(default_factory=list)
     cluster_ref: Optional[str] = None
+    target_cluster: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None

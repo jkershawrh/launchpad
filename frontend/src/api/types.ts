@@ -142,6 +142,8 @@ export interface Workshop {
   status: string;
   seats: WorkshopSeat[];
   session_ids: string[];
+  cluster_ref?: string;
+  target_cluster?: string;
   metadata: Record<string, unknown>;
 }
 
@@ -149,6 +151,8 @@ export interface WorkshopCapacityPreview {
   can_provision: boolean;
   reason: string;
   seats_requested: number;
+  selected_cluster?: string;
+  placement_reason?: string;
   estimated_resources: {
     cpu_millicores: number;
     memory_mib: number;

@@ -14,6 +14,8 @@ router = APIRouter(prefix="/lab-requests", tags=["lab-requests"], dependencies=[
 @router.post("", response_model=LabRequest, status_code=201)
 def create_lab_request(request: LabRequest, user: User = Depends(get_current_user)):
     require_tenant_access(user, request.tenant_id)
+    if request.metadata.get("target_cluster") and not user.is_admin:
+        raise HTTPException(403, "Only administrators can override environment placement")
     return provisioning_service.submit_request(request)
 
 

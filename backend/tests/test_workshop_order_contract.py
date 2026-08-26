@@ -416,6 +416,29 @@ def test_collective_readiness_retry_reuses_existing_session():
     assert len(service._sessions) == 1
 
 
+def test_retry_capacity_counts_only_seats_without_existing_sessions():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="retry-capacity-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=2,
+    )
+    with patch.object(
+        service,
+        "_wait_for_workshop_stability",
+        return_value={2: "showroom endpoint was not stable"},
+    ):
+        first = service.provision_workshop(workshop)
+    queued = service.queue_failed_workshop_seats(first.workshop_id)
+
+    with patch.object(service, "check_workshop_capacity") as capacity:
+        with patch.object(service, "_wait_for_workshop_stability", return_value={}):
+            retried = service.provision_workshop(queued)
+
+    assert retried.status == WorkshopStatus.READY
+    capacity.assert_not_called()
+
+
 def test_reclaim_waits_for_inflight_provisioning_without_status_overwrite():
     service = ProvisioningService()
     workshop = Workshop(

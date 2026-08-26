@@ -20,15 +20,16 @@ class OpenShiftPoolAdapter:
     Kubernetes scheduling and quotas remain the final admission controls.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, clients=None) -> None:
         if not HAS_KUBERNETES:
             raise ValueError(
                 "The 'kubernetes' Python package is required for OpenShiftPoolAdapter."
             )
 
-        try:
+        if clients is None:
+          try:
             config.load_incluster_config()
-        except config.ConfigException:
+          except config.ConfigException:
             try:
                 config.load_kube_config()
             except config.ConfigException as exc:
@@ -37,7 +38,9 @@ class OpenShiftPoolAdapter:
                     f"(tried in-cluster and kubeconfig): {exc}"
                 ) from exc
 
-        self._authorization = client.AuthorizationV1Api()
+          self._authorization = client.AuthorizationV1Api()
+        else:
+          self._authorization = clients.authorization
         self._reservations: Dict[str, Dict[str, Any]] = {}
         self._lock = threading.Lock()
 

@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: partner-ai-launchpad
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: remote-access
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: launchpad-provisioner
+  namespace: partner-ai-launchpad
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: launchpad-remote-provisioner
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["create", "get", "list", "watch", "delete", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "services", "secrets", "configmaps", "persistentvolumeclaims", "serviceaccounts", "resourcequotas", "limitranges"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["route.openshift.io"]
+    resources: ["routes"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["selfsubjectaccessreviews"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: launchpad-remote-provisioner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: launchpad-remote-provisioner
+subjects:
+  - kind: ServiceAccount
+    name: launchpad-provisioner
+    namespace: partner-ai-launchpad

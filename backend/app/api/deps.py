@@ -97,6 +97,11 @@ def create_provisioning_service() -> ProvisioningService:
         from app.adapters.openshift.pool import OpenShiftPoolAdapter
         from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
         from app.adapters.openshift.validation import OpenShiftValidationAdapter
+        from app.adapters.openshift.client_factory import ClusterClientFactory
+        from app.services.cluster_registry import ClusterRegistry
+
+        cluster_registry = ClusterRegistry.from_file()
+        cluster_client_factory = ClusterClientFactory(cluster_registry)
 
         preflight = None
         litellm_base = os.environ.get("LITELLM_API_BASE", "")
@@ -166,6 +171,8 @@ def create_provisioning_service() -> ProvisioningService:
             brain=brain,
             preflight=preflight,
             maas_key_broker=maas_key_broker,
+            cluster_registry=cluster_registry,
+            cluster_client_factory=cluster_client_factory,
         )
     elif mode == "rhdp":
         from app.adapters.rhdp.cleanup import RHDPCleanupAdapter

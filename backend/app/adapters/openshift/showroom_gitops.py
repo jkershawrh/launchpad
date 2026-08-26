@@ -37,6 +37,9 @@ class ShowroomSeat:
     content_repo_url: str
     content_ref: str
     apps_domain: str
+    destination_server: str = "https://kubernetes.default.svc"
+    storage_class: str = "nfs-storage"
+    cluster_id: str = "oberon"
     console_url: str = ""
     content_playbook: str = "site.yml"
     ui_config_path: str = "ui-config.yml"
@@ -60,6 +63,7 @@ def build_showroom_application(
         "app.kubernetes.io/managed-by": "launchpad",
         "launchpad.redhat.com/workshop-id": seat.workshop_id,
         "launchpad.redhat.com/seat-id": seat.seat_id,
+        "launchpad.redhat.com/cluster-id": seat.cluster_id,
     }
     user_data = {
         "user": seat.participant_id,
@@ -94,7 +98,7 @@ def build_showroom_application(
             "image": "quay.io/rhpds/openshift-showroom-terminal-ocp:4.20",
             "storage": {
                 "setup": "true",
-                "storageClass": "nfs-storage",
+                "storageClass": seat.storage_class,
                 "pvcSize": "5Gi",
             },
         },
@@ -140,7 +144,7 @@ def build_showroom_application(
                 "targetRevision": chart_version,
                 "helm": {"releaseName": "showroom", "values": yaml.safe_dump(values, sort_keys=False)},
             },
-            "destination": {"server": "https://kubernetes.default.svc", "namespace": seat.namespace},
+            "destination": {"server": seat.destination_server, "namespace": seat.namespace},
             "syncPolicy": {
                 "automated": {"prune": True, "selfHeal": True},
                 "syncOptions": ["CreateNamespace=true"],
