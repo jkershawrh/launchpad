@@ -1229,6 +1229,31 @@ class ProvisioningService:
                 provision_event.set()
                 return workshop
 
+        # The direct create-and-provision API does not pass through
+        # create_workshop_order(), so it must persist placement here before
+        # any seat request is created.  Otherwise each seat independently
+        # falls back to automatic placement and the workshop loses its
+        # single-cluster affinity (and its cleanup target).
+        if self.cluster_registry:
+            try:
+                selected_cluster = self.cluster_registry.select(
+                    required_capabilities=catalog_item.required_capabilities,
+                    required_models=(catalog_item.metadata or {}).get(
+                        "required_models", []
+                    ),
+                    override=workshop.cluster_ref or workshop.target_cluster,
+                ).cluster_id
+            except ValueError as exc:
+                workshop = workshop.model_copy(update={
+                    "status": WorkshopStatus.FAILED,
+                    "metadata": {**workshop.metadata, "error": str(exc)},
+                })
+                self._save_workshop(workshop)
+                provision_event.set()
+                return workshop
+            workshop = workshop.model_copy(update={"cluster_ref": selected_cluster})
+            self._save_workshop(workshop)
+
         # Capacity is revalidated immediately before mutations. On retry,
         # existing seat sessions already consume cluster capacity, so only
         # seats that still require a new session belong in this calculation.

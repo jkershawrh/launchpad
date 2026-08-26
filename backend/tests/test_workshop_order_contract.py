@@ -10,12 +10,57 @@ import pytest
 
 from app.domain.enums import WorkshopSeatStatus, WorkshopStatus
 from app.domain.models import Workshop, WorkshopSeat
+from app.domain.clusters import ClusterTarget
 from app.main import app
+from app.services.cluster_registry import ClusterRegistry
 from app.services.provisioning import ProvisioningService
 from types import SimpleNamespace
 
 
 client = TestClient(app)
+
+
+def test_direct_provision_persists_cluster_override_before_creating_seats():
+    registry = ClusterRegistry([
+        ClusterTarget(
+            cluster_id="oberon",
+            display_name="Oberon",
+            ingress_domain="apps.oberon.example.com",
+            capabilities=["cpu", "openshift"],
+            local=True,
+        ),
+        ClusterTarget(
+            cluster_id="arena",
+            display_name="Arena",
+            ingress_domain="apps.arena.example.com",
+            capabilities=["cpu", "openshift"],
+            credential_secret="launchpad/arena",
+        ),
+    ])
+    service = ProvisioningService(cluster_registry=registry)
+    observed_clusters = []
+
+    def provision_seat(workshop, index):
+        observed_clusters.append(workshop.cluster_ref)
+        seat = workshop.seats[index].model_copy(
+            update={"status": WorkshopSeatStatus.READY}
+        )
+        return seat, f"session-{index}"
+
+    workshop = Workshop(
+        tenant_id="placement-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=2,
+        target_cluster="oberon",
+    )
+    with (
+        patch.object(service, "check_workshop_capacity", return_value=(True, "ok")),
+        patch.object(service, "_provision_workshop_seat", side_effect=provision_seat),
+    ):
+        result = service.provision_workshop(workshop)
+
+    assert result.cluster_ref == "oberon"
+    assert observed_clusters == ["oberon", "oberon"]
 
 
 def test_workshop_rejects_non_positive_seat_count():
