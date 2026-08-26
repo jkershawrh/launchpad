@@ -164,6 +164,14 @@ class ProvisioningService:
                 except Exception as e:
                     logger.warning("Failed to check orphaned session %s: %s", session.session_id, e)
 
+        if os.environ.get("LAUNCHPAD_MODE") == "openshift":
+            try:
+                from app.services.resource_reconciliation import reconcile_resources
+                report = reconcile_resources(self)
+                logger.info("Resource reconciliation complete: %s", report)
+            except Exception as exc:
+                logger.warning("Resource reconciliation failed: %s", exc)
+
     def _get_provisioner(self, catalog_item):
         from app.domain.enums import CatalogCategory
 

@@ -1,0 +1,94 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: launchpad-resource-reconciler
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: launchpad-backend
+          restartPolicy: Never
+          containers:
+          - name: reconcile
+            image: backend:latest
+            imagePullPolicy: Always
+            command: [python, -c]
+            args:
+            - |
+              from app.api.deps import provisioning_service
+              from app.services.resource_reconciliation import reconcile_resources
+              print(reconcile_resources(provisioning_service))
+            envFrom:
+            - configMapRef:
+                name: launchpad-config
+            - secretRef:
+                name: launchpad-litellm
+                optional: true
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: launchpad-db-secret
+                  key: DATABASE_URL
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: launchpad-model-warmup
+spec:
+  schedule: "0 7 * * 1-5"
+  timeZone: America/Chicago
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: launchpad-backend
+          restartPolicy: Never
+          containers:
+          - name: warmup
+            image: backend:latest
+            imagePullPolicy: Always
+            command: [/bin/sh, -ec]
+            args:
+            - |
+              for model in bench-model llama-gemma3-4b llama-granite-3b llama-llama32-1b llama-phi4-mini; do
+                oc -n intel-inference set probe deployment/$model --readiness --get-url=http://:8080/health --initial-delay-seconds=5 --period-seconds=5 --timeout-seconds=3 --failure-threshold=60
+                oc -n intel-inference scale deployment/$model --replicas=1
+                oc -n intel-inference rollout status deployment/$model --timeout=300s
+              done
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: launchpad-model-scale-down
+spec:
+  schedule: "0 20 * * 1-5"
+  timeZone: America/Chicago
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          serviceAccountName: launchpad-backend
+          restartPolicy: Never
+          containers:
+          - name: scale-down
+            image: backend:latest
+            imagePullPolicy: Always
+            command: [/bin/sh, -ec]
+            args:
+            - |
+              oc -n intel-inference scale deployment/bench-model deployment/llama-gemma3-4b deployment/llama-granite-3b deployment/llama-llama32-1b deployment/llama-phi4-mini --replicas=0

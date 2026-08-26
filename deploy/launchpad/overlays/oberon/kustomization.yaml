@@ -6,6 +6,7 @@ namespace: partner-ai-launchpad
 resources:
   - ../../base
   - buildconfig.yaml
+  - operations-automation.yaml
 
 patches:
   - path: patch-routes.yaml

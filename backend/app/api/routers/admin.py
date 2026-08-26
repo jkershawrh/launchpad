@@ -11,6 +11,7 @@ from app.domain.models import CatalogItem, LabSession
 from app.services.system_monitor import SystemMonitor
 from app.services.health import check_health_detailed
 from app.services.model_inventory import get_model_inventory
+from app.services.resource_reconciliation import reconcile_resources
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 monitor = SystemMonitor()
@@ -25,6 +26,11 @@ def detailed_system_health() -> Dict[str, Any]:
 def model_inventory() -> Dict[str, Any]:
     """Return the curated Oberon portfolio and its current operational state."""
     return get_model_inventory()
+
+
+@router.post("/system/reconcile")
+def reconcile_system_resources() -> Dict[str, Any]:
+    return reconcile_resources(provisioning_service)
 
 
 @router.get("/system/status")
