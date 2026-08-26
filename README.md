@@ -2,6 +2,26 @@
 
 Launchpad is an internal self-service lab platform running on the **Oberon OpenShift cluster**. It provisions individual environments and multi-seat workshops, validates them before handoff, exposes participant access, and reclaims generated resources at the end of a session.
 
+## Start here
+
+New participants, instructors, content integrators (CIs), tenant owners,
+platform operators, and developers should begin with the
+[persona onboarding guide](docs/persona-onboarding.md). It defines access
+boundaries, first-use workflows, the CI delivery contract, testing and
+certification expectations, and the evidence to provide when requesting help.
+
+Quick paths:
+
+- **Participant:** open the assigned ready session, then use its Visual Guide
+  and Live Workspace.
+- **Instructor:** order one multi-seat workshop, verify capacity, wait for every
+  seat to become ready, distribute seat-specific links, and reclaim after use.
+- **Content integrator:** keep the catalog definition, Antora/AsciiDoc Showroom
+  content, tests, and deployable resources in this repository; submit them for
+  review and certification.
+- **Operator:** use the admin dashboard and cluster-aware runbooks; production
+  promotion and shared Operator/model management are administrative actions.
+
 ## Current deployment
 
 | Surface | URL |
@@ -27,6 +47,10 @@ Use **Request Environment → Multi-seat Workshop** to order one workshop contai
 The `ai-sandbox` catalog item is OpenShift-first. Its primary access is the real OpenShift Console scoped to the generated namespace, with Web Terminal and browser IDE access where available. The requester receives the namespace-level `edit` role; Launchpad does not grant cluster-admin. Jupyter is not a default access method.
 
 The shared Oberon platform currently provides Red Hat OpenShift AI, Serverless, Service Mesh, cluster observability, Argo CD, and Intel device plugins. These operators are centrally managed; a sandbox order does not install cluster-wide operators.
+
+The request form shows the live healthy model inventory and permits multiple
+model selections. Models remain centrally served behind LiteLLM; the sandbox
+receives scoped API access and does not load model weights into its pod.
 
 ## Active file-backed catalog
 
@@ -71,6 +95,7 @@ frontend/      Partner portal
 admin/         Internal operations UI
 catalog/       Active file-backed catalog definitions
 content/       Antora/AsciiDoc Showroom content
+content-operators/ Operator-workshop Antora/AsciiDoc Showroom content
 demos/         Demo frontend, gateway, and sandbox image
 deploy/        Kustomize, build, and optional RHDP/AgnosticV assets
 docs/          Current runbooks plus historical design documents
@@ -85,6 +110,11 @@ cd frontend
 npm test -- --run
 npm run build
 ```
+
+New catalog experiences must include tests for their schema, request contract,
+provisioning plan, functional validation, Showroom journey, and deterministic
+cleanup. Follow the staged CI checklist in
+[docs/persona-onboarding.md](docs/persona-onboarding.md#content-integrator-ci-onboarding).
 
 Use an explicit Oberon context for every cluster command; do not change the current kubeconfig context:
 
