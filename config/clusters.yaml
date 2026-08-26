@@ -22,3 +22,11 @@ clusters:
     model_endpoints:
       smollm2-360m: https://inference.apps.oberon.fm2aihpcsed.com/v1
       smollm3-3b: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      qwen36-moe: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      llama31-8b-w8a8: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      granite-2b: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      gemma-4-e4b: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      gemma3-4b: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      granite-3b: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      llama32-1b: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      phi4-mini: https://inference.apps.oberon.fm2aihpcsed.com/v1

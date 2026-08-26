@@ -85,6 +85,7 @@ def test_active_ai_sandbox_has_an_eligible_cluster():
     assert set(catalog_item["metadata"]["required_models"]).issubset(
         selected.model_endpoints
     )
+    assert len(registry.get("oberon").model_endpoints) == 10
 
 
 def test_sandbox_model_selection_controls_cluster_placement():
