@@ -49,3 +49,18 @@ def test_reconcile_never_deletes_namespace_referenced_by_terminal_session(lab_se
 
     service.cleanup.cleanup.assert_not_called()
     assert report["orphan_namespaces_deleted"] == []
+
+
+def test_reconcile_fails_closed_when_database_is_unavailable(lab_session):
+    service = MagicMock(spec=ProvisioningService)
+    service._sessions = {}
+    service.cleanup = MagicMock()
+
+    with patch("app.services.resource_reconciliation._database_available", return_value=False), \
+         patch("app.services.resource_reconciliation._managed_namespaces") as namespaces:
+        from app.services.resource_reconciliation import reconcile_resources
+        report = reconcile_resources(service, delete_orphans=True)
+
+    namespaces.assert_not_called()
+    service.cleanup.cleanup.assert_not_called()
+    assert report["errors"] == ["database unavailable — orphan deletion skipped"]

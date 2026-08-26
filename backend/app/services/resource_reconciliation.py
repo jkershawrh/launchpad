@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import os
 from typing import Any
 
 from app.domain.enums import SessionStatus
@@ -43,6 +44,19 @@ def _managed_namespaces() -> list[str]:
     return sorted(item.metadata.name for item in result.items)
 
 
+def _database_available() -> bool:
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        return True
+    try:
+        import psycopg2
+        connection = psycopg2.connect(url, connect_timeout=3)
+        connection.close()
+        return True
+    except Exception:
+        return False
+
+
 def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[str, Any]:
     """Reconcile persisted lifecycle state with launchpad-managed namespaces."""
     report: dict[str, Any] = {
@@ -50,6 +64,9 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
         "orphan_namespaces_deleted": [],
         "errors": [],
     }
+    if delete_orphans and not _database_available():
+        report["errors"].append("database unavailable — orphan deletion skipped")
+        return report
     for session in list(service._sessions.values()):
         if session.status != SessionStatus.CLEANUP_FAILED or not session.namespace:
             continue
