@@ -13,6 +13,7 @@ spec:
       template:
         metadata:
           labels:
+            app.kubernetes.io/managed-by: kustomize
             app.kubernetes.io/part-of: partner-ai-launchpad
             app.kubernetes.io/name: launchpad-resource-reconciler
         spec:
