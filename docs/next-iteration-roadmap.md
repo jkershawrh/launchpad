@@ -77,3 +77,25 @@ Use the graduation sequence and ownership boundaries in
 `docs/production-solution-pathways.md`. A solution is not production merely
 because its UI is reachable from Launchpad; it must pass contract, security,
 operations, visual journey, capacity, reclaim, and support gates.
+
+## Pathway 6: self-service operations and auto-remediation
+
+- Expand self-service from ordering to CI scaffolding, preview certification,
+  tenant administration within policy, actionable failure explanations, and
+  owner-scoped retry/reclaim.
+- Normalize failure classes and evidence before automating mutations.
+- Graduate each remediation independently through observe, recommend,
+  approval-gated execution, and allow-listed automatic execution.
+- Start with retry-safe session-scoped actions such as validation retry,
+  Showroom resync, owned Route recreation, failed-seat retry, expired-session
+  reclaim, and cleanup reconciliation.
+- Require immutable target-cluster identity, idempotency, retry budgets,
+  functional post-validation, audit records, circuit breakers, and escalation.
+- Keep RBAC/Secret changes, cluster-scoped Operators, shared model deployment,
+  infrastructure/DNS/certificates, capacity expansion, and ambiguous deletion
+  behind human approval.
+- Move long-running provisioning and remediation to durable workers so the
+  platform can recover its work after API restarts.
+
+The complete autonomy boundary and graduation sequence are defined in
+`docs/self-service-and-autoremediation.md`.

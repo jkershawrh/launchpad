@@ -9,6 +9,13 @@ to catalog definitions, Showroom content, placement policy, shared operators,
 model serving, or the platform itself remain Git-reviewed and are promoted by
 the platform team.
 
+The longer-term goal is also operational self-service: known, low-risk failures
+are detected, classified, remediated, and functionally revalidated without an
+operator shepherding every session. Automation remains policy-bound and
+audited; security, shared infrastructure, capacity, and novel failures retain a
+human approval boundary. See
+[self-service-and-autoremediation.md](self-service-and-autoremediation.md).
+
 ## Persona map
 
 | Persona | Primary goal | Normal interface | Required access |
@@ -180,6 +187,10 @@ results, screenshots of participant-facing changes, one successful session ID,
 reclaim evidence, rollback notes, and any new operational dependency. Platform
 operators perform the production promotion.
 
+The planned CI self-service flow will generate this repository-native
+scaffolding and evidence bundle from a guided intake. It will open a reviewable
+change; it will not bypass Git review or production certification.
+
 ## Tenant-owner onboarding
 
 - Confirm the correct tenant and branding before ordering.
@@ -209,6 +220,8 @@ Operators own the control plane, shared services, and production promotion:
 - Do not retry cleanup against another cluster or migrate a live session.
 - Review cluster health, capacity reservations, model health, cleanup failures,
   and orphan resources before enabling broad ordering.
+- Promote remediation failure classes progressively from observe-only to
+  recommend, approval-gated execution, and narrowly allow-listed automation.
 
 Start with [DEPLOYMENT.md](../DEPLOYMENT.md),
 [deploy/multicluster/README.md](../deploy/multicluster/README.md), and

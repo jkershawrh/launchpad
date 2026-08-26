@@ -2,6 +2,13 @@
 
 Launchpad is an internal self-service lab platform running on the **Oberon OpenShift cluster**. It provisions individual environments and multi-seat workshops, validates them before handoff, exposes participant access, and reclaims generated resources at the end of a session.
 
+Its target operating model is self-service at both layers: users and CIs can
+request or contribute governed experiences, while the platform detects and
+recovers from known low-risk failures through evidence-gated automation. Novel,
+security-sensitive, cluster-scoped, and high-impact actions remain human
+approved. See the
+[self-service and auto-remediation operating model](docs/self-service-and-autoremediation.md).
+
 ## Start here
 
 New participants, instructors, content integrators (CIs), tenant owners,
