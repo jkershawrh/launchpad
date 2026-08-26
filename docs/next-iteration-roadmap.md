@@ -52,3 +52,28 @@ Measured baseline for 25 seats on 2026-08-26:
 - Certify 75 seats on Arena only after the 50-seat gate passes.
 - Continue toward the fleet goals in `docs/three-by-seventy-five-capacity-plan.md`.
 - Do not advertise a seat limit inferred only from allocatable cluster capacity.
+
+## Pathway 5: production solution portfolio
+
+Promote StarGate, DeepField, and GeoLux as production solution paths without
+bundling all three into every participant seat. Launchpad remains the catalog,
+placement, workshop, Showroom, handoff, and lifecycle control plane; each
+solution retains its own repository, deployment, data, security, and release
+ownership.
+
+- **StarGate:** shared validation and operations service. Integrate Launchpad
+  lifecycle evidence, readiness rubrics, capacity signals, failure classes, and
+  gated remediation. Offer a guided operations journey only when the learning
+  objective is platform reliability.
+- **DeepField:** shared fleet observability and inference-intelligence service.
+  Add a guided journey using scoped or synthetic signals to demonstrate signal
+  compression, classification, routing, forecasting, and advisory remediation
+  without exposing unrestricted fleet telemetry.
+- **GeoLux:** governed agentic-inference solution. Add it after StarGate and
+  DeepField contracts are stable, with a guided hypothesis, constraint,
+  stability, routing, and replay journey backed by approved model endpoints.
+
+Use the graduation sequence and ownership boundaries in
+`docs/production-solution-pathways.md`. A solution is not production merely
+because its UI is reachable from Launchpad; it must pass contract, security,
+operations, visual journey, capacity, reclaim, and support gates.

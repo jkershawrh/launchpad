@@ -1,10 +1,18 @@
-# Intel x Red Hat AI Platform Ecosystem (Historical Design)
+# Intel x Red Hat AI Platform Ecosystem
 
-> This document describes the broader planned RHDP ecosystem, not the currently deployed Oberon catalog. See the repository README for current production scope.
+> Much of the detailed RHDP deployment material below is historical. StarGate,
+> DeepField, and GeoLux are now tracked as candidate production solution paths
+> for the internal Oberon/Arena platform. See
+> `docs/production-solution-pathways.md` for the current graduation model and
+> `README.md` for the deployed Launchpad scope.
 
 ## Overview
 
-Three applications form the Intel x Red Hat AI platform. Launchpad is the orchestration brain; StarGate and DeepField are complementary signal sources that feed into Launchpad's intelligence layer.
+Launchpad, StarGate, DeepField, and GeoLux form complementary product paths.
+Launchpad is the self-service lifecycle control plane; StarGate provides
+validation and operations; DeepField provides fleet observability and inference
+intelligence; GeoLux provides governed agentic-inference workflows. They deploy
+independently and integrate through versioned APIs and events.
 
 ```
    +------------------+    +---------------------+    +------------------+

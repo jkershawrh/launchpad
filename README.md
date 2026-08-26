@@ -103,4 +103,6 @@ For certified multi-seat behavior and the current visual release gate, see
 [docs/oberon-workshop-readiness.md](docs/oberon-workshop-readiness.md). Deferred
 performance, ETA, automation, and scale pathways are tracked in
 [docs/next-iteration-roadmap.md](docs/next-iteration-roadmap.md). For adapter
-behavior, see [docs/adapters.md](docs/adapters.md).
+behavior, see [docs/adapters.md](docs/adapters.md). StarGate, DeepField, and
+GeoLux production-candidate paths are defined in
+[docs/production-solution-pathways.md](docs/production-solution-pathways.md).
