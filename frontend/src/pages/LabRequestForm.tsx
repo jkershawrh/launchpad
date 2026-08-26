@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useBranding } from '../context/BrandingContext';
-import type { BrandingProfile, CatalogItem, Tenant } from '../api/types';
+import type { AvailableModel, BrandingProfile, CatalogItem, Tenant } from '../api/types';
+import { defaultModelSelection, toggleModelSelection } from '../modelAccessContract';
 
 export default function LabRequestForm({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [availableModels, setAvailableModels] = useState<AvailableModel[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(false);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
 
   const [form, setForm] = useState({
     tenant_id: '',
@@ -58,6 +62,22 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
   const selectedCatalog = catalogs.find((c) => c.catalog_item_id === form.catalog_item_id);
   const isSandbox = selectedCatalog?.category === 'open_sandbox';
 
+  useEffect(() => {
+    if (!isSandbox) {
+      setSelectedModels([]);
+      return;
+    }
+    setModelsLoading(true);
+    api.listAvailableModels()
+      .then(({ models }) => {
+        setAvailableModels(models);
+        const defaults = defaultModelSelection(selectedCatalog?.metadata, models);
+        setSelectedModels((current) => current.length ? current.filter((id) => models.some((model) => model.id === id)) : defaults);
+      })
+      .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load available models'))
+      .finally(() => setModelsLoading(false));
+  }, [isSandbox, selectedCatalog?.catalog_item_id]);
+
   const primaryColor = brandingProfile?.primary_color || '#EE0000';
   const primaryHoverColor = primaryColor === '#EE0000' ? '#A30000' : primaryColor;
 
@@ -82,6 +102,10 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
       };
 
       if (isSandbox) {
+        if (selectedModels.length === 0) {
+          throw new Error('Select at least one model for sandbox API access.');
+        }
+        requestData.requested_models = selectedModels;
         requestData.metadata = {
           sandbox_config: sandboxConfig,
         };
@@ -250,6 +274,45 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
             <p className="text-sm text-[#6A6E73] mb-5">Configure your open sandbox environment settings.</p>
 
             <div className="space-y-5">
+              <fieldset>
+                <legend className="block text-sm font-medium text-[#3C3F42] mb-1">Model access</legend>
+                <p className="text-sm text-[#6A6E73] mb-3">
+                  Select one or more centrally hosted models. Models stay behind LiteLLM and are not loaded into your sandbox.
+                </p>
+                {modelsLoading ? (
+                  <p className="text-sm text-[#6A6E73]">Checking live model availability...</p>
+                ) : availableModels.length === 0 ? (
+                  <p className="text-sm text-red-700">No healthy models are currently available.</p>
+                ) : (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {availableModels.map((model) => {
+                      const selected = selectedModels.includes(model.id);
+                      return (
+                        <label
+                          key={model.id}
+                          className={`rounded-md border p-3 cursor-pointer transition-colors ${
+                            selected ? 'border-[#0068B5] bg-[#0068B5]/5' : 'border-[#D2D2D2] hover:border-[#6A6E73]'
+                          }`}
+                        >
+                          <span className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              className="mt-1"
+                              checked={selected}
+                              onChange={() => setSelectedModels((current) => toggleModelSelection(current, model.id))}
+                            />
+                            <span>
+                              <span className="block text-sm font-medium text-[#151515]">{model.display_name}</span>
+                              <span className="block text-xs text-[#6A6E73] mt-1">{model.hardware} · {model.use_case}</span>
+                            </span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </fieldset>
+
               <div>
                 <label className="block text-sm font-medium text-[#3C3F42] mb-1">Stack Level</label>
                 <select
@@ -338,7 +401,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
 
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || (isSandbox && (modelsLoading || selectedModels.length === 0))}
           style={{ backgroundColor: primaryColor }}
           className="w-full py-3 text-white rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           onMouseEnter={(e) => { if (!submitting) (e.target as HTMLButtonElement).style.backgroundColor = primaryHoverColor; }}

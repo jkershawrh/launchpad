@@ -101,6 +101,23 @@ def test_api_can_get_catalog_item(client):
     assert resp.json()["category"] == "quick_start"
 
 
+def test_api_lists_only_healthy_models_for_environment_requests(client, monkeypatch):
+    from app.api.routers import models
+
+    monkeypatch.setattr(models, "get_model_inventory", lambda: {
+        "models": [
+            {"id": "ready", "display_name": "Ready", "hardware": "Intel Xeon", "use_case": "Chat", "status": "healthy"},
+            {"id": "asleep", "display_name": "Asleep", "hardware": "Intel Xeon", "use_case": "Chat", "status": "stopped"},
+        ]
+    })
+    resp = client.get("/api/v1/models")
+    assert resp.status_code == 200
+    assert resp.json() == {"models": [{
+        "id": "ready", "display_name": "Ready", "hardware": "Intel Xeon",
+        "use_case": "Chat", "status": "healthy",
+    }]}
+
+
 def test_api_catalog_not_found(client):
     resp = client.get("/api/v1/catalog/nonexistent")
     assert resp.status_code == 404

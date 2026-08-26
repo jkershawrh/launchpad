@@ -19,4 +19,6 @@ clusters:
     local: true
     priority: 50
     capabilities: [cpu, gaudi, gaudi_direct, openshift, operators, openshift-ai, showroom, model_endpoint, vector_db, kafka, workbench, control-plane]
-    model_endpoints: {}
+    model_endpoints:
+      smollm2-360m: https://inference.apps.oberon.fm2aihpcsed.com/v1
+      smollm3-3b: https://inference.apps.oberon.fm2aihpcsed.com/v1

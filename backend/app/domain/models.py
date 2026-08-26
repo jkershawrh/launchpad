@@ -87,6 +87,7 @@ class LabRequest(BaseModel):
     quota_profile: Optional[str] = None
     branding_profile_id: Optional[str] = None
     requested_capabilities: List[str] = Field(default_factory=list)
+    requested_models: List[str] = Field(default_factory=list)
     status: LabRequestStatus = LabRequestStatus.SUBMITTED
     created_at: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
@@ -97,6 +98,14 @@ class LabRequest(BaseModel):
         if not v.strip():
             raise ValueError("field must not be empty")
         return v
+
+    @field_validator("requested_models")
+    @classmethod
+    def requested_models_are_unique_and_non_empty(cls, values: List[str]) -> List[str]:
+        normalized = [value.strip() for value in values]
+        if any(not value for value in normalized):
+            raise ValueError("requested model IDs must not be empty")
+        return list(dict.fromkeys(normalized))
 
 
 class ValidationResult(BaseModel):

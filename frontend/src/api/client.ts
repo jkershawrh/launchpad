@@ -1,5 +1,6 @@
 import type {
   BrandingProfile,
+  AvailableModelsResponse,
   CatalogItem,
   HandoffPackage,
   LabRequest,
@@ -37,6 +38,7 @@ export const api = {
   // Catalog
   listCatalog: () => request<CatalogItem[]>('/catalog'),
   getCatalogItem: (id: string) => request<CatalogItem>(`/catalog/${id}`),
+  listAvailableModels: () => request<AvailableModelsResponse>('/models'),
 
   // Lab Requests
   createLabRequest: (data: Partial<LabRequest>) =>

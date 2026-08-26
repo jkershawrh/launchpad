@@ -35,9 +35,22 @@ export interface LabRequest {
   hardware_profile?: string;
   quota_profile?: string;
   branding_profile_id?: string;
+  requested_models?: string[];
   metadata?: Record<string, unknown>;
   status: string;
   created_at: string;
+}
+
+export interface AvailableModel {
+  id: string;
+  display_name: string;
+  hardware: string;
+  use_case: string;
+  status: 'healthy';
+}
+
+export interface AvailableModelsResponse {
+  models: AvailableModel[];
 }
 
 export interface ValidationResult {

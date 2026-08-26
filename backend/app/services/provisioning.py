@@ -250,6 +250,9 @@ class ProvisioningService:
 
     def _select_target_cluster(self, request: LabRequest, catalog_item) -> Optional[str]:
         override = request.metadata.get("target_cluster")
+        required_models = request.requested_models or (
+            (catalog_item.metadata or {}).get("required_models", [])
+        )
         if not self.cluster_registry:
             return override or self._get_placement_recommendation(
                 request.hardware_profile or catalog_item.default_hardware_profile or "xeon-basic",
@@ -257,7 +260,7 @@ class ProvisioningService:
             )
         target = self.cluster_registry.select(
             required_capabilities=catalog_item.required_capabilities,
-            required_models=(catalog_item.metadata or {}).get("required_models", []),
+            required_models=required_models,
             override=override,
         )
         return target.cluster_id
@@ -405,6 +408,17 @@ class ProvisioningService:
         if not catalog_item:
             raise ValueError(f"Catalog item {request.catalog_item_id} not found")
 
+        selected_models = request.requested_models or list(
+            (catalog_item.metadata or {}).get("required_models", [])
+        )
+        if request.requested_models:
+            catalog_item = catalog_item.model_copy(update={
+                "metadata": {
+                    **(catalog_item.metadata or {}),
+                    "required_models": selected_models,
+                }
+            })
+
         if self.preflight:
             preflight_result = self.preflight.check(catalog_item)
             if not preflight_result.passed:
@@ -432,7 +446,7 @@ class ProvisioningService:
                 issued_key = self.maas_key_broker.create_key(
                     alias=f"launchpad-{request.request_id}",
                     duration=ttl_str,
-                    models=metadata.get("required_models", []),
+                    models=selected_models,
                     rpm_limit=int(metadata.get(
                         "maas_rpm_limit", os.environ.get("MAAS_RATE_LIMIT_RPM", "60")
                     )),
@@ -460,6 +474,7 @@ class ProvisioningService:
             "target_cluster": preferred_cluster,
             "required_resources": {
                 **plan.required_resources,
+                "requested_models": selected_models,
                 "maas_api_key": maas_api_key,
                 "sandbox_data": sandbox_data,
             }
@@ -477,6 +492,7 @@ class ProvisioningService:
             maas_api_key=maas_api_key,
             resources={"cluster_id": preferred_cluster},
             metadata={
+                "requested_models": selected_models,
                 "labels": {
                     "launchpad.redhat.com/tenant": request.tenant_id,
                     "launchpad.redhat.com/catalog-item": request.catalog_item_id,
@@ -533,7 +549,10 @@ class ProvisioningService:
             "dashboard_url": dashboard_url,
             "expires_at": expires_at,
             "resources": session_resources,
-            "metadata": {"labels": {**session.metadata.get("labels", {}), **session_labels}},
+            "metadata": {
+                **session.metadata,
+                "labels": {**session.metadata.get("labels", {}), **session_labels},
+            },
         })
         session = transition(session, SessionStatus.VALIDATING, reason="provisioning complete")
 
