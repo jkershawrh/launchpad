@@ -66,21 +66,32 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
                 "completed_at": datetime.utcnow(),
                 "lifecycle_events": session.lifecycle_events + [event],
             })
+            updated = service._scrub_credentials(updated)
             service._save_session(updated)
             report["sessions_reconciled"] += 1
         except Exception as exc:
             report["errors"].append(f"session {session.session_id}: {exc}")
 
+    # Terminal records must never retain access credentials, including records
+    # reclaimed by older versions of the service.
+    for session in list(service._sessions.values()):
+        if session.status != SessionStatus.RECLAIMED:
+            continue
+        if session.maas_api_key or any(
+            key in session.resources for key in ("sa_token", "sandbox_data")
+        ):
+            service._save_session(service._scrub_credentials(session))
+
     if not delete_orphans or not service.cleanup:
         return report
 
-    protected = {
+    referenced = {
         session.namespace
         for session in service._sessions.values()
-        if session.namespace and session.status in ACTIVE_STATES
+        if session.namespace
     }
     for namespace in _managed_namespaces():
-        if namespace in protected:
+        if namespace in referenced:
             continue
         try:
             service.cleanup.cleanup(namespace)

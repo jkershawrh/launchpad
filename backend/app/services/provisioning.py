@@ -146,7 +146,14 @@ class ProvisioningService:
                         core = client.CoreV1Api()
                         try:
                             core.read_namespace(session.namespace)
-                        except Exception as e:
+                        except client.exceptions.ApiException as e:
+                            if e.status != 404:
+                                logger.warning(
+                                    "Namespace check failed for active session %s: %s",
+                                    session.session_id,
+                                    e,
+                                )
+                                continue
                             logger.info("Namespace %s gone, reclaiming orphaned session %s: %s", session.namespace, session.session_id, e)
                             event = LifecycleEvent(
                                 from_status=session.status,
@@ -160,6 +167,7 @@ class ProvisioningService:
                                     "lifecycle_events": session.lifecycle_events + [event],
                                 }
                             )
+                            session = self._scrub_credentials(session)
                             self._save_session(session)
                 except Exception as e:
                     logger.warning("Failed to check orphaned session %s: %s", session.session_id, e)
