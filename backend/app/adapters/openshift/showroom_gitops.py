@@ -40,6 +40,7 @@ class ShowroomSeat:
     destination_server: str = "https://kubernetes.default.svc"
     storage_class: str = "nfs-storage"
     cluster_id: str = "oberon"
+    cluster_display_name: str = "OpenShift cluster"
     console_url: str = ""
     content_playbook: str = "site.yml"
     ui_config_path: str = "ui-config.yml"
@@ -72,6 +73,7 @@ def build_showroom_application(
         "namespace": seat.namespace,
         "workspace_url": seat.workspace_url,
         "openshift_console_url": seat.console_url,
+        "cluster_display_name": seat.cluster_display_name,
         "content_revision": seat.content_ref,
         "showroom_journey": seat.journey,
     }

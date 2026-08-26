@@ -1,7 +1,7 @@
 = Discover Platform Operators
 :navtitle: Discover Operators
 
-Oberon centrally manages Red Hat and Intel Operators. In this exercise you inspect their APIs and learn which capabilities can be consumed from your namespace.
+{cluster_display_name} centrally manages Red Hat and Intel Operators. In this exercise you inspect their APIs and learn which capabilities can be consumed from your namespace.
 
 == Inspect available APIs
 

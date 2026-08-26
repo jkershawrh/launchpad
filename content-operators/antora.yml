@@ -10,3 +10,4 @@ asciidoc:
     seat_id: seat
     namespace: user1-operator-workshop
     openshift_console_url: "https://console-openshift-console.apps.example.com"
+    cluster_display_name: "OpenShift cluster"

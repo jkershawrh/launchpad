@@ -48,12 +48,14 @@ def test_operator_workshop_uses_terminal_and_external_console_without_demo_works
         content_repo_url="https://github.com/jkershawrh/launchpad.git",
         content_ref="main", apps_domain="apps.example.com",
         console_url="https://console.example.com", journey="openshift-operators",
+        cluster_display_name="Arena CPU Execution",
     ))
     values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
     ui = yaml.safe_load(values["content"]["uiConfig"])
     assert [tab["name"] for tab in ui["tabs"]] == ["Instructions", "Terminal"]
     user_data = yaml.safe_load(values["content"]["user_data"])
     assert user_data["openshift_console_url"] == "https://console.example.com"
+    assert user_data["cluster_display_name"] == "Arena CPU Execution"
     assert values["terminal"]["storage"]["setup"] == "false"
     assert values["terminal"]["resources"]["requests"]["cpu"] == "100m"
     assert values["wetty"]["resources"]["requests"]["cpu"] == "50m"

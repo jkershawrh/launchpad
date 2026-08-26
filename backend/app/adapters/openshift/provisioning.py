@@ -211,6 +211,10 @@ class OpenShiftProvisioningAdapter:
                     destination_server=self._target.api_url if self._target else "https://kubernetes.default.svc",
                     storage_class=self._target.storage_class if self._target else "nfs-storage",
                     cluster_id=self._target.cluster_id if self._target else "oberon",
+                    cluster_display_name=(
+                        self._target.display_name
+                        if self._target else "Oberon Primary"
+                    ),
                     content_playbook=str(res.get("showroom_content_playbook", "site.yml")),
                     journey=str(res.get("showroom_journey", "guided-rag")),
                 ),

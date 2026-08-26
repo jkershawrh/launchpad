@@ -7,7 +7,7 @@ Deploy a small OpenShift workload, expose it with a Route, and inspect it using 
 
 [source,bash,role=execute,subs=attributes+]
 ----
-oc create deployment hello --image=registry.access.redhat.com/ubi9/httpd-24 \
+oc create deployment hello --image=quay.io/openshifttest/hello-openshift:1.2.0 \
   -n {namespace}
 oc expose deployment hello --port=8080 -n {namespace}
 oc expose service hello -n {namespace}
@@ -20,9 +20,11 @@ oc rollout status deployment/hello -n {namespace} --timeout=120s
 ----
 oc get deployment,pod,service,route -n {namespace}
 oc logs deployment/hello -n {namespace} --tail=20
+HELLO_URL="http://$(oc get route hello -n {namespace} -o jsonpath='{.spec.host}')"
+curl --fail --silent --show-error "$HELLO_URL"
 ----
 
-Open *Topology* in the OpenShift Console and select `{namespace}`. Confirm the Deployment, Pod, Service, and Route are connected and healthy.
+Confirm that `curl` prints `Hello OpenShift!`. Then open *Topology* in the OpenShift Console and select `{namespace}`. Confirm the Deployment, Pod, Service, and Route are connected and healthy.
 
 == Clean up the exercise
 

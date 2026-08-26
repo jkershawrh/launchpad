@@ -10,7 +10,7 @@ Namespace:: `{namespace}`
 Workshop:: `{workshop_id}`
 Seat:: `{seat_id}`
 
-This workshop uses operators already managed on the shared Oberon platform. It does not install cluster-wide Operators for each participant.
+This workshop uses operators already managed on the shared {cluster_display_name} platform. It does not install cluster-wide Operators for each participant.
 
 == Verify access
 
@@ -25,7 +25,7 @@ oc get pods -n {namespace}
 ----
 . Confirm the authorization result is `yes` and the active project is your assigned namespace.
 
-The *OpenShift Console* tab opens the shared cluster console. Select your assigned namespace before changing any resource.
+The *OpenShift Console* tab opens the {cluster_display_name} console. Select your assigned namespace before changing any resource.
 
 [.next-nav]
 xref:02-operator-discovery.adoc[Next: Discover platform operators →]

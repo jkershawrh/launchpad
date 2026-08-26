@@ -29,6 +29,17 @@ def test_operator_workshop_playbook_starts_on_operator_journey():
     assert "OpenShift AI Operator Workshop" in operator_index.read_text()
     assert "Inference Overdrive" not in operator_index.read_text()
     assert "link:{openshift_console_url}" in operator_index.read_text()
+    assert "{cluster_display_name}" in operator_index.read_text()
+    assert "Oberon" not in operator_index.read_text()
+
+    discovery = ROOT / "content-operators/modules/ROOT/pages/02-operator-discovery.adoc"
+    assert "{cluster_display_name}" in discovery.read_text()
+    assert "Oberon" not in discovery.read_text()
+
+    exercise = ROOT / "content-operators/modules/ROOT/pages/03-deploy-and-observe.adoc"
+    exercise_text = exercise.read_text()
+    assert "quay.io/openshifttest/hello-openshift:1.2.0" in exercise_text
+    assert "curl" in exercise_text
 
 
 def test_nookbag_config_has_guided_workspace_tabs():
