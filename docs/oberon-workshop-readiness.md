@@ -13,16 +13,19 @@ a fail-closed live capacity check before provisioning.
 
 ## Certified path
 
-The most recent full-scale live certification used 20 seats on 2026-08-25 and completed with:
+The most recent fleet certification on 2026-08-26 ran three concurrently active
+25-seat workshops: one on Oberon and two on Arena. It completed with:
 
-- 20 of 20 seats ready
-- 20 of 20 Argo CD applications `Synced` and `Healthy`
-- 20 of 20 Showroom URLs returning HTTP 200
-- the root Launchpad Argo CD application `Synced` and `Healthy`
-- retry preserving already-ready seats and reusing deterministic namespaces
+- 75 of 75 seats ready
+- 75 of 75 Argo CD applications `Synced` and `Healthy`
+- 75 of 75 namespaces on their persisted target clusters
+- representative Showroom URLs from all three workshops returning HTTP 200
+- complete bulk reclaim with zero remaining namespaces or Applications
+- no backend restart while provisioning was bounded to one workshop graph at a time
 
-The successful nine-seat recovery pass completed in approximately 6 minutes 37
-seconds after the Showroom chart cache was warm.
+Measured 25-seat readiness was approximately 14 minutes 9 seconds on Oberon and
+2 minutes 35 seconds to 2 minutes 54 seconds on Arena. These are certification
+measurements, not yet published service-level objectives.
 
 ## Required Oberon settings
 
@@ -44,8 +47,29 @@ participants. Workshop reclaim is asynchronous: the organizer receives an
 immediate accepted response and can follow persisted per-seat cleanup progress
 until the workshop reaches `completed` or `completed_with_errors`.
 
-Before broad unscheduled self-service, add concurrent-workshop admission policy,
-load-test two simultaneous workshops, and publish organizer support/SLO
-guidance.
+Before broad unscheduled self-service, complete the visual Showroom-scale gate
+below and publish organizer support guidance. Provisioning speed optimization,
+queued workshop execution, and readiness ETA belong to the next iteration and
+are tracked in `docs/next-iteration-roadmap.md`.
 
-The 20-seat certification proves the collective lifecycle implementation. New orders use `openshift-operators-workshop`; the earlier Guided RAG catalog item is deprecated and is not the canonical operator workshop.
+## Current release gate: visual Showroom scale
+
+Run one 25-seat `openshift-operators-workshop` and validate the participant
+experience in real browsers, not only with API probes:
+
+- visually inspect seats 1, 5, 10, 15, 20, and 25
+- confirm personalized participant, namespace, workshop, seat, and cluster values
+- navigate every Antora page using both side navigation and next-page actions
+- open the Terminal and run the documented authorization checks
+- complete the operator discovery exercise
+- deploy the hello workload and require `Hello OpenShift!` through its Route
+- open the correct cluster Console and confirm Topology in the seat namespace
+- verify no broken layout, stale content, wrong-cluster wording, or cross-seat data
+- reclaim all 25 seats and require zero namespace/Application residue
+
+Arena browser validation requires a trusted certificate for
+`*.apps.arena.fm2aihpcsed.com`. Until that certificate is installed, Arena may
+be used for API/load certification but cannot pass this browser release gate.
+
+New orders use `openshift-operators-workshop`; the earlier Guided RAG catalog
+item is deprecated and is not the canonical operator workshop.

@@ -99,4 +99,8 @@ oc --context='default/api-oberon-fm2aihpcsed-com:6443/kube:admin' ...
 - Some older files in `docs/` describe the original RHDP/infra01 target. Files explicitly labeled **historical** are design references, not the Oberon production contract.
 - Repository-wide lint currently includes pre-existing React purity errors in `BrandingContext.tsx` and `Fleet.tsx`.
 
-For certified multi-seat behavior, see [docs/oberon-workshop-readiness.md](docs/oberon-workshop-readiness.md). For adapter behavior, see [docs/adapters.md](docs/adapters.md).
+For certified multi-seat behavior and the current visual release gate, see
+[docs/oberon-workshop-readiness.md](docs/oberon-workshop-readiness.md). Deferred
+performance, ETA, automation, and scale pathways are tracked in
+[docs/next-iteration-roadmap.md](docs/next-iteration-roadmap.md). For adapter
+behavior, see [docs/adapters.md](docs/adapters.md).
