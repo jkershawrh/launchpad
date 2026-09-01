@@ -1,0 +1,22 @@
+version: 3
+supersedes: validation-matrix-v2.yaml
+feature: public-passwordless-lab-access
+stages: [RED, GREEN-local, GREEN-integration, GREEN-live]
+columns: [unit, contract, component, bdd, integration, security, external_browser, fault_injection, cleanup, performance]
+rows:
+  - {id: PA-DNS-001, requirement: Public DNS and trusted TLS, critical: true, stage: RED, evidence: [evidence/public-access/oberon-live-readiness-2026-09-01.json]}
+  - {id: PA-ISO-002, requirement: Public route isolation, critical: true, stage: RED, evidence: [evidence/public-access/oberon-live-readiness-2026-09-01.json]}
+  - {id: PA-CODE-003, requirement: Order and one-time code creation, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_access.py]}
+  - {id: PA-CLAIM-004, requirement: Individual and workshop claims, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_access.py]}
+  - {id: PA-CONC-005, requirement: Twenty-five concurrent unique claims, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_access.py]}
+  - {id: PA-IDENT-006, requirement: Seat recovery and multi-lab identity, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_access.py]}
+  - {id: PA-GATE-007, requirement: Showroom and workspace authorization, critical: true, stage: GREEN-local, evidence: [backend/app/public_gateway.py, backend/tests/test_public_gateway.py]}
+  - {id: PA-OIDC-008, requirement: Keycloak OpenShift OIDC and Console SSO, critical: true, stage: GREEN-local, evidence: [keycloak-authenticator/, deploy/launchpad/public-access/]}
+  - {id: PA-DENY-009, requirement: Cross-seat and cross-tenant denial, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_rbac.py]}
+  - {id: PA-ROT-010, requirement: Rotation and reauthentication, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_access.py]}
+  - {id: PA-RATE-011, requirement: Rate limiting and abuse handling, critical: true, stage: GREEN-local, evidence: [backend/app/services/public_access.py]}
+  - {id: PA-TTL-012, requirement: TTL denial and complete cleanup, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_access.py]}
+  - {id: PA-RECOV-013, requirement: Backend restart recovery, critical: true, stage: GREEN-local, evidence: [backend/tests/test_public_access.py]}
+  - {id: PA-LIVE25-014, requirement: Twenty-five-seat external browser certification, critical: true, stage: RED}
+  - {id: PA-RECOV-015, requirement: Keycloak restart recovery, critical: true, stage: RED}
+release_rule: No critical RED row may be counted as release-ready.

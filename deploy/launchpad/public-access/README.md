@@ -19,6 +19,12 @@ Activation order:
 
 Do not set `public_access_enabled: true` for Oberon until all steps pass.
 
+Oberon currently uses a single HostNetwork router on its only node. Do not
+apply the sample `LoadBalancerService` IngressController until an external
+load balancer/WAF and a reachable isolated endpoint have been designed. A
+second router cannot share the default router's node ports on this topology.
+The existing OSAC development Keycloak is unrelated and must not be reused.
+
 The Keycloak authenticator image is built from `keycloak-authenticator/`.
 `keycloak.yaml`, `keycloak-flow-config.json`, and `openshift-oauth-idp.yaml` are
 merge templates, not directly deployable replacements. Back up the live

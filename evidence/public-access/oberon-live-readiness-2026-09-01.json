@@ -1,0 +1,38 @@
+{
+  "evidence_id": "PA-OBERON-READINESS-001",
+  "timestamp": "2026-09-01T18:24:00-05:00",
+  "cluster": "oberon",
+  "cluster_api": "https://api.oberon.fm2aihpcsed.com:6443",
+  "observations": {
+    "nodes": 1,
+    "default_ingress_domain": "apps.oberon.fm2aihpcsed.com",
+    "default_ingress_strategy": "HostNetwork",
+    "default_ingress_replicas": 1,
+    "managed_load_balancer": false,
+    "managed_dns": false,
+    "public_certificate_trusted": false,
+    "keycloak_operator_installed": false,
+    "dedicated_launchpad_keycloak": false,
+    "public_access_secret_present": false,
+    "public_gateway_replicas": 0,
+    "public_route_present": false,
+    "feature_enabled": false,
+    "argocd_sync": "Synced",
+    "argocd_health": "Healthy",
+    "argocd_revision": "929418ce7ea855b234899d1c2efe6503ec2854ee"
+  },
+  "security_observation": {
+    "id": "PA-SEC-OSAC-001",
+    "finding": "The unrelated OSAC development Keycloak Deployment contains a bootstrap credential directly in its pod specification.",
+    "action": "Do not reuse it for Launchpad. Rotate the OSAC credential and move it to a Secret in the OSAC maintenance workflow.",
+    "secret_value_recorded": false
+  },
+  "blocking_inputs": [
+    "PUBLIC_LABS_DOMAIN",
+    "public load balancer or WAF forwarding to an isolated ingress endpoint",
+    "trusted wildcard certificate",
+    "Launchpad Keycloak database and signed authenticator image",
+    "OIDC client secrets"
+  ],
+  "decision": "remain fail closed; do not enable public placement or create a public Route"
+}
