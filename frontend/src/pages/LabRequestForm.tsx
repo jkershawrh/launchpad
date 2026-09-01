@@ -29,6 +29,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
     hardware_profile: '',
     quota_profile: 'standard',
     branding_profile_id: '',
+    exposure_policy: 'internal' as 'internal' | 'public_code',
   });
 
   const [sandboxConfig, setSandboxConfig] = useState({
@@ -221,6 +222,11 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
               <option value="24h">24 hours</option>
             </select>
           </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-[#3C3F42] mb-1">Access</label>
+          <select value={form.exposure_policy} onChange={(e) => setForm({...form, exposure_policy:e.target.value as 'internal' | 'public_code'})} className="w-full border border-[#D2D2D2] rounded-md px-3 py-2 text-sm"><option value="internal">Internal access</option><option value="public_code">Public link + instructor code</option></select>
+          <p className="mt-1 text-xs text-[#6A6E73]">Public access uses unverified email plus the instructor code and expires with the lab.</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

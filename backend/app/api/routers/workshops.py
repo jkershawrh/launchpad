@@ -5,7 +5,8 @@ from typing import List
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
 from pydantic import BaseModel, Field
 
-from app.api.deps import provisioning_service
+from app.api.deps import provisioning_service, public_access_service
+from app.domain.access import ExposurePolicy
 from app.domain.enums import WorkshopStatus
 from app.domain.models import Workshop
 from app.auth.oauth import User, get_current_user
@@ -23,6 +24,7 @@ class WorkshopCreate(BaseModel):
     ocp_version: str = "4.20"
     purpose: str = "events"
     target_cluster: str | None = None
+    exposure_policy: ExposurePolicy = ExposurePolicy.INTERNAL
 
 
 def _to_workshop(body: WorkshopCreate) -> Workshop:
@@ -36,6 +38,7 @@ def _to_workshop(body: WorkshopCreate) -> Workshop:
         ocp_version=body.ocp_version,
         purpose=body.purpose,
         target_cluster=body.target_cluster,
+        exposure_policy=body.exposure_policy,
     )
 
 
@@ -64,16 +67,37 @@ def preview_workshop_capacity(body: WorkshopCreate, user: User = Depends(get_cur
     return provisioning_service.preview_workshop_capacity(_to_workshop(body))
 
 
-@router.post("/orders", response_model=Workshop, status_code=201)
+@router.post("/orders", status_code=201)
 def create_workshop_order(
     body: WorkshopCreate, idempotency_key: str | None = Header(default=None), user: User = Depends(get_current_user)
 ):
     if body.target_cluster and not user.is_admin:
         raise HTTPException(403, "Only administrators can override workshop placement")
     try:
-        return provisioning_service.create_workshop_order(
+        workshop = provisioning_service.create_workshop_order(
             _to_workshop(body), idempotency_key=idempotency_key
         )
+        result = workshop.model_dump(mode="json")
+        if body.exposure_policy == ExposurePolicy.PUBLIC_CODE:
+            from datetime import datetime, timedelta
+            amount, unit = int(body.ttl[:-1]), body.ttl[-1]
+            delta = timedelta(days=amount) if unit == "d" else timedelta(hours=amount)
+            policy = public_access_service.get_policy(workshop.workshop_id)
+            plaintext = None
+            if policy is None:
+                policy, plaintext = public_access_service.create_policy(
+                    order_id=workshop.workshop_id,
+                    order_type="workshop",
+                    catalog_slug=workshop.catalog_item_id,
+                    seat_refs=[seat.seat_id for seat in workshop.seats],
+                    expires_at=datetime.utcnow() + delta,
+                )
+            workshop.public_url = policy.public_url
+            provisioning_service._workshops[workshop.workshop_id] = workshop
+            result["public_url"] = policy.public_url
+            if plaintext:
+                result["one_time_access_code"] = plaintext
+        return result
     except ValueError as e:
         if "Idempotency key" in str(e):
             raise HTTPException(409, str(e))

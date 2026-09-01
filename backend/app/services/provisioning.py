@@ -40,6 +40,7 @@ from app.domain.models import (
     Workshop,
     WorkshopSeat,
 )
+from app.domain.access import ExposurePolicy
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
 logger = __import__("logging").getLogger("launchpad.provisioning")
@@ -262,6 +263,7 @@ class ProvisioningService:
             required_capabilities=catalog_item.required_capabilities,
             required_models=required_models,
             override=override,
+            require_public_access=request.exposure_policy == ExposurePolicy.PUBLIC_CODE,
         )
         return target.cluster_id
 
@@ -808,6 +810,9 @@ class ProvisioningService:
         else:
             session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed — credentials scrubbed")
             self._save_session(session)
+            access = getattr(self, "public_access_service", None)
+            if access:
+                access.expire_order(session.request_id)
             notify_stargate(
                 session_id=session.session_id,
                 namespace=session.namespace,
@@ -943,6 +948,7 @@ class ProvisioningService:
             "ttl": workshop.ttl,
             "ocp_version": workshop.ocp_version,
             "purpose": workshop.purpose,
+            "exposure_policy": workshop.exposure_policy.value,
         }
         return hashlib.sha256(json.dumps(order, sort_keys=True).encode()).hexdigest()
 
@@ -968,6 +974,7 @@ class ProvisioningService:
                     required_capabilities=catalog_item.required_capabilities,
                     required_models=(catalog_item.metadata or {}).get("required_models", []),
                     override=workshop.target_cluster,
+                    require_public_access=workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE,
                 ).cluster_id
             except ValueError as exc:
                 return {
@@ -1261,6 +1268,7 @@ class ProvisioningService:
                         "required_models", []
                     ),
                     override=workshop.cluster_ref or workshop.target_cluster,
+                    require_public_access=workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE,
                 ).cluster_id
             except ValueError as exc:
                 workshop = workshop.model_copy(update={
@@ -1739,6 +1747,9 @@ class ProvisioningService:
             "metadata": {**workshop.metadata, "failed_reclaims": failed_reclaims},
         })
         self._save_workshop(workshop)
+        access = getattr(self, "public_access_service", None)
+        if access:
+            access.expire_order(workshop_id)
         return workshop
 
     def _reclaim_workshop_session(self, session_id: str) -> Optional[str]:

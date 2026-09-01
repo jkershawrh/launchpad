@@ -7,6 +7,7 @@ clusters:
     storage_class: nfs-storage
     credential_secret: partner-ai-launchpad/launchpad-arena-kubeconfig
     priority: 10
+    public_access_enabled: false
     capabilities: [cpu, openshift, operators, openshift-ai, showroom, model_endpoint]
     model_endpoints:
       granite-2b: https://ovms-granite-2b-fleet-llm-d.apps.arena.fm2aihpcsed.com
@@ -18,6 +19,12 @@ clusters:
     storage_class: nfs-storage
     local: true
     priority: 50
+    # Certification gate: enable only after wildcard DNS/TLS, dedicated public
+    # ingress, Keycloak and Console/OAuth external probes are all GREEN-live.
+    public_access_enabled: false
+    public_ingress_domain: ""
+    public_console_url: ""
+    public_oauth_url: ""
     capabilities: [cpu, gaudi, gaudi_direct, openshift, operators, openshift-ai, showroom, model_endpoint, vector_db, kafka, workbench, control-plane]
     model_endpoints:
       smollm2-360m: https://inference.apps.oberon.fm2aihpcsed.com/v1

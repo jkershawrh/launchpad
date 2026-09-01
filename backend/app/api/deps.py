@@ -7,6 +7,7 @@ from app.adapters.mock.branding import FileBrandingAdapter
 from app.adapters.mock.catalog import MockCatalogAdapter
 from app.domain.models import Tenant
 from app.services.provisioning import ProvisioningService
+from app.services.public_access import PublicAccessService
 from app.storage.database import get_database_url
 
 
@@ -48,6 +49,7 @@ def _create_db_stores():
         PostgresShowbackStore,
         PostgresTenantStore,
         PostgresWorkshopStore,
+        PostgresAccessStore,
     )
     return SimpleNamespace(
         tenants=PostgresTenantStore(),
@@ -57,6 +59,7 @@ def _create_db_stores():
         showback=PostgresShowbackStore(),
         catalog=PostgresCatalogStore(),
         workshops=PostgresWorkshopStore(),
+        access=PostgresAccessStore(),
     )
 
 
@@ -278,6 +281,8 @@ tenant_store = TenantStore(db_store=db_stores.tenants if db_stores else None)
 provisioning_service = create_provisioning_service()
 catalog_adapter = _create_catalog()
 branding_adapter = FileBrandingAdapter()
+public_access_service = PublicAccessService(store=db_stores.access if db_stores else None)
+provisioning_service.public_access_service = public_access_service
 
 
 def get_placement_service():

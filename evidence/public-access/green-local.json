@@ -1,0 +1,25 @@
+{
+  "phase": "GREEN-local",
+  "requirement_set": "public-passwordless-access-v1",
+  "baseline_commit": "1da9626bf855a7ee8c9c5c77a5aca1f23953b67f",
+  "cluster": "local",
+  "timestamp": "2026-09-01T17:48:10-05:00",
+  "results": {
+    "public_access_component_tests": "11 passed",
+    "multicluster_and_workshop_regression": "31 passed",
+    "frontend_tests": "34 passed",
+    "frontend_build": "passed",
+    "live_certification": "not_run_fail_closed"
+  },
+  "artifacts": [
+    {"path": "backend/tests/test_public_access.py", "sha256": "a4ce1ad71e871d2f900d3daf706c5eadbff8c0bd0c6d72b21b59ca3b908fcc92"},
+    {"path": "contracts/public-access-v1.yaml", "sha256": "98218660dabebb22ff53396f0c123d70c983c9128217357238ad8b8e383220a2"},
+    {"path": "features/public_lab_access.feature", "sha256": "4923642571aab7d140019460b8917c615abc5d55845a0fb092965704585c871c"},
+    {"path": "evidence/public-access/validation-matrix.yaml", "sha256": "a05c59df206a843b36dba39878dbdc584b6dc42f114111f83a05a82ad8bd46f7"}
+  ],
+  "known_baseline": {
+    "backend_full_suite": "existing test expects HTTP 400 while route explicitly returns HTTP 404 for a missing request",
+    "frontend_lint": "existing React purity findings in BrandingContext Fleet and LabRequestForm"
+  },
+  "release_ready": false
+}

@@ -9,6 +9,10 @@ security-sensitive, cluster-scoped, and high-impact actions remain human
 approved. See the
 [self-service and auto-remediation operating model](docs/self-service-and-autoremediation.md).
 
+Public passwordless participant access is implemented behind a fail-closed
+release gate. See [public lab access](docs/PUBLIC_ACCESS.md) for persona flows,
+infrastructure prerequisites, contracts and certification evidence.
+
 ## Start here
 
 New participants, instructors, content integrators (CIs), tenant owners,

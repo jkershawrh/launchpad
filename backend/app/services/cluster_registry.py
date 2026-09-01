@@ -40,6 +40,7 @@ class ClusterRegistry:
         self,
         required_capabilities: Iterable[str] = (),
         required_models: Iterable[str] = (),
+        require_public_access: bool = False,
     ) -> list[ClusterTarget]:
         capabilities = set(required_capabilities)
         models = set(required_models)
@@ -49,6 +50,9 @@ class ClusterRegistry:
                 for target in self.list_enabled()
                 if capabilities.issubset(set(target.capabilities))
                 and models.issubset(set(target.model_endpoints))
+                and (not require_public_access or (
+                    target.public_access_enabled and bool(target.public_ingress_domain)
+                ))
             ],
             key=lambda target: (target.priority, target.cluster_id),
         )
@@ -58,8 +62,9 @@ class ClusterRegistry:
         required_capabilities: Iterable[str] = (),
         required_models: Iterable[str] = (),
         override: Optional[str] = None,
+        require_public_access: bool = False,
     ) -> ClusterTarget:
-        candidates = self.eligible(required_capabilities, required_models)
+        candidates = self.eligible(required_capabilities, required_models, require_public_access)
         if override:
             target = self.get(override)
             if target not in candidates:

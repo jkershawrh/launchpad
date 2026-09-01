@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routers import admin, branding, callbacks, catalog, intelligence, lab_requests, lab_sessions, models, tenants, workshops
+from app.api.routers import admin, branding, callbacks, catalog, intelligence, lab_requests, lab_sessions, models, public_access, tenants, workshops
 from app.storage.database import get_database_url, init_db, close_db
 
 logger = logging.getLogger(__name__)
@@ -125,6 +125,7 @@ app.include_router(admin.router, prefix=API_PREFIX)
 app.include_router(workshops.router, prefix=API_PREFIX)
 app.include_router(callbacks.router, prefix=API_PREFIX)
 app.include_router(intelligence.router, prefix=API_PREFIX)
+app.include_router(public_access.router, prefix=API_PREFIX)
 
 
 @app.get("/health")

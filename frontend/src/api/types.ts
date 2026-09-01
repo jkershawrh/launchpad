@@ -39,6 +39,9 @@ export interface LabRequest {
   metadata?: Record<string, unknown>;
   status: string;
   created_at: string;
+  exposure_policy?: 'internal' | 'public_code';
+  public_url?: string;
+  one_time_access_code?: string;
 }
 
 export interface AvailableModel {
@@ -158,6 +161,16 @@ export interface Workshop {
   cluster_ref?: string;
   target_cluster?: string;
   metadata: Record<string, unknown>;
+  exposure_policy?: 'internal' | 'public_code';
+  public_url?: string;
+  one_time_access_code?: string;
+}
+
+export interface PublicClaimResult {
+  order_id: string;
+  seat_ref: string;
+  public_url: string;
+  participant_id: string;
 }
 
 export interface WorkshopCapacityPreview {

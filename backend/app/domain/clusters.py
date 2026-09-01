@@ -20,6 +20,11 @@ class ClusterTarget(BaseModel):
     priority: int = 100
     capabilities: List[str] = Field(default_factory=list)
     model_endpoints: Dict[str, str] = Field(default_factory=dict)
+    public_access_enabled: bool = False
+    public_ingress_domain: str = ""
+    public_console_url: str = ""
+    public_oauth_url: str = ""
+    public_tls_secret: Optional[str] = None
 
     @field_validator("cluster_id")
     @classmethod
@@ -44,4 +49,3 @@ class ClusterHealth(BaseModel):
     reserved_cpu_millicores: int = 0
     reserved_memory_mib: int = 0
     reserved_pods: int = 0
-

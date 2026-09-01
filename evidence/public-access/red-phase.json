@@ -1,0 +1,8 @@
+{
+  "phase": "RED",
+  "requirement_set": "public-passwordless-access-v1",
+  "command": ".venv/bin/pytest -q backend/tests/test_public_access.py",
+  "expected_failure": "ModuleNotFoundError: app.domain.access",
+  "result": "failed-as-designed",
+  "test_contracts": 9
+}

@@ -1,0 +1,14 @@
+version: 1
+required_score: 100
+categories:
+  identity_and_claims: {points: 20, earned: 10}
+  authorization_and_isolation: {points: 20, earned: 0}
+  public_ingress_dns_tls: {points: 15, earned: 0}
+  keycloak_openshift_sso: {points: 15, earned: 0}
+  rotation_expiry_cleanup: {points: 15, earned: 5}
+  participant_instructor_usability: {points: 5, earned: 2}
+  audit_and_evidence_integrity: {points: 5, earned: 2}
+  repeatability_and_recovery: {points: 5, earned: 0}
+current_score: 19
+release_ready: false
+blocking_live_inputs: [PUBLIC_LABS_DOMAIN, wildcard_dns, trusted_wildcard_tls, dedicated_ingress, keycloak_authenticator, openshift_oidc]

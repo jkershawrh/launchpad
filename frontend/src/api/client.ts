@@ -11,6 +11,7 @@ import type {
   Tenant,
   Workshop,
   WorkshopCapacityPreview,
+  PublicClaimResult,
 } from './types';
 
 const BASE = '/api';
@@ -93,4 +94,9 @@ export const api = {
     request<Workshop>(`/workshops/${id}`, { method: 'DELETE' }),
   retryFailedWorkshopSeats: (id: string) =>
     request<Workshop>(`/workshops/${id}/retry-failed`, { method: 'POST' }),
+
+  claimPublicAccess: (data: {order_id: string; email: string; code: string}) =>
+    request<PublicClaimResult>('/public-access/claim', { method: 'POST', body: JSON.stringify(data) }),
+  getPublicOrder: (id: string) => request<Record<string, unknown>>(`/public-access/orders/${id}`),
+  rotatePublicCode: (id: string) => request<Record<string, unknown>>(`/public-access/admin/orders/${id}/rotate`, { method: 'POST' }),
 };

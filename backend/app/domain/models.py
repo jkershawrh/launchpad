@@ -6,6 +6,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.domain.access import ExposurePolicy
+
 from app.domain.enums import (
     BrandingTheme,
     CatalogCategory,
@@ -88,6 +90,7 @@ class LabRequest(BaseModel):
     branding_profile_id: Optional[str] = None
     requested_capabilities: List[str] = Field(default_factory=list)
     requested_models: List[str] = Field(default_factory=list)
+    exposure_policy: ExposurePolicy = ExposurePolicy.INTERNAL
     status: LabRequestStatus = LabRequestStatus.SUBMITTED
     created_at: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict[str, Any] = Field(default_factory=dict)
@@ -273,6 +276,8 @@ class Workshop(BaseModel):
     ttl: str = "8h"
     ocp_version: str = "4.20"
     purpose: str = "events"
+    exposure_policy: ExposurePolicy = ExposurePolicy.INTERNAL
+    public_url: Optional[str] = None
     status: WorkshopStatus = WorkshopStatus.DRAFT
     seats: List[WorkshopSeat] = Field(default_factory=list)
     session_ids: List[str] = Field(default_factory=list)

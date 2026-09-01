@@ -5,6 +5,10 @@ metadata:
   labels:
     app.kubernetes.io/part-of: partner-ai-launchpad
 data:
+  # Fail closed until an overlay supplies a certified public domain, ingress,
+  # TLS certificate, Keycloak broker and OpenShift OIDC integration.
+  PUBLIC_ACCESS_ENABLED: "false"
+  PUBLIC_LABS_DOMAIN: ""
   SHOWROOM_ARGOCD_NAMESPACE: argocd
   SHOWROOM_ARGOCD_PROJECT: default
   SHOWROOM_CHART_VERSION: "2.2.*"

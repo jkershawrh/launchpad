@@ -13,6 +13,7 @@ from typing import Any
 from typing import List, Optional
 
 from app.domain.feedback import ProvisioningOutcome
+from app.domain.access import AccessPolicy, ParticipantEntitlement, ParticipantIdentity
 from app.domain.models import (
     CatalogItem,
     LabRequest,
@@ -25,6 +26,67 @@ from app.domain.models import (
 from app.storage.database import get_database_url
 
 logger = logging.getLogger("launchpad.stores")
+
+
+class PostgresAccessStore:
+    _models = {
+        "access_policies": ("order_id", AccessPolicy),
+        "participant_identities": ("participant_id", ParticipantIdentity),
+        "participant_entitlements": ("entitlement_id", ParticipantEntitlement),
+    }
+
+    def _save(self, table: str, key: str, value: BaseException | Any) -> None:
+        conn = _get_sync_conn()
+        if not conn:
+            return
+        key_column, _ = self._models[table]
+        data = json.dumps(value.model_dump(mode="json"))
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"INSERT INTO {table} ({key_column}, data) VALUES (%s, %s::jsonb) "
+                    f"ON CONFLICT ({key_column}) DO UPDATE SET data=EXCLUDED.data, updated_at=NOW()",
+                    (key, data),
+                )
+            conn.commit()
+        except Exception as exc:
+            logger.warning("DB save public access record error: %s", exc)
+            conn.rollback()
+        finally:
+            conn.close()
+
+    def _list(self, table: str) -> list[Any]:
+        conn = _get_sync_conn()
+        if not conn:
+            return []
+        _, model = self._models[table]
+        try:
+            with conn.cursor() as cur:
+                cur.execute(f"SELECT data FROM {table}")
+                return [model.model_validate(_decode_json(row[0])) for row in cur.fetchall()]
+        except Exception as exc:
+            logger.warning("DB list public access records error: %s", exc)
+            return []
+        finally:
+            conn.close()
+
+    def save_policy(self, value: AccessPolicy) -> None:
+        self._save("access_policies", value.order_id, value)
+
+    def save_identity(self, value: ParticipantIdentity) -> None:
+        self._save("participant_identities", value.participant_id, value)
+
+    def save_entitlement(self, value: ParticipantEntitlement) -> None:
+        self._save("participant_entitlements", value.entitlement_id, value)
+
+    def list_policies(self) -> list[AccessPolicy]:
+        return self._list("access_policies")
+
+    def list_identities(self) -> list[ParticipantIdentity]:
+        return self._list("participant_identities")
+
+    def list_entitlements(self) -> list[ParticipantEntitlement]:
+        return self._list("participant_entitlements")
 
 
 def _get_sync_conn():

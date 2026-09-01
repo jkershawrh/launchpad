@@ -14,7 +14,7 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
-    name: '', owner_id: '', tenant_id: '', catalog_item_id: 'openshift-operators-workshop', num_users: 25, ttl: '4h',
+    name: '', owner_id: '', tenant_id: '', catalog_item_id: 'openshift-operators-workshop', num_users: 25, ttl: '4h', exposure_policy: 'internal',
   });
 
   useEffect(() => {
@@ -67,6 +67,7 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
         <label className={label}>Participant seats<input type="number" min="1" max={MAX_WORKSHOP_SEATS} className={field} value={form.num_users} onChange={(e) => setForm({...form, num_users:Number(e.target.value)})} /><span className="mt-1 block text-xs font-normal text-[#6A6E73]">Maximum {MAX_WORKSHOP_SEATS} seats in one workshop.</span></label>
         <label className={label}>Duration<select className={field} value={form.ttl} onChange={(e) => setForm({...form, ttl:e.target.value})}><option value="4h">4 hours</option><option value="8h">8 hours</option><option value="1d">1 day</option></select></label>
       </div>
+      <label className={label}>Access<select className={field} value={form.exposure_policy} onChange={(e) => setForm({...form, exposure_policy:e.target.value})}><option value="internal">Internal access</option><option value="public_code">Public link + instructor code</option></select><span className="mt-1 block text-xs font-normal text-[#6A6E73]">Email is an unverified label. The shared instructor code is the only secret, and access ends at the workshop TTL.</span></label>
     </div>
 
     <button disabled={busy || !form.tenant_id || !form.owner_id || !!seatError} onClick={checkCapacity} className="mt-6 w-full rounded-md bg-[#EE0000] px-5 py-3 font-semibold text-white transition hover:bg-[#CC0000] disabled:cursor-not-allowed disabled:opacity-40">{busy ? 'Checking capacity…' : 'Check capacity'}</button>
@@ -77,6 +78,6 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
       {!workshop && <button disabled={!preview.can_provision || busy} onClick={orderWorkshop} className="mt-5 w-full rounded-md bg-[#EE0000] px-5 py-3 font-semibold text-white hover:bg-[#CC0000] disabled:opacity-40">Create workshop order</button>}
     </section>}
 
-    {workshop && <section className="mt-6 rounded-md border border-[#0071C5]/60 bg-[#0071C5]/10 p-6"><h2 className="text-xl font-bold text-white">Ready for confirmation</h2><p className="mt-2 text-sm text-[#D2D2D2]">One workshop · {workshop.num_users} isolated participant seats</p><p className="mt-2 font-mono text-xs text-[#8A8D90]">{workshop.workshop_id}</p>{workshop.status === 'awaiting_confirmation' && <button disabled={busy} onClick={confirm} className="mt-5 w-full rounded-md bg-[#EE0000] px-5 py-3 font-semibold text-white hover:bg-[#CC0000] disabled:opacity-40">Confirm and start provisioning</button>}</section>}
+    {workshop && <section className="mt-6 rounded-md border border-[#0071C5]/60 bg-[#0071C5]/10 p-6"><h2 className="text-xl font-bold text-white">Ready for confirmation</h2><p className="mt-2 text-sm text-[#D2D2D2]">One workshop · {workshop.num_users} isolated participant seats</p><p className="mt-2 font-mono text-xs text-[#8A8D90]">{workshop.workshop_id}</p>{workshop.one_time_access_code && <div className="mt-4 rounded border border-amber-400/40 bg-amber-400/10 p-4"><p className="text-xs font-semibold uppercase tracking-wide text-amber-200">Copy now — shown once</p><p className="mt-2 break-all font-mono text-xl text-white">{workshop.one_time_access_code}</p><p className="mt-2 break-all text-sm text-[#B8BBBE]">{workshop.public_url}</p></div>}{workshop.status === 'awaiting_confirmation' && <button disabled={busy} onClick={confirm} className="mt-5 w-full rounded-md bg-[#EE0000] px-5 py-3 font-semibold text-white hover:bg-[#CC0000] disabled:opacity-40">Confirm and start provisioning</button>}</section>}
   </div>;
 }

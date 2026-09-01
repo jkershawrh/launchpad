@@ -18,6 +18,7 @@ import Workshops from './pages/Workshops';
 import WorkshopDetail from './pages/WorkshopDetail';
 import EnvironmentRequest from './pages/EnvironmentRequest';
 import { getAppSurface } from './appSurface';
+import PublicAccess from './pages/PublicAccess';
 
 export default function App() {
   const surface = getAppSurface(
@@ -29,6 +30,7 @@ export default function App() {
     <BrowserRouter>
       <BrandingProvider>
         <Routes>
+          <Route path="/public-access" element={<PublicAccess />} />
           <Route element={<Layout />}>
             <Route path="/" element={surface === 'operations' ? <Overview /> : <PortalDashboard />} />
             {surface === 'operations' ? (
