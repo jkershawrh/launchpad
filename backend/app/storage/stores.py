@@ -13,7 +13,7 @@ from typing import Any
 from typing import List, Optional
 
 from app.domain.feedback import ProvisioningOutcome
-from app.domain.access import AccessPolicy, ParticipantEntitlement, ParticipantIdentity
+from app.domain.access import AccessPolicy, AccessSession, ParticipantEntitlement, ParticipantIdentity
 from app.domain.models import (
     CatalogItem,
     LabRequest,
@@ -33,9 +33,10 @@ class PostgresAccessStore:
         "access_policies": ("order_id", AccessPolicy),
         "participant_identities": ("participant_id", ParticipantIdentity),
         "participant_entitlements": ("entitlement_id", ParticipantEntitlement),
+        "access_sessions": ("session_id", AccessSession),
     }
 
-    def _save(self, table: str, key: str, value: BaseException | Any) -> None:
+    def _save(self, table: str, key: str, value: Any) -> None:
         conn = _get_sync_conn()
         if not conn:
             return
@@ -87,6 +88,60 @@ class PostgresAccessStore:
 
     def list_entitlements(self) -> list[ParticipantEntitlement]:
         return self._list("participant_entitlements")
+
+    def save_session(self, value: AccessSession) -> None:
+        self._save("access_sessions", value.session_id, value)
+
+    def list_sessions(self) -> list[AccessSession]:
+        return self._list("access_sessions")
+
+    def failed_attempt_count(self, order_id: str, email_hash: str, ip_hash: str) -> int:
+        conn = _get_sync_conn()
+        if not conn:
+            return 0
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """SELECT GREATEST(
+                         COUNT(*) FILTER (WHERE email_hash = %s),
+                         COUNT(*) FILTER (WHERE ip_hash = %s))
+                       FROM access_claim_failures
+                       WHERE order_id = %s AND created_at > NOW() - INTERVAL '15 minutes'""",
+                    (email_hash, ip_hash, order_id),
+                )
+                return int(cur.fetchone()[0] or 0)
+        finally:
+            conn.close()
+
+    def record_failed_attempt(self, order_id: str, email_hash: str, ip_hash: str) -> None:
+        conn = _get_sync_conn()
+        if not conn:
+            return
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO access_claim_failures (order_id, email_hash, ip_hash) VALUES (%s, %s, %s)",
+                    (order_id, email_hash, ip_hash),
+                )
+            conn.commit()
+        finally:
+            conn.close()
+
+    def save_audit_event(self, event: dict[str, Any]) -> None:
+        conn = _get_sync_conn()
+        if not conn:
+            return
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """INSERT INTO access_audit_events
+                       (order_id, event_type, actor_hash, outcome, data)
+                       VALUES (%s, %s, %s, %s, %s::jsonb)""",
+                    (event.get("order_id"), event["event_type"], event.get("participant_hash"), event["outcome"], json.dumps(event)),
+                )
+            conn.commit()
+        finally:
+            conn.close()
 
 
 def _get_sync_conn():

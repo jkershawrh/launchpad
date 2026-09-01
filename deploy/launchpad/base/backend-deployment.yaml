@@ -43,6 +43,12 @@ spec:
               key: DATABASE_URL
         - name: AUTH_ENABLED
           value: 'true'
+        - name: ACCESS_BROKER_KEY
+          valueFrom:
+            secretKeyRef:
+              name: launchpad-public-access
+              key: ACCESS_BROKER_KEY
+              optional: true
         readinessProbe:
           httpGet:
             path: /health

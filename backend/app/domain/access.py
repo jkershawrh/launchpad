@@ -79,3 +79,4 @@ class ClaimResult(BaseModel):
     entitlement: ParticipantEntitlement
     session_token: str
     public_url: str
+    session_expires_at: datetime

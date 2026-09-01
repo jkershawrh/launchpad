@@ -63,6 +63,8 @@ class PublicAccessService:
             self._identities[identity.normalized_email] = identity
         for entitlement in self.store.list_entitlements():
             self._entitlements[(entitlement.order_id, entitlement.participant_id)] = entitlement
+        for session in self.store.list_sessions():
+            self._sessions[session.token_hash] = session
 
     @staticmethod
     def normalize_email(email: str) -> str:
@@ -118,6 +120,11 @@ class PublicAccessService:
         return f"ip:{order_id}:{ip_address}", f"email:{order_id}:{email}"
 
     def _check_rate_limit(self, order_id: str, email: str, ip_address: str) -> None:
+        if self.store and hasattr(self.store, "failed_attempt_count"):
+            email_hash = hashlib.sha256(email.encode()).hexdigest()
+            ip_hash = hashlib.sha256(ip_address.encode()).hexdigest()
+            if self.store.failed_attempt_count(order_id, email_hash, ip_hash) >= 5:
+                raise ValueError(GENERIC_DENIAL)
         now = time.monotonic()
         for key in self._rate_limit_keys(order_id, email, ip_address):
             attempts = self._attempts[key]
@@ -130,15 +137,24 @@ class PublicAccessService:
         now = time.monotonic()
         for key in self._rate_limit_keys(order_id, email, ip_address):
             self._attempts[key].append(now)
+        if self.store and hasattr(self.store, "record_failed_attempt"):
+            self.store.record_failed_attempt(
+                order_id,
+                hashlib.sha256(email.encode()).hexdigest(),
+                hashlib.sha256(ip_address.encode()).hexdigest(),
+            )
 
     def _audit(self, event_type: str, order_id: str, outcome: str, participant_id: str = "") -> None:
-        self.audit_events.append({
+        event = {
             "event_type": event_type,
             "order_id": order_id,
             "outcome": outcome,
             "participant_hash": hashlib.sha256(participant_id.encode()).hexdigest() if participant_id else None,
             "timestamp": datetime.utcnow().isoformat() + "Z",
-        })
+        }
+        self.audit_events.append(event)
+        if self.store and hasattr(self.store, "save_audit_event"):
+            self.store.save_audit_event(event)
 
     def _verify(self, policy: AccessPolicy, code: str) -> bool:
         try:
@@ -208,11 +224,14 @@ class PublicAccessService:
                 ),
             )
             self._sessions[session.token_hash] = session
+            if self.store:
+                self.store.save_session(session)
             return ClaimResult(
                 identity=identity,
                 entitlement=entitlement,
                 session_token=token,
                 public_url=policy.public_url,
+                session_expires_at=session.expires_at,
             )
 
     def validate_session(self, token: str, order_id: str) -> AccessSession:
@@ -269,6 +288,29 @@ class PublicAccessService:
             if self.store:
                 self.store.save_entitlement(updated)
             self._audit("participant_remove", order_id, "completed", participant_id)
+            self._disable_identity_if_finished(participant_id)
+
+    def _disable_identity_if_finished(self, participant_id: str) -> None:
+        remaining = any(
+            item.participant_id == participant_id
+            and item.status in {EntitlementStatus.ACTIVE, EntitlementStatus.REAUTH_REQUIRED}
+            and item.expires_at > datetime.utcnow()
+            for item in self._entitlements.values()
+        )
+        if remaining:
+            return
+        identity = next((item for item in self._identities.values() if item.participant_id == participant_id), None)
+        if identity:
+            disabled = identity.model_copy(update={"disabled_at": datetime.utcnow()})
+            self._identities[disabled.normalized_email] = disabled
+            if self.store:
+                self.store.save_identity(disabled)
+        for token_hash, session in list(self._sessions.items()):
+            if session.participant_id == participant_id and not session.revoked_at:
+                revoked = session.model_copy(update={"revoked_at": datetime.utcnow()})
+                self._sessions[token_hash] = revoked
+                if self.store:
+                    self.store.save_session(revoked)
 
     def expire_order(self, order_id: str) -> None:
         with self._lock:
@@ -286,6 +328,8 @@ class PublicAccessService:
                     self._entitlements[key] = updated
                     if self.store:
                         self.store.save_entitlement(updated)
+            for participant_id in {item.participant_id for item in self._entitlements.values() if item.order_id == order_id}:
+                self._disable_identity_if_finished(participant_id)
             self._audit("expire", order_id, "completed")
 
     def entitlements_for(self, participant_id: str) -> list[ParticipantEntitlement]:
@@ -293,3 +337,10 @@ class PublicAccessService:
 
     def get_policy(self, order_id: str) -> AccessPolicy | None:
         return self._policies.get(order_id)
+
+    def get_policy_by_host(self, host: str) -> AccessPolicy | None:
+        normalized = host.split(":", 1)[0].casefold()
+        return next(
+            (policy for policy in self._policies.values() if policy.public_url.removeprefix("https://").casefold() == normalized),
+            None,
+        )

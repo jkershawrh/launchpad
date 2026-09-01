@@ -18,6 +18,7 @@ resources:
   - oauth-setup.yaml
   - rbac.yaml
   - network-policy.yaml
+  - public-access-gateway.yaml
 
 commonLabels:
   app.kubernetes.io/managed-by: kustomize

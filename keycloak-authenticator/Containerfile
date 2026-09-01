@@ -1,0 +1,11 @@
+FROM registry.access.redhat.com/ubi9/openjdk-17:latest AS build
+USER 0
+RUN microdnf install -y maven && microdnf clean all
+WORKDIR /src
+COPY pom.xml .
+COPY src src
+RUN mvn -B -DskipTests package
+
+FROM quay.io/keycloak/keycloak:26.4.2
+COPY --from=build /src/target/launchpad-code-authenticator-1.0.0.jar /opt/keycloak/providers/
+RUN /opt/keycloak/bin/kc.sh build

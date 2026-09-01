@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: public-access-gateway}
+spec: {replicas: 2}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: launchpad-config}
+data:
+  PUBLIC_ACCESS_ENABLED: "true"
+  # Required input: replace only in the private certified overlay.
+  PUBLIC_LABS_DOMAIN: labs.example.invalid
+

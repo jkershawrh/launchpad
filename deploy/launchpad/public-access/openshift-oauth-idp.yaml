@@ -1,0 +1,20 @@
+# Template only. Merge this identity provider into the existing cluster OAuth
+# resource; never replace the full providers list. The referenced Secret must
+# contain the Keycloak client secret under `clientSecret`.
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata: {name: cluster}
+spec:
+  identityProviders:
+    - name: launchpad-public
+      mappingMethod: claim
+      type: OpenID
+      openID:
+        clientID: openshift-launchpad-public
+        clientSecret: {name: launchpad-keycloak-client}
+        issuer: https://keycloak.example.invalid/realms/launchpad-public
+        claims:
+          preferredUsername: [preferred_username]
+          name: [name]
+          email: [email]
+

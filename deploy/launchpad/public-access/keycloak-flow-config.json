@@ -1,0 +1,23 @@
+{
+  "realm": "launchpad-public",
+  "flowAlias": "Launchpad public passwordless browser",
+  "providerId": "launchpad-order-code",
+  "requirement": "REQUIRED",
+  "clients": [
+    {
+      "clientId": "openshift-launchpad-public",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "redirectUris": ["https://oauth-openshift.apps.oberon.fm2aihpcsed.com/oauth2callback/launchpad-public"]
+    },
+    {
+      "clientId": "launchpad-public-gateway",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "redirectUris": ["https://*.labs.example.invalid/oauth2/callback"]
+    }
+  ],
+  "notes": "Create the client secret at deployment time; it is intentionally absent from Git. Configure the realm browser flow with the compiled provider through the Keycloak Admin API."
+}

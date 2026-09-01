@@ -1,0 +1,16 @@
+# Apply as a cluster administrator only after the public DNS address and
+# wildcard certificate Secret exist. This is intentionally outside the normal
+# namespaced Argo CD application.
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  name: public-labs
+  namespace: openshift-ingress-operator
+spec:
+  domain: labs.example.invalid
+  routeSelector:
+    matchLabels: {launchpad.redhat.com/exposure: public-labs}
+  defaultCertificate: {name: public-labs-wildcard-tls}
+  replicas: 2
+  endpointPublishingStrategy: {type: LoadBalancerService}
+

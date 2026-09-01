@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: public-access-gateway
+  labels:
+    app.kubernetes.io/name: public-access-gateway
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  # Fail closed. A certified overlay scales this deployment after its domain,
+  # certificate, broker secret and dedicated ingress controller exist.
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: public-access-gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: public-access-gateway
+        app.kubernetes.io/part-of: partner-ai-launchpad
+        app.kubernetes.io/component: public-gateway
+    spec:
+      serviceAccountName: launchpad-backend
+      containers:
+        - name: gateway
+          image: backend:latest
+          command: [uvicorn]
+          args: [app.public_gateway:app, --host, 0.0.0.0, --port, "8080", --proxy-headers, --forwarded-allow-ips, "*"]
+          ports:
+            - {name: http, containerPort: 8080}
+          env:
+            - {name: LAUNCHPAD_INTERNAL_API, value: "http://backend:8000/api/v1"}
+            - name: ACCESS_BROKER_KEY
+              valueFrom:
+                secretKeyRef: {name: launchpad-public-access, key: ACCESS_BROKER_KEY, optional: true}
+          readinessProbe: {httpGet: {path: /health, port: http}, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /health, port: http}, periodSeconds: 30}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: "1", memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+        - name: oidc-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.12.0
+          args:
+            - --provider=oidc
+            - --http-address=0.0.0.0:8443
+            - --upstream=http://127.0.0.1:8080
+            - --email-domain=*
+            - --pass-user-headers=true
+            - --set-xauthrequest=true
+            - --cookie-secure=true
+            - --cookie-samesite=lax
+            - --cookie-expire=24h
+            - --cookie-refresh=5m
+            - --skip-provider-button=true
+            # Each new order host must execute the code authenticator even
+            # when the device already has a Keycloak SSO session.
+            - --prompt=login
+          env:
+            - {name: OAUTH2_PROXY_OIDC_ISSUER_URL, value: "https://keycloak.example.invalid/realms/launchpad-public"}
+            - {name: OAUTH2_PROXY_CLIENT_ID, value: launchpad-public-gateway}
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom: {secretKeyRef: {name: launchpad-public-access, key: OIDC_CLIENT_SECRET, optional: true}}
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom: {secretKeyRef: {name: launchpad-public-access, key: OIDC_COOKIE_SECRET, optional: true}}
+          ports:
+            - {name: oidc, containerPort: 8443}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: public-access-gateway
+  labels:
+    app.kubernetes.io/name: public-access-gateway
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  selector: {app.kubernetes.io/name: public-access-gateway}
+  ports:
+    - {name: oidc, port: 8443, targetPort: oidc}

@@ -1,0 +1,22 @@
+# Template only. Replace the image with the signed image built from
+# keycloak-authenticator/Containerfile and merge these values into Oberon's
+# operator-managed Keycloak CR after backing up the existing CR.
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata: {name: keycloak, namespace: keycloak}
+spec:
+  instances: 2
+  image: registry.example.invalid/launchpad-keycloak:26.4.2
+  additionalOptions:
+    - {name: spi-login-protocol-openid-connect-legacy-logout-redirect-uri, value: "true"}
+  unsupported:
+    podTemplate:
+      spec:
+        containers:
+          - name: keycloak
+            env:
+              - name: LAUNCHPAD_ACCESS_VALIDATION_URL
+                value: http://backend.partner-ai-launchpad.svc:8000/api/v1/public-access/private/validate
+              - name: ACCESS_BROKER_KEY
+                valueFrom:
+                  secretKeyRef: {name: launchpad-access-broker, key: ACCESS_BROKER_KEY}

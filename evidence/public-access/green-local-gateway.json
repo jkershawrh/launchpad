@@ -1,0 +1,25 @@
+{
+  "phase": "GREEN-local",
+  "requirement_set": "public-passwordless-access-v1-gateway",
+  "baseline_commit": "10ce08a",
+  "cluster": "local",
+  "timestamp": "2026-09-01T18:12:00-05:00",
+  "results": {
+    "component_and_regression_tests": "48 passed",
+    "keycloak_26_4_2_spi_compile": "passed",
+    "base_kustomize_render": "passed",
+    "oberon_public_kustomize_render": "passed",
+    "secret_scan": "passed",
+    "external_fail_closed_probe": "failed-as-designed for .invalid host",
+    "live_certification": "blocked_by_oberon_credentials_and_external_inputs"
+  },
+  "artifacts": [
+    {"path": "backend/app/public_gateway.py", "sha256": "cf02403cbf1cc15973e2b23294fb841d1eb3d7d7a93439980ae067e8ef40040d"},
+    {"path": "backend/tests/test_public_gateway.py", "sha256": "9adfe1f9d7eb618f940debd70a2da01a85390b4290494242f8085c6b339e0209"},
+    {"path": "backend/tests/test_public_rbac.py", "sha256": "1051c4c282b41c355fae818127922c39e62424367024194bd5bd02b8642c8110"},
+    {"path": "keycloak-authenticator/src/main/java/com/redhat/launchpad/LaunchpadCodeAuthenticator.java", "sha256": "8d17853b18cf75772adf0fd038b375fab4e3b05392ed8763db91a056f431edfa"},
+    {"path": "deploy/launchpad/overlays/oberon-public/kustomization.yaml", "sha256": "a06a73e82178bf091f626d67ba923ccc85a810ba8f27c9e11886f6c7ef931ac2"},
+    {"path": "evidence/public-access/validation-matrix-v2.yaml", "sha256": "5692d8658a77407bd32a25f8a80b7ab4d50efb9daf38a6f3c87e4400873c7ab9"}
+  ],
+  "release_ready": false
+}

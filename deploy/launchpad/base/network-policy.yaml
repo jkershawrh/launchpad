@@ -39,3 +39,18 @@ spec:
   policyTypes:
     - Egress
   egress: []
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: public-access-gateway-ingress
+spec:
+  podSelector:
+    matchLabels: {app.kubernetes.io/name: public-access-gateway}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels: {kubernetes.io/metadata.name: openshift-ingress}
+      ports:
+        - {port: 8443, protocol: TCP}

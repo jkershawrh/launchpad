@@ -1803,6 +1803,52 @@ class ProvisioningService:
     def get_workshop(self, workshop_id: str) -> Optional[Workshop]:
         return self._workshops.get(workshop_id)
 
+    def _public_access_session(self, order_id: str, seat_ref: str) -> Optional[LabSession]:
+        workshop = self._workshops.get(order_id)
+        if workshop:
+            seat = next((item for item in workshop.seats if item.seat_id == seat_ref), None)
+            return self._sessions.get(seat.session_id) if seat and seat.session_id else None
+        return next((item for item in self._sessions.values() if item.request_id == order_id), None)
+
+    def bind_public_participant(self, order_id: str, seat_ref: str, username: str) -> None:
+        """Grant the stable OIDC user edit access only to the claimed namespace."""
+        session = self._public_access_session(order_id, seat_ref)
+        if not session or not session.namespace:
+            raise ValueError("Claimed environment is not ready")
+        clients = self._target_clients(session.cluster_ref)
+        if not clients:
+            if os.environ.get("LAUNCHPAD_MODE", "mock") == "mock":
+                return
+            raise ValueError("Target cluster credentials are unavailable")
+        from kubernetes import client
+        name = f"launchpad-participant-{hashlib.sha256(username.encode()).hexdigest()[:12]}"
+        binding = client.V1RoleBinding(
+            metadata=client.V1ObjectMeta(
+                name=name,
+                labels={"launchpad.redhat.com/order-id": order_id, "launchpad.redhat.com/managed": "true"},
+            ),
+            role_ref=client.V1RoleRef(api_group="rbac.authorization.k8s.io", kind="ClusterRole", name="edit"),
+            subjects=[client.RbacV1Subject(api_group="rbac.authorization.k8s.io", kind="User", name=username)],
+        )
+        try:
+            clients.rbac.create_namespaced_role_binding(session.namespace, binding)
+        except client.ApiException as exc:
+            if exc.status != 409:
+                raise ValueError(f"Failed to grant participant namespace access: {exc.reason}") from exc
+
+    def unbind_public_participant(self, order_id: str, seat_ref: str, username: str) -> None:
+        session = self._public_access_session(order_id, seat_ref)
+        clients = self._target_clients(session.cluster_ref) if session else None
+        if not session or not session.namespace or not clients:
+            return
+        from kubernetes import client
+        name = f"launchpad-participant-{hashlib.sha256(username.encode()).hexdigest()[:12]}"
+        try:
+            clients.rbac.delete_namespaced_role_binding(name, session.namespace)
+        except client.ApiException as exc:
+            if exc.status != 404:
+                raise ValueError(f"Failed to revoke participant namespace access: {exc.reason}") from exc
+
     def enforce_ttl(self) -> int:
         now = datetime.utcnow()
         reclaimable = {"ready", "active"}

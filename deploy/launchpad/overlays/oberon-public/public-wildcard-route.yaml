@@ -1,0 +1,14 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: public-labs
+  labels:
+    app.kubernetes.io/name: public-access-gateway
+    launchpad.redhat.com/exposure: public-labs
+spec:
+  # Required input: the parent host for *.PUBLIC_LABS_DOMAIN.
+  host: labs.example.invalid
+  wildcardPolicy: Subdomain
+  to: {kind: Service, name: public-access-gateway}
+  port: {targetPort: oidc}
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}

@@ -140,3 +140,40 @@ def test_participant_removal_reopens_the_seat():
     first = access.claim("order-remove", "first@example.com", code, "192.0.2.11")
     access.remove_participant("order-remove", first.identity.participant_id)
     assert access.claim("order-remove", "second@example.com", code, "192.0.2.12").entitlement.seat_ref == "seat"
+
+
+def test_backend_restart_recovers_policy_identity_entitlement_and_session():
+    class Store:
+        def __init__(self):
+            self.policies = {}; self.identities = {}; self.entitlements = {}; self.sessions = {}
+        def save_policy(self, value): self.policies[value.order_id] = value
+        def save_identity(self, value): self.identities[value.participant_id] = value
+        def save_entitlement(self, value): self.entitlements[value.entitlement_id] = value
+        def save_session(self, value): self.sessions[value.session_id] = value
+        def list_policies(self): return list(self.policies.values())
+        def list_identities(self): return list(self.identities.values())
+        def list_entitlements(self): return list(self.entitlements.values())
+        def list_sessions(self): return list(self.sessions.values())
+
+    store = Store()
+    first = PublicAccessService(public_domain="labs.example.io", enabled=True, store=store)
+    _, code = first.create_policy(
+        order_id="restart", order_type="individual", catalog_slug="sandbox",
+        seat_refs=["seat"], expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+    claim = first.claim("restart", "person@example.com", code, "192.0.2.20")
+    restarted = PublicAccessService(public_domain="labs.example.io", enabled=True, store=store)
+    assert restarted.validate_session(claim.session_token, "restart").participant_id == claim.identity.participant_id
+
+
+def test_final_entitlement_expiry_disables_identity_and_revokes_session():
+    access = service()
+    _, code = access.create_policy(
+        order_id="final", order_type="individual", catalog_slug="sandbox",
+        seat_refs=["seat"], expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+    claim = access.claim("final", "person@example.com", code, "192.0.2.21")
+    access.expire_order("final")
+    identity = access._identities["person@example.com"]
+    assert identity.disabled_at is not None
+    assert access._sessions[access._token_hash(claim.session_token)].revoked_at is not None

@@ -14,7 +14,7 @@ RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/op
     | tar xz -C /usr/local/bin --strip-components=1 linux-amd64/helm \
     && chmod +x /usr/local/bin/helm
 
-RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx sqlalchemy psycopg2-binary kubernetes requests "celery[redis]" kafka-python-ng argon2-cffi
+RUN pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx python-multipart sqlalchemy psycopg2-binary kubernetes requests "celery[redis]" kafka-python-ng argon2-cffi
 
 COPY backend/app/ ./app/
 COPY backend/migrations/ ./migrations/

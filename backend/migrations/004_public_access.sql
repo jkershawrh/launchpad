@@ -39,3 +39,20 @@ CREATE TABLE IF NOT EXISTS access_audit_events (
     data JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS access_sessions (
+    session_id TEXT PRIMARY KEY,
+    data JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS access_claim_failures (
+    failure_id BIGSERIAL PRIMARY KEY,
+    order_id TEXT NOT NULL,
+    email_hash TEXT NOT NULL,
+    ip_hash TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS access_claim_failures_window
+    ON access_claim_failures (order_id, created_at);
