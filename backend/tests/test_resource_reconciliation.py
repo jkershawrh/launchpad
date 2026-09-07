@@ -2,7 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from app.domain.enums import CatalogCategory, SessionStatus, WorkshopStatus
-from app.domain.models import LabRequest, Workshop
+from app.domain.models import LabRequest, Workshop, WorkshopSeat
 from app.services.provisioning import ProvisioningService
 
 
@@ -175,3 +175,92 @@ def test_reconcile_reclaims_active_session_owned_by_completed_workshop(
         }
     ]
     assert report["errors"] == []
+
+
+def test_reconcile_completes_nonterminal_workshop_when_every_session_is_reclaimed(
+    lab_session,
+):
+    workshop_id = "stale-ready-workshop"
+    reclaimed = lab_session.model_copy(
+        update={
+            "status": SessionStatus.RECLAIMED,
+            "maas_api_key": None,
+            "resources": {},
+        }
+    )
+    workshop = Workshop(
+        workshop_id=workshop_id,
+        tenant_id=reclaimed.tenant_id,
+        catalog_item_id=reclaimed.catalog_item_id,
+        num_users=1,
+        status=WorkshopStatus.READY,
+        session_ids=[reclaimed.session_id],
+        seats=[
+            WorkshopSeat(
+                workshop_id=workshop_id,
+                seat_number=1,
+                status="ready",
+                session_id=reclaimed.session_id,
+            )
+        ],
+    )
+    access = MagicMock()
+    service = SimpleNamespace(
+        _sessions={reclaimed.session_id: reclaimed},
+        _workshops={workshop_id: workshop},
+        cleanup=None,
+        public_access_service=access,
+        _save_session=MagicMock(),
+        _save_workshop=MagicMock(),
+    )
+
+    from app.services.resource_reconciliation import reconcile_resources
+
+    report = reconcile_resources(service, delete_orphans=False)
+
+    saved = service._save_workshop.call_args.args[0]
+    assert saved.status == WorkshopStatus.COMPLETED
+    assert saved.completed_at is not None
+    assert saved.seats[0].status.value == "reclaimed"
+    assert report["workshops_reconciled"] == [
+        {
+            "workshop_id": workshop_id,
+            "cluster_id": None,
+            "session_count": 1,
+        }
+    ]
+    access.expire_order.assert_called_once_with(workshop_id)
+
+
+def test_reconcile_does_not_complete_workshop_with_an_active_session(lab_session):
+    workshop_id = "still-active-workshop"
+    workshop = Workshop(
+        workshop_id=workshop_id,
+        tenant_id=lab_session.tenant_id,
+        catalog_item_id=lab_session.catalog_item_id,
+        num_users=1,
+        status=WorkshopStatus.READY,
+        session_ids=[lab_session.session_id],
+        seats=[
+            WorkshopSeat(
+                workshop_id=workshop_id,
+                seat_number=1,
+                status="ready",
+                session_id=lab_session.session_id,
+            )
+        ],
+    )
+    service = SimpleNamespace(
+        _sessions={lab_session.session_id: lab_session},
+        _workshops={workshop_id: workshop},
+        cleanup=None,
+        _save_session=MagicMock(),
+        _save_workshop=MagicMock(),
+    )
+
+    from app.services.resource_reconciliation import reconcile_resources
+
+    report = reconcile_resources(service, delete_orphans=False)
+
+    service._save_workshop.assert_not_called()
+    assert report["workshops_reconciled"] == []

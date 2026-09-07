@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from app.domain.enums import SessionStatus, WorkshopStatus
+from app.domain.enums import SessionStatus, WorkshopSeatStatus, WorkshopStatus
 from app.domain.models import LifecycleEvent
 
 ACTIVE_STATES = {
@@ -85,6 +85,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
     """Reconcile persisted lifecycle state with launchpad-managed namespaces."""
     report: dict[str, Any] = {
         "sessions_reconciled": 0,
+        "workshops_reconciled": [],
         "late_workshop_sessions_reclaimed": [],
         "orphan_namespaces_deleted": [],
         "errors": [],
@@ -175,6 +176,70 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
             key in session.resources for key in ("sa_token", "sandbox_data")
         ):
             service._save_session(service._scrub_credentials(session))
+
+    # TTL enforcement reclaims sessions independently. Repair the parent
+    # aggregate only after every seat has a persisted, reclaimed session (or
+    # was already marked reclaimed), so an interrupted or partially active
+    # workshop can never be completed early.
+    terminal_workshop_states = {
+        WorkshopStatus.COMPLETED,
+        WorkshopStatus.COMPLETED_WITH_ERRORS,
+    }
+    workshops = getattr(service, "_workshops", {})
+    if isinstance(workshops, dict):
+        for workshop in list(workshops.values()):
+            if workshop.status in terminal_workshop_states or not workshop.seats:
+                continue
+            if workshop.status == WorkshopStatus.RECLAIMING:
+                continue
+            seat_sessions = {
+                seat.session_id: service._sessions.get(seat.session_id)
+                for seat in workshop.seats
+                if seat.session_id
+            }
+            all_seats_reclaimed = all(
+                (
+                    seat.status == WorkshopSeatStatus.RECLAIMED
+                    if not seat.session_id
+                    else seat_sessions.get(seat.session_id) is not None
+                    and seat_sessions[seat.session_id].status == SessionStatus.RECLAIMED
+                )
+                for seat in workshop.seats
+            )
+            if not all_seats_reclaimed:
+                continue
+            updated = workshop.model_copy(
+                update={
+                    "status": WorkshopStatus.COMPLETED,
+                    "completed_at": datetime.utcnow(),
+                    "seats": [
+                        seat.model_copy(
+                            update={
+                                "status": WorkshopSeatStatus.RECLAIMED,
+                                "error": None,
+                                "updated_at": datetime.utcnow(),
+                            }
+                        )
+                        for seat in workshop.seats
+                    ],
+                }
+            )
+            try:
+                service._save_workshop(updated)
+                access = getattr(service, "public_access_service", None)
+                if access:
+                    access.expire_order(workshop.workshop_id)
+                report["workshops_reconciled"].append(
+                    {
+                        "workshop_id": workshop.workshop_id,
+                        "cluster_id": workshop.cluster_ref,
+                        "session_count": len(workshop.session_ids),
+                    }
+                )
+            except Exception as exc:
+                report["errors"].append(
+                    f"workshop {workshop.workshop_id}: {exc}"
+                )
 
     if not delete_orphans or not service.cleanup:
         return report
