@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "59563b0a77252e8b91077c30c23ab524a8402bce",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.0",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
