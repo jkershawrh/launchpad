@@ -1,0 +1,94 @@
+{
+  "schema": "launchpad.redhat.com/workshop-aggregate-recovery/v1",
+  "evidence_id": "SEPTEMBER-17-ARENA-WORKSHOP-AGGREGATE-RECOVERY-20260907",
+  "observed_at": "2026-09-07T22:11:16Z",
+  "cluster_ref": "arena",
+  "source_commit": "b4580a04284bf6c2269e4d70212f9759afe67c2c",
+  "deployment_commit": "0442d3e53fabbaf13ca7827d9343eee611ad8c37",
+  "backend_image_digest": "sha256:bd2eefdd00cd42b95c054a62a41284040d1b7e3b95d0b3390e9130c0947fad7a",
+  "result": "GREEN-live",
+  "defect": {
+    "description": "TTL or individual session cleanup could reclaim every seat while leaving the parent workshop ready.",
+    "impact": "Stale workshops inflated active workshop and seat counts and remained visible as resumable orders.",
+    "red_test": "test_reconcile_completes_nonterminal_workshop_when_every_session_is_reclaimed",
+    "red_result": "failed because no workshop aggregate reconciliation existed"
+  },
+  "historical_records_repaired": {
+    "workshops": 3,
+    "seats": 5,
+    "live_namespaces_before_repair": 0,
+    "final_workshop_status": "completed"
+  },
+  "live_proof": {
+    "workshop_id": "1cd4a866-3542-4519-a4fa-c1fae79162ed",
+    "session_id": "cc879e95-01db-4707-8374-6d6b19afbb34",
+    "seat_id": "5490c332-c711-4978-a6ae-3325983db11e",
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "workshop_status_after_individual_session_reclaim": "ready",
+    "session_status_before_reconcile": "reclaimed",
+    "reconciler_response": {
+      "sessions_reconciled": 0,
+      "workshops_reconciled": [
+        {
+          "workshop_id": "1cd4a866-3542-4519-a4fa-c1fae79162ed",
+          "cluster_id": "arena",
+          "session_count": 1
+        }
+      ],
+      "late_workshop_sessions_reclaimed": [],
+      "orphan_namespaces_deleted": [],
+      "errors": []
+    },
+    "workshop_status_after_reconcile": "completed",
+    "seat_status_after_reconcile": "reclaimed",
+    "completed_at": "2026-09-07T22:11:16.504407Z",
+    "remaining_namespaces": 0,
+    "remaining_argocd_applications": 0
+  },
+  "behavior_contract": {
+    "complete_only_when_every_seat_is_reclaimed": true,
+    "leave_workshop_nonterminal_when_any_session_is_active": true,
+    "expire_public_access_on_aggregate_completion": true,
+    "preserve_existing_api_compatibility": true
+  },
+  "test_results": {
+    "related_suite_passed": 95,
+    "related_suite_failed": 0,
+    "components": [
+      "resource reconciliation",
+      "multicluster reconciliation",
+      "workshop lifecycle",
+      "cleanup hardening",
+      "public access"
+    ]
+  },
+  "red_green_matrix": [
+    {
+      "requirement": "all reclaimed sessions complete the parent workshop",
+      "red": "test failed before implementation",
+      "green_local": true,
+      "green_integration": true,
+      "green_live": true
+    },
+    {
+      "requirement": "an active seat prevents early aggregate completion",
+      "red": "missing aggregate safety contract",
+      "green_local": true,
+      "green_integration": true,
+      "green_live": "not destructively exercised; protected by unit and lifecycle suites"
+    },
+    {
+      "requirement": "completed aggregate leaves no cluster residue",
+      "red": "stale records remained visible after prior seat cleanup",
+      "green_local": true,
+      "green_integration": true,
+      "green_live": true
+    }
+  ],
+  "release_boundary": {
+    "workshop_aggregate_recovery_gate": "GREEN-live",
+    "september_17_three_workshop_release": "RED",
+    "reason": "node soak, Brutus repeat, and exact 75-seat retained rehearsal remain outstanding"
+  },
+  "contains_plaintext_credentials": false
+}
