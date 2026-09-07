@@ -346,6 +346,12 @@ def test_failed_workshop_seats_can_be_requeued_without_resetting_ready_seats():
     service._save_workshop(order.model_copy(update={
         "status": WorkshopStatus.PARTIALLY_READY,
         "seats": seats,
+        "metadata": {
+            **order.metadata,
+            "error": "Insufficient capacity during a prior attempt",
+            "preflight_failure": "prior endpoint failure",
+            "readiness_failures": {"2": "route timed out"},
+        },
     }))
 
     queued = service.queue_failed_workshop_seats(order.workshop_id)
@@ -354,6 +360,9 @@ def test_failed_workshop_seats_can_be_requeued_without_resetting_ready_seats():
     assert queued.seats[0].status == WorkshopSeatStatus.READY
     assert queued.seats[1].status == WorkshopSeatStatus.PENDING
     assert queued.seats[1].error is None
+    assert "error" not in queued.metadata
+    assert "preflight_failure" not in queued.metadata
+    assert "readiness_failures" not in queued.metadata
 
 
 def test_interrupted_workshop_seats_can_be_requeued_without_resetting_ready_seats():

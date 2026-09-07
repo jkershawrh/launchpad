@@ -1391,7 +1391,17 @@ class ProvisioningService:
             }) if seat.status != WorkshopSeatStatus.READY else seat
             for seat in workshop.seats
         ]
-        queued = workshop.model_copy(update={"status": WorkshopStatus.QUEUED, "seats": seats})
+        stale_failure_keys = {"error", "preflight_failure", "readiness_failures"}
+        metadata = {
+            key: value
+            for key, value in workshop.metadata.items()
+            if key not in stale_failure_keys
+        }
+        queued = workshop.model_copy(update={
+            "status": WorkshopStatus.QUEUED,
+            "seats": seats,
+            "metadata": metadata,
+        })
         self._save_workshop(queued)
         return queued
 
