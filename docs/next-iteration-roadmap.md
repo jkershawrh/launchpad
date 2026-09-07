@@ -20,15 +20,19 @@ Arena worker and control-plane failure modes and remain immutable RED evidence,
 even though their resource cleanup is now complete and the run-02 remediation
 is GREEN-live.
 
-The approved event topology now uses two execution clusters: Multi-Agent and
-Serve LLMs run as two complete workshops on Arena, while Building an AI Agent
-runs on Brutus. Seats are never split across clusters. Aggregate Arena 50-seat
-admission and the current tagged Serve LLMs one- and five-seat participant
-gates are GREEN-live. The next gate is the retained Arena 25 + 25 functional
-run, followed by the remaining Brutus repeat/soak gate and one exact staggered
-fleet rehearsal with all 75 participants active together. Public access remains a separate
-certification gate; internal access is the September release baseline unless
-the public matrix is independently GREEN-live by Sep 15.
+The two-cluster candidate assigned Multi-Agent and Serve LLMs to Arena and
+Building an AI Agent to Brutus, with no workshop split across clusters. Arena
+admission and the tagged Serve LLMs one- and five-seat gates were GREEN-live,
+but the September 7 retained 25 + 25 functional run was RED. It reached 50
+backend-ready sessions only after bounded retry, then `rhgnr1` entered NotReady
+for the second time: the first 25-way CPU journey completed 22/25 and the repeat
+failed 25/25 with HTTP 500/503 responses. Backend-ready state also diverged
+from deleting namespaces. Arena is no longer assumed to carry two event
+workshops. The preferred target is one complete 25-seat workshop per stable
+execution cluster; with only Arena and Brutus, a repaired Arena 50-seat soak or
+a third cluster is required. Public access remains a separate certification
+gate; internal access is the September release baseline unless the public
+matrix is independently GREEN-live by Sep 15.
 
 AgentOps remains in the catalog as a five-seat internal pilot. Its one- and
 five-seat evidence, 25-seat RED capacity finding, and production-hardening
@@ -114,7 +118,12 @@ Measured baseline for 25 seats on 2026-08-26:
 - Completed: three consecutive internal 25-seat functional/Showroom
   certifications on Arena, each scoring 100/100 with zero-residue cleanup.
 - Keep public browser/identity certification as a separate release gate.
-- Certify 50 seats on Arena only after retained capacity headroom is measured.
+- Keep the September 7 Arena 50-seat attempt RED: admission passed, but worker
+  stability, participant behavior, and lifecycle consistency failed.
+- Reattempt 50 seats on Arena only after `rhgnr1` root-cause remediation and a
+  sustained node/runtime/network soak.
+- Prefer one 25-seat workshop per stable cluster; add a third execution cluster
+  if Arena cannot pass the repaired 50-seat gate.
 - Certify 75 seats on Arena only after the 50-seat gate passes.
 - Continue toward the fleet goals in `docs/three-by-seventy-five-capacity-plan.md`.
 - Do not advertise a seat limit inferred only from allocatable cluster capacity.

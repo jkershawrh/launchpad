@@ -265,8 +265,33 @@ finalizers. The immutable evidence is
 `evidence/runs/intel-cpu-serving-five-seat-arena-20260907.json`.
 
 The current-release one- and five-seat gates are complete. They do not certify
-25 current seats or aggregate coexistence with Multi-Agent. The next Arena
-gate is the staggered, retained Multi-Agent 25 plus Serve LLMs 25 run.
+25 current seats or aggregate coexistence with Multi-Agent.
+
+### Retained Arena 25 + 25 attempt — RED-live
+
+The September 7 retained attempt reached Multi-Agent 25/25 and recovered Serve
+LLMs from 16 ready plus nine failed seats to 25/25 in the same workshop. The
+bounded model-preflight retry and clean retry-state contracts are GREEN-live.
+The participant and platform gate is not: the first simultaneous 25-seat CPU
+RAG burst returned 22 grounded, cited answers and three connection resets. A
+repeat immediately returned eleven HTTP 503 and fourteen HTTP 500 failures.
+
+During the same interval, `rhgnr1` entered NotReady for the second time in less
+than 25 minutes despite low CPU and memory utilization and no resource-pressure
+conditions. Probe failures affected participant workloads, model routing,
+Launchpad, Keycloak, and multiple OpenShift operators. The backend still
+reported 50 ready sessions while only 30 workshop namespaces remained visible,
+17 of them Terminating. This lifecycle drift also keeps the gate RED; its
+initiator must be proven from audit evidence before rerun.
+
+The immutable run record is
+`evidence/runs/september-17-arena-retained-25x2-20260907-node-instability-red.json`.
+Arena must not be advertised for two concurrent 25-seat workshops until the
+worker/runtime/network cause is repaired and the entire retained participant,
+isolation, soak, and zero-residue matrix passes. The preferred event path is one
+25-seat workshop per independently stable execution cluster. If only Arena and
+Brutus are available, the remaining options are a repaired Arena 50-seat gate
+or onboarding a third execution cluster; Oberon remains excluded.
 
 ## Exact-trio GREEN-live procedure
 

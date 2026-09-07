@@ -119,11 +119,10 @@ AgentOps import analysis is in
 The native Multi-Agent Quickstart intake and promotion gates are in
 [docs/multi-agent-quickstart-import.md](docs/multi-agent-quickstart-import.md).
 
-The approved September 17 internal event candidate uses two execution clusters:
-25 Multi-Agent seats and 25 Serve LLMs seats on Arena, plus 25 Building an AI
-Agent seats on Brutus. Provisioning is staggered, every workshop stays wholly
-on its assigned cluster, and all 75 environments then remain available
-concurrently through one Launchpad entry point. The exact
+The September 17 internal event target remains 25 Multi-Agent seats, 25 Serve
+LLMs seats, and 25 Building an AI Agent seats. Provisioning is staggered, every
+workshop stays wholly on its assigned cluster, and all 75 environments must
+remain available concurrently through one Launchpad entry point. The exact
 combined rehearsal and capacity gate are tracked in
 [docs/september-17-agentic-three-workshop-readiness.md](docs/september-17-agentic-three-workshop-readiness.md).
 Run 01 provisioned all 75 environments and reclaimed them without residue, but
@@ -131,12 +130,18 @@ is RED because Arena worker connectivity failed during participant probes.
 Run 02 proved balanced placement and a healthy first 25-seat workshop, then
 stopped on a backend OOM, a misleadingly Ready `rhgnr1`, and a late-seat
 cancellation race. It also reached zero residue after targeted reconciliation.
-The all-Arena runs remain immutable RED evidence. The next gate is the combined
-Arena 50-seat admission and functional run, followed by the Brutus repeat/soak
-and an exact staggered two-cluster fleet rehearsal. Oberon is excluded because
-its safe capacity is below 25 seats and stale KubeVirt/HCO discovery prevents
-namespace cleanup. The event candidate is not yet certified, and Brutus remains
-disabled until its gate passes.
+The all-Arena runs remain immutable RED evidence. A September 7 retained
+Arena 25 + 25 attempt recovered all CPU-serving seats in place, but its first
+25-way participant burst completed only 22 journeys and the repeat failed all
+25 when `rhgnr1` entered NotReady for the second time. Namespace state then
+diverged from the backend session records. Arena is therefore not certified to
+host two event workshops. The preferred topology is now one 25-seat workshop
+per independently stable execution cluster; if only Arena and Brutus are
+available, either Arena must pass a repaired 50-seat soak or a third cluster is
+required. Oberon remains excluded because its safe capacity is below 25 seats
+and stale KubeVirt/HCO discovery prevents namespace cleanup. The event
+candidate is not yet certified, and Brutus remains disabled until its gate
+passes.
 
 ## Repository layout
 
