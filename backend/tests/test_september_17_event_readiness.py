@@ -42,7 +42,7 @@ def test_event_readiness_manifest_keeps_the_exact_workshop_target_and_budget():
     ]
     assert all(workshop["seat_count"] == 25 for workshop in workshops)
     assert workshops[0]["release_status"] == "GREEN-live-25-x3-internal"
-    assert workshops[1]["release_status"] == ("GREEN-live-one-seat-current-and-25-historical")
+    assert workshops[1]["release_status"] == ("GREEN-live-five-seat-current-and-25-historical")
     assert workshops[2]["catalog_version"] == "1.0.2"
     assert workshops[2]["release_status"] == "GREEN-live-25-once-internal"
     assert [workshop["candidate_cluster_id"] for workshop in workshops] == [
@@ -68,7 +68,9 @@ def test_event_readiness_manifest_keeps_the_exact_workshop_target_and_budget():
 
     assert readiness["public_access_certified"] is False
     assert readiness["overall_status"] == "RED"
-    assert readiness["next_gate"] == ("arena-tagged-serve-llms-five-seat-certification")
+    assert readiness["next_gate"] == (
+        "arena-multi-agent-plus-serve-llms-staggered-retained-fifty-seat-run"
+    )
     assert readiness["supersedes"] == (
         "evidence/september-17-multicluster-three-workshop-readiness-2026-09-07.json"
     )

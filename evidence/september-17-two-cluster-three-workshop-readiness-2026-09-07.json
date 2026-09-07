@@ -2,7 +2,7 @@
   "schema": "launchpad.redhat.com/event-readiness/v4",
   "evidence_id": "READINESS-SEPTEMBER-17-TWO-CLUSTER-THREE-WORKSHOPS-20260907",
   "generated_at": "2026-09-07T19:05:00Z",
-  "source_revision": "2f5d08f8399e23482c218c140ad6f2bfd85a9c7b",
+  "source_revision": "8cb4207519ca1137baee3e4265388a870e78e3ea",
   "event_date": "2026-09-17",
   "deployment_scope": "arena-brutus-fleet",
   "supersedes": "evidence/september-17-multicluster-three-workshop-readiness-2026-09-07.json",
@@ -28,7 +28,7 @@
   "concurrent_participant_seats": 75,
   "public_access_certified": false,
   "overall_status": "RED",
-  "certification_boundary": "The two-cluster topology is approved but not yet certified as one retained 75-seat pilot. Arena aggregate admission and the tagged Serve LLMs one-seat canary are GREEN-live. Arena still needs the clean five-seat Serve LLMs gate and combined retained 50-seat functional run; Brutus still needs the scheduled soak/repeat gate.",
+  "certification_boundary": "The two-cluster topology is approved but not yet certified as one retained 75-seat pilot. Arena aggregate admission plus current tagged Serve LLMs one- and five-seat gates are GREEN-live. Arena still needs the combined retained 50-seat functional run; Brutus still needs the scheduled soak/repeat gate.",
   "workshops": [
     {
       "provision_order": 1,
@@ -48,13 +48,13 @@
       "catalog_item_id": "intel-llm-cpu-serving",
       "catalog_version": "1.0.1",
       "seat_count": 25,
-      "release_status": "GREEN-live-one-seat-current-and-25-historical",
+      "release_status": "GREEN-live-five-seat-current-and-25-historical",
       "candidate_cluster_id": "arena",
       "cpu_millicores": 16625,
       "memory_mib": 37200,
       "pod_slots": 50,
       "storage_gib_minimum": 0,
-      "target_specific_gate": "Run a clean tagged-content five-seat certification, then retain 25 seats concurrently with Multi-Agent and prove the documented CPU-serving journey."
+      "target_specific_gate": "Retain 25 current-release seats concurrently with Multi-Agent 25 and prove both documented participant journeys."
     },
     {
       "provision_order": 3,
@@ -129,8 +129,8 @@
     "arena": {
       "enabled": true,
       "event_override_required": true,
-      "current_gate": "Tagged Serve LLMs five-seat certification, retained 50-seat functional run, soak, and zero-residue cleanup.",
-      "latest_target_evidence": "evidence/runs/intel-cpu-serving-one-seat-arena-20260907.json"
+      "current_gate": "Retained Multi-Agent 25 plus Serve LLMs 25 functional run, soak, and zero-residue cleanup.",
+      "latest_target_evidence": "evidence/runs/intel-cpu-serving-five-seat-arena-20260907.json"
     },
     "brutus": {
       "enabled": false,
@@ -142,11 +142,11 @@
     "Multi-Agent 0.2.5 completed three consecutive internal 25-seat Arena certifications with functional journeys, isolation, and zero residue.",
     "Serve LLMs completed a historical internal 25-seat Arena workshop and now uses immutable tagged Showroom content.",
     "The current tagged Serve LLMs release completed a one-seat Arena participant journey with namespace isolation, grounded RAG, and zero-residue reclaim.",
+    "The current tagged Serve LLMs release completed a five-seat Arena run with 20/20 grounded and cited RAG calls, three consecutive qualifying latency bursts, cross-seat denial, and zero residue.",
     "Building an AI Agent completed one internal 25-seat Brutus certification with 75 ready pods, functional journeys, isolation, and zero residue.",
     "Launchpad persists immutable whole-workshop cluster affinity and cluster-aware cleanup."
   ],
   "remaining_release_gates": [
-    "arena-tagged-serve-llms-five-seat-certification",
     "arena-multi-agent-plus-serve-llms-staggered-retained-fifty-seat-run",
     "brutus-agent-201-repeat-and-sixty-minute-soak",
     "two-cluster-exact-seventy-five-seat-functional-rehearsal",
@@ -155,7 +155,7 @@
     "sequential-targeted-reclaim-with-zero-residue",
     "requester-participant-api-and-browser-contract-matrix"
   ],
-  "next_gate": "arena-tagged-serve-llms-five-seat-certification",
+  "next_gate": "arena-multi-agent-plus-serve-llms-staggered-retained-fifty-seat-run",
   "release_policy": {
     "rubric_score_required": 100,
     "critical_cells_must_be_green_live": true,

@@ -13,7 +13,7 @@ prior readiness contract and RED 25-seat capacity evidence remain immutable.
 | Provision order | Catalog item | Seats | Current evidence | Candidate target |
 |---|---|---:|---|---|
 | 1 | `multi-agent-quickstart` | 25 | GREEN-live-25 three consecutive times on Arena | Arena |
-| 2 | `intel-llm-cpu-serving` | 25 | Current tagged content GREEN-live at one seat; GREEN-live-25 historically on Arena | Arena |
+| 2 | `intel-llm-cpu-serving` | 25 | Current tagged content GREEN-live at five seats; GREEN-live-25 historically on Arena | Arena |
 | 3 | `intel-xeon6-agent-201` | 25 | Current compact release passed one internal 25-seat run on Brutus | Brutus |
 
 The order is **Multi-Agent first**, Serve LLMs second, and Building an AI
@@ -242,9 +242,31 @@ namespaces, Routes, Applications, RoleBindings, pods, and Secrets in under ten
 minutes. The immutable record is
 `evidence/runs/intel-cpu-serving-one-seat-arena-20260907.json`.
 
-This proves only the one-seat current-release canary. The next gate is a clean
-five-seat run with simultaneous deterministic RAG journeys and bulk reclaim,
-followed by the retained Arena Multi-Agent 25 + Serve LLMs 25 rehearsal.
+The one-seat record proves only that scope. The five-seat run described next
+adds simultaneous deterministic RAG journeys and bulk reclaim before the
+retained Arena Multi-Agent 25 + Serve LLMs 25 rehearsal.
+
+### Tagged Serve LLMs five-seat gate — GREEN-live
+
+The current release then completed the five-seat Arena gate at deployed Git
+revision `8cb4207`. All five seats reached Ready in 56.189972 seconds from
+workshop start, every Showroom and guide returned HTTP 200, every terminal
+opened in its assigned project, all own-namespace edit checks passed, and all
+five cross-seat reads were denied. The ten participant pods contained 20 ready
+containers with zero restarts.
+
+All 20 simultaneous deterministic RAG calls across four bursts returned the
+exact fact and source citation. The first burst preserved a RED performance
+observation at 10.900942 seconds nearest-rank p95. The next three consecutive
+bursts passed the existing under-10-second criterion at 8.861017, 6.673436,
+and 7.777173 seconds. Normal workshop reclaim removed all five sessions, and
+the namespace and Application counts reached zero in 83 seconds with no forced
+finalizers. The immutable evidence is
+`evidence/runs/intel-cpu-serving-five-seat-arena-20260907.json`.
+
+The current-release one- and five-seat gates are complete. They do not certify
+25 current seats or aggregate coexistence with Multi-Agent. The next Arena
+gate is the staggered, retained Multi-Agent 25 plus Serve LLMs 25 run.
 
 ## Exact-trio GREEN-live procedure
 
@@ -291,9 +313,9 @@ cleanup and repeatability. Any failed critical cell keeps the event candidate
 RED regardless of the numerical score.
 
 The read-only two-cluster capacity inspection and the current tagged-content
-Serve LLMs one-seat canary are complete. The next gates are the Arena five-seat
-Serve LLMs certification, the retained Arena 25 + 25 functional run, and the
-remaining Brutus Agent 201 repeat/soak. Enable Brutus for event
+Serve LLMs one- and five-seat certifications are complete. The next gates are
+the retained Arena 25 + 25 functional run and the remaining Brutus Agent 201
+repeat/soak. Enable Brutus for event
 orders only after its workload gate passes, then repeat the exact preview and
 combined 75-seat rehearsal. AgentOps continues separately at a maximum of five
 internal seats until its own 25-seat capacity and architecture gates are

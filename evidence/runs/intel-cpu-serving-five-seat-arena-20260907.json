@@ -1,0 +1,186 @@
+{
+  "schema": "launchpad.redhat.com/workshop-certification/v1",
+  "evidence_id": "EDD-ARENA-CPU-SERVING-FIVE-SEAT-20260907",
+  "captured_at": "2026-09-07T19:24:56Z",
+  "source_revision": "8cb4207519ca1137baee3e4265388a870e78e3ea",
+  "backend_image": "sha256:861be76bf234fcc8a5a76150ef5faa56947e7a05f62a2f778a3a0f99d8e53bed",
+  "portal_image": "sha256:43e8dafd8276faf598c3ad3bf7090bb48129ced6cb131a7e9925f6c4aca9aaa7",
+  "catalog_item_id": "intel-llm-cpu-serving",
+  "catalog_version": "1.0.1",
+  "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.0",
+  "cluster_ref": "arena",
+  "workshop_id": "8bdd62c8-f55a-44c5-82b2-c1503dac0dfa",
+  "session_ids": [
+    "c441282c-c84b-4fbe-8565-800cb597a7c8",
+    "69cdafbf-4355-4963-9c04-4c6517fb546a",
+    "e231de73-c252-42e3-9f44-9748d11b0c32",
+    "0694564f-d11d-4305-b83a-587b253f7739",
+    "b0adafc5-4f5c-4ec9-a2e9-8af31e35896b"
+  ],
+  "namespaces": [
+    "launchpad-smoke-test-tenant-intel-llm-cpu-serv-208cc9",
+    "launchpad-smoke-test-tenant-intel-llm-cpu-serv-158281",
+    "launchpad-smoke-test-tenant-intel-llm-cpu-serv-2047c0",
+    "launchpad-smoke-test-tenant-intel-llm-cpu-serv-4cd2e1",
+    "launchpad-smoke-test-tenant-intel-llm-cpu-serv-0a5ca9"
+  ],
+  "seat_count": 5,
+  "exposure_policy": "internal",
+  "result": "GREEN-live-five-seat",
+  "capacity_preview": {
+    "can_provision": true,
+    "selected_cluster": "arena",
+    "catalog_seat_limit": 25,
+    "cluster_safe_seats": 92,
+    "requested_cpu_millicores": 3325,
+    "requested_memory_mib": 7440,
+    "requested_pods": 10,
+    "headroom_percent": 20
+  },
+  "provisioning": {
+    "workshop_created_at": "2026-09-07T19:18:53.612925Z",
+    "workshop_started_at": "2026-09-07T19:19:01.465440Z",
+    "last_seat_ready_at": "2026-09-07T19:19:57.655412Z",
+    "collective_ready_seconds": 56.189972,
+    "all_seats_ready": true,
+    "unique_session_count": 5,
+    "unique_namespace_count": 5,
+    "showroom_http_200": 5,
+    "guide_http_200": 5,
+    "runtime_contract_complete": 5,
+    "anythingllm_ready": 5,
+    "running_pods": 10,
+    "ready_containers": 20,
+    "container_restarts": 0
+  },
+  "authorization": {
+    "default_project_matches_seat": 5,
+    "own_namespace_edit_allowed": 5,
+    "cross_seat_read_denied": 5
+  },
+  "concurrent_rag": {
+    "deterministic_document": "orion-leave-policy.txt",
+    "expected_fact": "17 days of Orion leave per calendar year",
+    "total_calls": 20,
+    "successful_calls": 20,
+    "grounded_answers": 20,
+    "cited_documents": 20,
+    "bursts": [
+      {
+        "classification": "RED-performance-observation",
+        "latency_seconds": [
+          8.336269,
+          7.525233,
+          7.214037,
+          9.250239,
+          10.900942
+        ],
+        "nearest_rank_p95_seconds": 10.900942
+      },
+      {
+        "classification": "GREEN-live-qualifying-1",
+        "latency_seconds": [
+          4.598230,
+          4.752399,
+          4.803239,
+          7.316859,
+          8.861017
+        ],
+        "nearest_rank_p95_seconds": 8.861017
+      },
+      {
+        "classification": "GREEN-live-qualifying-2",
+        "latency_seconds": [
+          4.254610,
+          4.170289,
+          4.087455,
+          6.673436,
+          5.930875
+        ],
+        "nearest_rank_p95_seconds": 6.673436
+      },
+      {
+        "classification": "GREEN-live-qualifying-3",
+        "latency_seconds": [
+          4.853703,
+          4.546824,
+          4.700889,
+          7.777173,
+          6.380955
+        ],
+        "nearest_rank_p95_seconds": 7.777173
+      }
+    ],
+    "consecutive_qualifying_bursts": 3,
+    "qualifying_calls": 15,
+    "qualifying_nearest_rank_p95_seconds": 8.861017,
+    "qualifying_mean_seconds": 5.580530
+  },
+  "cleanup": {
+    "reclaim_requested_at": "2026-09-07T19:23:33Z",
+    "workshop_completed_at": "2026-09-07T19:24:09.097157Z",
+    "zero_residue_observed_at": "2026-09-07T19:24:56Z",
+    "zero_residue_observed_seconds": 83,
+    "workshop_status": "completed",
+    "reclaimed_seats": 5,
+    "remaining_namespaces": 0,
+    "remaining_routes": 0,
+    "remaining_applications": 0,
+    "remaining_rolebindings": 0,
+    "remaining_pods": 0,
+    "remaining_secrets": 0,
+    "forced_finalizers": 0
+  },
+  "red_green_matrix": [
+    {
+      "id": "CPU5-CONTRACT-001",
+      "red": "The old certification driver expected participant secrets in rendered Antora HTML.",
+      "green_local": "A failing contract test now requires runtime Secret access through the Showroom terminal boundary and prohibits HTML key scraping.",
+      "green_live": "All five terminals read complete namespace-scoped runtime contracts and deployed their participant workloads without publishing a key."
+    },
+    {
+      "id": "CPU5-PERF-001",
+      "red": "The first five-way burst was functionally correct but had a nearest-rank p95 of 10.900942 seconds against the existing under-10-second rubric.",
+      "green_local": "The deterministic journey and exact latency calculation were retained without weakening the threshold.",
+      "green_live": "Three consecutive subsequent five-way bursts were fully grounded and cited with p95 values of 8.861017, 6.673436, and 7.777173 seconds."
+    },
+    {
+      "id": "CPU5-ISOLATION-001",
+      "red": "A five-seat current-release cross-seat authorization matrix had not been recorded.",
+      "green_local": "The matrix requires each terminal to default to its own project, retain own-namespace edit, and deny reads from the next seat.",
+      "green_live": "All 5 own-project and edit checks passed and all 5 cross-seat reads were denied."
+    },
+    {
+      "id": "CPU5-CLEANUP-001",
+      "red": "Current-release bulk reclaim and zero-residue behavior were unproven.",
+      "green_local": "The normal idempotent workshop reclaim path and ten-minute cleanup limit were retained.",
+      "green_live": "All five seats were reclaimed and namespaces plus GitOps resources reached zero in 83 seconds without forcing finalizers."
+    }
+  ],
+  "proof_strategy": {
+    "tdd": "The participant runtime boundary was captured as a failing test before the certification driver was corrected.",
+    "edd": "This manifest records revision and image digests, capacity, immutable order IDs, timestamps, behavior, authorization, performance, and cleanup.",
+    "cdd": "The requester response, capacity resource fields, runtime Secret, placement, and reclaim contracts were exercised at the deployed revision.",
+    "bdd": "Given five Arena seats, when participants deploy and simultaneously query isolated RAG assistants, then all exact answers and citations return and bulk reclaim removes every seat artifact.",
+    "cbt": "Portal/API, placement, Showroom, terminal, RBAC, runtime Secret, AnythingLLM, inference, and cleanup were checked separately and end to end."
+  },
+  "rubric": {
+    "contract_and_artifacts": 15,
+    "placement_and_capacity": 15,
+    "provisioning_and_readiness": 20,
+    "participant_functionality": 25,
+    "authorization_and_isolation": 15,
+    "cleanup_and_repeatability": 10,
+    "score": 100,
+    "required": 100,
+    "scope": "five-seat-internal-current-release"
+  },
+  "not_certified": [
+    "twenty-five-seat current-release CPU-serving workshop",
+    "CPU-serving 25 retained concurrently with Multi-Agent 25",
+    "three-workshop September 17 fleet rehearsal",
+    "public participant access for this catalog item"
+  ],
+  "next_gate": "Provision Multi-Agent 25 on Arena, retain it, then provision CPU Serving 25 on Arena and run both participant matrices concurrently before sequential zero-residue reclaim.",
+  "contains_plaintext_credentials": false
+}

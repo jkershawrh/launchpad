@@ -23,11 +23,10 @@ is GREEN-live.
 The approved event topology now uses two execution clusters: Multi-Agent and
 Serve LLMs run as two complete workshops on Arena, while Building an AI Agent
 runs on Brutus. Seats are never split across clusters. Aggregate Arena 50-seat
-admission and the current tagged Serve LLMs one-seat participant canary are
-GREEN-live. The next gate is a clean five-seat Serve LLMs run, followed by the
-retained Arena 25 + 25 functional run, the remaining Brutus repeat/soak gate,
-and one exact staggered fleet rehearsal with all 75 participants active
-together. Public access remains a separate
+admission and the current tagged Serve LLMs one- and five-seat participant
+gates are GREEN-live. The next gate is the retained Arena 25 + 25 functional
+run, followed by the remaining Brutus repeat/soak gate and one exact staggered
+fleet rehearsal with all 75 participants active together. Public access remains a separate
 certification gate; internal access is the September release baseline unless
 the public matrix is independently GREEN-live by Sep 15.
 
