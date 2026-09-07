@@ -1,3 +1,7 @@
+# Remote execution targets only. Do not apply this identity to the cluster
+# currently hosting the Launchpad control plane. Arena is the control plane as
+# of the September 2026 pilot, so this manifest is for Brutus/Oberon only until
+# that topology deliberately changes.
 apiVersion: v1
 kind: Namespace
 metadata:

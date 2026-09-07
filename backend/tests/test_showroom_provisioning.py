@@ -441,14 +441,16 @@ def test_wait_for_showroom_route_requires_http_200(monkeypatch):
     assert request.call_count == 2
 
 
-def test_showroom_namespace_is_labeled_for_namespaced_argocd():
+def test_showroom_namespace_is_labeled_for_namespaced_argocd(monkeypatch):
     adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
     adapter._core_v1 = MagicMock()
+    monkeypatch.setenv("LAUNCHPAD_CONTROL_PLANE_ID", "arena-primary")
 
     adapter._create_namespace("lab-showroom", {"argocd.argoproj.io/managed-by": "argocd"})
 
     body = adapter._core_v1.create_namespace.call_args.kwargs["body"]
     assert body.metadata.labels["argocd.argoproj.io/managed-by"] == "argocd"
+    assert body.metadata.labels["launchpad.redhat.com/control-plane-id"] == "arena-primary"
 
 
 def test_workshop_participant_gets_edit_only_in_seat_namespace():

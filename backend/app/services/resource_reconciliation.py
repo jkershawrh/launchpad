@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
 import os
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from app.domain.enums import SessionStatus, WorkshopStatus
 from app.domain.models import LifecycleEvent
-
 
 ACTIVE_STATES = {
     SessionStatus.READY,
@@ -37,9 +36,14 @@ def _namespace_exists(namespace: str, core=None) -> bool:
         raise
 
 
-def _managed_namespaces(core=None) -> list[str]:
+def _managed_namespaces(
+    core=None, *, control_plane_id: str
+) -> list[str]:
     result = (core or _core_api()).list_namespace(
-        label_selector="app.kubernetes.io/managed-by=launchpad"
+        label_selector=(
+            "app.kubernetes.io/managed-by=launchpad,"
+            f"launchpad.redhat.com/control-plane-id={control_plane_id}"
+        )
     )
     return sorted(
         item.metadata.name
@@ -67,7 +71,7 @@ def _namespace_metadata(
 def _database_available() -> bool:
     url = os.environ.get("DATABASE_URL")
     if not url:
-        return True
+        return False
     try:
         import psycopg2
         connection = psycopg2.connect(url, connect_timeout=3)
@@ -87,6 +91,12 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
     }
     if delete_orphans and not _database_available():
         report["errors"].append("database unavailable — orphan deletion skipped")
+        return report
+    control_plane_id = os.environ.get("LAUNCHPAD_CONTROL_PLANE_ID", "").strip()
+    if delete_orphans and not control_plane_id:
+        report["errors"].append(
+            "control-plane identity unavailable — orphan deletion skipped"
+        )
         return report
 
     # A process that was replaced while provisioning can finish a seat after
@@ -189,7 +199,9 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
         }
         try:
             core = service._target_clients(cluster_id).core if cluster_id else None
-            namespaces = _managed_namespaces(core)
+            namespaces = _managed_namespaces(
+                core, control_plane_id=control_plane_id
+            )
         except Exception as exc:
             report["errors"].append(f"cluster {cluster_id or 'local'}: {exc}")
             continue

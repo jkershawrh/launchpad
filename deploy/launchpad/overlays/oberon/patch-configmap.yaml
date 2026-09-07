@@ -4,6 +4,7 @@ metadata:
   name: launchpad-config
 data:
   LAUNCHPAD_MODE: "openshift"
+  LAUNCHPAD_CONTROL_PLANE_ID: "oberon-primary"
   CATALOG_DIR: "/opt/catalog"
   LITELLM_API_BASE: "http://inference-proxy.intel-inference.svc:4000"
   SANDBOX_STORAGE_CLASS: "nfs-storage"

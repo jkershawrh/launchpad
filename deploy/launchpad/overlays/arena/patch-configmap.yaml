@@ -7,6 +7,7 @@ data:
   CATALOG_DIR: "/opt/catalog"
   CLUSTER_TARGETS_FILE: "/etc/launchpad/clusters.yaml"
   LAUNCHPAD_CONTROL_CLUSTER_REF: "arena"
+  LAUNCHPAD_CONTROL_PLANE_ID: "arena-primary"
   SHOWROOM_ARGOCD_NAMESPACE: "openshift-gitops"
   LITELLM_API_BASE: "http://ovms-granite-2b.fleet-llm-d.svc:8080/v1"
   SANDBOX_IMAGE: "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-sandbox:latest"

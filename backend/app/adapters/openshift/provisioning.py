@@ -1298,6 +1298,11 @@ http {{
             "pod-security.kubernetes.io/enforce": "restricted",
             "pod-security.kubernetes.io/warn": "restricted",
         }
+        control_plane_id = os.environ.get(
+            "LAUNCHPAD_CONTROL_PLANE_ID", ""
+        ).strip()
+        if control_plane_id:
+            labels["launchpad.redhat.com/control-plane-id"] = control_plane_id
         if extra_labels:
             labels.update(extra_labels)
         body = client.V1Namespace(

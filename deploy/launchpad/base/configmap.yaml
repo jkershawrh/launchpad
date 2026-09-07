@@ -24,5 +24,8 @@ data:
   WORKSHOP_CANCEL_WAIT_TIMEOUT: "900"
   WORKSHOP_RECLAIM_CONCURRENCY: "10"
   ORPHAN_CLEANUP_GRACE_SECONDS: "1800"
+  # Orphan deletion remains disabled until an overlay gives this control
+  # plane a unique ownership identity.
+  LAUNCHPAD_CONTROL_PLANE_ID: ""
   LAUNCHPAD_MODE: "openshift"
   CORS_ORIGINS: "https://launchpad.apps.example.com,https://launchpad-admin.apps.example.com"

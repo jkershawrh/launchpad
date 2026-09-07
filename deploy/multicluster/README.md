@@ -14,9 +14,11 @@ integrated registry now uses a retained 100Gi NFS claim and all three pinned
 images passed post-restart `Always` pull probes. Oberon remains at the
 infrastructure probe gate.
 
-Apply `arena-rbac.yaml` to the remote cluster, create a bound service-account
-token, and build a kubeconfig for that identity. Despite the historical
-filename, this is the shared Launchpad provisioner RBAC contract. Store the
+Apply `arena-rbac.yaml` only to a remote execution cluster, create a bound
+service-account token, and build a kubeconfig for that identity. Despite the
+historical filename, this is the shared Launchpad provisioner RBAC contract.
+Never apply it to Arena while Arena hosts the control plane. Use one credential
+per remote cluster; do not reuse a token between Brutus and Oberon. Store each
 kubeconfig on Arena without committing it:
 
 ```sh
@@ -37,6 +39,34 @@ must exactly match the registry:
 - Oberon: `https://api.oberon.fm2aihpcsed.com:6443`
 
 Never copy kubeadmin credentials into Launchpad or Git.
+
+## Control-plane ownership and cutover safety
+
+Every control plane must set a unique `LAUNCHPAD_CONTROL_PLANE_ID`. The Arena
+overlay uses `arena-primary`; the Oberon overlay uses `oberon-primary`.
+Launchpad stamps that identity on every managed namespace, and orphan
+reconciliation selects only namespaces carrying its own identity. Orphan
+deletion also fails closed when either the control-plane identity or database
+connection is unavailable.
+
+Before moving the control plane, revoke the old control plane's remote
+credential on every execution cluster. A stale reconciler with a different
+session database must never retain namespace-delete permission after cutover.
+On the new local control-plane cluster, verify that no workload uses the remote
+provisioner identity, then remove its binding and service account:
+
+```sh
+KUBECONFIG=/explicit/arena-admin.kubeconfig oc get pods -A \
+  -o jsonpath='{range .items[?(@.spec.serviceAccountName=="launchpad-provisioner")]}{.metadata.namespace}/{.metadata.name}{"\\n"}{end}'
+KUBECONFIG=/explicit/arena-admin.kubeconfig oc delete \
+  clusterrolebinding launchpad-remote-provisioner
+KUBECONFIG=/explicit/arena-admin.kubeconfig oc -n partner-ai-launchpad delete \
+  serviceaccount launchpad-provisioner
+```
+
+These removals are intentional and recoverable by applying the remote RBAC
+manifest during a future, deliberate topology change. Recreating the service
+account produces a new identity and does not revive an old credential.
 
 Build the control-plane trust bundle from explicit, authenticated kubeconfigs
 before enabling an HTTPS model endpoint on a remote target:

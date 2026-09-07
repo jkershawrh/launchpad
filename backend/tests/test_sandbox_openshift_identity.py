@@ -39,3 +39,16 @@ def test_sandbox_pod_uses_cli_identity_and_kubeconfig():
     assert pod_spec.service_account_name == "sandbox-user"
     assert environment["SANDBOX_NAMESPACE"] == "sandbox-one"
     assert environment["KUBECONFIG"] == "/tmp/launchpad-kubeconfig"
+
+
+def test_sandbox_namespace_carries_control_plane_ownership(monkeypatch):
+    provisioner = _provisioner()
+    monkeypatch.setenv("LAUNCHPAD_CONTROL_PLANE_ID", "arena-primary")
+
+    provisioner._create_namespace("sandbox-one")
+
+    namespace = provisioner._core_v1.create_namespace.call_args.args[0]
+    assert (
+        namespace.metadata.labels["launchpad.redhat.com/control-plane-id"]
+        == "arena-primary"
+    )
