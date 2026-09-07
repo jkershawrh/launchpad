@@ -76,11 +76,22 @@ class ClusterRegistry:
         required_models: Iterable[str] = (),
         override: Optional[str] = None,
         require_public_access: bool = False,
+        allow_disabled_override: bool = False,
     ) -> ClusterTarget:
         candidates = self.eligible(required_capabilities, required_models, require_public_access)
         if override:
-            target = self.get(override)
-            if target not in candidates:
+            target = self.inspect(override) if allow_disabled_override else self.get(override)
+            capabilities = set(required_capabilities)
+            models = set(required_models)
+            pilot_cluster = os.getenv("PUBLIC_ACCESS_PILOT_CLUSTER", "").strip()
+            public_access_available = (
+                target.public_access_enabled and bool(target.public_ingress_domain)
+            ) or target.cluster_id == pilot_cluster
+            if (
+                not capabilities.issubset(set(target.capabilities))
+                or not models.issubset(set(target.model_endpoints))
+                or (require_public_access and not public_access_available)
+            ):
                 raise ValueError(
                     f"Target cluster '{override}' lacks required capabilities or models"
                 )

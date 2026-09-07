@@ -191,7 +191,14 @@ class ProvisioningService:
     def _target_clients(self, cluster_ref: Optional[str]):
         if not cluster_ref or not self.cluster_client_factory:
             return None
-        return self.cluster_client_factory.clients(cluster_ref)
+        # Enabled is a placement control, not a lifecycle kill switch. Once a
+        # target is persisted, validation, reconciliation and cleanup must keep
+        # using that exact cluster even if normal placement is disabled.
+        return self.cluster_client_factory.clients(cluster_ref, allow_disabled=True)
+
+    def _target_config(self, cluster_ref: str):
+        """Resolve a persisted target without making it generally placeable."""
+        return self.cluster_registry.inspect(cluster_ref)
 
     def _get_provisioner(self, catalog_item, cluster_ref: Optional[str] = None):
         from app.domain.enums import CatalogCategory
@@ -208,7 +215,7 @@ class ProvisioningService:
                 if cluster_ref and self.cluster_registry:
                     return OpenShiftSandboxProvisioner(
                         clients=self._target_clients(cluster_ref),
-                        target=self.cluster_registry.get(cluster_ref),
+                        target=self._target_config(cluster_ref),
                     )
                 return OpenShiftSandboxProvisioner()
             elif mode == "local":
@@ -216,7 +223,7 @@ class ProvisioningService:
                 return LocalSandboxProvisioner()
         if mode == "openshift" and cluster_ref and self.cluster_registry:
             from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
-            target = self.cluster_registry.get(cluster_ref)
+            target = self._target_config(cluster_ref)
             clients = self._target_clients(cluster_ref)
             control_clients = self._target_clients(self._control_cluster_ref(cluster_ref))
             return OpenShiftProvisioningAdapter(
@@ -262,7 +269,13 @@ class ProvisioningService:
             return target_cluster_ref
         return "oberon"
 
-    def _select_target_cluster(self, request: LabRequest, catalog_item) -> Optional[str]:
+    def _select_target_cluster(
+        self,
+        request: LabRequest,
+        catalog_item,
+        *,
+        allow_disabled_override: bool = False,
+    ) -> Optional[str]:
         override = request.metadata.get("target_cluster")
         required_models = request.requested_models or (
             (catalog_item.metadata or {}).get("required_models", [])
@@ -277,6 +290,7 @@ class ProvisioningService:
             required_models=required_models,
             override=override,
             require_public_access=request.exposure_policy == ExposurePolicy.PUBLIC_CODE,
+            allow_disabled_override=allow_disabled_override,
         )
         return target.cluster_id
 
@@ -284,7 +298,7 @@ class ProvisioningService:
         """Validate models against the endpoints on the persisted target cluster."""
         model_endpoints = None
         if cluster_ref and self.cluster_registry:
-            model_endpoints = self.cluster_registry.get(cluster_ref).model_endpoints
+            model_endpoints = self._target_config(cluster_ref).model_endpoints
         return self.preflight.check(
             catalog_item,
             model_endpoints=model_endpoints,
@@ -297,7 +311,7 @@ class ProvisioningService:
         if not selected_models:
             return ""
         if cluster_ref and self.cluster_registry:
-            return self.cluster_registry.get(cluster_ref).model_endpoints.get(
+            return self._target_config(cluster_ref).model_endpoints.get(
                 selected_models[0], ""
             )
         return os.environ.get("LITELLM_API_BASE", "")
@@ -443,7 +457,13 @@ class ProvisioningService:
                 f"Reclaim existing sessions before requesting new ones."
             )
 
-    def provision(self, request_id: str, workshop_id: str = None) -> LabSession:
+    def provision(
+        self,
+        request_id: str,
+        workshop_id: str = None,
+        *,
+        allow_disabled_target: bool = False,
+    ) -> LabSession:
         request = self._requests.get(request_id)
         if not request:
             raise ValueError(f"Request {request_id} not found")
@@ -468,7 +488,11 @@ class ProvisioningService:
             })
 
         hw, qp = self._resolve_hardware(request, catalog_item)
-        preferred_cluster = self._select_target_cluster(request, catalog_item)
+        preferred_cluster = self._select_target_cluster(
+            request,
+            catalog_item,
+            allow_disabled_override=allow_disabled_target,
+        )
 
         if self.preflight:
             preflight_result = self._run_preflight(catalog_item, preferred_cluster)
@@ -528,7 +552,7 @@ class ProvisioningService:
                     preferred_cluster, selected_models
                 ),
                 "model_endpoints": (
-                    dict(self.cluster_registry.get(preferred_cluster).model_endpoints)
+                    dict(self._target_config(preferred_cluster).model_endpoints)
                     if preferred_cluster and self.cluster_registry
                     else {}
                 ),
@@ -1139,6 +1163,7 @@ class ProvisioningService:
                     required_models=(catalog_item.metadata or {}).get("required_models", []),
                     override=workshop.target_cluster,
                     require_public_access=workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE,
+                    allow_disabled_override=workshop.certification_override,
                 ).cluster_id
             except ValueError as exc:
                 return {
@@ -1636,6 +1661,7 @@ class ProvisioningService:
                     ),
                     override=workshop.cluster_ref or workshop.target_cluster,
                     require_public_access=workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE,
+                    allow_disabled_override=workshop.certification_override,
                 ).cluster_id
             except ValueError as exc:
                 workshop = workshop.model_copy(update={
@@ -1913,7 +1939,9 @@ class ProvisioningService:
             }), None
         try:
             session = self.provision(
-                accepted.request_id, workshop_id=workshop.workshop_id
+                accepted.request_id,
+                workshop_id=workshop.workshop_id,
+                allow_disabled_target=workshop.certification_override,
             )
             session = self.validate_session(session.session_id)
             if session.status != SessionStatus.READY:

@@ -12,7 +12,9 @@ class FakeRbac:
 
 class FakeFactory:
     def __init__(self, rbac): self.rbac = rbac
-    def clients(self, _cluster): return SimpleNamespace(rbac=self.rbac)
+    def clients(self, _cluster, *, allow_disabled=False):
+        assert allow_disabled is True
+        return SimpleNamespace(rbac=self.rbac)
 
 
 def service_with_session(catalog_item_id="sandbox"):

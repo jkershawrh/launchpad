@@ -6,7 +6,7 @@ import pytest
 from app.adapters.openshift.client_factory import ClusterClientFactory
 from app.adapters.openshift.showroom_gitops import ShowroomSeat, build_showroom_application
 from app.domain.clusters import ClusterTarget
-from app.domain.models import LabRequest
+from app.domain.models import LabRequest, Workshop
 from app.services.cluster_registry import ClusterRegistry
 from app.services.provisioning import ProvisioningService
 
@@ -42,6 +42,85 @@ def test_registry_can_inspect_disabled_target_without_making_it_placeable():
     assert registry.list_all() == [disabled]
     with pytest.raises(ValueError, match="disabled"):
         registry.get("brutus")
+
+
+def test_disabled_target_requires_explicit_certification_override():
+    disabled = target(
+        "oberon",
+        50,
+        ["cpu", "openshift", "showroom", "model_endpoint"],
+        {"granite-2b-cpu": "https://model"},
+    ).model_copy(update={"enabled": False})
+    registry = ClusterRegistry([disabled])
+
+    with pytest.raises(ValueError, match="disabled"):
+        registry.select(
+            ["openshift", "showroom", "model_endpoint"],
+            ["granite-2b-cpu"],
+            override="oberon",
+        )
+
+    selected = registry.select(
+        ["openshift", "showroom", "model_endpoint"],
+        ["granite-2b-cpu"],
+        override="oberon",
+        allow_disabled_override=True,
+    )
+
+    assert selected == disabled
+
+
+def test_workshop_certification_preview_can_target_disabled_cluster_only_explicitly():
+    disabled = target(
+        "oberon",
+        50,
+        ["openshift", "showroom", "model_endpoint"],
+        {"granite-2b-cpu": "https://model"},
+    ).model_copy(update={"enabled": False})
+    catalog = MagicMock()
+    catalog.get_item.return_value = SimpleNamespace(
+        required_capabilities=["openshift", "showroom", "model_endpoint"],
+        metadata={"required_models": ["granite-2b-cpu"], "max_workshop_seats": 25},
+    )
+    service = ProvisioningService(
+        catalog=catalog,
+        cluster_registry=ClusterRegistry([disabled]),
+    )
+    service.check_workshop_capacity = MagicMock(return_value=(True, "capacity available"))
+
+    ordinary = service.preview_workshop_capacity(
+        Workshop(
+            tenant_id="pilot-tenant",
+            catalog_item_id="intel-llm-cpu-serving",
+            num_users=1,
+            target_cluster="oberon",
+        )
+    )
+    certification = service.preview_workshop_capacity(
+        Workshop(
+            tenant_id="pilot-tenant",
+            catalog_item_id="intel-llm-cpu-serving",
+            num_users=1,
+            target_cluster="oberon",
+            certification_override=True,
+        )
+    )
+
+    assert ordinary["can_provision"] is False
+    assert ordinary["reason"] == "Target cluster 'oberon' is disabled"
+    assert certification["can_provision"] is True
+    assert certification["selected_cluster"] == "oberon"
+
+
+def test_persisted_target_lifecycle_can_reach_disabled_cluster_for_cleanup():
+    factory = MagicMock()
+    expected = MagicMock()
+    factory.clients.return_value = expected
+    service = ProvisioningService.__new__(ProvisioningService)
+    service.cluster_client_factory = factory
+
+    assert service._target_clients("brutus") is expected
+    factory.clients.assert_called_once_with("brutus", allow_disabled=True)
 
 
 def test_client_factory_inspection_does_not_bypass_disabled_placement():
