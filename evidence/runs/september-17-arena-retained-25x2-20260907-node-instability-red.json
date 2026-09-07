@@ -1,0 +1,185 @@
+{
+  "schema": "launchpad.redhat.com/workshop-certification/v1",
+  "evidence_id": "EDD-SEPT17-ARENA-RETAINED-25X2-NODE-INSTABILITY-20260907-RED",
+  "captured_at": "2026-09-07T20:13:00Z",
+  "source_revision": "b9205a48f0e7b7fc63035824435eb88d898183a3",
+  "backend_source_revision": "47883e28787ea10b41caa475afc1391f448c027d",
+  "backend_image": "sha256:1add5aa235fa06cbc310ba870515d2c2b0c3141f1c2174a16dd8a7baeb691245",
+  "cluster_ref": "arena",
+  "result": "RED-live-node-instability",
+  "scope": "internal-retained-multi-agent-25-plus-cpu-serving-25",
+  "workshops": {
+    "multi_agent": {
+      "catalog_item_id": "multi-agent-quickstart",
+      "workshop_id": "736a4a17-326c-4761-a49c-2281b6dfdb3c",
+      "requested_seats": 25,
+      "api_seat_state_before_functional_burst": {
+        "ready": 25
+      }
+    },
+    "cpu_serving": {
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "workshop_id": "a6571182-51a1-4b78-bc55-fa2266f3e53a",
+      "requested_seats": 25,
+      "api_seat_state_after_bounded_preflight_recovery": {
+        "ready": 25
+      },
+      "ready_sessions_preserved_during_retry": 16,
+      "failed_seats_recovered_in_place": 9,
+      "replacement_workshop_created": false,
+      "stale_error_cleared": true
+    }
+  },
+  "cpu_participant_bursts": [
+    {
+      "run_id": "sept17-retained-25x2-20260907",
+      "simultaneous_seats": 25,
+      "grounded_and_cited": 22,
+      "failed": 3,
+      "failure_signature": "connection reset by peer",
+      "successful_call_mean_seconds": 41.877607,
+      "successful_call_nearest_rank_p95_seconds": 55.343308,
+      "successful_call_max_seconds": 59.235418,
+      "wall_clock_seconds": 134,
+      "status": "RED-live"
+    },
+    {
+      "run_id": "sept17-retained-25x2-20260907-02",
+      "simultaneous_seats": 25,
+      "grounded_and_cited": 0,
+      "failed": 25,
+      "http_503_failures": 11,
+      "http_500_failures": 14,
+      "status": "RED-live"
+    }
+  ],
+  "node_incidents": [
+    {
+      "node": "rhgnr1",
+      "not_ready_at": "2026-09-07T19:46:13Z",
+      "ready_at": "2026-09-07T19:47:34Z",
+      "duration_seconds": 81
+    },
+    {
+      "node": "rhgnr1",
+      "not_ready_at": "2026-09-07T20:09:25Z",
+      "ready_at": "2026-09-07T20:09:52Z",
+      "duration_seconds": 27
+    }
+  ],
+  "node_observation": {
+    "memory_pressure": false,
+    "disk_pressure": false,
+    "pid_pressure": false,
+    "cpu_utilization_percent_at_observation": 1,
+    "memory_utilization_percent_at_observation": 10,
+    "active_pods_on_rhgnr1": 224,
+    "launchpad_pods_on_rhgnr1": 55,
+    "active_pods_on_gnr2": 59,
+    "launchpad_pods_on_gnr2": 14,
+    "cross_component_probe_timeouts": true,
+    "affected_components": [
+      "participant-showrooms",
+      "participant-workloads",
+      "model-routing",
+      "openshift-ai-operators",
+      "storage-operators",
+      "keycloak",
+      "launchpad-control-plane"
+    ],
+    "runtime_symptoms": [
+      "kubelet probe deadlines",
+      "CRI-O container status not found",
+      "image garbage collection failure",
+      "API and node-log proxy timeouts"
+    ]
+  },
+  "lifecycle_drift_observation": {
+    "expected_namespaces": 50,
+    "namespaces_observed": 30,
+    "active_namespaces": 13,
+    "terminating_namespaces": 17,
+    "missing_namespaces": 20,
+    "deletion_started_at": "2026-09-07T20:10:57Z",
+    "dynamic_argocd_applications_observed": 75,
+    "backend_sessions_still_reported_ready": 50,
+    "initiator_confirmed": false,
+    "status": "RED-live"
+  },
+  "diagnosis": {
+    "application_capacity_exhaustion": false,
+    "cpu_or_memory_pressure": false,
+    "stable_worker_network_or_runtime": false,
+    "pod_density_is_a_risk_factor": true,
+    "root_cause_confirmed": false,
+    "conclusion": "Arena cannot be certified for two retained 25-seat workshops while rhgnr1 repeatedly leaves Ready and participant routes fail."
+  },
+  "red_green_matrix": [
+    {
+      "id": "SEPT17-25X2-PROVISION-RECOVERY-001",
+      "status": "GREEN-live",
+      "red": "Nine CPU seats failed on a one-shot model preflight.",
+      "green_local": "Bounded retry and clean retry metadata passed the full non-local backend suite.",
+      "green_integration": "The current backend image deployed Synced and Healthy.",
+      "green_live": "The same workshop recovered from 16/25 to 25/25 without replacing ready sessions."
+    },
+    {
+      "id": "SEPT17-25X2-PARTICIPANT-001",
+      "status": "RED-live",
+      "red": "A 25-way CPU participant burst completed only 22 grounded journeys; the repeat burst failed all 25 route calls.",
+      "green_local": null,
+      "green_integration": null,
+      "green_live": null
+    },
+    {
+      "id": "SEPT17-25X2-NODE-STABILITY-001",
+      "status": "RED-live",
+      "red": "rhgnr1 entered NotReady twice during the retained rehearsal despite low CPU and memory utilization.",
+      "green_local": null,
+      "green_integration": null,
+      "green_live": null
+    },
+    {
+      "id": "SEPT17-25X2-LIFECYCLE-001",
+      "status": "RED-live",
+      "red": "Namespace state diverged from 50 backend-ready sessions after the node incident; the deletion initiator is not yet proven.",
+      "green_local": null,
+      "green_integration": null,
+      "green_live": null
+    },
+    {
+      "id": "SEPT17-25X2-CLEANUP-001",
+      "status": "RED-not-run",
+      "red": "Normal sequential reclaim and zero-residue proof must run after this failure snapshot is preserved.",
+      "green_local": null,
+      "green_integration": null,
+      "green_live": null
+    }
+  ],
+  "proof_strategy": {
+    "tdd": "Preflight retry and stale-error removal were first expressed as failing tests and then made green.",
+    "edd": "The manifest retains immutable revisions, image digest, order IDs, participant results, node transitions, resource utilization, and lifecycle drift.",
+    "cdd": "The same-workshop retry contract preserved ready seats, recovered only incomplete seats, and cleared stale failure state.",
+    "bdd": "Given 50 retained participants, when 25 CPU learners execute together, then every route and grounded answer must succeed; this behavior failed.",
+    "cbt": "Provisioning recovery passed independently, while participant routes, node stability, lifecycle consistency, and cleanup remain separate failed or pending components."
+  },
+  "rubric": {
+    "provisioning_recovery": 20,
+    "placement_and_capacity": 15,
+    "participant_functionality": 10,
+    "node_and_network_stability": 0,
+    "lifecycle_consistency": 0,
+    "cleanup_and_repeatability": 0,
+    "score": 45,
+    "required": 100,
+    "release_gate": "failed"
+  },
+  "required_next_actions": [
+    "Reclaim the CPU Serving workshop and then the Multi-Agent workshop through their persisted Arena lifecycle paths.",
+    "Prove zero remaining namespaces and Argo CD applications for both workshop IDs.",
+    "Identify the namespace deletion initiator from audit evidence before the next rehearsal.",
+    "Hold rhgnr1 out of placement until a sustained stability soak passes.",
+    "Rebalance the September topology so one unstable worker cannot carry two 25-seat workshops."
+  ],
+  "contains_plaintext_credentials": false
+}
