@@ -44,6 +44,30 @@ def test_showroom_uses_immutable_git_cloner_that_marks_repo_safe_before_entering
     assert values["git_cloner"]["image"] == SHOWROOM_GIT_CLONER_IMAGE
 
 
+def test_showroom_uses_cluster_specific_immutable_support_images():
+    terminal_image = "registry.example.test/showroom-terminal@sha256:" + "a" * 64
+    git_cloner_image = "registry.example.test/showroom-git-cloner@sha256:" + "b" * 64
+
+    app = build_showroom_application(
+        ShowroomSeat(
+            namespace="launchpad-seat-remote-1",
+            workshop_id="workshop-1",
+            seat_id="seat-1",
+            participant_id="lp-user-1",
+            workspace_url="",
+            content_repo_url="https://github.com/example/showroom.git",
+            content_ref="c" * 40,
+            apps_domain="apps.remote.example.com",
+            terminal_image=terminal_image,
+            git_cloner_image=git_cloner_image,
+        )
+    )
+
+    values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
+    assert values["terminal"]["image"] == terminal_image
+    assert values["git_cloner"]["image"] == git_cloner_image
+
+
 def test_builds_official_chart_application_with_personalized_git_content():
     app = build_showroom_application(
         ShowroomSeat(

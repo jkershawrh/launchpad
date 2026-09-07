@@ -213,6 +213,16 @@ def test_repository_cluster_config_registers_remote_targets_fail_closed():
     targets = {item["cluster_id"]: item for item in document["clusters"]}
     assert set(targets) == {"arena", "oberon", "brutus"}
     assert {c.cluster_id for c in registry.list_enabled()} == {"arena"}
+    assert registry.inspect("oberon").image_references == {
+        "showroom_git_cloner": (
+            "quay.io/rhpds/git-cloner@sha256:"
+            "2b036e2ed3b7cb8cd214361e599884ddc47aadf6adf2220700f4ee5dfae52f65"
+        ),
+        "showroom_terminal": (
+            "quay.io/rhpds/openshift-showroom-terminal-ocp@sha256:"
+            "e0301bebc02bd463c5fe9e8587dd9cbc7568d6fc1b3dd20182ec8b58e4e5583c"
+        ),
+    }
     assert targets["oberon"] == {
         "cluster_id": "oberon",
         "display_name": "Oberon Primary",
@@ -228,6 +238,7 @@ def test_repository_cluster_config_registers_remote_targets_fail_closed():
         "public_ingress_domain": "",
         "public_console_url": "",
         "public_oauth_url": "",
+        "image_references": targets["oberon"]["image_references"],
         "capabilities": [
             "cpu", "gaudi", "gaudi_direct", "openshift", "operators",
             "openshift-ai", "showroom", "model_endpoint", "vector_db",
@@ -250,6 +261,7 @@ def test_repository_cluster_config_registers_remote_targets_fail_closed():
         "public_ingress_domain": "",
         "public_console_url": "",
         "public_oauth_url": "",
+        "image_references": targets["brutus"]["image_references"],
         "capabilities": [
             "cpu", "openshift", "operators", "showroom", "model_endpoint",
         ],

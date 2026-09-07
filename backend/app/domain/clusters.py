@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
@@ -21,6 +22,7 @@ class ClusterTarget(BaseModel):
     capabilities: List[str] = Field(default_factory=list)
     model_endpoints: Dict[str, str] = Field(default_factory=dict)
     service_urls: Dict[str, str] = Field(default_factory=dict)
+    image_references: Dict[str, str] = Field(default_factory=dict)
     public_access_enabled: bool = False
     public_ingress_domain: str = ""
     public_console_url: str = ""
@@ -32,6 +34,23 @@ class ClusterTarget(BaseModel):
     def validate_cluster_id(cls, value: str) -> str:
         if not value or not value.replace("-", "").isalnum():
             raise ValueError("cluster_id must be a DNS-safe identifier")
+        return value
+
+    @field_validator("image_references")
+    @classmethod
+    def validate_image_references(cls, value: Dict[str, str]) -> Dict[str, str]:
+        """Cluster-specific support images must be immutable.
+
+        A remote cluster must never accidentally resolve an Arena-local image
+        name to its own empty integrated registry. Digest-pinned references
+        make the supply contract explicit and auditable per target.
+        """
+        pattern = re.compile(r"^[^\s]+@sha256:[0-9a-f]{64}$")
+        for name, reference in value.items():
+            if not pattern.fullmatch(reference):
+                raise ValueError(
+                    f"image_references.{name} must be an immutable @sha256 reference"
+                )
         return value
 
 

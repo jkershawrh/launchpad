@@ -45,6 +45,28 @@ def test_guided_catalog_item_adds_showroom_to_plan():
     assert plan.required_resources["workspace_path"] == "/try-it"
 
 
+def test_remote_showroom_plan_carries_target_specific_support_images():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._overlay_path = "/tmp/demo"
+    adapter._target = SimpleNamespace(
+        cluster_id="oberon",
+        image_references={
+            "showroom_terminal": "quay.io/example/terminal@sha256:" + "a" * 64,
+            "showroom_git_cloner": "quay.io/example/cloner@sha256:" + "b" * 64,
+        },
+    )
+    request = LabRequest(
+        tenant_id="partner-a",
+        requester_id="user-a",
+        catalog_item_id="guided-rag-on-xeon",
+        requested_mode=CatalogCategory.GUIDED_BUILD,
+    )
+
+    plan = adapter.create_plan(request, _guided_item())
+
+    assert plan.required_resources["showroom_support_images"] == adapter._target.image_references
+
+
 def test_operator_workshop_plan_skips_generic_demo_runtime():
     adapter = object.__new__(OpenShiftProvisioningAdapter)
     adapter._overlay_path = "/tmp/demo"

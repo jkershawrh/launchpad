@@ -25,7 +25,9 @@ except ImportError:  # pragma: no cover
 
 from app.adapters.interfaces import ProvisionResult
 from app.adapters.openshift.showroom_gitops import (
+    SHOWROOM_GIT_CLONER_IMAGE,
     SHOWROOM_RUNTIME_SECRET_NAME,
+    SHOWROOM_TERMINAL_IMAGE,
     ShowroomGitOpsAdapter,
     ShowroomSeat,
     ShowroomToolTab,
@@ -169,6 +171,9 @@ class OpenShiftProvisioningAdapter:
                 ),
                 "showroom_content_playbook": meta.get("showroom_content_playbook", "site.yml"),
                 "showroom_tabs": meta.get("showroom_tabs", []),
+                "showroom_support_images": dict(
+                    getattr(getattr(self, "_target", None), "image_references", {})
+                ),
                 "workload_enabled": "helm-workload" in catalog_item.provisioner_refs,
                 "workload_gitops_ready": bool(meta.get("workload_gitops_ready", False)),
                 "workload_repo": meta.get("workload_repo", ""),
@@ -417,6 +422,16 @@ class OpenShiftProvisioningAdapter:
                     content_only=bool(res.get("content_only", False)),
                     terminal_storage_enabled=bool(
                         res.get("showroom_terminal_storage", True)
+                    ),
+                    terminal_image=str(
+                        res.get("showroom_support_images", {}).get(
+                            "showroom_terminal", SHOWROOM_TERMINAL_IMAGE
+                        )
+                    ),
+                    git_cloner_image=str(
+                        res.get("showroom_support_images", {}).get(
+                            "showroom_git_cloner", SHOWROOM_GIT_CLONER_IMAGE
+                        )
                     ),
                     tool_tabs=tool_tabs,
                 ),

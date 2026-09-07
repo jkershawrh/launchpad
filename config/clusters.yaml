@@ -12,6 +12,9 @@ clusters:
     service_urls:
       mlflow: https://rh-ai.apps.arena.fm2aihpcsed.com/mlflow
       rhoai: https://rh-ai.apps.arena.fm2aihpcsed.com/
+    image_references:
+      showroom_git_cloner: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-git-cloner@sha256:3ae8e259f03888ee90526fd7d76375c4a6340df31242ede6be423604c3fdc26d
+      showroom_terminal: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-terminal@sha256:164aa93d20af95dc916aa695556a1cae2ec057385ee1b254157df9eead099d9b
     model_endpoints:
       granite-2b-cpu: https://ovms-granite-2b-fleet-llm-d.apps.arena.fm2aihpcsed.com/v1
       granite-3.2-8b-tools: http://vllm-granite-3-2-8b-tools.fleet-llm-d.svc:8080/v1
@@ -32,6 +35,9 @@ clusters:
     public_ingress_domain: ""
     public_console_url: ""
     public_oauth_url: ""
+    image_references:
+      showroom_git_cloner: quay.io/rhpds/git-cloner@sha256:2b036e2ed3b7cb8cd214361e599884ddc47aadf6adf2220700f4ee5dfae52f65
+      showroom_terminal: quay.io/rhpds/openshift-showroom-terminal-ocp@sha256:e0301bebc02bd463c5fe9e8587dd9cbc7568d6fc1b3dd20182ec8b58e4e5583c
     capabilities: [cpu, gaudi, gaudi_direct, openshift, operators, openshift-ai, showroom, model_endpoint, vector_db, kafka, workbench]
     model_endpoints:
       granite-2b-cpu: https://ovms-granite-2b-fleet-llm-d.apps.oberon.fm2aihpcsed.com/v1
@@ -62,6 +68,9 @@ clusters:
     public_ingress_domain: ""
     public_console_url: ""
     public_oauth_url: ""
+    image_references:
+      showroom_git_cloner: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-git-cloner@sha256:3ae8e259f03888ee90526fd7d76375c4a6340df31242ede6be423604c3fdc26d
+      showroom_terminal: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-terminal@sha256:164aa93d20af95dc916aa695556a1cae2ec057385ee1b254157df9eead099d9b
     capabilities: [cpu, openshift, operators, showroom, model_endpoint]
     model_endpoints:
       granite-3.2-8b-tools: https://vllm-granite-3-2-8b-tools-fleet-llm-d.apps.arena.fm2aihpcsed.com/v1

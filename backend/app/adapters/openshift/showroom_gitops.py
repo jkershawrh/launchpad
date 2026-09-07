@@ -92,6 +92,8 @@ class ShowroomSeat:
     session_id: str = ""
     tenant_id: str = ""
     terminal_storage_enabled: bool = True
+    terminal_image: str = SHOWROOM_TERMINAL_IMAGE
+    git_cloner_image: str = SHOWROOM_GIT_CLONER_IMAGE
 
     def __post_init__(self) -> None:
         if not self.content_ref.strip():
@@ -164,7 +166,7 @@ def build_showroom_application(
         "deployer": {"domain": seat.apps_domain},
         "terminal": {
             "setup": "true",
-            "image": SHOWROOM_TERMINAL_IMAGE,
+            "image": seat.terminal_image,
             "storage": {
                 "setup": "true",
                 "storageClass": seat.storage_class,
@@ -179,7 +181,7 @@ def build_showroom_application(
             "user_data": yaml.safe_dump(user_data, sort_keys=False),
             "zero_touch_bundle": "https://github.com/rhpds/nookbag/releases/download/nookbag-v0.4.0/nookbag-v0.4.0.zip",
         },
-        "git_cloner": {"image": SHOWROOM_GIT_CLONER_IMAGE},
+        "git_cloner": {"image": seat.git_cloner_image},
     }
     if not seat.terminal_storage_enabled:
         values["terminal"]["storage"] = {"setup": "false"}
