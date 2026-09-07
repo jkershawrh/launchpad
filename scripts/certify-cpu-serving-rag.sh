@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-namespace="${1:?usage: certify-cpu-serving-rag.sh <namespace>}"
-: "${KUBECONFIG:?KUBECONFIG must point to the Arena credential}"
+namespace="${1:?usage: certify-cpu-serving-rag.sh <namespace> <cluster-id>}"
+expected_cluster="${2:?usage: certify-cpu-serving-rag.sh <namespace> <cluster-id>}"
+: "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
 actual_cluster="$(
   oc get namespace "$namespace" \
     -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}'
 )"
-if [[ "$actual_cluster" != "arena" ]]; then
-  echo "refusing to validate cluster '${actual_cluster}'; expected 'arena'" >&2
+if [[ "$actual_cluster" != "$expected_cluster" ]]; then
+  echo "refusing to validate cluster '${actual_cluster}'; expected '${expected_cluster}'" >&2
   exit 2
 fi
 
@@ -19,11 +20,11 @@ run_id="${CERTIFICATION_RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$}"
 run_id="$(printf '%s' "$run_id" | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')"
 workspace_slug="hr-assistant-${run_id}"
 curl_options=(-fsSk)
-if [[ -n "${ARENA_CURL_INTERFACE:-}" ]]; then
-  curl_options+=(--interface "$ARENA_CURL_INTERFACE")
+if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
+  curl_options+=(--interface "$LAUNCHPAD_CURL_INTERFACE")
 fi
-if [[ -n "${ARENA_INGRESS_IP:-}" ]]; then
-  curl_options+=(--resolve "${host}:443:${ARENA_INGRESS_IP}")
+if [[ -n "${LAUNCHPAD_INGRESS_IP:-}" ]]; then
+  curl_options+=(--resolve "${host}:443:${LAUNCHPAD_INGRESS_IP}")
 fi
 api_token="$({
   curl "${curl_options[@]}" \
@@ -72,4 +73,5 @@ printf '%s' "$response" | jq -e '
   and (.error == null)
 ' >/dev/null
 
-printf '%s\t%s\tgrounded=true\n' "$namespace" "$metadata"
+printf '%s\t%s\t%s\tgrounded=true\n' \
+  "$namespace" "$expected_cluster" "$metadata"

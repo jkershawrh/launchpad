@@ -1,0 +1,70 @@
+{
+  "schema": "launchpad.redhat.com/event-contract-test-evidence/v2",
+  "evidence_id": "SEPTEMBER-17-MULTICLUSTER-EVENT-CONTRACT-TEST-20260907",
+  "observed_at": "2026-09-07T16:08:00Z",
+  "source_revision_before_change": "085b51715d9af2a53a128f48bc381317dd5bf07d",
+  "topology": {
+    "multi-agent-quickstart": "arena",
+    "intel-llm-cpu-serving": "oberon",
+    "intel-xeon6-agent-201": "brutus"
+  },
+  "provisioning_mode": "staggered",
+  "concurrent_participant_seats": 75,
+  "methodology": {
+    "TDD": "The event contract test was changed to require schema v3 and three distinct targets before the v3 evidence existed. The reusable capacity-preflight tests were added before the preflight implementation. The CPU-serving driver test required an explicit cluster before the Arena-only scripts were generalized.",
+    "EDD": "The v3 manifest links immutable all-Arena RED runs, current Arena Multi-Agent promotion evidence, and the Brutus Agent 201 25-seat evidence without claiming an Oberon result that has not run.",
+    "CDD": "The test contract fixes the exact catalog IDs, versions, target clusters, one-workshop affinity, no-split behavior, resource reservations, and fail-closed activation state.",
+    "BDD": "Given three approved 25-seat workshops, when the read-only preflight runs, then each request must preserve its named cluster or the event remains RED before any order is created.",
+    "CBT": "Event evidence, request construction, preview handling, placement mismatch denial, CPU-serving participant probes, and rendered cluster configuration are independently tested."
+  },
+  "red": [
+    {
+      "id": "EVENT-CONTRACT-V3-RED",
+      "command": ".venv/bin/pytest -q backend/tests/test_september_17_event_readiness.py",
+      "result": "2 failed, 2 passed",
+      "reason": "The required v3 event manifest and checksum did not exist."
+    },
+    {
+      "id": "CPU-PROBE-PORTABILITY-RED",
+      "command": ".venv/bin/pytest -q backend/tests/test_intel_cpu_serving_five_seat_evidence.py",
+      "result": "1 failed, 1 passed",
+      "reason": "The participant probe still required Arena instead of an explicit expected cluster."
+    },
+    {
+      "id": "EVENT-PREFLIGHT-RED",
+      "command": ".venv/bin/pytest -q backend/tests/test_september_17_multicluster_preflight.py",
+      "result": "collection error",
+      "reason": "The non-mutating preflight implementation did not exist."
+    }
+  ],
+  "green": {
+    "focused": {
+      "command": ".venv/bin/pytest -q backend/tests/test_september_17_multicluster_preflight.py backend/tests/test_intel_cpu_serving_five_seat_evidence.py backend/tests/test_september_17_event_readiness.py backend/tests/test_remote_agent_certification_drivers.py",
+      "passed": 13,
+      "failed": 0
+    },
+    "regression": {
+      "command": ".venv/bin/pytest -q backend/tests -m 'not local'",
+      "passed": 1146,
+      "deselected": 13,
+      "failed": 0
+    },
+    "contract_preflight": {
+      "command": "./scripts/september_17_multicluster_preflight.py --contract-only",
+      "result": "GREEN-contract",
+      "capacity_preview_requests": 3,
+      "mutates_cluster": false
+    }
+  },
+  "live_boundary": {
+    "arena_command_used_explicit_kubeconfig": true,
+    "arena_authentication_result": "RED-expired-kubeconfig-token",
+    "remote_clusters_contacted": false,
+    "live_capacity_preflight_run": false,
+    "cluster_mutations": 0,
+    "reason": "Live certification is deferred until Arena control-plane authentication is refreshed and the Oberon and Brutus activation gates are explicitly opened."
+  },
+  "release_status": "RED",
+  "release_boundary": "GREEN applies only to the repository contract and non-mutating preflight behavior. It does not certify Oberon, Brutus repeat/soak, the combined three-cluster rehearsal, public access, or the September 17 event.",
+  "contains_plaintext_credentials": false
+}

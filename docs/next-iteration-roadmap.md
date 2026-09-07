@@ -15,20 +15,19 @@ and access boundary are defined in
 
 The earlier three-workshop pilot proved the orchestration shape and both Intel
 guided labs at 25 seats. Multi-Agent v0.2.5 independently passed three
-consecutive 25-seat Arena certifications. Exact-trio run 01 provisioned and
-retained 75/75 environments, but `rhgnr1` connectivity failed during the first
-participant probes, so the run is RED despite successful zero-residue cleanup.
-Exact-trio run 02 proved balanced placement and one healthy 25-seat workshop,
-then stopped when the backend was OOMKilled and `rhgnr1` stalled new Showroom
-pods while still reporting Ready. Cancellation also exposed late unlinked
-sessions during backend replacement, and the scheduled reconciler could not
-reach PostgreSQL through its NetworkPolicy. Run 02 was safely reclaimed to
-zero residue after targeted reconciliation but remains RED. The next gate is
-deployment and live verification of those fixes, a workload-start health gate
-for `rhgnr1`, and exact-trio run 03. Public access
-remains a separate certification gate;
-internal Arena access is the September release baseline unless the public
-matrix is independently GREEN-live by Sep 15.
+consecutive 25-seat Arena certifications. Exact-trio runs 01 and 02 exposed
+Arena worker and control-plane failure modes and remain immutable RED evidence,
+even though their resource cleanup is now complete and the run-02 remediation
+is GREEN-live.
+
+The approved event topology now assigns one complete workshop to each cluster:
+Multi-Agent on Arena, Serve LLMs on Oberon, and Building an AI Agent on Brutus.
+Seats are never split across clusters. The next gate is a read-only
+three-cluster preflight, followed by Oberon Serve LLMs certification, the
+remaining Brutus repeat/soak gate, and one exact staggered fleet rehearsal with
+all 75 participants active together. Public access remains a separate
+certification gate; internal access is the September release baseline unless
+the public matrix is independently GREEN-live by Sep 15.
 
 AgentOps remains in the catalog as a five-seat internal pilot. Its one- and
 five-seat evidence, 25-seat RED capacity finding, and production-hardening
@@ -53,8 +52,8 @@ five-seat chart reruns confirm it. The qualified single Arena worker still
 cannot admit 25 AgentOps seats. Per-seat DSPA and database isolation are
 retained; sharing the project-scoped pipeline stack is not an approved shortcut.
 
-The current candidate path dedicates Arena to AgentOps and re-certifies Oberon
-for Serve LLMs. Brutus is registered and passed the one-, five-, and
+The current event path assigns Arena to Multi-Agent and re-certifies Oberon for
+Serve LLMs. Brutus is registered and passed the one-, five-, and
 25-seat internal gates with a measured three-pod contract. The 25-seat run
 created 75 healthy pods, completed all 25 simultaneous three-tool journeys,
 preserved namespace isolation, and reclaimed with zero residue. Its capacity

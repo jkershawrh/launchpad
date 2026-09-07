@@ -8,23 +8,30 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 READINESS = (
-    ROOT / "evidence/september-17-agentic-three-workshop-readiness-2026-09-06.json"
+    ROOT
+    / "evidence/september-17-multicluster-three-workshop-readiness-2026-09-07.json"
 )
 RUNBOOK = ROOT / "docs/september-17-agentic-three-workshop-readiness.md"
 READINESS_CHECKSUM = READINESS.with_suffix(".json.sha256")
+CONTRACT_EVIDENCE = (
+    ROOT
+    / "evidence/september-17-multicluster-event-contract-test-2026-09-07.json"
+)
 
 
 def test_event_readiness_manifest_keeps_the_exact_workshop_target_and_budget():
     readiness = json.loads(READINESS.read_text())
 
-    assert readiness["schema"] == "launchpad.redhat.com/event-readiness/v2"
+    assert readiness["schema"] == "launchpad.redhat.com/event-readiness/v3"
     assert readiness["event_date"] == "2026-09-17"
     assert readiness["deployment_scope"] == "fleet"
     assert readiness["candidate_cluster_targets"] == {
         "multi-agent-quickstart": "arena",
-        "intel-llm-cpu-serving": "arena",
-        "intel-xeon6-agent-201": "arena",
+        "intel-llm-cpu-serving": "oberon",
+        "intel-xeon6-agent-201": "brutus",
     }
+    assert readiness["workshop_affinity"] == "one-workshop-one-cluster"
+    assert readiness["seat_splitting_allowed"] is False
     assert readiness["provisioning_mode"] == "staggered"
     assert readiness["concurrent_participant_seats"] == 75
 
@@ -36,8 +43,13 @@ def test_event_readiness_manifest_keeps_the_exact_workshop_target_and_budget():
     ]
     assert all(workshop["seat_count"] == 25 for workshop in workshops)
     assert workshops[0]["release_status"] == "GREEN-live-25-x3-internal"
-    assert workshops[1]["release_status"] == "GREEN-live-25"
-    assert workshops[2]["release_status"] == "GREEN-live-25-prior-arena-release"
+    assert workshops[1]["release_status"] == "RED-pending-oberon-recertification"
+    assert workshops[2]["release_status"] == "GREEN-live-internal-25-single-run"
+    assert [workshop["candidate_cluster_id"] for workshop in workshops] == [
+        "arena",
+        "oberon",
+        "brutus",
+    ]
 
     declared = readiness["declared_event_reservation"]
     assert declared == {
@@ -59,11 +71,9 @@ def test_event_readiness_manifest_keeps_the_exact_workshop_target_and_budget():
     )
     assert readiness["public_access_certified"] is False
     assert readiness["overall_status"] == "RED"
-    assert readiness["next_gate"] == (
-        "deploy-run02-remediation-then-exact-agentic-trio-run03"
-    )
+    assert readiness["next_gate"] == "three-cluster-read-only-preflight"
     assert readiness["supersedes"] == (
-        "evidence/september-17-three-workshop-readiness-2026-09-05.json"
+        "evidence/september-17-agentic-three-workshop-readiness-2026-09-06.json"
     )
     assert readiness["substitution"]["removed_catalog_item_id"] == (
         "agentops-observability"
@@ -77,17 +87,43 @@ def test_event_readiness_manifest_keeps_the_exact_workshop_target_and_budget():
     assert readiness["latest_exact_trio_evidence"] == (
         "evidence/september-17-agentic-trio-run02-red-2026-09-06.json"
     )
-    assert readiness["capacity_status"]["active_worker_pods"] == 216
-    assert readiness["capacity_status"]["available_slots_after_reserve"] == 184
-    assert readiness["capacity_status"]["remaining_slots_after_event"] == 9
-    assert readiness["capacity_status"]["fit_decision"] == (
-        "fits-current-snapshot-with-narrow-pod-margin"
+    per_cluster = readiness["per_cluster_reservations"]
+    assert per_cluster["arena"]["pod_slots"] == 50
+    assert per_cluster["oberon"]["pod_slots"] == 50
+    assert per_cluster["brutus"]["pod_slots"] == 75
+    assert per_cluster["arena"]["protected_pod_slots"] == 60
+    assert per_cluster["oberon"]["protected_pod_slots"] == 60
+    assert per_cluster["brutus"]["protected_pod_slots"] == 90
+
+    activation = readiness["target_activation"]
+    assert activation["arena"]["enabled"] is True
+    assert activation["oberon"]["enabled"] is False
+    assert activation["brutus"]["enabled"] is False
+    assert all(
+        target["event_override_required"] is True
+        for target in activation.values()
     )
 
 
 def test_event_readiness_manifest_is_hash_verified():
     expected = READINESS_CHECKSUM.read_text().split()[0]
     assert hashlib.sha256(READINESS.read_bytes()).hexdigest() == expected
+
+
+def test_multicluster_contract_evidence_is_hash_verified_and_does_not_overclaim():
+    evidence = json.loads(CONTRACT_EVIDENCE.read_text())
+    checksum = CONTRACT_EVIDENCE.with_suffix(".json.sha256")
+
+    assert evidence["schema"] == (
+        "launchpad.redhat.com/event-contract-test-evidence/v2"
+    )
+    assert evidence["green"]["regression"]["passed"] == 1146
+    assert evidence["live_boundary"]["live_capacity_preflight_run"] is False
+    assert evidence["live_boundary"]["cluster_mutations"] == 0
+    assert evidence["release_status"] == "RED"
+    assert evidence["contains_plaintext_credentials"] is False
+    expected = checksum.read_text().split()[0]
+    assert hashlib.sha256(CONTRACT_EVIDENCE.read_bytes()).hexdigest() == expected
 
 
 def test_event_runbook_names_every_gate_and_does_not_overclaim_capacity():
@@ -101,8 +137,12 @@ def test_event_runbook_names_every_gate_and_does_not_overclaim_capacity():
         "57,000m",
         "111,200 MiB",
         "175",
-        "184",
+        "one workshop per cluster",
+        "Arena",
+        "Oberon",
+        "Brutus",
         "evidence/arena-staggered-three-workshops-2026-09-04.json",
+        "evidence/brutus-agent-201-three-pod-certification-2026-09-05.json",
         "Exact-trio run 01 — RED",
         "Exact-trio run 02 — RED",
         "evidence/september-17-agentic-trio-run02-red-2026-09-06.json",
@@ -112,7 +152,7 @@ def test_event_runbook_names_every_gate_and_does_not_overclaim_capacity():
 
     normalized_runbook = " ".join(runbook.lower().split())
     assert "public access is not certified" in normalized_runbook
-    assert "current free arena capacity must be measured live" in normalized_runbook
+    assert "current free capacity on every target must be measured live" in normalized_runbook
     assert "Multi-Agent first" in runbook
     assert "AgentOps remains available as a five-seat pilot" in runbook
     assert "zero residue" in runbook
@@ -129,3 +169,18 @@ def test_every_event_catalog_blocks_recently_recovered_workers():
         )
         assert catalog["metadata"]["workshop_node_spread"] is True
         assert catalog["metadata"]["workshop_node_min_ready_seconds"] == 900
+
+
+def test_remote_event_targets_remain_fail_closed_until_preflight_passes():
+    rendered = yaml.safe_load(
+        (
+            ROOT
+            / "deploy/launchpad/overlays/arena/arena-clusters.yaml"
+        ).read_text()
+    )
+    targets = yaml.safe_load(rendered["data"]["clusters.yaml"])["clusters"]
+    by_id = {target["cluster_id"]: target for target in targets}
+
+    assert by_id["arena"].get("enabled", True) is True
+    assert by_id["oberon"]["enabled"] is False
+    assert by_id["brutus"]["enabled"] is False

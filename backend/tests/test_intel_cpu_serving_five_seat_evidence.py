@@ -2,7 +2,6 @@
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "evidence/intel-cpu-serving-five-seat-2026-09-04.json"
 
@@ -67,20 +66,22 @@ def test_cpu_serving_certification_driver_uses_the_participant_boundary():
     rag_script = (ROOT / "scripts/certify-cpu-serving-rag.sh").read_text()
 
     assert 'actual_cluster="$(' in script
-    assert 'actual_cluster" != "arena' in script
+    assert 'expected_cluster="${2:?' in script
+    assert 'actual_cluster" != "$expected_cluster' in script
     assert "refusing to mutate cluster" in script
     assert "deploy/showroom -c terminal" in script
     assert "anythingllm-openshift@sha256:" in script
     assert 'name: "rag"' in script
     assert 'haproxy.router.openshift.io/timeout' in script
     assert "GENERIC_OPEN_AI_BASE_PATH" in script
-    assert "ARENA_CURL_INTERFACE" in script
-    assert "ARENA_INGRESS_IP" in script
+    assert "LAUNCHPAD_CURL_INTERFACE" in script
+    assert "LAUNCHPAD_INGRESS_IP" in script
     assert 'actual_cluster="$(' in rag_script
-    assert 'actual_cluster" != "arena' in rag_script
+    assert 'expected_cluster="${2:?' in rag_script
+    assert 'actual_cluster" != "$expected_cluster' in rag_script
     assert "refusing to validate cluster" in rag_script
-    assert "ARENA_CURL_INTERFACE" in rag_script
-    assert "ARENA_INGRESS_IP" in rag_script
+    assert "LAUNCHPAD_CURL_INTERFACE" in rag_script
+    assert "LAUNCHPAD_INGRESS_IP" in rag_script
     assert "CERTIFICATION_RUN_ID" in rag_script
     assert "orion-leave-policy.txt" in rag_script
     assert 'contains("17")' in rag_script

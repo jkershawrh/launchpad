@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-namespace="${1:?usage: certify-cpu-serving-seat.sh <namespace>}"
-: "${KUBECONFIG:?KUBECONFIG must point to the Arena credential}"
+namespace="${1:?usage: certify-cpu-serving-seat.sh <namespace> <cluster-id>}"
+expected_cluster="${2:?usage: certify-cpu-serving-seat.sh <namespace> <cluster-id>}"
+: "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
 actual_cluster="$(
   oc get namespace "$namespace" \
     -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}'
 )"
-if [[ "$actual_cluster" != "arena" ]]; then
-  echo "refusing to mutate cluster '${actual_cluster}'; expected 'arena'" >&2
+if [[ "$actual_cluster" != "$expected_cluster" ]]; then
+  echo "refusing to mutate cluster '${actual_cluster}'; expected '${expected_cluster}'" >&2
   exit 2
 fi
 
 host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
 curl_options=(-fsSk)
-if [[ -n "${ARENA_CURL_INTERFACE:-}" ]]; then
-  curl_options+=(--interface "$ARENA_CURL_INTERFACE")
+if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
+  curl_options+=(--interface "$LAUNCHPAD_CURL_INTERFACE")
 fi
-if [[ -n "${ARENA_INGRESS_IP:-}" ]]; then
-  curl_options+=(--resolve "${host}:443:${ARENA_INGRESS_IP}")
+if [[ -n "${LAUNCHPAD_INGRESS_IP:-}" ]]; then
+  curl_options+=(--resolve "${host}:443:${LAUNCHPAD_INGRESS_IP}")
 fi
 page="$(curl "${curl_options[@]}" "https://${host}/www/modules/02-explore-maas.html")"
 endpoint="$(printf '%s' "$page" | sed -n 's/.*export MAAS_ENDPOINT="\([^"]*\)".*/\1/p' | head -1)"
@@ -122,4 +123,4 @@ jq -nc \
   | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
       oc apply -n "$namespace" -f - >/dev/null
 
-printf '%s\tdeployed\n' "$namespace"
+printf '%s\t%s\tdeployed\n' "$namespace" "$expected_cluster"

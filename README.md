@@ -119,9 +119,10 @@ AgentOps import analysis is in
 The native Multi-Agent Quickstart intake and promotion gates are in
 [docs/multi-agent-quickstart-import.md](docs/multi-agent-quickstart-import.md).
 
-The approved September 17 internal event candidate is 25 Multi-Agent seats,
-25 Serve LLMs seats, and 25 Building an AI Agent seats. Provisioning is
-staggered while all 75 environments remain available concurrently. The exact
+The approved September 17 internal event candidate is 25 Multi-Agent seats on
+Arena, 25 Serve LLMs seats on Oberon, and 25 Building an AI Agent seats on
+Brutus. Provisioning is staggered, every workshop stays wholly on its assigned
+cluster, and all 75 environments then remain available concurrently. The exact
 combined rehearsal and capacity gate are tracked in
 [docs/september-17-agentic-three-workshop-readiness.md](docs/september-17-agentic-three-workshop-readiness.md).
 Run 01 provisioned all 75 environments and reclaimed them without residue, but
@@ -129,8 +130,10 @@ is RED because Arena worker connectivity failed during participant probes.
 Run 02 proved balanced placement and a healthy first 25-seat workshop, then
 stopped on a backend OOM, a misleadingly Ready `rhgnr1`, and a late-seat
 cancellation race. It also reached zero residue after targeted reconciliation.
-The next gate is deployment verification of the recorded fixes followed by
-run 03; the event candidate is not yet certified.
+The all-Arena runs remain immutable RED evidence. The next gate is a read-only
+three-cluster preflight, followed by target-local certification on Oberon and
+Brutus and an exact staggered fleet rehearsal. The event candidate is not yet
+certified, and the remote targets remain disabled until their gates pass.
 
 ## Repository layout
 
