@@ -1,0 +1,135 @@
+{
+  "schema": "launchpad.redhat.com/event-preflight-evidence/v1",
+  "evidence_id": "SEPTEMBER-17-MULTICLUSTER-PREFLIGHT-20260907T163910Z",
+  "observed_at": "2026-09-07T16:39:10.708584Z",
+  "event_date": "2026-09-17",
+  "mutates_cluster": false,
+  "result": "RED",
+  "target_inspection": {
+    "passed": true,
+    "mutates_cluster": false,
+    "targets": {
+      "arena": {
+        "cluster_id": "arena",
+        "cluster_name": "Arena Primary",
+        "health_status": "healthy",
+        "healthy": true,
+        "eligible": true,
+        "reason": "eligible",
+        "configured_enabled": true,
+        "inspection_only": false,
+        "available_cpu_millicores": 335259,
+        "available_memory_mib": 1279531,
+        "available_pods": 284,
+        "active_sessions": 0,
+        "active_workshops": 3,
+        "active_seats": 5,
+        "capabilities": [
+          "cpu",
+          "openshift",
+          "operators",
+          "openshift-ai",
+          "rhoai",
+          "showroom",
+          "model_endpoint",
+          "embedding_endpoint",
+          "mlflow",
+          "openshift_logging",
+          "agentops_observability_stack",
+          "user_workload_monitoring",
+          "data_science_pipelines",
+          "control-plane"
+        ],
+        "ingress_domain": "apps.arena.fm2aihpcsed.com"
+      },
+      "oberon": {
+        "cluster_id": "oberon",
+        "cluster_name": "Oberon Primary",
+        "health_status": "healthy",
+        "healthy": true,
+        "eligible": false,
+        "reason": "inspection passed; placement remains disabled",
+        "configured_enabled": false,
+        "inspection_only": true,
+        "available_cpu_millicores": 165433,
+        "available_memory_mib": 270737,
+        "available_pods": 142,
+        "active_sessions": 0,
+        "active_workshops": 0,
+        "active_seats": 0,
+        "capabilities": [
+          "cpu",
+          "gaudi",
+          "gaudi_direct",
+          "openshift",
+          "operators",
+          "openshift-ai",
+          "showroom",
+          "model_endpoint",
+          "vector_db",
+          "kafka",
+          "workbench"
+        ],
+        "ingress_domain": "apps.oberon.fm2aihpcsed.com"
+      },
+      "brutus": {
+        "cluster_id": "brutus",
+        "cluster_name": "Brutus CPU Execution",
+        "health_status": "healthy",
+        "healthy": true,
+        "eligible": false,
+        "reason": "inspection passed; placement remains disabled",
+        "configured_enabled": false,
+        "inspection_only": true,
+        "available_cpu_millicores": 88159,
+        "available_memory_mib": 1000670,
+        "available_pods": 141,
+        "active_sessions": 0,
+        "active_workshops": 0,
+        "active_seats": 0,
+        "capabilities": [
+          "cpu",
+          "openshift",
+          "operators",
+          "showroom",
+          "model_endpoint"
+        ],
+        "ingress_domain": "apps.brutus.fm2aihpcsed.com"
+      }
+    },
+    "http_status": 200
+  },
+  "checks": [
+    {
+      "catalog_item_id": "multi-agent-quickstart",
+      "expected_cluster": "arena",
+      "seats": 25,
+      "passed": true,
+      "http_status": 200,
+      "can_provision": true,
+      "selected_cluster": "arena",
+      "placement_reason": "Entire workshop assigned to arena; seats will not be split"
+    },
+    {
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "expected_cluster": "oberon",
+      "seats": 25,
+      "passed": false,
+      "http_status": 200,
+      "can_provision": false,
+      "selected_cluster": null,
+      "placement_reason": "Target cluster 'oberon' is disabled"
+    },
+    {
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "expected_cluster": "brutus",
+      "seats": 25,
+      "passed": false,
+      "http_status": 200,
+      "can_provision": false,
+      "selected_cluster": null,
+      "placement_reason": "Target cluster 'brutus' is disabled"
+    }
+  ],
+  "contains_plaintext_credentials": false
+}

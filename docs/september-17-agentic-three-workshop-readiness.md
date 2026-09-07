@@ -198,6 +198,21 @@ the exact Arena, Oberon, and Brutus assignments. A disabled or unreachable
 target, insufficient capacity, or any placement substitution keeps the gate
 RED.
 
+### Disabled-target inspection — GREEN; placement gate — RED
+
+The 2026-09-07 live, non-mutating inspection reached all three clusters through
+the Arena control plane while leaving Oberon and Brutus disabled. Arena,
+Oberon, and Brutus each reported healthy APIs and positive CPU, memory, and pod
+headroom. The exact Arena Multi-Agent 25-seat preview passed. The Oberon Serve
+LLMs and Brutus Agent 201 previews were rejected only because those targets
+remain deliberately disabled; Launchpad did not substitute another cluster.
+
+This proves the temporary Arena authentication and both remote credential paths
+work without weakening the fail-closed placement policy. It does not certify
+either workload or authorize event placement. The overall result therefore
+remains **RED**. See
+`evidence/runs/september-17-multicluster-preflight-disabled-inspection-20260907.json`.
+
 ## Exact-trio GREEN-live procedure
 
 1. Record commit SHA, catalog versions, image digests, model routes, target
@@ -226,7 +241,7 @@ RED.
 | Gate | RED baseline | Required GREEN-live evidence |
 |---|---|---|
 | Exact catalog revisions | Prior proofs span different revisions and workshop combinations | All three orders record the pinned event revisions and digests |
-| Capacity | No current combined snapshot exists for all three targets | Per-cluster preflight and revalidation pass immediately before each order |
+| Capacity | All targets are healthy with positive headroom, but Oberon and Brutus are intentionally disabled | Target-local certification, explicit activation, then per-cluster preview and revalidation immediately before each order |
 | Provisioning | No exact three-cluster trio has run together | 25 + 25 + 25 Ready through targeted staggered orders |
 | Functional behavior | Pod readiness alone proves nothing | 75 participant journeys complete with real model responses |
 | Authorization | Combined-run isolation is not yet recorded | Every seat can edit only its assigned namespace; cross-seat and node access are denied |
@@ -242,8 +257,9 @@ for participant functionality, 15 for authorization/isolation, and 10 for
 cleanup and repeatability. Any failed critical cell keeps the event candidate
 RED regardless of the numerical score.
 
-The next gate is a **read-only three-cluster preflight**. After that, certify
-Oberon for Serve LLMs and finish the Brutus repeat/soak gate before enabling
-either remote target for event orders. AgentOps continues separately at a
-maximum of five internal seats until its own 25-seat capacity and architecture
-gates are satisfied.
+The read-only three-cluster inspection is complete. The next gates are the
+Oberon Serve LLMs 1 → 5 → 25 certification and the remaining Brutus Agent 201
+60-minute soak plus two repeat 25-seat runs. Enable each target for event orders
+only after its workload gate passes, then repeat the exact preview and combined
+75-seat rehearsal. AgentOps continues separately at a maximum of five internal
+seats until its own 25-seat capacity and architecture gates are satisfied.
