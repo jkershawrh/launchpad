@@ -8,10 +8,10 @@ from app.api.deps import catalog_adapter, provisioning_service
 from app.auth.oauth import require_admin
 from app.domain.enums import CatalogStatus
 from app.domain.models import CatalogItem, LabSession
-from app.services.system_monitor import SystemMonitor
 from app.services.health import check_health_detailed
 from app.services.model_inventory import get_model_inventory
 from app.services.resource_reconciliation import reconcile_resources
+from app.services.system_monitor import SystemMonitor
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 monitor = SystemMonitor()
@@ -42,6 +42,17 @@ def system_status() -> Dict[str, Any]:
     ])
     status["total_sessions"] = len(provisioning_service._sessions)
     return status
+
+
+@router.get("/clusters/preflight")
+def preflight_cluster_targets() -> Dict[str, Any]:
+    """Inspect enabled and disabled targets without changing placement state."""
+    return {
+        "mutates_cluster": False,
+        "clusters": provisioning_service.get_cluster_fleet_health(
+            include_disabled=True
+        ),
+    }
 
 
 @router.get("/system/containers")

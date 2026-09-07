@@ -1,0 +1,41 @@
+{
+  "schema": "launchpad.redhat.com/event-preflight-evidence/v1",
+  "evidence_id": "SEPTEMBER-17-MULTICLUSTER-PREFLIGHT-20260907T162706Z",
+  "observed_at": "2026-09-07T16:27:06.102060Z",
+  "event_date": "2026-09-17",
+  "mutates_cluster": false,
+  "result": "RED",
+  "checks": [
+    {
+      "catalog_item_id": "multi-agent-quickstart",
+      "expected_cluster": "arena",
+      "seats": 25,
+      "passed": true,
+      "http_status": 200,
+      "can_provision": true,
+      "selected_cluster": "arena",
+      "placement_reason": "Entire workshop assigned to arena; seats will not be split"
+    },
+    {
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "expected_cluster": "oberon",
+      "seats": 25,
+      "passed": false,
+      "http_status": 200,
+      "can_provision": false,
+      "selected_cluster": null,
+      "placement_reason": "Target cluster 'oberon' is disabled"
+    },
+    {
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "expected_cluster": "brutus",
+      "seats": 25,
+      "passed": false,
+      "http_status": 200,
+      "can_provision": false,
+      "selected_cluster": null,
+      "placement_reason": "Target cluster 'brutus' is disabled"
+    }
+  ],
+  "contains_plaintext_credentials": false
+}

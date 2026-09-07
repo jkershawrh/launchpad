@@ -1,8 +1,9 @@
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
+from app.adapters.openshift.client_factory import ClusterClientFactory
 from app.adapters.openshift.showroom_gitops import ShowroomSeat, build_showroom_application
 from app.domain.clusters import ClusterTarget
 from app.domain.models import LabRequest
@@ -29,6 +30,68 @@ def test_registry_prefers_arena_for_cpu_operator_workloads():
         target("arena", 10, ["cpu", "openshift", "operators"]),
     ])
     assert registry.select(["openshift", "operators"]).cluster_id == "arena"
+
+
+def test_registry_can_inspect_disabled_target_without_making_it_placeable():
+    disabled = target("brutus", 20, ["cpu", "openshift"]).model_copy(
+        update={"enabled": False}
+    )
+    registry = ClusterRegistry([disabled])
+
+    assert registry.inspect("brutus") == disabled
+    assert registry.list_all() == [disabled]
+    with pytest.raises(ValueError, match="disabled"):
+        registry.get("brutus")
+
+
+def test_client_factory_inspection_does_not_bypass_disabled_placement():
+    disabled = target("brutus", 20, ["cpu", "openshift"]).model_copy(
+        update={"enabled": False}
+    )
+    registry = ClusterRegistry([disabled])
+    factory = ClusterClientFactory(registry)
+
+    with patch.object(factory, "_remote_client", return_value=MagicMock()):
+        inspected = factory.clients("brutus", allow_disabled=True)
+
+    assert inspected.core is not None
+    with pytest.raises(ValueError, match="disabled"):
+        factory.clients("brutus")
+
+
+def test_fleet_inspection_reports_healthy_disabled_target_as_ineligible():
+    disabled = target("brutus", 20, ["cpu", "openshift"]).model_copy(
+        update={"enabled": False}
+    )
+    registry = ClusterRegistry([disabled])
+    ready = SimpleNamespace(type="Ready", status="True", last_transition_time=None)
+    node = SimpleNamespace(
+        metadata=SimpleNamespace(name="worker-0", labels={}),
+        spec=SimpleNamespace(unschedulable=False),
+        status=SimpleNamespace(
+            conditions=[ready],
+            allocatable={"cpu": "64", "memory": "128Gi", "pods": "250"},
+        ),
+    )
+    core = MagicMock()
+    core.list_node.return_value.items = [node]
+    core.list_pod_for_all_namespaces.return_value.items = []
+    factory = MagicMock()
+    factory.clients.return_value = SimpleNamespace(core=core)
+    service = ProvisioningService(
+        cluster_registry=registry,
+        cluster_client_factory=factory,
+    )
+
+    result = service.get_cluster_fleet_health(include_disabled=True)
+
+    assert result[0]["cluster_id"] == "brutus"
+    assert result[0]["healthy"] is True
+    assert result[0]["eligible"] is False
+    assert result[0]["configured_enabled"] is False
+    assert result[0]["inspection_only"] is True
+    assert result[0]["available_pods"] == 250
+    factory.clients.assert_called_once_with("brutus", allow_disabled=True)
 
 
 def test_registry_filters_capabilities_and_models_and_validates_override():

@@ -116,6 +116,40 @@ def run_capacity_preflight(
     if not base.endswith("/api/v1"):
         base = f"{base}/api/v1"
     http = session or requests.Session()
+    expected_targets = set(contract["candidate_cluster_targets"].values())
+    target_inspection: dict[str, Any] = {
+        "passed": False,
+        "mutates_cluster": False,
+        "targets": {},
+    }
+    try:
+        response = http.get(
+            f"{base}/admin/clusters/preflight",
+            headers={"X-API-Key": api_key},
+            timeout=60,
+            verify=verify,
+        )
+        payload = response.json()
+        observed = {
+            item.get("cluster_id"): item
+            for item in payload.get("clusters", [])
+            if item.get("cluster_id") in expected_targets
+        }
+        target_inspection.update(
+            {
+                "http_status": response.status_code,
+                "targets": observed,
+            }
+        )
+        target_inspection["passed"] = bool(
+            response.status_code == 200
+            and payload.get("mutates_cluster") is False
+            and set(observed) == expected_targets
+            and all(item.get("healthy") is True for item in observed.values())
+        )
+    except (requests.RequestException, ValueError, TypeError) as exc:
+        target_inspection["error"] = type(exc).__name__
+
     checks: list[dict[str, Any]] = []
 
     for body in build_capacity_requests(contract):
@@ -165,9 +199,12 @@ def run_capacity_preflight(
         "mutates_cluster": False,
         "result": (
             "GREEN-live-preflight"
-            if len(checks) == 3 and all(check["passed"] for check in checks)
+            if target_inspection["passed"]
+            and len(checks) == 3
+            and all(check["passed"] for check in checks)
             else "RED"
         ),
+        "target_inspection": target_inspection,
         "checks": checks,
         "contains_plaintext_credentials": False,
     }

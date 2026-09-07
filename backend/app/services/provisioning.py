@@ -2067,16 +2067,25 @@ class ProvisioningService:
                 selected.append(pod)
         return selected
 
-    def get_cluster_fleet_health(self) -> list[dict]:
+    def get_cluster_fleet_health(self, *, include_disabled: bool = False) -> list[dict]:
         if not self.cluster_registry or not self.cluster_client_factory:
             return []
         active_states = {"requested", "provisioning", "validating", "ready", "active", "resetting"}
         results = []
-        for target in self.cluster_registry.list_enabled():
+        targets = (
+            self.cluster_registry.list_all()
+            if include_disabled
+            else self.cluster_registry.list_enabled()
+        )
+        for target in targets:
             sessions = [s for s in self._sessions.values() if s.cluster_ref == target.cluster_id and s.status.value in active_states]
             workshops = [w for w in self._workshops.values() if w.cluster_ref == target.cluster_id and w.status.value not in {"completed", "completed_with_errors", "failed"}]
             try:
-                core = self._target_clients(target.cluster_id).core
+                clients = self.cluster_client_factory.clients(
+                    target.cluster_id,
+                    allow_disabled=include_disabled and not target.enabled,
+                )
+                core = clients.core
                 nodes = self._workshop_schedulable_nodes(core.list_node().items)
                 node_names = {str(node.metadata.name) for node in nodes}
                 pods = self._pods_using_nodes(
@@ -2100,8 +2109,16 @@ class ProvisioningService:
                     "cluster_name": target.display_name,
                     "health_status": "healthy" if nodes else "degraded",
                     "healthy": bool(nodes),
-                    "eligible": bool(nodes),
-                    "reason": "eligible" if nodes else "no schedulable Ready worker nodes",
+                    "eligible": bool(nodes) and target.enabled,
+                    "reason": (
+                        "eligible"
+                        if nodes and target.enabled
+                        else "inspection passed; placement remains disabled"
+                        if nodes
+                        else "no schedulable Ready worker nodes"
+                    ),
+                    "configured_enabled": target.enabled,
+                    "inspection_only": not target.enabled,
                     "available_cpu_millicores": max(0, cpu - used_cpu),
                     "available_memory_mib": max(0, memory - used_memory),
                     "available_pods": max(0, pod_slots - len(pods)),
@@ -2119,6 +2136,8 @@ class ProvisioningService:
                     "healthy": False,
                     "eligible": False,
                     "reason": str(exc),
+                    "configured_enabled": target.enabled,
+                    "inspection_only": not target.enabled,
                     "available_cpu_millicores": 0,
                     "available_memory_mib": 0,
                     "available_pods": 0,

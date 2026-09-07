@@ -8,7 +8,6 @@ import yaml
 
 from app.domain.clusters import ClusterTarget
 
-
 _SOURCE_CONFIG = Path(__file__).resolve().parents[3] / "config" / "clusters.yaml"
 DEFAULT_CONFIG = Path("/opt/config/clusters.yaml") if Path("/opt/config/clusters.yaml").exists() else _SOURCE_CONFIG
 
@@ -26,12 +25,20 @@ class ClusterRegistry:
         return cls(ClusterTarget.model_validate(item) for item in payload.get("clusters", []))
 
     def get(self, cluster_id: str) -> ClusterTarget:
-        target = self._targets.get(cluster_id)
-        if target is None:
-            raise ValueError(f"Unknown target cluster '{cluster_id}'")
+        target = self.inspect(cluster_id)
         if not target.enabled:
             raise ValueError(f"Target cluster '{cluster_id}' is disabled")
         return target
+
+    def inspect(self, cluster_id: str) -> ClusterTarget:
+        """Resolve configuration without making a disabled target placeable."""
+        target = self._targets.get(cluster_id)
+        if target is None:
+            raise ValueError(f"Unknown target cluster '{cluster_id}'")
+        return target
+
+    def list_all(self) -> list[ClusterTarget]:
+        return list(self._targets.values())
 
     def list_enabled(self) -> list[ClusterTarget]:
         return [target for target in self._targets.values() if target.enabled]

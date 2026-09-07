@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import base64
-import tempfile
 from dataclasses import dataclass
-from pathlib import Path
 
 import yaml
 from kubernetes import client, config
@@ -30,10 +28,18 @@ class ClusterClientFactory:
         self._control_core = control_core
         self._cache: dict[str, KubernetesClients] = {}
 
-    def clients(self, cluster_id: str) -> KubernetesClients:
+    def clients(
+        self, cluster_id: str, *, allow_disabled: bool = False
+    ) -> KubernetesClients:
+        # Resolve before consulting the cache so a client created for an
+        # inspection cannot later bypass normal placement's enabled check.
+        target = (
+            self.registry.inspect(cluster_id)
+            if allow_disabled
+            else self.registry.get(cluster_id)
+        )
         if cluster_id in self._cache:
             return self._cache[cluster_id]
-        target = self.registry.get(cluster_id)
         api_client = self._local_client() if target.local else self._remote_client(target)
         clients = KubernetesClients(
             api_client=api_client,
@@ -70,4 +76,3 @@ class ClusterClientFactory:
         configuration = client.Configuration()
         config.load_kube_config_from_dict(kubeconfig, client_configuration=configuration)
         return client.ApiClient(configuration)
-

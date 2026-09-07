@@ -24,9 +24,32 @@ class FakeResponse:
 
 
 class FakeSession:
-    def __init__(self, selected_clusters: list[str]):
+    def __init__(
+        self,
+        selected_clusters: list[str],
+        *,
+        unhealthy_clusters: set[str] | None = None,
+    ):
         self.selected_clusters = iter(selected_clusters)
+        self.unhealthy_clusters = unhealthy_clusters or set()
         self.requests: list[dict] = []
+
+    def get(self, url: str, **kwargs):
+        self.requests.append({"url": url, **kwargs})
+        return FakeResponse(
+            200,
+            {
+                "mutates_cluster": False,
+                "clusters": [
+                    {
+                        "cluster_id": cluster_id,
+                        "healthy": cluster_id not in self.unhealthy_clusters,
+                        "configured_enabled": cluster_id == "arena",
+                    }
+                    for cluster_id in ("arena", "oberon", "brutus")
+                ],
+            },
+        )
 
     def post(self, url: str, **kwargs):
         self.requests.append({"url": url, **kwargs})
@@ -70,6 +93,7 @@ def test_live_preflight_is_green_only_when_every_preview_keeps_exact_affinity():
 
     assert result["result"] == "GREEN-live-preflight"
     assert result["mutates_cluster"] is False
+    assert result["target_inspection"]["passed"] is True
     assert len(result["checks"]) == 3
     assert all(check["passed"] for check in result["checks"])
     assert all(
@@ -93,6 +117,25 @@ def test_live_preflight_fails_closed_on_cluster_substitution():
     assert result["checks"][1]["passed"] is False
     assert result["checks"][1]["selected_cluster"] == "arena"
     assert result["checks"][1]["expected_cluster"] == "oberon"
+
+
+def test_live_preflight_is_red_when_disabled_target_inspection_is_unhealthy():
+    contract = MODULE.load_event_contract()
+    session = FakeSession(
+        ["arena", "oberon", "brutus"],
+        unhealthy_clusters={"oberon"},
+    )
+
+    result = MODULE.run_capacity_preflight(
+        contract,
+        api_base_url="https://launchpad-api.example.com",
+        api_key="not-a-real-key",
+        session=session,
+    )
+
+    assert result["result"] == "RED"
+    assert result["target_inspection"]["passed"] is False
+    assert result["target_inspection"]["targets"]["oberon"]["healthy"] is False
 
 
 def test_contract_validation_rejects_duplicate_cluster_assignment():

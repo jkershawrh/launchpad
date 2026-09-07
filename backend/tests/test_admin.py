@@ -2,14 +2,15 @@
 Admin Observability + Sysadmin + Dynamic Catalog — TDD Red/Green Matrix
 12 gates with GREEN + RED tests.
 """
-import pytest
-from fastapi.testclient import TestClient
+from unittest.mock import patch
 
+import pytest
 from app.api.deps import catalog_adapter, provisioning_service
 from app.domain.enums import CatalogCategory, CatalogStatus, Persistence, SessionStatus
 from app.domain.models import CatalogItem, LabRequest
 from app.main import app
 from app.services.system_monitor import SystemMonitor
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture(autouse=True)
@@ -53,6 +54,29 @@ def test_system_status_no_containers():
     monitor = SystemMonitor()
     status = monitor.get_status()
     assert isinstance(status["containers_list"], list)
+
+
+def test_admin_can_preflight_disabled_clusters_without_enabling_them(client):
+    result = [
+        {
+            "cluster_id": "brutus",
+            "configured_enabled": False,
+            "healthy": True,
+            "eligible": False,
+            "inspection_only": True,
+            "reason": "inspection passed; placement remains disabled",
+        }
+    ]
+    with patch.object(
+        provisioning_service,
+        "get_cluster_fleet_health",
+        return_value=result,
+    ) as preflight:
+        response = client.get("/api/v1/admin/clusters/preflight")
+
+    assert response.status_code == 200
+    assert response.json() == {"mutates_cluster": False, "clusters": result}
+    preflight.assert_called_once_with(include_disabled=True)
 
 
 # ─── A2: Container list from podman ──────────────────────────────────────────
