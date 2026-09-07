@@ -1,0 +1,146 @@
+{
+  "schema": "launchpad.redhat.com/workshop-certification/v1",
+  "evidence_id": "EDD-SEPT17-ARENA-SPLIT-BRAIN-RECONCILER-20260907-RED",
+  "captured_at": "2026-09-07T21:20:54Z",
+  "source_revision": "240de54927e851ac90d1513a0ed3673bc211afd4",
+  "cluster_ref": "arena",
+  "result": "RED-live-split-brain-reconciler",
+  "scope": "internal-retained-multi-agent-25-plus-cpu-serving-25",
+  "audit_finding": {
+    "audit_rotation": "kube-apiserver/audit-2026-09-07T20-16-30.461.log",
+    "control_plane_node": "40-a6-b7-c3-4b-18",
+    "actor": {
+      "username": "system:serviceaccount:partner-ai-launchpad:launchpad-provisioner",
+      "user_agent": "OpenAPI-Generator/36.0.3/python",
+      "pod_bound_identity": false,
+      "deployed_arena_backend_identity": false,
+      "deployed_arena_backend_service_account": "launchpad-backend"
+    },
+    "representative_namespace": "launchpad-smoke-test-tenant-multi-agent-03467b",
+    "namespace_delete_events": [
+      {
+        "timestamp": "2026-09-07T20:10:57.076015Z",
+        "response_code": 200,
+        "audit_id": "28fffb02-772f-4149-bbf4-641c13c51d1e"
+      },
+      {
+        "timestamp": "2026-09-07T20:10:57.768692Z",
+        "response_code": 200,
+        "audit_id": "6f62386e-1e0d-4fe3-afc0-86835aaddd97"
+      }
+    ],
+    "orphan_cleanup_sweep_detected": true,
+    "sweep_behavior": [
+      "list all managed namespaces",
+      "get each candidate namespace",
+      "delete namespaces absent from the client's session snapshot",
+      "delete the corresponding image-puller RoleBinding",
+      "repeat the sweep with the same non-pod-bound identity"
+    ],
+    "affected_catalog_families": [
+      "intel-llm-cpu-serving",
+      "multi-agent-quickstart"
+    ],
+    "deletion_initiator_identity_confirmed": true,
+    "originating_external_process_confirmed": false,
+    "conclusion": "A stale external Launchpad reconciliation client retained Arena namespace-delete permission after the control plane moved. Its session snapshot did not contain the new Arena control plane's active workshops, so it classified valid seat namespaces as orphans."
+  },
+  "excluded_initiators": {
+    "arena_backend": "Runs as launchpad-backend and logged no reclaim request at the deletion time.",
+    "arena_resource_reconciler": "Runs as launchpad-backend on a */15 schedule, not as launchpad-provisioner.",
+    "argocd": "Uses the openshift-gitops application-controller identity.",
+    "namespace_controller": "Performed only follow-on namespaced resource deletion after the namespace DELETE request."
+  },
+  "live_containment": {
+    "current_workloads_using_legacy_identity": 0,
+    "cluster_role_binding": "launchpad-remote-provisioner",
+    "cluster_role_binding_deleted": true,
+    "service_account": "partner-ai-launchpad/launchpad-provisioner",
+    "service_account_deleted": true,
+    "namespace_delete_allowed_before_revocation": true,
+    "namespace_delete_allowed_after_revocation": false,
+    "recovery": "The remote-access manifest can recreate a new identity only during a deliberate future topology change.",
+    "rhgnr1_cordoned_without_eviction": true
+  },
+  "code_guard": {
+    "revision": "240de54927e851ac90d1513a0ed3673bc211afd4",
+    "requires_database": true,
+    "requires_control_plane_identity": true,
+    "namespace_selector_is_control_plane_scoped": true,
+    "arena_control_plane_id": "arena-primary",
+    "oberon_control_plane_id": "oberon-primary",
+    "new_namespaces_receive_ownership_label": true,
+    "full_non_local_tests": {
+      "passed": 1182,
+      "deselected": 13
+    },
+    "focused_tests_passed": 41,
+    "arena_overlay_rendered": true,
+    "oberon_overlay_rendered": true
+  },
+  "capacity_observation_after_cordon": {
+    "arena_schedulable_workers": 1,
+    "arena_multi_agent_25": {
+      "can_provision": false,
+      "safe_seats": 21,
+      "limiting_resource": "cpu"
+    },
+    "arena_cpu_serving_25": {
+      "can_provision": true,
+      "safe_seats": 39
+    },
+    "brutus_available_pod_slots": 141,
+    "brutus_agent_201_plus_multi_agent_protected_pod_slots": 150,
+    "recommended_event_topology": "Arena Multi-Agent 25 plus CPU Serving 25 after rhgnr1 repair; Brutus Agent 201 25."
+  },
+  "deployment": {
+    "status": "blocked-vpn-route",
+    "arena_api_probe": "host is down",
+    "local_route_interface": "en0",
+    "expected_route_interface": "VPN tunnel",
+    "backend_image_built": false,
+    "arena_rollout_complete": false
+  },
+  "red_green_matrix": [
+    {
+      "id": "SEPT17-SPLIT-BRAIN-AUDIT-001",
+      "status": "GREEN-live",
+      "red": "The namespace deletion initiator was unknown.",
+      "green_live": "API audit evidence identifies the legacy launchpad-provisioner identity and repeated orphan-cleanup call pattern."
+    },
+    {
+      "id": "SEPT17-SPLIT-BRAIN-CONTAIN-001",
+      "status": "GREEN-live",
+      "red": "The stale external identity retained namespace-delete permission.",
+      "green_live": "The unused binding and service account were removed and an impersonation check now returns no."
+    },
+    {
+      "id": "SEPT17-SPLIT-BRAIN-GUARD-001",
+      "status": "GREEN-local",
+      "red": "Orphan deletion was not partitioned by a unique control-plane owner.",
+      "green_local": "Database and control-plane identity are mandatory, namespaces are owner-labeled, and reconciliation uses the owner selector; 1,182 tests pass.",
+      "green_live": null
+    },
+    {
+      "id": "SEPT17-ARENA-NODE-STABILITY-001",
+      "status": "RED-live",
+      "red": "rhgnr1 continued to enter NotReady and report DNS/API/service timeouts after the retained run.",
+      "green_live": null
+    }
+  ],
+  "proof_strategy": {
+    "tdd": "The split-brain evidence contract first failed because this manifest and checksum did not exist; ownership behavior was first expressed by failing reconciliation and namespace-label tests.",
+    "edd": "The manifest records audit IDs, exact actor identity, call pattern, live RBAC containment, code revision, tests, capacity impact, and the blocked deployment state.",
+    "cdd": "The reconciliation contract now requires a database-backed session snapshot and an explicit control-plane owner before namespace deletion.",
+    "bdd": "Given two control planes with different session databases, when either reconciles Arena, then it can enumerate and delete only namespaces stamped with its own control-plane identity.",
+    "cbt": "Audit identity, workload service accounts, RBAC revocation, reconciliation selection, namespace labeling, capacity preview, and deployment reachability were checked separately."
+  },
+  "release_gate": "failed",
+  "required_next_actions": [
+    "Restore the Arena VPN route and build the backend image from revision 240de54927e851ac90d1513a0ed3673bc211afd4.",
+    "Pin and deploy the immutable image, then prove an owner-labeled namespace survives repeated reconciler runs.",
+    "Repair rhgnr1 and complete a sustained node/network soak before restoring it to scheduling.",
+    "Run the exact staggered retained 3x25 rehearsal only after both gates pass."
+  ],
+  "contains_plaintext_credentials": false
+}
