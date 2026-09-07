@@ -1,10 +1,9 @@
-from fastapi.testclient import TestClient
-
 from app.api.deps import provisioning_service, tenant_store
 from app.auth.oauth import User, get_current_user
 from app.domain.enums import CatalogCategory, TenantType
-from app.domain.models import LabRequest, Tenant
+from app.domain.models import LabRequest, Tenant, Workshop
 from app.main import app
+from fastapi.testclient import TestClient
 
 
 def _client(user: User) -> TestClient:
@@ -16,13 +15,16 @@ def setup_function():
     tenant_store._tenants.clear()
     provisioning_service._requests.clear()
     provisioning_service._sessions.clear()
+    provisioning_service._workshops.clear()
     app.dependency_overrides.clear()
     for tenant_id in ("partner-a", "partner-b"):
-        tenant_store.create(Tenant(
-            tenant_id=tenant_id,
-            display_name=tenant_id,
-            tenant_type=TenantType.PARTNER,
-        ))
+        tenant_store.create(
+            Tenant(
+                tenant_id=tenant_id,
+                display_name=tenant_id,
+                tenant_type=TenantType.PARTNER,
+            )
+        )
 
 
 def teardown_function():
@@ -65,12 +67,14 @@ def test_partner_can_create_request_for_assigned_tenant():
 
 
 def test_partner_cannot_read_or_mutate_another_tenants_session():
-    request = provisioning_service.submit_request(LabRequest(
-        tenant_id="partner-b",
-        requester_id="other-user",
-        catalog_item_id="inference-overdrive-quickstart",
-        requested_mode=CatalogCategory.QUICK_START,
-    ))
+    request = provisioning_service.submit_request(
+        LabRequest(
+            tenant_id="partner-b",
+            requester_id="other-user",
+            catalog_item_id="inference-overdrive-quickstart",
+            requested_mode=CatalogCategory.QUICK_START,
+        )
+    )
     session = provisioning_service.provision(request.request_id)
     client = _client(User(username="partner-user", tenant_ids=["partner-a"]))
 
@@ -84,3 +88,51 @@ def test_admin_retains_cross_tenant_access():
     response = client.post("/api/v1/lab-requests", json=_request("partner-b"))
 
     assert response.status_code == 201
+
+
+def _workshop(tenant_id: str) -> Workshop:
+    workshop = Workshop(
+        tenant_id=tenant_id,
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=1,
+    )
+    provisioning_service._save_workshop(workshop)
+    return workshop
+
+
+def test_partner_cannot_preview_or_create_workshop_for_another_tenant():
+    client = _client(User(username="partner-user", tenant_ids=["partner-a"]))
+    payload = {
+        "tenant_id": "partner-b",
+        "catalog_item_id": "inference-overdrive-quickstart",
+        "num_users": 1,
+    }
+
+    preview = client.post("/api/v1/workshops/capacity-preview", json=payload)
+    create = client.post("/api/v1/workshops/orders", json=payload)
+
+    assert preview.status_code == 403
+    assert create.status_code == 403
+
+
+def test_partner_only_lists_workshops_for_assigned_tenants():
+    visible = _workshop("partner-a")
+    _workshop("partner-b")
+    client = _client(User(username="partner-user", tenant_ids=["partner-a"]))
+
+    response = client.get("/api/v1/workshops")
+
+    assert response.status_code == 200
+    assert [item["workshop_id"] for item in response.json()] == [visible.workshop_id]
+
+
+def test_partner_cannot_read_or_mutate_another_tenants_workshop():
+    hidden = _workshop("partner-b")
+    client = _client(User(username="partner-user", tenant_ids=["partner-a"]))
+
+    assert client.get(f"/api/v1/workshops/{hidden.workshop_id}").status_code == 404
+    assert client.post(f"/api/v1/workshops/{hidden.workshop_id}/confirm").status_code == 404
+    assert client.post(f"/api/v1/workshops/{hidden.workshop_id}/retry-failed").status_code == 404
+    assert client.get(f"/api/v1/workshops/{hidden.workshop_id}/users").status_code == 404
+    assert client.get(f"/api/v1/workshops/{hidden.workshop_id}/capacity").status_code == 404
+    assert client.delete(f"/api/v1/workshops/{hidden.workshop_id}").status_code == 404

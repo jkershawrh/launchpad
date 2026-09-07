@@ -1,0 +1,113 @@
+{
+  "schema": "launchpad.redhat.com/event-preflight-evidence/v1",
+  "evidence_id": "SEPTEMBER-17-MULTICLUSTER-PREFLIGHT-20260907T185019Z",
+  "observed_at": "2026-09-07T18:50:19.655001Z",
+  "event_date": "2026-09-17",
+  "source_revision": "2f5d08f8399e23482c218c140ad6f2bfd85a9c7b",
+  "mutates_cluster": false,
+  "result": "RED",
+  "target_inspection": {
+    "passed": true,
+    "mutates_cluster": false,
+    "http_status": 200,
+    "targets": {
+      "arena": {
+        "cluster_id": "arena",
+        "healthy": true,
+        "configured_enabled": true,
+        "available_cpu_millicores": 335259,
+        "available_memory_mib": 1279531,
+        "available_pods": 284,
+        "active_sessions": 0,
+        "active_workshops": 3,
+        "active_seats": 5
+      },
+      "brutus": {
+        "cluster_id": "brutus",
+        "healthy": true,
+        "configured_enabled": false,
+        "available_cpu_millicores": 88159,
+        "available_memory_mib": 1000670,
+        "available_pods": 141,
+        "active_sessions": 0,
+        "active_workshops": 0,
+        "active_seats": 0
+      }
+    }
+  },
+  "aggregate_capacity": {
+    "passed": true,
+    "clusters": {
+      "arena": {
+        "required": {
+          "cpu_millicores": 55950,
+          "memory_mib": 106080,
+          "pods": 120
+        },
+        "available": {
+          "cpu_millicores": 335259,
+          "memory_mib": 1279531,
+          "pods": 284
+        },
+        "dimension_checks": {
+          "cpu_millicores": true,
+          "memory_mib": true,
+          "pods": true
+        },
+        "passed": true
+      },
+      "brutus": {
+        "required": {
+          "cpu_millicores": 12450,
+          "memory_mib": 27360,
+          "pods": 90
+        },
+        "available": {
+          "cpu_millicores": 88159,
+          "memory_mib": 1000670,
+          "pods": 141
+        },
+        "dimension_checks": {
+          "cpu_millicores": true,
+          "memory_mib": true,
+          "pods": true
+        },
+        "passed": true
+      }
+    }
+  },
+  "checks": [
+    {
+      "catalog_item_id": "multi-agent-quickstart",
+      "expected_cluster": "arena",
+      "seats": 25,
+      "http_status": 200,
+      "can_provision": true,
+      "selected_cluster": "arena",
+      "placement_reason": "Entire workshop assigned to arena; seats will not be split",
+      "passed": true
+    },
+    {
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "expected_cluster": "arena",
+      "seats": 25,
+      "http_status": 200,
+      "can_provision": true,
+      "selected_cluster": "arena",
+      "placement_reason": "Entire workshop assigned to arena; seats will not be split",
+      "passed": true
+    },
+    {
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "expected_cluster": "brutus",
+      "seats": 25,
+      "http_status": 200,
+      "can_provision": false,
+      "selected_cluster": null,
+      "placement_reason": "Target cluster 'brutus' is disabled",
+      "passed": false
+    }
+  ],
+  "release_boundary": "Aggregate capacity is GREEN-live. The release remains RED because Brutus placement is intentionally disabled and no exact retained 75-seat functional rehearsal has run.",
+  "contains_plaintext_credentials": false
+}

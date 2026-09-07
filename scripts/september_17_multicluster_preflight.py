@@ -14,6 +14,7 @@ import json
 import os
 import sys
 import warnings
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -26,8 +27,7 @@ warnings.filterwarnings(
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONTRACT = (
-    REPO_ROOT
-    / "evidence/september-17-multicluster-three-workshop-readiness-2026-09-07.json"
+    REPO_ROOT / "evidence/september-17-two-cluster-three-workshop-readiness-2026-09-07.json"
 )
 
 
@@ -44,8 +44,8 @@ def load_event_contract(path: Path | str = DEFAULT_CONTRACT) -> dict[str, Any]:
 
 
 def build_capacity_requests(contract: dict[str, Any]) -> list[dict[str, Any]]:
-    if contract.get("schema") != "launchpad.redhat.com/event-readiness/v3":
-        raise ValueError("event readiness contract must use schema v3")
+    if contract.get("schema") != "launchpad.redhat.com/event-readiness/v4":
+        raise ValueError("event readiness contract must use schema v4")
     if contract.get("workshop_affinity") != "one-workshop-one-cluster":
         raise ValueError("event requires whole-workshop cluster affinity")
     if contract.get("seat_splitting_allowed") is not False:
@@ -68,9 +68,7 @@ def build_capacity_requests(contract: dict[str, Any]) -> list[dict[str, Any]]:
         if not catalog_item_id or not target_cluster:
             raise ValueError("every workshop must have an explicit target cluster")
         if workshop.get("candidate_cluster_id") != target_cluster:
-            raise ValueError(
-                f"candidate target mismatch for {catalog_item_id}: {target_cluster}"
-            )
+            raise ValueError(f"candidate target mismatch for {catalog_item_id}: {target_cluster}")
         if workshop.get("seat_count") != 25:
             raise ValueError("every September event workshop must contain 25 seats")
         activation = contract.get("target_activation", {}).get(target_cluster, {})
@@ -93,8 +91,17 @@ def build_capacity_requests(contract: dict[str, Any]) -> list[dict[str, Any]]:
             }
         )
 
-    if len(set(selected_targets)) != len(selected_targets):
-        raise ValueError("event topology requires one distinct cluster per workshop")
+    observed_counts = dict(Counter(selected_targets))
+    declared_counts = {
+        str(cluster_id): int(count)
+        for cluster_id, count in contract.get("candidate_cluster_workshop_counts", {}).items()
+    }
+    if observed_counts != declared_counts:
+        raise ValueError("event topology workshop counts do not match the declared distribution")
+    if len(observed_counts) != 2 or max(observed_counts.values()) != 2:
+        raise ValueError(
+            "event topology requires three whole workshops across exactly two clusters"
+        )
     if sum(item["num_users"] for item in requests_to_preview) != 75:
         raise ValueError("event contract must reserve exactly 75 participant seats")
     return requests_to_preview
@@ -150,6 +157,36 @@ def run_capacity_preflight(
     except (requests.RequestException, ValueError, TypeError) as exc:
         target_inspection["error"] = type(exc).__name__
 
+    aggregate_capacity: dict[str, Any] = {
+        "passed": False,
+        "clusters": {},
+    }
+    for cluster_id, reservation in contract.get("per_cluster_reservations", {}).items():
+        observed_target = target_inspection["targets"].get(cluster_id, {})
+        required = {
+            "cpu_millicores": int(reservation["protected_cpu_millicores"]),
+            "memory_mib": int(reservation["protected_memory_mib"]),
+            "pods": int(reservation["protected_pod_slots"]),
+        }
+        available = {
+            "cpu_millicores": int(observed_target.get("available_cpu_millicores", 0)),
+            "memory_mib": int(observed_target.get("available_memory_mib", 0)),
+            "pods": int(observed_target.get("available_pods", 0)),
+        }
+        dimension_checks = {name: available[name] >= required[name] for name in required}
+        aggregate_capacity["clusters"][cluster_id] = {
+            "required": required,
+            "available": available,
+            "dimension_checks": dimension_checks,
+            "passed": bool(
+                observed_target.get("healthy") is True and all(dimension_checks.values())
+            ),
+        }
+    aggregate_capacity["passed"] = bool(
+        aggregate_capacity["clusters"]
+        and all(item["passed"] for item in aggregate_capacity["clusters"].values())
+    )
+
     checks: list[dict[str, Any]] = []
 
     for body in build_capacity_requests(contract):
@@ -191,8 +228,7 @@ def run_capacity_preflight(
     return {
         "schema": "launchpad.redhat.com/event-preflight-evidence/v1",
         "evidence_id": (
-            "SEPTEMBER-17-MULTICLUSTER-PREFLIGHT-"
-            f"{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}"  # noqa: UP017
+            f"SEPTEMBER-17-MULTICLUSTER-PREFLIGHT-{datetime.now(timezone.utc):%Y%m%dT%H%M%SZ}"  # noqa: UP017
         ),
         "observed_at": _utc_now(),
         "event_date": contract["event_date"],
@@ -200,11 +236,13 @@ def run_capacity_preflight(
         "result": (
             "GREEN-live-preflight"
             if target_inspection["passed"]
+            and aggregate_capacity["passed"]
             and len(checks) == 3
             and all(check["passed"] for check in checks)
             else "RED"
         ),
         "target_inspection": target_inspection,
+        "aggregate_capacity": aggregate_capacity,
         "checks": checks,
         "contains_plaintext_credentials": False,
     }
@@ -218,9 +256,7 @@ def _write_result(path: Path | None, result: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(rendered)
     checksum = hashlib.sha256(path.read_bytes()).hexdigest()
-    path.with_suffix(path.suffix + ".sha256").write_text(
-        f"{checksum}  {path.name}\n"
-    )
+    path.with_suffix(path.suffix + ".sha256").write_text(f"{checksum}  {path.name}\n")
     print(path)
 
 

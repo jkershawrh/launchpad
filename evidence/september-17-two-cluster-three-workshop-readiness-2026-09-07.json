@@ -1,0 +1,170 @@
+{
+  "schema": "launchpad.redhat.com/event-readiness/v4",
+  "evidence_id": "READINESS-SEPTEMBER-17-TWO-CLUSTER-THREE-WORKSHOPS-20260907",
+  "generated_at": "2026-09-07T19:05:00Z",
+  "source_revision": "2f5d08f8399e23482c218c140ad6f2bfd85a9c7b",
+  "event_date": "2026-09-17",
+  "deployment_scope": "arena-brutus-fleet",
+  "supersedes": "evidence/september-17-multicluster-three-workshop-readiness-2026-09-07.json",
+  "topology_decision": {
+    "decision": "approved",
+    "decision_date": "2026-09-07",
+    "reason": "Oberon cannot admit 25 Serve LLMs seats with protected headroom and cannot currently finalize namespace deletion because stale KubeVirt API discovery references a missing HCO conversion webhook.",
+    "participant_entry_point": "One Launchpad portal and one My Lab Access surface; Launchpad resolves each immutable cluster_ref and participants never select a cluster.",
+    "ordering_control": "Every pilot order uses an explicit admin target-cluster override and is revalidated immediately before provisioning."
+  },
+  "candidate_cluster_targets": {
+    "multi-agent-quickstart": "arena",
+    "intel-llm-cpu-serving": "arena",
+    "intel-xeon6-agent-201": "brutus"
+  },
+  "candidate_cluster_workshop_counts": {
+    "arena": 2,
+    "brutus": 1
+  },
+  "workshop_affinity": "one-workshop-one-cluster",
+  "seat_splitting_allowed": false,
+  "provisioning_mode": "staggered-retained",
+  "concurrent_participant_seats": 75,
+  "public_access_certified": false,
+  "overall_status": "RED",
+  "certification_boundary": "The two-cluster topology is approved but not yet certified as one retained 75-seat pilot. Arena aggregate admission and the tagged Serve LLMs one-seat canary are GREEN-live. Arena still needs the clean five-seat Serve LLMs gate and combined retained 50-seat functional run; Brutus still needs the scheduled soak/repeat gate.",
+  "workshops": [
+    {
+      "provision_order": 1,
+      "catalog_item_id": "multi-agent-quickstart",
+      "catalog_version": "0.2.5",
+      "seat_count": 25,
+      "release_status": "GREEN-live-25-x3-internal",
+      "candidate_cluster_id": "arena",
+      "cpu_millicores": 30000,
+      "memory_mib": 51200,
+      "pod_slots": 50,
+      "storage_gib_minimum": 0,
+      "target_specific_gate": "Retain the current three-run proof, then run this exact release as the first workshop in the combined Arena rehearsal."
+    },
+    {
+      "provision_order": 2,
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "catalog_version": "1.0.1",
+      "seat_count": 25,
+      "release_status": "GREEN-live-one-seat-current-and-25-historical",
+      "candidate_cluster_id": "arena",
+      "cpu_millicores": 16625,
+      "memory_mib": 37200,
+      "pod_slots": 50,
+      "storage_gib_minimum": 0,
+      "target_specific_gate": "Run a clean tagged-content five-seat certification, then retain 25 seats concurrently with Multi-Agent and prove the documented CPU-serving journey."
+    },
+    {
+      "provision_order": 3,
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "catalog_version": "1.0.2",
+      "seat_count": 25,
+      "release_status": "GREEN-live-25-once-internal",
+      "candidate_cluster_id": "brutus",
+      "cpu_millicores": 10375,
+      "memory_mib": 22800,
+      "pod_slots": 75,
+      "storage_gib_minimum": 0,
+      "target_specific_gate": "Complete the remaining current-release soak and repeat requirement, then retain it during the exact fleet rehearsal."
+    }
+  ],
+  "declared_event_reservation": {
+    "cpu_millicores": 57000,
+    "memory_mib": 111200,
+    "pod_slots": 175,
+    "storage_gib_minimum": 0
+  },
+  "admission_target_with_twenty_percent_headroom": {
+    "cpu_millicores": 68400,
+    "memory_mib": 133440,
+    "pod_slots": 210,
+    "storage_gib_minimum": 0
+  },
+  "per_cluster_reservations": {
+    "arena": {
+      "catalog_item_ids": [
+        "multi-agent-quickstart",
+        "intel-llm-cpu-serving"
+      ],
+      "workshops": 2,
+      "seats": 50,
+      "cpu_millicores": 46625,
+      "memory_mib": 88400,
+      "pod_slots": 100,
+      "protected_cpu_millicores": 55950,
+      "protected_memory_mib": 106080,
+      "protected_pod_slots": 120
+    },
+    "brutus": {
+      "catalog_item_ids": [
+        "intel-xeon6-agent-201"
+      ],
+      "workshops": 1,
+      "seats": 25,
+      "cpu_millicores": 10375,
+      "memory_mib": 22800,
+      "pod_slots": 75,
+      "protected_cpu_millicores": 12450,
+      "protected_memory_mib": 27360,
+      "protected_pod_slots": 90
+    }
+  },
+  "excluded_targets": {
+    "oberon": {
+      "execution_enabled": false,
+      "observed_safe_max_serve_llms_seats": 19,
+      "required_seats": 25,
+      "cleanup_result": "RED",
+      "cleanup_blocker": "NamespaceDeletionDiscoveryFailure for subresources.kubevirt.io/v1 and v1alpha3 plus a missing openshift-cnv/hco-webhook-service conversion endpoint.",
+      "affected_namespaces": [
+        "launchpad-smoke-test-tenant-intel-llm-cpu-serv-76c59c",
+        "launchpad-smoke-test-tenant-intel-llm-cpu-serv-8911b8"
+      ],
+      "return_gate": "Restore or cleanly remove the stale KubeVirt/HCO APIs, prove namespace deletion, and re-run workload-specific capacity and cleanup certification."
+    }
+  },
+  "target_activation": {
+    "arena": {
+      "enabled": true,
+      "event_override_required": true,
+      "current_gate": "Tagged Serve LLMs five-seat certification, retained 50-seat functional run, soak, and zero-residue cleanup.",
+      "latest_target_evidence": "evidence/runs/intel-cpu-serving-one-seat-arena-20260907.json"
+    },
+    "brutus": {
+      "enabled": false,
+      "event_override_required": true,
+      "current_gate": "Agent 201 current-release repeat and soak, followed by exact fleet rehearsal."
+    }
+  },
+  "already_proven": [
+    "Multi-Agent 0.2.5 completed three consecutive internal 25-seat Arena certifications with functional journeys, isolation, and zero residue.",
+    "Serve LLMs completed a historical internal 25-seat Arena workshop and now uses immutable tagged Showroom content.",
+    "The current tagged Serve LLMs release completed a one-seat Arena participant journey with namespace isolation, grounded RAG, and zero-residue reclaim.",
+    "Building an AI Agent completed one internal 25-seat Brutus certification with 75 ready pods, functional journeys, isolation, and zero residue.",
+    "Launchpad persists immutable whole-workshop cluster affinity and cluster-aware cleanup."
+  ],
+  "remaining_release_gates": [
+    "arena-tagged-serve-llms-five-seat-certification",
+    "arena-multi-agent-plus-serve-llms-staggered-retained-fifty-seat-run",
+    "brutus-agent-201-repeat-and-sixty-minute-soak",
+    "two-cluster-exact-seventy-five-seat-functional-rehearsal",
+    "cross-seat-and-cross-namespace-denial",
+    "shared-model-contention-and-error-rate-check",
+    "sequential-targeted-reclaim-with-zero-residue",
+    "requester-participant-api-and-browser-contract-matrix"
+  ],
+  "next_gate": "arena-tagged-serve-llms-five-seat-certification",
+  "release_policy": {
+    "rubric_score_required": 100,
+    "critical_cells_must_be_green_live": true,
+    "pod_readiness_alone_is_sufficient": false,
+    "silent_workshop_substitution_allowed": false,
+    "silent_cluster_substitution_allowed": false,
+    "uncertified_public_access_allowed": false,
+    "exact_catalog_versions_must_match": true,
+    "whole_workshop_cluster_affinity_required": true,
+    "zero_residue_cleanup_required": true
+  }
+}

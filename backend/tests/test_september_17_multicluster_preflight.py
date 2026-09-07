@@ -29,9 +29,15 @@ class FakeSession:
         selected_clusters: list[str],
         *,
         unhealthy_clusters: set[str] | None = None,
+        available_pods: dict[str, int] | None = None,
     ):
         self.selected_clusters = iter(selected_clusters)
         self.unhealthy_clusters = unhealthy_clusters or set()
+        self.available_pods = available_pods or {
+            "arena": 284,
+            "oberon": 140,
+            "brutus": 141,
+        }
         self.requests: list[dict] = []
 
     def get(self, url: str, **kwargs):
@@ -45,6 +51,9 @@ class FakeSession:
                         "cluster_id": cluster_id,
                         "healthy": cluster_id not in self.unhealthy_clusters,
                         "configured_enabled": cluster_id == "arena",
+                        "available_cpu_millicores": 400000,
+                        "available_memory_mib": 1400000,
+                        "available_pods": self.available_pods[cluster_id],
                     }
                     for cluster_id in ("arena", "oberon", "brutus")
                 ],
@@ -72,7 +81,7 @@ def test_contract_preflight_builds_three_explicit_non_public_capacity_requests()
 
     assert [(request["catalog_item_id"], request["target_cluster"]) for request in requests] == [
         ("multi-agent-quickstart", "arena"),
-        ("intel-llm-cpu-serving", "oberon"),
+        ("intel-llm-cpu-serving", "arena"),
         ("intel-xeon6-agent-201", "brutus"),
     ]
     assert all(request["num_users"] == 25 for request in requests)
@@ -82,7 +91,7 @@ def test_contract_preflight_builds_three_explicit_non_public_capacity_requests()
 
 def test_live_preflight_is_green_only_when_every_preview_keeps_exact_affinity():
     contract = MODULE.load_event_contract()
-    session = FakeSession(["arena", "oberon", "brutus"])
+    session = FakeSession(["arena", "arena", "brutus"])
 
     result = MODULE.run_capacity_preflight(
         contract,
@@ -94,17 +103,16 @@ def test_live_preflight_is_green_only_when_every_preview_keeps_exact_affinity():
     assert result["result"] == "GREEN-live-preflight"
     assert result["mutates_cluster"] is False
     assert result["target_inspection"]["passed"] is True
+    assert result["aggregate_capacity"]["passed"] is True
+    assert result["aggregate_capacity"]["clusters"]["arena"]["passed"] is True
     assert len(result["checks"]) == 3
     assert all(check["passed"] for check in result["checks"])
-    assert all(
-        request["headers"]["X-API-Key"] == "not-a-real-key"
-        for request in session.requests
-    )
+    assert all(request["headers"]["X-API-Key"] == "not-a-real-key" for request in session.requests)
 
 
 def test_live_preflight_fails_closed_on_cluster_substitution():
     contract = MODULE.load_event_contract()
-    session = FakeSession(["arena", "arena", "brutus"])
+    session = FakeSession(["arena", "brutus", "brutus"])
 
     result = MODULE.run_capacity_preflight(
         contract,
@@ -115,15 +123,15 @@ def test_live_preflight_fails_closed_on_cluster_substitution():
 
     assert result["result"] == "RED"
     assert result["checks"][1]["passed"] is False
-    assert result["checks"][1]["selected_cluster"] == "arena"
-    assert result["checks"][1]["expected_cluster"] == "oberon"
+    assert result["checks"][1]["selected_cluster"] == "brutus"
+    assert result["checks"][1]["expected_cluster"] == "arena"
 
 
 def test_live_preflight_is_red_when_disabled_target_inspection_is_unhealthy():
     contract = MODULE.load_event_contract()
     session = FakeSession(
-        ["arena", "oberon", "brutus"],
-        unhealthy_clusters={"oberon"},
+        ["arena", "arena", "brutus"],
+        unhealthy_clusters={"brutus"},
     )
 
     result = MODULE.run_capacity_preflight(
@@ -135,17 +143,36 @@ def test_live_preflight_is_red_when_disabled_target_inspection_is_unhealthy():
 
     assert result["result"] == "RED"
     assert result["target_inspection"]["passed"] is False
-    assert result["target_inspection"]["targets"]["oberon"]["healthy"] is False
+    assert result["target_inspection"]["targets"]["brutus"]["healthy"] is False
 
 
-def test_contract_validation_rejects_duplicate_cluster_assignment():
+def test_live_preflight_is_red_when_individual_previews_pass_but_aggregate_does_not_fit():
+    contract = MODULE.load_event_contract()
+    session = FakeSession(
+        ["arena", "arena", "brutus"],
+        available_pods={"arena": 119, "oberon": 140, "brutus": 141},
+    )
+
+    result = MODULE.run_capacity_preflight(
+        contract,
+        api_base_url="https://launchpad-api.example.com",
+        api_key="not-a-real-key",
+        session=session,
+    )
+
+    assert all(check["passed"] for check in result["checks"])
+    assert result["aggregate_capacity"]["passed"] is False
+    assert result["aggregate_capacity"]["clusters"]["arena"]["passed"] is False
+    assert result["result"] == "RED"
+
+
+def test_contract_validation_requires_declared_two_cluster_workshop_counts():
     contract = copy.deepcopy(MODULE.load_event_contract())
-    contract["candidate_cluster_targets"]["intel-llm-cpu-serving"] = "arena"
-    contract["workshops"][1]["candidate_cluster_id"] = "arena"
+    contract["candidate_cluster_workshop_counts"]["arena"] = 1
 
     try:
         MODULE.build_capacity_requests(contract)
     except ValueError as exc:
-        assert "one distinct cluster per workshop" in str(exc)
+        assert "workshop counts" in str(exc)
     else:
-        raise AssertionError("duplicate event target was accepted")
+        raise AssertionError("invalid two-cluster event distribution was accepted")

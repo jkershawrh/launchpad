@@ -1,0 +1,105 @@
+{
+  "schema": "launchpad.redhat.com/workshop-certification/v1",
+  "evidence_id": "EDD-ARENA-CPU-SERVING-ONE-SEAT-20260907",
+  "captured_at": "2026-09-07T19:02:12Z",
+  "source_commit_before_candidate": "2f5d08f8399e23482c218c140ad6f2bfd85a9c7b",
+  "catalog_item_id": "intel-llm-cpu-serving",
+  "catalog_version": "1.0.1",
+  "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.0",
+  "cluster_ref": "arena",
+  "workshop_id": "29234904-35cf-4049-97b4-a8a7b815b08a",
+  "session_id": "50877401-ebe3-4052-854a-08ac5aa816a6",
+  "namespace": "launchpad-smoke-test-tenant-intel-llm-cpu-serv-ccf122",
+  "exposure_policy": "internal",
+  "result": "GREEN-live-one-seat",
+  "provisioning": {
+    "requested_at": "2026-09-07T18:53:26.305707Z",
+    "ready_at": "2026-09-07T18:53:51.577101Z",
+    "ready_seconds": 25.271394,
+    "showroom_route_http_status": 200,
+    "guide_route_http_status": 200,
+    "running_pods": 2,
+    "ready_containers": 4,
+    "total_containers": 4,
+    "container_restarts": 0
+  },
+  "runtime_contract": {
+    "secret_name": "launchpad-participant-runtime",
+    "expected_keys": [
+      "MAAS_API_KEY",
+      "MAAS_API_URL",
+      "MAAS_ENDPOINT",
+      "MAAS_MODEL"
+    ],
+    "all_values_present": true,
+    "showroom_service_account_can_read_own_secret": true,
+    "terminal_server_inherited_all_values": true,
+    "secret_serialized_in_antora_or_argocd": false
+  },
+  "participant_validation": {
+    "terminal_default_project_matches_seat": true,
+    "terminal_own_namespace_edit": true,
+    "terminal_default_namespace_read": false,
+    "anythingllm_ready": true,
+    "anythingllm_image_immutable": true,
+    "grounded_rag_http_status": 200,
+    "grounded_rag_seconds": 4.100597,
+    "expected_fact_returned": true,
+    "source_document_cited": true
+  },
+  "cleanup": {
+    "reclaim_started_at": "2026-09-07T18:59:56.116432Z",
+    "session_reclaimed_at": "2026-09-07T19:00:26.272779Z",
+    "zero_residue_observed_at": "2026-09-07T19:02:12Z",
+    "zero_residue_observed_seconds": 135.883568,
+    "workshop_status": "completed",
+    "session_status": "reclaimed",
+    "remaining_namespaces": 0,
+    "remaining_routes": 0,
+    "remaining_applications": 0,
+    "remaining_rolebindings": 0,
+    "remaining_pods": 0,
+    "remaining_secrets": 0
+  },
+  "red_green_matrix": [
+    {
+      "id": "CPU-SERVING-RUNTIME-001",
+      "red": "The certification driver attempted to recover the participant API key by scraping rendered Antora HTML, but secrets are intentionally excluded from Antora and Argo CD.",
+      "green_local": "A failing contract test was added, then the driver was changed to read the namespaced runtime Secret through the Showroom terminal service account boundary.",
+      "green_live": "The terminal service account read the complete four-key runtime contract and deployed the participant RAG workload without publishing the key."
+    },
+    {
+      "id": "CPU-SERVING-RAG-001",
+      "red": "No deterministic participant workload had been completed for the tagged September 17 CPU-serving content.",
+      "green_local": "The existing deterministic Orion leave-policy journey remained syntax-valid and contract-tested.",
+      "green_live": "The participant workload returned HTTP 200, the exact fact, and the expected source citation in 4.100597 seconds."
+    },
+    {
+      "id": "CPU-SERVING-CLEANUP-001",
+      "red": "The namespace still existed at the first 45-second deletion observation.",
+      "green_local": "The existing idempotent workshop reclaim path was retained without forcing Kubernetes finalizers.",
+      "green_live": "Within 135.883568 seconds, the namespace, Routes, Argo CD Applications, RoleBindings, pods, and Secrets all reached zero."
+    }
+  ],
+  "proof_strategy": {
+    "tdd": "RED contract test captured the unsafe HTML scraping assumption before the driver change.",
+    "edd": "This manifest records immutable IDs, timestamps, runtime boundary checks, participant behavior, and zero-residue counts.",
+    "cdd": "The four-key runtime Secret is the versioned participant-to-model contract; secret material is excluded from GitOps and content.",
+    "bdd": "Given one Arena seat, when the participant deploys and queries a RAG assistant, then the exact fact and citation are returned and reclaim removes all artifacts.",
+    "cbt": "Showroom, terminal RBAC, runtime Secret, AnythingLLM, model call, and reclaim were checked independently before the end-to-end result."
+  },
+  "rubric": {
+    "score": 100,
+    "required": 100,
+    "scope": "one-seat-internal-canary-only"
+  },
+  "not_certified": [
+    "five-seat CPU-serving workshop",
+    "twenty-five-seat CPU-serving workshop",
+    "CPU-serving workshop retained concurrently with Multi-Agent",
+    "public participant access for this catalog item",
+    "three-workshop September 17 pilot"
+  ],
+  "next_gate": "Run a clean five-seat Arena CPU-serving workshop, including simultaneous deterministic RAG calls and zero-residue bulk reclaim.",
+  "contains_plaintext_credentials": false
+}

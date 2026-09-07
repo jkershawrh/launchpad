@@ -180,10 +180,24 @@ export interface WorkshopCapacityPreview {
   selected_cluster?: string;
   placement_reason?: string;
   catalog_seat_limit?: number | null;
+  certification_override?: boolean;
+  certification_target_seats?: number | null;
   estimated_resources: {
     cpu_millicores: number;
     memory_mib: number;
+    pods: number;
   };
+  resource_breakdown?: {
+    shared: WorkshopResourceEstimate;
+    per_seat: WorkshopResourceEstimate;
+    transient: WorkshopResourceEstimate & { concurrent_seats: number };
+  } | null;
+}
+
+export interface WorkshopResourceEstimate {
+  cpu_millicores: number;
+  memory_mib: number;
+  pods: number;
 }
 
 export type WorkloadType = 'cpu_inference' | 'gpu_inference' | 'training' | 'rag_pipeline' | 'agent' | 'mixed' | 'lightweight';

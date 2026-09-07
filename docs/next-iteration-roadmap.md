@@ -20,12 +20,14 @@ Arena worker and control-plane failure modes and remain immutable RED evidence,
 even though their resource cleanup is now complete and the run-02 remediation
 is GREEN-live.
 
-The approved event topology now assigns one complete workshop to each cluster:
-Multi-Agent on Arena, Serve LLMs on Oberon, and Building an AI Agent on Brutus.
-Seats are never split across clusters. The next gate is a read-only
-three-cluster preflight, followed by Oberon Serve LLMs certification, the
-remaining Brutus repeat/soak gate, and one exact staggered fleet rehearsal with
-all 75 participants active together. Public access remains a separate
+The approved event topology now uses two execution clusters: Multi-Agent and
+Serve LLMs run as two complete workshops on Arena, while Building an AI Agent
+runs on Brutus. Seats are never split across clusters. Aggregate Arena 50-seat
+admission and the current tagged Serve LLMs one-seat participant canary are
+GREEN-live. The next gate is a clean five-seat Serve LLMs run, followed by the
+retained Arena 25 + 25 functional run, the remaining Brutus repeat/soak gate,
+and one exact staggered fleet rehearsal with all 75 participants active
+together. Public access remains a separate
 certification gate; internal access is the September release baseline unless
 the public matrix is independently GREEN-live by Sep 15.
 
@@ -52,8 +54,8 @@ five-seat chart reruns confirm it. The qualified single Arena worker still
 cannot admit 25 AgentOps seats. Per-seat DSPA and database isolation are
 retained; sharing the project-scoped pipeline stack is not an approved shortcut.
 
-The current event path assigns Arena to Multi-Agent and re-certifies Oberon for
-Serve LLMs. Brutus is registered and passed the one-, five-, and
+The current event path assigns Arena to both Multi-Agent and Serve LLMs. Brutus
+is registered and passed the one-, five-, and
 25-seat internal gates with a measured three-pod contract. The 25-seat run
 created 75 healthy pods, completed all 25 simultaneous three-tool journeys,
 preserved namespace isolation, and reclaimed with zero residue. Its capacity
@@ -62,8 +64,12 @@ integrated registry uses a retained 100Gi NFS claim and all three pinned digests
 passed `Always` pull probes after a deliberate registry restart. Brutus remains
 placement-disabled and reserved for emergency use; public access and Console
 OIDC are separate gates.
-Oberon needs eleven
-additional protected slots before its live gate.
+
+Oberon is excluded from event execution. Its safe Serve LLMs preview is 19
+seats, and two reclaimed test namespaces remain `Terminating` because stale
+KubeVirt discovery calls a missing HCO conversion webhook. Returning Oberon to
+the fleet requires cluster-level KubeVirt/HCO remediation, a successful
+namespace-deletion canary, and workload-specific recertification.
 
 The Brutus one-seat run also measured the fleet prerequisites that must move
 out of the ordering path: a 10m42s cold Showroom terminal-image mirror, a

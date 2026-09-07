@@ -13,7 +13,7 @@ prior readiness contract and RED 25-seat capacity evidence remain immutable.
 | Provision order | Catalog item | Seats | Current evidence | Candidate target |
 |---|---|---:|---|---|
 | 1 | `multi-agent-quickstart` | 25 | GREEN-live-25 three consecutive times on Arena | Arena |
-| 2 | `intel-llm-cpu-serving` | 25 | GREEN-live-25 on Arena; not yet portable to Oberon | Oberon |
+| 2 | `intel-llm-cpu-serving` | 25 | Current tagged content GREEN-live at one seat; GREEN-live-25 historically on Arena | Arena |
 | 3 | `intel-xeon6-agent-201` | 25 | Current compact release passed one internal 25-seat run on Brutus | Brutus |
 
 The order is **Multi-Agent first**, Serve LLMs second, and Building an AI
@@ -22,12 +22,14 @@ time, so starting it first preserves the most recovery time. Do not submit the
 next order until every seat in the preceding workshop is Ready. Do not reclaim
 an earlier workshop while creating the next one.
 
-The approved event topology is **one workshop per cluster**. Every workshop
-must retain whole-workshop affinity: its 25 seats stay together on the named
-cluster and are never split or silently moved. Event orders use an explicit
-admin target override so the evidence cannot accidentally describe a different
-placement. Arena is currently enabled; Oberon and Brutus remain fail-closed in
-the registry until their target-specific gates pass.
+The approved event topology uses **two execution clusters**. Arena hosts two
+complete workshops and Brutus hosts one. Every workshop retains whole-workshop
+affinity: its 25 seats stay together on the named cluster and are never split
+or silently moved. Event orders use an explicit admin target override so the
+evidence cannot accidentally describe a different placement. Arena is enabled;
+Brutus remains fail-closed until its repeat/soak gate passes. Oberon is excluded
+from event execution until its capacity and namespace-deletion defects are
+remediated.
 
 ## Why this substitution is materially safer
 
@@ -59,17 +61,20 @@ The approved placement distributes that reservation as follows:
 
 | Cluster | Workshop | Declared pods | Pods with 20% headroom | Declared CPU / memory |
 |---|---|---:|---:|---:|
-| Arena | Multi-Agent | 50 | 60 | 30,000m / 51,200 MiB |
-| Oberon | Serve LLMs | 50 | 60 | 16,625m / 37,200 MiB |
+| Arena | Multi-Agent + Serve LLMs | 100 | 120 | 46,625m / 88,400 MiB |
 | Brutus | Building an AI Agent | 75 | 90 | 10,375m / 22,800 MiB |
 
-This materially reduces the pod-pressure and worker-failure blast radius seen
-in the all-Arena runs, but it is not capacity evidence. Current free capacity
-on every target must be measured live immediately before every rehearsal and
-event order. Admission must fail closed if active pod count, requested CPU or
-memory, node readiness, workload-start canaries, model health, image
-availability, storage, ingress, credentials, or temporary rollout demand do
-not fit the protected envelope.
+The September 7 read-only inspection measured 284 available pod slots, 335,259m
+CPU, and 1,279,531 MiB memory on Arena. The aggregate Arena capacity envelope
+requires 120 protected pod slots, 55,950m CPU, and 106,080 MiB memory. Brutus
+reported 141 available pod slots against the 90-slot protected Agent 201
+envelope. These measurements make the topology eligible for staged live
+certification; they are not functional evidence. Current free capacity on every
+target must be measured live immediately before every rehearsal and event
+order. Admission must fail closed if active pod count, requested CPU or memory,
+node readiness, workload-start canaries, model health, image availability,
+storage, ingress, credentials, or temporary rollout demand do not fit the
+protected envelope.
 
 ## Evidence boundary
 
@@ -158,22 +163,30 @@ zero Argo CD Applications. This makes the remediation **GREEN-live**, while
 the failed run and the event release decision remain RED pending run 03. See
 `evidence/september-17-agentic-trio-run02-remediation-2026-09-06.json`.
 
-## Approved topology change after run 02
+## Approved two-cluster topology after run 02
 
 Runs 01 and 02 remain immutable all-Arena RED evidence. They proved valuable
 orchestration and recovery behavior, but they do not certify the newly approved
 fleet topology.
 
-The next candidate assigns Multi-Agent to Arena, Serve LLMs to Oberon, and
-Building an AI Agent to Brutus. Arena already has three consecutive current
-Multi-Agent 25-seat passes. Brutus has one current internal 25-seat Agent 201
-pass in
+The candidate assigns both Multi-Agent and Serve LLMs to Arena, and Building an
+AI Agent to Brutus. Arena already has three consecutive current Multi-Agent
+25-seat passes and historical Serve LLMs 25-seat evidence. Brutus has one
+current internal 25-seat Agent 201 pass in
 `evidence/brutus-agent-201-three-pod-certification-2026-09-05.json`, but still
-needs its 60-minute soak and two repeat runs. Oberon has no current target-local
-Serve LLMs 25-seat proof and must complete the 1 → 5 → 25 progression.
+needs its repeat/soak gate.
 
-The topology contract is recorded in
-`evidence/september-17-multicluster-three-workshop-readiness-2026-09-07.json`.
+Oberon is not an event execution target. Its live Serve LLMs preview reported a
+safe maximum of 19 seats rather than the required 25. Two one-seat portability
+runs were reclaimed in Launchpad, but their empty namespaces remained
+`Terminating`. Namespace conditions identify stale
+`subresources.kubevirt.io/v1` and `v1alpha3` discovery plus a missing
+`openshift-cnv/hco-webhook-service` conversion endpoint. Launchpad will not
+force-remove namespace finalizers or claim zero-residue cleanup while that
+cluster-level defect remains.
+
+The current topology contract is recorded in
+`evidence/september-17-two-cluster-three-workshop-readiness-2026-09-07.json`.
 Its status is RED until all target gates and the exact combined rehearsal pass.
 
 Validate the immutable request shape without contacting a cluster:
@@ -182,8 +195,7 @@ Validate the immutable request shape without contacting a cluster:
 ./scripts/september_17_multicluster_preflight.py --contract-only
 ```
 
-After Arena control-plane authentication is restored and both remote targets
-have passed their activation gates, run the read-only live preview through the
+After Brutus has passed its activation gate, run the read-only live preview through the
 Launchpad API. The command submits no order and creates no cluster resource:
 
 ```bash
@@ -193,34 +205,55 @@ LAUNCHPAD_ADMIN_API_KEY="${LAUNCHPAD_ADMIN_API_KEY}" \
   --output evidence/runs/september-17-multicluster-preflight.json
 ```
 
-GREEN requires all three previews to return `can_provision: true` and preserve
-the exact Arena, Oberon, and Brutus assignments. A disabled or unreachable
-target, insufficient capacity, or any placement substitution keeps the gate
-RED.
+GREEN requires all three previews to return `can_provision: true`, preserve the
+exact Arena, Arena, and Brutus assignments, and fit the aggregate per-cluster
+reservation. A disabled or unreachable target, insufficient capacity, or any
+placement substitution keeps the gate RED.
 
-### Disabled-target inspection — GREEN; placement gate — RED
+### Two-cluster capacity inspection — GREEN; functional gate — RED
 
-The 2026-09-07 live, non-mutating inspection reached all three clusters through
-the Arena control plane while leaving Oberon and Brutus disabled. Arena,
-Oberon, and Brutus each reported healthy APIs and positive CPU, memory, and pod
-headroom. The exact Arena Multi-Agent 25-seat preview passed. The Oberon Serve
-LLMs and Brutus Agent 201 previews were rejected only because those targets
-remain deliberately disabled; Launchpad did not substitute another cluster.
+The 2026-09-07 live, non-mutating inspection reached Arena and Brutus through
+the Arena control plane. Both individual Arena 25-seat previews passed, and
+their combined protected reservation fits the measured free CPU, memory, and
+pod slots. Brutus also has enough measured headroom for its protected 25-seat
+envelope, but its preview remains fail-closed while placement is disabled.
 
-This proves the temporary Arena authentication and both remote credential paths
-work without weakening the fail-closed placement policy. It does not certify
-either workload or authorize event placement. The overall result therefore
-remains **RED**. See
-`evidence/runs/september-17-multicluster-preflight-disabled-inspection-20260907.json`.
+This is capacity evidence only. It does not prove 50 retained Arena participant
+journeys, the Brutus repeat/soak, or the exact 75-seat rehearsal. The overall
+result therefore remains **RED**.
+
+### Tagged Serve LLMs one-seat canary — GREEN-live
+
+The current `intel-llm-cpu-serving` 1.0.1 catalog and pinned September content
+completed a clean one-seat Arena canary on September 7. Showroom and the guide
+returned HTTP 200, the terminal opened in the assigned namespace, its service
+account could edit that namespace but could not read `default`, and all four
+short-lived LiteMaaS runtime fields were present behind the namespace-scoped
+Secret boundary. The participant deployed AnythingLLM from the Showroom
+terminal and completed the deterministic Orion leave-policy RAG journey with
+HTTP 200, the exact fact, and its source citation in 4.100597 seconds.
+
+The first certification attempt was RED because its driver still expected to
+scrape the participant API key from rendered Antora HTML. Secrets are
+intentionally excluded from Antora and Argo CD. A failing contract test now
+locks that boundary, and the corrected driver reads the runtime Secret through
+the Showroom service account without publishing the key. Reclaim reached zero
+namespaces, Routes, Applications, RoleBindings, pods, and Secrets in under ten
+minutes. The immutable record is
+`evidence/runs/intel-cpu-serving-one-seat-arena-20260907.json`.
+
+This proves only the one-seat current-release canary. The next gate is a clean
+five-seat run with simultaneous deterministic RAG journeys and bulk reclaim,
+followed by the retained Arena Multi-Agent 25 + Serve LLMs 25 rehearsal.
 
 ## Exact-trio GREEN-live procedure
 
 1. Record commit SHA, catalog versions, image digests, model routes, target
    credentials, node conditions, active pods, requested resources, and
-   admission output for Arena, Oberon, and Brutus.
+   admission output for Arena and Brutus.
 2. Submit Multi-Agent 25 with the explicit Arena override and wait for all 25
    seats to cross the common readiness barrier.
-3. Submit Serve LLMs 25 with the explicit Oberon override, wait for all seats,
+3. Submit Serve LLMs 25 with the explicit Arena override, wait for all seats,
    and retain Multi-Agent.
 4. Submit Building an AI Agent 25 with the explicit Brutus override, wait for
    all seats, and retain the other 50 environments.
@@ -241,8 +274,8 @@ remains **RED**. See
 | Gate | RED baseline | Required GREEN-live evidence |
 |---|---|---|
 | Exact catalog revisions | Prior proofs span different revisions and workshop combinations | All three orders record the pinned event revisions and digests |
-| Capacity | All targets are healthy with positive headroom, but Oberon and Brutus are intentionally disabled | Target-local certification, explicit activation, then per-cluster preview and revalidation immediately before each order |
-| Provisioning | No exact three-cluster trio has run together | 25 + 25 + 25 Ready through targeted staggered orders |
+| Capacity | Individual Arena previews pass and the aggregate protected envelope fits; Brutus remains intentionally disabled | Brutus activation plus per-cluster aggregate preview and revalidation immediately before each order |
+| Provisioning | No exact two-cluster trio has run together | 25 + 25 on Arena and 25 on Brutus Ready through targeted staggered orders |
 | Functional behavior | Pod readiness alone proves nothing | 75 participant journeys complete with real model responses |
 | Authorization | Combined-run isolation is not yet recorded | Every seat can edit only its assigned namespace; cross-seat and node access are denied |
 | Soak | No exact-trio 60-minute hold | All seats and model routes remain healthy for 60 minutes |
@@ -257,9 +290,11 @@ for participant functionality, 15 for authorization/isolation, and 10 for
 cleanup and repeatability. Any failed critical cell keeps the event candidate
 RED regardless of the numerical score.
 
-The read-only three-cluster inspection is complete. The next gates are the
-Oberon Serve LLMs 1 → 5 → 25 certification and the remaining Brutus Agent 201
-60-minute soak plus two repeat 25-seat runs. Enable each target for event orders
-only after its workload gate passes, then repeat the exact preview and combined
-75-seat rehearsal. AgentOps continues separately at a maximum of five internal
-seats until its own 25-seat capacity and architecture gates are satisfied.
+The read-only two-cluster capacity inspection and the current tagged-content
+Serve LLMs one-seat canary are complete. The next gates are the Arena five-seat
+Serve LLMs certification, the retained Arena 25 + 25 functional run, and the
+remaining Brutus Agent 201 repeat/soak. Enable Brutus for event
+orders only after its workload gate passes, then repeat the exact preview and
+combined 75-seat rehearsal. AgentOps continues separately at a maximum of five
+internal seats until its own 25-seat capacity and architecture gates are
+satisfied.

@@ -1,4 +1,5 @@
 """Contract for the Arena five-seat CPU Serving certification evidence."""
+
 import json
 from pathlib import Path
 
@@ -53,9 +54,7 @@ def test_cpu_serving_five_seat_evidence_is_complete_and_scoped():
     assert cleanup["remaining_cross_namespace_rolebindings"] == 0
 
     assert all(
-        row["status"] == "GREEN-live"
-        for row in evidence["red_green_matrix"]
-        if row["critical"]
+        row["status"] == "GREEN-live" for row in evidence["red_green_matrix"] if row["critical"]
     )
     assert evidence["gate_rubric"]["score"] == 100
     assert evidence["gate_rubric"]["required"] == 100
@@ -70,12 +69,15 @@ def test_cpu_serving_certification_driver_uses_the_participant_boundary():
     assert 'actual_cluster" != "$expected_cluster' in script
     assert "refusing to mutate cluster" in script
     assert "deploy/showroom -c terminal" in script
+    assert "launchpad-participant-runtime" in script
+    assert "oc get secret" in script
+    assert "@base64d" in script
+    assert "Showroom did not render the required model connection values" not in script
+    assert "sed -n 's/.*export MAAS_API_KEY" not in script
     assert "anythingllm-openshift@sha256:" in script
     assert 'name: "rag"' in script
-    assert 'haproxy.router.openshift.io/timeout' in script
+    assert "haproxy.router.openshift.io/timeout" in script
     assert "GENERIC_OPEN_AI_BASE_PATH" in script
-    assert "LAUNCHPAD_CURL_INTERFACE" in script
-    assert "LAUNCHPAD_INGRESS_IP" in script
     assert 'actual_cluster="$(' in rag_script
     assert 'expected_cluster="${2:?' in rag_script
     assert 'actual_cluster" != "$expected_cluster' in rag_script

@@ -14,23 +14,20 @@ if [[ "$actual_cluster" != "$expected_cluster" ]]; then
   exit 2
 fi
 
-host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
-curl_options=(-fsSk)
-if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
-  curl_options+=(--interface "$LAUNCHPAD_CURL_INTERFACE")
-fi
-if [[ -n "${LAUNCHPAD_INGRESS_IP:-}" ]]; then
-  curl_options+=(--resolve "${host}:443:${LAUNCHPAD_INGRESS_IP}")
-fi
-page="$(curl "${curl_options[@]}" "https://${host}/www/modules/02-explore-maas.html")"
-endpoint="$(printf '%s' "$page" | sed -n 's/.*export MAAS_ENDPOINT="\([^"]*\)".*/\1/p' | head -1)"
-model="$(printf '%s' "$page" | sed -n 's/.*export MAAS_MODEL="\([^"]*\)".*/\1/p' | head -1)"
-api_key="$(printf '%s' "$page" | sed -n 's/.*export MAAS_API_KEY="\([^"]*\)".*/\1/p' | head -1)"
-
-if [[ -z "$endpoint" || -z "$model" || -z "$api_key" ]]; then
-  echo "Showroom did not render the required model connection values" >&2
+runtime_secret_json="$(
+  oc exec -n "$namespace" deploy/showroom -c terminal -- \
+    oc get secret launchpad-participant-runtime -n "$namespace" -o json
+)"
+if ! printf '%s' "$runtime_secret_json" | jq -e '
+  (.data | keys | sort) == ["MAAS_API_KEY", "MAAS_API_URL", "MAAS_ENDPOINT", "MAAS_MODEL"]
+  and all(.data[]; length > 0)
+' >/dev/null; then
+  echo "Participant terminal runtime contract is missing or incomplete" >&2
   exit 3
 fi
+endpoint="$(printf '%s' "$runtime_secret_json" | jq -r '.data.MAAS_ENDPOINT | @base64d')"
+model="$(printf '%s' "$runtime_secret_json" | jq -r '.data.MAAS_MODEL | @base64d')"
+api_key="$(printf '%s' "$runtime_secret_json" | jq -r '.data.MAAS_API_KEY | @base64d')"
 
 jq -nc \
   --arg endpoint "${endpoint}/v1" \
