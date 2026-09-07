@@ -1,0 +1,91 @@
+{
+  "schema": "launchpad.redhat.com/remediation-verification/v1",
+  "evidence_id": "REMEDIATE-SEPTEMBER-17-AGENTIC-TRIO-RUN02-20260906",
+  "generated_at": "2026-09-07T04:15:27Z",
+  "cluster_id": "arena",
+  "failed_run_evidence": "evidence/september-17-agentic-trio-run02-red-2026-09-06.json",
+  "source_revisions": {
+    "workshop_recovery": "1f1e25a71a7ebb516eb8472f7d16a4bd2e3e0c0d",
+    "model_health_normalization": "7ed3c71bea7a4cdc8f6fd77190957b23bd0702d7",
+    "deployed_gitops_revision": "ea273165958567ada58f53e2336232c3f8436fd6"
+  },
+  "backend_image": {
+    "build": "launchpad-backend-110",
+    "source_revision": "7ed3c71bea7a4cdc8f6fd77190957b23bd0702d7",
+    "digest": "sha256:a35dcbd4376c9bbc225504479c8880895f8b3730af860d9aa796d94d59cdd8dd"
+  },
+  "gitops": {
+    "application": "launchpad-arena",
+    "sync": "Synced",
+    "health": "Healthy",
+    "operation": "Succeeded"
+  },
+  "backend_runtime": {
+    "replicas": 1,
+    "rollout_strategy": "Recreate",
+    "node": "gnr2.fm2aihpcsed.com",
+    "memory_request": "1Gi",
+    "memory_limit": "2Gi",
+    "pod_ready": true,
+    "restart_count": 0
+  },
+  "detailed_health": {
+    "overall": "ok",
+    "database": "pass",
+    "kubernetes": "pass",
+    "catalog": "pass",
+    "model_api": "pass",
+    "models_visible_through_configured_endpoint": 1,
+    "active_sessions": 0
+  },
+  "reconciler": {
+    "proof_job": "launchpad-resource-reconciler-run02-final",
+    "node": "gnr2.fm2aihpcsed.com",
+    "exit_code": 0,
+    "database_reachable": true,
+    "sessions_reconciled": 0,
+    "late_workshop_sessions_reclaimed": 0,
+    "orphan_namespaces_deleted": 0,
+    "errors": []
+  },
+  "run02_residue": {
+    "workshop_ids": [
+      "2b005a29-220c-439f-a219-b8db05edcb2d",
+      "4e3b2e5f-8987-42a1-943f-aa3d36aebdea"
+    ],
+    "remaining_namespaces": 0,
+    "remaining_argocd_applications": 0
+  },
+  "test_evidence": {
+    "methodologies": [
+      "TDD",
+      "EDD",
+      "CDD",
+      "BDD",
+      "CBT"
+    ],
+    "non_local_suite": {
+      "passed": 1139,
+      "deselected_local": 13,
+      "failed": 0
+    },
+    "hardcoded_secret_hook": "pass"
+  },
+  "verified_fixes": [
+    "late seat workers consult persisted workshop stop state",
+    "late unlinked sessions are reclaimed instead of published",
+    "completed-workshop active sessions are reconciled",
+    "configured PostgreSQL connection and lifecycle write failures fail closed",
+    "backend replacements do not overlap",
+    "resource reconciler is admitted by the PostgreSQL ingress policy",
+    "OpenAI-compatible health and inventory URLs do not duplicate /v1"
+  ],
+  "remaining_blocker": {
+    "component": "rhgnr1",
+    "reason": "run 02 observed nondeterministic Showroom startup while Kubernetes still reported the worker Ready",
+    "required_proof": "successful workload-start admission canary and sustained node stability before run 03"
+  },
+  "run02_status_after_remediation": "RED",
+  "remediation_status": "GREEN-live",
+  "release_decision": "not-certified-until-run03"
+}

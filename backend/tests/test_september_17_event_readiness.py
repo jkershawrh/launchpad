@@ -106,6 +106,7 @@ def test_event_runbook_names_every_gate_and_does_not_overclaim_capacity():
         "Exact-trio run 01 — RED",
         "Exact-trio run 02 — RED",
         "evidence/september-17-agentic-trio-run02-red-2026-09-06.json",
+        "evidence/september-17-agentic-trio-run02-remediation-2026-09-06.json",
     ):
         assert value in runbook
 

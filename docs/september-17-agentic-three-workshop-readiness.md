@@ -139,6 +139,14 @@ and reconciler NetworkPolicy label. Then prove the scheduled reconciler can
 reach PostgreSQL and repair or exclude `rhgnr1` using a workload-start canary;
 the Kubernetes Ready condition alone did not predict usable seat startup.
 
+The run-02 remediation was deployed and verified separately at Argo revision
+`ea27316` with backend build 110. Detailed database, Kubernetes, catalog, and
+model API health passed; a fresh reconciler job reached PostgreSQL with zero
+errors; and both run-02 workshop selectors still returned zero namespaces and
+zero Argo CD Applications. This makes the remediation **GREEN-live**, while
+the failed run and the event release decision remain RED pending run 03. See
+`evidence/september-17-agentic-trio-run02-remediation-2026-09-06.json`.
+
 ## Exact-trio GREEN-live procedure
 
 1. Record commit SHA, catalog versions, image digests, model routes, Arena node
