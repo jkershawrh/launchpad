@@ -1,0 +1,92 @@
+{
+  "schema": "launchpad.redhat.com/control-plane-ownership-recovery/v1",
+  "evidence_id": "SEPTEMBER-17-ARENA-CONTROL-PLANE-OWNERSHIP-RECOVERY-20260907",
+  "observed_at": "2026-09-07T21:54:57Z",
+  "cluster_ref": "arena",
+  "control_plane_id": "arena-primary",
+  "git_commit": "9007c3a56cd525e61649616ad663cd7d508be4ed",
+  "backend_image_digest": "sha256:acb378de9ef266631fb71f4602b034d0e4446d21421175268be8998d34e66121",
+  "scope": "one-seat ownership, reconciliation, and cleanup recovery gate",
+  "result": "GREEN-live",
+  "workshop": {
+    "workshop_id": "5b6a2fba-f06e-43f1-b98d-9cad74c9b638",
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "seats": 1,
+    "cluster_ref": "arena",
+    "created_at": "2026-09-07T21:29:02.116755Z",
+    "final_status": "completed"
+  },
+  "session": {
+    "session_id": "f7ce6a5d-67b9-4e02-8684-2e95497c01c6",
+    "seat_id": "db5462e8-d6cd-4bc8-8891-01e0c57f1c6c",
+    "namespace": "launchpad-smoke-test-tenant-intel-llm-cpu-serv-db5462",
+    "ready_at": "2026-09-07T21:29:35.785155Z",
+    "reclaimed_at": "2026-09-07T21:54:23.938227Z",
+    "final_status": "reclaimed"
+  },
+  "ownership_labels_observed_before_reconcile": {
+    "app.kubernetes.io/managed-by": "launchpad",
+    "launchpad.redhat.com/control-plane-id": "arena-primary",
+    "launchpad.redhat.com/cluster-id": "arena",
+    "launchpad.redhat.com/workshop-id": "5b6a2fba-f06e-43f1-b98d-9cad74c9b638",
+    "launchpad.redhat.com/session-id": "f7ce6a5d-67b9-4e02-8684-2e95497c01c6",
+    "launchpad.redhat.com/seat-id": "db5462e8-d6cd-4bc8-8891-01e0c57f1c6c"
+  },
+  "reconciliation": {
+    "sessions_reconciled": 0,
+    "late_workshop_sessions_reclaimed": [],
+    "orphan_namespaces_deleted": [],
+    "errors": [],
+    "active_namespace_survived": true
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "seat_status": "reclaimed",
+    "session_status": "reclaimed",
+    "remaining_workshop_namespaces": 0,
+    "remaining_session_namespaces": 0,
+    "remaining_workshop_argocd_applications": 0,
+    "credentials_scrubbed_event_recorded": true
+  },
+  "service_account_boundary": {
+    "arena_runtime_identity": "system:serviceaccount:partner-ai-launchpad:launchpad-backend",
+    "stale_remote_identity_revoked": "system:serviceaccount:partner-ai-launchpad:launchpad-provisioner",
+    "per_seat_infrastructure_service_accounts_required": false,
+    "per_workshop_infrastructure_service_accounts_required": false,
+    "remote_identity_policy": "one distinct least-privilege provisioner credential per remote execution cluster"
+  },
+  "red_green_matrix": [
+    {
+      "requirement": "reconciliation is scoped to one persisted control-plane owner",
+      "red": "evidence/runs/september-17-arena-split-brain-reconciler-20260907-red.json",
+      "green_local": "backend/tests/test_resource_reconciliation.py",
+      "green_integration": "owner-labeled active namespace survived the deployed reconciler",
+      "green_live": true
+    },
+    {
+      "requirement": "normal reclaim targets the persisted execution cluster",
+      "red": "cross-control-plane deletion was possible before ownership enforcement",
+      "green_local": "backend/tests/test_multicluster_reconciliation.py",
+      "green_integration": "Arena session transitioned ready to reclaimed through the Arena backend",
+      "green_live": true
+    },
+    {
+      "requirement": "cleanup leaves no managed workload residue",
+      "red": "historical split-brain incident required containment",
+      "green_local": "backend/tests/test_resource_reconciliation.py",
+      "green_integration": "zero namespace and Argo application selectors after reclaim",
+      "green_live": true
+    }
+  ],
+  "release_boundary": {
+    "ownership_recovery_gate": "GREEN-live",
+    "september_17_three_workshop_release": "RED",
+    "remaining_gates": [
+      "rhgnr1 sustained workload-start stability",
+      "Brutus Agent 201 repeat and soak",
+      "exact staggered 25 plus 25 plus 25 retained rehearsal",
+      "75 concurrent participant journeys and zero-residue bulk reclaim"
+    ]
+  },
+  "contains_plaintext_credentials": false
+}
