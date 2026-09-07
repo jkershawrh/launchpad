@@ -1,0 +1,132 @@
+{
+  "schema": "launchpad.redhat.com/workshop-certification/v1",
+  "evidence_id": "EDD-SEPT17-ARENA-RETAINED-25X2-CLEANUP-20260907-GREEN",
+  "captured_at": "2026-09-07T20:58:40Z",
+  "source_revision": "b8ac1de88364a3ae2d032a8b5db855c1ab0d4f53",
+  "backend_image": "sha256:1add5aa235fa06cbc310ba870515d2c2b0c3141f1c2174a16dd8a7baeb691245",
+  "cluster_ref": "arena",
+  "result": "GREEN-live-cleanup-only",
+  "scope": "sequential-reclaim-after-internal-retained-multi-agent-25-plus-cpu-serving-25-red-run",
+  "workshops": {
+    "cpu_serving": {
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "workshop_id": "a6571182-51a1-4b78-bc55-fa2266f3e53a",
+      "reclaim_started_at": "2026-09-07T20:52:34.992407Z",
+      "completed_at": "2026-09-07T20:53:37.972370Z",
+      "elapsed_seconds": 63,
+      "status": "completed",
+      "seat_statuses": {
+        "reclaimed": 25
+      },
+      "error": null
+    },
+    "multi_agent": {
+      "catalog_item_id": "multi-agent-quickstart",
+      "workshop_id": "736a4a17-326c-4761-a49c-2281b6dfdb3c",
+      "reclaim_started_at": "2026-09-07T20:54:29.041828Z",
+      "completed_at": "2026-09-07T20:57:13.855974Z",
+      "elapsed_seconds": 165,
+      "status": "completed",
+      "seat_statuses": {
+        "reclaimed": 25
+      },
+      "error": null
+    }
+  },
+  "cleanup_observation": {
+    "reclaim_order": [
+      "cpu_serving",
+      "multi_agent"
+    ],
+    "normal_lifecycle_path_used": true,
+    "forced_namespace_finalizer_removal_used": false,
+    "workshop_sessions_expected": 50,
+    "workshop_sessions_found": 50,
+    "workshop_sessions_reclaimed": 50,
+    "credential_residue_count": 0,
+    "arena_session_status_counts": {
+      "reclaimed": 818
+    },
+    "active_session_count": 0,
+    "active_namespace_records": 0,
+    "live_managed_namespaces": 0,
+    "orphan_live_namespaces": [],
+    "missing_active_namespaces": [],
+    "generated_argocd_applications": 0,
+    "permanent_control_applications": [
+      "launchpad-arena"
+    ],
+    "cleanup_within_ten_minutes": true
+  },
+  "post_cleanup_cluster_snapshot": {
+    "nodes_total": 5,
+    "nodes_ready": 5,
+    "not_ready_nodes": [],
+    "cluster_operators_total": 34,
+    "cluster_operators_available": 34,
+    "degraded_operators": [],
+    "unavailable_operators": [],
+    "launchpad_control_application": {
+      "name": "launchpad-arena",
+      "sync": "Synced",
+      "health": "Healthy",
+      "revision": "b8ac1de88364a3ae2d032a8b5db855c1ab0d4f53"
+    },
+    "note": "This point-in-time healthy snapshot does not satisfy the sustained node-stability certification gate."
+  },
+  "red_green_matrix": [
+    {
+      "id": "SEPT17-25X2-PROVISION-RECOVERY-001",
+      "status": "GREEN-live",
+      "evidence": "The retained CPU workshop previously recovered from 16/25 to 25/25 without replacing ready seats."
+    },
+    {
+      "id": "SEPT17-25X2-PARTICIPANT-001",
+      "status": "RED-live",
+      "evidence": "The first 25-way participant burst completed 22/25 grounded journeys and the immediate repeat failed 25/25."
+    },
+    {
+      "id": "SEPT17-25X2-NODE-STABILITY-001",
+      "status": "RED-live",
+      "evidence": "rhgnr1 left Ready twice during the retained run; a later point-in-time healthy snapshot does not close this gate."
+    },
+    {
+      "id": "SEPT17-25X2-LIFECYCLE-001",
+      "status": "RED-live",
+      "evidence": "The namespace deletion initiator observed during the run remains unconfirmed."
+    },
+    {
+      "id": "SEPT17-25X2-CLEANUP-001",
+      "status": "GREEN-live",
+      "red": "Normal sequential reclaim and zero-residue proof had not run after the failure snapshot.",
+      "green_local": "An evidence contract first failed because this cleanup manifest did not exist.",
+      "green_integration": "Both workshop deletion requests were accepted by the deployed Arena backend and reconciled all 50 session records.",
+      "green_live": "Both workshops completed, 50/50 seats were reclaimed, credentials were scrubbed, and zero generated namespaces or applications remained."
+    }
+  ],
+  "proof_strategy": {
+    "tdd": "The cleanup evidence contract was executed RED with FileNotFoundError before this manifest was added.",
+    "edd": "This immutable manifest records source and image identity, exact workshop IDs and lifecycle times, terminal seat counts, credential scrubbing, and live zero-residue observations.",
+    "cdd": "Workshop DELETE preserved the existing asynchronous reclaim contract and reached completed with no error for both orders.",
+    "bdd": "Given two retained 25-seat workshops, when the owner reclaims CPU Serving and then Multi-Agent, then every seat is reclaimed and no generated namespace or application remains.",
+    "cbt": "Database lifecycle state, credential cleanup, namespace cleanup, Argo application cleanup, node readiness, and operator readiness were checked independently."
+  },
+  "rubric": {
+    "provisioning_recovery": 20,
+    "placement_and_capacity": 15,
+    "participant_functionality": 10,
+    "node_and_network_stability": 0,
+    "lifecycle_consistency": 0,
+    "cleanup_and_repeatability": 15,
+    "score": 60,
+    "required": 100,
+    "release_gate": "failed"
+  },
+  "remaining_blockers": {
+    "namespace_deletion_initiator_confirmed": false,
+    "sustained_arena_node_stability_proven": false,
+    "retained_25_plus_25_participant_burst_proven": false,
+    "one_full_25_seat_workshop_per_stable_execution_cluster_recommended": true
+  },
+  "contains_plaintext_credentials": false
+}
