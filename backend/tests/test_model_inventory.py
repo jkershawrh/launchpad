@@ -24,6 +24,7 @@ def test_inventory_distinguishes_running_exposed_and_stopped(apps_api, http_get)
 
     result = get_model_inventory(PORTFOLIO, "http://litellm", "secret")
 
+    assert http_get.call_args.args[0] == "http://litellm/v1/models"
     assert result["summary"] == {"configured": 2, "running": 1, "exposed": 1, "healthy": 1}
     assert result["models"][0]["status"] == "healthy"
     assert result["models"][0]["litellm_exposed"] is True
@@ -44,3 +45,17 @@ def test_running_model_not_exposed_is_reported_accurately(apps_api, http_get):
 
     assert result["models"][0]["status"] == "running_not_exposed"
     assert result["summary"]["healthy"] == 0
+
+
+@patch("app.services.model_inventory.httpx.get")
+@patch("app.services.model_inventory._apps_api")
+def test_inventory_does_not_duplicate_v1_in_api_base(apps_api, http_get):
+    workload = MagicMock()
+    workload.spec.replicas = 1
+    workload.status.ready_replicas = 1
+    apps_api.return_value.read_namespaced_deployment.return_value = workload
+    http_get.return_value.json.return_value = {"data": [{"id": "smollm3"}]}
+
+    get_model_inventory(PORTFOLIO[:1], "http://model-api:8080/v1")
+
+    assert http_get.call_args.args[0] == "http://model-api:8080/v1/models"

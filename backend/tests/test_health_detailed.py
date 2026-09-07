@@ -55,6 +55,31 @@ class TestOkInMockMode:
 
 
 class TestLiteLLMHealth:
+    def test_does_not_duplicate_v1_in_configured_api_base(self):
+        from app.services.health import _check_litellm
+
+        models = MagicMock()
+        models.json.return_value = {"data": [{"id": "granite"}]}
+        completion = MagicMock()
+        completion.json.return_value = {
+            "choices": [{"message": {"content": "OK"}}]
+        }
+        with (
+            patch("app.services.health.httpx.get", return_value=models) as get,
+            patch(
+                "app.services.health.httpx.post", return_value=completion
+            ) as post,
+        ):
+            result = _check_litellm(
+                "http://model-api:8080/v1", "", "granite"
+            )
+
+        assert result["status"] == "pass"
+        assert get.call_args.args[0] == "http://model-api:8080/v1/models"
+        assert post.call_args.args[0] == (
+            "http://model-api:8080/v1/chat/completions"
+        )
+
     def test_requires_authenticated_models(self):
         from app.services.health import _check_litellm
 

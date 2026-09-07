@@ -8,6 +8,8 @@ from typing import Any, Dict
 
 import httpx
 
+from app.integrations.openai_compat import openai_api_url
+
 logger = logging.getLogger("launchpad.health")
 
 _start_time = time.monotonic()
@@ -88,7 +90,7 @@ def _check_litellm(api_base: str, api_key: str = "", canary_model: str = "") -> 
     try:
         headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         resp = httpx.get(
-            f"{api_base.rstrip('/')}/v1/models", headers=headers, timeout=5
+            openai_api_url(api_base, "models"), headers=headers, timeout=5
         )
         resp.raise_for_status()
         models = resp.json().get("data", [])
@@ -97,7 +99,7 @@ def _check_litellm(api_base: str, api_key: str = "", canary_model: str = "") -> 
         result: Dict[str, Any] = {"status": "pass", "models_available": len(models)}
         if canary_model:
             canary = httpx.post(
-                f"{api_base.rstrip('/')}/v1/chat/completions",
+                openai_api_url(api_base, "chat/completions"),
                 headers=headers,
                 json={
                     "model": canary_model,

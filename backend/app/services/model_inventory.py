@@ -5,6 +5,8 @@ from typing import Any, Dict, List
 
 import httpx
 
+from app.integrations.openai_compat import openai_api_url
+
 
 DEFAULT_MODEL_PORTFOLIO: List[Dict[str, str]] = [
     {"id": "smollm2-360m", "display_name": "SmolLM2 360M", "namespace": "intel-inference", "workload": "llama-smollm2-360m", "hardware": "Intel Xeon", "use_case": "Fast lightweight inference"},
@@ -33,7 +35,9 @@ def _exposed_models(api_base: str, api_key: str) -> set[str]:
     if not api_base:
         return set()
     headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
-    response = httpx.get(f"{api_base.rstrip('/')}/v1/models", headers=headers, timeout=5)
+    response = httpx.get(
+        openai_api_url(api_base, "models"), headers=headers, timeout=5
+    )
     response.raise_for_status()
     return {item["id"] for item in response.json().get("data", []) if item.get("id")}
 
