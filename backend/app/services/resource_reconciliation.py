@@ -86,6 +86,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
     report: dict[str, Any] = {
         "sessions_reconciled": 0,
         "workshops_reconciled": [],
+        "workshops_reclaiming": [],
         "late_workshop_sessions_reclaimed": [],
         "orphan_namespaces_deleted": [],
         "errors": [],
@@ -206,30 +207,69 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
                 )
                 for seat in workshop.seats
             )
-            if not all_seats_reclaimed:
-                continue
-            updated = workshop.model_copy(
-                update={
-                    "status": WorkshopStatus.COMPLETED,
-                    "completed_at": datetime.utcnow(),
-                    "seats": [
-                        seat.model_copy(
-                            update={
-                                "status": WorkshopSeatStatus.RECLAIMED,
-                                "error": None,
-                                "updated_at": datetime.utcnow(),
-                            }
-                        )
-                        for seat in workshop.seats
-                    ],
+            if all_seats_reclaimed:
+                updated = workshop.model_copy(
+                    update={
+                        "status": WorkshopStatus.COMPLETED,
+                        "completed_at": datetime.utcnow(),
+                        "seats": [
+                            seat.model_copy(
+                                update={
+                                    "status": WorkshopSeatStatus.RECLAIMED,
+                                    "error": None,
+                                    "updated_at": datetime.utcnow(),
+                                }
+                            )
+                            for seat in workshop.seats
+                        ],
+                    }
+                )
+                report_key = "workshops_reconciled"
+            else:
+                cleanup_states = {
+                    SessionStatus.EXPIRED,
+                    SessionStatus.RESETTING,
+                    SessionStatus.RECLAIMED,
+                    SessionStatus.CLEANUP_FAILED,
                 }
-            )
+                if not any(
+                    session is not None and session.status in cleanup_states
+                    for session in seat_sessions.values()
+                ):
+                    continue
+
+                def reconciled_seat(seat):
+                    session = seat_sessions.get(seat.session_id)
+                    if not session:
+                        return seat
+                    if session.status == SessionStatus.RECLAIMED:
+                        status = WorkshopSeatStatus.RECLAIMED
+                    elif session.status == SessionStatus.CLEANUP_FAILED:
+                        status = WorkshopSeatStatus.FAILED
+                    elif session.status in {
+                        SessionStatus.EXPIRED,
+                        SessionStatus.RESETTING,
+                    }:
+                        status = WorkshopSeatStatus.RECLAIMING
+                    else:
+                        return seat
+                    return seat.model_copy(
+                        update={"status": status, "updated_at": datetime.utcnow()}
+                    )
+
+                updated = workshop.model_copy(
+                    update={
+                        "status": WorkshopStatus.RECLAIMING,
+                        "seats": [reconciled_seat(seat) for seat in workshop.seats],
+                    }
+                )
+                report_key = "workshops_reclaiming"
             try:
                 service._save_workshop(updated)
                 access = getattr(service, "public_access_service", None)
                 if access:
                     access.expire_order(workshop.workshop_id)
-                report["workshops_reconciled"].append(
+                report[report_key].append(
                     {
                         "workshop_id": workshop.workshop_id,
                         "cluster_id": workshop.cluster_ref,

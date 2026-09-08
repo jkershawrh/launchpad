@@ -36,6 +36,68 @@ def _provision(svc, **req_kw):
 
 class TestTTLEnforcement:
 
+    def test_workshop_seats_share_one_order_expiration(self):
+        svc = _svc()
+        workshop = svc.provision_workshop(
+            Workshop(
+                tenant_id="ttl-workshop",
+                catalog_item_id="inference-overdrive-quickstart",
+                num_users=2,
+                ttl="1h",
+            )
+        )
+
+        expirations = {
+            svc.get_session(session_id).expires_at
+            for session_id in workshop.session_ids
+        }
+
+        assert workshop.status == WorkshopStatus.READY
+        assert len(expirations) == 1
+        assert expirations == {workshop.started_at + timedelta(hours=1)}
+
+    def test_enforce_ttl_reclaims_expired_workshop_as_one_order(self):
+        svc = _svc()
+        workshop = svc.provision_workshop(
+            Workshop(
+                tenant_id="ttl-workshop",
+                catalog_item_id="inference-overdrive-quickstart",
+                num_users=2,
+                ttl="1h",
+            )
+        )
+        for session_id in workshop.session_ids:
+            session = svc.get_session(session_id)
+            svc._sessions[session_id] = session.model_copy(
+                update={"expires_at": datetime.utcnow() - timedelta(minutes=1)}
+            )
+
+        observed_parent_states = []
+        original = svc._reclaim_workshop_session
+
+        def tracked_reclaim(session_id):
+            observed_parent_states.append(
+                svc.get_workshop(workshop.workshop_id).status
+            )
+            return original(session_id)
+
+        tracked = MagicMock(side_effect=tracked_reclaim)
+        svc._reclaim_workshop_session = tracked
+        reclaimed_count = svc.enforce_ttl()
+
+        updated = svc.get_workshop(workshop.workshop_id)
+        assert reclaimed_count == 2
+        assert tracked.call_count == 2
+        assert observed_parent_states == [
+            WorkshopStatus.RECLAIMING,
+            WorkshopStatus.RECLAIMING,
+        ]
+        assert updated.status == WorkshopStatus.COMPLETED
+        assert all(
+            svc.get_session(session_id).status == SessionStatus.RECLAIMED
+            for session_id in updated.session_ids
+        )
+
     def test_enforce_ttl_reclaims_expired_session(self):
         """RED: expired session should be auto-reclaimed."""
         svc = _svc()

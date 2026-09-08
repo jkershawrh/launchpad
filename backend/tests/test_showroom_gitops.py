@@ -103,6 +103,23 @@ def test_builds_official_chart_application_with_personalized_git_content():
     assert any(tab.get("name") == "RAG Workspace" for tab in ui["tabs"])
 
 
+def test_showroom_application_uses_background_cascade_for_bounded_reclaim():
+    app = build_showroom_application(
+        ShowroomSeat(
+            namespace="launchpad-seat-cleanup-1",
+            workshop_id="workshop-cleanup-1",
+            seat_id="seat-cleanup-1",
+            participant_id="participant-cleanup-1",
+            workspace_url="https://workspace.example.com",
+            content_repo_url="https://github.com/rhpds/launchpad.git",
+            content_ref="a" * 40,
+            apps_domain="apps.arena.example.com",
+        )
+    )
+
+    assert app["metadata"]["finalizers"] == ["resources-finalizer.argocd.argoproj.io/background"]
+
+
 def test_operator_workshop_places_namespace_console_inside_showroom():
     app = build_showroom_application(
         ShowroomSeat(

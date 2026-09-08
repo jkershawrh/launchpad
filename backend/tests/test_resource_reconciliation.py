@@ -1,7 +1,12 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from app.domain.enums import CatalogCategory, SessionStatus, WorkshopStatus
+from app.domain.enums import (
+    CatalogCategory,
+    SessionStatus,
+    WorkshopSeatStatus,
+    WorkshopStatus,
+)
 from app.domain.models import LabRequest, Workshop, WorkshopSeat
 from app.services.provisioning import ProvisioningService
 
@@ -264,3 +269,68 @@ def test_reconcile_does_not_complete_workshop_with_an_active_session(lab_session
 
     service._save_workshop.assert_not_called()
     assert report["workshops_reconciled"] == []
+
+
+def test_reconcile_marks_partially_reclaimed_legacy_workshop_reclaiming(
+    lab_session,
+):
+    workshop_id = "legacy-partial-ttl-workshop"
+    reclaimed = lab_session.model_copy(
+        update={
+            "session_id": "reclaimed-seat-session",
+            "status": SessionStatus.RECLAIMED,
+            "maas_api_key": None,
+            "resources": {},
+        }
+    )
+    active = lab_session.model_copy(
+        update={"session_id": "active-seat-session", "status": SessionStatus.READY}
+    )
+    workshop = Workshop(
+        workshop_id=workshop_id,
+        tenant_id=lab_session.tenant_id,
+        catalog_item_id=lab_session.catalog_item_id,
+        num_users=2,
+        status=WorkshopStatus.READY,
+        session_ids=[reclaimed.session_id, active.session_id],
+        seats=[
+            WorkshopSeat(
+                workshop_id=workshop_id,
+                seat_number=1,
+                status=WorkshopSeatStatus.READY,
+                session_id=reclaimed.session_id,
+            ),
+            WorkshopSeat(
+                workshop_id=workshop_id,
+                seat_number=2,
+                status=WorkshopSeatStatus.READY,
+                session_id=active.session_id,
+            ),
+        ],
+    )
+    access = MagicMock()
+    service = SimpleNamespace(
+        _sessions={reclaimed.session_id: reclaimed, active.session_id: active},
+        _workshops={workshop_id: workshop},
+        cleanup=None,
+        public_access_service=access,
+        _save_session=MagicMock(),
+        _save_workshop=MagicMock(),
+    )
+
+    from app.services.resource_reconciliation import reconcile_resources
+
+    report = reconcile_resources(service, delete_orphans=False)
+
+    saved = service._save_workshop.call_args.args[0]
+    assert saved.status == WorkshopStatus.RECLAIMING
+    assert saved.seats[0].status == WorkshopSeatStatus.RECLAIMED
+    assert saved.seats[1].status == WorkshopSeatStatus.READY
+    assert report["workshops_reclaiming"] == [
+        {
+            "workshop_id": workshop_id,
+            "cluster_id": None,
+            "session_count": 2,
+        }
+    ]
+    access.expire_order.assert_called_once_with(workshop_id)

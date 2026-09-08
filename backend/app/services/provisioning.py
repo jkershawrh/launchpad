@@ -1964,7 +1964,21 @@ class ProvisioningService:
                     "error": "seat validation failed",
                     "updated_at": datetime.utcnow(),
                 }), None
+            # A workshop is one order with one lifecycle boundary.  Computing
+            # expiry independently in provision() made early seats disappear
+            # while later seats from the same order still appeared ready.
+            # Anchor every ephemeral seat to the persisted workshop start so
+            # TTL enforcement can reclaim the order atomically.
+            order_expires_at = (
+                workshop.started_at + parse_ttl(workshop.ttl)
+                if (
+                    session.expires_at is not None
+                    and workshop.started_at is not None
+                )
+                else session.expires_at
+            )
             session = session.model_copy(update={
+                "expires_at": order_expires_at,
                 "metadata": {
                     **session.metadata,
                     "purpose": workshop.purpose,
@@ -2651,20 +2665,78 @@ class ProvisioningService:
         now = datetime.utcnow()
         reclaimable = {"ready", "active"}
         reclaimed_count = 0
-        for session in list(self._sessions.values()):
-            if session.status.value not in reclaimable:
-                continue
-            if session.expires_at is None:
-                continue
-            if session.expires_at < now:
+        expired = [
+            session
+            for session in list(self._sessions.values())
+            if session.status.value in reclaimable
+            and session.expires_at is not None
+            and session.expires_at < now
+        ]
+        workshop_expirations: dict[str, list[LabSession]] = {}
+        standalone_expirations: list[LabSession] = []
+        terminal_workshop_states = {
+            WorkshopStatus.COMPLETED,
+            WorkshopStatus.COMPLETED_WITH_ERRORS,
+            WorkshopStatus.FAILED,
+        }
+        for session in expired:
+            request = self._requests.get(session.request_id)
+            workshop_id = (
+                request.metadata.get("workshop_id") if request else None
+            )
+            workshop = self._workshops.get(workshop_id) if workshop_id else None
+            if workshop and workshop.status not in terminal_workshop_states:
+                workshop_expirations.setdefault(workshop.workshop_id, []).append(
+                    session
+                )
+            else:
+                standalone_expirations.append(session)
+
+        # A workshop's first expired seat represents expiry of the order.  The
+        # order-level expiry written during provisioning makes those timestamps
+        # identical for new workshops; grouping also repairs older staggered
+        # records without leaving the parent falsely marked READY.
+        for workshop_id in workshop_expirations:
+            workshop = self._workshops[workshop_id]
+            active_session_ids = {
+                session_id
+                for session_id in workshop.session_ids
+                if (session := self._sessions.get(session_id)) is not None
+                and session.status.value in reclaimable
+            }
+            try:
+                self.queue_workshop_reclaim(workshop_id)
+                self.reclaim_workshop(workshop_id)
+            except Exception as exc:
+                logger.error(
+                    "TTL reclaim failed for workshop %s: %s",
+                    workshop_id,
+                    exc,
+                )
+            reclaimed_count += sum(
+                1
+                for session_id in active_session_ids
+                if (session := self._sessions.get(session_id)) is not None
+                and session.status == SessionStatus.RECLAIMED
+            )
+
+        for session in standalone_expirations:
+            try:
+                self.reclaim_session(session.session_id)
+                reclaimed_count += 1
+            except Exception as e:
+                logger.warning(
+                    "TTL reclaim failed for session %s, attempting force-reclaim: %s",
+                    session.session_id,
+                    e,
+                )
                 try:
-                    self.reclaim_session(session.session_id)
+                    self.force_reclaim_session(session.session_id)
                     reclaimed_count += 1
-                except Exception as e:
-                    logger.warning("TTL reclaim failed for session %s, attempting force-reclaim: %s", session.session_id, e)
-                    try:
-                        self.force_reclaim_session(session.session_id)
-                        reclaimed_count += 1
-                    except Exception as e2:
-                        logger.error("Force-reclaim also failed for session %s: %s", session.session_id, e2)
+                except Exception as e2:
+                    logger.error(
+                        "Force-reclaim also failed for session %s: %s",
+                        session.session_id,
+                        e2,
+                    )
         return reclaimed_count
