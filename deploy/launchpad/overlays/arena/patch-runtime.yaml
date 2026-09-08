@@ -94,7 +94,9 @@ kind: Deployment
 metadata:
   name: admin
 spec:
-  replicas: 2
+  # Arena currently has one schedulable worker. Keep the pilot admin service
+  # available on gnr2 without blocking rollouts on a hard topology spread.
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
