@@ -16,12 +16,15 @@ export default function Tenants() {
     default_ttl: '8h',
   });
   const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
 
   const loadTenants = () => {
-    api.listTenants().then((data) => {
-      setTenants(data);
-      setLoading(false);
-    });
+    return api.listTenants()
+      .then(setTenants)
+      .catch((err: unknown) => {
+        setLoadError(err instanceof Error ? err.message : 'Failed to load tenants');
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => { loadTenants(); }, []);
@@ -40,6 +43,7 @@ export default function Tenants() {
   };
 
   if (loading) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#6A6E73]">Loading...</div>;
+  if (loadError) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#C9190B]">Unable to load tenants: {loadError}</div>;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">

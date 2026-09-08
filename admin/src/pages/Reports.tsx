@@ -6,22 +6,23 @@ export default function Reports() {
   const [sessions, setSessions] = useState<LabSession[]>([]);
   const [showbacks, setShowbacks] = useState<Record<string, ShowbackRecord>>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
-    api.listSessions().then(async (data) => {
-      setSessions(data);
-      const records: Record<string, ShowbackRecord> = {};
-      for (const s of data) {
-        try {
-          const sb = await api.getShowback(s.session_id);
-          records[s.session_id] = sb;
-        } catch {
-          // skip sessions without showback
-        }
-      }
-      setShowbacks(records);
-      setLoading(false);
-    });
+    api.listSessions(100)
+      .then(async (data) => {
+        setSessions(data);
+        const records: Record<string, ShowbackRecord> = {};
+        const results = await Promise.allSettled(data.map((session) => api.getShowback(session.session_id)));
+        results.forEach((result, index) => {
+          if (result.status === 'fulfilled') records[data[index].session_id] = result.value;
+        });
+        setShowbacks(records);
+      })
+      .catch((err: unknown) => {
+        setLoadError(err instanceof Error ? err.message : 'Failed to load reports');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const tenantSummaries = sessions.reduce<Record<string, {
@@ -44,11 +45,12 @@ export default function Reports() {
   }, {});
 
   if (loading) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#6A6E73]">Loading...</div>;
+  if (loadError) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#C9190B]">Unable to load reports: {loadError}</div>;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       <h1 className="text-3xl font-bold text-[#151515] mb-2">Reports</h1>
-      <p className="text-[#6A6E73] mb-8">Showback and usage reports across tenants.</p>
+      <p className="text-[#6A6E73] mb-8">Showback and usage reports for the 100 most recent sessions.</p>
 
       {Object.keys(tenantSummaries).length === 0 ? (
         <div className="bg-white rounded border border-[#D2D2D2] p-8 text-center text-[#6A6E73]">

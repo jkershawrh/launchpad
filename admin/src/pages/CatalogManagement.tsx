@@ -56,7 +56,8 @@ export default function CatalogManagement() {
   };
 
   useEffect(() => {
-    fetchCatalog();
+    const timer = window.setTimeout(() => void fetchCatalog(), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const handleAdd = async (e: React.FormEvent) => {

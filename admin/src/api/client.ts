@@ -51,7 +51,9 @@ export const api = {
     request<LabSession>(`/lab-requests/${requestId}/provision`, { method: 'POST' }),
 
   // Lab Sessions
-  listSessions: () => request<LabSession[]>('/lab-sessions'),
+  listSessions: (limit?: number) => request<LabSession[]>(
+    `/lab-sessions?newest_first=true${limit ? `&limit=${limit}` : ''}`,
+  ),
   getSession: (id: string) => request<LabSession>(`/lab-sessions/${id}`),
   validateSession: (id: string) =>
     request<LabSession>(`/lab-sessions/${id}/validate`, { method: 'POST' }),

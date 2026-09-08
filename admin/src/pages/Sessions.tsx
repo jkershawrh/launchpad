@@ -7,18 +7,21 @@ import StatusBadge from '../components/StatusBadge';
 export default function Sessions() {
   const [sessions, setSessions] = useState<LabSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [filter, setFilter] = useState('all');
   const [reclaimingId, setReclaimingId] = useState<string | null>(null);
 
   useEffect(() => {
-    api.listSessions().then((data) => {
-      setSessions(data);
-      setLoading(false);
-    });
+    api.listSessions(100)
+      .then(setSessions)
+      .catch((err: unknown) => {
+        setLoadError(err instanceof Error ? err.message : 'Failed to load sessions');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const refreshSessions = () => {
-    api.listSessions().then((data) => setSessions(data));
+    api.listSessions(100).then((data) => setSessions(data));
   };
 
   const handleForceReclaim = async (sessionId: string) => {
@@ -39,11 +42,12 @@ export default function Sessions() {
     : sessions.filter((s) => s.status === filter);
 
   if (loading) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#6A6E73]">Loading...</div>;
+  if (loadError) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#C9190B]">Unable to load sessions: {loadError}</div>;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       <h1 className="text-3xl font-bold text-[#151515] mb-2">Sessions</h1>
-      <p className="text-[#6A6E73] mb-8">All lab sessions across tenants.</p>
+      <p className="text-[#6A6E73] mb-8">The 100 most recent lab sessions across tenants.</p>
 
       <div className="flex gap-2 mb-6">
         {['all', 'ready', 'active', 'failed', 'reclaimed'].map((f) => (

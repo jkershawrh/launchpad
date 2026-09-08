@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.auth.oauth import User, can_access_tenant, get_current_user
 
@@ -15,13 +15,23 @@ router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/lab-sessio
 
 
 @router.get("", response_model=List[LabSession])
-def list_lab_sessions(user: User = Depends(get_current_user)):
+def list_lab_sessions(
+    limit: int | None = Query(default=None, ge=1, le=500),
+    newest_first: bool = False,
+    user: User = Depends(get_current_user),
+):
     if user.is_admin:
-        return list(provisioning_service._sessions.values())
-    return [
-        s for s in provisioning_service._sessions.values()
-        if can_access_tenant(user, s.tenant_id)
-    ]
+        sessions = list(provisioning_service._sessions.values())
+    else:
+        sessions = [
+            s for s in provisioning_service._sessions.values()
+            if can_access_tenant(user, s.tenant_id)
+        ]
+    if newest_first:
+        sessions.reverse()
+    if limit is not None:
+        sessions = sessions[:limit]
+    return sessions
 
 
 @router.get("/{session_id}", response_model=LabSession)

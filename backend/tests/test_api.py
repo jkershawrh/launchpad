@@ -179,6 +179,21 @@ def test_api_can_list_sessions(client):
     assert len(resp.json()) == 1
 
 
+def test_api_can_bound_session_list_newest_first(client):
+    session_ids = []
+    for index in range(3):
+        payload = {**LAB_REQUEST_PAYLOAD, "requester_id": f"bounded-list-{index}"}
+        request_id = client.post("/api/v1/lab-requests", json=payload).json()["request_id"]
+        session_ids.append(
+            client.post(f"/api/v1/lab-requests/{request_id}/provision").json()["session_id"]
+        )
+
+    resp = client.get("/api/v1/lab-sessions?limit=2&newest_first=true")
+
+    assert resp.status_code == 200
+    assert [session["session_id"] for session in resp.json()] == list(reversed(session_ids[-2:]))
+
+
 def test_api_can_get_session(client):
     prov = _create_and_provision(client)
     session_id = prov.json()["session_id"]

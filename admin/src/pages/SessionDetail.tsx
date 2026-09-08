@@ -13,6 +13,7 @@ export default function SessionDetail() {
   const [report, setReport] = useState<RepeatabilityReport | null>(null);
   const [decision, setDecision] = useState<OrchestrationDecision | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     if (!sessionId) return;
@@ -21,16 +22,20 @@ export default function SessionDetail() {
       api.getHandoff(sessionId).catch(() => null),
       api.getShowback(sessionId).catch(() => null),
       api.getRepeatabilityReport(sessionId).catch(() => null),
-    ]).then(([s, h, sb, r]) => {
-      setSession(s);
-      setHandoff(h);
-      setShowback(sb);
-      setReport(r);
-      setLoading(false);
-      if (s?.request_id) {
-        api.getDecision(s.request_id).then(setDecision).catch(() => null);
-      }
-    });
+    ])
+      .then(([s, h, sb, r]) => {
+        setSession(s);
+        setHandoff(h);
+        setShowback(sb);
+        setReport(r);
+        if (s?.request_id) {
+          api.getDecision(s.request_id).then(setDecision).catch(() => null);
+        }
+      })
+      .catch((err: unknown) => {
+        setLoadError(err instanceof Error ? err.message : 'Failed to load session');
+      })
+      .finally(() => setLoading(false));
   }, [sessionId]);
 
   const handleAction = async (action: string) => {
@@ -46,6 +51,7 @@ export default function SessionDetail() {
   };
 
   if (loading) return <div className="max-w-4xl mx-auto px-4 py-10 text-[#6A6E73]">Loading session...</div>;
+  if (loadError) return <div className="max-w-4xl mx-auto px-4 py-10 text-red-600">Unable to load session: {loadError}</div>;
   if (!session) return <div className="max-w-4xl mx-auto px-4 py-10 text-red-600">Session not found.</div>;
 
   return (

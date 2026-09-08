@@ -7,12 +7,16 @@ import StatusBadge from '../components/StatusBadge';
 export default function Dashboard() {
   const [sessions, setSessions] = useState<LabSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [loadedAt] = useState(() => Date.now());
 
   useEffect(() => {
-    api.listSessions().then((data) => {
-      setSessions(data);
-      setLoading(false);
-    });
+    api.listSessions(100)
+      .then(setSessions)
+      .catch((err: unknown) => {
+        setLoadError(err instanceof Error ? err.message : 'Failed to load dashboard data');
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const active = sessions.filter((s) => ['ready', 'active', 'validating', 'provisioning'].includes(s.status));
@@ -20,7 +24,7 @@ export default function Dashboard() {
   const persistent = sessions.filter((s) => !s.expires_at && ['ready', 'active'].includes(s.status));
   const expiring = sessions.filter((s) => {
     if (!s.expires_at || s.status === 'reclaimed') return false;
-    return new Date(s.expires_at).getTime() - Date.now() < 2 * 60 * 60 * 1000;
+    return new Date(s.expires_at).getTime() - loadedAt < 2 * 60 * 60 * 1000;
   });
 
   const tenantCounts = sessions.reduce<Record<string, number>>((acc, s) => {
@@ -29,6 +33,7 @@ export default function Dashboard() {
   }, {});
 
   if (loading) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#6A6E73]">Loading...</div>;
+  if (loadError) return <div className="max-w-6xl mx-auto px-6 py-10 text-[#C9190B]">Unable to load dashboard: {loadError}</div>;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
@@ -95,7 +100,7 @@ export default function Dashboard() {
             <tbody>
               {persistent.map((s) => {
                 const uptime = s.started_at
-                  ? `${Math.round((Date.now() - new Date(s.started_at).getTime()) / 3600000)}h`
+                  ? `${Math.round((loadedAt - new Date(s.started_at).getTime()) / 3600000)}h`
                   : '—';
                 return (
                   <tr key={s.session_id} className="border-b border-[#F0F0F0] last:border-0">
@@ -114,7 +119,7 @@ export default function Dashboard() {
                           if (!window.confirm(`Reinitialize ${s.session_id.slice(0, 8)}...? This resets the demo without destroying it.`)) return;
                           try {
                             await api.resetSession(s.session_id);
-                            api.listSessions().then(setSessions);
+                            api.listSessions(100).then(setSessions);
                           } catch (err) {
                             alert(`Failed: ${err}`);
                           }

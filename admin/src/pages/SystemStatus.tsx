@@ -28,9 +28,10 @@ export default function SystemStatus() {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    const initialTimer = window.setTimeout(() => void fetchData(), 0);
     intervalRef.current = setInterval(fetchData, 10000);
     return () => {
+      window.clearTimeout(initialTimer);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [fetchData]);
