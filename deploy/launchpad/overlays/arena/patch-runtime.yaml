@@ -115,7 +115,10 @@ kind: Deployment
 metadata:
   name: public-access-gateway
 spec:
-  replicas: 2
+  # Public access is disabled by default on Arena. The disposable pilot starts
+  # one gateway replica explicitly; production HA belongs with stable ingress
+  # and at least two schedulable worker nodes.
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
