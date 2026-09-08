@@ -23,7 +23,7 @@ def test_multi_agent_quickstart_is_active_for_internal_event_orders():
     assert catalog == build_catalog_item(intake)
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert catalog["display_name"] == "Build Multi-Agent AI Systems with Open Protocols"
-    assert catalog["version"] == "0.2.6"
+    assert catalog["version"] == "0.2.7"
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
     assert catalog["metadata"]["activation_blockers"] == []
