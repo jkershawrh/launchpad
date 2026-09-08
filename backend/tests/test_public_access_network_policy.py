@@ -56,3 +56,27 @@ def test_arena_public_gateway_validates_the_stable_keycloak_issuer():
     assert env["OAUTH2_PROXY_OIDC_ISSUER_URL"] == (
         "https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public"
     )
+
+
+def test_arena_pilot_accepts_the_internal_ingress_certificate_chain():
+    rendered = subprocess.run(
+        ["oc", "kustomize", str(ARENA_OVERLAY)],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    resources = list(yaml.safe_load_all(rendered))
+    deployment = next(
+        item
+        for item in resources
+        if item.get("kind") == "Deployment"
+        and item["metadata"]["name"] == "public-access-gateway"
+    )
+    gateway = next(
+        container
+        for container in deployment["spec"]["template"]["spec"]["containers"]
+        if container["name"] == "gateway"
+    )
+    env = {item["name"]: item.get("value") for item in gateway["env"]}
+
+    assert env["PUBLIC_UPSTREAM_TLS_VERIFY"] == "false"

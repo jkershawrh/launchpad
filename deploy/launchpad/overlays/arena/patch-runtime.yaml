@@ -131,6 +131,10 @@ spec:
   template:
     spec:
       containers:
+        - name: gateway
+          env:
+            - name: PUBLIC_UPSTREAM_TLS_VERIFY
+              value: "false"
         - name: oidc-proxy
           env:
             - name: OAUTH2_PROXY_OIDC_ISSUER_URL
