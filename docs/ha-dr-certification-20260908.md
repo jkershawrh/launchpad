@@ -11,21 +11,21 @@ stage never implies a higher one.
 | Evidence ID | Behavior | Unit/component | PostgreSQL | Manifest | Live | Status |
 |---|---|---:|---:|---:|---:|---|
 | HA-QUEUE-01 | Idempotent durable job creation | GREEN | GREEN | — | RED | GREEN-postgres |
-| HA-LEASE-01 | Only one worker owns an aggregate | GREEN | GREEN | — | RED | GREEN-postgres |
-| HA-FENCE-01 | Expired owner cannot heartbeat, checkpoint, complete, or continue | GREEN | GREEN | — | RED | GREEN-postgres |
-| HA-TAKEOVER-01 | A replacement worker receives a higher fencing token | GREEN | GREEN | — | RED | GREEN-postgres |
+| HA-LEASE-01 | Only one worker owns an aggregate | GREEN | GREEN | — | GREEN (one seat) | GREEN-live-process |
+| HA-FENCE-01 | Expired owner cannot heartbeat, checkpoint, complete, or continue | GREEN | GREEN | — | GREEN (one seat) | GREEN-live-process |
+| HA-TAKEOVER-01 | A replacement worker receives a higher fencing token | GREEN | GREEN | — | GREEN (provision + reclaim) | GREEN-live-process |
 | HA-CANCEL-01 | Reclaim cancels provision and waits for aggregate ownership | GREEN | GREEN | — | RED | GREEN-postgres |
-| HA-API-01 | Individual provision/reclaim returns a durable queued session | GREEN | — | — | RED | GREEN-local |
+| HA-API-01 | Individual provision/reclaim returns a durable queued session | GREEN | — | — | GREEN (one seat) | GREEN-live-process |
 | HA-API-02 | Workshop confirm, retry, direct create, and reclaim use the queue | GREEN | — | — | RED | GREEN-local |
 | HA-READ-01 | API/admin reads observe state persisted by another worker | GREEN | — | — | RED | GREEN-local |
 | HA-DB-FAIL-01 | Configured PostgreSQL read/write loss fails closed | GREEN | — | — | RED | GREEN-local |
 | HA-TTL-01 | TTL work has one leased system owner | GREEN | GREEN | GREEN | RED | GREEN-render |
 | HA-RECON-01 | Reconciliation mutations stop after ownership loss | GREEN | — | GREEN | RED | GREEN-render |
-| HA-TARGET-01 | Provision and reclaim retain the persisted `cluster_ref` | GREEN | — | — | RED | GREEN-local |
-| HA-READY-01 | API readiness rejects standby, DB loss, or missing HA schema | GREEN | — | GREEN | RED | GREEN-render |
-| HA-OBS-01 | Admin reports jobs, leases, retries, failures, and takeovers | GREEN | — | GREEN | RED | GREEN-render |
+| HA-TARGET-01 | Provision and reclaim retain the persisted `cluster_ref` | GREEN | — | — | GREEN (Arena) | GREEN-live-process |
+| HA-READY-01 | API readiness rejects standby, DB loss, or missing HA schema | GREEN | — | GREEN | GREEN (active/DB/schema) | GREEN-live-process |
+| HA-OBS-01 | Admin reports jobs, leases, retries, failures, and takeovers | GREEN | — | GREEN | GREEN | GREEN-live-process |
 | HA-ALERT-01 | Stalled jobs, reclaim, and failed jobs have Prometheus alerts | GREEN | — | GREEN | RED | GREEN-render |
-| HA-DEPLOY-01 | Arena overlay selects two workers and disables legacy reconciliation | GREEN | — | GREEN | RED | GREEN-render |
+| HA-DEPLOY-01 | Arena overlay selects two workers and disables legacy reconciliation | GREEN | — | GREEN | GREEN (same node) | GREEN-live-process |
 | DR-PASSIVE-01 | Flightpath renders with zero Deployments and suspended CronJobs | GREEN | — | GREEN | RED | GREEN-render |
 | DR-FENCE-01 | Runbook requires a hard Arena credential/network fence | GREEN | — | GREEN | RED | GREEN-render |
 | DR-IDENTITY-01 | Flightpath has a distinct least-privilege identity for Arena and Brutus | GREEN | — | GREEN | RED | GREEN-render |
@@ -44,13 +44,46 @@ requires every item below; this is a binary 100-point gate, not an average.
 | Area | Points | Current evidence | Awarded |
 |---|---:|---|---:|
 | Durable queue, idempotency, cancellation | 15 | Local and PostgreSQL contracts | 15 |
-| Lease ownership and fencing | 20 | Local and PostgreSQL contracts; live kill test pending | 12 |
-| Provision/reclaim/TTL/reconcile integration | 20 | Local and rendered; live workload pending | 12 |
+| Lease ownership and fencing | 20 | Local, PostgreSQL, and live one-seat provision/reclaim worker-kill proof | 20 |
+| Provision/reclaim/TTL/reconcile integration | 20 | One-seat provision and reclaim takeover; 5/25-seat takeover and clean timing runs pending | 16 |
 | Database availability and recoverability | 15 | Single PostgreSQL instance; restore drill pending | 0 |
 | Arena worker and node availability | 10 | Two-worker overlay; second schedulable node pending | 0 |
-| Operations UI, metrics, and alerts | 10 | Local UI/API and rendered alerts | 7 |
+| Operations UI, metrics, and alerts | 10 | Live lifecycle API plus local UI and rendered alerts | 8 |
 | Flightpath restore, hard fence, and failback | 10 | Passive overlay and runbook only | 3 |
-| **Total** | **100** | **Not approved for activation** | **49** |
+| **Total** | **100** | **Pilot enabled; not approved for production HA/DR** | **62** |
+
+## Arena live process-takeover result
+
+The one-seat Arena exercise is `GREEN-live-process-ha` for provision and
+reclaim. Deleting the owning worker increased the provision fencing token from
+1 to 8 and the reclaim token from 9 to 17. The same persisted Arena target was
+retained, provisioning produced exactly one namespace and a Showroom HTTP 200,
+and reclaim left zero Namespace, Route, RoleBinding, or Argo CD Application
+residue. The public certification lab was intentionally preserved.
+
+The live exercise found and fixed four defects: lifecycle-worker model-network
+access, explicit worker CA selection, idempotent replay of an already reclaimed
+session, and clearing stale lifecycle errors after a successful retry. Each fix
+has a regression test. The immutable receipt is
+`evidence/runs/arena-lifecycle-process-ha-20260908.json`.
+
+This is functional takeover proof, not clean latency evidence. The first run
+included defect discovery, deployments, and repeated recovery; it also began
+with the earlier 120-second lease. A fresh uninterrupted run using the current
+30-second lease is required before publishing a failover-time objective.
+
+Both lifecycle processes currently run on `gnr2`; `rhgnr1` remains cordoned.
+Therefore node HA remains RED. Five-seat and 25-seat workshop takeover, stable
+public DNS/TLS, and Flightpath DR also remain RED.
+
+## Flightpath live preflight status
+
+Read-only credential discovery on September 8 found the dedicated Arena
+kubeconfig but no dedicated Flightpath kubeconfig. The promotion preflight was
+therefore not run against Flightpath. This is the expected fail-closed result:
+the disclosed bootstrap credential was not used, copied, or retained. Live DR
+preflight remains blocked until a distinct least-privilege Flightpath credential
+is delivered through the approved secret path.
 
 ## Arena activation sequence
 
@@ -61,10 +94,10 @@ requires every item below; this is a binary 100-point gate, not an average.
 3. Apply migration `005_lifecycle_jobs.sql` while the feature flag remains off;
    verify `/ready` and a database backup.
 4. Apply `deploy/launchpad/overlays/arena-ha-pilot` in a controlled window.
-5. Run one individual provision while deleting its lifecycle-worker pod. Prove
-   one namespace, one session, an increased fence, and a ready participant URL.
-6. Run one reclaim while deleting its worker pod. Prove successful takeover and
-   zero namespace, Route, RoleBinding, Application, model-key, or access residue.
+5. Repeat the individual provision/reclaim takeover once without changing code
+   or configuration and record clean takeover latency using the 30-second lease.
+6. Stabilize and uncordon `rhgnr1`, force the owner node unavailable, and repeat
+   the proof before calling the deployment node-HA.
 7. Repeat at 5 seats and 25 seats. Record job IDs, fencing tokens, image digests,
    cluster state, timings, route probes, screenshots, and cleanup scans.
 

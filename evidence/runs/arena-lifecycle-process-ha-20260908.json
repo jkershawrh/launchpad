@@ -1,0 +1,117 @@
+{
+  "schema": "launchpad.redhat.com/lifecycle-ha-live-certification/v1",
+  "evidence_id": "ARENA-LIFECYCLE-PROCESS-HA-20260908-01",
+  "result": "GREEN-live-process-ha",
+  "certified_at": "2026-09-08T23:46:52Z",
+  "source": {
+    "commit": "6ed84ae9cb33264b86643bb7ebb6293fad078547",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:89663ab56b207ca1c86f3d3eadc5fce5043a1accbf1e6eb773c87c4cf5efd690",
+    "cluster_ref": "arena"
+  },
+  "topology": {
+    "control_plane_role": "active",
+    "lifecycle_ha_enabled": true,
+    "workshop_auto_recovery": false,
+    "lifecycle_worker_processes_ready": 2,
+    "lifecycle_worker_nodes": ["gnr2.fm2aihpcsed.com"],
+    "schedulable_compute_workers": ["gnr2.fm2aihpcsed.com"],
+    "cordoned_compute_workers": ["rhgnr1"],
+    "legacy_reconciler_suspended": true,
+    "durable_scheduler_suspended": false,
+    "readiness": {
+      "status": "ready",
+      "control_plane_role": "pass",
+      "database": "pass",
+      "lifecycle_schema": "pass"
+    }
+  },
+  "provision_takeover": {
+    "tenant_id": "ha-cert-tenant",
+    "request_id": "f0df7cc0-232e-49a7-8850-eefc33ec9c86",
+    "session_id": "0a910318-91b2-44ac-b111-dcb2aef98efd",
+    "job_id": "ab81d6f1-542a-45f2-bf6e-946c0d617558",
+    "initial_owner_pod": "lifecycle-worker-774556b6fc-wc7gp",
+    "owner_deleted_at": "2026-09-08T23:11:47Z",
+    "initial_fencing_token": 1,
+    "final_fencing_token": 8,
+    "final_attempts": 8,
+    "final_job_status": "succeeded",
+    "final_job_step": "completed",
+    "session_status_after_provision": "ready",
+    "namespaces_created": 1,
+    "showroom_http": 200,
+    "validation_failures": 0,
+    "duplicate_namespaces": 0,
+    "target_cluster_preserved": "arena"
+  },
+  "reclaim_takeover": {
+    "session_id": "0a910318-91b2-44ac-b111-dcb2aef98efd",
+    "job_id": "c8896a29-088a-4a11-a396-6cd8bdc06f93",
+    "initial_owner_pod": "lifecycle-worker-859f5cccd9-jsgr8",
+    "owner_deleted_at": "2026-09-08T23:29:14Z",
+    "initial_fencing_token": 9,
+    "final_fencing_token": 17,
+    "final_attempts": 9,
+    "final_job_status": "succeeded",
+    "final_job_step": "completed",
+    "last_error": null,
+    "session_status": "reclaimed",
+    "target_cluster_preserved": "arena",
+    "residue": {
+      "namespaces": 0,
+      "routes": 0,
+      "role_bindings": 0,
+      "argocd_applications": 0
+    }
+  },
+  "defects_discovered_and_fixed": [
+    {
+      "component": "model NetworkPolicy",
+      "failure": "lifecycle workers could not reach the Arena fleet model",
+      "fix": "permit backend and lifecycle-worker pod identities"
+    },
+    {
+      "component": "worker CA trust",
+      "failure": "mounted CA bundle was not selected by HTTP clients",
+      "fix": "set SSL_CERT_FILE and REQUESTS_CA_BUNDLE"
+    },
+    {
+      "component": "reclaim idempotency",
+      "failure": "takeover replay attempted an invalid reclaimed-to-resetting transition",
+      "fix": "return success when a correctly targeted session is already reclaimed"
+    },
+    {
+      "component": "lifecycle observability",
+      "failure": "a succeeded retry retained an obsolete last_error",
+      "fix": "clear last_error on successful completion in both stores"
+    }
+  ],
+  "proof_methods": {
+    "TDD": "Each live-discovered defect was reproduced by a failing regression test before its fix.",
+    "EDD": "The receipt binds source, immutable image, aggregate IDs, fencing tokens, participant probes and cleanup counts.",
+    "CDD": "Queue ownership, persisted cluster targeting, session state and cleanup contracts were checked.",
+    "BDD": "Given an owned provision or reclaim job, when its lifecycle-worker is deleted, then another process fences the old owner and completes the same aggregate on Arena.",
+    "CBT": "Readiness, queue, model reachability, Showroom validation, reclaim idempotency and residue scans were exercised independently.",
+    "red_green": "RED defects were retained as regressions; GREEN is successful provision and reclaim takeover with higher fencing tokens and zero cleanup residue.",
+    "test_suite": {
+      "non_local": "1324 passed, 6 skipped, 13 deselected",
+      "local_container_runtime": "not certified because the required local container runtime was unavailable"
+    }
+  },
+  "public_certification_lab": {
+    "request_id": "20578205-1d0d-468f-be16-67abc94717ec",
+    "session_id": "5479de63-d0bf-418e-aaee-5fcf3eac3d4e",
+    "namespace": "launchpad-public-cert-tenant-intel-llm-cpu-serv-205782",
+    "preserved": true,
+    "gateway_observation": "reachable and redirects unauthenticated requests to authentication"
+  },
+  "certification_boundary": {
+    "single_seat_process_takeover": "certified for provision and reclaim",
+    "node_ha": "not certified; both lifecycle processes run on gnr2 while rhgnr1 is cordoned",
+    "workshop_ha_five_seat": "not certified",
+    "workshop_ha_twenty_five_seat": "not certified",
+    "clean_latency_run": "not certified; the proof run included defect discovery, deployment and retry recovery",
+    "flightpath_dr": "not certified",
+    "stable_public_dns_tls": "not certified; Quick Tunnel remains temporary"
+  }
+}
