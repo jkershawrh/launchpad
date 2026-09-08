@@ -18,20 +18,6 @@ KEYCLOAK_ISSUER="https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-pu
 KEYCLOAK_ADMIN_URL="http://127.0.0.1:18087"
 BACKEND_LOCAL_URL="http://127.0.0.1:18090"
 BACKEND_ADMIN_URL="$BACKEND_LOCAL_URL/api/v1"
-CONSOLE_ROUTE_BACKUP="launchpad-public-console-route-backup"
-CONSOLE_ROUTE_SECRET="launchpad-public-console-route-tls"
-
-keycloak_forward_pid=""
-backend_forward_pid=""
-console_cert_dir=""
-cleanup_local() {
-  [[ -z "$keycloak_forward_pid" ]] || kill "$keycloak_forward_pid" 2>/dev/null || true
-  [[ -z "$backend_forward_pid" ]] || kill "$backend_forward_pid" 2>/dev/null || true
-  if [[ -n "$console_cert_dir" && -d "$console_cert_dir" ]]; then
-    rm -rf -- "$console_cert_dir"
-  fi
-}
-trap cleanup_local EXIT
 
 log() { printf '[arena-public-pilot] %s\n' "$*"; }
 die() { printf '[arena-public-pilot] ERROR: %s\n' "$*" >&2; exit 1; }
@@ -70,33 +56,6 @@ for ((attempt=1; attempt<=60; attempt++)); do
   sleep 2
 done
 [[ -n "$tunnel_url" ]] || die "Cloudflare did not assign a pilot hostname"
-tunnel_host="${tunnel_url#https://}"
-
-log "Configuring the supported OpenShift custom Console route for the pilot origin"
-if ! oc get configmap "$CONSOLE_ROUTE_BACKUP" -n "$NAMESPACE" >/dev/null 2>&1; then
-  original_console_route=$(oc get consoles.operator.openshift.io cluster -o jsonpath='{.spec.route}')
-  [[ -n "$original_console_route" ]] || original_console_route='{}'
-  oc create configmap "$CONSOLE_ROUTE_BACKUP" -n "$NAMESPACE" \
-    --from-literal=route.json="$original_console_route" >/dev/null
-fi
-console_cert_dir=$(mktemp -d)
-openssl req -x509 -newkey rsa:2048 -nodes -days 7 \
-  -subj "/CN=$tunnel_host" \
-  -addext "subjectAltName=DNS:$tunnel_host" \
-  -keyout "$console_cert_dir/tls.key" \
-  -out "$console_cert_dir/tls.crt" >/dev/null 2>&1
-oc create secret tls "$CONSOLE_ROUTE_SECRET" -n openshift-config \
-  --cert="$console_cert_dir/tls.crt" --key="$console_cert_dir/tls.key" \
-  --dry-run=client -o yaml | oc apply -f - >/dev/null
-oc patch consoles.operator.openshift.io cluster --type=merge -p \
-  "{\"spec\":{\"route\":{\"hostname\":\"$tunnel_host\",\"secret\":{\"name\":\"$CONSOLE_ROUTE_SECRET\"}}}}" >/dev/null
-for ((attempt=1; attempt<=60; attempt++)); do
-  console_redirects=$(oc get oauthclient console -o jsonpath='{.redirectURIs[*]}')
-  [[ "$console_redirects" == *"$tunnel_url/auth/callback"* ]] && break
-  sleep 2
-done
-[[ "$console_redirects" == *"$tunnel_url/auth/callback"* ]] \
-  || die "Console operator did not register the public OAuth callback"
 
 log "Enabling the shared-origin public pilot on Arena"
 oc set env deployment/backend -n "$NAMESPACE" --containers=backend \
@@ -117,6 +76,13 @@ oc set env deployment/public-access-gateway -n "$NAMESPACE" --containers=oidc-pr
 oc scale deployment/public-access-gateway --replicas=1 -n "$NAMESPACE" >/dev/null
 oc rollout status deployment/public-access-gateway -n "$NAMESPACE" --timeout=180s
 
+keycloak_forward_pid=""
+backend_forward_pid=""
+cleanup_forwards() {
+  [[ -z "$keycloak_forward_pid" ]] || kill "$keycloak_forward_pid" 2>/dev/null || true
+  [[ -z "$backend_forward_pid" ]] || kill "$backend_forward_pid" 2>/dev/null || true
+}
+trap cleanup_forwards EXIT
 oc port-forward service/keycloak-service 18087:8080 -n "$KEYCLOAK_NAMESPACE" >/dev/null 2>&1 &
 keycloak_forward_pid=$!
 oc port-forward service/backend 18090:8000 -n "$NAMESPACE" >/dev/null 2>&1 &
