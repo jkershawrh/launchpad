@@ -6,6 +6,8 @@ metadata:
 spec:
   template:
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: gnr2.fm2aihpcsed.com
       containers:
         - name: ovms
           readinessProbe:

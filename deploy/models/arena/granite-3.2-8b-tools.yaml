@@ -120,10 +120,10 @@ spec:
             timeoutSeconds: 10
           resources:
             requests:
-              cpu: "96"
+              cpu: "80"
               memory: 64Gi
             limits:
-              cpu: "96"
+              cpu: "80"
               memory: 64Gi
           securityContext:
             allowPrivilegeEscalation: false

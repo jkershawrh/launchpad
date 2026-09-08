@@ -200,6 +200,10 @@ def test_cpu_model_readiness_does_not_flap_during_a_participant_burst():
         assert probe["timeoutSeconds"] == 5
         assert probe["failureThreshold"] == 6
 
+    assert patch["spec"]["template"]["spec"]["nodeSelector"] == {
+        "kubernetes.io/hostname": "gnr2.fm2aihpcsed.com"
+    }
+
     driver = (ROOT / "scripts/apply-arena-model-readiness.sh").read_text()
     assert "*config-arena*" in driver
     assert "refusing to mutate a non-Arena cluster" in driver

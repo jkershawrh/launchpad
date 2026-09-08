@@ -5,6 +5,10 @@ namespace="${1:?usage: certify-cpu-serving-rag.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-cpu-serving-rag.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
+oc() {
+  command oc --kubeconfig "$KUBECONFIG" "$@"
+}
+
 actual_cluster="$(
   oc get namespace "$namespace" \
     -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}'
@@ -19,7 +23,14 @@ base_url="https://${host}"
 run_id="${CERTIFICATION_RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$}"
 run_id="$(printf '%s' "$run_id" | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')"
 workspace_slug="hr-assistant-${run_id}"
-curl_options=(-fsSk)
+curl_options=(
+  -fsSk
+  --retry 3
+  --retry-all-errors
+  --retry-delay 2
+  --connect-timeout 10
+  --max-time 180
+)
 if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
   curl_options+=(--interface "$LAUNCHPAD_CURL_INTERFACE")
 fi

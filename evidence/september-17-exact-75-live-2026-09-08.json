@@ -1,0 +1,254 @@
+{
+  "schema": "launchpad.redhat.com/september-17-exact-75-live/v1",
+  "generated_at": "2026-09-08T00:44:40Z",
+  "git_commit": "6f368adc12acd2dd719414e0e062184736e2c20e",
+  "run_id": "sep17-exact75-20260908T003335327z",
+  "release_status": "GREEN-live-internal-pilot-candidate",
+  "production_status": "RED-not-production-certified",
+  "certification_boundary": "This receipt proves one retained 25-seat workshop for each September 17 catalog item and 75 participant-level functional journeys started as one concurrent live wave. It covers internal routes and namespace-scoped identities. It does not certify public browser ingress, three consecutive runs, Arena network resilience, or final reclaim of this retained trio.",
+  "event_date": "2026-09-17",
+  "provisioning_mode": "staggered-retained",
+  "workshop_affinity": "one-workshop-one-cluster",
+  "seat_splitting_allowed": false,
+  "concurrent_participant_seats": 75,
+  "workshops": {
+    "building-an-ai-agent": {
+      "workshop_id": "36a501d8-4754-4632-bf33-67cf6d4c4649",
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "cluster_ref": "brutus",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "collective_ready_seconds": 246.503,
+      "functional": {
+        "passed": 25,
+        "failed": 0,
+        "run_seconds": 207.773,
+        "seat_duration_seconds": {
+          "min": 125,
+          "max": 131,
+          "p95": 131
+        },
+        "tools_exact": 25,
+        "model_answers_valid": 25,
+        "app_http_200": 25,
+        "own_namespace_edit": 25,
+        "cross_namespace_read_denied": 25,
+        "node_list_denied": 25,
+        "contains_plaintext_credentials": false
+      }
+    },
+    "multi-agent": {
+      "workshop_id": "e85a59c5-66a7-4b25-a0dc-66a74eafd372",
+      "catalog_item_id": "multi-agent-quickstart",
+      "cluster_ref": "arena",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "collective_ready_seconds": 587.473,
+      "placement": {
+        "gnr2.fm2aihpcsed.com": 13,
+        "rhgnr1": 12
+      },
+      "functional": {
+        "passed": 25,
+        "failed": 0,
+        "three_agent_workflow_latency_ms": {
+          "min": 76604.27,
+          "max": 91267.96,
+          "p95": 90572.0
+        },
+        "semantic_routing_latency_ms": {
+          "min": 25212.91,
+          "max": 30219.91,
+          "p95": 30189.59
+        },
+        "guardrail_latency_ms": {
+          "min": 91.81,
+          "max": 307.26,
+          "p95": 249.69
+        },
+        "learner_policy_roundtrip_passed": 25,
+        "guardrails_passed": 25,
+        "showroom_passed": 25,
+        "own_namespace_edit": 25,
+        "cross_namespace_read_denied": 25,
+        "node_list_denied": 25,
+        "contains_sensitive_values": false
+      }
+    },
+    "serve-llms": {
+      "workshop_id": "04126518-64b5-43d3-aa95-5b61934fc019",
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "cluster_ref": "arena",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "collective_ready_seconds": 587.473,
+      "placement": {
+        "gnr2.fm2aihpcsed.com": 25,
+        "rhgnr1": 0
+      },
+      "functional": {
+        "passed": 25,
+        "failed": 0,
+        "http_200": 25,
+        "grounded_answer_exact": 25,
+        "document_citation_present": 25,
+        "latency_seconds": {
+          "min": 23.482625,
+          "max": 71.237245,
+          "p95": 69.083042
+        },
+        "contains_plaintext_credentials": false
+      }
+    }
+  },
+  "concurrent_live_proof": {
+    "started_at": "2026-09-08T00:33:35Z",
+    "completed_at": "2026-09-08T00:42:36Z",
+    "started_together_within_seconds": 8,
+    "participants_started": 75,
+    "participants_passed": 75,
+    "participants_failed": 0,
+    "cross_namespace_denials": 50,
+    "node_list_denials": 50,
+    "grounded_rag_answers": 25,
+    "exact_three_agent_workflows": 25,
+    "exact_agent_201_toolsets": 25,
+    "contains_plaintext_credentials": false,
+    "note": "The isolation assertions apply to Agent 201 and Multi-Agent. The Serve LLMs proof exercises the participant-facing AnythingLLM API and grounded document path."
+  },
+  "infrastructure_observation": {
+    "arena_probe_stall_observed": true,
+    "first_correlated_warning_at": "2026-09-08T00:39:12Z",
+    "affected_components": [
+      "multi-agent-seat readiness and liveness probes",
+      "fleet model routing probes",
+      "OpenShift ingress",
+      "OpenShift GitOps",
+      "OpenShift logging",
+      "Red Hat OpenShift AI operators"
+    ],
+    "node_pressure_observed": false,
+    "model_restarts": 0,
+    "automatic_recovery_observed": true,
+    "all_participant_checks_eventually_passed": true,
+    "conclusion": "The exact functional pilot gate passed, but correlated platform-wide probe timeouts make Arena network resilience a release blocker for production certification. Keep rhgnr1 cordoned outside explicitly supervised certification windows."
+  },
+  "post_run_state": {
+    "observed_at": "2026-09-08T00:44:40Z",
+    "arena_api_ready": true,
+    "gnr2_ready": true,
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned": true,
+    "multi_agent_pods": {
+      "running": 50,
+      "total": 50
+    },
+    "multi_agent_containers": {
+      "ready": 275,
+      "total": 275
+    },
+    "multi_agent_observed_restarts": 28,
+    "multi_agent_restart_note": "These were existing Showroom restart counts from prior Arena instability; the functional run ended with every container ready.",
+    "serve_llms_pods": {
+      "running": 50,
+      "total": 50
+    },
+    "serve_llms_containers": {
+      "ready": 100,
+      "total": 100
+    },
+    "serve_llms_observed_restarts": 0,
+    "vllm": {
+      "ready_replicas": 2,
+      "replicas": 2,
+      "restarts": 0
+    },
+    "workflow_policy_configmaps": 0,
+    "arena_certification_pods": 0,
+    "brutus_certification_pods": 0,
+    "failed_pods_in_retained_arena_namespaces": 0,
+    "workshops_retained_for_follow_up": true
+  },
+  "proof_strategy": {
+    "TDD": "The evidence contract was first executed RED with the receipt absent. Earlier driver changes were also introduced as failing tests before implementation.",
+    "EDD": "The receipt records immutable workshop IDs, clusters, seat counts, participant outcomes, timings, authorization denials, infrastructure warnings, and post-run residue without credentials.",
+    "CDD": "Catalog identity, persisted cluster targeting, explicit kubeconfig wrappers, participant result shapes, and this evidence schema are enforced by tests.",
+    "BDD": "Given three staggered and retained 25-seat workshops, when 75 participant journeys start as one wave, then every catalog-specific journey succeeds and tested identities remain namespace scoped.",
+    "CBT": "Agent 201 tools and UI, Multi-Agent workflow and learner policy, grounded RAG, shared model health, namespace authorization, node state, and residue were validated independently before the combined result was accepted."
+  },
+  "red_green_matrix": [
+    {
+      "gate": "Portable concurrent certification launcher",
+      "state": "RED-local",
+      "evidence": "The first Arena launcher used mapfile, which macOS Bash 3.2 does not provide; no seat command started."
+    },
+    {
+      "gate": "Portable concurrent certification launcher",
+      "state": "GREEN-live",
+      "evidence": "Portable array collection launched all 50 Arena seat validators; the Brutus validator was already active."
+    },
+    {
+      "gate": "Exact staggered retained topology",
+      "state": "GREEN-live",
+      "evidence": "Three distinct workshops remained ready at 25/25 on their persisted clusters."
+    },
+    {
+      "gate": "Exact concurrent participant function",
+      "state": "GREEN-live",
+      "evidence": "75/75 catalog-specific journeys passed."
+    },
+    {
+      "gate": "Namespace and cluster-scope denial",
+      "state": "GREEN-live",
+      "evidence": "50/50 tested seats could edit their namespace and were denied cross-namespace reads and node listing."
+    },
+    {
+      "gate": "Temporary learner and certification artifact cleanup",
+      "state": "GREEN-live",
+      "evidence": "Zero workflow-policy ConfigMaps and zero certification pods remained on either execution target."
+    },
+    {
+      "gate": "Arena correlated probe resilience",
+      "state": "RED-live",
+      "evidence": "A platform-wide probe stall affected workloads and OpenShift services during the Multi-Agent restart wave."
+    },
+    {
+      "gate": "Arena bounded recovery",
+      "state": "GREEN-live",
+      "evidence": "All 25 Multi-Agent journeys completed and all 275 containers returned ready without model restarts."
+    },
+    {
+      "gate": "Public 25-seat browser and SSO access",
+      "state": "RED-pending",
+      "evidence": "This run used internal participant routes and did not exercise 25 simultaneous external browsers."
+    },
+    {
+      "gate": "Exact retained trio reclaim",
+      "state": "RED-pending-retained",
+      "evidence": "The three successful workshops remain intentionally retained for manual review."
+    }
+  ],
+  "open_gates": {
+    "public_access_25_seat_browser_run": "RED-pending",
+    "exact_trio_reclaim_zero_residue": "RED-pending-retained",
+    "arena_network_resilience": "RED-live-observed-stall",
+    "three_consecutive_exact_runs": "RED-one-of-three-complete"
+  },
+  "rubric": {
+    "required": 100,
+    "score": 90,
+    "categories": {
+      "catalog_and_contracts": 10,
+      "staggered_retained_topology": 15,
+      "concurrent_catalog_functionality": 30,
+      "authorization_and_isolation": 15,
+      "model_capacity_and_readiness": 10,
+      "temporary_artifact_cleanup": 5,
+      "evidence_integrity": 5,
+      "public_browser_access": 0,
+      "exact_trio_reclaim": 0,
+      "network_resilience": 0
+    }
+  },
+  "contains_plaintext_credentials": false
+}

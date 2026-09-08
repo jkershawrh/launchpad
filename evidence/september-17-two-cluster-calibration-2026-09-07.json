@@ -1,0 +1,183 @@
+{
+  "schema": "launchpad.redhat.com/september-17-two-cluster-calibration/v1",
+  "generated_at": "2026-09-08T00:11:37Z",
+  "git_commit": "6f368adc12acd2dd719414e0e062184736e2c20e",
+  "release_status": "RED-live-infrastructure-blocked",
+  "certification_boundary": "This immutable calibration receipt records two retained 25-seat workshops, the reclaimed failed Serve LLMs attempt, and the model-capacity experiment as observed before Arena API connectivity returned. It does not certify the exact retained three-workshop event topology.",
+  "clusters": {
+    "building-an-ai-agent": "brutus",
+    "multi-agent": "arena",
+    "serve-llms": "arena"
+  },
+  "workshops": {
+    "building-an-ai-agent": {
+      "workshop_id": "36a501d8-4754-4632-bf33-67cf6d4c4649",
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "cluster_ref": "brutus",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "created_at": "2026-09-07T22:14:16.560796Z",
+      "collective_ready_seconds": 246.503,
+      "post_soak_functional": {
+        "passed": 25,
+        "failed": 0,
+        "run_seconds": 159.161,
+        "seat_duration_seconds": {
+          "min": 81,
+          "max": 84
+        },
+        "tools_exact": true,
+        "model_answers_valid": true,
+        "isolation_passed": true,
+        "sensitive_values_absent": true
+      }
+    },
+    "multi-agent": {
+      "workshop_id": "e85a59c5-66a7-4b25-a0dc-66a74eafd372",
+      "catalog_item_id": "multi-agent-quickstart",
+      "cluster_ref": "arena",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "created_at": "2026-09-07T22:54:09.978544Z",
+      "collective_ready_seconds": 587.473,
+      "placement": {
+        "gnr2.fm2aihpcsed.com": 13,
+        "rhgnr1": 12
+      },
+      "functional": {
+        "passed": 25,
+        "failed": 0,
+        "three_agent_workflow_latency_ms": {
+          "min": 39001.58,
+          "max": 53589.99
+        },
+        "semantic_routing_latency_ms": {
+          "min": 19192.45,
+          "max": 24987.21
+        },
+        "learner_policy_roundtrip_passed": true,
+        "guardrails_passed": true,
+        "showroom_passed": true,
+        "isolation_passed": true,
+        "sensitive_values_absent": true
+      }
+    },
+    "serve-llms-red-attempt": {
+      "workshop_id": "04a2346b-faec-4d20-ab30-f637f2cc6730",
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "cluster_ref": "arena",
+      "seat_count": 25,
+      "ready_seats": 22,
+      "failed_seats": 3,
+      "failure": "Three Showroom pods assigned to rhgnr1 remained PodInitializing beyond the collective readiness window during sustained staggered startup.",
+      "provisioning_seconds": 965.51,
+      "reclaim_seconds": 103.586,
+      "reclaimed_seats": 25,
+      "cleanup_residue": 0
+    }
+  },
+  "rhgnr1_reliability": {
+    "idle_soak_samples": 180,
+    "idle_soak_failures": 0,
+    "ten_pod_startup_burst_passed": true,
+    "two_seat_workshop_passed_and_reclaimed": true,
+    "sustained_25_seat_startup_passed": false,
+    "scheduling_disabled": true,
+    "conclusion": "Idle and small-burst health did not predict sustained startup behavior; keep the worker cordoned until runtime and network repair is independently certified."
+  },
+  "shared_model_calibration": {
+    "model": "granite-3.2-8b-tools",
+    "replicas": 2,
+    "baseline": {
+      "cpu_request_per_replica": 96,
+      "cpu_limit_per_replica": 96,
+      "qos_class": "Guaranteed",
+      "seat_duration_seconds": {
+        "min": 81,
+        "max": 84
+      }
+    },
+    "rejected_48_96": {
+      "cpu_request_per_replica": 48,
+      "cpu_limit_per_replica": 96,
+      "qos_class": "Burstable",
+      "functional_passed": 25,
+      "seat_duration_seconds": {
+        "min": 197,
+        "max": 201
+      },
+      "accepted": false,
+      "reason": "Correctness passed but participant latency regressed and the unequal request/limit lost Guaranteed QoS."
+    },
+    "proposed_80_80": {
+      "cpu_request_per_replica": 80,
+      "cpu_limit_per_replica": 80,
+      "qos_class": "Guaranteed",
+      "cpu_recovered_across_replicas": 32,
+      "capacity_preview_can_provision": true,
+      "capacity_preview_seats": 25,
+      "live_deployed": false,
+      "reason": "The manifest contract was GREEN locally, but the Arena API became unreachable before live deployment and re-certification."
+    }
+  },
+  "blocking_gate": {
+    "id": "arena-api-connectivity",
+    "observed_error": "Arena API and worker addresses became unreachable during the 80/96 measurement stream.",
+    "exact_trio_ordered": false,
+    "required_next_proof": "Restore Arena access, deploy 80/80, prove Guaranteed QoS and 25-seat Agent 201 latency, then provision and functionally certify the retained Serve LLMs workshop."
+  },
+  "proof_strategy": {
+    "TDD": "The Arena target pin, explicit certification kubeconfig wrapper, model resources, and this evidence schema each began with a failing test.",
+    "EDD": "Workshop identifiers, lifecycle timing, functional outcomes, capacity decisions, node behavior, and cleanup residue are recorded without credentials.",
+    "CDD": "Catalog, placement, model resource, participant probe, and evidence contracts remain versioned in Git.",
+    "BDD": "Given two retained green workshops and a third staggered order, the event remains RED until all 75 seats are simultaneously ready and participant journeys pass.",
+    "CBT": "Node health, model readiness, model QoS, capacity preview, per-seat workflow, authorization, and cleanup were evaluated as separate components."
+  },
+  "red_green_matrix": [
+    {
+      "gate": "Brutus Agent 201 25-seat post-soak function",
+      "state": "GREEN-live",
+      "evidence": "25/25 functional and isolation journeys"
+    },
+    {
+      "gate": "Arena Multi-Agent 25-seat retained function",
+      "state": "GREEN-live",
+      "evidence": "25/25 three-agent, learner, guardrail, Showroom, and isolation journeys"
+    },
+    {
+      "gate": "Arena sustained startup on rhgnr1",
+      "state": "RED-live",
+      "evidence": "22/25 ready; three timed out during PodInitializing"
+    },
+    {
+      "gate": "Arena cleanup after partial workshop",
+      "state": "GREEN-live",
+      "evidence": "25/25 reclaimed with zero namespace or Argo residue"
+    },
+    {
+      "gate": "Shared model capacity tuning",
+      "state": "GREEN-local",
+      "evidence": "80/80 manifest and tests pass; live application pending at receipt time"
+    },
+    {
+      "gate": "Exact retained 3 x 25 topology",
+      "state": "RED-pending",
+      "evidence": "Third workshop was not ordered at receipt time"
+    }
+  ],
+  "rubric": {
+    "required": 100,
+    "score": 80,
+    "categories": {
+      "catalog_and_contracts": 15,
+      "agent_201_function_and_isolation": 20,
+      "multi_agent_function_and_isolation": 20,
+      "serve_llms_function_and_isolation": 0,
+      "retained_75_seat_topology": 0,
+      "capacity_and_model_readiness": 10,
+      "cleanup_and_residue": 10,
+      "evidence_integrity": 5
+    }
+  },
+  "contains_plaintext_credentials": false
+}

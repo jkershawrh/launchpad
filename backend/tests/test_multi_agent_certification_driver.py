@@ -8,6 +8,7 @@ def test_multi_agent_live_driver_is_arena_fail_closed_and_secret_safe():
     source = DRIVER.read_text()
 
     assert ': "${KUBECONFIG:?' in source
+    assert 'command oc --kubeconfig "$KUBECONFIG" "$@"' in source
     assert 'actual_cluster' in source
     assert '!= "arena"' in source
     assert "oc config use-context" not in source

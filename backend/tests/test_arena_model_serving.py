@@ -30,8 +30,12 @@ def test_tool_calling_model_is_private_shared_arena_infrastructure():
     assert {item["name"]: item["value"] for item in container["env"]}[
         "LD_PRELOAD"
     ] == "/usr/lib64/libomp.so"
-    assert container["resources"]["requests"]["cpu"] == "96"
-    assert container["resources"]["limits"]["cpu"] == "96"
+    # A 48-core reservation passed correctness but regressed the 25-seat
+    # Agent 201 journey from ~82s to ~199s. Keep most of the original CPU
+    # allocation while recovering 32 cores across the two replicas. Matching
+    # request and limit preserves Guaranteed QoS and exclusive CPU placement.
+    assert container["resources"]["requests"]["cpu"] == "80"
+    assert container["resources"]["limits"]["cpu"] == "80"
 
     model_volume = next(
         volume

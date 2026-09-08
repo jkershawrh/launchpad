@@ -5,6 +5,10 @@ namespace="${1:?usage: certify-cpu-serving-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-cpu-serving-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
+oc() {
+  command oc --kubeconfig "$KUBECONFIG" "$@"
+}
+
 actual_cluster="$(
   oc get namespace "$namespace" \
     -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}'
@@ -74,11 +78,17 @@ jq -nc \
                     {name: "DISABLE_TELEMETRY", value: "true"}
                   ],
                   startupProbe: {
-                    tcpSocket: {port: 3001},
+                    httpGet: {path: "/api/ping", port: 3001},
                     failureThreshold: 60,
-                    periodSeconds: 5
+                    periodSeconds: 5,
+                    timeoutSeconds: 3
                   },
-                  readinessProbe: {tcpSocket: {port: 3001}, periodSeconds: 5},
+                  readinessProbe: {
+                    httpGet: {path: "/api/ping", port: 3001},
+                    periodSeconds: 5,
+                    timeoutSeconds: 3,
+                    failureThreshold: 6
+                  },
                   securityContext: {
                     allowPrivilegeEscalation: false,
                     capabilities: {drop: ["ALL"]}

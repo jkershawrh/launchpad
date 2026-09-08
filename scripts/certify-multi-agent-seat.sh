@@ -4,6 +4,12 @@ set -euo pipefail
 namespace="${1:?usage: certify-multi-agent-seat.sh <namespace>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the Arena execution cluster credential}"
 
+# Keep the live target explicit even for commands nested inside this driver.
+# ``command`` bypasses this wrapper and invokes the real OpenShift CLI.
+oc() {
+  command oc --kubeconfig "$KUBECONFIG" "$@"
+}
+
 stage="bootstrap"
 policy_config_created=false
 

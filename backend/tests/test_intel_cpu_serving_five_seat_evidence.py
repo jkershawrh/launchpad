@@ -64,6 +64,8 @@ def test_cpu_serving_certification_driver_uses_the_participant_boundary():
     script = (ROOT / "scripts/certify-cpu-serving-seat.sh").read_text()
     rag_script = (ROOT / "scripts/certify-cpu-serving-rag.sh").read_text()
 
+    assert 'command oc --kubeconfig "$KUBECONFIG" "$@"' in script
+    assert 'command oc --kubeconfig "$KUBECONFIG" "$@"' in rag_script
     assert 'actual_cluster="$(' in script
     assert 'expected_cluster="${2:?' in script
     assert 'actual_cluster" != "$expected_cluster' in script
@@ -76,6 +78,8 @@ def test_cpu_serving_certification_driver_uses_the_participant_boundary():
     assert "sed -n 's/.*export MAAS_API_KEY" not in script
     assert "anythingllm-openshift@sha256:" in script
     assert 'name: "rag"' in script
+    assert 'path: "/api/ping"' in script
+    assert "tcpSocket" not in script
     assert "haproxy.router.openshift.io/timeout" in script
     assert "GENERIC_OPEN_AI_BASE_PATH" in script
     assert 'actual_cluster="$(' in rag_script
@@ -84,6 +88,9 @@ def test_cpu_serving_certification_driver_uses_the_participant_boundary():
     assert "refusing to validate cluster" in rag_script
     assert "LAUNCHPAD_CURL_INTERFACE" in rag_script
     assert "LAUNCHPAD_INGRESS_IP" in rag_script
+    assert "--retry" in rag_script
+    assert "--retry-all-errors" in rag_script
+    assert "--connect-timeout" in rag_script
     assert "CERTIFICATION_RUN_ID" in rag_script
     assert "orion-leave-policy.txt" in rag_script
     assert 'contains("17")' in rag_script
