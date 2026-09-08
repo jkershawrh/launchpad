@@ -11,6 +11,9 @@ This matrix is the release contract for the external portal and internal operati
 | EXT-03 | Partner user | They use the external hostname | Navigation renders | Internal fleet, decisions, feedback, and admin links are absent | Navigation contract test |
 | OPS-01 | Operator | They use the admin hostname | They open `/` | Fleet health, active sessions, failures, and capacity are visible | Component/API contract test |
 | OPS-02 | Operator | A session needs intervention | They open session operations | They can inspect diagnostics and perform permitted lifecycle actions | API authorization test |
+| OPS-03 | Operator | Labs are running across the fleet | They open `/observability` | Cluster capacity plus provisioning, in-flight work, and resolution are grouped by lab and seat | Component/API contract test |
+| OPS-04 | Operator | LLM telemetry is available | They open `/observability` | Endpoint health, requests, latency, errors, limits, tokens, route/backend, and seat attribution are visible | Component/API contract test |
+| OPS-05 | Operator | A Grafana dashboard is configured | They select a lab telemetry link | Grafana opens with bounded cluster and catalog variables; the exact order remains in Launchpad | Navigation contract test |
 | ADM-01 | Administrator | They have the admin role | They open `/admin` | Tenant/session reports and admin actions are available | Authorization + route test |
 | SEC-01 | Partner user | They lack an admin role | They call an admin API | The API returns 403 | Backend authorization test |
 | DEP-01 | External client | Portal and admin routes are deployed | They request each hostname | Both return HTTP 200 and the expected surface | OpenShift route evidence |
@@ -25,6 +28,9 @@ This matrix is the release contract for the external portal and internal operati
 | API compatibility | UI calls endpoints outside `/api/v1` proxy contract | All calls pass through `/api/*` and receive typed responses |
 | Deployment | Oberon removes permanent frontends | Portal/admin deployments, services, and routes are rendered |
 | Availability | Pod readiness does not prove HTTP service | Pod, service, router, and public route each return healthy evidence |
+| Operational join | Fleet, lab, and seat data are separate pages | One versioned admin read model joins lifecycle state by order and seat |
+| Telemetry boundary | Launchpad duplicates time-series dashboards | Launchpad owns workflow state and links to Grafana for time-series analysis |
+| LLM attribution | Model health has no lab context | Available request telemetry is attributed to workshop, lab, and seat; missing signals are named as gaps |
 
 ## Release rubric
 
@@ -36,4 +42,3 @@ Each category scores 0–2. Release requires 10/12 with no zero in Security or A
 - Security: server-side tenant/admin authorization is enforced.
 - Availability: build, pod, service, router, and public route checks pass.
 - Evidence: test output and deployment observations are captured with the release.
-

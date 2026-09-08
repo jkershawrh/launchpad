@@ -227,6 +227,9 @@ def test_multi_agent_services_routes_and_network_boundary_are_complete():
 
     for route_name in ("multi-agent", "multi-agent-ui"):
         route = resources[("Route", route_name)]
+        assert route["metadata"]["annotations"][
+            "haproxy.router.openshift.io/timeout"
+        ] == "600s"
         assert route["spec"]["tls"]["termination"] == "edge"
         assert route["spec"]["tls"]["insecureEdgeTerminationPolicy"] == "Redirect"
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -8,6 +9,8 @@ from app.api.deps import catalog_adapter, provisioning_service
 from app.auth.oauth import require_admin
 from app.domain.enums import CatalogStatus
 from app.domain.models import CatalogItem, LabSession
+from app.integrations.llm_audit import get_llm_audit_log
+from app.services.admin_observability import build_admin_observability
 from app.services.health import check_health_detailed
 from app.services.model_inventory import get_model_inventory
 from app.services.resource_reconciliation import reconcile_resources
@@ -15,6 +18,33 @@ from app.services.system_monitor import SystemMonitor
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
 monitor = SystemMonitor()
+
+
+@router.get("/observability")
+def admin_observability() -> Dict[str, Any]:
+    """Return the read-only workflow view used by Launchpad Operations.
+
+    This endpoint reports order/seat lifecycle state. Prometheus and Grafana
+    remain the source of truth for historical resource and network telemetry.
+    """
+
+    catalog_names = {
+        item.catalog_item_id: item.display_name
+        for item in catalog_adapter.list_items()
+    }
+    try:
+        inventory = get_model_inventory()
+    except Exception:  # noqa: BLE001 - inventory degrades independently of workflow state
+        inventory = {"summary": {}, "models": []}
+    return build_admin_observability(
+        sessions=provisioning_service._sessions.values(),
+        workshops=provisioning_service._workshops.values(),
+        clusters=provisioning_service.get_cluster_fleet_health(),
+        grafana_url=os.environ.get("GRAFANA_LAUNCHPAD_DASHBOARD_URL", ""),
+        catalog_names=catalog_names,
+        model_inventory=inventory,
+        llm_events=get_llm_audit_log(),
+    )
 
 
 @router.get("/system/health")

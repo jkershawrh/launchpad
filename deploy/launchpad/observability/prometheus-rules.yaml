@@ -1,0 +1,118 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: launchpad-workshop-operations
+  labels:
+    app.kubernetes.io/name: launchpad-workshop-operations
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  groups:
+    - name: launchpad.cluster.capacity
+      rules:
+        - record: launchpad:cluster:cpu_headroom_ratio
+          labels:
+            cluster: arena
+          expr: |
+            clamp_min(
+              sum(kube_node_status_allocatable{resource="cpu",unit="core"})
+                - sum(kube_pod_container_resource_requests{resource="cpu",unit="core"}),
+              0
+            ) / clamp_min(sum(kube_node_status_allocatable{resource="cpu",unit="core"}), 1)
+        - record: launchpad:cluster:memory_headroom_ratio
+          labels:
+            cluster: arena
+          expr: |
+            clamp_min(
+              sum(kube_node_status_allocatable{resource="memory",unit="byte"})
+                - sum(kube_pod_container_resource_requests{resource="memory",unit="byte"}),
+              0
+            ) / clamp_min(sum(kube_node_status_allocatable{resource="memory",unit="byte"}), 1)
+        - record: launchpad:cluster:pod_slot_headroom_ratio
+          labels:
+            cluster: arena
+          expr: |
+            clamp_min(
+              sum(kube_node_status_allocatable{resource="pods"})
+                - sum(kube_pod_status_phase{phase=~"Pending|Running"} == 1),
+              0
+            ) / clamp_min(sum(kube_node_status_allocatable{resource="pods"}), 1)
+        - alert: LaunchpadClusterCapacityHeadroomLow
+          expr: |
+            launchpad:cluster:cpu_headroom_ratio < 0.15
+              or launchpad:cluster:memory_headroom_ratio < 0.15
+              or launchpad:cluster:pod_slot_headroom_ratio < 0.15
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: Launchpad execution capacity is below 15 percent headroom
+            description: Reject additional workshop placement until the limiting resource recovers.
+    - name: launchpad.workshop.lifecycle
+      rules:
+        - record: launchpad:workshop:inflight_seats
+          expr: sum(launchpad_session_inflight) by (cluster, catalog_item, status)
+        - alert: LaunchpadSeatProvisioningStalled
+          expr: |
+            launchpad_session_state_age_seconds_max{status=~"requested|provisioning|validating"} > 600
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: Workshop seat provisioning has not advanced for ten minutes
+            description: Inspect the cluster and catalog labels, then use the Launchpad admin seat view before retrying.
+        - alert: LaunchpadSeatReclaimStalled
+          expr: launchpad_session_state_age_seconds_max{status="resetting"} > 600
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: Workshop seat reclaim has not advanced for ten minutes
+            description: Inspect cleanup and Argo CD state on the persisted execution cluster.
+        - alert: LaunchpadCleanupFailed
+          expr: launchpad_session_state{status="cleanup_failed"} > 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: Launchpad has a session in cleanup_failed
+            description: Reconcile the exact persisted cluster and verify zero namespace and Argo CD residue.
+        - alert: LaunchpadWorkshopSeatFailed
+          expr: launchpad_workshop_seats{status="failed"} > 0
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: A workshop contains one or more failed seats
+            description: Use the workshop and seat lifecycle views to isolate the failed stage.
+    - name: launchpad.model.serving
+      rules:
+        - alert: LaunchpadModelEndpointUnavailable
+          expr: |
+            kube_deployment_status_replicas_available{
+              namespace="fleet-llm-d",
+              deployment=~"vllm-granite-3-2-8b-tools|tei-nomic-embed"
+            } < 1
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: Required Arena model endpoint has no available replicas
+            description: Model-dependent catalog items must be excluded from placement.
+        - alert: LaunchpadVLLMQueueSaturated
+          expr: 'vllm:num_requests_waiting > 10'
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: vLLM has more than ten queued requests
+            description: Inspect concurrency, token throughput and latency before admitting another workshop.
+        - alert: LaunchpadGatewayErrorRateHigh
+          expr: |
+            sum(rate(gateway_requests_total{status="error"}[5m]))
+              / clamp_min(sum(rate(gateway_requests_total[5m])), 0.001) > 0.05
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: Inference gateway error rate exceeds five percent
+            description: Compare the selected backend with vLLM queue and endpoint readiness.

@@ -118,7 +118,9 @@
   },
   "infrastructure_observation": {
     "arena_probe_stall_observed": true,
-    "first_correlated_warning_at": "2026-09-08T00:39:12Z",
+    "earliest_correlated_warning_at": "2026-09-08T00:34:02Z",
+    "broad_gnr2_warning_wave_at": "2026-09-08T00:34:24Z",
+    "operator_investigation_sample_at": "2026-09-08T00:39:12Z",
     "affected_components": [
       "multi-agent-seat readiness and liveness probes",
       "fleet model routing probes",
@@ -131,7 +133,7 @@
     "model_restarts": 0,
     "automatic_recovery_observed": true,
     "all_participant_checks_eventually_passed": true,
-    "conclusion": "The exact functional pilot gate passed, but correlated platform-wide probe timeouts make Arena network resilience a release blocker for production certification. Keep rhgnr1 cordoned outside explicitly supervised certification windows."
+    "conclusion": "The exact functional pilot gate passed, but correlated node-local and platform-wide probe timeouts make Arena network resilience a release blocker for production certification. OVN, Multus, and ingress remain diagnostic subjects rather than proven root causes. Keep rhgnr1 cordoned outside explicitly supervised certification windows."
   },
   "post_run_state": {
     "observed_at": "2026-09-08T00:44:40Z",

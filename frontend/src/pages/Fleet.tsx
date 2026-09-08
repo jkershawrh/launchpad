@@ -35,12 +35,13 @@ export default function Fleet() {
   const [alerts, setAlerts] = useState<HealthAlert[]>([]);
   const [selectedCluster, setSelectedCluster] = useState<string | null>(null);
   const [signals, setSignals] = useState<DeepFieldSignal[]>([]);
+  const [observedAt, setObservedAt] = useState(() => Date.now());
 
   useEffect(() => {
     const poll = () => {
       fetch('/api/intelligence/fleet-health', { credentials: 'same-origin' })
         .then(r => r.ok ? r.json() : { clusters: [], alerts: [] })
-        .then(d => { setClusters(d.clusters || []); setAlerts(d.alerts || []); })
+        .then(d => { setClusters(d.clusters || []); setAlerts(d.alerts || []); setObservedAt(Date.now()); })
         .catch(() => null);
     };
     poll();
@@ -49,7 +50,7 @@ export default function Fleet() {
   }, []);
 
   useEffect(() => {
-    if (!selectedCluster) { setSignals([]); return; }
+    if (!selectedCluster) return;
     fetch(`/api/intelligence/cluster/${selectedCluster}/signals`, { credentials: 'same-origin' })
       .then(r => r.ok ? r.json() : { signals: [] })
       .then(d => setSignals(d.signals || []))
@@ -140,7 +141,7 @@ export default function Fleet() {
                       <span className="text-sm font-medium text-white">{c.cluster_name}</span>
                     </div>
                     <span className="text-xs font-mono text-[#6A6E73]">
-                      {c.last_updated ? `${Math.round((Date.now() - new Date(c.last_updated).getTime()) / 1000)}s ago` : ''}
+                      {c.last_updated ? `${Math.max(0, Math.round((observedAt - new Date(c.last_updated).getTime()) / 1000))}s ago` : ''}
                     </span>
                   </div>
                   <div className="space-y-2">

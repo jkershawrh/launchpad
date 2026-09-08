@@ -1,0 +1,255 @@
+{
+  "annotations": {"list": []},
+  "description": "Cluster, workshop, seat lifecycle and model-serving telemetry for the Launchpad pilot. Workflow state comes from Launchpad; infrastructure and LLM trends come from Prometheus.",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "1. Cluster health and capacity",
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Ready workers",
+      "description": "Native OpenShift metric for the selected Prometheus datasource.",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 1},
+      "targets": [{"expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})", "legendFormat": "Ready workers"}]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "CPU headroom",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "percentunit", "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "yellow", "value": 0.15}, {"color": "green", "value": 0.2}]}}},
+      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 1},
+      "targets": [{"expr": "launchpad:cluster:cpu_headroom_ratio", "legendFormat": "CPU"}]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Memory headroom",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "percentunit"}},
+      "gridPos": {"h": 5, "w": 6, "x": 12, "y": 1},
+      "targets": [{"expr": "launchpad:cluster:memory_headroom_ratio", "legendFormat": "Memory"}]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Pod-slot headroom",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "percentunit"}},
+      "gridPos": {"h": 5, "w": 6, "x": 18, "y": 1},
+      "targets": [{"expr": "launchpad:cluster:pod_slot_headroom_ratio", "legendFormat": "Pod slots"}]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Assigned sessions and seats by execution cluster",
+      "description": "Includes remote execution clusters because cluster assignment is exported by the central Launchpad control plane.",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 7, "w": 24, "x": 0, "y": 6},
+      "targets": [
+        {"expr": "launchpad_cluster_active_sessions{cluster=~\"$cluster\"}", "legendFormat": "{{cluster}} sessions"},
+        {"expr": "launchpad_cluster_active_seats{cluster=~\"$cluster\"}", "legendFormat": "{{cluster}} seats"}
+      ]
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "2. Provisioning by lab and seat",
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 13},
+      "panels": []
+    },
+    {
+      "id": 11,
+      "type": "bargauge",
+      "title": "Workshop seat state",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 10, "x": 0, "y": 14},
+      "targets": [{"expr": "sum by (cluster, catalog_item, status) (launchpad_workshop_seats{cluster=~\"$cluster\",catalog_item=~\"$catalog\"})", "legendFormat": "{{catalog_item}} · {{status}}"}]
+    },
+    {
+      "id": 12,
+      "type": "table",
+      "title": "Provisioning duration by lab type",
+      "description": "Aggregate trend by bounded cluster, catalog and outcome labels. Exact workshop and seat drill-down stays in the authenticated Launchpad admin view.",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 14, "x": 10, "y": 14},
+      "targets": [{"expr": "launchpad_session_provision_duration_seconds_max{cluster=~\"$cluster\",catalog_item=~\"$catalog\"}", "format": "table", "instant": true, "legendFormat": "{{catalog_item}} · {{outcome}}"}]
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "3. In-flight work by lab and seat",
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 22},
+      "panels": []
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Seats in flight",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 10, "x": 0, "y": 23},
+      "targets": [{"expr": "launchpad:workshop:inflight_seats{cluster=~\"$cluster\",catalog_item=~\"$catalog\"}", "legendFormat": "{{catalog_item}} · {{status}}"}]
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "Oldest current stage by lab type",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 14, "x": 10, "y": 23},
+      "targets": [{"expr": "launchpad_session_state_age_seconds_max{cluster=~\"$cluster\",catalog_item=~\"$catalog\",status=~\"requested|provisioning|validating|resetting\"}", "format": "table", "instant": true, "legendFormat": "{{catalog_item}} · {{status}}"}]
+    },
+    {
+      "id": 30,
+      "type": "row",
+      "title": "4. Resolution, reclaim, and cleanup",
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 31},
+      "panels": []
+    },
+    {
+      "id": 31,
+      "type": "table",
+      "title": "Reclaim duration by lab type",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 8, "w": 14, "x": 0, "y": 32},
+      "targets": [{"expr": "launchpad_session_resolution_duration_seconds_max{cluster=~\"$cluster\",catalog_item=~\"$catalog\"}", "format": "table", "instant": true, "legendFormat": "{{catalog_item}} · {{outcome}}"}]
+    },
+    {
+      "id": 32,
+      "type": "stat",
+      "title": "Cleanup failures",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}},
+      "gridPos": {"h": 8, "w": 10, "x": 14, "y": 32},
+      "targets": [{"expr": "sum(launchpad_session_state{status=\"cleanup_failed\",cluster=~\"$cluster\"}) or vector(0)", "legendFormat": "cleanup_failed"}]
+    },
+    {
+      "id": 40,
+      "type": "row",
+      "title": "5. LLM serving and usage",
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 40},
+      "panels": []
+    },
+    {
+      "id": 41,
+      "type": "stat",
+      "title": "Model endpoint replicas available",
+      "description": "Live Kubernetes readiness for the Arena vLLM and Text Embeddings Inference deployments.",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 41},
+      "targets": [{"expr": "kube_deployment_status_replicas_available{namespace=\"fleet-llm-d\",deployment=~\"vllm-granite-3-2-8b-tools|tei-nomic-embed\"}", "legendFormat": "{{deployment}}"}]
+    },
+    {
+      "id": 42,
+      "type": "timeseries",
+      "title": "Gateway request and error rate",
+      "description": "Current gateway metrics split by bounded task, backend and status labels.",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 6, "w": 9, "x": 6, "y": 41},
+      "targets": [
+        {"expr": "sum by (task, backend, status) (rate(gateway_requests_total[5m]))", "legendFormat": "{{task}} · {{backend}} · {{status}}"},
+        {"expr": "sum(rate(gateway_requests_total{status=\"error\"}[5m]))", "legendFormat": "all errors"}
+      ]
+    },
+    {
+      "id": 43,
+      "type": "timeseries",
+      "title": "Gateway request latency",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "gridPos": {"h": 6, "w": 9, "x": 15, "y": 41},
+      "targets": [{"expr": "histogram_quantile(0.95, sum by (le, task, backend) (rate(gateway_request_latency_seconds_bucket[5m])))", "legendFormat": "p95 {{task}} · {{backend}}"}]
+    },
+    {
+      "id": 44,
+      "type": "timeseries",
+      "title": "vLLM concurrency and queue",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 7, "w": 8, "x": 0, "y": 47},
+      "targets": [
+        {"expr": "sum(vllm:num_requests_running)", "legendFormat": "running"},
+        {"expr": "sum(vllm:num_requests_waiting)", "legendFormat": "waiting"}
+      ]
+    },
+    {
+      "id": 45,
+      "type": "timeseries",
+      "title": "vLLM input and output tokens",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 7, "w": 8, "x": 8, "y": 47},
+      "targets": [
+        {"expr": "sum(rate(vllm:prompt_tokens_total[5m]))", "legendFormat": "input tokens/s"},
+        {"expr": "sum(rate(vllm:generation_tokens_total[5m]))", "legendFormat": "output tokens/s"}
+      ]
+    },
+    {
+      "id": 46,
+      "type": "timeseries",
+      "title": "Selected route and backend",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 7, "w": 8, "x": 16, "y": 47},
+      "targets": [{"expr": "sum by (task, backend) (rate(gateway_routing_decisions_total[5m]))", "legendFormat": "{{task}} → {{backend}}"}]
+    },
+    {
+      "id": 47,
+      "type": "text",
+      "title": "Known LLM telemetry gaps",
+      "description": "These are release gates, not zero-value signals.",
+      "gridPos": {"h": 5, "w": 24, "x": 0, "y": 54},
+      "options": {
+        "mode": "markdown",
+        "content": "**Not yet end-to-end:** LiteLLM rate-limit rejection counters; exact token usage for OVMS/direct LiteLLM calls; and per-workshop/per-seat inference attribution. Add bounded virtual-key metadata aggregation or exemplars before showing those splits. Never use email, API key, prompt, namespace, participant ID, or raw request ID as a metric label."
+      }
+    },
+    {
+      "id": 48,
+      "type": "timeseries",
+      "title": "vLLM response outcomes",
+      "description": "Completed responses split by the bounded vLLM finish reason and selected model.",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "gridPos": {"h": 7, "w": 12, "x": 0, "y": 59},
+      "targets": [{"expr": "sum by (model_name, finished_reason) (rate(vllm:request_success_total[5m]))", "legendFormat": "{{model_name}} · {{finished_reason}}"}]
+    },
+    {
+      "id": 49,
+      "type": "timeseries",
+      "title": "vLLM end-to-end and first-token latency",
+      "datasource": {"type": "prometheus", "uid": "${datasource}"},
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "gridPos": {"h": 7, "w": 12, "x": 12, "y": 59},
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum by (le, model_name) (rate(vllm:e2e_request_latency_seconds_bucket[5m])))", "legendFormat": "p95 E2E · {{model_name}}"},
+        {"expr": "histogram_quantile(0.95, sum by (le, model_name) (rate(vllm:time_to_first_token_seconds_bucket[5m])))", "legendFormat": "p95 TTFT · {{model_name}}"}
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["launchpad", "workshops", "seats", "openshift", "llm"],
+  "templating": {
+    "list": [
+      {"name": "datasource", "type": "datasource", "query": "prometheus", "label": "Prometheus", "current": {}},
+      {"name": "cluster", "type": "query", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "query": "label_values(launchpad_cluster_target_info, cluster)", "includeAll": true, "allValue": ".*", "multi": true, "refresh": 1},
+      {"name": "catalog", "type": "query", "datasource": {"type": "prometheus", "uid": "${datasource}"}, "query": "label_values(launchpad_sessions{cluster=~\"$cluster\"}, catalog_item)", "includeAll": true, "allValue": ".*", "multi": true, "refresh": 1}
+    ]
+  },
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "title": "Launchpad Workshop Operations",
+  "uid": "launchpad-workshop-operations",
+  "version": 1
+}

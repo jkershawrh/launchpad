@@ -19,6 +19,7 @@ import WorkshopDetail from './pages/WorkshopDetail';
 import EnvironmentRequest from './pages/EnvironmentRequest';
 import { getAppSurface } from './appSurface';
 import PublicAccess from './pages/PublicAccess';
+import Observability from './pages/Observability';
 
 export default function App() {
   const surface = getAppSurface(
@@ -40,6 +41,7 @@ export default function App() {
                 <Route path="/workloads" element={<Workloads />} />
                 <Route path="/feedback" element={<Feedback />} />
                 <Route path="/timing" element={<Timing />} />
+                <Route path="/observability" element={<Observability />} />
                 <Route path="/admin" element={<Admin />} />
               </>
             ) : (
@@ -50,10 +52,10 @@ export default function App() {
                 <Route path="/request" element={<EnvironmentRequest />} />
                 <Route path="/workshops/new" element={<Navigate to="/request?type=workshop" replace />} />
                 <Route path="/workshops" element={<Workshops />} />
-                <Route path="/workshops/:workshopId" element={<WorkshopDetail />} />
                 <Route path="/sessions" element={<Sessions />} />
               </>
             )}
+            <Route path="/workshops/:workshopId" element={<WorkshopDetail />} />
             <Route path="/sessions/:sessionId" element={<SessionDetail />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>

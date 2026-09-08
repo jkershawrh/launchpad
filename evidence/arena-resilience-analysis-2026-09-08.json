@@ -1,0 +1,91 @@
+{
+  "schema": "launchpad.redhat.com/arena-resilience-analysis/v1",
+  "evidence_id": "ARENA-RESILIENCE-20260908-COHORT5",
+  "generated_at": "2026-09-08T01:47:46Z",
+  "source_commit": "9d309b7e08d6685096ca5b554758bb982b58445f",
+  "cluster_ref": "arena",
+  "observation_window": {
+    "started_at": "2026-09-08T01:23:21Z",
+    "completed_at": "2026-09-08T01:36:24Z"
+  },
+  "workload": {
+    "participants": 75,
+    "agent_201": 25,
+    "multi_agent": 25,
+    "serve_llms": 25,
+    "multi_agent_policy_concurrency": 5,
+    "certification_driver_result": "RED-evidence-parser",
+    "parser_defect": "A delayed progress line followed the valid Brutus JSON receipt, so the last-line parser reported zero. All three underlying receipt sets prove 25 of 25 passes. A RED/GREEN regression now selects the last JSON line instead."
+  },
+  "workload_result": {
+    "passed": 75,
+    "failed": 0
+  },
+  "network_resilience_status": "RED-live",
+  "observations": {
+    "api_after_run": {
+      "ready_samples": 5,
+      "failed_samples": 0,
+      "latency_seconds_max": 0.006454
+    },
+    "probe_events": {
+      "event_records": 843,
+      "context_deadline_records": 486,
+      "io_timeout_records": 12,
+      "maximum_namespaces_in_one_node_minute": 41,
+      "gnr2_event_records": 368,
+      "rhgnr1_event_records": 459,
+      "unknown_node_event_records": 16
+    },
+    "nodes": {
+      "gnr2.fm2aihpcsed.com": {
+        "cpu_busy_percent_max": 16.448684,
+        "load1_max": 69.08,
+        "conntrack_ratio_max": 0.103504,
+        "disk_io_busy_ratio_max": 0.004222,
+        "network_receive_drops_per_second_max": 0,
+        "network_errors_per_second_max": 0,
+        "kubelet_exec_sync_p99_seconds": 14.724731,
+        "kubelet_list_containers_p99_seconds": 5.111694,
+        "kubelet_log_context_deadlines": 273,
+        "kubelet_log_io_timeouts": 13
+      },
+      "rhgnr1": {
+        "cpu_busy_percent_max": 2.446065,
+        "load1_max": 58.94,
+        "conntrack_ratio_max": 0.877861,
+        "conntrack_entries_sample": 199044,
+        "conntrack_limit": 262144,
+        "disk_io_busy_ratio_max": 0.456044,
+        "network_receive_drops_per_second_max": 0,
+        "network_errors_per_second_max": 0,
+        "kubelet_exec_sync_p99_seconds": 10.719299,
+        "kubelet_list_containers_p99_seconds": 6.828308,
+        "kubelet_list_podsandbox_p99_seconds": 6.942749,
+        "kubelet_log_context_deadlines": 1269,
+        "kubelet_log_io_timeouts": 5
+      }
+    }
+  },
+  "conclusion": {
+    "causality_proven": false,
+    "finding": "The evidence is inconsistent with host CPU saturation or interface drop/error counters as the sole cause. It is consistent with kubelet/CRI streaming and runtime pressure amplified by many concurrent oc exec operations, while rhgnr1 also carries a separately material conntrack risk above 80 percent. These are strong diagnostic leads, not a proven single root cause.",
+    "production_boundary": "Arena remains not production-certified for network resilience. The 75 participant functions recovered and passed, which supports the internal pilot only with explicit controls and monitoring."
+  },
+  "pilot_controls": {
+    "participant_wave_transport": "HTTPS routes",
+    "deep_admin_concurrency": 5,
+    "policy_restart_concurrency": 5,
+    "rhgnr1_default_state": "cordoned",
+    "workshop_provisioning": "staggered",
+    "participant_operation": "concurrent",
+    "public_access": "separate pending gate"
+  },
+  "next_diagnostics": [
+    "Repeat the 25-seat Multi-Agent participant wave through HTTPS routes while batching kubelet-dependent deep checks.",
+    "Measure conntrack entries by protocol, state, source and destination on rhgnr1 using an approved node diagnostic window.",
+    "Compare kubelet runtime-operation latency and probe deadlines before, during and after the HTTPS-only wave.",
+    "Implement dynamic policy reload so the learning track does not require deployment restarts."
+  ],
+  "contains_plaintext_credentials": false
+}

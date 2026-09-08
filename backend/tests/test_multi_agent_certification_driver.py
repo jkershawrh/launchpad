@@ -51,3 +51,13 @@ def test_multi_agent_live_driver_does_not_pipe_curl_into_early_exit_grep():
     assert 'showroom_index="$(curl' in source
     assert "grep -q 'Build Multi-Agent AI Systems' <<<\"$showroom_index\"" in source
     assert "| grep -q 'Build Multi-Agent AI Systems'" not in source
+
+
+def test_multi_agent_live_driver_can_bound_the_restart_heavy_policy_stage():
+    source = DRIVER.read_text()
+
+    assert "POLICY_CONCURRENCY" in source
+    assert "POLICY_LOCK_DIR" in source
+    assert "acquire_policy_slot" in source
+    assert "release_policy_slot" in source
+    assert 'stage="learner-policy-slot"' in source

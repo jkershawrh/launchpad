@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - granite-3.2-8b-tools.yaml
   - nomic-embed-text-v1.5.yaml
+  - model-observability.yaml

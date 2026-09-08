@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
-import { useBranding } from '../context/BrandingContext';
+import { useBranding } from '../context/useBranding';
 import type { AvailableModel, BrandingProfile, CatalogItem, Tenant } from '../api/types';
 import { defaultModelSelection, toggleModelSelection } from '../modelAccessContract';
 import { participantCatalog } from '../catalogVisibility';
@@ -18,7 +18,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [availableModels, setAvailableModels] = useState<AvailableModel[]>([]);
-  const [modelsLoading, setModelsLoading] = useState(false);
+  const [modelsLoading, setModelsLoading] = useState(true);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
 
   const [form, setForm] = useState({
@@ -49,17 +49,18 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
         setBrandings(brands);
         setLoading(false);
 
-        const selected = orderableCatalog.find(
-          (c) => c.catalog_item_id === form.catalog_item_id,
-        );
-        if (selected && !form.hardware_profile) {
-          setForm((f) => ({
-            ...f,
+        setForm((current) => {
+          const selected = orderableCatalog.find(
+            (c) => c.catalog_item_id === current.catalog_item_id,
+          );
+          if (!selected || current.hardware_profile) return current;
+          return {
+            ...current,
             hardware_profile: selected.default_hardware_profile || '',
             ttl: selected.default_ttl || '4h',
             quota_profile: selected.default_quota_profile || 'standard',
-          }));
-        }
+          };
+        });
       }
     );
   }, []);
@@ -68,11 +69,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
   const isSandbox = selectedCatalog?.category === 'open_sandbox';
 
   useEffect(() => {
-    if (!isSandbox) {
-      setSelectedModels([]);
-      return;
-    }
-    setModelsLoading(true);
+    if (!isSandbox) return;
     api.listAvailableModels()
       .then(({ models }) => {
         setAvailableModels(models);
@@ -81,7 +78,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
       })
       .catch((err: unknown) => setError(err instanceof Error ? err.message : 'Failed to load available models'))
       .finally(() => setModelsLoading(false));
-  }, [isSandbox, selectedCatalog?.catalog_item_id]);
+  }, [isSandbox, selectedCatalog?.catalog_item_id, selectedCatalog?.metadata]);
 
   const primaryColor = brandingProfile?.primary_color || '#EE0000';
   const primaryHoverColor = primaryColor === '#EE0000' ? '#A30000' : primaryColor;

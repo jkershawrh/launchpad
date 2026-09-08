@@ -216,6 +216,8 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: multi-agent
+  annotations:
+    haproxy.router.openshift.io/timeout: 600s
   labels:
     {{- include "multiAgent.labels" . | nindent 4 }}
 spec:
@@ -227,6 +229,8 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: multi-agent-ui
+  annotations:
+    haproxy.router.openshift.io/timeout: 600s
   labels:
     {{- include "multiAgent.labels" . | nindent 4 }}
 spec:

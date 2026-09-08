@@ -1,0 +1,61 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "generated_at": "2026-09-08T01:05:00Z",
+  "git_commit": "9d309b7e08d6685096ca5b554758bb982b58445f",
+  "run_id": "september-17-exact75-run02-20260908",
+  "result": "RED-client-path-unreachable",
+  "started_at": "2026-09-08T01:01:35Z",
+  "completed_at": "2026-09-08T01:04:31Z",
+  "participants_started": 75,
+  "participants_passed": 25,
+  "participants_failed": 50,
+  "groups": {
+    "agent_201": {
+      "cluster": "brutus",
+      "passed": 25,
+      "failed": 0
+    },
+    "multi_agent": {
+      "cluster": "arena",
+      "passed": 0,
+      "failed": 25
+    },
+    "serve_llms": {
+      "cluster": "arena",
+      "passed": 0,
+      "failed": 25
+    }
+  },
+  "client_path": {
+    "arena_api_reachable": false,
+    "arena_ingress_reachable": false,
+    "observed_error": "Arena API and ingress connections timed out from the certification client.",
+    "local_subnet_overlap": true,
+    "route_observation": "The Arena 192.168.1.x API and ingress addresses resolved onto the client's local en4 192.168.1.0/24 route, while the active VPN interface advertised 192.168.3.0/24.",
+    "cluster_control_plane_outage_proven": false
+  },
+  "lab_failure_proven": false,
+  "reason": "The Brutus group completed 25/25 through the already-open Arena control-plane session. Both Arena-local groups failed at their first API or ingress operation, so this receipt proves a certification-client routing failure rather than a catalog, seat, model, or workshop assertion failure.",
+  "safety": {
+    "rhgnr1_cordon_restore_attempted": true,
+    "rhgnr1_cordon_state_at_receipt": "unverified-client-path-down",
+    "bounded_cordon_guard_started": true,
+    "new_orders_started": false,
+    "workshops_reclaimed": false,
+    "remediation": {
+      "observed_at": "2026-09-08T01:09:25Z",
+      "vpn_host_route": "Arena API traffic restored through the VPN interface and gateway.",
+      "arena_api_ready": true,
+      "guardian_attempt": 16,
+      "rhgnr1_ready": true,
+      "rhgnr1_cordoned": true
+    }
+  },
+  "tdd_regression": {
+    "red": "The first reusable driver allowed OpenShift commands to inherit the CLI's unbounded request duration.",
+    "green": "The driver now bounds API requests and retries the rhgnr1 re-cordon guard before returning.",
+    "contract_test": "backend/tests/test_september_17_exact_75_driver.py"
+  },
+  "next_action": "Restore a non-overlapping client route to the Arena API and ingress, verify rhgnr1 is cordoned, then restart the consecutive certification count.",
+  "contains_plaintext_credentials": false
+}

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { CatalogItem } from '../api/types';
-import { useBranding } from '../context/BrandingContext';
+import { useBranding } from '../context/useBranding';
 import StatusBadge from '../components/StatusBadge';
 import { participantCatalog } from '../catalogVisibility';
 

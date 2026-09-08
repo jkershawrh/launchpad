@@ -20,6 +20,7 @@ describe('application surface contract', () => {
   it('exposes operations and admin navigation internally', () => {
     const paths = getNavigation('operations').map((item) => item.path);
     expect(paths).toContain('/fleet');
+    expect(paths).toContain('/observability');
     expect(paths).toContain('/admin');
     expect(paths).not.toContain('/request');
   });

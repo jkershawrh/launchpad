@@ -3,7 +3,7 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers import admin, branding, callbacks, catalog, intelligence, lab_requests, lab_sessions, models, public_access, tenants, workshops
@@ -160,3 +160,26 @@ def health():
 def health_detailed():
     from app.services.health import check_health_detailed
     return check_health_detailed()
+
+
+@app.get("/metrics", include_in_schema=False)
+def prometheus_metrics():
+    """Expose persisted lifecycle state to in-cluster Prometheus.
+
+    The ServiceMonitor reaches the plain backend service.  The public API
+    route remains internal to the pilot network, and the exporter never emits
+    participant, tenant, workshop, seat, namespace, email, or credential labels.
+    """
+    from app.api.deps import provisioning_service
+    from app.services.observability_metrics import render_launchpad_metrics
+
+    registry = provisioning_service.cluster_registry
+    targets = registry.list_all() if registry else []
+    return Response(
+        content=render_launchpad_metrics(
+            sessions=provisioning_service._sessions.values(),
+            workshops=provisioning_service._workshops.values(),
+            cluster_targets=targets,
+        ),
+        media_type="text/plain; version=0.0.4; charset=utf-8",
+    )

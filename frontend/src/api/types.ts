@@ -238,3 +238,144 @@ export interface BrandingProfile {
   theme: string;
   metadata?: Record<string, unknown>;
 }
+
+export interface ClusterObservation {
+  cluster_id: string;
+  cluster_name?: string;
+  healthy: boolean;
+  eligible: boolean;
+  reason?: string;
+  available_cpu_millicores: number;
+  available_memory_mib: number;
+  available_pods: number;
+  active_sessions: number;
+  active_workshops: number;
+  active_seats: number;
+  configured_enabled?: boolean;
+  inspection_only?: boolean;
+}
+
+export interface SeatObservation {
+  seat_number: number;
+  session_id?: string | null;
+  namespace?: string | null;
+  status: string;
+  started_at?: string | null;
+  last_transition_at?: string | null;
+  provisioning_seconds?: number | null;
+  resolution_state: 'none' | 'attention' | 'resolving' | 'resolved';
+  error?: string | null;
+  detail_url?: string | null;
+}
+
+export interface ProvisioningObservation {
+  order_id: string;
+  order_type: 'individual' | 'workshop';
+  name: string;
+  catalog_item_id: string;
+  cluster_ref?: string | null;
+  status: string;
+  started_at?: string | null;
+  seats_requested: number;
+  ready_seats: number;
+  failed_seats: number;
+  inflight_seats: number;
+  status_counts: Record<string, number>;
+  max_ready_seconds?: number | null;
+  oldest_inflight_seconds?: number | null;
+  seats: SeatObservation[];
+  detail_url?: string | null;
+}
+
+export interface InflightObservation {
+  order_id: string;
+  order_type: 'individual' | 'workshop';
+  name: string;
+  catalog_item_id: string;
+  cluster_ref?: string | null;
+  inflight_seats: number;
+  stage_counts: Record<string, number>;
+  oldest_seconds?: number | null;
+  detail_url?: string | null;
+}
+
+export interface ResolutionObservation {
+  order_id: string;
+  order_type: 'individual' | 'workshop';
+  name: string;
+  catalog_item_id: string;
+  cluster_ref?: string | null;
+  seat_number: number;
+  session_id?: string | null;
+  status: string;
+  state: 'attention' | 'resolving' | 'resolved';
+  message?: string | null;
+  last_transition_at?: string | null;
+  detail_url?: string | null;
+}
+
+export interface LlmModelObservation {
+  model_id: string;
+  display_name: string;
+  hardware?: string | null;
+  status: string;
+  desired_replicas: number;
+  ready_replicas: number;
+  route: string;
+  backend?: string | null;
+}
+
+export interface LlmAttributionObservation {
+  order_id: string;
+  order_type: 'individual' | 'workshop';
+  catalog_item_id: string;
+  cluster_ref?: string | null;
+  seat_number: number;
+  session_id: string;
+  namespace?: string | null;
+  model_id: string;
+  requests: number;
+  avg_latency_ms?: number | null;
+  errors: number;
+  rate_limited: number;
+  estimated_tokens: number;
+}
+
+export interface AdminObservability {
+  schema: 'launchpad.admin-observability/v1';
+  generated_at: string;
+  summary: {
+    clusters_healthy: number;
+    clusters_total: number;
+    labs_active: number;
+    seats_active: number;
+    seats_inflight: number;
+    seats_attention: number;
+  };
+  clusters: ClusterObservation[];
+  provisioning: ProvisioningObservation[];
+  inflight: InflightObservation[];
+  resolution: ResolutionObservation[];
+  grafana: {
+    configured: boolean;
+    url?: string | null;
+    purpose: string;
+  };
+  llm: {
+    summary: {
+      models_configured: number;
+      models_running: number;
+      models_healthy: number;
+      requests_observed: number;
+      avg_latency_ms?: number | null;
+      p95_latency_ms?: number | null;
+      errors: number;
+      rate_limited: number;
+      estimated_tokens: number;
+      attributed_requests: number;
+    };
+    models: LlmModelObservation[];
+    attribution: LlmAttributionObservation[];
+    telemetry_gaps: string[];
+  };
+}

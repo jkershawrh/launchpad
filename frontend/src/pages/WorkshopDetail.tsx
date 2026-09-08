@@ -12,12 +12,13 @@ export default function WorkshopDetail() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const load = useCallback(() => api.getWorkshop(workshopId).then(setWorkshop).catch((err) => setError(err instanceof Error ? err.message : 'Unable to load workshop')), [workshopId]);
+  const workshopStatus = workshop?.status;
 
   useEffect(() => {
     void load();
-    const timer = window.setInterval(() => { if (!workshop || !terminalStatuses.has(workshop.status)) void load(); }, 5000);
+    const timer = window.setInterval(() => { if (!workshopStatus || !terminalStatuses.has(workshopStatus)) void load(); }, 5000);
     return () => window.clearInterval(timer);
-  }, [load, workshop?.status]);
+  }, [load, workshopStatus]);
 
   const reclaim = async () => {
     if (!window.confirm('Reclaim every seat and remove all workshop environments?')) return;

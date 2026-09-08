@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
-import { useBranding } from '../context/BrandingContext';
+import { useBranding } from '../context/useBranding';
 import type { CatalogItem, Tenant } from '../api/types';
 import { resolveOpenSandbox } from '../sandboxContract';
 

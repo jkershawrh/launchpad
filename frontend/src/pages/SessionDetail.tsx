@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
-import { useBranding } from '../context/BrandingContext';
+import { useBranding } from '../context/useBranding';
 import type { HandoffPackage, LabSession, OrchestrationDecision, RepeatabilityReport, ShowbackRecord } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
 import { canReclaimSession, workshopIdForSession } from '../labSessionContract';

@@ -23,6 +23,9 @@ data:
   WORKSHOP_STABILITY_PASSES: "3"
   WORKSHOP_CANCEL_WAIT_TIMEOUT: "900"
   WORKSHOP_RECLAIM_CONCURRENCY: "10"
+  # Optional deep link for historical cluster, network and LLM telemetry.
+  # Launchpad remains the source of truth for order and seat lifecycle state.
+  GRAFANA_LAUNCHPAD_DASHBOARD_URL: ""
   ORPHAN_CLEANUP_GRACE_SECONDS: "1800"
   # Orphan deletion remains disabled until an overlay gives this control
   # plane a unique ownership identity.

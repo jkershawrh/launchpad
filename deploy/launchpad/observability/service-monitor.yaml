@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: launchpad-backend
+  labels:
+    app.kubernetes.io/name: launchpad-backend-metrics
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backend
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s

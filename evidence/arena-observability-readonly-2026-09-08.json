@@ -1,0 +1,69 @@
+{
+  "evidence_id": "OBS-ARENA-READONLY-2026-09-08",
+  "captured_at": "2026-09-08T01:13:27Z",
+  "scope": "Arena read-only observability prerequisite inspection",
+  "mutation_performed": false,
+  "cluster_access": {
+    "cluster": "arena",
+    "explicit_kubeconfig_required": true,
+    "default_context_changed": false
+  },
+  "user_workload_monitoring": {
+    "enabled": true,
+    "prometheus_operator_ready": "2/2",
+    "prometheus_user_workload_replicas_ready": "2/2",
+    "thanos_ruler_replicas_ready": "2/2",
+    "observed_container_restarts": 0
+  },
+  "existing_launchpad_monitoring": {
+    "prometheus_rules": [
+      "launchpad-arena-reliability"
+    ],
+    "service_monitors": [],
+    "standalone_grafana_observed": false
+  },
+  "model_serving": {
+    "vllm_granite_3_2_8b_tools": {
+      "desired_replicas": 2,
+      "ready_replicas": 2,
+      "metrics_endpoint_reachable": true,
+      "verified_metrics": [
+        "vllm:num_requests_running",
+        "vllm:num_requests_waiting",
+        "vllm:prompt_tokens_total",
+        "vllm:generation_tokens_total",
+        "vllm:request_success_total",
+        "vllm:time_to_first_token_seconds",
+        "vllm:e2e_request_latency_seconds"
+      ]
+    },
+    "tei_nomic_embed": {
+      "desired_replicas": 1,
+      "ready_replicas": 1,
+      "metrics_endpoint_reachable": true,
+      "metrics_available": false,
+      "prometheus_body_bytes": 0,
+      "reason": "A read-only port-forward returned HTTP 200 from /metrics with an empty body; TEI metrics are not available from this installed build/configuration."
+    }
+  },
+  "repository_candidate": {
+    "launchpad_metrics_exporter": "GREEN-local",
+    "launchpad_service_monitor": "GREEN-render",
+    "model_service_monitors": "GREEN-render",
+    "prometheus_rules": "GREEN-render",
+    "grafana_dashboard": "GREEN-parse",
+    "live_deployment": "NOT_RUN"
+  },
+  "result": "PARTIAL",
+  "blocking_gates": [
+    "Deploy and verify ServiceMonitor targets in Arena user-workload Prometheus.",
+    "Enable TEI metrics or add a compatible exporter; the installed /metrics response is empty.",
+    "Select and authorize a Grafana instance or use OpenShift Observe for the pilot.",
+    "Add authoritative LiteLLM rate-limit, normalized token, and safe inference-attribution instrumentation."
+  ],
+  "sensitive_output": {
+    "secrets_present": false,
+    "participant_identity_present": false,
+    "namespace_or_session_identifiers_present": false
+  }
+}

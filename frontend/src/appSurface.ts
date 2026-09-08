@@ -20,6 +20,7 @@ const OPERATIONS_NAVIGATION: NavigationItem[] = [
   { path: '/workloads', label: 'Workloads' },
   { path: '/feedback', label: 'Feedback' },
   { path: '/timing', label: 'Timing' },
+  { path: '/observability', label: 'Observability' },
   { path: '/admin', label: 'Admin' },
 ];
 

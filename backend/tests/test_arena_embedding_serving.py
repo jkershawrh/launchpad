@@ -61,10 +61,10 @@ def test_arena_embedding_service_is_private_cached_and_pinned():
 
 def test_arena_embedding_service_is_registered_and_deployable_as_a_model_bundle():
     kustomization = yaml.safe_load((ROOT / "deploy/models/arena/kustomization.yaml").read_text())
-    assert set(kustomization["resources"]) == {
+    assert {
         "granite-3.2-8b-tools.yaml",
         "nomic-embed-text-v1.5.yaml",
-    }
+    } <= set(kustomization["resources"])
 
     for filename in ("clusters.yaml", "clusters-arena-cert.yaml"):
         config = yaml.safe_load((ROOT / "config" / filename).read_text())

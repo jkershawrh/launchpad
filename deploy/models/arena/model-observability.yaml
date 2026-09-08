@@ -1,0 +1,33 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vllm-granite-tools
+  namespace: fleet-llm-d
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vllm-granite-3-2-8b-tools
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: tei-nomic-embed
+  namespace: fleet-llm-d
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tei-nomic-embed
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

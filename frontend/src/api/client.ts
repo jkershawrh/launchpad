@@ -1,6 +1,7 @@
 import type {
   BrandingProfile,
   AvailableModelsResponse,
+  AdminObservability,
   CatalogItem,
   HandoffPackage,
   LabRequest,
@@ -74,6 +75,8 @@ export const api = {
   // Intelligence
   getDecision: (requestId: string) =>
     request<OrchestrationDecision>(`/intelligence/decision/${requestId}`),
+  getAdminObservability: () =>
+    request<AdminObservability>('/admin/observability'),
 
   // Workshops
   previewWorkshop: (data: Record<string, unknown>) =>

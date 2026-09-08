@@ -99,6 +99,7 @@ metadata:
   name: tei-nomic-embed
   namespace: fleet-llm-d
   labels:
+    app.kubernetes.io/name: tei-nomic-embed
     app.kubernetes.io/managed-by: launchpad
     app.kubernetes.io/part-of: partner-ai-launchpad
 spec:

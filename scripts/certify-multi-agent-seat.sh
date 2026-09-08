@@ -12,6 +12,42 @@ oc() {
 
 stage="bootstrap"
 policy_config_created=false
+policy_slot=""
+policy_concurrency="${POLICY_CONCURRENCY:-0}"
+policy_lock_dir="${POLICY_LOCK_DIR:-}"
+
+if ! [[ "$policy_concurrency" =~ ^[0-9]+$ ]]; then
+  echo "POLICY_CONCURRENCY must be a non-negative integer" >&2
+  exit 64
+fi
+if [[ "$policy_concurrency" -gt 0 && -z "$policy_lock_dir" ]]; then
+  echo "POLICY_LOCK_DIR is required when POLICY_CONCURRENCY is enabled" >&2
+  exit 64
+fi
+
+acquire_policy_slot() {
+  local slot deadline=$((SECONDS + 900))
+  [[ "$policy_concurrency" -gt 0 ]] || return 0
+  mkdir -p "$policy_lock_dir"
+  while [[ "$SECONDS" -lt "$deadline" ]]; do
+    for ((slot = 1; slot <= policy_concurrency; slot++)); do
+      if mkdir "$policy_lock_dir/slot-${slot}" 2>/dev/null; then
+        policy_slot="$policy_lock_dir/slot-${slot}"
+        return 0
+      fi
+    done
+    sleep 2
+  done
+  echo "timed out waiting for a learner-policy concurrency slot" >&2
+  return 5
+}
+
+release_policy_slot() {
+  if [[ -n "$policy_slot" ]]; then
+    rmdir "$policy_slot" 2>/dev/null || true
+    policy_slot=""
+  fi
+}
 
 cleanup_learner_policy() {
   if [[ "$policy_config_created" == "true" ]]; then
@@ -23,7 +59,7 @@ cleanup_learner_policy() {
 }
 
 trap 'rc=$?; printf "seat_probe_failure stage=${stage} exit_code=${rc}\n" >&2' ERR
-trap 'cleanup_learner_policy >/dev/null 2>&1 || true' EXIT
+trap 'cleanup_learner_policy >/dev/null 2>&1 || true; release_policy_slot' EXIT
 
 oc_exec_json() {
   local container="${1:?container is required}"
@@ -108,6 +144,8 @@ printf '%s' "$participant_ui_journey" | jq -e '
   and .step_count_one == true
 ' >/dev/null
 
+stage="learner-policy-slot"
+acquire_policy_slot
 stage="learner-policy-apply"
 oc create configmap workflow-policy -n "$namespace" \
   --from-literal=AGENT_MAX_TOKENS_OVERRIDE=48 \
@@ -136,6 +174,7 @@ printf '%s' "$policy_ui_journey" | jq -e '
 
 stage="learner-policy-rollback"
 cleanup_learner_policy
+release_policy_slot
 [[ -z "$(oc get configmap workflow-policy -n "$namespace" --ignore-not-found -o name)" ]]
 baseline_max_tokens="$(
   oc exec deployment/multi-agent -c executor -n "$namespace" -- \

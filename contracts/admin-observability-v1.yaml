@@ -1,0 +1,123 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Admin Observability Contract
+  version: 1.0.0
+paths:
+  /api/v1/admin/observability:
+    get:
+      operationId: getAdminObservability
+      summary: Join cluster, order, seat, resolution, and LLM workflow state.
+      description: >-
+        Read-only workflow data for Launchpad Operations. Prometheus and Grafana
+        remain the source of truth for historical resource, network, and latency
+        time series.
+      security: [{openshiftAdmin: []}]
+      responses:
+        '200':
+          description: Versioned operations snapshot.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/AdminObservability'}
+        '403': {description: Administrator access is required.}
+components:
+  securitySchemes:
+    openshiftAdmin: {type: openIdConnect, openIdConnectUrl: /oauth/.well-known/openid-configuration}
+  schemas:
+    AdminObservability:
+      type: object
+      required: [schema, generated_at, summary, clusters, provisioning, inflight, resolution, llm, grafana]
+      properties:
+        schema: {const: launchpad.admin-observability/v1}
+        generated_at: {type: string, format: date-time}
+        summary: {$ref: '#/components/schemas/OperationsSummary'}
+        clusters:
+          type: array
+          items: {$ref: '#/components/schemas/ClusterObservation'}
+        provisioning:
+          type: array
+          items: {$ref: '#/components/schemas/LabObservation'}
+        inflight:
+          type: array
+          items: {type: object, additionalProperties: true}
+        resolution:
+          type: array
+          items: {type: object, additionalProperties: true}
+        llm: {$ref: '#/components/schemas/LlmObservation'}
+        grafana:
+          type: object
+          required: [configured, url, purpose]
+          properties:
+            configured: {type: boolean}
+            url: {type: [string, 'null'], format: uri}
+            purpose: {type: string}
+    OperationsSummary:
+      type: object
+      required: [clusters_healthy, clusters_total, labs_active, seats_active, seats_inflight, seats_attention]
+      properties:
+        clusters_healthy: {type: integer, minimum: 0}
+        clusters_total: {type: integer, minimum: 0}
+        labs_active: {type: integer, minimum: 0}
+        seats_active: {type: integer, minimum: 0}
+        seats_inflight: {type: integer, minimum: 0}
+        seats_attention: {type: integer, minimum: 0}
+    ClusterObservation:
+      type: object
+      required: [cluster_id, healthy, eligible, available_cpu_millicores, available_memory_mib, available_pods, active_sessions, active_workshops, active_seats]
+      properties:
+        cluster_id: {type: string}
+        cluster_name: {type: string}
+        healthy: {type: boolean}
+        eligible: {type: boolean}
+        reason: {type: string}
+        available_cpu_millicores: {type: integer, minimum: 0}
+        available_memory_mib: {type: integer, minimum: 0}
+        available_pods: {type: integer, minimum: 0}
+        active_sessions: {type: integer, minimum: 0}
+        active_workshops: {type: integer, minimum: 0}
+        active_seats: {type: integer, minimum: 0}
+    LabObservation:
+      type: object
+      required: [order_id, order_type, name, catalog_item_id, status, seats_requested, ready_seats, failed_seats, inflight_seats, status_counts, seats]
+      properties:
+        order_id: {type: string}
+        order_type: {enum: [individual, workshop]}
+        name: {type: string}
+        catalog_item_id: {type: string}
+        cluster_ref: {type: [string, 'null']}
+        status: {type: string}
+        seats_requested: {type: integer, minimum: 1}
+        ready_seats: {type: integer, minimum: 0}
+        failed_seats: {type: integer, minimum: 0}
+        inflight_seats: {type: integer, minimum: 0}
+        status_counts: {type: object, additionalProperties: {type: integer}}
+        seats:
+          type: array
+          items: {$ref: '#/components/schemas/SeatObservation'}
+    SeatObservation:
+      type: object
+      required: [seat_number, status, resolution_state]
+      properties:
+        seat_number: {type: integer, minimum: 1}
+        session_id: {type: [string, 'null']}
+        namespace: {type: [string, 'null']}
+        status: {type: string}
+        provisioning_seconds: {type: [integer, 'null'], minimum: 0}
+        resolution_state: {enum: [none, attention, resolving, resolved]}
+        error: {type: [string, 'null']}
+    LlmObservation:
+      type: object
+      required: [summary, models, attribution, telemetry_gaps]
+      properties:
+        summary:
+          type: object
+          required: [models_configured, models_running, models_healthy, requests_observed, errors, rate_limited, estimated_tokens, attributed_requests]
+          additionalProperties: true
+        models:
+          type: array
+          items: {type: object, additionalProperties: true}
+        attribution:
+          type: array
+          items: {type: object, additionalProperties: true}
+        telemetry_gaps:
+          type: array
+          items: {type: string}

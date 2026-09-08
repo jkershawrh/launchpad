@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - service-monitor.yaml
+  - prometheus-rules.yaml
+
+configMapGenerator:
+  - name: launchpad-operations-dashboard
+    files:
+      - launchpad-operations.json
+    options:
+      labels:
+        app.kubernetes.io/name: launchpad-operations-dashboard
+        app.kubernetes.io/part-of: partner-ai-launchpad
+        grafana_dashboard: "1"
+
+generatorOptions:
+  disableNameSuffixHash: true
