@@ -103,7 +103,7 @@ def test_builds_official_chart_application_with_personalized_git_content():
     assert any(tab.get("name") == "RAG Workspace" for tab in ui["tabs"])
 
 
-def test_showroom_application_uses_background_cascade_for_bounded_reclaim():
+def test_showroom_application_leaves_cascade_to_namespace_reclaim():
     app = build_showroom_application(
         ShowroomSeat(
             namespace="launchpad-seat-cleanup-1",
@@ -117,7 +117,7 @@ def test_showroom_application_uses_background_cascade_for_bounded_reclaim():
         )
     )
 
-    assert app["metadata"]["finalizers"] == ["resources-finalizer.argocd.argoproj.io/background"]
+    assert "finalizers" not in app["metadata"]
 
 
 def test_operator_workshop_places_namespace_console_inside_showroom():

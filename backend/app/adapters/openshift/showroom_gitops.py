@@ -203,11 +203,6 @@ def build_showroom_application(
             "name": name,
             "namespace": argocd_namespace,
             "labels": labels,
-            # Launchpad deletes the whole seat namespace after both Argo
-            # Applications are removed.  Foreground cascade made every
-            # Showroom Application wait for the full resource tree and hit
-            # the stale-finalizer recovery timeout at workshop scale.
-            "finalizers": ["resources-finalizer.argocd.argoproj.io/background"],
         },
         "spec": {
             "project": argocd_project,
