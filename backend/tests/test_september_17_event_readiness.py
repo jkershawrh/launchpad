@@ -175,7 +175,7 @@ def test_every_event_catalog_blocks_recently_recovered_workers():
         assert catalog["metadata"]["workshop_node_min_ready_seconds"] == 900
 
 
-def test_brutus_and_excluded_oberon_remain_fail_closed_until_their_gates_pass():
+def test_brutus_is_internal_only_and_excluded_oberon_remains_fail_closed():
     rendered = yaml.safe_load(
         (ROOT / "deploy/launchpad/overlays/arena/arena-clusters.yaml").read_text()
     )
@@ -184,4 +184,5 @@ def test_brutus_and_excluded_oberon_remain_fail_closed_until_their_gates_pass():
 
     assert by_id["arena"].get("enabled", True) is True
     assert by_id["oberon"]["enabled"] is False
-    assert by_id["brutus"]["enabled"] is False
+    assert by_id["brutus"]["enabled"] is True
+    assert by_id["brutus"]["public_access_enabled"] is False

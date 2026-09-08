@@ -274,7 +274,7 @@ def test_repository_cluster_config_registers_remote_targets_fail_closed():
     }
 
 
-def test_arena_overlay_carries_disabled_remote_targets():
+def test_arena_overlay_enables_brutus_for_internal_pilot_only():
     root = Path(__file__).resolve().parents[2]
     document = __import__("yaml").safe_load(
         (root / "deploy/launchpad/overlays/arena/arena-clusters.yaml").read_text()
@@ -285,8 +285,10 @@ def test_arena_overlay_carries_disabled_remote_targets():
     assert set(targets) == {"arena", "oberon", "brutus"}
     assert targets["arena"].get("enabled", True) is True
     assert targets["arena"]["local"] is True
+    assert targets["oberon"]["enabled"] is False
+    assert targets["brutus"]["enabled"] is True
+    assert targets["brutus"]["public_access_enabled"] is False
     for cluster_id in ("oberon", "brutus"):
-        assert targets[cluster_id]["enabled"] is False
         assert targets[cluster_id]["local"] is False
         assert targets[cluster_id]["credential_secret"].startswith(
             "partner-ai-launchpad/launchpad-"

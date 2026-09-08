@@ -64,9 +64,11 @@ created 75 healthy pods, completed all 25 simultaneous three-tool journeys,
 preserved namespace isolation, and reclaimed with zero residue. Its capacity
 preview now supports 30 seats while retaining 20 percent headroom. The
 integrated registry uses a retained 100Gi NFS claim and all three pinned digests
-passed `Always` pull probes after a deliberate registry restart. Brutus remains
-placement-disabled and reserved for emergency use; public access and Console
-OIDC are separate gates.
+passed `Always` pull probes after a deliberate registry restart. On September 8,
+Brutus was enabled for explicitly targeted, supervised internal pilot orders so
+the approved 25-seat Agent 201 placement can be exercised from the Arena control
+plane. Public access and Console OIDC remain disabled and are separate gates;
+this activation is not a production or general-availability promotion.
 
 Oberon is excluded from event execution. Its safe Serve LLMs preview is 19
 seats, and two reclaimed test namespaces remain `Terminating` because stale

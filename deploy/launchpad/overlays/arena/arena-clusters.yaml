@@ -64,7 +64,9 @@ data:
         credential_secret: partner-ai-launchpad/launchpad-brutus-kubeconfig
         local: false
         priority: 20
-        enabled: false
+        # Enabled only for explicitly targeted, supervised internal pilot orders.
+        # Public access remains fail-closed and Oberon remains disabled.
+        enabled: true
         public_access_enabled: false
         public_ingress_domain: ""
         public_console_url: ""
