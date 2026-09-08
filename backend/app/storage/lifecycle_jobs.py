@@ -273,6 +273,7 @@ class InMemoryLifecycleJobStore:
                 update={
                     "status": LifecycleJobStatus.SUCCEEDED,
                     "step": "completed",
+                    "last_error": None,
                     "owner_id": None,
                     "lease_until": None,
                     "updated_at": now,
@@ -703,7 +704,7 @@ class PostgresLifecycleJobStore:
                 return False
             cur.execute(
                 """UPDATE lifecycle_jobs SET status = 'succeeded', step = 'completed',
-                       owner_id = NULL, lease_until = NULL, completed_at = NOW(),
+                       last_error = NULL, owner_id = NULL, lease_until = NULL, completed_at = NOW(),
                        updated_at = NOW() WHERE job_id = %s""",
                 (job.job_id,),
             )

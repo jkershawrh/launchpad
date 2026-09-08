@@ -1,3 +1,4 @@
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
@@ -232,6 +233,38 @@ def test_worker_failure_is_requeued_with_error() -> None:
     persisted = store.list_all()[0]
     assert persisted.status == LifecycleJobStatus.QUEUED
     assert persisted.last_error == "cluster unavailable"
+
+
+def test_successful_retry_clears_stale_lifecycle_error() -> None:
+    now = [datetime.now(UTC)]
+    store = InMemoryLifecycleJobStore(clock=lambda: now[0])
+    LifecycleQueueService(store).enqueue_workshop_provision(workshop())
+    now[0] += timedelta(seconds=1)
+    ready = workshop(status=WorkshopStatus.READY)
+    provisioning = SimpleNamespace(
+        db=None,
+        _workshops={},
+        run_queued_workshop=Mock(
+            side_effect=[RuntimeError("transient failure"), ready]
+        ),
+        reclaim_workshop=Mock(),
+    )
+    worker = LifecycleWorker(
+        store=store,
+        provisioning_service=provisioning,
+        worker_id="worker-a",
+        lease_seconds=30,
+        heartbeat_interval_seconds=60,
+    )
+
+    assert worker.run_once() == "retrying"
+    assert store.list_all()[0].last_error == "transient failure"
+    now[0] += timedelta(seconds=3)
+    assert worker.run_once() == "succeeded"
+
+    persisted = store.list_all()[0]
+    assert persisted.status == LifecycleJobStatus.SUCCEEDED
+    assert persisted.last_error is None
 
 
 def test_worker_does_not_report_success_after_losing_fence() -> None:
