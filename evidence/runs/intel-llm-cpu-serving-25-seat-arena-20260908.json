@@ -1,0 +1,94 @@
+{
+  "schema": "launchpad.redhat.com/catalog-live-certification/v1",
+  "evidence_id": "INTEL-LLM-CPU-SERVING-ARENA-25-20260908-01",
+  "result": "GREEN-live-internal-25-seat",
+  "started_at": "2026-09-08T22:59:48.449479Z",
+  "completed_at": "2026-09-08T22:59:55.187222Z",
+  "source": {
+    "commit": "b56e67dd91e79f8b06d934d250fa05208aab09be",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:0239ef0285022c7e06eef9a8a0c4d02f2cd5d7f16b1491e6ed65049c763c4bc7",
+    "catalog_item": "intel-llm-cpu-serving",
+    "catalog_version": "1.0.2",
+    "cluster_ref": "arena"
+  },
+  "workshop": {
+    "workshop_id": "93aa33dc-e432-42dc-863a-65c61e646f57",
+    "tenant_id": "smoke-test-tenant",
+    "seats_requested": 25,
+    "seats_ready": 25,
+    "validation_failures": 0,
+    "estimated_resources": {
+      "cpu_millicores": 16625,
+      "memory_mib": 37200,
+      "pods": 50
+    },
+    "placement": "entire workshop persisted on arena without splitting"
+  },
+  "proof_methods": {
+    "TDD": "Evidence-contract tests were added RED before this immutable receipt.",
+    "EDD": "Every seat result is retained below without credentials or generated model prose.",
+    "CDD": "The persisted workshop, session, runtime-secret and model response contracts were checked.",
+    "BDD": "Given 25 ready seats, when all participants query the assigned model concurrently, then every call succeeds and every Showroom returns HTTP 200.",
+    "CBT": "Showroom route, participant runtime Secret shape and LiteLLM response were checked independently per seat.",
+    "red_green": "RED was the absence of a current 1.0.2 Arena 25-seat participant proof; GREEN is 25 of 25 passing results.",
+    "matrix": {
+      "workshop_collective_ready": "GREEN-live",
+      "namespace_isolation": "GREEN-live",
+      "showroom_http": "GREEN-live 25/25",
+      "runtime_contract": "GREEN-live 25/25",
+      "model_call": "GREEN-live 25/25",
+      "bulk_reclaim": "GREEN-live 25/25 with zero cluster residue",
+      "public_browser": "RED-not-certified",
+      "lifecycle_ha": "RED-not-certified",
+      "dr_failover": "RED-not-certified"
+    }
+  },
+  "seat_result_digest": "c15b133dc3c70c405ec36c02b230bd138b1ac68adb76a7b7f9de1486d6c72280",
+  "seat_results": [
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-0273b8","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-084133","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-0e4630","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-140999","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-18d162","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-2f247f","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-2fc181","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-3d2894","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-486e96","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-4b8ddd","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-4bb1be","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-662d8f","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-748107","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-86d49f","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-87fec9","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-8f3001","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-958d11","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-96a665","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-a30c93","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-abe159","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-b4efde","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-d2bb19","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-d41eeb","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-dc1b6e","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true},
+    {"namespace":"launchpad-smoke-test-tenant-intel-llm-cpu-serv-ead410","showroom_http":200,"runtime_contract":true,"model":"granite-2b-cpu","model_call":true,"response_model":"granite-2b-cpu","passed":true}
+  ],
+  "cleanup": {
+    "requested_at": "2026-09-08T23:04:03Z",
+    "completed_at": "2026-09-08T23:04:16.994365Z",
+    "observed_at": "2026-09-08T23:04:19Z",
+    "workshop_status": "completed",
+    "seats_reclaimed": 25,
+    "failed_reclaims": 0,
+    "namespace_residue": 0,
+    "argocd_application_residue": 0,
+    "unrelated_public_cert_namespace_preserved": true
+  },
+  "certification_boundary": {
+    "internal_workshop": "certified at 25 seats for Showroom, runtime contract, and one model response per seat",
+    "public_access": "not certified",
+    "browser_trusted_arena_tls": "not certified",
+    "anythingllm_all_seats": "not exercised",
+    "lifecycle_ha": "not certified",
+    "node_ha": "not certified; only one worker schedulable",
+    "dr_failover": "not certified"
+  }
+}

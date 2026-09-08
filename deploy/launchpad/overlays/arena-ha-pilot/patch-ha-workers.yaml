@@ -4,3 +4,30 @@ metadata:
   name: lifecycle-worker
 spec:
   replicas: 2
+  template:
+    spec:
+      # Prefer separate workers as Arena recovers, but keep the process-level
+      # takeover pilot runnable while only one worker node is schedulable.
+      # This does not constitute node-HA evidence.
+      topologySpreadConstraints:
+        - $patch: replace
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/managed-by: kustomize
+              app.kubernetes.io/name: lifecycle-worker
+      containers:
+        - name: lifecycle-worker
+          env:
+            - name: SSL_CERT_FILE
+              value: /etc/launchpad-ca/ca-bundle.crt
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/launchpad-ca/ca-bundle.crt
+            - name: LIFECYCLE_JOB_LEASE_SECONDS
+              value: "30"
+            - name: LIFECYCLE_HEARTBEAT_INTERVAL_SECONDS
+              value: "5"
+            - name: LIFECYCLE_POLL_INTERVAL_SECONDS
+              value: "1"

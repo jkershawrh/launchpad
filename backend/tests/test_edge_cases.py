@@ -104,6 +104,18 @@ class TestStateEdgeCases:
         still_reclaimed = svc.get_session(s.session_id)
         assert still_reclaimed.status == SessionStatus.RECLAIMED
 
+    def test_reclaim_already_reclaimed_is_idempotent_for_worker_takeover(self):
+        svc = _svc()
+        session = _provision(svc)
+
+        first = svc.reclaim_session(session.session_id)
+        event_count = len(first.lifecycle_events)
+        second = svc.reclaim_session(session.session_id)
+
+        assert first.status == SessionStatus.RECLAIMED
+        assert second.status == SessionStatus.RECLAIMED
+        assert len(second.lifecycle_events) == event_count
+
     def test_provision_rejected_request_raises(self):
         svc = _svc()
         r = svc.submit_request(_req(catalog_item_id="does-not-exist"))

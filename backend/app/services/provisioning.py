@@ -1133,6 +1133,13 @@ class ProvisioningService:
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
+        # A replacement lifecycle worker can inherit a reclaim job after the
+        # prior owner deleted every resource and persisted the terminal state,
+        # but before it completed the durable job record. Treat that replay as
+        # success instead of attempting the invalid reclaimed -> resetting
+        # transition or repeating external cleanup side effects.
+        if session.status == SessionStatus.RECLAIMED:
+            return session
         if session.status not in (SessionStatus.RESETTING, SessionStatus.CLEANUP_FAILED):
             session = transition(session, SessionStatus.RESETTING, reason="cleanup started")
             self._save_session(session)

@@ -17,8 +17,12 @@ spec:
             matchLabels:
               kubernetes.io/metadata.name: partner-ai-launchpad
           podSelector:
-            matchLabels:
-              app.kubernetes.io/name: backend
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - backend
+                  - lifecycle-worker
       ports:
         - protocol: TCP
           port: 8080

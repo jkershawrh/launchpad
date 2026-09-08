@@ -34,8 +34,51 @@ def test_arena_ha_overlay_has_two_workers_and_no_direct_reconciler() -> None:
 
     assert config["data"]["LIFECYCLE_HA_ENABLED"] == "true"
     assert worker["spec"]["replicas"] == 2
+    assert worker["spec"]["template"]["spec"]["topologySpreadConstraints"] == [
+        {
+            "maxSkew": 1,
+            "topologyKey": "kubernetes.io/hostname",
+            "whenUnsatisfiable": "ScheduleAnyway",
+            "labelSelector": {
+                "matchLabels": {
+                    "app.kubernetes.io/managed-by": "kustomize",
+                    "app.kubernetes.io/name": "lifecycle-worker",
+                }
+            },
+        }
+    ]
+    worker_container = next(
+        item
+        for item in worker["spec"]["template"]["spec"]["containers"]
+        if item["name"] == "lifecycle-worker"
+    )
+    worker_env = {item["name"]: item.get("value") for item in worker_container["env"]}
+    assert worker_env["SSL_CERT_FILE"] == "/etc/launchpad-ca/ca-bundle.crt"
+    assert worker_env["REQUESTS_CA_BUNDLE"] == "/etc/launchpad-ca/ca-bundle.crt"
+    assert worker_env["LIFECYCLE_JOB_LEASE_SECONDS"] == "30"
+    assert worker_env["LIFECYCLE_HEARTBEAT_INTERVAL_SECONDS"] == "5"
+    assert worker_env["LIFECYCLE_POLL_INTERVAL_SECONDS"] == "1"
     assert scheduler["spec"]["suspend"] is False
     assert legacy["spec"]["suspend"] is True
+
+
+def test_arena_model_network_policy_allows_api_and_lifecycle_workers() -> None:
+    policy = yaml.safe_load(
+        (ROOT / "deploy/launchpad/overlays/arena/fleet-model-access.yaml").read_text()
+    )
+
+    assert policy["metadata"]["namespace"] == "fleet-llm-d"
+    control_plane_source = policy["spec"]["ingress"][0]["from"][0]
+    assert control_plane_source["namespaceSelector"]["matchLabels"] == {
+        "kubernetes.io/metadata.name": "partner-ai-launchpad"
+    }
+    assert control_plane_source["podSelector"]["matchExpressions"] == [
+        {
+            "key": "app.kubernetes.io/name",
+            "operator": "In",
+            "values": ["backend", "lifecycle-worker"],
+        }
+    ]
 
 
 def test_flightpath_dr_overlay_is_passive_and_contains_no_credentials() -> None:

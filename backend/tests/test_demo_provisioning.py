@@ -282,9 +282,12 @@ def test_demo_reclaim_already_reclaimed():
     session = _full_demo_lifecycle(svc)
     session = svc.activate_session(session.session_id)
     session = svc.reset_session(session.session_id)
-    svc.reclaim_session(session.session_id)
-    with pytest.raises(Exception):
-        svc.reclaim_session(session.session_id)
+    first = svc.reclaim_session(session.session_id)
+    event_count = len(first.lifecycle_events)
+    replay = svc.reclaim_session(session.session_id)
+
+    assert replay.status == SessionStatus.RECLAIMED
+    assert len(replay.lifecycle_events) == event_count
 
 
 # ─── C12: API demo launch ──────────────────────────────────────────────────────
