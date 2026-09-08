@@ -237,3 +237,15 @@ export interface SessionDiagnostics {
   health_checks: Array<Record<string, unknown>>;
   recent_logs: string;
 }
+
+export interface CatalogReclaimResult {
+  catalog_item_id: string;
+  requested_count: number;
+  reclaimed_count: number;
+  failed_count: number;
+  results: Array<{
+    session_id: string;
+    status: string;
+    error?: string;
+  }>;
+}

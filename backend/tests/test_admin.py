@@ -269,3 +269,46 @@ def test_api_force_reclaim(client):
 def test_api_force_reclaim_404(client):
     resp = client.post("/api/v1/admin/sessions/nonexistent/force-reclaim")
     assert resp.status_code == 404
+
+
+def test_bulk_force_reclaim_catalog_reclaims_every_matching_session_only(client):
+    first = _provision_session()
+    second = _provision_session()
+    unrelated = second.model_copy(
+        update={
+            "session_id": "unrelated-session",
+            "request_id": "unrelated-request",
+            "catalog_item_id": "rag-on-xeon",
+        }
+    )
+    provisioning_service._sessions[unrelated.session_id] = unrelated
+
+    response = client.post(
+        "/api/v1/admin/catalog/inference-overdrive-quickstart/force-reclaim"
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+    assert result["requested_count"] == 2
+    assert result["reclaimed_count"] == 2
+    assert result["failed_count"] == 0
+    assert {item["session_id"] for item in result["results"]} == {
+        first.session_id,
+        second.session_id,
+    }
+    assert provisioning_service.get_session(unrelated.session_id).status != (
+        SessionStatus.RECLAIMED
+    )
+
+
+def test_bulk_force_reclaim_catalog_is_idempotent(client):
+    response = client.post("/api/v1/admin/catalog/no-sessions/force-reclaim")
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "catalog_item_id": "no-sessions",
+        "requested_count": 0,
+        "reclaimed_count": 0,
+        "failed_count": 0,
+        "results": [],
+    }

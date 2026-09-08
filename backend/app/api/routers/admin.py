@@ -122,6 +122,12 @@ def force_reclaim(session_id: str):
         raise HTTPException(404, str(e))
 
 
+@router.post("/catalog/{catalog_item_id}/force-reclaim")
+def force_reclaim_catalog_sessions(catalog_item_id: str) -> Dict[str, Any]:
+    """Force-reclaim all active and failed sessions for one catalog item."""
+    return provisioning_service.force_reclaim_catalog_sessions(catalog_item_id)
+
+
 @router.get("/sessions/{session_id}/diagnostics")
 def session_diagnostics(session_id: str) -> Dict[str, Any]:
     session = provisioning_service.get_session(session_id)

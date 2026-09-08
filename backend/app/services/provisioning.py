@@ -990,6 +990,102 @@ class ProvisioningService:
         self._save_session(session)
         return session
 
+    def force_reclaim_catalog_sessions(self, catalog_item_id: str) -> dict:
+        """Reclaim every non-reclaimed session for one catalog item.
+
+        Workshop-backed sessions use the workshop lifecycle so queued workers
+        are stopped and the aggregate record remains consistent. Standalone
+        sessions use the existing force-reclaim path with cleanup verification.
+        The operation is idempotent when a catalog has no remaining sessions.
+        """
+        targets = [
+            session
+            for session in self._sessions.values()
+            if session.catalog_item_id == catalog_item_id
+            and session.status != SessionStatus.RECLAIMED
+        ]
+        target_ids = {session.session_id for session in targets}
+        workshop_ids: set[str] = set()
+        for session in targets:
+            request = self._requests.get(session.request_id)
+            workshop_id = str(
+                (request.metadata or {}).get("workshop_id", "") if request else ""
+            ).strip()
+            if workshop_id and workshop_id in self._workshops:
+                workshop_ids.add(workshop_id)
+        for workshop_id, workshop in self._workshops.items():
+            if target_ids.intersection(workshop.session_ids):
+                workshop_ids.add(workshop_id)
+
+        failures: dict[str, str] = {}
+        for workshop_id in sorted(workshop_ids):
+            try:
+                self.queue_workshop_reclaim(workshop_id)
+                self.reclaim_workshop(workshop_id)
+            except Exception as exc:  # noqa: BLE001 - report every failed group cleanup
+                logger.exception(
+                    "Catalog bulk force-reclaim failed for workshop %s", workshop_id
+                )
+                workshop = self._workshops.get(workshop_id)
+                for session_id in workshop.session_ids if workshop else []:
+                    if session_id in target_ids:
+                        failures[session_id] = str(exc)
+
+        remaining = [
+            session_id
+            for session_id in target_ids
+            if self._sessions.get(session_id)
+            and self._sessions[session_id].status != SessionStatus.RECLAIMED
+        ]
+        concurrency = max(
+            1, min(10, int(os.environ.get("WORKSHOP_RECLAIM_CONCURRENCY", "10")))
+        )
+        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+            futures = {
+                executor.submit(
+                    self.force_reclaim_session,
+                    session_id,
+                    require_cleanup_success=True,
+                ): session_id
+                for session_id in remaining
+            }
+            for future in as_completed(futures):
+                session_id = futures[future]
+                try:
+                    result = future.result()
+                    if result.status != SessionStatus.RECLAIMED:
+                        failures[session_id] = (
+                            result.lifecycle_events[-1].reason
+                            if result.lifecycle_events
+                            else f"cleanup ended in {result.status.value}"
+                        )
+                    else:
+                        failures.pop(session_id, None)
+                except Exception as exc:  # noqa: BLE001 - aggregate partial failures
+                    failures[session_id] = str(exc)
+
+        results = []
+        for session in targets:
+            current = self._sessions.get(session.session_id, session)
+            error = failures.get(session.session_id)
+            results.append(
+                {
+                    "session_id": session.session_id,
+                    "status": current.status.value,
+                    "error": error,
+                }
+            )
+        reclaimed_count = sum(
+            item["status"] == SessionStatus.RECLAIMED.value for item in results
+        )
+        return {
+            "catalog_item_id": catalog_item_id,
+            "requested_count": len(targets),
+            "reclaimed_count": reclaimed_count,
+            "failed_count": len(results) - reclaimed_count,
+            "results": results,
+        }
+
     def _scrub_credentials(self, session: LabSession) -> LabSession:
         scrubbed_resources = {
             k: v for k, v in session.resources.items()

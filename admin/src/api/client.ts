@@ -87,6 +87,11 @@ export const api = {
     request<{ success: boolean }>(`/admin/system/containers/${name}/restart`, { method: 'POST' }),
   forceReclaimSession: (id: string) =>
     request<LabSession>(`/admin/sessions/${id}/force-reclaim`, { method: 'POST' }),
+  forceReclaimCatalog: (catalogItemId: string) =>
+    request<import('./types').CatalogReclaimResult>(
+      `/admin/catalog/${encodeURIComponent(catalogItemId)}/force-reclaim`,
+      { method: 'POST' },
+    ),
   getSessionDiagnostics: (id: string) =>
     request<SessionDiagnostics>(`/admin/sessions/${id}/diagnostics`),
   addCatalogItem: (data: Partial<CatalogItem>) =>
