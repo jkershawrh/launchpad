@@ -37,3 +37,19 @@ def test_admin_labels_bounded_and_estimated_data_honestly() -> None:
     assert "Recent Sessions by Tenant" in dashboard
     assert "Estimated showback" in reports
     assert "measured per-seat telemetry is connected" in reports
+
+
+def test_admin_uses_partner_launchpad_dark_theme_contract() -> None:
+    """The admin content must share the requester portal's dark visual language."""
+
+    styles = (ROOT / "admin/src/index.css").read_text()
+    layout = (ROOT / "admin/src/components/AdminLayout.tsx").read_text()
+
+    assert "--brand-dark: #151515" in styles
+    assert "--brand-surface: #212121" in styles
+    assert "--brand-border-light: #333" in styles
+    assert "--brand-link: #58A6E7" in styles
+    assert '.admin-shell main [class~="bg-white"]' in styles
+    assert '.admin-shell main [class~="text-[#151515]"]' in styles
+    assert 'className="admin-shell min-h-screen' in layout
+    assert "Launchpad Operations" in layout

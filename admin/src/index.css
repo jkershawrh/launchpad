@@ -1,15 +1,117 @@
 @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;500;600;700&family=Red+Hat+Text:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
+:root {
+  --brand-primary: #EE0000;
+  --brand-secondary: #0071C5;
+  --brand-dark: #151515;
+  --brand-surface: #212121;
+  --brand-surface-deep: #1A1A1A;
+  --brand-border: #2e2e2e;
+  --brand-border-light: #333;
+  --brand-text: #F5F5F5;
+  --brand-muted: #A3A3A3;
+  --brand-subtle: #6A6E73;
+  --brand-link: #58A6E7;
+  --brand-green: #3E8635;
+  --brand-red: #C9190B;
+  --brand-amber: #F0AB00;
+}
+
 body {
   margin: 0;
   font-family: 'Red Hat Text', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #151515;
-  color: #e0e0e0;
+  background: var(--brand-dark);
+  color: var(--brand-text);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Red Hat Display', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/*
+ * The admin pages predate the participant portal and still carry their original
+ * PatternFly-light utility classes. Keep their component markup stable while
+ * presenting both surfaces through one Launchpad theme. Scoping these mappings
+ * to the admin shell prevents status colors and the shared header from changing.
+ */
+.admin-shell main {
+  background: var(--brand-dark);
+  color: var(--brand-text);
+}
+
+.admin-shell main h1,
+.admin-shell main h2,
+.admin-shell main h3,
+.admin-shell main [class~="text-[#151515]"] {
+  color: var(--brand-text) !important;
+}
+
+.admin-shell main [class~="text-[#6A6E73]"] {
+  color: var(--brand-muted) !important;
+}
+
+.admin-shell main [class~="text-gray-700"],
+.admin-shell main [class~="text-gray-600"] {
+  color: #D2D2D2 !important;
+}
+
+.admin-shell main [class~="text-gray-400"],
+.admin-shell main [class~="text-gray-300"] {
+  color: var(--brand-muted) !important;
+}
+
+.admin-shell main [class~="bg-white"] {
+  background-color: var(--brand-surface) !important;
+}
+
+.admin-shell main [class*="bg-[#F0F0F0]"] {
+  background-color: var(--brand-surface-deep) !important;
+}
+
+.admin-shell main [class~="border-[#D2D2D2]"],
+.admin-shell main [class~="border-[#F0F0F0]"],
+.admin-shell main [class~="border-gray-50"],
+.admin-shell main [class~="bg-white"][class~="border"] {
+  border-color: var(--brand-border-light) !important;
+}
+
+.admin-shell main [class~="text-[#0068B5]"] {
+  color: var(--brand-link) !important;
+}
+
+.admin-shell main [class*="hover:bg-gray-50"]:hover,
+.admin-shell main [class*="hover:bg-[#F0F0F0]"]:hover {
+  background-color: rgb(255 255 255 / 0.05) !important;
+}
+
+.admin-shell main input,
+.admin-shell main select,
+.admin-shell main textarea {
+  background-color: var(--brand-dark);
+  border-color: #555 !important;
+  color: var(--brand-text);
+  color-scheme: dark;
+}
+
+.admin-shell main input::placeholder,
+.admin-shell main textarea::placeholder {
+  color: var(--brand-subtle);
+}
+
+.admin-shell main [class~="bg-green-50"] {
+  background-color: #16251A !important;
+  color: #8BCB82 !important;
+}
+
+.admin-shell main [class~="bg-red-50"] {
+  background-color: #2B1717 !important;
+  color: #FF8D85 !important;
+}
+
+.admin-shell main [class~="bg-yellow-50"] {
+  background-color: #2B2414 !important;
+  color: #F8C95E !important;
 }

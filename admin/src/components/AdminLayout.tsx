@@ -15,7 +15,7 @@ export default function AdminLayout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-[#151515] flex flex-col">
+    <div className="admin-shell min-h-screen bg-[#151515] flex flex-col">
       <header className="border-b border-[#333] bg-[#151515] text-white">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -26,7 +26,7 @@ export default function AdminLayout() {
                 <IntelLogo height={18} />
               </Link>
               <span className="text-[#333] mx-2">|</span>
-              <span className="text-white text-sm font-semibold" style={{ fontFamily: 'Red Hat Display' }}>Partner AI Launchpad</span>
+              <span className="text-white text-sm font-semibold" style={{ fontFamily: 'Red Hat Display' }}>Launchpad Operations</span>
               <span className="text-[11px] font-medium bg-white/15 px-2 py-1 rounded">ADMIN</span>
             </div>
             <nav className="flex gap-1">
@@ -56,7 +56,7 @@ export default function AdminLayout() {
 
       <footer className="border-t border-[#333] bg-[#151515] text-[#6A6E73] text-sm py-6">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 opacity-60">
             <RedHatLogo height={18} />
             <span className="text-white text-sm font-bold mx-1">X</span>
             <IntelLogo height={14} />
