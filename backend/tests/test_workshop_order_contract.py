@@ -126,6 +126,43 @@ def test_workshop_uses_typed_lifecycle_status():
     assert workshop.seats == []
 
 
+def test_workshop_order_defaults_name_to_catalog_display_name():
+    catalog = _catalog_with_workshop_limit(25)
+    item = catalog.get_item("guided-rag-on-xeon")
+    item.display_name = "Guided RAG on Intel Xeon"
+    catalog.get_item = lambda _item_id: item
+    service = ProvisioningService(catalog=catalog)
+
+    order = service.create_workshop_order(
+        Workshop(
+            tenant_id="tenant",
+            catalog_item_id="guided-rag-on-xeon",
+            num_users=2,
+        )
+    )
+
+    assert order.name == "Guided RAG on Intel Xeon"
+
+
+def test_workshop_order_preserves_explicit_api_name():
+    catalog = _catalog_with_workshop_limit(25)
+    item = catalog.get_item("guided-rag-on-xeon")
+    item.display_name = "Guided RAG on Intel Xeon"
+    catalog.get_item = lambda _item_id: item
+    service = ProvisioningService(catalog=catalog)
+
+    order = service.create_workshop_order(
+        Workshop(
+            tenant_id="tenant",
+            catalog_item_id="guided-rag-on-xeon",
+            num_users=2,
+            name="Explicit API workshop name",
+        )
+    )
+
+    assert order.name == "Explicit API workshop name"
+
+
 def test_create_workshop_is_idempotent_for_same_tenant_and_key():
     payload = {
         "tenant_id": "idempotent-tenant",

@@ -14,7 +14,7 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
-    name: '', owner_id: '', tenant_id: '', catalog_item_id: 'openshift-operators-workshop', num_users: 25, ttl: '4h', exposure_policy: 'internal',
+    owner_id: '', tenant_id: '', catalog_item_id: 'openshift-operators-workshop', num_users: 25, ttl: '4h', exposure_policy: 'internal',
   });
 
   useEffect(() => {
@@ -68,7 +68,6 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
     {error && <div className="mb-6 rounded border border-[#C9190B]/50 bg-[#C9190B]/15 px-4 py-3 text-sm text-red-200">{error}</div>}
 
     <div className="space-y-6">
-      <label className={label}>Workshop name<input className={field} value={form.name} onChange={(e) => setForm({...form, name:e.target.value})} placeholder="e.g., Intel partner enablement" /></label>
       <label className={label}>Instructor ID<input required className={field} value={form.owner_id} onChange={(e) => setForm({...form, owner_id:e.target.value})} placeholder="e.g., instructor-1" /></label>
       <label className={label}>Tenant<select required className={field} value={form.tenant_id} onChange={(e) => setForm({...form, tenant_id:e.target.value})}><option value="">Select a tenant...</option>{tenants.map((t)=><option key={t.tenant_id} value={t.tenant_id}>{t.display_name}</option>)}</select></label>
       <label className={label}>Lab<select className={field} value={form.catalog_item_id} onChange={(e) => { const catalog_item_id = e.target.value; const item = catalog.find((candidate) => candidate.catalog_item_id === catalog_item_id); const configured = Number(item?.metadata?.max_workshop_seats ?? MAX_WORKSHOP_SEATS); const maximum = Number.isInteger(configured) ? Math.min(MAX_WORKSHOP_SEATS, Math.max(1, configured)) : MAX_WORKSHOP_SEATS; setForm({...form, catalog_item_id, num_users: Math.min(form.num_users, maximum)}); setPreview(null); }}>{catalog.map((c)=><option key={c.catalog_item_id} value={c.catalog_item_id}>{c.display_name}</option>)}</select></label>

@@ -1052,6 +1052,16 @@ class ProvisioningService:
         }
         return hashlib.sha256(json.dumps(order, sort_keys=True).encode()).hexdigest()
 
+    def _with_default_workshop_name(self, workshop: Workshop) -> Workshop:
+        """Use the catalog title when the caller does not supply an API name."""
+        if workshop.name and workshop.name.strip():
+            return workshop
+        catalog_item = self.catalog.get_item(workshop.catalog_item_id)
+        display_name = getattr(catalog_item, "display_name", None) if catalog_item else None
+        return workshop.model_copy(
+            update={"name": display_name or workshop.catalog_item_id}
+        )
+
     @staticmethod
     def _workshop_seats(workshop: Workshop) -> list[WorkshopSeat]:
         if len(workshop.seats) == workshop.num_users:
@@ -1283,6 +1293,7 @@ class ProvisioningService:
     def create_workshop_order(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:
+        workshop = self._with_default_workshop_name(workshop)
         self._validate_workshop_seat_limit(workshop)
         fingerprint = self._workshop_order_fingerprint(workshop)
         if idempotency_key:
@@ -1616,6 +1627,7 @@ class ProvisioningService:
     def provision_workshop(
         self, workshop: Workshop, idempotency_key: str = None
     ) -> Workshop:
+        workshop = self._with_default_workshop_name(workshop)
         provision_event = self._workshop_provision_events.setdefault(
             workshop.workshop_id, threading.Event()
         )

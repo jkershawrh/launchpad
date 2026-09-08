@@ -73,9 +73,7 @@ describe('requester workshop order journey', () => {
     render(<MemoryRouter><WorkshopOrderForm /></MemoryRouter>);
 
     await screen.findByRole('option', { name: 'Build Multi-Agent AI Systems' });
-    fireEvent.change(screen.getByLabelText('Workshop name'), {
-      target: { value: 'September pilot' },
-    });
+    expect(screen.queryByLabelText('Workshop name')).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Instructor ID'), {
       target: { value: 'instructor-1' },
     });
@@ -102,6 +100,9 @@ describe('requester workshop order journey', () => {
     );
     expect(vi.mocked(api.previewWorkshop).mock.calls[0][0]).not.toHaveProperty(
       'target_cluster',
+    );
+    expect(vi.mocked(api.previewWorkshop).mock.calls[0][0]).not.toHaveProperty(
+      'name',
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Create workshop order' }));
