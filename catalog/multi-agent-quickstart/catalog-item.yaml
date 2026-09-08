@@ -5,7 +5,7 @@ description: 'Follow three learning tracks in one environment: study the local m
   blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry, guardrails, and service
   authentication on Intel infrastructure.'
 category: guided_build
-version: 0.2.5
+version: 0.2.6
 status: active
 required_capabilities:
 - openshift
@@ -55,7 +55,7 @@ metadata:
   showroom_title: Build Multi-Agent AI Systems with Open Protocols
   namespace_slug: multi-agent
   showroom_content_repo_url: https://github.com/rhpds/launchpad.git
-  showroom_content_ref: 24d73e87efa3546a1e0118d8d01f67f278b9e8fb
+  showroom_content_ref: 6aa0e07f6111bc81b37025cbbf4412f171e13867
   showroom_content_playbook: site-multi-agent-quickstart.yml
   showroom_content_start_path: content-multi-agent-quickstart
   showroom_terminal_storage: false
@@ -100,7 +100,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/rhpds/launchpad.git
-  workload_revision: 24d73e87efa3546a1e0118d8d01f67f278b9e8fb
+  workload_revision: 6aa0e07f6111bc81b37025cbbf4412f171e13867
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: deploy/workloads/multi-agent-seat
@@ -130,7 +130,7 @@ metadata:
     orchestrator: multi-agent
   workload_readiness: []
   source_content_repo: https://github.com/rhpds/launchpad.git
-  source_content_revision: 24d73e87efa3546a1e0118d8d01f67f278b9e8fb
+  source_content_revision: 6aa0e07f6111bc81b37025cbbf4412f171e13867
   source_references:
     original_lab:
       repo_url: https://github.com/jkershawrh/multi-agent-quickstart.git

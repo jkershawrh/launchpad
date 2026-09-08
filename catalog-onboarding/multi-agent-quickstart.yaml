@@ -10,7 +10,7 @@ catalog:
     advanced blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry,
     guardrails, and service authentication on Intel infrastructure.
   category: guided_build
-  version: "0.2.5"
+  version: "0.2.6"
   status: active
   supported_branding:
     - redhat-intel-default
@@ -19,12 +19,12 @@ catalog:
 sources:
   showroom:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "24d73e87efa3546a1e0118d8d01f67f278b9e8fb"
+    revision: "6aa0e07f6111bc81b37025cbbf4412f171e13867"
     playbook: site-multi-agent-quickstart.yml
     start_path: content-multi-agent-quickstart
   workload:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "24d73e87efa3546a1e0118d8d01f67f278b9e8fb"
+    revision: "6aa0e07f6111bc81b37025cbbf4412f171e13867"
     deploy_path: deploy/workloads/multi-agent-seat
 
 references:

@@ -23,7 +23,7 @@ def test_multi_agent_quickstart_is_active_for_internal_event_orders():
     assert catalog == build_catalog_item(intake)
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert catalog["display_name"] == "Build Multi-Agent AI Systems with Open Protocols"
-    assert catalog["version"] == "0.2.5"
+    assert catalog["version"] == "0.2.6"
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
     assert catalog["metadata"]["activation_blockers"] == []
@@ -50,7 +50,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
     }
     assert metadata["workload_repo"] == "https://github.com/rhpds/launchpad.git"
     assert metadata["workload_revision"] == (
-        "24d73e87efa3546a1e0118d8d01f67f278b9e8fb"
+        "6aa0e07f6111bc81b37025cbbf4412f171e13867"
     )
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
     assert metadata["workload_source_kind"] == "launchpad-seat-chart"
