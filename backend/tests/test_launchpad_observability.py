@@ -215,6 +215,33 @@ def test_arena_models_are_discoverable_without_exposing_model_metrics_publicly()
         assert "namespaceSelector" not in monitor["spec"]
 
 
+def test_arena_model_network_policies_admit_user_workload_prometheus():
+    model_dir = ROOT / "deploy/models/arena"
+    policies = []
+    for name in ("granite-3.2-8b-tools.yaml", "nomic-embed-text-v1.5.yaml"):
+        policies.extend(
+            item
+            for item in yaml.safe_load_all((model_dir / name).read_text())
+            if item and item.get("kind") == "NetworkPolicy"
+        )
+
+    monitored = {
+        "allow-launchpad-to-granite-tools",
+        "allow-launchpad-to-nomic-embed",
+    }
+    for policy in policies:
+        if policy["metadata"]["name"] not in monitored:
+            continue
+        namespaces = {
+            source.get("namespaceSelector", {}).get("matchLabels", {}).get(
+                "kubernetes.io/metadata.name"
+            )
+            for ingress in policy["spec"]["ingress"]
+            for source in ingress.get("from", [])
+        }
+        assert "openshift-user-workload-monitoring" in namespaces
+
+
 def test_observability_decision_records_available_llm_signals_and_gaps():
     content = (ROOT / "docs/observability-architecture.md").read_text()
     for phrase in (
