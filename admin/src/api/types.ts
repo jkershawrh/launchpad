@@ -159,12 +159,43 @@ export interface OrchestrationDecision {
 }
 
 export interface ClusterCapacity {
+  cluster_id?: string;
   cluster_name: string;
-  score: number;
+  score?: number;
   cpu_utilization?: number;
   gpu_available?: boolean;
   health_status: string;
-  last_updated: string;
+  healthy?: boolean;
+  eligible?: boolean;
+  reason?: string;
+  configured_enabled?: boolean;
+  inspection_only?: boolean;
+  available_cpu_millicores?: number;
+  available_memory_mib?: number;
+  available_pods?: number;
+  active_sessions?: number;
+  active_workshops?: number;
+  active_seats?: number;
+  capabilities?: string[];
+  ingress_domain?: string;
+  last_updated?: string;
+}
+
+export interface DetailedHealthCheck {
+  status: string;
+  [key: string]: string | number | boolean | undefined;
+}
+
+export interface DetailedSystemHealth {
+  status: string;
+  checks: Record<string, DetailedHealthCheck>;
+  timestamp: string;
+  uptime_seconds: number;
+}
+
+export interface ClusterPreflightResponse {
+  mutates_cluster: false;
+  clusters: ClusterCapacity[];
 }
 
 export interface HealthAlert {

@@ -2,8 +2,10 @@ import type {
   BrandingProfile,
   CatalogItem,
   ClusterCapacity,
+  ClusterPreflightResponse,
   ContainerInfo,
   ContainerLogs,
+  DetailedSystemHealth,
   FeedbackSummary,
   HandoffPackage,
   HealthAlert,
@@ -76,6 +78,8 @@ export const api = {
 
   // Admin
   getSystemStatus: () => request<SystemStatus>('/admin/system/status'),
+  getDetailedSystemHealth: () => request<DetailedSystemHealth>('/admin/system/health'),
+  getClusterPreflight: () => request<ClusterPreflightResponse>('/admin/clusters/preflight'),
   listContainers: () => request<ContainerInfo[]>('/admin/system/containers'),
   getContainerLogs: (name: string, lines?: number) =>
     request<ContainerLogs>(`/admin/system/containers/${name}/logs?lines=${lines || 100}`),
