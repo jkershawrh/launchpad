@@ -30,3 +30,29 @@ def test_public_gateway_accepts_the_managed_cloudflare_tunnel():
             "matchLabels": {"app.kubernetes.io/name": "cloudflare-tunnel"}
         }
     } in sources
+
+
+def test_arena_public_gateway_validates_the_stable_keycloak_issuer():
+    rendered = subprocess.run(
+        ["oc", "kustomize", str(ARENA_OVERLAY)],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    resources = list(yaml.safe_load_all(rendered))
+    deployment = next(
+        item
+        for item in resources
+        if item.get("kind") == "Deployment"
+        and item["metadata"]["name"] == "public-access-gateway"
+    )
+    proxy = next(
+        container
+        for container in deployment["spec"]["template"]["spec"]["containers"]
+        if container["name"] == "oidc-proxy"
+    )
+    env = {item["name"]: item.get("value") for item in proxy["env"]}
+
+    assert env["OAUTH2_PROXY_OIDC_ISSUER_URL"] == (
+        "https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public"
+    )

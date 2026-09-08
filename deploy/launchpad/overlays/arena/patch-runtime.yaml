@@ -130,6 +130,11 @@ spec:
       maxSurge: 0
   template:
     spec:
+      containers:
+        - name: oidc-proxy
+          env:
+            - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+              value: https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
