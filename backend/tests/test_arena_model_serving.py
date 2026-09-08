@@ -32,8 +32,9 @@ def test_tool_calling_model_is_private_shared_arena_infrastructure():
     ] == "/usr/lib64/libomp.so"
     # Preserve two replicas and Guaranteed QoS while recovering the small
     # admission gap required by the retained Arena 25 + 25 pilot topology.
-    assert container["resources"]["requests"]["cpu"] == "79"
-    assert container["resources"]["limits"]["cpu"] == "79"
+    assert container["resources"]["requests"]["cpu"] == "78"
+    assert container["resources"]["limits"]["cpu"] == "78"
+    assert int(container["resources"]["requests"]["cpu"]) % 2 == 0
     assert deployment["spec"]["strategy"] == {
         "type": "RollingUpdate",
         "rollingUpdate": {"maxSurge": 0, "maxUnavailable": 1},
