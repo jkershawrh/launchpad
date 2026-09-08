@@ -184,7 +184,7 @@ Get the AnythingLLM URL:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-export ANYTHINGLLM_URL=$(oc get route rag -n {project_name} -o jsonpath='https://\{.spec.host\}')
+export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} -o custom-columns=HOST:.spec.host --no-headers)"
 echo "AnythingLLM URL: $\{ANYTHINGLLM_URL\}"
 ----
 

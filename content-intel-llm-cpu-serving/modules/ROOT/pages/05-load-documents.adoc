@@ -51,7 +51,7 @@ The AnythingLLM API requires an API key. Retrieve it from the running instance:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-export ANYTHINGLLM_URL=$(oc get route rag -n {project_name} -o jsonpath='https://\{.spec.host\}')
+export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} -o custom-columns=HOST:.spec.host --no-headers)"
 echo "Get your API key from: $\{ANYTHINGLLM_URL\}/settings/api-keys"
 ----
 

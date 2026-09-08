@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.0",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.1",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -360,6 +360,11 @@ def test_cpu_serving_content_uses_route_name_that_fits_launchpad_namespace():
     assert "haproxy.router.openshift.io/timeout=120s" in content
     assert "oc get route rag" in content
     assert "oc get route anythingllm" not in content
+    assert (
+        'export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} '
+        '-o custom-columns=HOST:.spec.host --no-headers)"'
+    ) in content
+    assert "jsonpath=" not in content
 
 
 def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
