@@ -28,7 +28,7 @@ patches:
 images:
   - name: backend
     newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend
-    digest: sha256:f0957202b6de0c5c1e143d60100ea5992ac6e8cfc6a29201b5c9dda05197a395
+    digest: sha256:b5eb09c488c5d23ffd5466555bf483592ed9dd1f1b20ba7f4195f2e054a9a4b0
   - name: partner-portal
     newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-portal
     digest: sha256:7ada26ddd740dedb39979fdb3e47021f5893e9965d25a836561e682ef9ec7d6b
