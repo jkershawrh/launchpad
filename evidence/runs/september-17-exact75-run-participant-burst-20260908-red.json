@@ -1,0 +1,55 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "result": "RED-participant-burst-saturation",
+  "started_at": "2026-09-08T02:02:26Z",
+  "completed_at": "2026-09-08T02:06:40Z",
+  "source_commit": "f2237b8",
+  "control_plane": "arena",
+  "participants_started": 75,
+  "participants_functionally_passed": 43,
+  "contains_plaintext_credentials": false,
+  "workshops": {
+    "agent_201": {
+      "id": "36a501d8-4754-4632-bf33-67cf6d4c4649",
+      "cluster": "brutus",
+      "passed": 0,
+      "failed": 25,
+      "failure": "Arena control-plane backend lost its Brutus API exec stream with an i/o timeout before emitting a journey receipt"
+    },
+    "multi_agent": {
+      "id": "e85a59c5-66a7-4b25-a0dc-66a74eafd372",
+      "cluster": "arena",
+      "participant_wave_passed": 19,
+      "participant_wave_failed": 6,
+      "complete_json_receipts": 21,
+      "empty_receipts": 4,
+      "deep_checks_started": 0,
+      "successful_latency_ms": {
+        "min": 70038.24,
+        "max": 98317.32,
+        "mean": 83558.98421052632
+      }
+    },
+    "serve_llms": {
+      "id": "04126518-64b5-43d3-aa95-5b61934fc019",
+      "cluster": "arena",
+      "passed": 24,
+      "failed": 1,
+      "failure": "participant route returned connection reset, 504, and 503 responses"
+    }
+  },
+  "resilience": {
+    "multi_agent_ready_before": "25/25",
+    "multi_agent_ready_low_observed": "16/25",
+    "multi_agent_ready_after": "25/25",
+    "multi_agent_container_restarts_before": 2,
+    "multi_agent_container_restarts_after": 50,
+    "rhgnr1_cordoned_after": true,
+    "route_timeout_seconds": 600
+  },
+  "interpretation": {
+    "lab_failure_proven": true,
+    "three_run_streak_credit": false,
+    "finding": "The retained 75-seat fleet can stay ready, but the exact simultaneous participant workload burst is not currently reliable. Failures crossed Arena workloads and the Arena-to-Brutus control stream, so the next proof must use a measured ramp or infrastructure remediation rather than counting this run as green."
+  }
+}

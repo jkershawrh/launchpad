@@ -54,14 +54,17 @@ spec:
             - {name: A2A_CLIENT_TIMEOUT, value: "180"}
           readinessProbe:
             httpGet: {path: /ready, port: orchestrator}
+            timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 36
           livenessProbe:
             httpGet: {path: /health, port: orchestrator}
+            timeoutSeconds: 5
             periodSeconds: 20
             failureThreshold: 6
           startupProbe:
             httpGet: {path: /ready, port: orchestrator}
+            timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 36
           securityContext:
@@ -100,10 +103,12 @@ spec:
           {{- end }}
           readinessProbe:
             httpGet: {path: /health, port: {{ $agent.name }}}
+            timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 24
           livenessProbe:
             httpGet: {path: /health, port: {{ $agent.name }}}
+            timeoutSeconds: 5
             periodSeconds: 20
             failureThreshold: 6
           securityContext:
@@ -121,10 +126,14 @@ spec:
             - {name: mcp, containerPort: 8004}
           readinessProbe:
             httpGet: {path: /health, port: mcp}
+            timeoutSeconds: 5
             periodSeconds: 5
+            failureThreshold: 24
           livenessProbe:
             httpGet: {path: /health, port: mcp}
+            timeoutSeconds: 5
             periodSeconds: 20
+            failureThreshold: 6
           securityContext:
             {{- include "multiAgent.containerSecurityContext" . | nindent 12 }}
           resources:
@@ -139,10 +148,14 @@ spec:
             - {name: guardrails, containerPort: 8005}
           readinessProbe:
             httpGet: {path: /health, port: guardrails}
+            timeoutSeconds: 5
             periodSeconds: 5
+            failureThreshold: 24
           livenessProbe:
             httpGet: {path: /health, port: guardrails}
+            timeoutSeconds: 5
             periodSeconds: 20
+            failureThreshold: 6
           securityContext:
             {{- include "multiAgent.containerSecurityContext" . | nindent 12 }}
           resources:
@@ -168,10 +181,12 @@ spec:
             - {name: HOME, value: "/tmp"}
           readinessProbe:
             httpGet: {path: /, port: ui}
+            timeoutSeconds: 5
             periodSeconds: 5
             failureThreshold: 36
           livenessProbe:
             httpGet: {path: /, port: ui}
+            timeoutSeconds: 5
             periodSeconds: 20
             failureThreshold: 6
           securityContext:

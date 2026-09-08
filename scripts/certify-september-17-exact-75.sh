@@ -138,8 +138,15 @@ run_multi_concurrent_wave() {
         -X POST "https://${host}/api/v1/workflow" \
         --data '{"query":"Look up record REC-001 and recommend next steps","workflow_type":"comprehensive"}' \
         >"$raw"
-      jq -c '{
-        result: "GREEN-live-participant-wave",
+      jq -c '
+        (
+          .agents_involved == ["research", "analyst", "executor"]
+          and (.steps | length) == 3
+          and ([.steps[] | select(.result | contains("[MCP tool data retrieved]"))] | length) == 3
+          and ([.steps[] | select(.result | startswith("Error:"))] | length) == 0
+        ) as $passed
+        | {
+        result: (if $passed then "GREEN-live-participant-wave" else "RED-live-participant-wave" end),
         agents: .agents_involved,
         steps: (.steps | length),
         mcp_steps: [.steps[] | select(.result | contains("[MCP tool data retrieved]")) | .agent],
@@ -235,7 +242,11 @@ serve_rc=$?
 completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 agent_receipt="$(grep '^{' "$result_dir/agent-201/run.log" | tail -n 1)"
-agent_passed="$(printf '%s' "$agent_receipt" | jq -r '.journeys.passed // 0' 2>/dev/null || echo 0)"
+agent_passed=0
+if [[ -n "$agent_receipt" ]] \
+  && printf '%s' "$agent_receipt" | jq -e ".journeys.passed | numbers" >/dev/null 2>&1; then
+  agent_passed="$(printf '%s' "$agent_receipt" | jq -r '.journeys.passed')"
+fi
 multi_passed="$(rg -l '"result":"GREEN-live-internal-seat"' "$result_dir"/multi-agent/launchpad-*.json 2>/dev/null | wc -l | tr -d ' ')"
 multi_concurrent_passed="$(rg -l '"result":"GREEN-live-participant-wave"' "$result_dir"/multi-agent/concurrent/launchpad-*.json 2>/dev/null | wc -l | tr -d ' ')"
 serve_passed="$(rg -l 'grounded=true' "$result_dir"/serve-llms/launchpad-*.tsv 2>/dev/null | wc -l | tr -d ' ')"
@@ -261,6 +272,9 @@ jq -n \
   --argjson multi_passed "$multi_passed" \
   --argjson multi_concurrent_passed "$multi_concurrent_passed" \
   --argjson serve_passed "$serve_passed" \
+  --argjson agent_rc "$agent_rc" \
+  --argjson multi_rc "$multi_rc" \
+  --argjson serve_rc "$serve_rc" \
   '{
     "status": $status,
     "started_at": $started_at,
@@ -268,6 +282,11 @@ jq -n \
     "participants_started": 75,
     "participants_passed": ($agent_passed + $multi_passed + $serve_passed),
     "contains_plaintext_credentials": false,
+    "return_codes": {
+      "agent_201": $agent_rc,
+      "multi_agent": $multi_rc,
+      "serve_llms": $serve_rc
+    },
     "result_dir": $result_dir,
     "workshops": {
       "agent_201": {"id": $agent_workshop_id, "passed": $agent_passed},

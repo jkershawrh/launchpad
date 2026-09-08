@@ -207,6 +207,26 @@ def test_multi_agent_model_and_service_auth_come_only_from_the_runtime_secret():
     }
 
 
+def test_multi_agent_probes_tolerate_a_long_participant_workflow():
+    _, documents = _render()
+    deployment = next(item for item in documents if item["kind"] == "Deployment")
+    containers = deployment["spec"]["template"]["spec"]["containers"]
+
+    # A comprehensive workflow can keep an application event loop occupied for
+    # 70-100 seconds.  One busy sidecar must not remove the complete seven-
+    # container seat from its Service or trigger a liveness restart.
+    for container in containers:
+        readiness = container["readinessProbe"]
+        liveness = container["livenessProbe"]
+        assert readiness["timeoutSeconds"] == 5, container["name"]
+        assert readiness["failureThreshold"] >= 24, container["name"]
+        assert liveness["timeoutSeconds"] == 5, container["name"]
+        assert liveness["failureThreshold"] >= 6, container["name"]
+
+    orchestrator = next(item for item in containers if item["name"] == "orchestrator")
+    assert orchestrator["startupProbe"]["timeoutSeconds"] == 5
+
+
 def test_multi_agent_services_routes_and_network_boundary_are_complete():
     _, documents = _render()
     resources = {(item["kind"], item["metadata"]["name"]): item for item in documents}
