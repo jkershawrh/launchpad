@@ -38,7 +38,7 @@ def test_tunnel_manifest_cannot_overwrite_rendered_router_or_require_a_shell():
     assert "tee /shared/cloudflared.log" not in manifest
 
 
-def test_tunnel_does_not_take_ownership_of_managed_console_or_authentication():
+def test_tunnel_does_not_patch_managed_console_oauth_client_or_authentication():
     scripts = "\n".join(
         (ROOT / path).read_text()
         for path in (
@@ -51,9 +51,23 @@ def test_tunnel_does_not_take_ownership_of_managed_console_or_authentication():
 
     assert "scale deployment console-operator" not in scripts
     assert "patch oauthclient console" not in scripts
+    assert "patch oauth cluster" not in scripts
     assert "OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION=true" not in scripts
     assert "/rotate" not in scripts
     assert "UPDATE access_policies" not in scripts
+
+
+def test_disposable_pilot_uses_supported_console_route_and_restores_it():
+    apply_script = (ROOT / "deploy/tunnel-oncluster/apply.sh").read_text()
+    stop_script = (ROOT / "scripts/stop-tunnel.sh").read_text()
+
+    assert "launchpad-public-console-route-backup" in apply_script
+    assert "launchpad-public-console-route-tls" in apply_script
+    assert "patch consoles.operator.openshift.io cluster" in apply_script
+    assert '"$tunnel_url/auth/callback"' in apply_script
+    assert "launchpad-public-console-route-backup" in stop_script
+    assert '"op": "replace", "path": "/spec/route"' in stop_script
+    assert "prior Console route was restored" in stop_script
 
 
 def test_console_proxy_preserves_http_only_oauth_cookies():
