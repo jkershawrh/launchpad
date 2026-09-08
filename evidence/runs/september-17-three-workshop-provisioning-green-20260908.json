@@ -1,0 +1,118 @@
+{
+  "schema": "launchpad.redhat.com/three-workshop-provisioning-evidence/v1",
+  "evidence_id": "SEPTEMBER-17-THREE-WORKSHOP-PROVISIONING-20260908",
+  "observed_at": "2026-09-08T18:17:22Z",
+  "result": "GREEN-live-provisioning",
+  "source": {
+    "placement_commit": "d64437c38f24c2d0a4ce8d1e24c223a781836476",
+    "smt_model_commit": "c003c1e8e4d952ab6c6bcbb41c7e6760d389235f",
+    "deployed_configuration_commit": "9955db24f5f505aa19903f5aef26c9d7e951dc1c",
+    "backend_image_digest": "sha256:4b30e81458d227915ad34855be617f9c3122034290d65bec5b25492be6210104",
+    "argocd": {
+      "application": "launchpad-arena",
+      "sync": "Synced",
+      "health": "Healthy"
+    }
+  },
+  "model_capacity_remediation": {
+    "cluster_ref": "arena",
+    "deployment": "fleet-llm-d/vllm-granite-3-2-8b-tools",
+    "replicas_ready": 2,
+    "replicas_desired": 2,
+    "cpu_request_per_replica": "78",
+    "cpu_limit_per_replica": "78",
+    "memory_request_per_replica": "64Gi",
+    "qos": "Guaranteed",
+    "node": "gnr2.fm2aihpcsed.com",
+    "health_http_status": 200,
+    "models_http_status": 200,
+    "deterministic_completion": "ARENA_MODEL_OK",
+    "red_observation": "A 79-CPU candidate was rejected by Arena CPU Manager because SMT-aligned exclusive CPU requests must be divisible by two.",
+    "green_correction": "Both replicas rolled to an SMT-safe 78-CPU request and became Ready before workshop admission.",
+    "failed_transient_pod_records_removed": 62
+  },
+  "workshops": [
+    {
+      "name": "Build Multi-Agent AI Systems",
+      "catalog_item_id": "multi-agent-quickstart",
+      "workshop_id": "c6621ff9-ad11-4467-9100-59b1ed2a56ee",
+      "cluster_ref": "arena",
+      "seats_requested": 25,
+      "seats_ready": 25,
+      "sessions_ready": 25,
+      "validation_checks_passed": 125,
+      "validation_checks_failed": 0,
+      "showroom_routes": 25,
+      "workshop_node": "gnr2.fm2aihpcsed.com"
+    },
+    {
+      "name": "Serve LLMs on Intel Xeon CPUs",
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "workshop_id": "54c4e9ee-ed93-47d0-9bae-0de2a7a817dc",
+      "cluster_ref": "arena",
+      "seats_requested": 25,
+      "seats_ready": 25,
+      "sessions_ready": 25,
+      "validation_checks_passed": 50,
+      "validation_checks_failed": 0,
+      "showroom_routes": 25,
+      "workshop_node": "gnr2.fm2aihpcsed.com",
+      "capacity_preview": "25 requested; 29 supported with 20 percent headroom"
+    },
+    {
+      "name": "Building an AI Agent",
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "workshop_id": "641958b8-e4f8-4da6-a7e2-004187ea03bf",
+      "cluster_ref": "brutus",
+      "seats_requested": 25,
+      "seats_ready": 25,
+      "sessions_ready": 25,
+      "validation_checks_passed": 50,
+      "validation_checks_failed": 0,
+      "showroom_routes": 25,
+      "workshop_node": "brutus.fm2aihpcsed.com",
+      "capacity_preview": "25 requested; 30 supported with 20 percent headroom"
+    }
+  ],
+  "aggregate": {
+    "workshops_ready": 3,
+    "seats_ready": 75,
+    "sessions_ready": 75,
+    "validation_checks_passed": 225,
+    "validation_checks_failed": 0,
+    "cluster_assignment": {
+      "arena": 50,
+      "brutus": 25
+    },
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned": true
+  },
+  "test_evidence": {
+    "focused_result": "72 passed",
+    "focused_suites": [
+      "backend/tests/test_arena_model_serving.py",
+      "backend/tests/test_multicluster.py",
+      "backend/tests/test_workshop_order_contract.py"
+    ],
+    "precommit": "Detect hardcoded secrets passed"
+  },
+  "proof_strategy": {
+    "TDD": "SMT alignment and whole-workshop capacity fallback were RED before the implementation and GREEN in the focused 72-test suite.",
+    "EDD": "This receipt records immutable revisions, image identity, placement decisions, workshop and cluster identities, live seat counts, validation totals, and the retained node guard.",
+    "CDD": "Existing workshop request compatibility is preserved while explicit or persisted cluster assignments remain immutable and automatic placement can evaluate the next eligible whole-workshop target.",
+    "BDD": "Given three staggered 25-seat orders, two remain Ready on Arena while the third reaches Ready on Brutus without splitting any workshop.",
+    "CBT": "Model health, placement preview, workshop lifecycle, session validation, Showroom route checks, GitOps synchronization, and node guard state were observed independently.",
+    "red_green_matrix": {
+      "SMT-safe model rollout": "GREEN-live",
+      "Arena Serve LLMs 25-seat admission": "GREEN-live",
+      "Brutus Agent 201 25-seat admission": "GREEN-live",
+      "whole-workshop cluster affinity": "GREEN-live",
+      "75 participant functional wave": "PENDING",
+      "manual browser journey": "PENDING",
+      "bulk reclaim and zero residue": "PENDING",
+      "public access": "OUT-OF-SCOPE"
+    }
+  },
+  "certification_boundary": "This evidence proves live staggered provisioning, immutable cluster placement, collective Ready state, and platform validation for three concurrently retained 25-seat workshops. It does not certify the 75-participant functional wave, manual browser usability, public access, soak behavior, or bulk reclaim. The workshops are intentionally retained for the next participant and manual gates.",
+  "contains_plaintext_credentials": false
+}
