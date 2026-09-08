@@ -78,6 +78,22 @@ def _participant_tool_urls(lab_session, catalog_item, cluster) -> dict[str, str]
         parsed = urlsplit(url)
         if parsed.scheme == "https" and parsed.netloc and not parsed.username:
             tools[tool_id] = url.rstrip("/")
+
+    # Catalogs onboarded before declarative Showroom tabs identify their
+    # participant application with workspace_route_name. Preserve that
+    # contract through the same entitlement-aware, same-origin proxy used by
+    # newer tool tabs. Do not infer any other Route from the namespace.
+    workspace_route = str(metadata.get("workspace_route_name", "")).strip()
+    has_declared_workspace = any(
+        str(tab.get("source", "")).startswith("workload.route.")
+        for tab in metadata.get("showroom_tabs", [])
+        if isinstance(tab, dict)
+    )
+    if workspace_route and not has_declared_workspace:
+        workspace_url = str(route_urls.get(workspace_route, ""))
+        parsed = urlsplit(workspace_url)
+        if parsed.scheme == "https" and parsed.netloc and not parsed.username:
+            tools["workspace"] = workspace_url.rstrip("/")
     return tools
 
 

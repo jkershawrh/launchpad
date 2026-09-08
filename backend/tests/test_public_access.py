@@ -49,6 +49,50 @@ def test_public_gateway_receives_only_catalog_declared_tool_urls():
     }
 
 
+def test_public_gateway_includes_legacy_catalog_workspace_route():
+    session = SimpleNamespace(
+        resources={
+            "routes": {
+                "rag": "https://rag-seat.apps.arena.example",
+                "undeclared-route": "https://undeclared.apps.arena.example",
+            }
+        }
+    )
+    catalog_item = SimpleNamespace(
+        metadata={
+            "workspace_route_name": "rag",
+            "workspace_title": "RAG Assistant",
+        }
+    )
+
+    assert _participant_tool_urls(session, catalog_item, None) == {
+        "workspace": "https://rag-seat.apps.arena.example",
+    }
+
+
+def test_declared_workspace_tab_takes_precedence_over_legacy_workspace_route():
+    session = SimpleNamespace(
+        resources={
+            "routes": {
+                "multi-agent-ui": "https://multi-agent-seat.apps.arena.example",
+            }
+        }
+    )
+    catalog_item = SimpleNamespace(
+        metadata={
+            "workspace_route_name": "multi-agent-ui",
+            "showroom_tabs": [
+                {"id": "participant-ui", "source": "workload.route.ui"},
+            ],
+            "workload_routes": {"ui": "multi-agent-ui"},
+        }
+    )
+
+    assert _participant_tool_urls(session, catalog_item, None) == {
+        "participant-ui": "https://multi-agent-seat.apps.arena.example",
+    }
+
+
 def test_public_access_defaults_to_internal():
     assert ExposurePolicy.INTERNAL.value == "internal"
 

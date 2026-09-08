@@ -170,3 +170,16 @@ def test_track_two_certification_executes_and_cleans_the_learner_change():
         assert command in probe
     assert "rollback_restored_baseline" in probe
     assert "configmap_removed" in probe
+
+
+def test_showroom_commands_do_not_collide_with_content_or_wetty_ports():
+    pages = CONTENT_ROOT / "modules/ROOT/pages"
+    explore = (pages / "02-explore.adoc").read_text()
+    workflows = (pages / "03-run-workflows.adoc").read_text()
+
+    assert "service/multi-agent 18000:8000" in explore
+    assert "service/multi-agent-research 18001:8001" in explore
+    assert "127.0.0.1:18000/health" in explore
+    assert "127.0.0.1:18001/.well-known/agent-card.json" in explore
+    assert "127.0.0.1:18000/api/v1/workflow" in workflows
+    assert "service/multi-agent-orchestrator" not in explore

@@ -38,25 +38,27 @@ Forward the orchestrator service to your terminal session:
 
 [source,bash,role="execute"]
 ----
-oc port-forward service/multi-agent-orchestrator 8000:8000 >/tmp/orchestrator-port-forward.log 2>&1 &
+oc port-forward service/multi-agent 18000:8000 >/tmp/orchestrator-port-forward.log 2>&1 &
 PF_PID=$!
 trap 'kill "$PF_PID" 2>/dev/null || true' EXIT
+until curl -fsS http://127.0.0.1:18000/health >/dev/null 2>&1; do sleep 1; done
 ----
 
 Check orchestrator readiness:
 
 [source,bash,role="execute"]
 ----
-curl -fsS http://127.0.0.1:8000/health | python3 -m json.tool
+curl -fsS http://127.0.0.1:18000/health | python3 -m json.tool
 ----
 
 The response should report three discovered agents. Now inspect one A2A agent card directly:
 
 [source,bash,role="execute"]
 ----
-oc port-forward service/multi-agent-research 8001:8001 >/tmp/research-port-forward.log 2>&1 &
+oc port-forward service/multi-agent-research 18001:8001 >/tmp/research-port-forward.log 2>&1 &
 RESEARCH_PF_PID=$!
-curl -fsS http://127.0.0.1:8001/.well-known/agent-card.json | python3 -m json.tool
+until curl -fsS http://127.0.0.1:18001/health >/dev/null 2>&1; do sleep 1; done
+curl -fsS http://127.0.0.1:18001/.well-known/agent-card.json | python3 -m json.tool
 kill "$RESEARCH_PF_PID"
 ----
 

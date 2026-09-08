@@ -41,7 +41,7 @@ AGENT_AUTH_TOKEN="$(
   oc get secret multi-agent-runtime \
     -o go-template='{{index .data "AGENT_AUTH_TOKEN" | base64decode}}'
 )"
-curl -fsS http://127.0.0.1:8000/api/v1/workflow \
+curl -fsS http://127.0.0.1:18000/api/v1/workflow \
   -H "Authorization: Bearer ${AGENT_AUTH_TOKEN}" \
   -H 'Content-Type: application/json' \
   -d '{
