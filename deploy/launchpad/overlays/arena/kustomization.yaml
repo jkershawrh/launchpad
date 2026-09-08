@@ -34,4 +34,4 @@ images:
     digest: sha256:43e8dafd8276faf598c3ad3bf7090bb48129ced6cb131a7e9925f6c4aca9aaa7
   - name: admin
     newName: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-admin
-    digest: sha256:343fa4698e047d9cf04e411c77afe1d605df23d5d130abbcd347d305e3bddd37
+    digest: sha256:7e1526d7882d0221cd3ce84af3141af8f539c2de268995f137f0acd977ca9c9f
