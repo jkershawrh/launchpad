@@ -334,3 +334,46 @@ def test_reconcile_marks_partially_reclaimed_legacy_workshop_reclaiming(
         }
     ]
     access.expire_order.assert_called_once_with(workshop_id)
+
+
+def test_reconcile_normalizes_unstarted_seat_in_completed_workshop():
+    workshop_id = "terminal-seat-repair"
+    workshop = Workshop(
+        workshop_id=workshop_id,
+        tenant_id="terminal-seat-repair",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=1,
+        status=WorkshopStatus.COMPLETED,
+        seats=[
+            WorkshopSeat(
+                workshop_id=workshop_id,
+                seat_number=1,
+                status=WorkshopSeatStatus.PENDING,
+            )
+        ],
+    )
+    access = MagicMock()
+    service = SimpleNamespace(
+        _sessions={},
+        _workshops={workshop_id: workshop},
+        cleanup=None,
+        public_access_service=access,
+        _save_session=MagicMock(),
+        _save_workshop=MagicMock(),
+    )
+
+    from app.services.resource_reconciliation import reconcile_resources
+
+    report = reconcile_resources(service, delete_orphans=False)
+
+    saved = service._save_workshop.call_args.args[0]
+    assert saved.status == WorkshopStatus.COMPLETED
+    assert saved.seats[0].status == WorkshopSeatStatus.RECLAIMED
+    assert report["workshops_reconciled"] == [
+        {
+            "workshop_id": workshop_id,
+            "cluster_id": None,
+            "session_count": 0,
+        }
+    ]
+    access.expire_order.assert_called_once_with(workshop_id)

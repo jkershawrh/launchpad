@@ -643,6 +643,33 @@ def test_workshop_order_rejects_more_than_supported_seat_limit():
             )
 
 
+def test_idempotent_reclaim_normalizes_unstarted_seat_in_completed_workshop():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="terminal-seat-repair",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=1,
+        status=WorkshopStatus.COMPLETED,
+        seats=[
+            WorkshopSeat(
+                workshop_id="terminal-seat-repair",
+                seat_number=1,
+                status=WorkshopSeatStatus.PENDING,
+            )
+        ],
+    )
+    service._save_workshop(workshop)
+
+    repaired = service.queue_workshop_reclaim(workshop.workshop_id)
+
+    assert repaired.status == WorkshopStatus.COMPLETED
+    assert repaired.seats[0].status == WorkshopSeatStatus.RECLAIMED
+    assert (
+        service.get_workshop(workshop.workshop_id).seats[0].status
+        == WorkshopSeatStatus.RECLAIMED
+    )
+
+
 def test_capacity_preview_rejects_catalog_certification_seat_limit():
     service = ProvisioningService(catalog=_catalog_with_workshop_limit(1))
     preview = service.preview_workshop_capacity(

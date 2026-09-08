@@ -189,7 +189,45 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
     workshops = getattr(service, "_workshops", {})
     if isinstance(workshops, dict):
         for workshop in list(workshops.values()):
-            if workshop.status in terminal_workshop_states or not workshop.seats:
+            if workshop.status in terminal_workshop_states:
+                seats = [
+                    seat.model_copy(
+                        update={
+                            "status": WorkshopSeatStatus.RECLAIMED,
+                            "error": None,
+                            "updated_at": datetime.utcnow(),
+                        }
+                    )
+                    if not seat.session_id
+                    and seat.status
+                    in {
+                        WorkshopSeatStatus.PENDING,
+                        WorkshopSeatStatus.PROVISIONING,
+                        WorkshopSeatStatus.RECLAIMING,
+                    }
+                    else seat
+                    for seat in workshop.seats
+                ]
+                if seats != workshop.seats:
+                    updated = workshop.model_copy(update={"seats": seats})
+                    try:
+                        service._save_workshop(updated)
+                        access = getattr(service, "public_access_service", None)
+                        if access:
+                            access.expire_order(workshop.workshop_id)
+                        report["workshops_reconciled"].append(
+                            {
+                                "workshop_id": workshop.workshop_id,
+                                "cluster_id": workshop.cluster_ref,
+                                "session_count": len(workshop.session_ids),
+                            }
+                        )
+                    except Exception as exc:
+                        report["errors"].append(
+                            f"workshop {workshop.workshop_id}: {exc}"
+                        )
+                continue
+            if not workshop.seats:
                 continue
             if workshop.status == WorkshopStatus.RECLAIMING:
                 continue

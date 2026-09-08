@@ -2565,6 +2565,27 @@ class ProvisioningService:
         if workshop.status == WorkshopStatus.RECLAIMING:
             return workshop
         if workshop.status == WorkshopStatus.COMPLETED:
+            seats = [
+                seat.model_copy(
+                    update={
+                        "status": WorkshopSeatStatus.RECLAIMED,
+                        "error": None,
+                        "updated_at": datetime.utcnow(),
+                    }
+                )
+                if not seat.session_id
+                and seat.status
+                in {
+                    WorkshopSeatStatus.PENDING,
+                    WorkshopSeatStatus.PROVISIONING,
+                    WorkshopSeatStatus.RECLAIMING,
+                }
+                else seat
+                for seat in workshop.seats
+            ]
+            if seats != workshop.seats:
+                workshop = workshop.model_copy(update={"seats": seats})
+                self._save_workshop(workshop)
             return workshop
 
         workshop = self._link_persisted_workshop_sessions(workshop)
