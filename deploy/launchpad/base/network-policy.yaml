@@ -52,5 +52,7 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels: {kubernetes.io/metadata.name: openshift-ingress}
+        - podSelector:
+            matchLabels: {app.kubernetes.io/name: cloudflare-tunnel}
       ports:
         - {port: 8443, protocol: TCP}
