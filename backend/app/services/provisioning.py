@@ -1239,6 +1239,32 @@ class ProvisioningService:
                 )
         return catalog_limit
 
+    def _workshop_cluster_candidates(self, workshop: Workshop, catalog_item):
+        """Return ordered targets without allowing a persisted target to move."""
+        required_models = (catalog_item.metadata or {}).get("required_models", [])
+        require_public_access = (
+            workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE
+        )
+        fixed_target = workshop.cluster_ref or workshop.target_cluster
+        if fixed_target:
+            return [
+                self.cluster_registry.select(
+                    required_capabilities=catalog_item.required_capabilities,
+                    required_models=required_models,
+                    override=fixed_target,
+                    require_public_access=require_public_access,
+                    allow_disabled_override=workshop.certification_override,
+                )
+            ]
+        candidates = self.cluster_registry.eligible(
+            required_capabilities=catalog_item.required_capabilities,
+            required_models=required_models,
+            require_public_access=require_public_access,
+        )
+        if not candidates:
+            raise ValueError("No eligible execution cluster is available")
+        return candidates
+
     def preview_workshop_capacity(self, workshop: Workshop) -> dict:
         catalog_item = self.catalog.get_item(workshop.catalog_item_id)
         catalog_limit = None
@@ -1262,15 +1288,12 @@ class ProvisioningService:
                 },
             }
         selected_cluster = workshop.cluster_ref or workshop.target_cluster
+        placement_reason = "single-cluster placement"
         if self.cluster_registry and catalog_item:
             try:
-                selected_cluster = self.cluster_registry.select(
-                    required_capabilities=catalog_item.required_capabilities,
-                    required_models=(catalog_item.metadata or {}).get("required_models", []),
-                    override=workshop.target_cluster,
-                    require_public_access=workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE,
-                    allow_disabled_override=workshop.certification_override,
-                ).cluster_id
+                candidates = self._workshop_cluster_candidates(
+                    workshop, catalog_item
+                )
             except ValueError as exc:
                 return {
                     "can_provision": False,
@@ -1280,8 +1303,56 @@ class ProvisioningService:
                     "seats_requested": workshop.num_users,
                     "estimated_resources": {"cpu_millicores": 0, "memory_mib": 0, "pods": 0},
                 }
-            workshop = workshop.model_copy(update={"cluster_ref": selected_cluster})
-        can_provision, reason = self.check_workshop_capacity(workshop)
+
+            capacity_failures = []
+            for candidate in candidates:
+                candidate_workshop = workshop.model_copy(
+                    update={"cluster_ref": candidate.cluster_id}
+                )
+                can_provision, reason = self.check_workshop_capacity(
+                    candidate_workshop
+                )
+                if can_provision:
+                    selected_cluster = candidate.cluster_id
+                    workshop = candidate_workshop
+                    if capacity_failures:
+                        rejected = "; ".join(
+                            f"{cluster}: {failure}"
+                            for cluster, failure in capacity_failures
+                        )
+                        placement_reason = (
+                            f"Entire workshop assigned to {selected_cluster} after "
+                            f"higher-priority targets could not fit ({rejected}); "
+                            "seats will not be split"
+                        )
+                    else:
+                        placement_reason = (
+                            f"Entire workshop assigned to {selected_cluster}; "
+                            "seats will not be split"
+                        )
+                    break
+                capacity_failures.append((candidate.cluster_id, reason))
+            else:
+                selected_cluster, reason = capacity_failures[0]
+                workshop = workshop.model_copy(
+                    update={"cluster_ref": selected_cluster}
+                )
+                if len(capacity_failures) == 1:
+                    placement_reason = (
+                        f"Entire workshop assigned to {selected_cluster}; "
+                        "seats will not be split"
+                    )
+                else:
+                    rejected = "; ".join(
+                        f"{cluster}: {failure}"
+                        for cluster, failure in capacity_failures
+                    )
+                    placement_reason = (
+                        "No capable cluster can fit the entire workshop "
+                        f"({rejected}); seats will not be split"
+                    )
+        else:
+            can_provision, reason = self.check_workshop_capacity(workshop)
         metadata = catalog_item.metadata if catalog_item else {}
         estimate = self._workshop_resource_estimate(
             metadata, workshop.num_users
@@ -1290,10 +1361,7 @@ class ProvisioningService:
             "can_provision": can_provision,
             "reason": reason,
             "selected_cluster": selected_cluster,
-            "placement_reason": (
-                f"Entire workshop assigned to {selected_cluster}; seats will not be split"
-                if selected_cluster else "single-cluster placement"
-            ),
+            "placement_reason": placement_reason,
             "seats_requested": workshop.num_users,
             "catalog_seat_limit": catalog_limit,
             "certification_override": workshop.certification_override,
@@ -1771,25 +1839,26 @@ class ProvisioningService:
         # falls back to automatic placement and the workshop loses its
         # single-cluster affinity (and its cleanup target).
         if self.cluster_registry:
-            try:
-                selected_cluster = self.cluster_registry.select(
-                    required_capabilities=catalog_item.required_capabilities,
-                    required_models=(catalog_item.metadata or {}).get(
-                        "required_models", []
-                    ),
-                    override=workshop.cluster_ref or workshop.target_cluster,
-                    require_public_access=workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE,
-                    allow_disabled_override=workshop.certification_override,
-                ).cluster_id
-            except ValueError as exc:
+            placement = self.preview_workshop_capacity(workshop)
+            if not placement["can_provision"]:
                 workshop = workshop.model_copy(update={
                     "status": WorkshopStatus.FAILED,
-                    "metadata": {**workshop.metadata, "error": str(exc)},
+                    "metadata": {
+                        **workshop.metadata,
+                        "error": placement["reason"],
+                        "capacity_preview": placement,
+                    },
                 })
                 self._save_workshop(workshop)
                 provision_event.set()
                 return workshop
-            workshop = workshop.model_copy(update={"cluster_ref": selected_cluster})
+            workshop = workshop.model_copy(update={
+                "cluster_ref": placement["selected_cluster"],
+                "metadata": {
+                    **workshop.metadata,
+                    "capacity_preview": placement,
+                },
+            })
             self._save_workshop(workshop)
 
         if self.preflight:

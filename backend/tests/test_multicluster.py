@@ -112,6 +112,107 @@ def test_workshop_certification_preview_can_target_disabled_cluster_only_explici
     assert certification["selected_cluster"] == "oberon"
 
 
+def test_workshop_preview_falls_through_to_next_capable_cluster_with_capacity():
+    catalog = MagicMock()
+    catalog.get_item.return_value = SimpleNamespace(
+        required_capabilities=["openshift", "showroom", "model_endpoint"],
+        metadata={
+            "required_models": ["granite-3.2-8b-tools"],
+            "max_workshop_seats": 25,
+            "seat_cpu_millicores": 415,
+            "seat_memory_mib": 912,
+            "seat_pods": 3,
+        },
+    )
+    service = ProvisioningService(
+        catalog=catalog,
+        cluster_registry=ClusterRegistry([
+            target(
+                "arena",
+                10,
+                ["openshift", "showroom", "model_endpoint"],
+                {"granite-3.2-8b-tools": "https://arena-model"},
+            ),
+            target(
+                "brutus",
+                20,
+                ["openshift", "showroom", "model_endpoint"],
+                {"granite-3.2-8b-tools": "https://brutus-model"},
+            ),
+        ]),
+    )
+    service.check_workshop_capacity = MagicMock(
+        side_effect=lambda workshop: (
+            (False, "arena cannot fit 25 seats")
+            if workshop.cluster_ref == "arena"
+            else (True, "brutus can fit 25 seats")
+        )
+    )
+
+    preview = service.preview_workshop_capacity(
+        Workshop(
+            tenant_id="pilot-tenant",
+            catalog_item_id="intel-xeon6-agent-201",
+            num_users=25,
+        )
+    )
+
+    assert preview["can_provision"] is True
+    assert preview["selected_cluster"] == "brutus"
+    assert preview["reason"] == "brutus can fit 25 seats"
+    assert [
+        call.args[0].cluster_ref
+        for call in service.check_workshop_capacity.call_args_list
+    ] == ["arena", "brutus"]
+
+
+def test_persisted_workshop_cluster_never_falls_through_to_another_cluster():
+    catalog = MagicMock()
+    catalog.get_item.return_value = SimpleNamespace(
+        required_capabilities=["openshift", "showroom", "model_endpoint"],
+        metadata={
+            "required_models": ["granite-3.2-8b-tools"],
+            "max_workshop_seats": 25,
+            "seat_cpu_millicores": 415,
+            "seat_memory_mib": 912,
+            "seat_pods": 3,
+        },
+    )
+    service = ProvisioningService(
+        catalog=catalog,
+        cluster_registry=ClusterRegistry([
+            target(
+                "arena",
+                10,
+                ["openshift", "showroom", "model_endpoint"],
+                {"granite-3.2-8b-tools": "https://arena-model"},
+            ),
+            target(
+                "brutus",
+                20,
+                ["openshift", "showroom", "model_endpoint"],
+                {"granite-3.2-8b-tools": "https://brutus-model"},
+            ),
+        ]),
+    )
+    service.check_workshop_capacity = MagicMock(
+        return_value=(False, "persisted Arena target is full")
+    )
+
+    preview = service.preview_workshop_capacity(
+        Workshop(
+            tenant_id="pilot-tenant",
+            catalog_item_id="intel-xeon6-agent-201",
+            num_users=25,
+            cluster_ref="arena",
+        )
+    )
+
+    assert preview["can_provision"] is False
+    assert preview["selected_cluster"] == "arena"
+    service.check_workshop_capacity.assert_called_once()
+
+
 def test_persisted_target_lifecycle_can_reach_disabled_cluster_for_cleanup():
     factory = MagicMock()
     expected = MagicMock()

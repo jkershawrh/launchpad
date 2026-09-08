@@ -30,12 +30,14 @@ def test_tool_calling_model_is_private_shared_arena_infrastructure():
     assert {item["name"]: item["value"] for item in container["env"]}[
         "LD_PRELOAD"
     ] == "/usr/lib64/libomp.so"
-    # A 48-core reservation passed correctness but regressed the 25-seat
-    # Agent 201 journey from ~82s to ~199s. Keep most of the original CPU
-    # allocation while recovering 32 cores across the two replicas. Matching
-    # request and limit preserves Guaranteed QoS and exclusive CPU placement.
-    assert container["resources"]["requests"]["cpu"] == "80"
-    assert container["resources"]["limits"]["cpu"] == "80"
+    # Preserve two replicas and Guaranteed QoS while recovering the small
+    # admission gap required by the retained Arena 25 + 25 pilot topology.
+    assert container["resources"]["requests"]["cpu"] == "79"
+    assert container["resources"]["limits"]["cpu"] == "79"
+    assert deployment["spec"]["strategy"] == {
+        "type": "RollingUpdate",
+        "rollingUpdate": {"maxSurge": 0, "maxUnavailable": 1},
+    }
 
     model_volume = next(
         volume

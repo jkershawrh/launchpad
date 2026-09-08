@@ -52,7 +52,10 @@ spec:
     matchLabels:
       app: vllm-granite-3-2-8b-tools
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -120,10 +123,10 @@ spec:
             timeoutSeconds: 10
           resources:
             requests:
-              cpu: "80"
+              cpu: "79"
               memory: 64Gi
             limits:
-              cpu: "80"
+              cpu: "79"
               memory: 64Gi
           securityContext:
             allowPrivilegeEscalation: false
