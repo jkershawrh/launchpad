@@ -85,6 +85,40 @@ tabs:
     assert config["tabs"][2]["url"] == "https://docs.redhat.com/example"
 
 
+def test_public_showroom_hides_uncertified_private_console_tab():
+    source = """type: showroom
+tabs:
+  - name: Instructions
+    url: /instructions
+  - name: OpenShift Console
+    url: https://console-openshift-console.apps.arena.fm2aihpcsed.com/k8s/ns/seat-a/core~v1~Pod
+"""
+
+    config = __import__("yaml").safe_load(
+        _rewrite_showroom_config(source, {}, public_console_url=None)
+    )
+
+    assert config["tabs"] == [{"name": "Instructions", "url": "/instructions"}]
+
+
+def test_public_showroom_enables_console_only_through_certified_public_proxy():
+    source = """type: showroom
+tabs:
+  - name: OpenShift Console
+    url: https://console-openshift-console.apps.arena.fm2aihpcsed.com/k8s/ns/seat-a/core~v1~Pod
+"""
+
+    config = __import__("yaml").safe_load(
+        _rewrite_showroom_config(
+            source,
+            {},
+            public_console_url="https://console.labs.example.test/k8s/ns/seat-a/core~v1~Pod",
+        )
+    )
+
+    assert config["tabs"][0]["url"] == "/proxy/console/"
+
+
 def test_tool_proxy_url_cannot_escape_its_authorized_origin():
     assert (
         _tool_upstream_url("https://mortgage-seat.apps.arena.example", "api/health", "verbose=true")

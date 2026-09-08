@@ -88,7 +88,11 @@ def _tool_upstream_url(base: str, path: str, query: str) -> str:
     return f"{url}?{query}" if query else url
 
 
-def _rewrite_showroom_config(source: str, tool_urls: dict[str, str]) -> str:
+def _rewrite_showroom_config(
+    source: str,
+    tool_urls: dict[str, str],
+    public_console_url: str | None = None,
+) -> str:
     """Replace only entitled tab URLs with gateway-relative proxy paths."""
     config = yaml.safe_load(source)
     if not isinstance(config, dict) or not isinstance(config.get("tabs"), list):
@@ -98,15 +102,25 @@ def _rewrite_showroom_config(source: str, tool_urls: dict[str, str]) -> str:
         key=lambda item: len(item[1]),
         reverse=True,
     )
+    rewritten_tabs = []
     for tab in config["tabs"]:
         if not isinstance(tab, dict) or not isinstance(tab.get("url"), str):
+            rewritten_tabs.append(tab)
             continue
         tab_url = tab["url"]
+        tab_host = urlsplit(tab_url).hostname or ""
+        if tab_host.startswith("console-openshift-console."):
+            if public_console_url:
+                tab["url"] = "/proxy/console/"
+                rewritten_tabs.append(tab)
+            continue
         for tool_id, base in allowed:
             if tab_url == base or tab_url.startswith(base + "/"):
                 suffix = tab_url[len(base) :].lstrip("/")
                 tab["url"] = f"/proxy/tool/{tool_id}/{suffix}"
                 break
+        rewritten_tabs.append(tab)
+    config["tabs"] = rewritten_tabs
     return yaml.safe_dump(config, sort_keys=False)
 
 
@@ -449,6 +463,7 @@ async def _showroom_alias(request: Request, path: str) -> Response:
             content = _rewrite_showroom_config(
                 upstream.content.decode(upstream.encoding or "utf-8"),
                 target.get("tool_urls", {}),
+                target.get("console_url"),
             )
         except (TypeError, UnicodeDecodeError, ValueError, yaml.YAMLError) as exc:
             raise HTTPException(502, "Invalid Showroom UI configuration") from exc

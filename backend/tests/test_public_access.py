@@ -512,6 +512,17 @@ def test_public_access_never_uses_placeholder_workspace_url():
     assert "/core~v1~Pod" in source
 
 
+def test_public_access_never_falls_back_to_private_console_url():
+    source = (
+        __import__("pathlib").Path(__file__).resolve().parents[1]
+        / "app/api/routers/public_access.py"
+    ).read_text()
+    assert "public_console_url or target.console_url" not in source
+    assert "public_console_url or cluster.console_url" not in source
+    assert "console_url = target.public_console_url" in source
+    assert "console_url = cluster.public_console_url" in source
+
+
 def test_backend_restart_recovers_policy_identity_entitlement_and_session():
     class Store:
         def __init__(self):
