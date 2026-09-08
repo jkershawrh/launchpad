@@ -50,7 +50,7 @@ export default function Reports() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       <h1 className="text-3xl font-bold text-[#151515] mb-2">Reports</h1>
-      <p className="text-[#6A6E73] mb-8">Showback and usage reports for the 100 most recent sessions.</p>
+      <p className="text-[#6A6E73] mb-8">Estimated showback for the 100 most recent sessions. Values remain estimates until measured per-seat telemetry is connected.</p>
 
       {Object.keys(tenantSummaries).length === 0 ? (
         <div className="bg-white rounded border border-[#D2D2D2] p-8 text-center text-[#6A6E73]">

@@ -42,7 +42,7 @@ export default function Dashboard() {
 
       <div className="grid sm:grid-cols-5 gap-4 mb-8">
         {[
-          { label: 'Total Sessions', value: sessions.length, color: 'text-[#151515]' },
+          { label: 'Recent Sessions', value: sessions.length, color: 'text-[#151515]' },
           { label: 'Active', value: active.length, color: 'text-[#3E8635]' },
           { label: 'Failed', value: failed.length, color: 'text-[#C9190B]' },
           { label: 'Persistent', value: persistent.length, color: 'text-[#0068B5]' },
@@ -57,7 +57,7 @@ export default function Dashboard() {
 
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded border border-[#D2D2D2] p-6">
-          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Sessions by Tenant</h2>
+          <h2 className="text-sm font-semibold text-[#6A6E73] uppercase mb-4">Recent Sessions by Tenant</h2>
           {Object.keys(tenantCounts).length === 0 ? (
             <p className="text-[#6A6E73] text-sm">No sessions yet.</p>
           ) : (

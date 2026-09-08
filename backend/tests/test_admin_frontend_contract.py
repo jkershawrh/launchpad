@@ -27,3 +27,13 @@ def test_admin_system_page_uses_openshift_health_contracts() -> None:
     assert "'/admin/clusters/preflight'" in client
     assert "Infrastructure health and execution cluster readiness." in page
     assert "container management" not in page.lower()
+
+
+def test_admin_labels_bounded_and_estimated_data_honestly() -> None:
+    dashboard = (ROOT / "admin/src/pages/Dashboard.tsx").read_text()
+    reports = (ROOT / "admin/src/pages/Reports.tsx").read_text()
+
+    assert "{ label: 'Recent Sessions'" in dashboard
+    assert "Recent Sessions by Tenant" in dashboard
+    assert "Estimated showback" in reports
+    assert "measured per-seat telemetry is connected" in reports
