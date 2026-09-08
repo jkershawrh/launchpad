@@ -12,6 +12,7 @@ RUNBOOK = ROOT / "docs/september-17-agentic-three-workshop-readiness.md"
 READINESS_CHECKSUM = READINESS.with_suffix(".json.sha256")
 CONTRACT_EVIDENCE = ROOT / "evidence/september-17-multicluster-event-contract-test-2026-09-07.json"
 TWO_CLUSTER_PREFLIGHT = ROOT / "evidence/runs/september-17-two-cluster-preflight-20260907-red.json"
+ACTIVATED_PREFLIGHT = ROOT / "evidence/runs/september-17-multicluster-preflight-20260908-green.json"
 
 
 def test_event_readiness_manifest_keeps_the_exact_workshop_target_and_budget():
@@ -160,6 +161,28 @@ def test_two_cluster_live_preflight_proves_capacity_without_overclaiming_release
     checksum = TWO_CLUSTER_PREFLIGHT.with_suffix(".json.sha256")
     expected = checksum.read_text().split()[0]
     assert hashlib.sha256(TWO_CLUSTER_PREFLIGHT.read_bytes()).hexdigest() == expected
+
+
+def test_brutus_activation_has_green_non_mutating_event_preflight_evidence():
+    evidence = json.loads(ACTIVATED_PREFLIGHT.read_text())
+
+    assert evidence["schema"] == "launchpad.redhat.com/event-preflight-evidence/v1"
+    assert evidence["result"] == "GREEN-live-preflight"
+    assert evidence["mutates_cluster"] is False
+    assert evidence["target_inspection"]["passed"] is True
+    assert evidence["aggregate_capacity"]["passed"] is True
+    assert [
+        (check["catalog_item_id"], check["selected_cluster"], check["passed"])
+        for check in evidence["checks"]
+    ] == [
+        ("multi-agent-quickstart", "arena", True),
+        ("intel-llm-cpu-serving", "arena", True),
+        ("intel-xeon6-agent-201", "brutus", True),
+    ]
+    assert evidence["contains_plaintext_credentials"] is False
+    checksum = ACTIVATED_PREFLIGHT.with_suffix(".json.sha256")
+    expected = checksum.read_text().split()[0]
+    assert hashlib.sha256(ACTIVATED_PREFLIGHT.read_bytes()).hexdigest() == expected
 
 
 def test_every_event_catalog_blocks_recently_recovered_workers():
