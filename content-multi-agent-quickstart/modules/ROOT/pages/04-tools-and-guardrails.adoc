@@ -6,16 +6,17 @@ Forward the MCP service:
 
 [source,bash,role="execute"]
 ----
-oc port-forward service/multi-agent-mcp-server 8004:8004 >/tmp/mcp-port-forward.log 2>&1 &
+oc port-forward service/multi-agent-mcp 18004:8004 >/tmp/mcp-port-forward.log 2>&1 &
 MCP_PF_PID=$!
 trap 'kill "$MCP_PF_PID" 2>/dev/null || true' EXIT
+until curl -fsS http://127.0.0.1:18004/health >/dev/null 2>&1; do sleep 1; done
 ----
 
 List the available tools through the MCP JSON-RPC interface:
 
 [source,bash,role="execute"]
 ----
-curl -fsS http://127.0.0.1:8004/mcp \
+curl -fsS http://127.0.0.1:18004/mcp \
   -H 'Content-Type: application/json' \
   -d '{"jsonrpc":"2.0","id":"tools","method":"tools/list"}' \
   | python3 -m json.tool
@@ -27,7 +28,7 @@ Find the input schema for record lookup, knowledge search, and task creation. Th
 
 [source,bash,role="execute"]
 ----
-curl -fsS http://127.0.0.1:8004/mcp \
+curl -fsS http://127.0.0.1:18004/mcp \
   -H 'Content-Type: application/json' \
   -d '{
     "jsonrpc":"2.0",

@@ -164,6 +164,9 @@ export interface Workshop {
   exposure_policy?: 'internal' | 'public_code';
   public_url?: string;
   one_time_access_code?: string;
+  created_at?: string;
+  started_at?: string;
+  completed_at?: string;
 }
 
 export interface PublicClaimResult {
