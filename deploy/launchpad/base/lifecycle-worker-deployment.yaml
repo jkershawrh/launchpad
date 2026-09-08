@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lifecycle-worker
+  labels:
+    app.kubernetes.io/name: lifecycle-worker
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: lifecycle
+spec:
+  # This is deliberately inert until the database queue, fencing, recovery,
+  # and worker-loss certification matrix is green in the target environment.
+  replicas: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lifecycle-worker
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lifecycle-worker
+        app.kubernetes.io/part-of: partner-ai-launchpad
+        app.kubernetes.io/component: lifecycle
+    spec:
+      serviceAccountName: launchpad-backend
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: lifecycle-worker
+      containers:
+        - name: lifecycle-worker
+          image: backend:latest
+          imagePullPolicy: IfNotPresent
+          command: [python, -m, app.lifecycle_worker_main]
+          envFrom:
+            - configMapRef:
+                name: launchpad-config
+            - secretRef:
+                name: launchpad-litellm
+                optional: true
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: launchpad-db-secret
+                  key: DATABASE_URL
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          securityContext:
+            capabilities:
+              drop: [ALL]
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: cluster-targets
+              mountPath: /etc/launchpad
+              readOnly: true
+            - name: cluster-ca-bundle
+              mountPath: /etc/launchpad-ca
+              readOnly: true
+      volumes:
+        - name: cluster-targets
+          configMap:
+            name: launchpad-cluster-targets
+        - name: cluster-ca-bundle
+          configMap:
+            name: launchpad-cluster-ca-bundle
+            optional: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault

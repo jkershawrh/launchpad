@@ -9,7 +9,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # 1. Module & import tests
 # ---------------------------------------------------------------------------
@@ -129,13 +128,12 @@ class TestEnforceTTLTask:
             assert result["status"] == "ok"
             assert result["reclaimed"] == 3
 
-    def test_returns_error_on_exception(self):
+    def test_retries_on_exception(self):
         with patch("app.api.deps.provisioning_service") as mock_svc:
             mock_svc.enforce_ttl.side_effect = RuntimeError("db down")
             from tasks.lifecycle import enforce_ttl
-            result = enforce_ttl()
-            assert result["status"] == "error"
-            assert "db down" in result["error"]
+            with pytest.raises(RuntimeError, match="db down"):
+                enforce_ttl()
 
 
 # ---------------------------------------------------------------------------
@@ -195,15 +193,15 @@ class TestReclaimSessionTask:
         with patch("app.api.deps.provisioning_service") as mock_svc:
             mock_svc._sessions = {"active-001": mock_session}
             from tasks.lifecycle import reclaim_session
-            result = reclaim_session()
+            reclaim_session()
             mock_svc.force_reclaim_session.assert_not_called()
 
-    def test_returns_error_on_exception(self):
+    def test_retries_on_exception(self):
         with patch("app.api.deps.provisioning_service") as mock_svc:
             mock_svc.reclaim_session.side_effect = RuntimeError("boom")
             from tasks.lifecycle import reclaim_session
-            result = reclaim_session(session_id="sess-fail")
-            assert result["status"] == "error"
+            with pytest.raises(RuntimeError, match="boom"):
+                reclaim_session(session_id="sess-fail")
 
 
 # ---------------------------------------------------------------------------
@@ -238,7 +236,7 @@ class TestPublishEventTask:
     def test_passes_error_summary(self):
         with patch("app.integrations.event_publisher.publish_event") as mock_pub:
             from tasks.lifecycle import publish_event
-            result = publish_event(
+            publish_event(
                 session_id="sess-002",
                 namespace="lab-ns",
                 status="cleanup_failed",

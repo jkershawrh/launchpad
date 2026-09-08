@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: lifecycle-scheduler
+  labels:
+    app.kubernetes.io/name: lifecycle-scheduler
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: lifecycle
+spec:
+  schedule: "*/5 * * * *"
+  suspend: true
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: lifecycle-scheduler
+            app.kubernetes.io/part-of: partner-ai-launchpad
+            app.kubernetes.io/component: lifecycle
+        spec:
+          serviceAccountName: launchpad-backend
+          restartPolicy: Never
+          containers:
+            - name: lifecycle-scheduler
+              image: backend:latest
+              imagePullPolicy: IfNotPresent
+              command: [python, -m, app.lifecycle_scheduler_main]
+              envFrom:
+                - configMapRef:
+                    name: launchpad-config
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: launchpad-db-secret
+                      key: DATABASE_URL
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 250m
+                  memory: 256Mi
+              securityContext:
+                capabilities:
+                  drop: [ALL]
+                allowPrivilegeEscalation: false
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault

@@ -9,6 +9,11 @@ from pathlib import Path
 
 import yaml
 from app.domain.enums import SessionStatus, WorkshopSeatStatus, WorkshopStatus
+from app.domain.lifecycle_jobs import (
+    LifecycleJob,
+    LifecycleJobOperation,
+    LifecycleJobStatus,
+)
 from app.domain.models import LabSession, LifecycleEvent, Workshop, WorkshopSeat
 from app.services.observability_metrics import render_launchpad_metrics
 from fastapi.testclient import TestClient
@@ -108,6 +113,63 @@ def test_metrics_describe_workshop_seats_inflight_and_resolution_without_identit
     assert "workshop-safe" not in body
 
 
+def test_metrics_report_lifecycle_queue_age_leases_and_takeovers_without_ids():
+    now = datetime(2026, 9, 8, 12, 5, 0, tzinfo=UTC)
+    queued = LifecycleJob(
+        job_id="job-must-not-leak",
+        operation=LifecycleJobOperation.RECLAIM_WORKSHOP,
+        aggregate_type="workshop",
+        aggregate_id="workshop-must-not-leak",
+        cluster_ref="arena",
+        idempotency_key="idempotency-must-not-leak",
+        created_at=now - timedelta(seconds=90),
+        updated_at=now - timedelta(seconds=90),
+        next_attempt_at=now - timedelta(seconds=90),
+    )
+    running = LifecycleJob(
+        operation=LifecycleJobOperation.PROVISION_WORKSHOP,
+        aggregate_type="workshop",
+        aggregate_id="workshop-two",
+        cluster_ref="brutus",
+        idempotency_key="workshop:two:provision:v1",
+        status=LifecycleJobStatus.RUNNING,
+        attempts=3,
+        fencing_token=3,
+        lease_until=now + timedelta(seconds=15),
+        created_at=now - timedelta(seconds=120),
+        updated_at=now,
+        next_attempt_at=now - timedelta(seconds=120),
+    )
+
+    body = render_launchpad_metrics(
+        sessions=[],
+        workshops=[],
+        cluster_targets=[],
+        lifecycle_jobs=[queued, running],
+        now=now,
+    ).decode()
+
+    assert (
+        'launchpad_lifecycle_jobs{cluster="arena",operation="reclaim_workshop",status="queued"} 1'
+        in body
+    )
+    assert (
+        'launchpad_lifecycle_job_age_seconds_max{cluster="arena",operation="reclaim_workshop",status="queued"} 90'
+        in body
+    )
+    assert (
+        'launchpad_lifecycle_lease_seconds_remaining{cluster="brutus",operation="provision_workshop"} 15'
+        in body
+    )
+    assert (
+        'launchpad_lifecycle_takeovers_total{cluster="brutus",operation="provision_workshop"} 2'
+        in body
+    )
+    assert "job-must-not-leak" not in body
+    assert "workshop-must-not-leak" not in body
+    assert "idempotency-must-not-leak" not in body
+
+
 def test_metrics_endpoint_is_prometheus_text_and_not_buried_under_admin_auth():
     from app.main import app
 
@@ -152,6 +214,9 @@ def test_observability_package_scrapes_backend_and_supplies_recording_rules():
         "LaunchpadSeatProvisioningStalled",
         "LaunchpadSeatReclaimStalled",
         "LaunchpadCleanupFailed",
+        "LaunchpadLifecycleJobStalled",
+        "LaunchpadLifecycleJobFailed",
+        "LaunchpadReclaimJobStalled",
     } <= set(expressions)
     for name in (
         "launchpad:cluster:cpu_headroom_ratio",

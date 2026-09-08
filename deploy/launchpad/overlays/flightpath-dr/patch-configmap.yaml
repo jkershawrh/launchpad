@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-config
+data:
+  LAUNCHPAD_MODE: "openshift"
+  CLUSTER_TARGETS_FILE: "/etc/launchpad/clusters.yaml"
+  LAUNCHPAD_CONTROL_CLUSTER_REF: "flightpath"
+  LAUNCHPAD_CONTROL_PLANE_ID: "flightpath-standby"
+  LAUNCHPAD_CONTROL_PLANE_ROLE: "standby"
+  REMOTE_PROVISIONER_SERVICE_ACCOUNT: "launchpad-provisioner-flightpath"
+  REMOTE_ARGOCD_SERVICE_ACCOUNT: "launchpad-argocd-manager-flightpath"
+  REMOTE_CONTROL_PLANE_SERVICE_ACCOUNT_NAMESPACE: "partner-ai-launchpad"
+  LIFECYCLE_HA_ENABLED: "false"
+  OPENSHIFT_INGRESS_DOMAIN: "apps.flightpath.fm2aihpcsed.com"
+  OPENSHIFT_CONSOLE_URL: "https://console-openshift-console.apps.flightpath.fm2aihpcsed.com"

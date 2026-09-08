@@ -1,11 +1,17 @@
 """
 API-level workflow tests — full HTTP round-trip for Launch Lab flow.
 """
-import pytest
-from fastapi.testclient import TestClient
+from unittest.mock import patch
 
-from app.api.deps import provisioning_service, tenant_store
+import pytest
+from app.api.deps import (
+    lifecycle_queue_service,
+    provisioning_service,
+    tenant_store,
+)
+from app.domain.enums import SessionStatus
 from app.main import app
+from fastapi.testclient import TestClient
 
 
 @pytest.fixture(autouse=True)
@@ -88,3 +94,56 @@ def test_api_workflow_provision_missing_request(client):
     # Missing and inaccessible requests intentionally share the same response
     # so the API does not disclose another tenant's request identifiers.
     assert resp.status_code == 404
+
+
+def test_ha_provision_returns_persisted_session_and_durable_job(client):
+    payload = {**REQUEST_PAYLOAD, "metadata": {"target_cluster": "arena"}}
+    created = client.post("/api/v1/lab-requests", json=payload)
+    request_id = created.json()["request_id"]
+
+    with (
+        patch.dict("os.environ", {"LIFECYCLE_HA_ENABLED": "true"}, clear=False),
+        patch.object(
+            lifecycle_queue_service,
+            "enqueue_session_provision",
+            wraps=lifecycle_queue_service.enqueue_session_provision,
+        ) as enqueue,
+    ):
+        response = client.post(f"/api/v1/lab-requests/{request_id}/provision")
+
+    assert response.status_code == 202
+    body = response.json()
+    assert body["status"] == "requested"
+    assert body["cluster_ref"] == "arena"
+    assert body["metadata"]["lifecycle_job_id"]
+    enqueue.assert_called_once()
+
+
+def test_ha_reclaim_queues_cleanup_without_running_it_in_api(client):
+    payload = {**REQUEST_PAYLOAD, "metadata": {"target_cluster": "arena"}}
+    created = client.post("/api/v1/lab-requests", json=payload)
+    prepared = provisioning_service.prepare_session_provision(
+        created.json()["request_id"]
+    )
+    provisioning_service._save_session(
+        prepared.model_copy(update={"status": SessionStatus.READY})
+    )
+
+    with (
+        patch.dict("os.environ", {"LIFECYCLE_HA_ENABLED": "true"}, clear=False),
+        patch.object(
+            lifecycle_queue_service,
+            "enqueue_session_reclaim",
+            wraps=lifecycle_queue_service.enqueue_session_reclaim,
+        ) as enqueue,
+        patch.object(provisioning_service, "reclaim_session") as reclaim,
+    ):
+        response = client.post(
+            f"/api/v1/lab-sessions/{prepared.session_id}/reclaim"
+        )
+
+    assert response.status_code == 202
+    assert response.json()["status"] == "resetting"
+    assert response.json()["metadata"]["lifecycle_job_id"]
+    enqueue.assert_called_once()
+    reclaim.assert_not_called()

@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.1",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.2",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -384,6 +384,10 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "LLM_PROVIDER: generic-openai" in page
     assert "LLM_PROVIDER: genericOpenAi" not in page
     assert "--timeout=300s" in page
+    assert page.count('httpGet:') >= 2
+    assert page.count('path: "/api/ping"') >= 2
+    assert "tcpSocket:" not in page
+    assert 'curl -fsS http://anythingllm:3001/api/ping' in page
     assert (
         "ghcr.io/mintplex-labs/anything-llm@sha256:"
         "e7751e8e65f470506379dbc2059d6a4c61eb3f22de58c184aef536a42bdd8335" in containerfile
@@ -391,6 +395,17 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "chgrp -R 0 /app" in containerfile
     assert "rm -rf /app/server/node_modules/.prisma/client" in containerfile
     assert "name: anythingllm-openshift" in build_config
+
+
+def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
+    )
+
+    assert catalog["version"] == "1.0.2"
+    assert catalog["metadata"]["showroom_content_ref"] == (
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.2"
+    )
 
 
 def test_tool_calling_hardware_story_respects_participant_rbac_boundary():

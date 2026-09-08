@@ -72,6 +72,29 @@ def _check_db() -> Dict[str, Any]:
         return {"status": "fail", "message": str(e)}
 
 
+def _check_lifecycle_schema() -> Dict[str, Any]:
+    try:
+        from app.storage.database import get_database_url
+
+        url = get_database_url()
+        if not url:
+            return {"status": "fail", "message": "DATABASE_URL not set"}
+        import psycopg2
+
+        conn = psycopg2.connect(url, connect_timeout=3)
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT to_regclass('public.lifecycle_jobs')")
+                table = cur.fetchone()[0]
+        finally:
+            conn.close()
+        if table != "lifecycle_jobs":
+            return {"status": "fail", "message": "lifecycle_jobs schema is missing"}
+        return {"status": "pass"}
+    except Exception as e:
+        return {"status": "fail", "message": str(e)}
+
+
 def _check_k8s() -> Dict[str, Any]:
     try:
         from kubernetes import client, config

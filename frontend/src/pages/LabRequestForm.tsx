@@ -121,8 +121,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
         return;
       }
 
-      const session = await api.provisionLab(request.request_id);
-      const validated = await api.validateSession(session.session_id);
+      const validated = await api.provisionLabToReady(request.request_id);
       navigate(`/sessions/${validated.session_id}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create lab');

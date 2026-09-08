@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-cluster-targets
+data:
+  clusters.yaml: |
+    clusters:
+      - cluster_id: flightpath
+        display_name: Flightpath DR Standby
+        api_url: https://api.flightpath.fm2aihpcsed.com:6443
+        ingress_domain: apps.flightpath.fm2aihpcsed.com
+        console_url: https://console-openshift-console.apps.flightpath.fm2aihpcsed.com
+        storage_class: ocs-storagecluster-ceph-rbd
+        local: true
+        priority: 90
+        enabled: false
+        public_access_enabled: false
+        capabilities: [cpu, openshift, operators, showroom, dr-standby]
+      - cluster_id: arena
+        display_name: Arena CPU Execution
+        api_url: https://api.arena.fm2aihpcsed.com:6443
+        ingress_domain: apps.arena.fm2aihpcsed.com
+        console_url: https://console-openshift-console.apps.arena.fm2aihpcsed.com
+        storage_class: launchpad-nfs-ephemeral
+        credential_secret: partner-ai-launchpad/launchpad-arena-kubeconfig
+        local: false
+        priority: 10
+        enabled: true
+        public_access_enabled: false
+        capabilities: [cpu, openshift, operators, showroom, model_endpoint]
+      - cluster_id: brutus
+        display_name: Brutus CPU Execution
+        api_url: https://api.brutus.fm2aihpcsed.com:6443
+        ingress_domain: apps.brutus.fm2aihpcsed.com
+        console_url: https://console-openshift-console.apps.brutus.fm2aihpcsed.com
+        storage_class: launchpad-nfs-ephemeral
+        credential_secret: partner-ai-launchpad/launchpad-brutus-kubeconfig
+        local: false
+        priority: 20
+        enabled: false
+        public_access_enabled: false
+        capabilities: [cpu, openshift, operators, showroom, model_endpoint]

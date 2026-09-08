@@ -1,15 +1,24 @@
 from __future__ import annotations
 
+import os
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 
-from app.api.deps import provisioning_service, public_access_service
-from app.domain.access import ExposurePolicy
+from app.api.deps import (
+    lifecycle_queue_service,
+    provisioning_service,
+    public_access_service,
+)
 from app.auth.oauth import User, can_access_tenant, get_current_user, require_tenant_access
+from app.domain.access import ExposurePolicy
 from app.domain.models import LabRequest, LabSession
 
 router = APIRouter(prefix="/lab-requests", tags=["lab-requests"], dependencies=[Depends(get_current_user)])
+
+
+def _lifecycle_ha_enabled() -> bool:
+    return os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true"
 
 
 @router.post("", status_code=201)
@@ -38,7 +47,11 @@ def create_lab_request(request: LabRequest, user: User = Depends(get_current_use
 
 @router.get("", response_model=List[LabRequest])
 def list_lab_requests(user: User = Depends(get_current_user)):
-    return [request for request in provisioning_service._requests.values() if can_access_tenant(user, request.tenant_id)]
+    return [
+        request
+        for request in provisioning_service.list_requests()
+        if can_access_tenant(user, request.tenant_id)
+    ]
 
 
 @router.get("/{request_id}", response_model=LabRequest)
@@ -52,11 +65,29 @@ def get_lab_request(request_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/{request_id}/provision", response_model=LabSession, status_code=201)
-def provision_lab(request_id: str, user: User = Depends(get_current_user)):
+def provision_lab(
+    request_id: str,
+    response: Response,
+    user: User = Depends(get_current_user),
+):
     try:
         request = provisioning_service.get_request(request_id)
         if not request or not can_access_tenant(user, request.tenant_id):
             raise HTTPException(404, f"Lab request {request_id} not found")
+        if _lifecycle_ha_enabled():
+            session = provisioning_service.prepare_session_provision(request_id)
+            job = lifecycle_queue_service.enqueue_session_provision(session)
+            session = session.model_copy(
+                update={
+                    "metadata": {
+                        **session.metadata,
+                        "lifecycle_job_id": job.job_id,
+                    }
+                }
+            )
+            provisioning_service._save_session(session)
+            response.status_code = 202
+            return session
         return provisioning_service.provision(request_id)
     except ValueError as e:
         raise HTTPException(400, str(e))

@@ -6,6 +6,8 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 import pytest
+from app.api.deps import provisioning_service as api_provisioning_service
+from app.auth.oauth import User, get_current_user
 from app.domain.clusters import ClusterTarget
 from app.domain.enums import (
     CatalogCategory,
@@ -17,8 +19,6 @@ from app.domain.enums import (
 )
 from app.domain.lifecycle import transition
 from app.domain.models import LabRequest, LabSession, ValidationResult, Workshop, WorkshopSeat
-from app.auth.oauth import User, get_current_user
-from app.api.deps import provisioning_service as api_provisioning_service
 from app.main import app
 from app.services.cluster_registry import ClusterRegistry
 from app.services.provisioning import ProvisioningService
@@ -324,6 +324,61 @@ def test_order_waits_for_confirmation_before_provisioning():
     completed = client.get(f"/api/v1/workshops/{order['workshop_id']}")
     assert completed.json()["status"] == "ready"
     assert len(completed.json()["session_ids"]) == 3
+
+
+def test_ha_confirm_enqueues_durable_work_without_api_background_execution(
+    monkeypatch,
+):
+    order = client.post(
+        "/api/v1/workshops/orders",
+        json={
+            "tenant_id": "ha-confirm-tenant",
+            "catalog_item_id": "inference-overdrive-quickstart",
+            "num_users": 1,
+        },
+    ).json()
+    enqueue = Mock(return_value=SimpleNamespace(job_id="job-provision-1"))
+    monkeypatch.setenv("LIFECYCLE_HA_ENABLED", "true")
+    monkeypatch.setattr(
+        "app.api.routers.workshops.lifecycle_queue_service.enqueue_workshop_provision",
+        enqueue,
+    )
+
+    confirmed = client.post(f"/api/v1/workshops/{order['workshop_id']}/confirm")
+
+    assert confirmed.status_code == 202
+    assert confirmed.json()["status"] == "queued"
+    enqueue.assert_called_once()
+    current = client.get(f"/api/v1/workshops/{order['workshop_id']}").json()
+    assert current["status"] == "queued"
+    assert current["metadata"]["lifecycle_job_id"] == "job-provision-1"
+
+
+def test_ha_direct_workshop_endpoint_also_uses_durable_worker(monkeypatch):
+    enqueue = Mock(return_value=SimpleNamespace(job_id="job-direct-provision-1"))
+    monkeypatch.setenv("LIFECYCLE_HA_ENABLED", "true")
+    monkeypatch.setattr(
+        "app.api.routers.workshops.lifecycle_queue_service.enqueue_workshop_provision",
+        enqueue,
+    )
+
+    with patch.object(api_provisioning_service, "provision_workshop") as direct:
+        response = client.post(
+            "/api/v1/workshops",
+            json={
+                "tenant_id": "ha-direct-tenant",
+                "catalog_item_id": "inference-overdrive-quickstart",
+                "num_users": 1,
+            },
+        )
+
+    assert response.status_code == 202
+    assert response.json()["status"] == "queued"
+    assert response.json()["metadata"]["lifecycle_job_id"] == (
+        "job-direct-provision-1"
+    )
+    enqueue.assert_called_once()
+    direct.assert_not_called()
 
 
 def test_confirm_is_idempotent_after_workshop_is_ready():
@@ -913,6 +968,88 @@ def test_workshop_provisioning_respects_bounded_concurrency():
 
     assert provisioned.status == WorkshopStatus.READY
     assert peak == 2
+
+
+def test_workshop_discards_late_seat_when_lifecycle_fence_is_lost():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="fenced-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=1,
+    )
+    owns_lease = True
+    original = service._provision_workshop_seat
+
+    def lose_fence(target_workshop, index):
+        nonlocal owns_lease
+        result = original(target_workshop, index)
+        owns_lease = False
+        return result
+
+    with patch.object(
+        service,
+        "_provision_workshop_seat",
+        side_effect=lose_fence,
+    ), patch.object(
+        service,
+        "_discard_late_workshop_session",
+        wraps=service._discard_late_workshop_session,
+    ) as discard:
+        with pytest.raises(RuntimeError, match="lifecycle ownership lost"):
+            service.provision_workshop(
+                workshop,
+                lifecycle_guard=lambda: owns_lease,
+            )
+
+    discard.assert_called_once()
+    persisted = service.get_workshop(workshop.workshop_id)
+    assert persisted is not None
+    assert persisted.status == WorkshopStatus.PROVISIONING
+
+
+def test_lost_workshop_worker_never_persists_late_cleanup_failure():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="fenced-cleanup-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=1,
+    )
+    owns_lease = True
+    save_count_at_loss = 0
+    original = service._provision_workshop_seat
+
+    def lose_fence(target_workshop, index):
+        nonlocal owns_lease, save_count_at_loss
+        result = original(target_workshop, index)
+        save_count_at_loss = service._save_workshop.call_count
+        owns_lease = False
+        return result
+
+    with patch.object(
+        service,
+        "_provision_workshop_seat",
+        side_effect=lose_fence,
+    ), patch.object(
+        service,
+        "_reclaim_workshop_session",
+        return_value="simulated cleanup failure",
+    ), patch.object(
+        service,
+        "_save_workshop",
+        wraps=service._save_workshop,
+    ) as save:
+        with pytest.raises(RuntimeError, match="lifecycle ownership lost"):
+            service.provision_workshop(
+                workshop,
+                lifecycle_guard=lambda: owns_lease,
+            )
+
+    # The stale worker may persist its initial provisioning state, but it must
+    # never write again after losing the lifecycle fence.
+    assert save.call_count == save_count_at_loss
+    persisted = service.get_workshop(workshop.workshop_id)
+    assert persisted is not None
+    assert persisted.status == WorkshopStatus.PROVISIONING
 
 
 def test_workshop_provisioning_uses_catalog_specific_concurrency():

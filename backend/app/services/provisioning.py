@@ -7,6 +7,7 @@ import re
 import threading
 import time
 import uuid as _uuid
+from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from typing import Optional
@@ -43,6 +44,10 @@ from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 from app.integrations.event_publisher import publish_event as notify_stargate
 
 logger = __import__("logging").getLogger("launchpad.provisioning")
+
+
+class LifecycleOwnershipLostError(RuntimeError):
+    """Raised when a distributed worker no longer owns its mutation lease."""
 
 
 def parse_ttl(value: str) -> timedelta:
@@ -118,6 +123,26 @@ class ProvisioningService:
         self._gw_locks: dict[str, threading.Lock] = {}
         self._load_from_db()
 
+    @staticmethod
+    def _lifecycle_ownership_valid(
+        lifecycle_guard: Callable[[], bool] | None,
+    ) -> bool:
+        if lifecycle_guard is None:
+            return True
+        try:
+            return bool(lifecycle_guard())
+        except Exception:
+            logger.exception("Lifecycle ownership check failed; stopping mutations")
+            return False
+
+    @classmethod
+    def _require_lifecycle_ownership(
+        cls,
+        lifecycle_guard: Callable[[], bool] | None,
+    ) -> None:
+        if not cls._lifecycle_ownership_valid(lifecycle_guard):
+            raise LifecycleOwnershipLostError("lifecycle ownership lost")
+
     def _load_from_db(self) -> None:
         if not self.db:
             return
@@ -134,7 +159,50 @@ class ProvisioningService:
                     self._workshop_idempotency[
                         (workshop.tenant_id, workshop.idempotency_key)
                     ] = (workshop.order_fingerprint, workshop.workshop_id)
-        self._cleanup_orphaned_sessions()
+        if os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() != "true":
+            self._cleanup_orphaned_sessions()
+
+    def refresh_persisted_state(self) -> None:
+        """Replace process-local lifecycle caches with the durable DB snapshot.
+
+        API and lifecycle worker pods are separate processes.  In HA mode the
+        database is authoritative; without this refresh an API pod can continue
+        returning the state that existed when it started.
+        """
+        db = getattr(self, "db", None)
+        if not db:
+            return
+        if hasattr(db, "sessions"):
+            sessions = db.sessions.list_all()
+            self._sessions = {session.session_id: session for session in sessions}
+        if hasattr(db, "requests"):
+            requests = db.requests.list_all()
+            self._requests = {request.request_id: request for request in requests}
+        if hasattr(db, "workshops"):
+            workshops = db.workshops.list_all()
+            self._workshops = {
+                workshop.workshop_id: workshop for workshop in workshops
+            }
+            self._workshop_idempotency = {
+                (workshop.tenant_id, workshop.idempotency_key): (
+                    workshop.order_fingerprint,
+                    workshop.workshop_id,
+                )
+                for workshop in workshops
+                if workshop.idempotency_key and workshop.order_fingerprint
+            }
+
+    def list_sessions(self) -> list[LabSession]:
+        self.refresh_persisted_state()
+        return list(self._sessions.values())
+
+    def list_requests(self) -> list[LabRequest]:
+        self.refresh_persisted_state()
+        return list(self._requests.values())
+
+    def list_workshops(self) -> list[Workshop]:
+        self.refresh_persisted_state()
+        return list(self._workshops.values())
 
     def _cleanup_orphaned_sessions(self) -> None:
         active_statuses = {"ready", "active", "validating", "provisioning", "resetting"}
@@ -418,13 +486,20 @@ class ProvisioningService:
     MAX_ACTIVE_PER_TENANT = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_TENANT", "5"))
     MAX_ACTIVE_PER_WORKSHOP = int(os.environ.get("MAX_ACTIVE_SESSIONS_PER_WORKSHOP", "50"))
 
-    def _check_session_limits(self, request: LabRequest, workshop_id: str = None) -> None:
+    def _check_session_limits(
+        self,
+        request: LabRequest,
+        workshop_id: str = None,
+        *,
+        exclude_session_id: str | None = None,
+    ) -> None:
         active_statuses = {"requested", "provisioning", "validating", "ready", "active"}
 
         if workshop_id:
             workshop_active = sum(
                 1 for s in self._sessions.values()
-                if s.status.value in active_statuses
+                if s.session_id != exclude_session_id
+                and s.status.value in active_statuses
                 and s.metadata.get("labels", {}).get("launchpad.redhat.com/workshop-id") == workshop_id
             )
             if workshop_active >= self.MAX_ACTIVE_PER_WORKSHOP:
@@ -436,7 +511,8 @@ class ProvisioningService:
 
         user_active = sum(
             1 for s in self._sessions.values()
-            if s.status.value in active_statuses and s.request_id in self._requests
+            if s.session_id != exclude_session_id
+            and s.status.value in active_statuses and s.request_id in self._requests
             and self._requests[s.request_id].requester_id == request.requester_id
         )
         if user_active >= self.MAX_ACTIVE_PER_USER:
@@ -448,7 +524,8 @@ class ProvisioningService:
 
         tenant_active = sum(
             1 for s in self._sessions.values()
-            if s.status.value in active_statuses and s.tenant_id == request.tenant_id
+            if s.session_id != exclude_session_id
+            and s.status.value in active_statuses and s.tenant_id == request.tenant_id
         )
         if tenant_active >= self.MAX_ACTIVE_PER_TENANT:
             raise ValueError(
@@ -457,20 +534,160 @@ class ProvisioningService:
                 f"Reclaim existing sessions before requesting new ones."
             )
 
+    def prepare_session_provision(self, request_id: str) -> LabSession:
+        """Persist placement and a stable session identity before queueing work."""
+        request = self._requests.get(request_id)
+        if not request:
+            raise ValueError(f"Request {request_id} not found")
+        existing = next(
+            (
+                session
+                for session in self._sessions.values()
+                if session.request_id == request_id
+                and session.status != SessionStatus.RECLAIMED
+            ),
+            None,
+        )
+        if existing:
+            if not existing.cluster_ref:
+                raise ValueError("Prepared session has no persisted cluster_ref")
+            return existing
+        if request.status != LabRequestStatus.ACCEPTED:
+            raise ValueError(
+                f"Request {request_id} is not accepted (status: {request.status.value})"
+            )
+        catalog_item = self.catalog.get_item(request.catalog_item_id)
+        if not catalog_item:
+            raise ValueError(f"Catalog item {request.catalog_item_id} not found")
+        self._check_session_limits(request)
+        cluster_ref = self._select_target_cluster(request, catalog_item)
+        if not cluster_ref:
+            raise ValueError("No execution cluster was selected for the session")
+        request = request.model_copy(
+            update={
+                "metadata": {
+                    **request.metadata,
+                    "target_cluster": cluster_ref,
+                }
+            }
+        )
+        self._save_request(request)
+        prepared = LabSession(
+            request_id=request.request_id,
+            tenant_id=request.tenant_id,
+            catalog_item_id=request.catalog_item_id,
+            cluster_ref=cluster_ref,
+            resources={"cluster_id": cluster_ref},
+            metadata={
+                "requested_models": list(request.requested_models),
+                "labels": {
+                    "launchpad.redhat.com/tenant": request.tenant_id,
+                    "launchpad.redhat.com/catalog-item": request.catalog_item_id,
+                    "launchpad.redhat.com/cluster-id": cluster_ref,
+                },
+            },
+        )
+        self._save_session(prepared)
+        return prepared
+
+    def run_queued_session(
+        self,
+        session_id: str,
+        lifecycle_guard: Callable[[], bool] | None = None,
+    ) -> LabSession:
+        """Resume a prepared individual session after worker replacement."""
+        self._require_lifecycle_ownership(lifecycle_guard)
+        session = self._sessions.get(session_id)
+        if not session:
+            raise ValueError(f"Session {session_id} not found")
+        if session.status in {SessionStatus.READY, SessionStatus.ACTIVE}:
+            return session
+        if session.status in {
+            SessionStatus.VALIDATING,
+            SessionStatus.VALIDATION_FAILED,
+        }:
+            return self.validate_session(
+                session_id, lifecycle_guard=lifecycle_guard
+            )
+        if session.status in {
+            SessionStatus.PROVISIONING,
+            SessionStatus.RESETTING,
+            SessionStatus.CLEANUP_FAILED,
+        }:
+            reclaimed = self.force_reclaim_session(
+                session_id,
+                require_cleanup_success=True,
+                lifecycle_guard=lifecycle_guard,
+            )
+            if reclaimed.status != SessionStatus.RECLAIMED:
+                raise ValueError(
+                    f"Interrupted session cleanup failed for {session_id}"
+                )
+            self._require_lifecycle_ownership(lifecycle_guard)
+            session = reclaimed.model_copy(
+                update={
+                    "status": SessionStatus.REQUESTED,
+                    "namespace": None,
+                    "lab_url": None,
+                    "dashboard_url": None,
+                    "started_at": None,
+                    "expires_at": None,
+                    "completed_at": None,
+                    "resources": {"cluster_id": reclaimed.cluster_ref},
+                    "validation_results": [],
+                    "maas_api_key": None,
+                }
+            )
+            self._save_session(session)
+            request = self._requests.get(session.request_id)
+            if request:
+                self._save_request(
+                    request.model_copy(update={"status": LabRequestStatus.ACCEPTED})
+                )
+        if session.status != SessionStatus.REQUESTED:
+            raise ValueError(
+                f"Session {session_id} cannot provision from {session.status.value}"
+            )
+        provisioned = self.provision(
+            session.request_id,
+            lifecycle_guard=lifecycle_guard,
+        )
+        return self.validate_session(
+            provisioned.session_id,
+            lifecycle_guard=lifecycle_guard,
+        )
+
     def provision(
         self,
         request_id: str,
         workshop_id: str = None,
         *,
         allow_disabled_target: bool = False,
+        lifecycle_guard: Callable[[], bool] | None = None,
     ) -> LabSession:
+        self._require_lifecycle_ownership(lifecycle_guard)
         request = self._requests.get(request_id)
         if not request:
             raise ValueError(f"Request {request_id} not found")
         if request.status != LabRequestStatus.ACCEPTED:
             raise ValueError(f"Request {request_id} is not accepted (status: {request.status.value})")
 
-        self._check_session_limits(request, workshop_id=workshop_id)
+        prepared_session = next(
+            (
+                session
+                for session in self._sessions.values()
+                if session.request_id == request_id
+                and session.status == SessionStatus.REQUESTED
+            ),
+            None,
+        )
+        self._check_session_limits(
+            request,
+            workshop_id=workshop_id,
+            exclude_session_id=(
+                prepared_session.session_id if prepared_session else None
+            ),
+        )
 
         catalog_item = self.catalog.get_item(request.catalog_item_id)
         if not catalog_item:
@@ -493,6 +710,13 @@ class ProvisioningService:
             catalog_item,
             allow_disabled_override=allow_disabled_target,
         )
+        if (
+            prepared_session
+            and prepared_session.cluster_ref != preferred_cluster
+        ):
+            raise ValueError(
+                "Prepared session target changed before provisioning"
+            )
 
         if self.preflight:
             preflight_result = self._run_preflight(catalog_item, preferred_cluster)
@@ -562,22 +786,35 @@ class ProvisioningService:
         })
         # Persist the target before the first cluster mutation. This makes
         # retry, reconciliation, and cleanup deterministic after interruption.
-        session = LabSession(
-            request_id=request.request_id,
-            tenant_id=request.tenant_id,
-            catalog_item_id=request.catalog_item_id,
-            namespace=plan.target_namespace,
-            cluster_ref=preferred_cluster,
-            maas_api_key=maas_api_key,
-            resources={"cluster_id": preferred_cluster},
-            metadata={
+        session_data = {
+            "namespace": plan.target_namespace,
+            "cluster_ref": preferred_cluster,
+            "maas_api_key": maas_api_key,
+            "resources": {"cluster_id": preferred_cluster},
+            "metadata": {
+                **(prepared_session.metadata if prepared_session else {}),
                 "requested_models": selected_models,
                 "labels": {
+                    **(
+                        prepared_session.metadata.get("labels", {})
+                        if prepared_session
+                        else {}
+                    ),
                     "launchpad.redhat.com/tenant": request.tenant_id,
                     "launchpad.redhat.com/catalog-item": request.catalog_item_id,
                     "launchpad.redhat.com/cluster-id": preferred_cluster or "local",
-                }
+                },
             },
+        }
+        session = (
+            prepared_session.model_copy(update=session_data)
+            if prepared_session
+            else LabSession(
+                request_id=request.request_id,
+                tenant_id=request.tenant_id,
+                catalog_item_id=request.catalog_item_id,
+                **session_data,
+            )
         )
         plan = plan.model_copy(update={
             "required_resources": {
@@ -589,6 +826,7 @@ class ProvisioningService:
         session = transition(session, SessionStatus.PROVISIONING, reason="target selected; provisioning started")
         self._save_session(session)
         self._save_request(request.model_copy(update={"status": LabRequestStatus.PROVISIONING}))
+        self._require_lifecycle_ownership(lifecycle_guard)
 
         try:
             result = provisioner.provision(plan)
@@ -599,6 +837,25 @@ class ProvisioningService:
                 preferred_cluster,
             )
             raise
+
+        if not self._lifecycle_ownership_valid(lifecycle_guard):
+            cleanup_adapter = self._get_cleanup(preferred_cluster)
+            if cleanup_adapter and result.namespace:
+                try:
+                    cleanup_adapter.cleanup(result.namespace)
+                except Exception:
+                    logger.exception(
+                        "Late session cleanup failed for %s", session.session_id
+                    )
+            if self.maas_key_broker and maas_api_key:
+                try:
+                    self.maas_key_broker.revoke_key(maas_api_key)
+                except Exception:
+                    logger.exception(
+                        "Late session key revocation failed for %s",
+                        session.session_id,
+                    )
+            raise LifecycleOwnershipLostError("lifecycle ownership lost")
 
         if request.persistence == Persistence.PERSISTENT:
             expires_at = None
@@ -614,7 +871,7 @@ class ProvisioningService:
             )
         )
 
-        cluster_ref = getattr(result, "cluster_ref", None) or sandbox_data.get("ingress_domain")
+        cluster_ref = preferred_cluster or getattr(result, "cluster_ref", None)
 
         session_labels = {
             "launchpad.redhat.com/tenant": request.tenant_id,
@@ -642,10 +899,16 @@ class ProvisioningService:
         })
         session = transition(session, SessionStatus.VALIDATING, reason="provisioning complete")
 
+        self._require_lifecycle_ownership(lifecycle_guard)
         self._save_session(session)
         return session
 
-    def validate_session(self, session_id: str) -> LabSession:
+    def validate_session(
+        self,
+        session_id: str,
+        lifecycle_guard: Callable[[], bool] | None = None,
+    ) -> LabSession:
+        self._require_lifecycle_ownership(lifecycle_guard)
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
@@ -664,6 +927,7 @@ class ProvisioningService:
         else:
             session = transition(session, SessionStatus.READY, reason="all checks passed")
 
+        self._require_lifecycle_ownership(lifecycle_guard)
         self._save_session(session)
         notify_stargate(
             session_id=session.session_id,
@@ -848,35 +1112,57 @@ class ProvisioningService:
         self._save_session(session)
         return session
 
-    def reclaim_session(self, session_id: str) -> LabSession:
+    def queue_session_reclaim(self, session_id: str) -> LabSession:
+        session = self._sessions.get(session_id)
+        if not session:
+            raise ValueError(f"Session {session_id} not found")
+        if session.status in {SessionStatus.RESETTING, SessionStatus.RECLAIMED}:
+            return session
+        queued = transition(
+            session, SessionStatus.RESETTING, reason="cleanup queued"
+        )
+        self._save_session(queued)
+        return queued
+
+    def reclaim_session(
+        self,
+        session_id: str,
+        lifecycle_guard: Callable[[], bool] | None = None,
+    ) -> LabSession:
+        self._require_lifecycle_ownership(lifecycle_guard)
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
         if session.status not in (SessionStatus.RESETTING, SessionStatus.CLEANUP_FAILED):
             session = transition(session, SessionStatus.RESETTING, reason="cleanup started")
             self._save_session(session)
+        self._require_lifecycle_ownership(lifecycle_guard)
         self.pool.release(session.request_id)
 
         cleanup_errors = []
         if self.maas_key_broker and session.maas_api_key:
+            self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 self.maas_key_broker.revoke_key(session.maas_api_key)
             except Exception as e:
                 cleanup_errors.append(f"MaaS key revocation failed: {e}")
         cleanup_adapter = self._get_cleanup(session.cluster_ref)
         if cleanup_adapter and session.resources.get("compose_file"):
+            self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 cleanup_adapter.cleanup(session.resources["compose_file"])
             except Exception as e:
                 cleanup_errors.append(str(e))
 
         if cleanup_adapter and session.namespace:
+            self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 cleanup_adapter.cleanup(session.namespace)
             except Exception as e:
                 cleanup_errors.append(str(e))
 
         if cleanup_adapter and session.resources.get("gateway_namespace"):
+            self._require_lifecycle_ownership(lifecycle_guard)
             gw_ns = session.resources["gateway_namespace"]
             with self._get_gw_lock(gw_ns):
                 active_demos_for_gw = sum(
@@ -886,11 +1172,13 @@ class ProvisioningService:
                     and s.resources.get("gateway_namespace") == gw_ns
                 )
                 if active_demos_for_gw == 0:
+                    self._require_lifecycle_ownership(lifecycle_guard)
                     try:
                         cleanup_adapter.cleanup(gw_ns)
                     except Exception as e:
                         cleanup_errors.append(str(e))
 
+        self._require_lifecycle_ownership(lifecycle_guard)
         session = self._scrub_credentials(session)
 
         if cleanup_errors:
@@ -911,6 +1199,7 @@ class ProvisioningService:
             self._save_session(session)
             access = getattr(self, "public_access_service", None)
             if access:
+                self._require_lifecycle_ownership(lifecycle_guard)
                 access.expire_order(session.request_id)
             notify_stargate(
                 session_id=session.session_id,
@@ -922,24 +1211,34 @@ class ProvisioningService:
         return session
 
     def force_reclaim_session(
-        self, session_id: str, *, require_cleanup_success: bool = False
+        self,
+        session_id: str,
+        *,
+        require_cleanup_success: bool = False,
+        lifecycle_guard: Callable[[], bool] | None = None,
     ) -> LabSession:
+        self._require_lifecycle_ownership(lifecycle_guard)
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
         key_revocation_error = None
         if self.maas_key_broker and session.maas_api_key:
+            self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 self.maas_key_broker.revoke_key(session.maas_api_key)
             except Exception as exc:
                 key_revocation_error = str(exc)
+        self._require_lifecycle_ownership(lifecycle_guard)
         self.pool.release(session.request_id)
         cleanup_adapter = self._get_cleanup(session.cluster_ref)
         if cleanup_adapter and session.resources.get("compose_file"):
+            self._require_lifecycle_ownership(lifecycle_guard)
             cleanup_adapter.cleanup(session.resources["compose_file"])
         if cleanup_adapter and session.resources.get("container_name"):
+            self._require_lifecycle_ownership(lifecycle_guard)
             cleanup_adapter.cleanup(session.resources["container_name"])
         if cleanup_adapter and session.namespace:
+            self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 cleanup_adapter.cleanup(session.namespace)
             except Exception as e:
@@ -958,10 +1257,12 @@ class ProvisioningService:
                         "status": SessionStatus.CLEANUP_FAILED,
                         "lifecycle_events": session.lifecycle_events + [event],
                     })
+                    self._require_lifecycle_ownership(lifecycle_guard)
                     session = self._scrub_credentials(session)
                     self._save_session(session)
                     return session
         if key_revocation_error and require_cleanup_success:
+            self._require_lifecycle_ownership(lifecycle_guard)
             event = LifecycleEvent(
                 from_status=session.status,
                 to_status=SessionStatus.CLEANUP_FAILED,
@@ -986,6 +1287,7 @@ class ProvisioningService:
                 "lifecycle_events": session.lifecycle_events + [event],
             }
         )
+        self._require_lifecycle_ownership(lifecycle_guard)
         session = self._scrub_credentials(session)
         self._save_session(session)
         return session
@@ -1107,10 +1409,16 @@ class ProvisioningService:
         return session
 
     def get_session(self, session_id: str) -> Optional[LabSession]:
+        db = getattr(self, "db", None)
+        session_store = getattr(db, "sessions", None) if db else None
+        if session_store and hasattr(session_store, "get"):
+            persisted = session_store.get(session_id)
+            if persisted:
+                self._sessions[session_id] = persisted
         return self._sessions.get(session_id)
 
     def get_session_public(self, session_id: str) -> Optional[LabSession]:
-        session = self._sessions.get(session_id)
+        session = self.get_session(session_id)
         if not session:
             return None
         return session.model_copy(update={"maas_api_key": None})
@@ -1128,6 +1436,12 @@ class ProvisioningService:
         return session
 
     def get_request(self, request_id: str) -> Optional[LabRequest]:
+        db = getattr(self, "db", None)
+        request_store = getattr(db, "requests", None) if db else None
+        if request_store and hasattr(request_store, "get"):
+            persisted = request_store.get(request_id)
+            if persisted:
+                self._requests[request_id] = persisted
         return self._requests.get(request_id)
 
     # ── Workshop provisioning ─────────────────────────────────────
@@ -1529,7 +1843,11 @@ class ProvisioningService:
         self._save_workshop(queued)
         return queued
 
-    def run_queued_workshop(self, workshop_id: str) -> Workshop:
+    def run_queued_workshop(
+        self,
+        workshop_id: str,
+        lifecycle_guard: Callable[[], bool] | None = None,
+    ) -> Workshop:
         workshop = self._workshops.get(workshop_id)
         if not workshop:
             raise ValueError(f"Workshop {workshop_id} not found")
@@ -1546,7 +1864,7 @@ class ProvisioningService:
             raise ValueError(
                 f"Workshop {workshop_id} cannot run from status {workshop.status.value}"
             )
-        return self.provision_workshop(workshop)
+        return self.provision_workshop(workshop, lifecycle_guard=lifecycle_guard)
 
     def queue_failed_workshop_seats(self, workshop_id: str) -> Workshop:
         workshop = self._workshops.get(workshop_id)
@@ -1652,13 +1970,25 @@ class ProvisioningService:
         return current if current and current.status in stop_states else None
 
     def _discard_late_workshop_session(
-        self, workshop: Workshop, session_id: Optional[str]
+        self,
+        workshop: Workshop,
+        session_id: Optional[str],
+        *,
+        persist_failure: bool = True,
     ) -> Workshop:
         """Reclaim a seat result produced after workshop shutdown began."""
         if not session_id or session_id in workshop.session_ids:
             return workshop
         error = self._reclaim_workshop_session(session_id)
         if not error:
+            return workshop
+        if not persist_failure:
+            logger.error(
+                "Late workshop seat %s could not be reclaimed after lifecycle "
+                "ownership was lost: %s",
+                session_id,
+                error,
+            )
             return workshop
         failed = list(workshop.metadata.get("failed_late_seat_reclaims", []))
         failed.append({"session_id": session_id, "error": error})
@@ -1789,8 +2119,12 @@ class ProvisioningService:
         return recovered
 
     def provision_workshop(
-        self, workshop: Workshop, idempotency_key: str = None
+        self,
+        workshop: Workshop,
+        idempotency_key: str = None,
+        lifecycle_guard: Callable[[], bool] | None = None,
     ) -> Workshop:
+        self._require_lifecycle_ownership(lifecycle_guard)
         workshop = self._with_default_workshop_name(workshop)
         provision_event = self._workshop_provision_events.setdefault(
             workshop.workshop_id, threading.Event()
@@ -1825,6 +2159,9 @@ class ProvisioningService:
             "seats": seats,
         })
         self._save_workshop(workshop)
+        if not self._lifecycle_ownership_valid(lifecycle_guard):
+            provision_event.set()
+            raise LifecycleOwnershipLostError("lifecycle ownership lost")
 
         catalog_item = self.catalog.get_item(workshop.catalog_item_id)
         if not catalog_item:
@@ -1971,6 +2308,7 @@ class ProvisioningService:
                     self._provision_workshop_seat_unless_reclaiming,
                     workshop,
                     i,
+                    lifecycle_guard,
                 ): i
                 for i in pending_indexes
             }
@@ -1990,6 +2328,18 @@ class ProvisioningService:
                         "updated_at": datetime.utcnow(),
                     })
                     session_id = None
+
+                if not self._lifecycle_ownership_valid(lifecycle_guard):
+                    if session_id:
+                        current_workshop = self._workshops.get(
+                            workshop.workshop_id, workshop
+                        )
+                        self._discard_late_workshop_session(
+                            current_workshop,
+                            session_id,
+                            persist_failure=False,
+                        )
+                    continue
 
                 # A different backend process may have reclaimed this order
                 # while this worker was blocked in a cluster API call.  Never
@@ -2018,6 +2368,10 @@ class ProvisioningService:
                     })
                 self._save_workshop(workshop)
 
+        if not self._lifecycle_ownership_valid(lifecycle_guard):
+            provision_event.set()
+            raise LifecycleOwnershipLostError("lifecycle ownership lost")
+
         current = self._authoritative_workshop_stop_state(workshop.workshop_id)
         if current and current.status == WorkshopStatus.RECLAIMING:
             workshop = current.model_copy(update={
@@ -2037,6 +2391,9 @@ class ProvisioningService:
             return current
 
         readiness_failures = self._wait_for_workshop_stability(workshop.seats)
+        if not self._lifecycle_ownership_valid(lifecycle_guard):
+            provision_event.set()
+            raise LifecycleOwnershipLostError("lifecycle ownership lost")
         if readiness_failures:
             for index, seat in enumerate(workshop.seats):
                 error = readiness_failures.get(seat.seat_number)
@@ -2083,9 +2440,13 @@ class ProvisioningService:
         return workshop
 
     def _provision_workshop_seat_unless_reclaiming(
-        self, workshop: Workshop, index: int
+        self,
+        workshop: Workshop,
+        index: int,
+        lifecycle_guard: Callable[[], bool] | None = None,
     ) -> tuple[WorkshopSeat, Optional[str]]:
         """Do not start queued seat work after group reclaim is requested."""
+        self._require_lifecycle_ownership(lifecycle_guard)
         current = self._workshops.get(workshop.workshop_id)
         if current and current.status == WorkshopStatus.RECLAIMING:
             seat = current.seats[index]
@@ -2096,7 +2457,16 @@ class ProvisioningService:
                     "updated_at": datetime.utcnow(),
                 }
             ), None
-        return self._provision_workshop_seat(workshop, index)
+        updated_seat, session_id = self._provision_workshop_seat(workshop, index)
+        if not self._lifecycle_ownership_valid(lifecycle_guard):
+            current_workshop = self._workshops.get(workshop.workshop_id, workshop)
+            self._discard_late_workshop_session(
+                current_workshop,
+                session_id,
+                persist_failure=False,
+            )
+            raise LifecycleOwnershipLostError("lifecycle ownership lost")
+        return updated_seat, session_id
 
     def _provision_workshop_seat(
         self, workshop: Workshop, index: int
@@ -2615,7 +2985,12 @@ class ProvisioningService:
             "headroom_pct": headroom_pct,
         }
 
-    def reclaim_workshop(self, workshop_id: str) -> Workshop:
+    def reclaim_workshop(
+        self,
+        workshop_id: str,
+        lifecycle_guard: Callable[[], bool] | None = None,
+    ) -> Workshop:
+        self._require_lifecycle_ownership(lifecycle_guard)
         provision_event = self._workshop_provision_events.get(workshop_id)
         if provision_event and not provision_event.is_set():
             wait_timeout = max(
@@ -2626,6 +3001,7 @@ class ProvisioningService:
                     f"Workshop {workshop_id} provisioning did not stop within "
                     f"{wait_timeout}s"
                 )
+        self._require_lifecycle_ownership(lifecycle_guard)
         workshop = self._workshops.get(workshop_id)
         if not workshop:
             raise ValueError(f"Workshop {workshop_id} not found")
@@ -2657,13 +3033,19 @@ class ProvisioningService:
         )
         with ThreadPoolExecutor(max_workers=concurrency) as executor:
             futures = {
-                executor.submit(self._reclaim_workshop_session, session_id): session_id
+                executor.submit(
+                    self._reclaim_workshop_session_if_owned,
+                    session_id,
+                    lifecycle_guard,
+                ): session_id
                 for session_id in workshop.session_ids
             }
             for future in as_completed(futures):
                 session_id = futures[future]
                 seat_index = seats_by_session.get(session_id)
                 error = future.result()
+                if not self._lifecycle_ownership_valid(lifecycle_guard):
+                    continue
                 if error:
                     failed_reclaims.append({"session_id": session_id, "error": error})
                 if seat_index is not None:
@@ -2677,6 +3059,8 @@ class ProvisioningService:
                         "updated_at": datetime.utcnow(),
                     })
                     self._save_workshop(workshop)
+
+        self._require_lifecycle_ownership(lifecycle_guard)
 
         status = (
             WorkshopStatus.COMPLETED
@@ -2710,6 +3094,14 @@ class ProvisioningService:
         if access:
             access.expire_order(workshop_id)
         return workshop
+
+    def _reclaim_workshop_session_if_owned(
+        self,
+        session_id: str,
+        lifecycle_guard: Callable[[], bool] | None,
+    ) -> Optional[str]:
+        self._require_lifecycle_ownership(lifecycle_guard)
+        return self._reclaim_workshop_session(session_id)
 
     def _reclaim_workshop_session(self, session_id: str) -> Optional[str]:
         existing = self._sessions.get(session_id)
@@ -2783,14 +3175,23 @@ class ProvisioningService:
         return queued
 
     def get_workshop(self, workshop_id: str) -> Optional[Workshop]:
+        db = getattr(self, "db", None)
+        workshop_store = getattr(db, "workshops", None) if db else None
+        if workshop_store and hasattr(workshop_store, "get"):
+            persisted = workshop_store.get(workshop_id)
+            if persisted:
+                self._workshops[workshop_id] = persisted
         return self._workshops.get(workshop_id)
 
     def _public_access_session(self, order_id: str, seat_ref: str) -> Optional[LabSession]:
-        workshop = self._workshops.get(order_id)
+        workshop = self.get_workshop(order_id)
         if workshop:
             seat = next((item for item in workshop.seats if item.seat_id == seat_ref), None)
-            return self._sessions.get(seat.session_id) if seat and seat.session_id else None
-        return next((item for item in self._sessions.values() if item.request_id == order_id), None)
+            return self.get_session(seat.session_id) if seat and seat.session_id else None
+        return next(
+            (item for item in self.list_sessions() if item.request_id == order_id),
+            None,
+        )
 
     def bind_public_participant(self, order_id: str, seat_ref: str, username: str) -> None:
         """Grant the stable OIDC user edit access only to the claimed namespace."""
@@ -2859,7 +3260,10 @@ class ProvisioningService:
                         f"Failed to revoke participant namespace access: {exc.reason}"
                     ) from exc
 
-    def enforce_ttl(self) -> int:
+    def enforce_ttl(
+        self, lifecycle_guard: Callable[[], bool] | None = None
+    ) -> int:
+        self._require_lifecycle_ownership(lifecycle_guard)
         now = datetime.utcnow()
         reclaimable = {"ready", "active"}
         reclaimed_count = 0
@@ -2895,6 +3299,7 @@ class ProvisioningService:
         # identical for new workshops; grouping also repairs older staggered
         # records without leaving the parent falsely marked READY.
         for workshop_id in workshop_expirations:
+            self._require_lifecycle_ownership(lifecycle_guard)
             workshop = self._workshops[workshop_id]
             active_session_ids = {
                 session_id
@@ -2904,7 +3309,11 @@ class ProvisioningService:
             }
             try:
                 self.queue_workshop_reclaim(workshop_id)
-                self.reclaim_workshop(workshop_id)
+                self.reclaim_workshop(
+                    workshop_id, lifecycle_guard=lifecycle_guard
+                )
+            except LifecycleOwnershipLostError:
+                raise
             except Exception as exc:
                 logger.error(
                     "TTL reclaim failed for workshop %s: %s",
@@ -2919,9 +3328,12 @@ class ProvisioningService:
             )
 
         for session in standalone_expirations:
+            self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 self.reclaim_session(session.session_id)
                 reclaimed_count += 1
+            except LifecycleOwnershipLostError:
+                raise
             except Exception as e:
                 logger.warning(
                     "TTL reclaim failed for session %s, attempting force-reclaim: %s",
@@ -2929,12 +3341,16 @@ class ProvisioningService:
                     e,
                 )
                 try:
+                    self._require_lifecycle_ownership(lifecycle_guard)
                     self.force_reclaim_session(session.session_id)
                     reclaimed_count += 1
+                except LifecycleOwnershipLostError:
+                    raise
                 except Exception as e2:
                     logger.error(
                         "Force-reclaim also failed for session %s: %s",
                         session.session_id,
                         e2,
                     )
+        self._require_lifecycle_ownership(lifecycle_guard)
         return reclaimed_count

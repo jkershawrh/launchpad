@@ -6,6 +6,7 @@ import type {
   HandoffPackage,
   LabRequest,
   LabSession,
+  LifecycleHealth,
   OrchestrationDecision,
   RepeatabilityReport,
   ShowbackRecord,
@@ -14,6 +15,10 @@ import type {
   WorkshopCapacityPreview,
   PublicClaimResult,
 } from './types';
+import {
+  isProvisioningTerminal,
+  usesDurableLifecycle,
+} from '../sessionProvisioning';
 
 const BASE = '/api';
 
@@ -28,6 +33,32 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error(`${res.status}: ${text}`);
   }
   return res.json();
+}
+
+async function waitForLifecycleSession(
+  sessionId: string,
+  timeoutMs = 15 * 60 * 1000,
+  pollIntervalMs = 2000,
+): Promise<LabSession> {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    const session = await request<LabSession>(`/lab-sessions/${sessionId}`);
+    if (isProvisioningTerminal(session.status)) return session;
+    await new Promise((resolve) => window.setTimeout(resolve, pollIntervalMs));
+  }
+  throw new Error('Provisioning is still running after 15 minutes. Check My Labs for status.');
+}
+
+async function provisionLabToReady(requestId: string): Promise<LabSession> {
+  const session = await request<LabSession>(`/lab-requests/${requestId}/provision`, {
+    method: 'POST',
+  });
+  if (usesDurableLifecycle(session)) {
+    return waitForLifecycleSession(session.session_id);
+  }
+  return request<LabSession>(`/lab-sessions/${session.session_id}/validate`, {
+    method: 'POST',
+  });
 }
 
 export const api = {
@@ -49,6 +80,8 @@ export const api = {
   getLabRequest: (id: string) => request<LabRequest>(`/lab-requests/${id}`),
   provisionLab: (requestId: string) =>
     request<LabSession>(`/lab-requests/${requestId}/provision`, { method: 'POST' }),
+  provisionLabToReady,
+  waitForLifecycleSession,
 
   // Lab Sessions
   listSessions: () => request<LabSession[]>('/lab-sessions'),
@@ -77,6 +110,8 @@ export const api = {
     request<OrchestrationDecision>(`/intelligence/decision/${requestId}`),
   getAdminObservability: () =>
     request<AdminObservability>('/admin/observability'),
+  getLifecycleHealth: () =>
+    request<LifecycleHealth>('/admin/lifecycle'),
 
   // Workshops
   previewWorkshop: (data: Record<string, unknown>) =>

@@ -119,14 +119,19 @@ spec:
             - name: DISABLE_TELEMETRY
               value: "true"
           startupProbe:
-            tcpSocket:
+            httpGet:
+              path: "/api/ping"
               port: 3001
             failureThreshold: 60
             periodSeconds: 5
+            timeoutSeconds: 3
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: "/api/ping"
               port: 3001
             periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 6
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -158,6 +163,7 @@ oc annotate route rag haproxy.router.openshift.io/timeout=120s --overwrite -n {p
 [source,bash,role="execute",subs="attributes+"]
 ----
 oc rollout status deployment/anythingllm -n {project_name} --timeout=300s
+curl -fsS http://anythingllm:3001/api/ping
 ----
 
 === Verify: Pod is Running
@@ -174,9 +180,11 @@ NAME                           READY   STATUS    RESTARTS   AGE
 anythingllm-xxxxx-xxxxx        1/1     Running   0          2m
 ----
 
-The OpenShift-compatible image is pinned and prebuilt by Launchpad. Its first
-pull to a worker can take several minutes; subsequent seats on that worker use
-the cached image layers.
+The OpenShift-compatible image is pinned and prebuilt by Launchpad. The
+deployment is not reported ready until the AnythingLLM application health
+endpoint responds, so the *RAG Assistant* tab is ready when this step
+completes. Its first pull to a worker can take several minutes; subsequent
+seats on that worker use the cached image layers.
 
 == Verify the Connection
 

@@ -5,6 +5,9 @@
 
 title = "StarGate Secret Detection"
 
+[extend]
+useDefault = true
+
 [allowlist]
   paths = [
     '''node_modules''',

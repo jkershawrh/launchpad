@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+import pytest
 from app.domain.enums import (
     CatalogCategory,
     SessionStatus,
@@ -9,6 +10,26 @@ from app.domain.enums import (
 )
 from app.domain.models import LabRequest, Workshop, WorkshopSeat
 from app.services.provisioning import ProvisioningService
+
+
+def test_reconcile_stops_before_mutation_when_lifecycle_fence_is_lost():
+    service = SimpleNamespace(
+        _sessions={},
+        _workshops={},
+        cleanup=MagicMock(),
+    )
+
+    from app.services.provisioning import LifecycleOwnershipLostError
+    from app.services.resource_reconciliation import reconcile_resources
+
+    with pytest.raises(LifecycleOwnershipLostError):
+        reconcile_resources(
+            service,
+            delete_orphans=False,
+            lifecycle_guard=lambda: False,
+        )
+
+    service.cleanup.assert_not_called()
 
 
 def test_reconcile_marks_cleanup_failed_reclaimed_when_namespace_is_gone(lab_session):

@@ -91,6 +91,27 @@ def _participant_tool_urls(lab_session, catalog_item, cluster) -> dict[str, str]
     )
     if workspace_route and not has_declared_workspace:
         workspace_url = str(route_urls.get(workspace_route, ""))
+        if not workspace_url:
+            namespace = str(getattr(lab_session, "namespace", "") or "").strip()
+            ingress_domain = str(
+                getattr(cluster, "ingress_domain", "") or ""
+            ).strip()
+            dns_label = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
+            dns_name = re.compile(
+                r"^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$"
+            )
+            if (
+                dns_label.fullmatch(workspace_route)
+                and dns_label.fullmatch(namespace)
+                and dns_name.fullmatch(ingress_domain)
+            ):
+                # Content-only labs can create their participant application
+                # after the session's initial Route snapshot.  Derive only
+                # the catalog-declared Route on the persisted seat namespace;
+                # never expose arbitrary namespace Route discovery here.
+                workspace_url = (
+                    f"https://{workspace_route}-{namespace}.{ingress_domain}"
+                )
         parsed = urlsplit(workspace_url)
         if parsed.scheme == "https" and parsed.netloc and not parsed.username:
             tools["workspace"] = workspace_url.rstrip("/")
@@ -370,14 +391,14 @@ def resolve_gateway_target(
         if seat:
             showroom_url = seat.showroom_url
             workspace_url = seat.lab_url
-            lab_session = provisioning_service._sessions.get(seat.session_id or "")
+            lab_session = provisioning_service.get_session(seat.session_id or "")
         else:
             lab_session = None
     else:
         lab_session = next(
             (
                 item
-                for item in provisioning_service._sessions.values()
+                for item in provisioning_service.list_sessions()
                 if item.request_id == policy.order_id
             ),
             None,

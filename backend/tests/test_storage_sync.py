@@ -5,11 +5,9 @@ import sys
 from types import SimpleNamespace
 
 import pytest
-
 from app.domain.enums import SessionStatus
 from app.domain.models import LabSession
-from app.storage import database
-from app.storage import stores
+from app.storage import database, stores
 from app.storage.stores import _decode_json
 
 
@@ -110,3 +108,43 @@ def test_session_write_failure_is_not_downgraded_to_memory_only(monkeypatch):
 
     with pytest.raises(stores.PersistenceUnavailableError):
         stores.PostgresSessionStore().save(session)
+
+
+@pytest.mark.parametrize(
+    ("store", "method", "args"),
+    [
+        (stores.PostgresSessionStore(), "get", ("session-1",)),
+        (stores.PostgresSessionStore(), "list_all", ()),
+        (stores.PostgresRequestStore(), "get", ("request-1",)),
+        (stores.PostgresRequestStore(), "list_all", ()),
+        (stores.PostgresWorkshopStore(), "get", ("workshop-1",)),
+        (stores.PostgresWorkshopStore(), "list_all", ()),
+    ],
+)
+def test_authoritative_lifecycle_read_failure_is_not_returned_as_missing(
+    monkeypatch,
+    store,
+    method,
+    args,
+):
+    class FakeCursor:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def execute(self, *_args, **_kwargs):
+            raise RuntimeError("connection lost during read")
+
+    class FakeConnection:
+        def cursor(self):
+            return FakeCursor()
+
+        def close(self):
+            pass
+
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: FakeConnection())
+
+    with pytest.raises(stores.PersistenceUnavailableError):
+        getattr(store, method)(*args)

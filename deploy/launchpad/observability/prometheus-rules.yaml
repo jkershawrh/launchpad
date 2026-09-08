@@ -84,6 +84,32 @@ spec:
           annotations:
             summary: A workshop contains one or more failed seats
             description: Use the workshop and seat lifecycle views to isolate the failed stage.
+        - alert: LaunchpadLifecycleJobStalled
+          expr: |
+            launchpad_lifecycle_job_age_seconds_max{status=~"queued|running|cancel_requested"} > 300
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: A durable lifecycle job has not advanced for five minutes
+            description: Inspect worker leases and the persisted target cluster before retrying.
+        - alert: LaunchpadReclaimJobStalled
+          expr: |
+            launchpad_lifecycle_job_age_seconds_max{operation=~"reclaim_workshop|reclaim_session",status=~"queued|running|cancel_requested"} > 300
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: A durable reclaim job has not advanced for five minutes
+            description: Preserve the job and target cluster; do not mark reclaimed until zero residue is verified.
+        - alert: LaunchpadLifecycleJobFailed
+          expr: launchpad_lifecycle_jobs{status="failed"} > 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: A durable lifecycle job exhausted its retry budget
+            description: Review the job evidence, fencing token and exact target cluster before administrative recovery.
     - name: launchpad.model.serving
       rules:
         - alert: LaunchpadModelEndpointUnavailable

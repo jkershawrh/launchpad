@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Response
 from pydantic import BaseModel, Field
 
-from app.api.deps import provisioning_service, public_access_service
+from app.api.deps import (
+    lifecycle_queue_service,
+    provisioning_service,
+    public_access_service,
+)
 from app.auth.oauth import (
     User,
     can_access_tenant,
@@ -19,6 +23,22 @@ router = APIRouter(
     tags=["workshops"],
     dependencies=[Depends(get_current_user)],
 )
+
+
+def _lifecycle_ha_enabled() -> bool:
+    import os
+
+    return os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true"
+
+
+def _record_lifecycle_job(workshop: Workshop, job_id: str) -> Workshop:
+    updated = workshop.model_copy(
+        update={
+            "metadata": {**workshop.metadata, "lifecycle_job_id": job_id}
+        }
+    )
+    provisioning_service._save_workshop(updated)
+    return updated
 
 
 class WorkshopCreate(BaseModel):
@@ -107,6 +127,7 @@ def _authorized_workshop(workshop_id: str, user: User) -> Workshop:
 @router.post("", response_model=Workshop, status_code=201)
 def create_workshop(
     body: WorkshopCreate,
+    response: Response,
     idempotency_key: str | None = Header(default=None),
     user: User = Depends(get_current_user),
 ):
@@ -114,6 +135,15 @@ def create_workshop(
     _authorize_overrides(body, user)
     workshop = _to_workshop(body)
     try:
+        if _lifecycle_ha_enabled():
+            order = provisioning_service.create_workshop_order(
+                workshop,
+                idempotency_key=idempotency_key,
+            )
+            queued = provisioning_service.queue_workshop(order.workshop_id)
+            job = lifecycle_queue_service.enqueue_workshop_provision(queued)
+            response.status_code = 202
+            return _record_lifecycle_job(queued, job.job_id)
         return provisioning_service.provision_workshop(workshop, idempotency_key=idempotency_key)
     except ValueError as e:
         if "Idempotency key" in str(e):
@@ -125,7 +155,7 @@ def create_workshop(
 def list_workshops(user: User = Depends(get_current_user)):
     return [
         workshop
-        for workshop in provisioning_service._workshops.values()
+        for workshop in provisioning_service.list_workshops()
         if can_access_tenant(user, workshop.tenant_id)
     ]
 
@@ -187,7 +217,13 @@ def confirm_workshop(
     try:
         workshop = provisioning_service.queue_workshop(workshop_id)
         if workshop.status == WorkshopStatus.QUEUED:
-            background_tasks.add_task(provisioning_service.run_queued_workshop, workshop_id)
+            if _lifecycle_ha_enabled():
+                job = lifecycle_queue_service.enqueue_workshop_provision(workshop)
+                workshop = _record_lifecycle_job(workshop, job.job_id)
+            else:
+                background_tasks.add_task(
+                    provisioning_service.run_queued_workshop, workshop_id
+                )
         return workshop
     except ValueError as e:
         if "not found" in str(e):
@@ -209,7 +245,13 @@ def retry_failed_workshop_seats(
     _authorized_workshop(workshop_id, user)
     try:
         workshop = provisioning_service.queue_failed_workshop_seats(workshop_id)
-        background_tasks.add_task(provisioning_service.run_queued_workshop, workshop_id)
+        if _lifecycle_ha_enabled():
+            job = lifecycle_queue_service.enqueue_workshop_provision(workshop)
+            workshop = _record_lifecycle_job(workshop, job.job_id)
+        else:
+            background_tasks.add_task(
+                provisioning_service.run_queued_workshop, workshop_id
+            )
         return workshop
     except ValueError as e:
         if "not found" in str(e):
@@ -245,7 +287,13 @@ def delete_workshop(
             return current
         workshop = provisioning_service.queue_workshop_reclaim(workshop_id)
         if workshop.status == WorkshopStatus.RECLAIMING:
-            background_tasks.add_task(provisioning_service.reclaim_workshop, workshop_id)
+            if _lifecycle_ha_enabled():
+                job = lifecycle_queue_service.enqueue_workshop_reclaim(workshop)
+                workshop = _record_lifecycle_job(workshop, job.job_id)
+            else:
+                background_tasks.add_task(
+                    provisioning_service.reclaim_workshop, workshop_id
+                )
         return workshop
     except ValueError as e:
         raise HTTPException(404, str(e))

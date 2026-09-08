@@ -5,9 +5,22 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from app.api.routers import admin, branding, callbacks, catalog, intelligence, lab_requests, lab_sessions, models, public_access, tenants, workshops
-from app.storage.database import get_database_url, init_db, close_db
+from app.api.routers import (
+    admin,
+    branding,
+    callbacks,
+    catalog,
+    intelligence,
+    lab_requests,
+    lab_sessions,
+    models,
+    public_access,
+    tenants,
+    workshops,
+)
+from app.storage.database import close_db, get_database_url, init_db
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +50,10 @@ def _validate_config() -> None:
         )
     if mode != "mock":
         logger.info("Launchpad starting in %s mode", mode)
+
+
+def _direct_lifecycle_background_tasks_enabled() -> bool:
+    return os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() != "true"
 
 
 async def _ttl_enforcement_loop():
@@ -72,8 +89,9 @@ async def _model_health_loop():
             litellm_base = os.environ.get("LITELLM_API_BASE", "")
             if not litellm_base:
                 continue
-            from app.api.deps import catalog_adapter
             from tasks.model_health import _do_model_health_check
+
+            from app.api.deps import catalog_adapter
             _do_model_health_check(catalog_adapter, litellm_base)
         except Exception as e:
             logger.debug("Model health check error (non-critical): %s", e)
@@ -95,16 +113,54 @@ async def _recover_interrupted_workshops():
         logger.exception("Interrupted workshop recovery failed: %s", exc)
 
 
+async def _enqueue_interrupted_workshops():
+    """Recover process loss by recreating durable ownership, not local threads."""
+    try:
+        from app.api.deps import lifecycle_queue_service, provisioning_service
+
+        await asyncio.to_thread(provisioning_service.refresh_persisted_state)
+        workshop_jobs = await asyncio.to_thread(
+            lifecycle_queue_service.enqueue_interrupted_workshops,
+            list(provisioning_service._workshops.values()),
+        )
+        standalone_sessions = [
+            session
+            for session in provisioning_service._sessions.values()
+            if not (
+                request := provisioning_service._requests.get(session.request_id)
+            )
+            or not request.metadata.get("workshop_id")
+        ]
+        session_jobs = await asyncio.to_thread(
+            lifecycle_queue_service.enqueue_interrupted_sessions,
+            standalone_sessions,
+        )
+        jobs = workshop_jobs + session_jobs
+        if jobs:
+            logger.info(
+                "Enqueued %d interrupted lifecycle job(s)", len(jobs)
+            )
+    except Exception:
+        logger.exception("Interrupted workshop enqueue failed")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _ttl_task, _catalog_sync_task, _model_health_task, _workshop_recovery_task
     _validate_config()
     if get_database_url():
         await init_db()
-    _ttl_task = asyncio.create_task(_ttl_enforcement_loop())
+    direct_lifecycle = _direct_lifecycle_background_tasks_enabled()
+    _ttl_task = (
+        asyncio.create_task(_ttl_enforcement_loop()) if direct_lifecycle else None
+    )
     _catalog_sync_task = asyncio.create_task(_catalog_sync_loop())
     _model_health_task = asyncio.create_task(_model_health_loop())
-    _workshop_recovery_task = asyncio.create_task(_recover_interrupted_workshops())
+    _workshop_recovery_task = asyncio.create_task(
+        _recover_interrupted_workshops()
+        if direct_lifecycle
+        else _enqueue_interrupted_workshops()
+    )
     yield
     for task in (
         _ttl_task,
@@ -156,6 +212,30 @@ def health():
     return {"status": "ok", "service": "launchpad"}
 
 
+@app.get("/ready")
+def ready():
+    """Fail closed when a stateful API cannot durably accept mutations."""
+    mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+    if mode == "mock":
+        return {"status": "ready", "checks": {}}
+
+    from app.services.health import _check_db, _check_lifecycle_schema
+
+    role = os.environ.get("LAUNCHPAD_CONTROL_PLANE_ROLE", "active").lower()
+    checks = {
+        "control_plane_role": {
+            "status": "pass" if role == "active" else "fail",
+            "role": role,
+        },
+        "db": _check_db(),
+    }
+    if os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true":
+        checks["lifecycle_schema"] = _check_lifecycle_schema()
+    ready_state = all(check["status"] == "pass" for check in checks.values())
+    payload = {"status": "ready" if ready_state else "not_ready", "checks": checks}
+    return payload if ready_state else JSONResponse(status_code=503, content=payload)
+
+
 @app.get("/health/detailed")
 def health_detailed():
     from app.services.health import check_health_detailed
@@ -170,16 +250,18 @@ def prometheus_metrics():
     route remains internal to the pilot network, and the exporter never emits
     participant, tenant, workshop, seat, namespace, email, or credential labels.
     """
-    from app.api.deps import provisioning_service
+    from app.api.deps import lifecycle_job_store, provisioning_service
     from app.services.observability_metrics import render_launchpad_metrics
 
     registry = provisioning_service.cluster_registry
     targets = registry.list_all() if registry else []
+    provisioning_service.refresh_persisted_state()
     return Response(
         content=render_launchpad_metrics(
             sessions=provisioning_service._sessions.values(),
             workshops=provisioning_service._workshops.values(),
             cluster_targets=targets,
+            lifecycle_jobs=lifecycle_job_store.list_all(),
         ),
         media_type="text/plain; version=0.0.4; charset=utf-8",
     )

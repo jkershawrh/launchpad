@@ -81,6 +81,9 @@ def test_pilot_can_start_before_an_order_and_configures_only_arena_public_placem
     assert '[[ -n "$ORDER_ID" ]] || die' not in script
     assert 'PUBLIC_LABS_SHARED_ORIGIN=$tunnel_url' in script
     assert 'PUBLIC_ACCESS_PILOT_CLUSTER=arena' in script
+    assert 'cluster["public_console_url"] = tunnel_url' in script
+    assert 'cluster["public_oauth_url"] = tunnel_url + "/oauth"' in script
+    assert "configmap launchpad-cluster-targets" in script
     assert "scale deployment/public-access-gateway --replicas=1" in script
     assert 'if [[ -n "$ORDER_ID" ]]' in script
 
@@ -91,6 +94,8 @@ def test_stopping_the_disposable_pilot_fails_public_ordering_closed():
     assert "PUBLIC_ACCESS_ENABLED-" in script
     assert "PUBLIC_LABS_SHARED_ORIGIN-" in script
     assert "PUBLIC_ACCESS_PILOT_CLUSTER-" in script
+    assert 'cluster["public_console_url"] = ""' in script
+    assert 'cluster["public_oauth_url"] = ""' in script
     assert "scale deployment/public-access-gateway --replicas=0" in script
     assert "rollout status deployment/backend" in script
 

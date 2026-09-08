@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-config
+data:
+  LIFECYCLE_HA_ENABLED: "true"
+  WORKSHOP_AUTO_RECOVERY: "false"
+  LAUNCHPAD_CONTROL_PLANE_ROLE: "active"

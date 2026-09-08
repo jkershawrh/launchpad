@@ -27,12 +27,33 @@ demos/.env
 *.token
 kubeconfig*
 *-kubeconfig
+*.kubeconfig
+.kube/
 .tunnel-pids
 .tunnel-hostname
 .tunnel-hostname.prev
 .cloudflared-config.yml
+.cloudflared/
 .sandbox/
 secrets/
+deploy/prod-dns/dns-credentials.yaml
+
+# Encrypted or plaintext state/backup artifacts still contain sensitive data
+*.age
+*.dump
+*.dump.*
+*.backup
+*.db
+*.sqlite
+*.sqlite3
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.tfstate
+*.tfstate.*
+.terraform/
+*.log
 
 # IDE
 .vscode/

@@ -41,7 +41,9 @@ class TenantStore:
 def _create_db_stores():
     if not get_database_url():
         return None
+    from app.storage.lifecycle_jobs import PostgresLifecycleJobStore
     from app.storage.stores import (
+        PostgresAccessStore,
         PostgresCatalogStore,
         PostgresPlanStore,
         PostgresRequestStore,
@@ -49,8 +51,8 @@ def _create_db_stores():
         PostgresShowbackStore,
         PostgresTenantStore,
         PostgresWorkshopStore,
-        PostgresAccessStore,
     )
+
     return SimpleNamespace(
         tenants=PostgresTenantStore(),
         requests=PostgresRequestStore(),
@@ -60,6 +62,7 @@ def _create_db_stores():
         catalog=PostgresCatalogStore(),
         workshops=PostgresWorkshopStore(),
         access=PostgresAccessStore(),
+        lifecycle_jobs=PostgresLifecycleJobStore(),
     )
 
 
@@ -97,10 +100,10 @@ def create_provisioning_service() -> ProvisioningService:
         )
     elif mode == "openshift":
         from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+        from app.adapters.openshift.client_factory import ClusterClientFactory
         from app.adapters.openshift.pool import OpenShiftPoolAdapter
         from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
         from app.adapters.openshift.validation import OpenShiftValidationAdapter
-        from app.adapters.openshift.client_factory import ClusterClientFactory
         from app.services.cluster_registry import ClusterRegistry
 
         cluster_registry = ClusterRegistry.from_file()
@@ -283,6 +286,14 @@ catalog_adapter = _create_catalog()
 branding_adapter = FileBrandingAdapter()
 public_access_service = PublicAccessService(store=db_stores.access if db_stores else None)
 provisioning_service.public_access_service = public_access_service
+
+from app.services.lifecycle_worker import LifecycleQueueService
+from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
+
+lifecycle_job_store = (
+    db_stores.lifecycle_jobs if db_stores else InMemoryLifecycleJobStore()
+)
+lifecycle_queue_service = LifecycleQueueService(lifecycle_job_store)
 
 
 def get_placement_service():

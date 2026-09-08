@@ -8,34 +8,21 @@ on:
 
 jobs:
   secret-scan:
-    name: Secret Scan
+    name: Gitleaks Secret Scan
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Scan for secrets
-        run: |
-          FOUND=0
-          PATTERNS=(
-            'sk-[A-Za-z0-9]{16,}'
-            'sha256~[A-Za-z0-9]{20,}'
-            'PRIVATE KEY'
-            'BEGIN RSA'
-            'BEGIN EC'
-          )
-          for pattern in "${PATTERNS[@]}"; do
-            matches=$(grep -rnE "$pattern" --include="*.py" --include="*.yaml" --include="*.yml" --include="*.json" --include="*.sh" --include="*.ts" --include="*.tsx" . 2>/dev/null | grep -v 'node_modules\|\.git/\|pre-commit\|ci\.yml' | grep -cv 'REDACTED\|example\|placeholder\|dummy\|changeme\|replace-with' || true)
-            if [ "$matches" -gt 0 ]; then
-              echo "::error::Found potential secret matching pattern: $pattern"
-              grep -rnE "$pattern" --include="*.py" --include="*.yaml" --include="*.yml" --include="*.json" --include="*.sh" --include="*.ts" --include="*.tsx" . 2>/dev/null | grep -v 'node_modules\|\.git/\|pre-commit\|ci\.yml' | grep -v 'REDACTED\|example\|placeholder\|dummy\|changeme\|replace-with' | head -5
-              FOUND=1
-            fi
-          done
-          if [ "$FOUND" -eq 1 ]; then
-            echo "::error::Secret scan failed. Remove secrets before merging."
-            exit 1
-          fi
-          echo "Secret scan passed — no secrets found."
+      # Gitleaks evaluates its maintained default rules plus this repository's
+      # narrow allowlist in .gitleaks.toml. On pull requests and pushes the
+      # action scans the event's commit range, catching a secret even if a
+      # later commit deletes it.
+      - name: Scan commit range with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     name: Tests + Lint

@@ -5,13 +5,14 @@ from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.deps import catalog_adapter, provisioning_service
+from app.api.deps import catalog_adapter, lifecycle_job_store, provisioning_service
 from app.auth.oauth import require_admin
 from app.domain.enums import CatalogStatus
 from app.domain.models import CatalogItem, LabSession
 from app.integrations.llm_audit import get_llm_audit_log
 from app.services.admin_observability import build_admin_observability
 from app.services.health import check_health_detailed
+from app.services.lifecycle_worker import build_lifecycle_admin_view
 from app.services.model_inventory import get_model_inventory
 from app.services.resource_reconciliation import reconcile_resources
 from app.services.system_monitor import SystemMonitor
@@ -36,6 +37,7 @@ def admin_observability() -> Dict[str, Any]:
         inventory = get_model_inventory()
     except Exception:  # noqa: BLE001 - inventory degrades independently of workflow state
         inventory = {"summary": {}, "models": []}
+    provisioning_service.refresh_persisted_state()
     return build_admin_observability(
         sessions=provisioning_service._sessions.values(),
         workshops=provisioning_service._workshops.values(),
@@ -52,6 +54,14 @@ def detailed_system_health() -> Dict[str, Any]:
     return check_health_detailed()
 
 
+@router.get("/lifecycle")
+def lifecycle_queue_health() -> Dict[str, Any]:
+    return build_lifecycle_admin_view(
+        lifecycle_job_store.list_all(),
+        enabled=os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true",
+    )
+
+
 @router.get("/models")
 def model_inventory() -> Dict[str, Any]:
     """Return the curated Oberon portfolio and its current operational state."""
@@ -66,11 +76,12 @@ def reconcile_system_resources() -> Dict[str, Any]:
 @router.get("/system/status")
 def system_status() -> Dict[str, Any]:
     status = monitor.get_status()
+    sessions = provisioning_service.list_sessions()
     status["active_sessions"] = len([
-        s for s in provisioning_service._sessions.values()
+        s for s in sessions
         if s.status.value in ("ready", "active", "provisioning", "validating")
     ])
-    status["total_sessions"] = len(provisioning_service._sessions)
+    status["total_sessions"] = len(sessions)
     return status
 
 

@@ -1,11 +1,9 @@
 """TDD tests for /health/detailed endpoint — Phase 5 gate matrix."""
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
-import pytest
 from fastapi.testclient import TestClient
-
 
 # ── Gate 5.1: test_shallow_health_unchanged ──────────────────────────
 
@@ -18,6 +16,91 @@ class TestShallowHealthUnchanged:
         data = resp.json()
         assert data["status"] == "ok"
         assert data["service"] == "launchpad"
+
+
+class TestReadinessIsFailClosed:
+    def test_mock_mode_is_ready_without_external_dependencies(self):
+        from app.main import app
+
+        client = TestClient(app, raise_server_exceptions=False)
+        with patch.dict("os.environ", {"LAUNCHPAD_MODE": "mock"}, clear=False):
+            response = client.get("/ready")
+
+        assert response.status_code == 200
+        assert response.json()["status"] == "ready"
+
+    def test_openshift_mode_rejects_traffic_when_database_is_unavailable(self):
+        from app.main import app
+
+        client = TestClient(app, raise_server_exceptions=False)
+        with (
+            patch.dict("os.environ", {"LAUNCHPAD_MODE": "openshift"}, clear=False),
+            patch(
+                "app.services.health._check_db",
+                return_value={"status": "fail", "message": "database unavailable"},
+            ),
+        ):
+            response = client.get("/ready")
+
+        assert response.status_code == 503
+        assert response.json()["checks"]["db"]["status"] == "fail"
+
+    def test_standby_control_plane_never_becomes_ready(self):
+        from app.main import app
+
+        client = TestClient(app, raise_server_exceptions=False)
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "LAUNCHPAD_MODE": "openshift",
+                    "LAUNCHPAD_CONTROL_PLANE_ROLE": "standby",
+                },
+                clear=False,
+            ),
+            patch(
+                "app.services.health._check_db",
+                return_value={"status": "pass"},
+            ),
+        ):
+            response = client.get("/ready")
+
+        assert response.status_code == 503
+        assert response.json()["checks"]["control_plane_role"] == {
+            "status": "fail",
+            "role": "standby",
+        }
+
+    def test_backend_deployment_uses_fail_closed_readiness(self):
+        from pathlib import Path
+
+        import yaml
+
+        root = Path(__file__).resolve().parents[2]
+        deployment = list(
+            yaml.safe_load_all(
+                (root / "deploy/launchpad/base/backend-deployment.yaml").read_text()
+            )
+        )[0]
+        backend = next(
+            container
+            for container in deployment["spec"]["template"]["spec"]["containers"]
+            if container["name"] == "backend"
+        )
+
+        assert backend["readinessProbe"]["httpGet"]["path"] == "/ready"
+
+    def test_ha_mode_disables_process_local_lifecycle_loops(self):
+        from app.main import _direct_lifecycle_background_tasks_enabled
+
+        with patch.dict(
+            "os.environ", {"LIFECYCLE_HA_ENABLED": "true"}, clear=False
+        ):
+            assert not _direct_lifecycle_background_tasks_enabled()
+        with patch.dict(
+            "os.environ", {"LIFECYCLE_HA_ENABLED": "false"}, clear=False
+        ):
+            assert _direct_lifecycle_background_tasks_enabled()
 
 
 # ── Gate 5.2: test_detailed_returns_checks ───────────────────────────

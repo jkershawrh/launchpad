@@ -70,6 +70,52 @@ def test_public_gateway_includes_legacy_catalog_workspace_route():
     }
 
 
+def test_public_gateway_derives_catalog_workspace_route_created_during_lab():
+    """A participant-created Route is absent from the provisioning snapshot.
+
+    The gateway may derive only the catalog-declared workspace Route for the
+    persisted seat namespace and target ingress domain.  It must not discover
+    or expose arbitrary namespace Routes.
+    """
+    session = SimpleNamespace(
+        namespace="launchpad-tenant-intel-llm-cpu-serv-seat1",
+        resources={"routes": {}},
+    )
+    catalog_item = SimpleNamespace(
+        metadata={
+            "workspace_route_name": "rag",
+            "workspace_title": "RAG Assistant",
+        }
+    )
+    cluster = SimpleNamespace(
+        ingress_domain="apps.arena.fm2aihpcsed.com",
+        service_urls={},
+    )
+
+    assert _participant_tool_urls(session, catalog_item, cluster) == {
+        "workspace": (
+            "https://rag-launchpad-tenant-intel-llm-cpu-serv-seat1."
+            "apps.arena.fm2aihpcsed.com"
+        ),
+    }
+
+
+def test_public_gateway_refuses_to_derive_unsafe_workspace_route():
+    session = SimpleNamespace(
+        namespace="launchpad-tenant-seat1",
+        resources={"routes": {}},
+    )
+    cluster = SimpleNamespace(
+        ingress_domain="apps.arena.fm2aihpcsed.com",
+        service_urls={},
+    )
+    catalog_item = SimpleNamespace(
+        metadata={"workspace_route_name": "../admin"},
+    )
+
+    assert _participant_tool_urls(session, catalog_item, cluster) == {}
+
+
 def test_declared_workspace_tab_takes_precedence_over_legacy_workspace_route():
     session = SimpleNamespace(
         resources={

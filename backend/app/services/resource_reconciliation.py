@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -14,6 +15,21 @@ ACTIVE_STATES = {
     SessionStatus.PROVISIONING,
     SessionStatus.RESETTING,
 }
+
+
+def _require_lifecycle_ownership(
+    lifecycle_guard: Callable[[], bool] | None,
+) -> None:
+    if lifecycle_guard is None:
+        return
+    try:
+        owns_lease = bool(lifecycle_guard())
+    except Exception:
+        owns_lease = False
+    if not owns_lease:
+        from app.services.provisioning import LifecycleOwnershipLostError
+
+        raise LifecycleOwnershipLostError("lifecycle ownership lost")
 
 
 def _core_api():
@@ -81,8 +97,14 @@ def _database_available() -> bool:
         return False
 
 
-def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[str, Any]:
+def reconcile_resources(
+    service: Any,
+    *,
+    delete_orphans: bool = True,
+    lifecycle_guard: Callable[[], bool] | None = None,
+) -> dict[str, Any]:
     """Reconcile persisted lifecycle state with launchpad-managed namespaces."""
+    _require_lifecycle_ownership(lifecycle_guard)
     report: dict[str, Any] = {
         "sessions_reconciled": 0,
         "workshops_reconciled": [],
@@ -117,6 +139,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
             WorkshopStatus.COMPLETED_WITH_ERRORS,
         }
         for session in list(service._sessions.values()):
+            _require_lifecycle_ownership(lifecycle_guard)
             if session.status not in ACTIVE_STATES:
                 continue
             request = requests.get(session.request_id)
@@ -142,6 +165,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
                 }
             )
     for session in list(service._sessions.values()):
+        _require_lifecycle_ownership(lifecycle_guard)
         if session.status != SessionStatus.CLEANUP_FAILED or not session.namespace:
             continue
         try:
@@ -171,6 +195,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
     # Terminal records must never retain access credentials, including records
     # reclaimed by older versions of the service.
     for session in list(service._sessions.values()):
+        _require_lifecycle_ownership(lifecycle_guard)
         if session.status != SessionStatus.RECLAIMED:
             continue
         if session.maas_api_key or any(
@@ -189,6 +214,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
     workshops = getattr(service, "_workshops", {})
     if isinstance(workshops, dict):
         for workshop in list(workshops.values()):
+            _require_lifecycle_ownership(lifecycle_guard)
             if workshop.status in terminal_workshop_states:
                 seats = [
                     seat.model_copy(
@@ -330,6 +356,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
         else [None]
     )
     for cluster_id in cluster_ids:
+        _require_lifecycle_ownership(lifecycle_guard)
         orphan_grace = timedelta(seconds=max(
             0, int(os.environ.get("ORPHAN_CLEANUP_GRACE_SECONDS", "1800"))
         ))
@@ -349,6 +376,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
             report["errors"].append(f"cluster {cluster_id or 'local'}: {exc}")
             continue
         for namespace in namespaces:
+            _require_lifecycle_ownership(lifecycle_guard)
             if namespace in referenced:
                 continue
             # Provisioners persist a session before mutation, but the final
@@ -381,6 +409,7 @@ def reconcile_resources(service: Any, *, delete_orphans: bool = True) -> dict[st
                     )
                     continue
             try:
+                _require_lifecycle_ownership(lifecycle_guard)
                 cleanup = service._get_cleanup(cluster_id) if cluster_id else service.cleanup
                 cleanup.cleanup(namespace)
                 report["orphan_namespaces_deleted"].append(

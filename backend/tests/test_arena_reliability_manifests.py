@@ -4,7 +4,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[2]
 OVERLAY = ROOT / "deploy/launchpad/overlays/arena"
 
@@ -80,7 +79,7 @@ def test_argocd_monitoring_access_is_namespace_scoped_and_least_privilege():
     ]
 
 
-def test_arena_stateless_frontends_are_spread_across_workers():
+def test_arena_stateless_frontends_keep_spread_rules_but_do_not_overstate_ha():
     documents = _documents("patch-runtime.yaml")
     deployments = {
         item["metadata"]["name"]: item
@@ -90,7 +89,10 @@ def test_arena_stateless_frontends_are_spread_across_workers():
 
     for name in ("partner-portal", "admin", "public-access-gateway"):
         deployment = deployments[name]
-        assert deployment["spec"]["replicas"] == 2
+        # Arena currently has one schedulable worker. The spread contract is
+        # ready for the second worker, but asking for two replicas now would
+        # leave one Pending and would not provide availability.
+        assert deployment["spec"]["replicas"] == 1
         assert deployment["spec"]["strategy"] == {
             "type": "RollingUpdate",
             "rollingUpdate": {"maxUnavailable": 1, "maxSurge": 0},

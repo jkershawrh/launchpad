@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+import os
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 
+from app.api.deps import lifecycle_queue_service, provisioning_service
 from app.auth.oauth import User, can_access_tenant, get_current_user
-
-from app.api.deps import provisioning_service
 from app.domain.lifecycle import InvalidTransitionError, ValidationRequiredError
 from app.domain.models import LabSession, ShowbackRecord
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
 router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/lab-sessions", tags=["lab-sessions"])
+
+
+def _lifecycle_ha_enabled() -> bool:
+    return os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true"
 
 
 @router.get("", response_model=List[LabSession])
@@ -20,12 +24,14 @@ def list_lab_sessions(
     newest_first: bool = False,
     user: User = Depends(get_current_user),
 ):
+    persisted_sessions = provisioning_service.list_sessions()
     if user.is_admin:
-        sessions = list(provisioning_service._sessions.values())
+        sessions = persisted_sessions
     else:
         sessions = [
-            s for s in provisioning_service._sessions.values()
-            if can_access_tenant(user, s.tenant_id)
+            session
+            for session in persisted_sessions
+            if can_access_tenant(user, session.tenant_id)
         ]
     if newest_first:
         sessions.reverse()
@@ -79,9 +85,27 @@ def reset_session(session_id: str, user: User = Depends(get_current_user)):
 
 
 @router.post("/{session_id}/reclaim", response_model=LabSession)
-def reclaim_session(session_id: str, user: User = Depends(get_current_user)):
+def reclaim_session(
+    session_id: str,
+    response: Response,
+    user: User = Depends(get_current_user),
+):
     _authorized_session(session_id, user)
     try:
+        if _lifecycle_ha_enabled():
+            session = provisioning_service.queue_session_reclaim(session_id)
+            job = lifecycle_queue_service.enqueue_session_reclaim(session)
+            session = session.model_copy(
+                update={
+                    "metadata": {
+                        **session.metadata,
+                        "lifecycle_job_id": job.job_id,
+                    }
+                }
+            )
+            provisioning_service._save_session(session)
+            response.status_code = 202
+            return session
         return provisioning_service.reclaim_session(session_id)
     except (ValueError, InvalidTransitionError) as e:
         raise HTTPException(400, str(e))

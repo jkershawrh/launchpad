@@ -239,6 +239,7 @@ class OpenShiftProvisioningAdapter:
                 gw_existed = self._namespace_exists(gw_namespace)
                 if not gw_existed:
                     self._create_namespace(gw_namespace)
+                    self._grant_remote_control_plane_access(gw_namespace)
                     self._grant_image_pull(gw_namespace)
                     self._create_demo_secrets(gw_namespace, session_maas_key)
                     self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
@@ -266,6 +267,7 @@ class OpenShiftProvisioningAdapter:
                 else None
             ),
         )
+        self._grant_remote_control_plane_access(demo_namespace)
         self._grant_image_pull(demo_namespace)
         self._grant_participant_access(
             demo_namespace,
@@ -1099,6 +1101,60 @@ http {{
         except ApiException as exc:
             if exc.status != 409:
                 pass
+
+    def _grant_remote_control_plane_access(self, namespace: str) -> None:
+        """Bind Flightpath identities only inside one managed namespace.
+
+        Arena's current broad remote credentials are never reused. The remote
+        bootstrap identity can create these bindings, but an admission policy
+        rejects its writes outside Launchpad-owned namespaces.
+        """
+        service_account_namespace = os.environ.get(
+            "REMOTE_CONTROL_PLANE_SERVICE_ACCOUNT_NAMESPACE", ""
+        ).strip()
+        identities = (
+            (
+                "launchpad-flightpath-provisioner",
+                os.environ.get("REMOTE_PROVISIONER_SERVICE_ACCOUNT", "").strip(),
+                "launchpad-flightpath-seat-manager",
+            ),
+            (
+                "launchpad-flightpath-argocd",
+                os.environ.get("REMOTE_ARGOCD_SERVICE_ACCOUNT", "").strip(),
+                "launchpad-flightpath-argocd-seat-manager",
+            ),
+        )
+        if not service_account_namespace or not any(item[1] for item in identities):
+            return
+
+        for binding_name, service_account, role_name in identities:
+            if not service_account:
+                continue
+            body = client.V1RoleBinding(
+                metadata=client.V1ObjectMeta(name=binding_name, namespace=namespace),
+                role_ref=client.V1RoleRef(
+                    api_group="rbac.authorization.k8s.io",
+                    kind="ClusterRole",
+                    name=role_name,
+                ),
+                subjects=[
+                    client.RbacV1Subject(
+                        kind="ServiceAccount",
+                        name=service_account,
+                        namespace=service_account_namespace,
+                    )
+                ],
+            )
+            try:
+                self._rbac_v1.create_namespaced_role_binding(
+                    namespace=namespace, body=body
+                )
+            except ApiException as exc:
+                if exc.status != 409:
+                    raise ValueError(
+                        f"Failed to bind remote control-plane access in "
+                        f"'{namespace}': {exc.reason}"
+                    ) from exc
 
     def _grant_participant_access(
         self,

@@ -10,7 +10,7 @@ PATTERNS=(
     'sk-[A-Za-z0-9]{16,}'           # LiteLLM/OpenAI API keys
     'sha256~[A-Za-z0-9]{20,}'       # OpenShift tokens
     'eyJ[A-Za-z0-9_-]{50,}'         # JWT tokens (base64-encoded)
-    'password\s*[:=]\s*"[^${\"]+'   # Hardcoded passwords (not env vars)
+    'password[[:space:]]*[:=][[:space:]]*"[^${\"]+' # Hardcoded passwords
     'PRIVATE KEY'                    # Private keys
     'BEGIN RSA'                      # RSA keys
     'BEGIN EC'                       # EC keys
@@ -34,19 +34,28 @@ KNOWN_HASHES=(
     'e47d44e22ece2564e9765b5e236ba1e664912ff5a2b505a714009479195dbcab'
     '1cf03a61fdb175275b59f8164761dff1bc88a2d605728dbc8ed686933684f709'
     '77000f84d3cc7e52204c7d26b849196e117b3bd6a29828338539cfbb516f5b8f'
+    '59760228a77e677589b69c999f69dea65af808d2bae4a5a4a70caa266bfb3a8e'
 )
 
 DIFF_CONTENT=$(git diff --cached --diff-filter=ACMR -- . ':!scripts/pre-commit-secret-scan.sh' ':!.github/workflows/ci.yml' 2>/dev/null)
-for word in $(echo "$DIFF_CONTENT" | grep -E "^\+" | grep -v "^+++" | tr -cs 'A-Za-z0-9_-' '\n'); do
-    WORD_HASH=$(echo -n "$word" | shasum -a 256 | cut -d' ' -f1)
-    for known in "${KNOWN_HASHES[@]}"; do
-        if [ "$WORD_HASH" = "$known" ]; then
-            echo -e "${RED}BLOCKED: Found known leaked secret value (hash match)${NC}"
-            FOUND=1
-            break 2
-        fi
-    done
-done
+# Hash every token in one Python process. The previous shell loop spawned one
+# `shasum` process per token and made a moderately sized commit take minutes.
+KNOWN_MATCH=$(printf '%s' "$DIFF_CONTENT" | python3 -c '
+import hashlib
+import re
+import sys
+
+known = set(sys.argv[1:])
+text = sys.stdin.read()
+for word in re.findall(r"[A-Za-z0-9_-]+", text):
+    if hashlib.sha256(word.encode()).hexdigest() in known:
+        print("match")
+        break
+' "${KNOWN_HASHES[@]}")
+if [ -n "$KNOWN_MATCH" ]; then
+    echo -e "${RED}BLOCKED: Found known leaked secret value (hash match)${NC}"
+    FOUND=1
+fi
 
 if [ "$FOUND" -eq 1 ]; then
     echo -e "${RED}Commit rejected. Remove secrets and use environment variables or K8s Secrets instead.${NC}"

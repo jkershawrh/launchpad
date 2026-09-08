@@ -467,6 +467,39 @@ def test_workshop_participant_gets_edit_only_in_seat_namespace():
     assert binding.subjects[0].name == "workshop-user-1"
 
 
+def test_flightpath_control_plane_is_bound_only_inside_the_seat_namespace(
+    monkeypatch,
+):
+    adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
+    adapter._rbac_v1 = MagicMock()
+    monkeypatch.setenv(
+        "REMOTE_CONTROL_PLANE_SERVICE_ACCOUNT_NAMESPACE", "partner-ai-launchpad"
+    )
+    monkeypatch.setenv(
+        "REMOTE_PROVISIONER_SERVICE_ACCOUNT", "launchpad-provisioner-flightpath"
+    )
+    monkeypatch.setenv(
+        "REMOTE_ARGOCD_SERVICE_ACCOUNT", "launchpad-argocd-manager-flightpath"
+    )
+
+    adapter._grant_remote_control_plane_access("launchpad-workshop-seat-01")
+
+    calls = adapter._rbac_v1.create_namespaced_role_binding.call_args_list
+    assert len(calls) == 2
+    assert {call.kwargs["namespace"] for call in calls} == {
+        "launchpad-workshop-seat-01"
+    }
+    bindings = [call.kwargs["body"] for call in calls]
+    assert {binding.role_ref.name for binding in bindings} == {
+        "launchpad-flightpath-seat-manager",
+        "launchpad-flightpath-argocd-seat-manager",
+    }
+    assert {binding.subjects[0].name for binding in bindings} == {
+        "launchpad-provisioner-flightpath",
+        "launchpad-argocd-manager-flightpath",
+    }
+
+
 def test_agentops_workshop_participant_gets_namespaced_application_log_view():
     adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
     adapter._rbac_v1 = MagicMock()

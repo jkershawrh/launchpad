@@ -9,11 +9,15 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any
-from typing import List, Optional
+from typing import Any, List, Optional
 
+from app.domain.access import (
+    AccessPolicy,
+    AccessSession,
+    ParticipantEntitlement,
+    ParticipantIdentity,
+)
 from app.domain.feedback import ProvisioningOutcome
-from app.domain.access import AccessPolicy, AccessSession, ParticipantEntitlement, ParticipantIdentity
 from app.domain.models import (
     CatalogItem,
     LabRequest,
@@ -274,7 +278,9 @@ class PostgresSessionStore:
             return None
         except Exception as e:
             logger.warning("DB get session error: %s", e)
-            return None
+            raise PersistenceUnavailableError(
+                "failed to read lab session"
+            ) from e
         finally:
             conn.close()
 
@@ -289,7 +295,9 @@ class PostgresSessionStore:
                 return [LabSession.model_validate(_decode_json(r[0])) for r in rows]
         except Exception as e:
             logger.warning("DB list sessions error: %s", e)
-            return []
+            raise PersistenceUnavailableError(
+                "failed to list lab sessions"
+            ) from e
         finally:
             conn.close()
 
@@ -362,7 +370,9 @@ class PostgresWorkshopStore:
                 return Workshop.model_validate(_decode_json(row[0])) if row else None
         except Exception as e:
             logger.warning("DB get workshop error: %s", e)
-            return None
+            raise PersistenceUnavailableError(
+                "failed to read workshop"
+            ) from e
         finally:
             conn.close()
 
@@ -379,7 +389,9 @@ class PostgresWorkshopStore:
                 ]
         except Exception as e:
             logger.warning("DB list workshops error: %s", e)
-            return []
+            raise PersistenceUnavailableError(
+                "failed to list workshops"
+            ) from e
         finally:
             conn.close()
 
@@ -435,7 +447,9 @@ class PostgresRequestStore:
             return None
         except Exception as e:
             logger.warning("DB get request error: %s", e)
-            return None
+            raise PersistenceUnavailableError(
+                "failed to read lab request"
+            ) from e
         finally:
             conn.close()
 
@@ -450,7 +464,9 @@ class PostgresRequestStore:
                 return [LabRequest.model_validate(_decode_json(r[0])) for r in rows]
         except Exception as e:
             logger.warning("DB list requests error: %s", e)
-            return []
+            raise PersistenceUnavailableError(
+                "failed to list lab requests"
+            ) from e
         finally:
             conn.close()
 

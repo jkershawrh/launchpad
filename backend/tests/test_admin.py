@@ -5,8 +5,9 @@ Admin Observability + Sysadmin + Dynamic Catalog — TDD Red/Green Matrix
 from unittest.mock import patch
 
 import pytest
-from app.api.deps import catalog_adapter, provisioning_service
+from app.api.deps import catalog_adapter, lifecycle_job_store, provisioning_service
 from app.domain.enums import CatalogCategory, CatalogStatus, Persistence, SessionStatus
+from app.domain.lifecycle_jobs import LifecycleJob, LifecycleJobOperation
 from app.domain.models import CatalogItem, LabRequest
 from app.main import app
 from app.services.system_monitor import SystemMonitor
@@ -77,6 +78,28 @@ def test_admin_can_preflight_disabled_clusters_without_enabling_them(client):
     assert response.status_code == 200
     assert response.json() == {"mutates_cluster": False, "clusters": result}
     preflight.assert_called_once_with(include_disabled=True)
+
+
+def test_admin_lifecycle_view_reports_queue_health_without_secret_payloads(client):
+    queued = LifecycleJob(
+        operation=LifecycleJobOperation.RECLAIM_WORKSHOP,
+        aggregate_type="workshop",
+        aggregate_id="workshop-admin-view",
+        cluster_ref="arena",
+        idempotency_key="must-not-be-returned",
+        payload={"secret": "must-not-be-returned"},
+    )
+    with patch.object(lifecycle_job_store, "list_all", return_value=[queued]):
+        response = client.get("/api/v1/admin/lifecycle")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["summary"]["queued"] == 1
+    assert body["summary"]["reclaim_pending"] == 1
+    assert body["jobs"][0]["aggregate_id"] == "workshop-admin-view"
+    assert "payload" not in body["jobs"][0]
+    assert "idempotency_key" not in body["jobs"][0]
+    assert "secret" not in response.text
 
 
 # ─── A2: Container list from podman ──────────────────────────────────────────

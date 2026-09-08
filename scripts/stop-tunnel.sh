@@ -10,6 +10,26 @@ infrastructure=$(oc get infrastructure cluster -o jsonpath='{.status.infrastruct
 [[ "$infrastructure" == arena-* ]] \
   || { printf "Refusing cluster '%s'; this workflow is Arena-only\n" "$infrastructure" >&2; exit 1; }
 
+cluster_config=$(oc get configmap launchpad-cluster-targets -n "$NAMESPACE" \
+  -o jsonpath='{.data.clusters\.yaml}')
+cluster_patch=$(CLUSTER_CONFIG="$cluster_config" python3 -c '
+import json
+import os
+
+import yaml
+
+config = yaml.safe_load(os.environ["CLUSTER_CONFIG"])
+arena = [cluster for cluster in config.get("clusters", []) if cluster.get("cluster_id") == "arena"]
+if len(arena) != 1:
+    raise SystemExit("Expected exactly one Arena cluster target")
+cluster = arena[0]
+cluster["public_console_url"] = ""
+cluster["public_oauth_url"] = ""
+cluster["public_ingress_domain"] = ""
+print(json.dumps({"data": {"clusters.yaml": yaml.safe_dump(config, sort_keys=False)}}))
+')
+oc patch configmap launchpad-cluster-targets -n "$NAMESPACE" \
+  --type=merge --patch "$cluster_patch" >/dev/null
 oc set env deployment/backend -n "$NAMESPACE" --containers=backend \
   PUBLIC_ACCESS_ENABLED- \
   PUBLIC_LABS_SHARED_ORIGIN- \

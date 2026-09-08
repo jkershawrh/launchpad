@@ -382,3 +382,37 @@ export interface AdminObservability {
     telemetry_gaps: string[];
   };
 }
+
+export interface LifecycleJobObservation {
+  job_id: string;
+  operation: string;
+  aggregate_type: string;
+  aggregate_id: string;
+  cluster_ref?: string | null;
+  status: string;
+  priority: number;
+  step?: string | null;
+  attempts: number;
+  max_attempts: number;
+  fencing_token: number;
+  lease_until?: string | null;
+  age_seconds: number;
+  last_error?: string | null;
+}
+
+export interface LifecycleHealth {
+  enabled: boolean;
+  summary: {
+    queued: number;
+    running: number;
+    cancel_requested: number;
+    cancelled: number;
+    succeeded: number;
+    failed: number;
+    reclaim_pending: number;
+    takeovers: number;
+    expired_leases: number;
+    oldest_pending_age_seconds: number;
+  };
+  jobs: LifecycleJobObservation[];
+}

@@ -358,10 +358,13 @@ def build_admin_observability(
 
     for workshop in workshops:
         seats = []
+        seat_started_at = []
         for seat in sorted(workshop.seats, key=lambda item: item.seat_number):
             session = session_by_id.get(seat.session_id) if seat.session_id else None
             if session:
                 claimed_session_ids.add(session.session_id)
+                if started_at := _session_started(session):
+                    seat_started_at.append(started_at)
             seats.append(
                 _seat_row(
                     session=session,
@@ -383,7 +386,11 @@ def build_admin_observability(
                 catalog_item_id=workshop.catalog_item_id,
                 cluster_ref=workshop.cluster_ref or workshop.target_cluster,
                 status=_value(workshop.status),
-                started_at=workshop.started_at or workshop.created_at,
+                started_at=(
+                    workshop.started_at
+                    or (min(seat_started_at) if seat_started_at else None)
+                    or workshop.created_at
+                ),
                 seats=seats,
                 now=now,
             )

@@ -113,8 +113,7 @@ export default function Demos() {
         return;
       }
 
-      const session = await api.provisionLab(request.request_id);
-      const validated = await api.validateSession(session.session_id);
+      const validated = await api.provisionLabToReady(request.request_id);
       navigate(`/sessions/${validated.session_id}${brandQuery}`);
     } catch (err: unknown) {
       setError(

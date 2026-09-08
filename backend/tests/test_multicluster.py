@@ -312,7 +312,7 @@ def test_repository_cluster_config_registers_remote_targets_fail_closed():
     registry = ClusterRegistry.from_file(str(path))
 
     targets = {item["cluster_id"]: item for item in document["clusters"]}
-    assert set(targets) == {"arena", "oberon", "brutus"}
+    assert set(targets) == {"arena", "oberon", "brutus", "flightpath"}
     assert {c.cluster_id for c in registry.list_enabled()} == {"arena"}
     assert registry.inspect("oberon").image_references == {
         "showroom_git_cloner": (
@@ -373,6 +373,30 @@ def test_repository_cluster_config_registers_remote_targets_fail_closed():
             )
         },
     }
+    assert targets["flightpath"] == {
+        "cluster_id": "flightpath",
+        "display_name": "Flightpath DR Standby",
+        "api_url": "https://api.flightpath.fm2aihpcsed.com:6443",
+        "ingress_domain": "apps.flightpath.fm2aihpcsed.com",
+        "console_url": (
+            "https://console-openshift-console.apps.flightpath.fm2aihpcsed.com"
+        ),
+        "storage_class": "ocs-storagecluster-ceph-rbd",
+        "credential_secret": (
+            "partner-ai-launchpad/launchpad-flightpath-kubeconfig"
+        ),
+        "local": False,
+        "priority": 90,
+        "enabled": False,
+        "public_access_enabled": False,
+        "capabilities": [
+            "cpu",
+            "openshift",
+            "operators",
+            "showroom",
+            "dr-standby",
+        ],
+    }
 
 
 def test_arena_overlay_enables_brutus_for_internal_pilot_only():
@@ -383,13 +407,16 @@ def test_arena_overlay_enables_brutus_for_internal_pilot_only():
     config = __import__("yaml").safe_load(document["data"]["clusters.yaml"])
     targets = {item["cluster_id"]: item for item in config["clusters"]}
 
-    assert set(targets) == {"arena", "oberon", "brutus"}
+    assert set(targets) == {"arena", "oberon", "brutus", "flightpath"}
     assert targets["arena"].get("enabled", True) is True
     assert targets["arena"]["local"] is True
     assert targets["oberon"]["enabled"] is False
     assert targets["brutus"]["enabled"] is True
     assert targets["brutus"]["public_access_enabled"] is False
-    for cluster_id in ("oberon", "brutus"):
+    assert targets["flightpath"]["enabled"] is False
+    assert targets["flightpath"]["public_access_enabled"] is False
+    assert "dr-standby" in targets["flightpath"]["capabilities"]
+    for cluster_id in ("oberon", "brutus", "flightpath"):
         assert targets[cluster_id]["local"] is False
         assert targets[cluster_id]["credential_secret"].startswith(
             "partner-ai-launchpad/launchpad-"

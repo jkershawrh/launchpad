@@ -114,3 +114,26 @@ control plane:
 
 All workstation operations must use `KUBECONFIG=/explicit/path`; never switch
 or rely on the default kubeconfig context.
+
+## Flightpath promotion identity
+
+Flightpath must not reuse Arena's remote provisioner token. Before a promotion
+drill, apply `flightpath-remote-rbac.yaml` separately to Arena and Brutus using
+each cluster's explicit administrative kubeconfig. Create a bound token for
+`system:serviceaccount:partner-ai-launchpad:launchpad-provisioner-flightpath`,
+build one kubeconfig per execution cluster, and store those encrypted
+kubeconfigs only on Flightpath as:
+
+- `partner-ai-launchpad/launchpad-arena-kubeconfig`
+- `partner-ai-launchpad/launchpad-brutus-kubeconfig`
+
+Register the same destinations with Flightpath's Argo CD using the distinct
+`launchpad-argocd-manager-flightpath` token. Provisioner and Argo credentials
+remain separate; neither token is reused from Arena.
+
+During promotion, removing Arena's local provisioner binding and its Brutus
+remote binding/token is the execution-cluster hard fence. Flightpath's distinct
+identities are enabled only after that removal is proven. See
+`docs/flightpath-dr-runbook.md` for the ordered backup, restore, activation and
+failback procedure. The read-only `scripts/flightpath-dr-preflight.sh` gate must
+be green before any Flightpath writer is started.

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import type {
   AdminObservability,
+  LifecycleHealth,
   ProvisioningObservation,
 } from '../api/types';
 import {
@@ -96,6 +97,8 @@ export default function Observability() {
   const [data, setData] = useState<AdminObservability | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lifecycle, setLifecycle] = useState<LifecycleHealth | null>(null);
+  const [lifecycleError, setLifecycleError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -107,6 +110,15 @@ export default function Observability() {
       })
       .catch((cause) => setError(cause instanceof Error ? cause.message : String(cause)))
       .finally(() => setLoading(false));
+    api.getLifecycleHealth()
+      .then((payload) => {
+        setLifecycle(payload);
+        setLifecycleError(null);
+      })
+      .catch((cause) => {
+        setLifecycle(null);
+        setLifecycleError(cause instanceof Error ? cause.message : String(cause));
+      });
   }, []);
 
   useEffect(() => {
@@ -308,6 +320,47 @@ export default function Observability() {
             ))}</div>
           </div>
         </div>
+      </section>
+
+      <section className="rounded-lg border border-[#2e2e2e] bg-[#212121] p-5">
+        <SectionHeader number="6" title="Lifecycle queue and worker ownership" detail="Durable provisioning and reclaim jobs, lease health, retries, and worker takeovers." />
+        {lifecycleError && (
+          <p className="rounded border border-[#C9190B]/40 bg-[#C9190B]/10 p-4 text-sm text-[#FA6868]">
+            Lifecycle queue data is unavailable. {lifecycleError}
+          </p>
+        )}
+        {lifecycle && (
+          <>
+            <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-6">
+              <Metric label="HA mode" value={lifecycle.enabled ? 'Enabled' : 'Disabled'} detail="durable lifecycle workers" tone={lifecycle.enabled ? 'text-[#73BC63]' : 'text-[#F4C145]'} />
+              <Metric label="Queued" value={lifecycle.summary.queued} detail={`${lifecycle.summary.running} running`} tone="text-[#73BCF7]" />
+              <Metric label="Reclaim pending" value={lifecycle.summary.reclaim_pending} detail="cleanup has priority" tone={lifecycle.summary.reclaim_pending ? 'text-[#F4C145]' : 'text-[#73BC63]'} />
+              <Metric label="Failed" value={lifecycle.summary.failed} detail="exhausted retries" tone={lifecycle.summary.failed ? 'text-[#FA6868]' : 'text-[#73BC63]'} />
+              <Metric label="Oldest active" value={formatOperationalDuration(lifecycle.summary.oldest_pending_age_seconds)} detail="queued or running" />
+              <Metric label="Lease safety" value={`${lifecycle.summary.takeovers} takeover${lifecycle.summary.takeovers === 1 ? '' : 's'}`} detail={`${lifecycle.summary.expired_leases} expired leases`} tone={lifecycle.summary.expired_leases ? 'text-[#FA6868]' : 'text-[#73BC63]'} />
+            </div>
+            {lifecycle.jobs.length === 0 ? (
+              <p className="rounded bg-[#181818] p-5 text-center text-sm text-[#8A8D90]">No lifecycle jobs have been recorded.</p>
+            ) : (
+              <div className="overflow-x-auto rounded border border-[#333] bg-[#181818]">
+                <table className="w-full min-w-[900px] text-xs">
+                  <thead className="text-left uppercase tracking-wider text-[#8A8D90]"><tr><th className="p-3">Operation</th><th className="p-3">Target</th><th className="p-3">Cluster</th><th className="p-3">Status</th><th className="p-3">Step</th><th className="p-3">Attempt</th><th className="p-3">Age</th></tr></thead>
+                  <tbody>{lifecycle.jobs.slice(0, 25).map((job) => (
+                    <tr key={job.job_id} className="border-t border-[#2e2e2e] text-[#D2D2D2]">
+                      <td className="p-3 font-medium">{job.operation.replaceAll('_', ' ')}</td>
+                      <td className="max-w-[240px] truncate p-3 font-mono text-[#8A8D90]">{job.aggregate_type}/{job.aggregate_id}</td>
+                      <td className="p-3 font-mono">{job.cluster_ref || 'system'}</td>
+                      <td className="p-3"><Pill value={job.status} /></td>
+                      <td className="p-3">{job.step || '—'}</td>
+                      <td className="p-3 font-mono">{job.attempts}/{job.max_attempts}</td>
+                      <td className="p-3 font-mono">{formatOperationalDuration(job.age_seconds)}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       {!data.grafana.configured && (

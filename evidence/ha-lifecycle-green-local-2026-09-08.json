@@ -1,0 +1,90 @@
+{
+  "schema": "launchpad.ha-dr-evidence/v1",
+  "evidence_id": "HA-LOCAL-20260908-01",
+  "generated_at": "2026-09-08T22:30:22Z",
+  "scope": "working-tree candidate; no live deployment",
+  "source": {
+    "base_commit": "bd6d4ba278b169e5548792ac2ff9719e97dcac77",
+    "working_tree_dirty": true,
+    "branch": "codex/ha-lifecycle"
+  },
+  "results": [
+    {
+      "gate": "backend-non-local",
+      "command": "pytest -q backend/tests backend/app/tests -m \"not local\" --ignore=backend/tests/test_demo_migration.py",
+      "passed": 1328,
+      "skipped": 6,
+      "deselected": 13,
+      "failed": 0,
+      "status": "GREEN-local"
+    },
+    {
+      "gate": "postgres-lifecycle",
+      "environment": "temporary PostgreSQL 16 container",
+      "passed": 6,
+      "failed": 0,
+      "behaviors": [
+        "cross-store idempotency",
+        "single concurrent aggregate owner",
+        "takeover fencing",
+        "atomic scoped cancellation",
+        "expired cancellation before reclaim takeover",
+        "cancellation stops lease renewal"
+      ],
+      "status": "GREEN-postgres"
+    },
+    {
+      "gate": "requester-operations-frontend",
+      "tests_passed": 57,
+      "build": "passed",
+      "status": "GREEN-local"
+    },
+    {
+      "gate": "standalone-admin-frontend",
+      "build": "passed",
+      "lint": "passed",
+      "test_script": "not defined",
+      "status": "GREEN-build"
+    },
+    {
+      "gate": "python-changed-files",
+      "checks": ["ruff E9", "ruff F", "ruff I", "git diff --check"],
+      "status": "GREEN-local"
+    },
+    {
+      "gate": "flightpath-promotion-contract",
+      "tests_passed": 7,
+      "checks": [
+        "passive render",
+        "distinct remote identity",
+        "read-only fail-closed preflight",
+        "encrypted backup and explicit restore target",
+        "hard-fence runbook"
+      ],
+      "status": "GREEN-local"
+    }
+  ],
+  "artifact_hashes": {
+    "backend/migrations/005_lifecycle_jobs.sql": "ded4c56bd9e6ccded7e23492e305d040590d3c2ed4f104bd285c7562c88287c3",
+    "deploy/launchpad/overlays/arena-ha-pilot/kustomization.yaml": "de755cf2f3decb13a038f90ceb1f474ec5d07635daa73c9becc2a9757c785f4f",
+    "deploy/launchpad/overlays/flightpath-dr/kustomization.yaml": "499a014caf7834983e9d36b9140b21f75c5edc193bcdd69b1f2edd233f38ece8",
+    "docs/ha-dr-certification-20260908.md": "f2abefa1dd91ac0f92347122a7065df064f2dcdb58fceb939031b781aa98d1e9",
+    "docs/flightpath-dr-runbook.md": "129b908120781c759d53bebb0b83fe640e7d3857a67c16aebabf5032764a7db9",
+    "deploy/multicluster/flightpath-remote-rbac.yaml": "235a93de91e76528fa8bda407dfb3b7dfdc7d60c62eaee4c34d3f41dcd4bc340",
+    "scripts/flightpath-dr-preflight.sh": "7bc9ebac205498c6e7d09d14026297af7e464c712f91f710691d1577b84d4986",
+    "scripts/launchpad-dr-database.sh": "82b12a17b5f3aaa93791aeca60ca71db86b903f320402cc8c1684ba2319fa767"
+  },
+  "excluded_local_harness": {
+    "reason": "Local Podman tests require podman_compose and running local demo services; the OpenShift/non-local gate is authoritative for this candidate.",
+    "known_environment_issue": "The interrupted unfiltered run also encountered local container storage exhaustion.",
+    "count_deselected": 13
+  },
+  "live_status": {
+    "arena_overlay_applied": false,
+    "flightpath_overlay_applied": false,
+    "worker_kill_takeover": "RED-not-run",
+    "reclaim_kill_takeover": "RED-not-run",
+    "flightpath_restore": "RED-not-run"
+  },
+  "release_decision": "NO-GO until the live and infrastructure gates in docs/ha-dr-certification-20260908.md pass"
+}

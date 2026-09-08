@@ -23,6 +23,13 @@ data:
   WORKSHOP_STABILITY_PASSES: "3"
   WORKSHOP_CANCEL_WAIT_TIMEOUT: "900"
   WORKSHOP_RECLAIM_CONCURRENCY: "10"
+  # Durable lifecycle execution is shipped dark. Enable only after applying
+  # migration 005 and certifying worker takeover against the target cluster.
+  LIFECYCLE_HA_ENABLED: "false"
+  LAUNCHPAD_CONTROL_PLANE_ROLE: "active"
+  LIFECYCLE_JOB_LEASE_SECONDS: "120"
+  LIFECYCLE_HEARTBEAT_INTERVAL_SECONDS: "15"
+  LIFECYCLE_POLL_INTERVAL_SECONDS: "2"
   # Optional deep link for historical cluster, network and LLM telemetry.
   # Launchpad remains the source of truth for order and seat lifecycle state.
   GRAFANA_LAUNCHPAD_DASHBOARD_URL: ""

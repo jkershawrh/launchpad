@@ -7,6 +7,8 @@ resources:
   - postgres-deployment.yaml
   - postgres-service.yaml
   - backend-deployment.yaml
+  - lifecycle-worker-deployment.yaml
+  - lifecycle-scheduler-cronjob.yaml
   - backend-service.yaml
   - partner-portal-deployment.yaml
   - partner-portal-service.yaml

@@ -46,6 +46,23 @@ Quick paths:
 
 The portal and API are protected by OpenShift OAuth. The deployment is managed by the `launchpad` Argo CD Application using `deploy/launchpad/overlays/arena`.
 
+### Lifecycle HA and Flightpath DR
+
+The repository now contains a feature-gated durable lifecycle worker design for
+provisioning, validation, TTL, reconciliation, and reclaim. PostgreSQL-backed
+leases and monotonically increasing fencing tokens keep one worker responsible
+for a session or workshop, while the operations view reports queue health,
+retries, takeovers, and stuck cleanup. The base remains disabled; the candidate
+Arena activation shape is `deploy/launchpad/overlays/arena-ha-pilot`.
+
+Flightpath is registered only as an inactive control-plane DR standby. Its
+overlay renders all Deployments at zero replicas and suspends CronJobs so it
+cannot become a second writer by accident. Promotion requires a hard Arena
+fence, verified data/secret restoration, and staged validation. See the
+[Flightpath DR runbook](docs/flightpath-dr-runbook.md) and the current
+[HA/DR certification matrix](docs/ha-dr-certification-20260908.md). Neither
+overlay has been applied to a live cluster by this change.
+
 ## Supported user journeys
 
 ### Individual environment

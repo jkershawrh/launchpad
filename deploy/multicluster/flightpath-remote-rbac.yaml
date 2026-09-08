@@ -1,0 +1,189 @@
+# Apply to each execution cluster before Flightpath promotion. Flightpath uses
+# identities distinct from Arena, and receives namespaced workload permissions
+# only after Launchpad creates a launchpad-* namespace and binds the seat roles.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: partner-ai-launchpad
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: remote-access
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: launchpad-provisioner-flightpath
+  namespace: partner-ai-launchpad
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: launchpad-argocd-manager-flightpath
+  namespace: partner-ai-launchpad
+automountServiceAccountToken: false
+---
+# Cluster-scoped discovery and namespace bootstrap only. Secret, workload,
+# Route, and namespaced RBAC access comes from a RoleBinding inside each
+# Launchpad-owned namespace; this binding never grants those rights globally.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: launchpad-flightpath-provisioner-bootstrap
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["create", "get", "list", "watch", "delete", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes", "pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["rolebindings"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["clusterroles"]
+    resourceNames:
+      - launchpad-flightpath-seat-manager
+      - launchpad-flightpath-argocd-seat-manager
+      - edit
+      - system:image-puller
+      - cluster-logging-application-view
+    verbs: ["bind"]
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["selfsubjectaccessreviews"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: launchpad-provisioner-flightpath-bootstrap
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: launchpad-flightpath-provisioner-bootstrap
+subjects:
+  - kind: ServiceAccount
+    name: launchpad-provisioner-flightpath
+    namespace: partner-ai-launchpad
+---
+# This role is intentionally not cluster-bound. Launchpad binds it only inside
+# the gateway and seat namespaces it creates.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: launchpad-flightpath-seat-manager
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "services", "secrets", "configmaps", "persistentvolumeclaims", "serviceaccounts", "resourcequotas", "limitranges"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["route.openshift.io"]
+    resources: ["routes"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies", "ingresses"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+---
+# Argo gets safe API discovery globally. It cannot read cluster-wide Secrets or
+# mutate any namespace until the per-seat RoleBinding below is created.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: launchpad-flightpath-argocd-discovery
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apiregistration.k8s.io"]
+    resources: ["apiservices"]
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/api", "/api/*", "/apis", "/apis/*", "/version"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: launchpad-argocd-manager-flightpath-discovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: launchpad-flightpath-argocd-discovery
+subjects:
+  - kind: ServiceAccount
+    name: launchpad-argocd-manager-flightpath
+    namespace: partner-ai-launchpad
+---
+# This role is also never cluster-bound. Every binding is created in one
+# Launchpad-owned namespace and removed with that namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: launchpad-flightpath-argocd-seat-manager
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "configmaps", "secrets", "services", "serviceaccounts", "persistentvolumeclaims"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["route.openshift.io"]
+    resources: ["routes"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies", "ingresses"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["servicemonitors"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["datasciencepipelinesapplications.opendatahub.io"]
+    resources: ["datasciencepipelinesapplications"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["roles", "rolebindings"]
+    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
+---
+# Defense in depth for the only cluster-bound mutating identity. Even if its
+# token is compromised, admission rejects writes outside Launchpad namespaces.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: launchpad-flightpath-namespace-boundary
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: ["CREATE", "UPDATE", "DELETE"]
+        resources: ["*"]
+        scope: "*"
+  validations:
+    - expression: >-
+        request.userInfo.username !=
+        'system:serviceaccount:partner-ai-launchpad:launchpad-provisioner-flightpath'
+        || (request.resource.resource == 'namespaces'
+          ? (request.operation == 'DELETE' ? oldObject.metadata.name : object.metadata.name).startsWith('launchpad-')
+          : request.namespace.startsWith('launchpad-') || request.namespace == 'partner-ai-launchpad')
+      message: Flightpath provisioner writes are restricted to Launchpad-owned namespaces.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: launchpad-flightpath-namespace-boundary
+spec:
+  policyName: launchpad-flightpath-namespace-boundary
+  validationActions: ["Deny"]

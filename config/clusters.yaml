@@ -74,3 +74,17 @@ clusters:
     capabilities: [cpu, openshift, operators, showroom, model_endpoint]
     model_endpoints:
       granite-3.2-8b-tools: https://vllm-granite-3-2-8b-tools-fleet-llm-d.apps.arena.fm2aihpcsed.com/v1
+  - cluster_id: flightpath
+    display_name: Flightpath DR Standby
+    api_url: https://api.flightpath.fm2aihpcsed.com:6443
+    ingress_domain: apps.flightpath.fm2aihpcsed.com
+    console_url: https://console-openshift-console.apps.flightpath.fm2aihpcsed.com
+    storage_class: ocs-storagecluster-ceph-rbd
+    credential_secret: partner-ai-launchpad/launchpad-flightpath-kubeconfig
+    local: false
+    priority: 90
+    enabled: false
+    # Flightpath is a passive control-plane recovery target. Promotion requires
+    # explicit Arena fencing, restored state, dedicated credentials and drills.
+    public_access_enabled: false
+    capabilities: [cpu, openshift, operators, showroom, dr-standby]

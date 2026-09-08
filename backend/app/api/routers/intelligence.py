@@ -1,11 +1,18 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.api.deps import get_placement_service, get_feedback_tracker, get_deepfield_adapter, get_brain, get_fleet_enrichment, provisioning_service
+from app.api.deps import (
+    get_brain,
+    get_deepfield_adapter,
+    get_feedback_tracker,
+    get_fleet_enrichment,
+    get_placement_service,
+    provisioning_service,
+)
 
 router = APIRouter(tags=["intelligence"])
 
@@ -33,7 +40,7 @@ def fleet_health() -> Dict[str, Any]:
 
 @router.get("/intelligence/decision/{request_id}")
 def get_decision(request_id: str) -> Dict[str, Any]:
-    for session in provisioning_service._sessions.values():
+    for session in provisioning_service.list_sessions():
         if session.request_id == request_id:
             decision_data = session.resources.get("decision")
             if decision_data:

@@ -8,7 +8,7 @@ import type { AdminObservability } from '../api/types';
 import Observability from './Observability';
 
 vi.mock('../api/client', () => ({
-  api: { getAdminObservability: vi.fn() },
+  api: { getAdminObservability: vi.fn(), getLifecycleHealth: vi.fn() },
 }));
 
 const snapshot: AdminObservability = {
@@ -97,6 +97,22 @@ afterEach(() => vi.clearAllMocks());
 describe('operator observability component', () => {
   it('renders all workflow angles and expands a lab to seat scope', async () => {
     vi.mocked(api.getAdminObservability).mockResolvedValue(snapshot);
+    vi.mocked(api.getLifecycleHealth).mockResolvedValue({
+      enabled: true,
+      summary: {
+        queued: 1,
+        running: 1,
+        cancel_requested: 0,
+        cancelled: 0,
+        succeeded: 4,
+        failed: 0,
+        reclaim_pending: 0,
+        takeovers: 1,
+        expired_leases: 0,
+        oldest_pending_age_seconds: 12,
+      },
+      jobs: [],
+    });
     const view = render(<MemoryRouter><Observability /></MemoryRouter>);
 
     expect(await screen.findByText('Lab observability')).toBeInTheDocument();
@@ -105,6 +121,8 @@ describe('operator observability component', () => {
     expect(screen.getByText('In-flight work')).toBeInTheDocument();
     expect(screen.getByText('Resolution and cleanup')).toBeInTheDocument();
     expect(screen.getByText('AI and LLM traffic')).toBeInTheDocument();
+    expect(screen.getByText('Lifecycle queue and worker ownership')).toBeInTheDocument();
+    expect(screen.getByText('1 takeover')).toBeInTheDocument();
     expect(screen.getByText('LiteLLM: granite')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Show seats' }));

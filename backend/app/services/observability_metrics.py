@@ -13,6 +13,7 @@ from collections.abc import Iterable
 from datetime import UTC, datetime
 from math import isfinite
 
+from app.domain.lifecycle_jobs import LifecycleJob
 from app.domain.models import LabSession, Workshop
 
 INFLIGHT_SESSION_STATES = {"requested", "provisioning", "validating", "resetting"}
@@ -92,6 +93,22 @@ METRICS = {
         "gauge",
         "Configured model availability; this is not a live readiness signal.",
     ),
+    "launchpad_lifecycle_jobs": (
+        "gauge",
+        "Durable lifecycle jobs grouped by bounded operational dimensions.",
+    ),
+    "launchpad_lifecycle_job_age_seconds_max": (
+        "gauge",
+        "Maximum age of a lifecycle job in its current operational group.",
+    ),
+    "launchpad_lifecycle_lease_seconds_remaining": (
+        "gauge",
+        "Seconds remaining on active lifecycle ownership leases.",
+    ),
+    "launchpad_lifecycle_takeovers_total": (
+        "counter",
+        "Lease takeovers after the first lifecycle execution attempt.",
+    ),
 }
 
 
@@ -119,11 +136,20 @@ def _event_time(session: LabSession, states: set[str], *, last: bool = False) ->
     return matches[-1] if last else matches[0]
 
 
+def _utc(value: datetime) -> datetime:
+    return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)
+
+
+def _seconds_between(later: datetime, earlier: datetime) -> float:
+    return (_utc(later) - _utc(earlier)).total_seconds()
+
+
 def render_launchpad_metrics(
     *,
     sessions: Iterable[LabSession],
     workshops: Iterable[Workshop],
     cluster_targets: Iterable[object],
+    lifecycle_jobs: Iterable[LifecycleJob] = (),
     now: datetime | None = None,
 ) -> bytes:
     """Render a deterministic Prometheus text snapshot.
@@ -300,6 +326,31 @@ def render_launchpad_metrics(
                 1,
                 mode="max",
             )
+
+    for job in lifecycle_jobs:
+        cluster = job.cluster_ref or "unassigned"
+        operation = _value(job.operation)
+        status = _value(job.status)
+        labels = {"cluster": cluster, "operation": operation, "status": status}
+        add("launchpad_lifecycle_jobs", labels)
+        add(
+            "launchpad_lifecycle_job_age_seconds_max",
+            labels,
+            max(0, _seconds_between(now, job.updated_at)),
+            mode="max",
+        )
+        if job.lease_until is not None and status in {"running", "cancel_requested"}:
+            add(
+                "launchpad_lifecycle_lease_seconds_remaining",
+                {"cluster": cluster, "operation": operation},
+                max(0, _seconds_between(job.lease_until, now)),
+                mode="max",
+            )
+        add(
+            "launchpad_lifecycle_takeovers_total",
+            {"cluster": cluster, "operation": operation},
+            max(0, job.attempts - 1),
+        )
 
     clusters = {
         *active_session_counts,
