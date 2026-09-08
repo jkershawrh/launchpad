@@ -1,16 +1,23 @@
 """Network-policy contract for participant ingress paths."""
 
 from pathlib import Path
+import subprocess
 
 import yaml
 
 
 ROOT = Path(__file__).resolve().parents[2]
-NETWORK_POLICY = ROOT / "deploy/launchpad/base/network-policy.yaml"
+ARENA_OVERLAY = ROOT / "deploy/launchpad/overlays/arena"
 
 
 def test_public_gateway_accepts_the_managed_cloudflare_tunnel():
-    policies = list(yaml.safe_load_all(NETWORK_POLICY.read_text()))
+    rendered = subprocess.run(
+        ["oc", "kustomize", str(ARENA_OVERLAY)],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    policies = list(yaml.safe_load_all(rendered))
     policy = next(
         item
         for item in policies

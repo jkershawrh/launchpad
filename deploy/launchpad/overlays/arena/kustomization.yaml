@@ -24,6 +24,16 @@ patches:
       kind: Deployment
       name: backend
     path: patch-backend-no-oauth.yaml
+  - target:
+      group: networking.k8s.io
+      version: v1
+      kind: NetworkPolicy
+      name: public-access-gateway-ingress
+    patch: |-
+      - op: replace
+        path: /spec/ingress/0/from/1/podSelector/matchLabels
+        value:
+          app.kubernetes.io/name: cloudflare-tunnel
 
 images:
   - name: backend
