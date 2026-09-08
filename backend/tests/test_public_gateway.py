@@ -7,6 +7,7 @@ from app.public_gateway import (
     _username,
     app,
 )
+from fastapi import Response
 from fastapi.testclient import TestClient
 
 
@@ -57,6 +58,18 @@ def test_gateway_exposes_participant_home_and_add_lab_routes():
         and route.__class__.__name__ == "APIWebSocketRoute"
         for route in app.routes
     )
+
+
+def test_http_tool_proxy_is_not_shadowed_by_legacy_proxy_route(monkeypatch):
+    async def fake_tool_proxy(tool_id, path, request):
+        return Response(f"{tool_id}:{path}")
+
+    monkeypatch.setattr("app.public_gateway.proxy_tool", fake_tool_proxy)
+
+    response = TestClient(app).get("/proxy/tool/workspace/api/ping")
+
+    assert response.status_code == 200
+    assert response.text == "workspace:api/ping"
 
 
 def test_public_showroom_config_rewrites_only_entitled_tool_urls():

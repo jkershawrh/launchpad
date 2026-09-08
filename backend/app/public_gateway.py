@@ -280,6 +280,14 @@ async def claim(request: Request, email: str = Form(), code: str = Form()):
 
 @app.get("/proxy/{kind}/{path:path}")
 async def proxy(kind: str, path: str, request: Request):
+    # Starlette resolves routes in declaration order.  This legacy catch-all
+    # is registered before the more specific HTTP tool proxy below, so forward
+    # the tool shape explicitly instead of rejecting it as an unknown kind.
+    if kind == "tool":
+        tool_id, separator, tool_path = path.partition("/")
+        if not tool_id or not separator:
+            raise HTTPException(404)
+        return await proxy_tool(tool_id, tool_path, request)
     if kind not in {"showroom", "workspace", "console"}:
         raise HTTPException(404)
     target = await _resolve(request)
