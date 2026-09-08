@@ -125,23 +125,19 @@ workshop stays wholly on its assigned cluster, and all 75 environments must
 remain available concurrently through one Launchpad entry point. The exact
 combined rehearsal and capacity gate are tracked in
 [docs/september-17-agentic-three-workshop-readiness.md](docs/september-17-agentic-three-workshop-readiness.md).
-Run 01 provisioned all 75 environments and reclaimed them without residue, but
-is RED because Arena worker connectivity failed during participant probes.
-Run 02 proved balanced placement and a healthy first 25-seat workshop, then
-stopped on a backend OOM, a misleadingly Ready `rhgnr1`, and a late-seat
-cancellation race. It also reached zero residue after targeted reconciliation.
-The all-Arena runs remain immutable RED evidence. A September 7 retained
-Arena 25 + 25 attempt recovered all CPU-serving seats in place, but its first
-25-way participant burst completed only 22 journeys and the repeat failed all
-25 when `rhgnr1` entered NotReady for the second time. Namespace state then
-diverged from the backend session records. Arena is therefore not certified to
-host two event workshops. The preferred topology is now one 25-seat workshop
-per independently stable execution cluster; if only Arena and Brutus are
-available, either Arena must pass a repaired 50-seat soak or a third cluster is
-required. Oberon remains excluded because its safe capacity is below 25 seats
-and stale KubeVirt/HCO discovery prevents namespace cleanup. The event
-candidate is not yet certified, and Brutus remains disabled until its gate
-passes.
+On September 8 the exact two-cluster rehearsal provisioned all three orders,
+then passed 75/75 overlapping participant journeys: Multi-Agent and Serve LLMs
+on Arena, and Building an AI Agent on Brutus through Arena's persisted remote
+client. All 75 seats were then reclaimed with zero namespaces or Argo CD
+Applications remaining. This is stronger functional load than the intended
+one-workshop-at-a-time participant use and makes the internal pilot a
+conditional candidate for the manual frontend journey. It is not production
+certification: correlated Arena probe pressure and retryable connection resets
+remain RED, the 60-minute soak is pending, public browser access is separate,
+and only one exact combined pass is recorded. `rhgnr1` remains cordoned outside
+supervised operations. The current matrix, rubric, and manual acceptance
+boundary are in
+[docs/september-17-pilot-status-20260908.md](docs/september-17-pilot-status-20260908.md).
 
 ## Repository layout
 

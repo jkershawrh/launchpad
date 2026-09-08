@@ -1,0 +1,67 @@
+{
+  "schema": "launchpad.redhat.com/exact75-cleanup/v1",
+  "result": "GREEN-live-cleanup-with-finalizer-warning",
+  "source_commit": "0bcbbee",
+  "control_plane": "arena",
+  "completed_at": "2026-09-08T04:59:23Z",
+  "contains_plaintext_credentials": false,
+  "workshops": [
+    {
+      "workshop_id": "2f5e34ff-f5f3-47e5-bc00-af697dda830b",
+      "cluster_ref": "brutus",
+      "workshop_status": "completed",
+      "seat_records_reclaimed": 25,
+      "session_records_reclaimed": 25,
+      "failed_reclaims": 0,
+      "remaining_namespaces": 0,
+      "remaining_argocd_applications": 0,
+      "showroom_finalizer_recoveries": 25,
+      "remote_access_path": "Arena backend persisted Brutus client"
+    },
+    {
+      "workshop_id": "7c7c2a80-12bc-47d7-a250-633980daa75c",
+      "cluster_ref": "arena",
+      "workshop_status": "completed",
+      "seat_records_reclaimed": 25,
+      "session_records_reclaimed": 25,
+      "failed_reclaims": 0,
+      "remaining_namespaces": 0,
+      "remaining_argocd_applications": 0,
+      "showroom_finalizer_recoveries": 25,
+      "cleanup_started_at": "2026-09-08T04:49:18Z",
+      "cleanup_completed_at": "2026-09-08T04:55:34Z",
+      "cleanup_seconds": 376
+    },
+    {
+      "workshop_id": "04126518-64b5-43d3-aa95-5b61934fc019",
+      "cluster_ref": "arena",
+      "workshop_status": "completed",
+      "seat_records_reclaimed": 25,
+      "session_records_reclaimed": 25,
+      "failed_reclaims": 0,
+      "remaining_namespaces": 0,
+      "remaining_argocd_applications": 0,
+      "showroom_finalizer_recoveries": 25,
+      "cleanup_started_at": "2026-09-08T04:55:45Z",
+      "backend_completed_at": "2026-09-08T04:58:38Z",
+      "resources_zero_at": "2026-09-08T04:59:23Z",
+      "cleanup_to_zero_seconds": 218
+    }
+  ],
+  "aggregate": {
+    "seat_records_reclaimed": 75,
+    "session_records_reclaimed": 75,
+    "failed_reclaims": 0,
+    "remaining_namespaces": 0,
+    "remaining_argocd_applications": 0,
+    "showroom_finalizer_recoveries": 75,
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned": true
+  },
+  "interpretation": {
+    "cleanup_correctness_proven": true,
+    "zero_residue_proven": true,
+    "cleanup_resilience_green": false,
+    "finding": "Every persisted record and cluster resource was reclaimed. Cleanup is functionally correct, but every Showroom Application required the stale-finalizer fallback, so normal Argo deletion remains a pilot reliability defect."
+  }
+}

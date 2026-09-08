@@ -1,0 +1,121 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v2",
+  "result": "GREEN-live-functional-RED-resilience",
+  "started_at": "2026-09-08T04:15:45Z",
+  "completed_at": "2026-09-08T04:41:27Z",
+  "duration_seconds": 1542,
+  "source_commit": "0bcbbee",
+  "control_plane": "arena",
+  "participants_started": 75,
+  "participants_functionally_passed": 75,
+  "contains_plaintext_credentials": false,
+  "pilot_scope": {
+    "orders": "three separate 25-seat workshops provisioned in staggered orders",
+    "participant_load": "all three 25-participant waves overlapped; this is stricter than the planned one-lab-at-a-time pilot use",
+    "manual_frontend_journey": "deferred to the next-day acceptance session",
+    "public_access": "not in scope for this run"
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "2f5e34ff-f5f3-47e5-bc00-af697dda830b",
+      "cluster": "brutus",
+      "passed": 25,
+      "failed": 0,
+      "setup_passed": 25,
+      "rbac_isolation_passed": 25
+    },
+    "multi_agent": {
+      "id": "7c7c2a80-12bc-47d7-a250-633980daa75c",
+      "cluster": "arena",
+      "participant_wave_passed": 25,
+      "participant_wave_failed": 0,
+      "deep_checks_passed": 25,
+      "deep_checks_failed": 0,
+      "terminal_isolation_passed": 25,
+      "learner_policy_rollback_passed": 25,
+      "guardrails_passed": 25,
+      "sensitive_values_absent": 25,
+      "participant_latency_ms": {
+        "min": 55482.46,
+        "max": 88698.84,
+        "mean": 73723.5008,
+        "p95": 88505.22
+      },
+      "deep_journey_latency_ms": {
+        "min": 40118.5,
+        "max": 54800.37,
+        "mean": 47409.4976
+      }
+    },
+    "serve_llms": {
+      "id": "04126518-64b5-43d3-aa95-5b61934fc019",
+      "cluster": "arena",
+      "passed": 25,
+      "failed": 0,
+      "grounded_responses": 25
+    }
+  },
+  "resilience": {
+    "result": "RED-live-node-pressure",
+    "api_post_run_samples": {
+      "ready": 5,
+      "total": 5,
+      "min_seconds": 0.001222,
+      "max_seconds": 0.011171
+    },
+    "participant_retryable_connection_resets": {
+      "multi_agent": 7,
+      "serve_llms": 25
+    },
+    "probe_window": {
+      "waves": 51,
+      "event_records": 1093,
+      "context_deadline_records": 643,
+      "io_timeout_records": 29,
+      "probe_failure_records": 421
+    },
+    "kubelet_window": {
+      "gnr2": {
+        "matching_lines": 1572,
+        "context_deadline": 438,
+        "io_timeout": 49,
+        "probe_failure": 1529
+      },
+      "rhgnr1": {
+        "matching_lines": 4294,
+        "context_deadline": 2883,
+        "io_timeout": 28,
+        "probe_failure": 3674,
+        "image_gc_failure": 1
+      }
+    },
+    "post_run_pod_density": {
+      "gnr2": 122,
+      "rhgnr1": 191,
+      "per_node_limit": 250
+    },
+    "launchpad_critical_pods_not_ready_post_run": 0,
+    "rhgnr1_ready_post_run": true,
+    "rhgnr1_cordoned_post_run": true
+  },
+  "pre_run_access_event": {
+    "result": "RED-unattributed-access-path",
+    "observed_from": "2026-09-08T03:47:44Z",
+    "last_failed_probe": "2026-09-08T03:55:07Z",
+    "symptom": "Arena API and ingress VIPs were unreachable from the certification client during the workload rollout",
+    "recovery": "access returned after the VPN connection was re-established",
+    "attribution": "not assigned to Arena because the VPN/client path changed before recovery"
+  },
+  "artifacts": {
+    "exact_result_files": 79,
+    "exact_result_tree_sha256": "d9a41d3c54089b4aaa76edad487033ca9ca8ec5a4cea71a5e5cf79b968e31de0",
+    "resilience_manifest_sha256": "1a5eedcce9bfbcc38801289e5ad2e5a17c4ae9d2356b40da187cd430178a6de4"
+  },
+  "interpretation": {
+    "september_17_functional_pilot_proven": true,
+    "one_lab_at_a_time_target_covered": true,
+    "ga_certified": false,
+    "three_run_streak_credit": 1,
+    "finding": "Three staggered 25-seat orders and 75 overlapping participant journeys completed successfully. The pilot functional claim is green, but node probe pressure and retryable ingress resets keep resilience red and prevent a production or GA claim."
+  }
+}

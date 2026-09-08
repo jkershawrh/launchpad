@@ -1,0 +1,61 @@
+{
+  "schema": "launchpad.redhat.com/showroom-cleanup-red-green/v1",
+  "evidence_id": "EDD-SHOWROOM-NAMESPACE-OWNED-CLEANUP-20260908",
+  "result": "GREEN-live",
+  "cluster": "arena",
+  "contains_plaintext_credentials": false,
+  "red_live": {
+    "source_commit": "df75b91279ebee320f239e2cd582cd9413c8f4ec",
+    "run_id": "lifecycle-background-finalizer-20260908",
+    "workshop_id": "9ffd5e6e-fcee-4f17-8aac-27c797ad2287",
+    "namespace": "launchpad-smoke-test-tenant-multi-agent-6079c8",
+    "functional_rubric": 100,
+    "cleanup_seconds": 82.749,
+    "zero_residue": true,
+    "showroom_finalizer_recovery_count": 1,
+    "finding": "The Argo background finalizer still reached Launchpad's stale-finalizer recovery path."
+  },
+  "green_live": {
+    "source_commit": "0a42971240074f706039e9ad17d4eb3b29af59d0",
+    "backend_image_digest": "sha256:fda7987abf080187b9b39dbfb9353f1ad69069c4e901ac547f4e50a9d8816db9",
+    "run_id": "lifecycle-namespace-owner-20260908",
+    "workshop_id": "9de4fbe4-cd6d-4f7b-8c79-f645afd32ac8",
+    "session_id": "099a63aa-4c64-422c-919f-214d3588a565",
+    "namespace": "launchpad-smoke-test-tenant-multi-agent-7e9e7d",
+    "catalog_version": "0.2.5",
+    "ready_seconds": 52.939,
+    "functional_rubric": 100,
+    "cleanup_seconds": 89.934,
+    "model_key_revoked": true,
+    "showroom_finalizer_recovery_count": 0,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    }
+  },
+  "test_evidence": {
+    "red_test": "backend/tests/test_showroom_gitops.py::test_showroom_application_leaves_cascade_to_namespace_reclaim",
+    "red_result": "failed because the generated Application still contained the background finalizer",
+    "green_focused": "90 passed",
+    "green_backend_non_local": "1203 passed, 13 deselected",
+    "precommit": "gitleaks passed"
+  },
+  "proof_strategy": {
+    "TDD": "The no-finalizer ownership rule failed before the manifest generator changed and passed afterward.",
+    "EDD": "Both live workshop IDs, commits, timings, fallback counts, rubric, and zero-residue counts are recorded.",
+    "CDD": "The Showroom Application contract omits a finalizer because Launchpad's namespace is the aggregate cleanup owner.",
+    "BDD": "Given a ready Showroom seat, when its workshop is reclaimed, then its Application and namespace disappear without stale-finalizer recovery.",
+    "CBT": "Application generation, participant behavior, model-key revocation, and each residue type were checked independently."
+  },
+  "interpretation": {
+    "targeted_finalizer_defect_fixed": true,
+    "zero_residue_proven": true,
+    "cleanup_latency_optimized": false,
+    "remaining_work": "The approximately 90-second total includes other Argo deletion, namespace garbage-collection, API polling, and seven resource-count queries; profile these separately before setting a tighter cleanup SLO."
+  }
+}

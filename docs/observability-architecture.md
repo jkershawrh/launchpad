@@ -131,3 +131,18 @@ diagnostic correlation.
    whole interval.
 6. Add the approved Grafana datasource and import the versioned dashboard.
 7. Keep public browser access certification as a separate gate.
+
+### Live status on September 8, 2026
+
+- Gates 1 and 2 are GREEN-live. User-workload Prometheus reports the Launchpad
+  backend target `up=1` and ingests persisted workshop and seat metrics.
+- Gate 3 is GREEN-live for discovery and network access: two vLLM targets and
+  one TEI target report `up=1`, and vLLM request metrics are queryable. TEI's
+  installed build still returns no useful application metric body, so its
+  detailed request panels remain unavailable rather than zero.
+- Gate 5 has functional evidence from the exact 75-participant rehearsal. A
+  retained dashboard screenshot and a 60-minute soak are still pending.
+- Gate 6 remains pending because Arena has no approved Grafana installation or
+  external datasource. The dashboard JSON is deployed as a ConfigMap and its
+  PromQL can be used in OpenShift Observe now.
+- Gate 7 remains intentionally separate and pending.

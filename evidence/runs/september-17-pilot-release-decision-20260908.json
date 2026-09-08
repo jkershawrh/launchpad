@@ -1,0 +1,137 @@
+{
+  "schema": "launchpad.redhat.com/september-17-pilot-release-decision/v1",
+  "evidence_id": "EDD-SEPTEMBER-17-INTERNAL-PILOT-DECISION-20260908",
+  "generated_at": "2026-09-08T05:50:00Z",
+  "repository_head": "6cf87f2",
+  "decision": "CONDITIONAL-GO-supervised-internal-pilot",
+  "production_or_ga_decision": "NO-GO",
+  "manual_frontend_acceptance": "PENDING-2026-09-09",
+  "public_access": "DEFERRED-separate-certification-stream",
+  "contains_plaintext_credentials": false,
+  "functional_run": {
+    "result": "GREEN-live",
+    "participants_started": 75,
+    "participants_passed": 75,
+    "participant_load": "Three 25-participant waves overlapped after staggered provisioning.",
+    "workshops": [
+      {
+        "catalog_item_id": "intel-xeon6-agent-201",
+        "workshop_id": "2f5e34ff-f5f3-47e5-bc00-af697dda830b",
+        "cluster_ref": "brutus",
+        "passed": 25
+      },
+      {
+        "catalog_item_id": "multi-agent-quickstart",
+        "workshop_id": "7c7c2a80-12bc-47d7-a250-633980daa75c",
+        "cluster_ref": "arena",
+        "passed": 25,
+        "deep_checks_passed": 25
+      },
+      {
+        "catalog_item_id": "intel-llm-cpu-serving",
+        "workshop_id": "04126518-64b5-43d3-aa95-5b61934fc019",
+        "cluster_ref": "arena",
+        "passed": 25
+      }
+    ],
+    "evidence": "evidence/runs/september-17-exact75-functional-green-resilience-red-20260908.json"
+  },
+  "cleanup": {
+    "seat_records_reclaimed": 75,
+    "session_records_reclaimed": 75,
+    "failed_reclaims": 0,
+    "remaining_namespaces": 0,
+    "remaining_argocd_applications": 0,
+    "follow_up_finalizer_fix": "GREEN-live",
+    "evidence": [
+      "evidence/runs/september-17-exact75-cleanup-green-finalizer-warning-20260908.json",
+      "evidence/runs/showroom-cleanup-finalizer-red-green-20260908.json"
+    ]
+  },
+  "deployed_candidate": {
+    "control_plane": "arena",
+    "backend_source_commit": "0a42971240074f706039e9ad17d4eb3b29af59d0",
+    "backend_image_digest": "sha256:fda7987abf080187b9b39dbfb9353f1ad69069c4e901ac547f4e50a9d8816db9",
+    "admin_image_digest": "sha256:80f0bdb3ba2d0c0c0d98dab9906f1018bfe9c1284e458e314f5f4dc667fb92eb",
+    "argocd_sync_revision": "0a42971240074f706039e9ad17d4eb3b29af59d0",
+    "core_deployments_ready": {
+      "backend": "1/1",
+      "admin": "2/2",
+      "partner_portal": "2/2",
+      "public_access_gateway": "2/2",
+      "postgres": "1/1"
+    },
+    "rhgnr1": {
+      "ready": true,
+      "cordoned": true
+    }
+  },
+  "observability": {
+    "admin_contract": "launchpad.admin-observability/v1",
+    "active_labs": 0,
+    "active_seats": 0,
+    "inflight_seats_after_repair": 0,
+    "historical_attention_rows": 2,
+    "launchpad_prometheus_target_up": 1,
+    "model_prometheus_targets": {
+      "vllm_granite_tools": "2/2 up",
+      "tei_nomic_embed": "1/1 up"
+    },
+    "vllm_request_metrics_queryable": true,
+    "grafana_dashboard_configmap_deployed": true,
+    "standalone_grafana_installed": false,
+    "named_gap": "Direct LiteLLM traffic is not yet normalized into per-seat request, error, rate-limit, latency, and token attribution."
+  },
+  "validation": {
+    "backend_focused": "111 passed",
+    "backend_non_local": "1203 passed, 13 deselected",
+    "frontend_components": "42 passed across 14 files",
+    "frontend_build": "passed",
+    "frontend_lint": "passed",
+    "observability_components": "13 passed",
+    "precommit": "gitleaks passed"
+  },
+  "red_green_matrix": [
+    {"gate": "three staggered 25-seat orders", "state": "GREEN-live"},
+    {"gate": "75 overlapping participant journeys", "state": "GREEN-live"},
+    {"gate": "namespace authorization and isolation", "state": "GREEN-live"},
+    {"gate": "real model and grounded RAG behavior", "state": "GREEN-live"},
+    {"gate": "75-seat zero-residue reclaim", "state": "GREEN-live"},
+    {"gate": "workshop-wide TTL and aggregate reclaim", "state": "GREEN-local"},
+    {"gate": "terminal child-state reconciliation", "state": "GREEN-local-and-live-repair"},
+    {"gate": "Showroom finalizer fallback", "state": "GREEN-live-after-RED"},
+    {"gate": "Launchpad and model Prometheus scraping", "state": "GREEN-live"},
+    {"gate": "Arena node and probe resilience", "state": "RED-live"},
+    {"gate": "60-minute exact-topology soak", "state": "RED-pending"},
+    {"gate": "manual requester and participant frontend", "state": "RED-pending-2026-09-09"},
+    {"gate": "public browser and SSO", "state": "DEFERRED"},
+    {"gate": "three consecutive exact rehearsals", "state": "RED-1-of-3"}
+  ],
+  "rubric": {
+    "required_for_ga": 100,
+    "pilot_score": 95,
+    "categories": {
+      "contract_and_evidence": 15,
+      "placement_and_capacity": 15,
+      "provisioning_and_readiness": 20,
+      "participant_functionality": 25,
+      "authorization_and_isolation": 15,
+      "cleanup_repeatability": 5
+    },
+    "critical_red_override": true
+  },
+  "proof_strategy": {
+    "TDD": "Every lifecycle or telemetry defect discovered in the live run became a failing regression before remediation.",
+    "EDD": "Run IDs, target clusters, commits, image digests, timings, participant outcomes, Prometheus results, cleanup counts, and hashes are retained.",
+    "CDD": "Versioned workshop, observability, certification, GitOps, and metrics contracts passed provider and consumer tests.",
+    "BDD": "The combined behavior proves staggered ordering, retained use, concurrent participant function, isolation, and complete reclaim.",
+    "CBT": "Frontend, backend, Showroom, catalog journeys, lifecycle, model serving, and telemetry were tested as separable components."
+  },
+  "next_acceptance": [
+    "Run one internal lab from the requester frontend and inspect the same order in the admin UI.",
+    "Open the correct Showroom, terminal, and catalog journey from the participant page.",
+    "Confirm observability transitions by lab and seat during provision and reclaim.",
+    "Reclaim from the UI and prove zero residue.",
+    "Keep public access out of this acceptance unless its separate prerequisites are intentionally enabled."
+  ]
+}

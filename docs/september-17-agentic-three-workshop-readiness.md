@@ -345,3 +345,30 @@ orders only after its workload gate passes, then repeat the exact preview and
 combined 75-seat rehearsal. AgentOps continues separately at a maximum of five
 internal seats until its own 25-seat capacity and architecture gates are
 satisfied.
+
+## September 8 exact functional rehearsal — GREEN-live / RED-resilience
+
+The later exact rehearsal supersedes the pending functional statements above
+without rewriting the immutable earlier RED records. Three staggered 25-seat
+orders reached Ready on the approved topology: Multi-Agent and Serve LLMs on
+Arena, and Building an AI Agent on Brutus through the Arena backend. All 75
+participant journeys then passed with overlap. This is stricter functional
+load than the event's intended one-workshop-at-a-time participant use.
+
+Sequential reclaim completed for all 75 seats with zero run namespaces and
+zero Argo CD Applications remaining. The observed Showroom finalizer fallback
+became a failing regression test. A subsequent one-seat run at commit
+`0a42971` proved namespace-owned Showroom cleanup with a 100/100 catalog rubric,
+zero residue, and no Showroom finalizer recovery.
+
+The exact run remains RED for production resilience: Arena recorded correlated
+probe pressure and retryable connection resets, the successful run did not
+include a 60-minute soak, and it is only the first exact GREEN-functional run.
+The requester/participant frontend journey is reserved for manual validation
+on September 9. Public access remains a separate gate.
+
+The current decision and validation matrix are in
+`docs/september-17-pilot-status-20260908.md`. The immutable run evidence is
+`evidence/runs/september-17-exact75-functional-green-resilience-red-20260908.json`
+and
+`evidence/runs/september-17-exact75-cleanup-green-finalizer-warning-20260908.json`.
