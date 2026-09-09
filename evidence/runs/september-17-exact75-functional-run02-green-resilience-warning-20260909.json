@@ -1,0 +1,94 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-FUNCTIONAL-RUN02-GREEN-20260909T043854Z",
+  "event_date": "2026-09-17",
+  "started_at": "2026-09-09T04:14:36Z",
+  "completed_at": "2026-09-09T04:38:54Z",
+  "result": "GREEN-live-functional-with-resilience-warning",
+  "functional_streak_credit": true,
+  "functional_streak_position": 2,
+  "source": {
+    "driver_commit": "4bc1f65",
+    "backend_source_commit": "0989043",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:c4e2d440e8d3270dd338af0a8acd4929b556a5720c6304469617e58d0855b95c",
+    "control_plane": "arena"
+  },
+  "participants": {
+    "started": 75,
+    "passed": 75,
+    "failed": 0
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "208ba076-38da-47b7-8895-09d8b23da075",
+      "cluster_ref": "brutus",
+      "seats_ready": 25,
+      "showroom_http_200": 25,
+      "journeys_passed": 25,
+      "journey_duration_seconds": {
+        "min": 202,
+        "p95": 205,
+        "max": 205
+      }
+    },
+    "multi_agent": {
+      "id": "863ca8e9-365a-4844-b5ed-c9715321de58",
+      "cluster_ref": "arena",
+      "seats_ready": 25,
+      "showroom_http_200": 25,
+      "concurrent_wave_passed": 25,
+      "deep_journeys_passed": 25,
+      "concurrent_latency_ms": {
+        "min": 82208.3,
+        "p95": 102617.23,
+        "max": 107488.57
+      },
+      "deep_workflow_latency_ms": {
+        "min": 39829.16,
+        "p95": 51237.21,
+        "max": 51526.72
+      }
+    },
+    "serve_llms": {
+      "id": "2d5fa3c2-bda2-49bf-ab92-ccf3106bdc98",
+      "cluster_ref": "arena",
+      "seats_ready": 25,
+      "showroom_http_200": 25,
+      "anythingllm_deployments_available": 25,
+      "grounded_journeys_passed": 25,
+      "response_seconds": {
+        "min": 10.242,
+        "p95": 27.076,
+        "max": 61.946
+      }
+    }
+  },
+  "resilience": {
+    "result": "WARNING-retryable-arena-connection-resets",
+    "multi_agent_connection_reset_log_lines": 50,
+    "serve_llms_connection_reset_log_lines": 5,
+    "participant_failures_after_retry": 0,
+    "interpretation": "The bounded retry policy recovered every participant journey, but the reset burst and elevated latency remain part of the Arena resilience gate and must be observed during the 60-minute soak."
+  },
+  "isolation": {
+    "agent_201_own_namespace_edit_passed": 25,
+    "agent_201_cross_namespace_denied": 25,
+    "agent_201_node_list_denied": 25,
+    "multi_agent_terminal_scope_passed": 25
+  },
+  "post_run_state": {
+    "workshops_ready": 3,
+    "seats_ready": 75,
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned": true,
+    "retained_for_sixty_minute_soak": true
+  },
+  "raw_artifact_hashes": {
+    "summary": "4bdb34da1bfd21d3d25b9a7266f959f618ba992fa89afb4031ceb3f7e20532bd",
+    "agent_201_run_log": "f234e116fc2b3192a256770b7b4d7ce0ef3e85466d576b8ad7d4890e5eb65899",
+    "multi_agent_run_log": "8ba3fbd03f71c27a957fea7df412329ffa18248f1147244e2417bd1d07621764",
+    "serve_llms_run_log": "41138d84af900d877869688a80838db28204d53ed926bde4374090cb7a2ecf7d"
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}
