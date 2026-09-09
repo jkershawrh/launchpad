@@ -23,6 +23,7 @@
     "live_keycloak_version": "26.4.2"
   },
   "green": {
+    "github_dependabot_open_after_3cc7787": 0,
     "npm_audit": {
       "root": 0,
       "frontend": 0,

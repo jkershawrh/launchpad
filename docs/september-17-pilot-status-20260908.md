@@ -155,6 +155,8 @@ provider and published immutable candidate digest
 `sha256:aa63ad89397a97be5b961e5c49d76406429af689ebbccb0610c7ab57f20a0dde`.
 A disposable Arena smoke pod reported Keycloak 26.7.2, confirmed the provider
 JAR, exited successfully with zero restarts, and was deleted.
+After commit `3cc7787`, GitHub's Dependabot rescan reports zero open alerts on
+main, down from 105 at the RED baseline.
 The running Keycloak Custom Resource intentionally remains on 26.4.2: the
 authenticator uses an internal Keycloak SPI, so a live change requires the
 manual browser and rollback gate rather than an unobserved rollout.

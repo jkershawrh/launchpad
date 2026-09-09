@@ -54,6 +54,7 @@ def test_security_evidence_is_honest_about_the_live_keycloak_boundary():
         == 105
     )
     assert all(value == 0 for value in evidence["green"]["npm_audit"].values())
+    assert evidence["green"]["github_dependabot_open_after_3cc7787"] == 0
     assert evidence["green"]["keycloak_candidate"]["build_result"] == "Complete"
     assert evidence["green"]["keycloak_candidate"]["version"] == "26.7.2"
     assert evidence["rejected_candidate"]["version"] == "26.7.0"
