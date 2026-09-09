@@ -75,6 +75,17 @@ api_idempotent_post() {
     "$API_BASE$path"
 }
 
+public_certification_session_status() {
+  api GET /api/v1/lab-sessions \
+    | jq -r --arg namespace "$PUBLIC_CERT_NAMESPACE" \
+      '[.[] | select(.namespace == $namespace)] | sort_by(.created_at) | last | .status // empty'
+}
+
+public_certification_session_is_active() {
+  PUBLIC_CERT_SESSION_STATUS="$(public_certification_session_status)"
+  [[ "$PUBLIC_CERT_SESSION_STATUS" == "ready" || "$PUBLIC_CERT_SESSION_STATUS" == "active" ]]
+}
+
 queue_reclaim_best_effort() {
   if [[ -n "$WORKSHOP_ID" && "$RECLAIM_COMPLETED" != "true" && -n "$PF_PID" ]]; then
     api DELETE "/api/v1/workshops/$WORKSHOP_ID" >/dev/null 2>&1 || true
@@ -537,6 +548,10 @@ done
   echo "Backend readiness failed" >&2
   exit 1
 }
+public_certification_session_is_active || {
+  echo "Public certification session is not active: ${PUBLIC_CERT_SESSION_STATUS:-missing}" >&2
+  exit 1
+}
 
 REQUEST_BODY="$(jq -cn \
   --arg tenant "$TENANT_ID" \
@@ -601,7 +616,10 @@ restore_worker_spread
 
 RESIDUE="$(wait_for_zero_workshop_residue)"
 IFS='|' read -r NAMESPACE_RESIDUE ROUTE_RESIDUE ROLEBINDING_RESIDUE APPLICATION_RESIDUE <<<"$RESIDUE"
-"${OC[@]}" get namespace "$PUBLIC_CERT_NAMESPACE" >/dev/null
+public_certification_session_is_active || {
+  echo "Public certification session is not active: ${PUBLIC_CERT_SESSION_STATUS:-missing}" >&2
+  exit 1
+}
 
 WORKER_NODES="$("${OC[@]}" -n "$NAMESPACE" get pods \
   -l app.kubernetes.io/name=lifecycle-worker -o json \

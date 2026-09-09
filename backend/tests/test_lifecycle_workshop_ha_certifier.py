@@ -2,7 +2,6 @@ import re
 import subprocess
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/certify-arena-lifecycle-workshop-ha.sh"
 
@@ -40,12 +39,15 @@ def test_workshop_certifier_bounds_seat_count_and_faults_both_aggregate_jobs():
     assert '&& -n "$claimant_pod"' in script
     assert 'local release_cordon_on_takeover="${4:-false}"' in script
     assert '[[ "$release_cordon_on_takeover" == "true" ]]' in script
-    assert 'wait_for_takeover_completion "$PROVISION_JOB_ID" "$PROVISION_INITIAL_FENCE" "$PROVISION_DELETED_EPOCH" true' in script
+    assert (
+        'wait_for_takeover_completion "$PROVISION_JOB_ID" "$PROVISION_INITIAL_FENCE" "$PROVISION_DELETED_EPOCH" true'
+        in script
+    )
     assert 'cordon_owner_node "$PROVISION_INITIAL_OWNER"' in script
     assert 'cordon_owner_node "$RECLAIM_INITIAL_OWNER"' in script
     assert script.count('delete_owner "$') == 2
     assert "--force --grace-period=0 --wait=false" in script
-    assert '(( fence > initial_fence ))' in script
+    assert "(( fence > initial_fence ))" in script
     assert "hold_showroom_applications" in script
     assert "release_showroom_application_holds" in script
     assert "launchpad.redhat.com/certification-hold" in script
@@ -68,6 +70,18 @@ def test_workshop_certifier_proves_every_seat_and_zero_aggregate_residue():
     assert "public_certification_lab_preserved:true" in script
 
 
+def test_workshop_certifier_requires_the_unrelated_public_session_to_stay_active():
+    script = _script()
+
+    assert "public_certification_session_is_active" in script
+    assert 'PUBLIC_CERT_SESSION_STATUS="$(public_certification_session_status)"' in script
+    assert (
+        '[[ "$PUBLIC_CERT_SESSION_STATUS" == "ready" || "$PUBLIC_CERT_SESSION_STATUS" == "active" ]]'
+        in script
+    )
+    assert script.count("Public certification session is not active") == 2
+
+
 def test_workshop_certifier_is_reversible_credential_free_and_hashed():
     script = _script()
 
@@ -79,7 +93,10 @@ def test_workshop_certifier_is_reversible_credential_free_and_hashed():
     assert 'shasum -a 256 "$OUTPUT_PATH"' in script
     assert "GREEN-live-five-seat-cross-node-workshop-ha" in script
     assert 'hard_node_failure:"not certified"' in script
-    assert 'twenty_five_seat_workshop_ha:(if $seat_count == 25 then "certified" else "not certified" end)' in script
+    assert (
+        'twenty_five_seat_workshop_ha:(if $seat_count == 25 then "certified" else "not certified" end)'
+        in script
+    )
 
 
 def test_workshop_certifier_evidence_filter_compiles_with_jq():
@@ -125,9 +142,7 @@ def test_workshop_certifier_evidence_filter_compiles_with_jq():
     for name, value in json_args.items():
         command.extend(["--argjson", name, value])
 
-    result = subprocess.run(
-        [*command, match.group(1)], capture_output=True, text=True
-    )
+    result = subprocess.run([*command, match.group(1)], capture_output=True, text=True, check=False)
 
     assert result.returncode == 0, result.stderr
 
@@ -150,6 +165,7 @@ def test_workshop_worker_spread_filter_counts_ready_pods_and_nodes():
         input=pods,
         capture_output=True,
         text=True,
+        check=False,
     )
 
     assert result.returncode == 0, result.stderr

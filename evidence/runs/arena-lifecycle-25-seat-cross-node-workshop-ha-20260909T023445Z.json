@@ -1,0 +1,339 @@
+{
+  "schema": "launchpad.redhat.com/workshop-lifecycle-ha-live-certification/v1",
+  "evidence_id": "ARENA-LIFECYCLE-25-SEAT-CROSS-NODE-WORKSHOP-HA-20260909T024611Z",
+  "result": "GREEN-live-twenty-five-seat-cross-node-workshop-ha",
+  "source": {
+    "commit": "5fb8594fff465a645c9e92888c17a0126c945393",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:90790c6ae143f862e0d0e2c73c69ede394ce71cf97cc68c0b86905c03745ccbf",
+    "cluster_ref": "arena"
+  },
+  "topology": {
+    "worker_processes": 2,
+    "worker_nodes": [
+      "gnr2.fm2aihpcsed.com",
+      "rhgnr1"
+    ],
+    "node_separated_processes": true,
+    "node_ha_certified": false
+  },
+  "workshop": {
+    "workshop_id": "9127a572-9e7e-40fb-9e25-a813dcf5da74",
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "cluster_ref": "arena",
+    "seats_requested": 25,
+    "seats_ready": 25,
+    "unique_session_ids": 25,
+    "unique_namespaces": 25,
+    "seat_proofs": [
+      {
+        "seat_number": 1,
+        "seat_id": "77c2669c-a022-4279-8ed3-f1f06f06a370",
+        "session_id": "f6e35fba-ca8b-42c0-a1a5-d482e3b199f1",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-77c266",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-77c266.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 2,
+        "seat_id": "4c764135-c560-451f-b1b6-a8d40284e0ee",
+        "session_id": "4f13af5c-4585-4e59-82f9-d97610a220b6",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-4c7641",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-4c7641.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 3,
+        "seat_id": "d2c27b70-968f-493f-8619-84eb7800b9fa",
+        "session_id": "685e22e5-f69a-4ea0-a8b1-a62cfd71bd52",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-d2c27b",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-d2c27b.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 4,
+        "seat_id": "6dbd9633-67f9-4e9f-be4b-8a9757f48531",
+        "session_id": "3b32d07b-cb1e-4bd3-b864-95f9403e6e57",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-6dbd96",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-6dbd96.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 5,
+        "seat_id": "243e929a-e0aa-45eb-aea5-c34dea8d93dc",
+        "session_id": "3a793d60-3efa-4c8c-9d55-624106ac1f0d",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-243e92",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-243e92.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 6,
+        "seat_id": "1c9ca6e0-03f0-4c28-87ec-f787daa926b2",
+        "session_id": "28a3e0b7-5e2a-44a2-b139-c0e86c12f99c",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-1c9ca6",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-1c9ca6.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 7,
+        "seat_id": "ccd1f771-533b-4c2e-86ab-299b70c2ba05",
+        "session_id": "c10492b1-9da7-4dd5-8f1a-6029cd738600",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-ccd1f7",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-ccd1f7.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 8,
+        "seat_id": "1437714e-75c0-435c-bb5d-c06562f25447",
+        "session_id": "24715719-bb77-48eb-87b7-657ed88105f3",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-143771",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-143771.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 9,
+        "seat_id": "988200bb-d964-490a-a5ef-4d0d6a46de8c",
+        "session_id": "f9deb17d-1782-4618-8e2e-e22ba69b3523",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-988200",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-988200.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 10,
+        "seat_id": "21a989e9-0e04-4a12-bdbb-82a7d5f9cb9f",
+        "session_id": "e77e19a7-f818-49a9-9694-bff1d5eeadf4",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-21a989",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-21a989.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 11,
+        "seat_id": "b7e49e45-3521-4587-a39b-ff05ab2272ed",
+        "session_id": "166bfbb5-85e9-4505-89e9-86b103ed6453",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-b7e49e",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-b7e49e.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 12,
+        "seat_id": "55408750-1dc7-4d07-a17f-17ba01158f7a",
+        "session_id": "61ead56d-2f83-4115-b639-eed88348c760",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-554087",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-554087.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 13,
+        "seat_id": "c3e26e50-d696-4b11-bcf7-19f548cc4491",
+        "session_id": "c9d7a720-5722-4f59-a23b-0bea8335f37c",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-c3e26e",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-c3e26e.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 14,
+        "seat_id": "824ae6a7-e2a4-413a-a272-847dd2a009fd",
+        "session_id": "deeda83f-3917-468c-ba6f-f0555fc0c54c",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-824ae6",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-824ae6.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 15,
+        "seat_id": "f5b64c22-0b6f-44ab-917d-b6258451cd54",
+        "session_id": "5ab5066d-4c96-4f38-98a1-534b954cb13e",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-f5b64c",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-f5b64c.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 16,
+        "seat_id": "5ca6ff9c-a171-468e-a5fb-60df5a6a6bd9",
+        "session_id": "73639d8a-118f-4591-a79f-d86abd785ee0",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-5ca6ff",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-5ca6ff.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 17,
+        "seat_id": "4c572ce8-917e-40bc-8908-e88498f99784",
+        "session_id": "f7a2ce55-5755-4bb4-98f2-8ddb19bc9dfc",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-4c572c",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-4c572c.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 18,
+        "seat_id": "14541467-529f-46ee-ba59-9a889aa0cc50",
+        "session_id": "462d2ecf-37ad-4132-853c-3488f275c2ee",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-145414",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-145414.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 19,
+        "seat_id": "40ce0106-1105-4039-84d1-67ae33ca7807",
+        "session_id": "a9ab1d17-2db3-4770-b207-f1084b843713",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-40ce01",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-40ce01.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 20,
+        "seat_id": "7db4b556-a4eb-470b-88c8-c0ded0f403a4",
+        "session_id": "aecda82b-c986-42be-ae8e-c7db89297146",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-7db4b5",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-7db4b5.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 21,
+        "seat_id": "46bc1a33-a07f-48fb-8dfb-bd975d348c28",
+        "session_id": "65b5d1b4-71c1-4367-8cb8-b0e8f36d659a",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-46bc1a",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-46bc1a.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 22,
+        "seat_id": "9ca1445e-20f1-4cad-9480-54a311dfde94",
+        "session_id": "07b31ee3-ccae-4bde-bd84-eac1007d81ac",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-9ca144",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-9ca144.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 23,
+        "seat_id": "274eccd6-b012-48a6-aa15-b29bce87dba1",
+        "session_id": "b2f33bfc-473c-4830-a857-b45832a48fd5",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-274ecc",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-274ecc.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 24,
+        "seat_id": "388cb474-e9b9-47ed-baa9-bd077b509bba",
+        "session_id": "87c71a47-dbff-4643-a0eb-91b81f3205cd",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-388cb4",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-388cb4.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 25,
+        "seat_id": "45c601ee-cda4-4b96-846a-e293f7152520",
+        "session_id": "06ea593d-8690-44d1-86d2-844f2d958bfe",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-45c601",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-45c601.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      }
+    ]
+  },
+  "provision_takeover": {
+    "job_id": "eac4bd16-ade5-44bd-b613-7bcaf99c2810",
+    "operation": "PROVISION_WORKSHOP",
+    "initial_owner_node": "gnr2.fm2aihpcsed.com",
+    "deleted_pod": "lifecycle-worker-5b6894cd7c-zvk7f",
+    "deleted_at": "2026-09-09T02:35:04Z",
+    "initial": {
+      "operation": "provision_workshop",
+      "status": "running",
+      "owner_id": "lifecycle-worker-5b6894cd7c-zvk7f-a804761f",
+      "fencing_token": 1,
+      "attempts": 1,
+      "step": "execution-started",
+      "last_error": null
+    },
+    "takeover": {
+      "final": {
+        "operation": "provision_workshop",
+        "status": "succeeded",
+        "owner_id": null,
+        "fencing_token": 2,
+        "attempts": 2,
+        "step": "completed",
+        "last_error": null
+      },
+      "replacement_owner": "lifecycle-worker-5b6894cd7c-jpblv-d364f93a",
+      "takeover_seconds": 43.845,
+      "completion_seconds": 383.792
+    }
+  },
+  "reclaim_takeover": {
+    "job_id": "96786c63-0bed-426d-b2c7-7b13907e3c20",
+    "operation": "RECLAIM_WORKSHOP",
+    "initial_owner_node": "rhgnr1",
+    "deleted_pod": "lifecycle-worker-5b6894cd7c-jpblv",
+    "deleted_at": "2026-09-09T02:43:55Z",
+    "initial": {
+      "operation": "reclaim_workshop",
+      "status": "running",
+      "owner_id": "lifecycle-worker-5b6894cd7c-jpblv-d364f93a",
+      "fencing_token": 3,
+      "attempts": 1,
+      "step": "execution-started",
+      "last_error": null
+    },
+    "takeover": {
+      "final": {
+        "operation": "reclaim_workshop",
+        "status": "succeeded",
+        "owner_id": null,
+        "fencing_token": 4,
+        "attempts": 2,
+        "step": "completed",
+        "last_error": null
+      },
+      "replacement_owner": "lifecycle-worker-5b6894cd7c-6lctt-41dd6d16",
+      "takeover_seconds": 87.458,
+      "completion_seconds": 92.687
+    }
+  },
+  "cleanup": {
+    "namespaces": 0,
+    "routes": 0,
+    "role_bindings": 0,
+    "argocd_applications": 0
+  },
+  "public_certification_lab_preserved": true,
+  "proof_strategy": {
+    "TDD": "Certifier safety, seat uniqueness and evidence contracts were RED before implementation.",
+    "EDD": "The receipt records immutable source, aggregate jobs, fences, timings, every seat route and aggregate cleanup counts.",
+    "CDD": "Workshop, session, placement, lifecycle-job and resource-label contracts are checked.",
+    "BDD": "A workshop must survive aggregate provision and reclaim owner loss with every seat usable and zero residue.",
+    "CBT": "Queue ownership, placement, sessions, namespaces, Showroom routes, Applications and cleanup are checked independently."
+  },
+  "certification_boundary": {
+    "five_seat_workshop_process_ha": "inherited",
+    "twenty_five_seat_workshop_ha": "certified",
+    "hard_node_failure": "not certified",
+    "flightpath_dr": "not certified"
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  }
+}

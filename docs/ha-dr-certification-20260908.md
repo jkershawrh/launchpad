@@ -16,10 +16,11 @@ stage never implies a higher one.
 | HA-TAKEOVER-01 | A replacement worker receives a higher fencing token | GREEN | GREEN | — | GREEN (clean provision + reclaim) | GREEN-live-process |
 | HA-XNODE-01 | Node-separated workers take over provision and reclaim jobs across hosts | GREEN | GREEN | GREEN | GREEN (Arena) | GREEN-live-cross-node-process |
 | HA-WORKSHOP-05 | Five-seat workshop provision and aggregate reclaim survive cross-node worker loss | GREEN | GREEN | GREEN | GREEN (5/5 seats) | GREEN-live-five-seat |
-| HA-SEAT-ID-01 | Recovered seats retain matching durable session and namespace ownership labels | GREEN | — | — | GREEN (5/5 seats) | GREEN-live-five-seat |
+| HA-WORKSHOP-25 | Twenty-five-seat workshop provision and aggregate reclaim survive cross-node worker loss | GREEN | GREEN | GREEN | GREEN (25/25 seats) | GREEN-live-twenty-five-seat |
+| HA-SEAT-ID-01 | Recovered seats retain matching durable session and namespace ownership labels | GREEN | — | — | GREEN (25/25 seats) | GREEN-live-twenty-five-seat |
 | HA-CANCEL-01 | Reclaim cancels provision and waits for aggregate ownership | GREEN | GREEN | — | RED | GREEN-postgres |
 | HA-API-01 | Individual provision/reclaim returns a durable queued session | GREEN | — | — | GREEN (one seat) | GREEN-live-process |
-| HA-API-02 | Workshop confirm, retry, direct create, and reclaim use the queue | GREEN | — | — | GREEN (5-seat order) | GREEN-live-five-seat |
+| HA-API-02 | Workshop confirm, retry, direct create, and reclaim use the queue | GREEN | — | — | GREEN (25-seat order) | GREEN-live-twenty-five-seat |
 | HA-READ-01 | API/admin reads observe state persisted by another worker | GREEN | — | — | RED | GREEN-local |
 | HA-DB-FAIL-01 | Configured PostgreSQL read/write loss fails closed | GREEN | — | — | RED | GREEN-local |
 | HA-TTL-01 | TTL work has one leased system owner | GREEN | GREEN | GREEN | RED | GREEN-render |
@@ -49,12 +50,12 @@ requires every item below; this is a binary 100-point gate, not an average.
 |---|---:|---|---:|
 | Durable queue, idempotency, cancellation | 15 | Local and PostgreSQL contracts | 15 |
 | Lease ownership and fencing | 20 | Local, PostgreSQL, and live one-seat provision/reclaim worker-kill proof | 20 |
-| Provision/reclaim/TTL/reconcile integration | 20 | Clean one-seat and five-seat workshop provision/reclaim takeover; 25-seat takeover pending | 18 |
+| Provision/reclaim/TTL/reconcile integration | 20 | Clean one-seat, five-seat, and 25-seat workshop provision/reclaim takeover | 20 |
 | Database availability and recoverability | 15 | Single PostgreSQL instance; restore drill pending | 0 |
 | Arena worker and node availability | 10 | Two anti-affined workers and cross-node process takeover; hard node-loss test pending | 5 |
 | Operations UI, metrics, and alerts | 10 | Live lifecycle API plus local UI and rendered alerts | 8 |
 | Flightpath restore, hard fence, and failback | 10 | Passive overlay and runbook only | 3 |
-| **Total** | **100** | **Pilot enabled; not approved for production HA/DR** | **69** |
+| **Total** | **100** | **Pilot enabled; not approved for production HA/DR** | **71** |
 
 ## Arena live process-takeover result
 
@@ -121,9 +122,9 @@ This certifies cross-node process takeover, not hard node failure. The proof
 cordoned the owning node without draining it and deleted only the owning
 Launchpad worker pod. A power, kubelet, or network-loss exercise for an entire
 worker remains RED and requires a separate maintenance window because it can
-affect unrelated workloads. Five-seat workshop takeover is now GREEN in the
-subsequent aggregate proof. The 25-seat takeover, stable public DNS/TLS, and
-Flightpath DR remain RED.
+affect unrelated workloads. Five-seat and 25-seat workshop takeover are now
+GREEN in subsequent aggregate proofs. Stable public DNS/TLS and Flightpath DR
+remain RED.
 
 ## Arena five-seat workshop process-takeover result
 
@@ -152,9 +153,45 @@ contains a declarative rollout marker.
 
 The hashed receipt is
 `evidence/runs/arena-lifecycle-5-seat-cross-node-workshop-ha-20260909T020155Z.json`.
-This result certifies process loss during one five-seat CPU Serving workshop.
-It does not certify a 25-seat takeover, hard node loss, public workshop access,
-or Flightpath DR.
+That receipt certifies process loss during one five-seat CPU Serving workshop;
+the subsequent 25-seat receipt extends the same boundary to 25 seats. Neither
+receipt certifies hard node loss, public workshop access, or Flightpath DR.
+
+## Arena 25-seat workshop process-takeover result
+
+The deterministic 25-seat run on source commit `5fb8594` and backend image
+digest
+`sha256:90790c6ae143f862e0d0e2c73c69ede394ce71cf97cc68c0b86905c03745ccbf`
+is `GREEN-live-twenty-five-seat-cross-node-workshop-ha`. The capacity gate
+assigned the entire workshop to Arena and reported capacity for 96 seats with
+20 percent retained headroom. Provisioning created all 25 seats in bounded
+batches. Every seat reached ready, used a unique durable session ID and
+namespace, retained matching ownership labels, and returned Showroom HTTP 200.
+
+Provision ownership transferred from `gnr2` at fencing token 1 to the worker on
+`rhgnr1` at token 2 in 43.845 seconds. Cleanup of the interrupted partial seat
+and the complete replacement rollout finished in 383.792 seconds. Aggregate
+reclaim transferred from `rhgnr1` at token 3 to `gnr2` at token 4. The receipt
+records a conservative 87.458-second observation bound because the certifier
+held and serially released all 25 Argo CD Applications before observing the
+higher fence; reclaim completed in 92.687 seconds. Cleanup left zero Namespace,
+Route, RoleBinding, or Argo CD Application residue, and both lifecycle workers
+returned Ready on separate nodes.
+
+The unrelated public certification session reached its own four-hour TTL at
+`2026-09-09T02:45:26Z` while this run was finishing. Database state confirms it
+was reclaimed by TTL rather than by the workshop selector. The original
+receipt's namespace-existence check briefly observed the terminating namespace,
+so its `public_certification_lab_preserved` field must not be interpreted as an
+active-public-session proof. A RED/GREEN regression now requires an unrelated
+public session to remain `ready` or `active` at both boundaries of future runs.
+Public access remains outside this certification result.
+
+The credential-free hashed receipt is
+`evidence/runs/arena-lifecycle-25-seat-cross-node-workshop-ha-20260909T023445Z.json`.
+This result certifies one 25-seat CPU Serving workshop under lifecycle-worker
+process loss. It does not certify simultaneous 25-seat workshops, hard node
+loss, public workshop access, or Flightpath DR.
 
 ## Flightpath live preflight status
 
@@ -178,9 +215,9 @@ is delivered through the approved secret path.
    complete. Retain its receipt as the process-HA baseline for later runs.
 6. `rhgnr1` is uncordoned and cross-node process takeover is complete. Run a
    controlled hard node-loss exercise before calling the deployment node-HA.
-7. The five-seat workshop takeover is complete. Repeat the same deterministic
-   proof at 25 seats, preserving job IDs, fencing tokens, image digests, cluster
-   state, timings, per-seat route probes, and cleanup scans.
+7. The five-seat and 25-seat workshop takeover proofs are complete. Retain both
+   hashed receipts as the aggregate process-HA baseline. The next Arena HA gate
+   is a controlled hard node-loss exercise in an approved maintenance window.
 
 The deterministic one-seat repetition is implemented by
 `scripts/certify-arena-lifecycle-process-ha.sh`. It requires an explicit Arena
