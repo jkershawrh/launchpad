@@ -4,7 +4,6 @@ import hashlib
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 DRIVER = ROOT / "scripts/certify-september-17-exact-75.sh"
 RUN02_RED = (
