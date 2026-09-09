@@ -1,0 +1,90 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-FUNCTIONAL-RUN03-GREEN-20260909T073917Z",
+  "event_date": "2026-09-17",
+  "started_at": "2026-09-09T07:17:18Z",
+  "completed_at": "2026-09-09T07:39:17Z",
+  "result": "GREEN-live-functional-and-ingress-resilient",
+  "functional_streak_credit": true,
+  "functional_streak_position": 3,
+  "source": {
+    "driver_commit": "e5e66ef",
+    "backend_source_commit": "0989043",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:c4e2d440e8d3270dd338af0a8acd4929b556a5720c6304469617e58d0855b95c",
+    "control_plane": "arena"
+  },
+  "participants": {
+    "started": 75,
+    "passed": 75,
+    "failed": 0
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "608f1a4a-b82e-4f30-8d23-46807c14ba04",
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "cluster_ref": "brutus",
+      "seats_ready": 25,
+      "journeys_passed": 25,
+      "journey_duration_seconds": {
+        "min": 96,
+        "p95": 105,
+        "max": 105
+      },
+      "own_namespace_edit_passed": 25,
+      "cross_namespace_denied": 25,
+      "node_list_denied": 25
+    },
+    "multi_agent": {
+      "id": "a47cdaa5-8917-4dad-8337-671f0957cf2e",
+      "catalog_item_id": "multi-agent-quickstart",
+      "cluster_ref": "arena",
+      "seats_ready": 25,
+      "concurrent_wave_passed": 25,
+      "deep_journeys_passed": 25,
+      "deep_workflow_latency_ms": {
+        "min": 41359.04,
+        "p95": 52241.44,
+        "max": 52722.1
+      }
+    },
+    "serve_llms": {
+      "id": "cfdd7c3e-b037-40dd-b204-2c47667fed7f",
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "cluster_ref": "arena",
+      "seats_ready": 25,
+      "participant_routes_created": 25,
+      "route_readiness_failures": 0,
+      "grounded_journeys_passed": 25,
+      "response_seconds": {
+        "min": 7.283496,
+        "p95": 37.711988,
+        "max": 40.210223
+      }
+    }
+  },
+  "post_run_availability": {
+    "observed_at": "2026-09-09T07:40:09Z",
+    "showroom_http_200": 75,
+    "showrooms_expected": 75,
+    "arena_unready_participant_pods": 0,
+    "arena_unready_nodes": 0,
+    "granite_tools_http": 200,
+    "nomic_embed_http": 200
+  },
+  "resilience": {
+    "ingress_reload_interval": "30s",
+    "router_restarts_before": 0,
+    "router_restarts_after": 0,
+    "router_restart_increase": 0,
+    "linked_red_ingress_evidence": "september-17-exact75-run03-ingress-churn-red-20260909.json",
+    "linked_red_route_readiness_evidence": "september-17-exact75-run03-route-readiness-red-20260909.json"
+  },
+  "raw_artifact_hashes": {
+    "summary": "503f4ae88e3291b17dfc4fae906f1aebb9c67ee2945ac7311686dfde5036da03",
+    "agent_201_run_log": "1d1cf433904ba02c57ec5f36523f9cc4c0cd7a6384e8fbb9350b734307549647",
+    "multi_agent_run_log": "ab3346fb57d930ef8218c3c770d5b31c23bf9ed9479cf0b5ef312ed8058222b0",
+    "serve_llms_run_log": "41138d84af900d877869688a80838db28204d53ed926bde4374090cb7a2ecf7d"
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

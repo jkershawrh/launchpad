@@ -1,0 +1,130 @@
+{
+  "schema": "launchpad.redhat.com/september-17-pilot-release-decision/v2",
+  "evidence_id": "EDD-SEPTEMBER-17-INTERNAL-PILOT-DECISION-20260909T075103Z",
+  "generated_at": "2026-09-09T07:51:03Z",
+  "repository_head": "e5e66ef",
+  "decision": "CONDITIONAL-GO-supervised-internal-pilot",
+  "automated_internal_pilot_gate": "GREEN-live",
+  "production_or_ga_decision": "NO-GO",
+  "manual_frontend_acceptance": "PENDING",
+  "public_access": "DEFERRED-separate-certification-stream",
+  "contains_plaintext_credentials": false,
+  "topology": {
+    "control_plane": "arena",
+    "workshop_affinity": "one-workshop-one-cluster",
+    "seat_splitting": false,
+    "provisioning_pattern": "staggered",
+    "participant_use": "75 overlapping participants",
+    "assignments": {
+      "multi-agent-quickstart": "arena",
+      "intel-llm-cpu-serving": "arena",
+      "intel-xeon6-agent-201": "brutus"
+    }
+  },
+  "repeatability": {
+    "successful_exact_functional_runs": 3,
+    "latest_participants_started": 75,
+    "latest_participants_passed": 75,
+    "latest_router_restart_increase": 0,
+    "evidence": [
+      "september-17-exact75-functional-green-resilience-red-20260908.json",
+      "september-17-exact75-functional-run02-green-resilience-warning-20260909.json",
+      "september-17-exact75-functional-run03-green-20260909.json"
+    ]
+  },
+  "soak": {
+    "result": "GREEN-live",
+    "duration_observed_seconds": 3613,
+    "samples": 51,
+    "failed_samples": 0,
+    "showrooms_available_per_sample": 75,
+    "participant_pod_readiness_failures": 0,
+    "model_probe_failures": 0,
+    "restart_increase": 0,
+    "evidence": "september-17-exact75-soak-run02-20260909/summary.json"
+  },
+  "cleanup": {
+    "latest_seat_records_reclaimed": 75,
+    "latest_failed_reclaims": 0,
+    "latest_remaining_namespaces": 0,
+    "latest_remaining_routes": 0,
+    "latest_remaining_rolebindings": 0,
+    "latest_remaining_argocd_applications": 0,
+    "evidence": [
+      "september-17-exact75-run02-cleanup-green-20260909.json",
+      "september-17-exact75-run03-cleanup-green-20260909.json"
+    ]
+  },
+  "ingress_red_green": {
+    "red": "Both Arena router pods restarted during 25 participant Route creations overlapping 25 Multi-Agent requests.",
+    "green": "Supported 30-second reload coalescing plus external-Route readiness produced 75/75 participant success with zero router restart increase.",
+    "tuning_contract": "deploy/launchpad/arena-pilot/ingresscontroller-default.yaml",
+    "regression_contract": "backend/tests/test_arena_ingress_burst_resilience.py",
+    "red_evidence": [
+      "september-17-exact75-run03-ingress-churn-red-20260909.json",
+      "september-17-exact75-run03-route-readiness-red-20260909.json"
+    ],
+    "green_evidence": "september-17-exact75-functional-run03-green-20260909.json"
+  },
+  "deployed_candidate": {
+    "backend_source_commit": "0989043",
+    "backend_image_digest": "sha256:c4e2d440e8d3270dd338af0a8acd4929b556a5720c6304469617e58d0855b95c",
+    "ingress_reload_interval": "30s",
+    "ingress_replicas": 2,
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned_after_certification": true
+  },
+  "validation": {
+    "backend_non_local": "1353 passed, 6 skipped, 13 deselected",
+    "focused_ingress_and_showroom": "32 passed",
+    "ruff_changed_files": "passed",
+    "shell_syntax": "passed",
+    "precommit_secret_scan": "passed"
+  },
+  "red_green_matrix": [
+    {"gate": "three staggered 25-seat orders", "state": "GREEN-live"},
+    {"gate": "75 overlapping participant journeys", "state": "GREEN-live-3-of-3"},
+    {"gate": "namespace authorization and isolation", "state": "GREEN-live"},
+    {"gate": "real model and grounded RAG behavior", "state": "GREEN-live"},
+    {"gate": "60-minute exact-topology soak", "state": "GREEN-live"},
+    {"gate": "Arena ingress Route churn", "state": "GREEN-live-after-RED"},
+    {"gate": "75-seat zero-residue reclaim", "state": "GREEN-live"},
+    {"gate": "manual requester and participant frontend", "state": "RED-pending-manual"},
+    {"gate": "per-seat LiteLLM attribution", "state": "RED-pending"},
+    {"gate": "dependency security triage", "state": "RED-pending"},
+    {"gate": "public browser and SSO", "state": "DEFERRED"}
+  ],
+  "rubric": {
+    "automated_internal_pilot_score": 100,
+    "required_for_automated_internal_pilot": 100,
+    "categories": {
+      "contract_and_evidence": 15,
+      "placement_and_capacity": 15,
+      "provisioning_and_readiness": 20,
+      "participant_functionality": 25,
+      "authorization_and_isolation": 15,
+      "cleanup_repeatability": 10
+    },
+    "production_or_ga_override": true,
+    "production_or_ga_blockers": [
+      "manual frontend acceptance",
+      "public ingress and SSO certification",
+      "per-seat LiteLLM attribution",
+      "dependency security triage"
+    ]
+  },
+  "proof_strategy": {
+    "TDD": "The ingress restart and external Route readiness failures were captured as failing regression tests before remediation.",
+    "EDD": "Every GREEN and RED run records immutable IDs, timestamps, hashes, target clusters, participant counts, router state, and cleanup counts.",
+    "CDD": "The cluster placement, exact-run, ingress tuning, external Route readiness, workshop lifecycle, and cleanup contracts are versioned and tested.",
+    "BDD": "Staggered workshop orders remain active together, support 75 participant journeys, enforce namespace isolation, and reclaim with zero residue.",
+    "CBT": "Ingress, Showroom, participant Route readiness, model serving, workload behavior, authorization, and cleanup were proven independently and together."
+  },
+  "next_acceptance": [
+    "Complete the manual requester, participant, lab, and admin browser walkthrough.",
+    "Publish and verify the updated Serve LLMs Showroom content revision in a new seat.",
+    "Add per-seat LiteLLM outcome, token, rate-limit, and latency attribution.",
+    "Triage dependency findings before production or GA consideration.",
+    "Complete public ingress and SSO certification when the external network path is approved."
+  ]
+}

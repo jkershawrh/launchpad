@@ -1,0 +1,69 @@
+{
+  "schema": "launchpad.redhat.com/exact75-cleanup/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-RUN03-CLEANUP-GREEN-20260909T075103Z",
+  "event_date": "2026-09-17",
+  "result": "GREEN-live-zero-residue",
+  "control_plane": "arena",
+  "workshops": [
+    {
+      "workshop_id": "a47cdaa5-8917-4dad-8337-671f0957cf2e",
+      "catalog_item_id": "multi-agent-quickstart",
+      "cluster_ref": "arena",
+      "seats_reclaimed": 25,
+      "seat_errors": 0,
+      "backend_completed_at": "2026-09-09T07:47:46Z",
+      "remaining_namespaces": 0,
+      "remaining_routes": 0,
+      "remaining_rolebindings": 0,
+      "remaining_argocd_applications": 0
+    },
+    {
+      "workshop_id": "cfdd7c3e-b037-40dd-b204-2c47667fed7f",
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "cluster_ref": "arena",
+      "seats_reclaimed": 25,
+      "seat_errors": 0,
+      "backend_completed_at": "2026-09-09T07:48:15Z",
+      "remaining_namespaces": 0,
+      "remaining_routes": 0,
+      "remaining_rolebindings": 0,
+      "remaining_argocd_applications": 0
+    },
+    {
+      "workshop_id": "608f1a4a-b82e-4f30-8d23-46807c14ba04",
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "cluster_ref": "brutus",
+      "seats_reclaimed": 25,
+      "seat_errors": 0,
+      "backend_completed_at": "2026-09-09T07:48:49Z",
+      "remaining_namespaces": 0,
+      "remaining_routes": 0,
+      "remaining_rolebindings": 0,
+      "remaining_argocd_applications_on_control_plane": 0
+    }
+  ],
+  "aggregate": {
+    "seat_records_reclaimed": 75,
+    "failed_reclaims": 0,
+    "remaining_namespaces": 0,
+    "remaining_routes": 0,
+    "remaining_rolebindings": 0,
+    "remaining_argocd_applications": 0,
+    "resources_zero_observed_at": "2026-09-09T07:51:03Z",
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned": true
+  },
+  "linked_evidence": {
+    "ingress_churn_red": "september-17-exact75-run03-ingress-churn-red-20260909.json",
+    "route_readiness_red": "september-17-exact75-run03-route-readiness-red-20260909.json",
+    "functional_green": "september-17-exact75-functional-run03-green-20260909.json"
+  },
+  "interpretation": {
+    "functional_streak_position": 3,
+    "cleanup_correctness_proven": true,
+    "zero_residue_proven": true,
+    "finding": "The third independently provisioned Arena/Arena/Brutus topology passed all 75 participant journeys after its RED defects were captured and remediated, then reclaimed every seat and labeled resource."
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

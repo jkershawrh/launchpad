@@ -1,12 +1,17 @@
-# September 17 internal pilot status — September 8, 2026
+# September 17 internal pilot status — September 9, 2026
 
 ## Decision
 
-The exact three-workshop functional gate is **GREEN-live for a supervised
-internal pilot**. It is **not production or GA certified**.
+The automated exact three-workshop gate is **GREEN-live for a supervised
+internal pilot**. Three independently provisioned event topologies have passed,
+the exact topology completed a 60-minute soak, and the latest run reclaimed
+with zero residue. It is **not production or GA certified** because manual
+frontend acceptance, public access, dependency triage, and per-seat LiteLLM
+attribution remain separate gates.
 
-The successful rehearsal used three staggered 25-seat orders and then ran all
-75 participant journeys with overlap:
+The successful rehearsals used three staggered 25-seat orders and then ran all
+75 participant journeys with overlap. The September 9 run also reproduced 25
+simultaneous participant-created Routes while Multi-Agent traffic was active:
 
 | Workshop | Cluster | Functional result |
 |---|---|---:|
@@ -50,15 +55,15 @@ context was never changed.
 | Showroom namespace-owned cleanup | GREEN-live | One-seat rerun passed 100/100 with zero residue and no Showroom finalizer recovery |
 | Launchpad metrics scrape | GREEN-live | Arena user-workload Prometheus reports the backend target `up=1` |
 | vLLM and TEI scrape | GREEN-live | Two vLLM targets and one TEI target report `up=1`; vLLM request metrics are queryable |
-| Arena node/network resilience | RED-live | Probe pressure and retryable connection resets were observed during the exact run |
-| 60-minute concurrent soak | RED-pending | Not executed in the successful exact run |
+| Arena node/network resilience | GREEN-live-after-RED | Supported 30-second ingress reload coalescing prevented router restarts during 25-Route churn; the exact driver now fails on any restart increase |
+| 60-minute concurrent soak | GREEN-live | 3,613 seconds, 51/51 samples, 75/75 Showrooms each sample, zero readiness/model failures, and no restart increase |
 | Manual requester/participant frontend | RED-pending | Scheduled for the next-day manual acceptance session |
 | Public browser/SSO access | DEFERRED | Separate infrastructure and browser certification stream |
-| Three consecutive exact rehearsals | RED-1-of-3 | One exact successful run is recorded |
+| Three exact functional rehearsals | GREEN-3-of-3 | Three successful exact 75-participant runs are recorded; run 3 retained immutable RED-to-GREEN ingress evidence |
 
 ## Pilot rubric
 
-The internal functional rubric scores **95/100**:
+The automated internal functional rubric scores **100/100**:
 
 | Category | Points |
 |---|---:|
@@ -67,12 +72,12 @@ The internal functional rubric scores **95/100**:
 | Provisioning and readiness | 20/20 |
 | Participant functionality and LLM behavior | 25/25 |
 | Authorization and isolation | 15/15 |
-| Cleanup repeatability | 5/10 |
+| Cleanup repeatability | 10/10 |
 
-The five withheld cleanup/repeatability points represent one exact combined run
-rather than a consecutive streak and the remaining cleanup-latency work. A
-critical RED overrides the numerical score, so this is a supervised pilot
-decision, not a GA declaration.
+The automated score does not turn this into a GA declaration. Manual visual
+acceptance is intentionally not inferred from API and browser probes, public
+access has its own infrastructure/SSO certification, per-seat model telemetry
+is incomplete, and the repository dependency findings still require triage.
 
 ## Deployed observability
 
@@ -105,11 +110,15 @@ journey:
 Public access is not part of this manual internal acceptance unless its separate
 DNS/tunnel and SSO prerequisites are intentionally enabled.
 
-## Remaining path after manual acceptance
+## Remaining path after automated certification
 
-1. Repair or formally mitigate Arena node/probe pressure and keep `rhgnr1`
-   cordoned outside supervised work.
-2. Run a 60-minute exact-topology soak.
-3. Repeat the exact combined rehearsal twice for a three-run streak.
-4. Complete per-seat LiteLLM outcome, token, rate-limit, and latency attribution.
-5. Complete the separate public ingress/SSO browser certification.
+1. Run the planned requester, participant, lab, and admin visual acceptance in
+   one browser journey; do not infer this result from API probes.
+2. Publish the Serve LLMs Showroom content revision containing the bounded
+   external-Route readiness step and verify it in a newly ordered seat.
+3. Complete per-seat LiteLLM outcome, token, rate-limit, and latency attribution.
+4. Triage the current dependency findings before any production/GA decision.
+5. Complete the separate public ingress/SSO browser certification after the
+   DNS/tunnel path is approved.
+6. Keep `rhgnr1` cordoned outside supervised provisioning and participant test
+   windows; the runbook should uncordon it only after Ready/pressure preflight.

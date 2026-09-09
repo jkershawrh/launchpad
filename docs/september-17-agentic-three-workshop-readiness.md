@@ -372,3 +372,46 @@ The current decision and validation matrix are in
 `evidence/runs/september-17-exact75-functional-green-resilience-red-20260908.json`
 and
 `evidence/runs/september-17-exact75-cleanup-green-finalizer-warning-20260908.json`.
+
+## September 9 repeatability and ingress closure — GREEN-live
+
+The remaining automated pilot gates are now closed. Rehearsal 2 retained the
+exact Arena/Arena/Brutus topology for 3,613 seconds. All 51 soak samples saw
+75/75 Showrooms, zero unready participant pods or nodes, healthy Granite Tools
+and Nomic model endpoints, and no restart increase. A post-soak functional wave
+then passed 75/75 before sequential zero-residue reclaim.
+
+The third independently provisioned topology initially reproduced the earlier
+participant-burst weakness. Creating 25 AnythingLLM Routes while 25 long-lived
+Multi-Agent requests were active caused both Arena router pods to fail liveness
+and restart. That run is immutable RED evidence. The supported
+`IngressController.spec.tuningOptions.reloadInterval` was changed from five to
+30 seconds to coalesce Route updates, and the exact driver now rejects any run
+whose router restart total increases.
+
+Reload coalescing exposed a second contract gap: a healthy AnythingLLM
+Deployment can precede external Route publication by up to one reload window.
+The certifier and learner instructions now wait for `/api/ping` through the
+external Route before continuing. Both defects were failing tests before their
+implementations.
+
+The final run then passed:
+
+- Agent 201: 25/25 on Brutus, including own-namespace edit and cross-namespace
+  and node denial.
+- Multi-Agent: 25/25 simultaneous workflows and 25/25 deep three-track checks
+  on Arena.
+- Serve LLMs: 25/25 grounded RAG journeys after recreating all 25 participant
+  Routes on Arena.
+- Ingress: two Ready replicas and zero router restart increase.
+- Post-run availability: 75/75 Showrooms, zero unready participant pods, and
+  both shared model probes returning HTTP 200.
+- Cleanup: 75/75 seats reclaimed with zero namespaces, Routes, RoleBindings,
+  or Argo CD Applications remaining on Arena or Brutus.
+
+This is functional proof for the supervised September 17 internal pilot, not a
+production or GA certification. Manual visual acceptance, the separately
+approved public path, per-seat LiteLLM attribution, and dependency-security
+triage remain outside this automated gate. See
+`docs/september-17-pilot-status-20260908.md` and the September 9 exact-run
+evidence under `evidence/runs/`.
