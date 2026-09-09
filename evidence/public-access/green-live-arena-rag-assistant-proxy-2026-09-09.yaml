@@ -1,0 +1,47 @@
+evidence_id: PA-ARENA-RAG-PROXY-GREEN-LIVE-20260909
+stage: GREEN-live
+captured_at: 2026-09-09T17:39:51Z
+base_commit_sha: 57173d03fa3b2927649deed5ebe36dc70bd9c086
+scope: path-scoped AnythingLLM RAG Assistant through the Arena public-access gateway
+environment:
+  cluster: arena
+  order_id: 781069da-6e22-4bd8-994e-f764488dbca5
+  session_id: 6320d8e2-5758-41b8-95da-1d704072929d
+  catalog_item: intel-llm-cpu-serving
+  namespace: launchpad-public-cert-tenant-intel-llm-cpu-serv-781069
+  public_path: /labs/intel-llm-cpu-serving-781069da/proxy/tool/workspace
+  plaintext_code_recorded: false
+images:
+  launchpad_gateway: sha256:cf701e186a6c527084d92711ef1658f1b04302bde61761b9455d7671d7a70dfa
+  anythingllm: sha256:141c3a75bc565c81820bb819e18d495b123ccf9f2bfa133fdd59b58b85660807
+red_evidence:
+  root_document: 200
+  escaped_index_js: 404
+  escaped_index_css: 404
+  symptom: AnythingLLM root-relative assets escaped the entitled order mount
+green_evidence:
+  focused_tests:
+    passed: 74
+    failed: 0
+  anythingllm_deployment:
+    available_replicas: 1
+    ready_replicas: 1
+  anythingllm_route:
+    root_http_status: 200
+    api_ping_http_status: 200
+  gateway_proxy:
+    root_http_status: 200
+    rewritten_index_js_http_status: 200
+    rewritten_api_ping_http_status: 200
+    rewritten_api_ping_body: '{"online":true}'
+    html_static_asset_paths_scoped: true
+    javascript_api_path_scoped: true
+    javascript_websocket_path_scoped: true
+    react_router_basename_scoped: true
+  authorization:
+    resolution_method: stable participant OIDC username
+    direct_execution_route_exposed: false
+limitations:
+  - Browser visual confirmation after the gateway rollout remains a manual pilot check.
+  - The adapter is intentionally activated only for the pinned AnythingLLM VITE_API_BASE bundle signature.
+  - Cloudflare Quick Tunnel remains temporary ingress and is not production certification.

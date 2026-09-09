@@ -135,6 +135,57 @@ def _rewrite_upstream_content(
     public = public_mount.rstrip("/")
     source = source.replace(upstream, public)
     source = source.replace(upstream.replace("/", r"\/"), public.replace("/", r"\/"))
+    if media_type in {"text/html", "application/xhtml+xml"}:
+        # Root-relative Vite assets otherwise escape the entitled tool mount
+        # and hit the public gateway root. Keep the document, its assets, and
+        # its manifest on the order-scoped proxy path.
+        source = re.sub(
+            r"(?P<attribute>\b(?:src|href|action)\s*=\s*[\"'])/(?!/)",
+            lambda match: f"{match.group('attribute')}{public}/",
+            source,
+            flags=re.IGNORECASE,
+        )
+    elif media_type == "application/javascript":
+        # AnythingLLM's published image is a Vite SPA compiled for `/` and it
+        # does not expose a supported runtime base-path option. Detect its
+        # stable VITE_API_BASE signature before applying the narrowly-scoped
+        # adapter needed by the entitlement gateway: API calls, WebSockets,
+        # React Router navigation, and root-relative image assets all retain
+        # the order mount. Unknown JavaScript bundles remain untouched.
+        api_pattern = re.compile(
+            r'const (?P<name>[$A-Za-z_][$\w]*)=\{\}\.VITE_API_BASE\|\|"/api"'
+        )
+        source, api_rewrites = api_pattern.subn(
+            lambda match: (
+                f'const {match.group("name")}=window.location.origin+"{public}/api"'
+            ),
+            source,
+            count=1,
+        )
+        if api_rewrites == 1:
+            source = source.replace(
+                "new URL({}.VITE_API_BASE).host",
+                f'window.location.host+"{public}"',
+            )
+            source = re.sub(
+                r'\]\}\]\);(?P<react>[$A-Za-z_][$\w]*)\.createRoot\('
+                r'document\.getElementById\("root"\)\)',
+                lambda match: (
+                    f']}}],{{basename:"{public}"}});{match.group("react")}.createRoot('
+                    'document.getElementById("root"))'
+                ),
+                source,
+                count=1,
+            )
+            source = re.sub(
+                r'(?P<quote>[\"\'`])/(?!/)(?P<path>[A-Za-z0-9_@./-]+\.'
+                r'(?:css|gif|ico|jpe?g|js|json|png|svg|webp|woff2?))(?P=quote)',
+                lambda match: (
+                    f'{match.group("quote")}{public}/{match.group("path")}'
+                    f'{match.group("quote")}'
+                ),
+                source,
+            )
     return source.encode("utf-8")
 
 
@@ -545,11 +596,7 @@ async def proxy_tool_socket(
         await client.close(code=4403)
         return
     upstream_url = "wss://" + https_url.removeprefix("https://")
-    tls = None
-    if not UPSTREAM_TLS_VERIFY:
-        tls = ssl.create_default_context()
-        tls.check_hostname = False
-        tls.verify_mode = ssl.CERT_NONE
+    scheme = urlsplit(upstream_url).scheme
     requested_protocols = [
         value.strip() for value in client.headers.get("sec-websocket-protocol", "").split(",")
     ]
@@ -561,8 +608,8 @@ async def proxy_tool_socket(
     try:
         async with websockets.connect(
             upstream_url,
-            ssl=tls,
             subprotocols=[selected_protocol] if selected_protocol else None,
+            **_websocket_tls_options(scheme),
         ) as upstream:
 
             async def to_upstream():

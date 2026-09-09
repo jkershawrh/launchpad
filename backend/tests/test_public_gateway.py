@@ -276,6 +276,48 @@ def test_tool_proxy_rewrites_textual_cluster_urls_to_the_order_mount():
     assert b'/labs/serve-llms-ab12cd34/proxy/tool/workspace/api' in rewritten
 
 
+def test_tool_proxy_rewrites_root_relative_html_assets_to_the_order_mount():
+    source = (
+        b'<link rel="stylesheet" href="/index.css">'
+        b'<script src="/index.js"></script>'
+        b'<link rel="manifest" href="/manifest.json">'
+    )
+
+    rewritten = _rewrite_upstream_content(
+        source,
+        "text/html; charset=utf-8",
+        "https://rag-seat.apps.arena.fm2aihpcsed.com",
+        "/labs/serve-llms-ab12cd34/proxy/tool/workspace",
+    )
+
+    assert b'href="/labs/serve-llms-ab12cd34/proxy/tool/workspace/index.css"' in rewritten
+    assert b'src="/labs/serve-llms-ab12cd34/proxy/tool/workspace/index.js"' in rewritten
+    assert b'href="/labs/serve-llms-ab12cd34/proxy/tool/workspace/manifest.json"' in rewritten
+
+
+def test_tool_proxy_adapts_anythingllm_bundle_to_the_order_mount():
+    source = (
+        b'const C={}.VITE_API_BASE||"/api";'
+        b'function socket(){return new URL({}.VITE_API_BASE).host}'
+        b'const DR=Iz([{path:"/",children:[]}]);'
+        b'au.createRoot(document.getElementById("root"));'
+        b'const logo="/anything-llm.png";'
+    )
+
+    rewritten = _rewrite_upstream_content(
+        source,
+        "application/javascript; charset=utf-8",
+        "https://rag-seat.apps.arena.fm2aihpcsed.com",
+        "/labs/serve-llms-ab12cd34/proxy/tool/workspace",
+    ).decode()
+
+    mount = "/labs/serve-llms-ab12cd34/proxy/tool/workspace"
+    assert f'const C=window.location.origin+"{mount}/api"' in rewritten
+    assert f'window.location.host+"{mount}"' in rewritten
+    assert f'basename:"{mount}"' in rewritten
+    assert f'const logo="{mount}/anything-llm.png"' in rewritten
+
+
 def test_tool_proxy_does_not_rewrite_binary_content():
     source = b"\x89PNG\r\n\x1a\nhttps://rag-seat.apps.arena.fm2aihpcsed.com"
     assert _rewrite_upstream_content(
@@ -352,6 +394,13 @@ def test_verified_wss_uses_the_websocket_clients_default_tls_context():
     assert public_gateway.UPSTREAM_TLS_VERIFY is True
     assert public_gateway._websocket_tls_options("wss") == {}
     assert public_gateway._websocket_tls_options("ws") == {}
+
+
+def test_tool_and_showroom_websockets_share_the_verified_tls_policy():
+    source = Path(__file__).resolve().parents[1].joinpath("app/public_gateway.py").read_text()
+
+    assert source.count("**_websocket_tls_options(scheme)") == 2
+    assert "ssl=tls" not in source
 
 
 def test_oauth_proxy_accepts_unverified_participant_identity_labels():
