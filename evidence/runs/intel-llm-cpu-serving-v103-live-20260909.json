@@ -1,0 +1,80 @@
+{
+  "schema": "launchpad.redhat.com/showroom-content-live-evidence/v1",
+  "evidence_id": "EDD-INTEL-LLM-CPU-SERVING-V103-20260909T081022Z",
+  "generated_at": "2026-09-09T08:10:22Z",
+  "result": "GREEN-live",
+  "contains_plaintext_credentials": false,
+  "repository": {
+    "commit": "53d8cb8865d8945ff102f98c7449ddabcb587131",
+    "content_tag": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3"
+  },
+  "deployment": {
+    "cluster_ref": "arena",
+    "build": "launchpad-backend-139",
+    "build_phase": "Complete",
+    "build_started_at": "2026-09-09T08:00:08Z",
+    "build_completed_at": "2026-09-09T08:01:16Z",
+    "backend_image_digest": "sha256:7546d9aad7f3a50c0a5e11a8995a24948b106722807d10040c596fec0850ebe0",
+    "backend_ready": "1/1",
+    "lifecycle_workers_ready": "2/2",
+    "public_gateway_ready": "1/1",
+    "workload_restart_count": 0,
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned_after_rollout": true
+  },
+  "catalog": {
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "version": "1.0.3",
+    "showroom_content_repo_url": "https://github.com/rhpds/launchpad.git",
+    "showroom_content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3",
+    "showroom_content_playbook": "site-intel-llm-cpu-serving.yml"
+  },
+  "acceptance_seat": {
+    "request_id": "e9c6d2f8-5669-4b6d-b605-5d98d5e3b3c0",
+    "session_id": "ccb365d1-a5b9-423a-8d04-7d086c0d39e2",
+    "namespace": "launchpad-smoke-test-tenant-intel-llm-cpu-serv-e9c6d2",
+    "cluster_ref": "arena",
+    "exposure_policy": "internal",
+    "requested_at": "2026-09-09T08:06:50.381383",
+    "ready_at": "2026-09-09T08:07:28.090837",
+    "provisioning_validation": {
+      "showroom_pod_ready": true,
+      "showroom_route_http_status": 200
+    }
+  },
+  "showroom": {
+    "root_http_status": 200,
+    "deployment_content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3",
+    "rendered_page": "/www/modules/04-wire-rag-frontend.html",
+    "rendered_contract": {
+      "wait_for_pod_and_route_heading": true,
+      "bounded_forty_attempt_route_probe": true,
+      "participant_facing_api_ping_probe": true,
+      "thirty_second_ingress_coalescing_explained": true
+    }
+  },
+  "participant_function": {
+    "anythingllm_deployed": true,
+    "external_rag_route_http_status": 200,
+    "grounded_response": true,
+    "grounding_document": "orion-leave-policy.txt",
+    "expected_fact_observed": "17",
+    "model": "granite-2b-cpu",
+    "response_latency_seconds": 4.492543
+  },
+  "cleanup": {
+    "session_status": "reclaimed",
+    "completed_at": "2026-09-09T08:09:21.338172",
+    "namespace_remaining": false,
+    "routes_remaining": 0,
+    "rolebindings_remaining": 0,
+    "argocd_applications_remaining": 0
+  },
+  "red_green_matrix": [
+    {"gate": "immutable catalog and content revision", "state": "GREEN-live"},
+    {"gate": "fresh-seat Showroom rendering", "state": "GREEN-live"},
+    {"gate": "external AnythingLLM Route readiness", "state": "GREEN-live"},
+    {"gate": "grounded participant RAG journey", "state": "GREEN-live"},
+    {"gate": "single-seat zero-residue reclaim", "state": "GREEN-live"}
+  ]
+}

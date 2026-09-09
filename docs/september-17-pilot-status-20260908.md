@@ -114,11 +114,19 @@ DNS/tunnel and SSO prerequisites are intentionally enabled.
 
 1. Run the planned requester, participant, lab, and admin visual acceptance in
    one browser journey; do not infer this result from API probes.
-2. Publish the Serve LLMs Showroom content revision containing the bounded
-   external-Route readiness step and verify it in a newly ordered seat.
-3. Complete per-seat LiteLLM outcome, token, rate-limit, and latency attribution.
-4. Triage the current dependency findings before any production/GA decision.
-5. Complete the separate public ingress/SSO browser certification after the
+2. Complete per-seat LiteLLM outcome, token, rate-limit, and latency attribution.
+3. Triage the current dependency findings before any production/GA decision.
+4. Complete the separate public ingress/SSO browser certification after the
    DNS/tunnel path is approved.
-6. Keep `rhgnr1` cordoned outside supervised provisioning and participant test
+5. Keep `rhgnr1` cordoned outside supervised provisioning and participant test
    windows; the runbook should uncordon it only after Ready/pressure preflight.
+
+## Serve LLMs Showroom revision — GREEN-live
+
+Catalog `intel-llm-cpu-serving` version `1.0.3` now points to the immutable
+`pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3` tag. A fresh Arena seat cloned
+that exact tag and rendered the bounded participant-facing `/api/ping` Route
+readiness loop. The deployed AnythingLLM route returned HTTP 200, the grounded
+RAG certification returned the expected source-backed fact, and reclaim left no
+namespace or Argo CD Application. See
+`evidence/runs/intel-llm-cpu-serving-v103-live-20260909.json`.
