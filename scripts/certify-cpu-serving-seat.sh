@@ -32,12 +32,17 @@ fi
 endpoint="$(printf '%s' "$runtime_secret_json" | jq -r '.data.MAAS_ENDPOINT | @base64d')"
 model="$(printf '%s' "$runtime_secret_json" | jq -r '.data.MAAS_MODEL | @base64d')"
 api_key="$(printf '%s' "$runtime_secret_json" | jq -r '.data.MAAS_API_KEY | @base64d')"
+apps_domain="$(
+  oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}'
+)"
+frame_ancestor="https://showroom-${namespace}.${apps_domain}"
 
 jq -nc \
   --arg endpoint "${endpoint}/v1" \
   --arg model "$model" \
   --arg api_key "$api_key" \
-  --arg image "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:1eee2162bed8ab643133dd9420ea086566f7c778849e9ff3eddc71a6a6cd8f98" \
+  --arg frame_ancestor "$frame_ancestor" \
+  --arg image "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:141c3a75bc565c81820bb819e18d495b123ccf9f2bfa133fdd59b58b85660807" \
   '{
     apiVersion: "v1",
     kind: "List",
@@ -75,7 +80,8 @@ jq -nc \
                   envFrom: [{secretRef: {name: "anythingllm-config"}}],
                   env: [
                     {name: "STORAGE_DIR", value: "/tmp/anythingllm-storage"},
-                    {name: "DISABLE_TELEMETRY", value: "true"}
+                    {name: "DISABLE_TELEMETRY", value: "true"},
+                    {name: "LAUNCHPAD_FRAME_ANCESTOR", value: $frame_ancestor}
                   ],
                   startupProbe: {
                     httpGet: {path: "/api/ping", port: 3001},

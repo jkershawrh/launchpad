@@ -20,6 +20,24 @@ fi
 
 host="$(oc get route rag -n "$namespace" -o jsonpath='{.spec.host}')"
 base_url="https://${host}"
+showroom_host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
+showroom_origin="https://${showroom_host}"
+apps_domain="$(
+  oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}'
+)"
+cluster_showroom_origin="https://*.${apps_domain}"
+configured_frame_ancestor="$(
+  oc get deployment anythingllm -n "$namespace" -o json \
+    | jq -r '.spec.template.spec.containers[]
+      | select(.name == "anythingllm")
+      | .env[]?
+      | select(.name == "LAUNCHPAD_FRAME_ANCESTOR")
+      | .value'
+)"
+if [[ "$configured_frame_ancestor" != "$showroom_origin" ]]; then
+  echo "LAUNCHPAD_FRAME_ANCESTOR does not match this seat's Showroom origin" >&2
+  exit 3
+fi
 route_ready_attempts="${LAUNCHPAD_ROUTE_READY_ATTEMPTS:-40}"
 if ! [[ "$route_ready_attempts" =~ ^[1-9][0-9]*$ ]]; then
   echo "LAUNCHPAD_ROUTE_READY_ATTEMPTS must be a positive integer" >&2
@@ -60,6 +78,23 @@ if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
 fi
 if [[ -n "${LAUNCHPAD_INGRESS_IP:-}" ]]; then
   curl_options+=(--resolve "${host}:443:${LAUNCHPAD_INGRESS_IP}")
+fi
+response_headers="$(curl "${curl_options[@]}" -D - -o /dev/null "${base_url}/")"
+if printf '%s\n' "$response_headers" | tr -d '\r' | grep -qi '^x-frame-options:'; then
+  echo "Unexpected X-Frame-Options prevents the RAG Assistant from loading in Showroom" >&2
+  exit 4
+fi
+content_security_policy="$(
+  printf '%s\n' "$response_headers" \
+    | tr -d '\r' \
+    | awk -F ': *' 'tolower($1) == "content-security-policy" {print substr($0, index($0, $2))}' \
+    | tail -1
+)"
+if [[ "$content_security_policy" != *"frame-ancestors"* ]] \
+  || { [[ "$content_security_policy" != *"${showroom_origin}"* ]] \
+    && [[ "$content_security_policy" != *"${cluster_showroom_origin}"* ]]; }; then
+  echo "RAG Assistant does not allow its Showroom origin: ${showroom_origin}" >&2
+  exit 5
 fi
 api_token="$({
   curl "${curl_options[@]}" \

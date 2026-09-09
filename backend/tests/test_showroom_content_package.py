@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.4",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -371,13 +371,15 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     page = (
         ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
     ).read_text()
-    containerfile = (ROOT / "workshop-images/anythingllm-openshift/Containerfile").read_text()
+    containerfile = (
+        ROOT / "workshop-images/anythingllm-openshift/Containerfile"
+    ).read_text()
     build_config = (ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml").read_text()
 
     assert "anything-llm:latest" not in page
     assert (
         "partner-ai-launchpad/anythingllm-openshift@sha256:"
-        "1eee2162bed8ab643133dd9420ea086566f7c778849e9ff3eddc71a6a6cd8f98" in page
+        "141c3a75bc565c81820bb819e18d495b123ccf9f2bfa133fdd59b58b85660807" in page
     )
     assert "STORAGE_DIR" in page
     assert "DISABLE_TELEMETRY" in page
@@ -397,14 +399,43 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "name: anythingllm-openshift" in build_config
 
 
+def test_cpu_serving_workbench_is_embeddable_only_by_its_seat_showroom():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+    seat_driver = (ROOT / "scripts/certify-cpu-serving-seat.sh").read_text()
+    containerfile = (ROOT / "workshop-images/anythingllm-openshift/Containerfile").read_text()
+    frame_patch = (
+        ROOT / "workshop-images/anythingllm-openshift/patch-frame-policy.js"
+    ).read_text()
+    rag_certifier = (ROOT / "scripts/certify-cpu-serving-rag.sh").read_text()
+
+    expected_origin = (
+        "https://showroom-{project_name}.{openshift_cluster_ingress_domain}"
+    )
+    assert "LAUNCHPAD_FRAME_ANCESTOR" in page
+    assert expected_origin in page
+    assert 'name: "LAUNCHPAD_FRAME_ANCESTOR"' in seat_driver
+    assert '"https://showroom-${namespace}.${apps_domain}"' in seat_driver
+    assert "patch-frame-policy.js" in containerfile
+    assert "Content-Security-Policy" in frame_patch
+    assert "frame-ancestors 'self'" in frame_patch
+    assert "app.use((_, response, next)" in frame_patch
+    assert "X-Frame-Options" in frame_patch
+    assert '"DENY"' in frame_patch
+    assert "LAUNCHPAD_FRAME_ANCESTOR" in rag_certifier
+    assert "Unexpected X-Frame-Options" in rag_certifier
+    assert "RAG Assistant does not allow its Showroom origin" in rag_certifier
+
+
 def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
     catalog = yaml.safe_load(
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.3"
+    assert catalog["version"] == "1.0.4"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3"
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.4"
     )
 
 

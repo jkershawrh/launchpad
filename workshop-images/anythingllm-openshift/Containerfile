@@ -1,6 +1,14 @@
 FROM ghcr.io/mintplex-labs/anything-llm@sha256:e7751e8e65f470506379dbc2059d6a4c61eb3f22de58c184aef536a42bdd8335
 
 USER 0
+# AnythingLLM deliberately sends X-Frame-Options: DENY for its static UI. A
+# Launchpad seat embeds that UI in one specific Showroom origin, so replace the
+# unconditional header with an exact, opt-in CSP allowlist.  The patched server
+# keeps DENY as the fail-closed default when no valid origin is configured.
+COPY patch-frame-policy.js /tmp/patch-frame-policy.js
+RUN node /tmp/patch-frame-policy.js /app/server/index.js \
+    && rm -f /tmp/patch-frame-policy.js
+
 # Prisma replaces generated files during startup. Remove the upstream
 # UID-owned copy so the namespace-assigned UID creates and owns its copy.
 RUN chgrp -R 0 /app \

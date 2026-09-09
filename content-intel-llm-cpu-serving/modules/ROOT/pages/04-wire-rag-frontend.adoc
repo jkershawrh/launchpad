@@ -107,7 +107,7 @@ spec:
     spec:
       containers:
         - name: anythingllm
-          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:1eee2162bed8ab643133dd9420ea086566f7c778849e9ff3eddc71a6a6cd8f98
+          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:141c3a75bc565c81820bb819e18d495b123ccf9f2bfa133fdd59b58b85660807
           ports:
             - containerPort: 3001
           envFrom:
@@ -118,6 +118,8 @@ spec:
               value: /tmp/anythingllm-storage
             - name: DISABLE_TELEMETRY
               value: "true"
+            - name: LAUNCHPAD_FRAME_ANCESTOR
+              value: "https://showroom-{project_name}.{openshift_cluster_ingress_domain}"
           startupProbe:
             httpGet:
               path: "/api/ping"
@@ -193,8 +195,10 @@ deployment is not reported ready until the AnythingLLM application health
 endpoint responds. The external Route may take another 30 seconds to become
 visible while OpenShift safely coalesces ingress updates, so the final loop
 also verifies the participant-facing path. The *RAG Assistant* tab is ready
-when this entire step completes. Its first pull to a worker can take several
-minutes; subsequent seats on that worker use the cached image layers.
+when this entire step completes. The image permits framing only from this
+seat's exact Showroom origin; every other origin remains denied. Its first pull
+to a worker can take several minutes; subsequent seats on that worker use the
+cached image layers.
 
 == Verify the Connection
 
