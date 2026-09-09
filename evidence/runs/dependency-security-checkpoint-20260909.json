@@ -1,0 +1,65 @@
+{
+  "schema": "launchpad.redhat.com/dependency-security-evidence/v1",
+  "evidence_id": "EDD-DEPENDENCY-SECURITY-20260909T083903Z",
+  "generated_at": "2026-09-09T08:39:03Z",
+  "repository_base": "5d7bf4655510a75c76bec4009ac77cf1d5883db6",
+  "result": "GREEN-source-and-build-RED-keycloak-live-rollout",
+  "contains_plaintext_credentials": false,
+  "red": {
+    "github_dependabot_open": {
+      "critical": 1,
+      "high": 35,
+      "moderate": 55,
+      "low": 14,
+      "total": 105
+    },
+    "npm_audit_dependency_trees": {
+      "root": 6,
+      "frontend": 7,
+      "admin": 9,
+      "demo_frontend": 8,
+      "total": 30
+    },
+    "live_keycloak_version": "26.4.2"
+  },
+  "green": {
+    "npm_audit": {
+      "root": 0,
+      "frontend": 0,
+      "admin": 0,
+      "demo_frontend": 0
+    },
+    "tests": {
+      "backend_non_local": "1369 passed, 6 skipped, 13 deselected",
+      "requester_frontend": "57 passed",
+      "demo_frontend": "8 passed"
+    },
+    "production_builds": {
+      "showroom_antora": "passed",
+      "requester_frontend": "passed",
+      "admin_frontend": "passed",
+      "demo_frontend": "passed"
+    },
+    "keycloak_candidate": {
+      "version": "26.7.0",
+      "jackson_databind": "2.18.9",
+      "arena_build": "launchpad-keycloak-19",
+      "build_result": "Complete",
+      "digest": "sha256:207b8388456f94363116e96e934494309ec5ef3b6c6c23770f91270c5bccaee1"
+    }
+  },
+  "live_boundary": {
+    "candidate_deployed": false,
+    "running_keycloak_version": "26.4.2",
+    "manual_sign_in_certified": false,
+    "internal_spi_warning_observed": true,
+    "reason": "The compiled candidate changes the identity provider's internal authenticator SPI and requires a manual sign-in and rollback gate before live rollout."
+  },
+  "next_gate": [
+    "Capture the current Keycloak Custom Resource and realm configuration rollback point.",
+    "Deploy the immutable 26.7.0 candidate digest during a supervised window.",
+    "Verify instructor-code sign-in, add lab, My Lab Access, OpenShift Console SSO, sign-out, and reauthentication.",
+    "Rollback immediately if the custom authenticator or realm flow fails.",
+    "Confirm GitHub Dependabot rescans the pushed dependency graphs before any production or GA declaration."
+  ]
+}

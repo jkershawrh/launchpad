@@ -18,11 +18,13 @@ describe('AppLayout', () => {
     renderWithProviders(<AppLayout />);
     expect(screen.getByText('Overview')).toBeTruthy();
     expect(screen.getByText('Architecture')).toBeTruthy();
+    expect(screen.getByText('Routing Engine')).toBeTruthy();
     expect(screen.getByText('Try It')).toBeTruthy();
-    expect(screen.getByText('Use Cases')).toBeTruthy();
+    expect(screen.getByText('Cockpit')).toBeTruthy();
     expect(screen.getByText('Operations')).toBeTruthy();
-    expect(screen.getByText('Governance')).toBeTruthy();
+    expect(screen.getByText('Governance Audit')).toBeTruthy();
     expect(screen.getByText('Documentation')).toBeTruthy();
+    expect(screen.getByText('Publishing House')).toBeTruthy();
   });
 
   it('shows platform title', () => {

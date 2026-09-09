@@ -6,7 +6,7 @@ COPY pom.xml .
 COPY src src
 RUN mvn -B -DskipTests package
 
-FROM quay.io/keycloak/keycloak:26.4.2
+FROM quay.io/keycloak/keycloak:26.7.0
 COPY --from=build /src/target/launchpad-code-authenticator-1.0.0.jar /opt/keycloak/providers/
 ENV KC_DB=postgres \
     KC_HEALTH_ENABLED=true

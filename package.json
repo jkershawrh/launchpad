@@ -6,7 +6,7 @@
     "build:showroom": "antora --clean site.yml"
   },
   "devDependencies": {
-    "@antora/cli": "3.1.12",
-    "@antora/site-generator": "3.1.12"
+    "@antora/cli": "^3.2.0",
+    "@antora/site-generator": "^3.2.0"
   }
 }

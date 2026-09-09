@@ -6,8 +6,8 @@ The automated exact three-workshop gate is **GREEN-live for a supervised
 internal pilot**. Three independently provisioned event topologies have passed,
 the exact topology completed a 60-minute soak, and the latest run reclaimed
 with zero residue. It is **not production or GA certified** because manual
-frontend acceptance, public access, dependency triage, and per-seat LiteLLM
-attribution remain separate gates.
+frontend acceptance, public access, the Keycloak security rollout, and
+per-seat LiteLLM attribution remain separate gates.
 
 The successful rehearsals used three staggered 25-seat orders and then ran all
 75 participant journeys with overlap. The September 9 run also reproduced 25
@@ -77,7 +77,8 @@ The automated internal functional rubric scores **100/100**:
 The automated score does not turn this into a GA declaration. Manual visual
 acceptance is intentionally not inferred from API and browser probes, public
 access has its own infrastructure/SSO certification, per-seat model telemetry
-is incomplete, and the repository dependency findings still require triage.
+is incomplete, and the security-upgraded Keycloak image still requires a live
+rollout plus manual authentication acceptance.
 
 ## Deployed observability
 
@@ -118,7 +119,10 @@ DNS/tunnel and SSO prerequisites are intentionally enabled.
    LiteLLM proxy and live-certify per-seat outcomes, tokens, rate limits, and
    latency. The stable virtual-key/session/seat correlation and admin display
    contract are GREEN-local; Arena still uses direct OVMS/vLLM endpoints.
-3. Triage the current dependency findings before any production/GA decision.
+3. Deploy the compiled Keycloak 26.7.0 candidate and run the manual public
+   sign-in, add-lab, resume, Console SSO, sign-out, and rollback checks. All
+   four npm dependency trees audit at zero; the existing live Keycloak remains
+   on 26.4.2 until this browser gate is available.
 4. Complete the separate public ingress/SSO browser certification after the
    DNS/tunnel path is approved.
 5. Keep `rhgnr1` cordoned outside supervised provisioning and participant test
@@ -133,3 +137,20 @@ readiness loop. The deployed AnythingLLM route returned HTTP 200, the grounded
 RAG certification returned the expected source-backed fact, and reclaim left no
 namespace or Argo CD Application. See
 `evidence/runs/intel-llm-cpu-serving-v103-live-20260909.json`.
+
+## Dependency security checkpoint
+
+The RED baseline was 105 open GitHub Dependabot alerts: one critical, 35 high,
+55 moderate, and 14 low. Those alerts collapse to the custom Keycloak
+authenticator dependency graph plus four npm lockfiles. Compatible npm and
+Antora updates now produce zero findings in all four local `npm audit` runs;
+the requester has 57 passing tests, the demo frontend has eight passing tests,
+and the Showroom, requester, admin, and demo production builds pass.
+
+The Keycloak authenticator was updated from 26.4.2 to 26.7.0 and Jackson from
+2.18.2 to 2.18.9. Arena Build `launchpad-keycloak-19` compiled the custom
+provider and published immutable candidate digest
+`sha256:207b8388456f94363116e96e934494309ec5ef3b6c6c23770f91270c5bccaee1`.
+The running Keycloak Custom Resource intentionally remains on 26.4.2: the
+authenticator uses an internal Keycloak SPI, so a live change requires the
+manual browser and rollback gate rather than an unobserved rollout.
