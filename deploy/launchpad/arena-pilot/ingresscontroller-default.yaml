@@ -1,0 +1,12 @@
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  name: default
+  namespace: openshift-ingress-operator
+spec:
+  # Twenty-five participant-created Routes can otherwise force HAProxy to
+  # reload every five seconds while long-running lab requests are active.
+  # Coalescing those updates is a supported IngressController tuning option
+  # and keeps new routes visible within the pilot's readiness timeout.
+  tuningOptions:
+    reloadInterval: 30s

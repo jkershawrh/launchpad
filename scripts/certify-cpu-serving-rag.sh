@@ -20,6 +20,30 @@ fi
 
 host="$(oc get route rag -n "$namespace" -o jsonpath='{.spec.host}')"
 base_url="https://${host}"
+route_ready_attempts="${LAUNCHPAD_ROUTE_READY_ATTEMPTS:-40}"
+if ! [[ "$route_ready_attempts" =~ ^[1-9][0-9]*$ ]]; then
+  echo "LAUNCHPAD_ROUTE_READY_ATTEMPTS must be a positive integer" >&2
+  exit 64
+fi
+
+wait_for_route() {
+  local attempt http_status
+  for ((attempt = 1; attempt <= route_ready_attempts; attempt++)); do
+    http_status="$(
+      curl -sSk -o /dev/null -w '%{http_code}' \
+        --connect-timeout 3 --max-time 5 \
+        "${base_url}/api/ping" 2>/dev/null || true
+    )"
+    if [[ "$http_status" == "200" ]]; then
+      return 0
+    fi
+    sleep 3
+  done
+  echo "AnythingLLM Route did not become ready after ${route_ready_attempts} attempts" >&2
+  return 1
+}
+
+wait_for_route
 run_id="${CERTIFICATION_RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$}"
 run_id="$(printf '%s' "$run_id" | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')"
 workspace_slug="hr-assistant-${run_id}"

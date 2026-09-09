@@ -1,0 +1,62 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-RUN03-ROUTE-READINESS-RED-20260909T071415Z",
+  "event_date": "2026-09-17",
+  "started_at": "2026-09-09T06:52:24Z",
+  "completed_at": "2026-09-09T07:14:15Z",
+  "result": "RED-new-route-readiness-window",
+  "three_run_streak_credit": false,
+  "participants": {
+    "started": 75,
+    "passed": 54,
+    "failed": 21
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "608f1a4a-b82e-4f30-8d23-46807c14ba04",
+      "cluster_ref": "brutus",
+      "passed": 25,
+      "failed": 0
+    },
+    "multi_agent": {
+      "id": "a47cdaa5-8917-4dad-8337-671f0957cf2e",
+      "cluster_ref": "arena",
+      "concurrent_wave_passed": 25,
+      "deep_journeys_passed": 25,
+      "failed": 0
+    },
+    "serve_llms": {
+      "id": "cfdd7c3e-b037-40dd-b204-2c47667fed7f",
+      "cluster_ref": "arena",
+      "participant_routes_created": 25,
+      "grounded_journeys_passed": 4,
+      "route_readiness_failures": 21,
+      "observed_http_status": 503
+    }
+  },
+  "ingress": {
+    "reload_interval": "30s",
+    "router_restarts_before": 0,
+    "router_restarts_after": 0,
+    "router_restart_increase": 0,
+    "remediation_result": "GREEN-no-router-restarts"
+  },
+  "tdd": {
+    "test": "backend/tests/test_arena_ingress_burst_resilience.py::test_serve_llms_waits_for_the_external_route_after_reload_coalescing",
+    "red_result": "1 failed, 2 passed",
+    "expected_missing_behavior": "Wait for the external AnythingLLM Route after the Deployment becomes available."
+  },
+  "interpretation": {
+    "ingress_resilience_failure": false,
+    "route_readiness_contract_failure": true,
+    "finding": "Supported reload coalescing prevented both router restarts and allowed every Multi-Agent journey to pass. The Serve certifier still assumed immediate Route publication and exhausted four rapid retries before the next coalesced reload."
+  },
+  "raw_artifact_hashes": {
+    "summary": "b96ff889849fd96045cb4168b280af9c127a1889c83d2cf5fcb0237c0dd5381c",
+    "agent_201_run_log": "886c148491061a735e762963bc37943f745a8921ac48b9d2fdb11593dea88e2e",
+    "multi_agent_run_log": "ab3346fb57d930ef8218c3c770d5b31c23bf9ed9479cf0b5ef312ed8058222b0",
+    "serve_llms_run_log": "2bcff498c90465393c7d4abb07a151d5be1bca9a1a215a3bc343bef770192b96"
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

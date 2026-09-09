@@ -1,0 +1,80 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-RUN03-INGRESS-CHURN-RED-20260909T063950Z",
+  "event_date": "2026-09-17",
+  "started_at": "2026-09-09T06:35:13Z",
+  "completed_at": "2026-09-09T06:39:50Z",
+  "result": "RED-arena-ingress-route-churn",
+  "three_run_streak_credit": false,
+  "participants": {
+    "started": 75,
+    "passed": 50,
+    "failed": 25
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "608f1a4a-b82e-4f30-8d23-46807c14ba04",
+      "cluster_ref": "brutus",
+      "passed": 25,
+      "failed": 0
+    },
+    "multi_agent": {
+      "id": "a47cdaa5-8917-4dad-8337-671f0957cf2e",
+      "cluster_ref": "arena",
+      "concurrent_wave_passed": 10,
+      "concurrent_wave_failed": 15,
+      "deep_checks_started": 0,
+      "connection_failures": [
+        "connection reset by peer",
+        "empty reply from server",
+        "connection timeout"
+      ]
+    },
+    "serve_llms": {
+      "id": "cfdd7c3e-b037-40dd-b204-2c47667fed7f",
+      "cluster_ref": "arena",
+      "participant_routes_created": 25,
+      "grounded_journeys_passed": 25,
+      "failed": 0
+    }
+  },
+  "ingress": {
+    "controller": "default",
+    "replicas": 2,
+    "publishing_strategy": "HostNetwork",
+    "reload_interval_before": "5s",
+    "router_restart_counts_before": {
+      "gnr2.fm2aihpcsed.com": 6,
+      "rhgnr1": 74
+    },
+    "router_restart_counts_after": {
+      "gnr2.fm2aihpcsed.com": 7,
+      "rhgnr1": 75
+    },
+    "last_termination_exit_code": 137,
+    "last_termination_reason": "Error",
+    "widespread_probe_timeouts_observed": true,
+    "route_churn_overlap": "Twenty-five participant AnythingLLM Routes were created while twenty-five long-lived Multi-Agent Route requests were active."
+  },
+  "tdd": {
+    "test": "backend/tests/test_arena_ingress_burst_resilience.py",
+    "red_result": "2 failed",
+    "expected_missing_behavior": [
+      "declarative supported reload coalescing",
+      "router restart delta in exact-run pass criteria"
+    ]
+  },
+  "interpretation": {
+    "lab_workload_failure": false,
+    "ingress_resilience_failure": true,
+    "finding": "All Multi-Agent workload pods remained Ready with zero container restarts. Both Arena router pods restarted during rapid Route publication, interrupting 15 participant connections. The next run must coalesce supported router reloads and fail closed on any router restart increase."
+  },
+  "raw_artifact_hashes": {
+    "summary": "be7c88724f0aafa822afab62a8d710ca05a3ccd0319964db8c27d3ef88b8e2cf",
+    "agent_201_run_log": "460cf247d9754b2cd0d7320500383b39285639bbf1ba5d08f3a2e82d9b8172d3",
+    "multi_agent_run_log": "8852fad14a21df52a034a7184f4ca3062b32944ca9e911f087442d44501421bc",
+    "serve_llms_run_log": "41138d84af900d877869688a80838db28204d53ed926bde4374090cb7a2ecf7d"
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

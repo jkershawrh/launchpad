@@ -31,7 +31,7 @@
     },
     {
       "workshop_id": "208ba076-38da-47b7-8895-09d8b23da075",
-      "catalog_item_id": "intel-xeon-agent-201",
+      "catalog_item_id": "intel-xeon6-agent-201",
       "cluster_ref": "brutus",
       "seats_reclaimed": 25,
       "seat_errors": 0,

@@ -53,6 +53,13 @@ oc() {
   fi
 }
 
+router_restart_total() {
+  oc -n openshift-ingress get pods \
+    -l ingresscontroller.operator.openshift.io/deployment-ingresscontroller=default \
+    -o json \
+    | jq '[.items[].status.containerStatuses[]? | select(.name == "router") | .restartCount] | add // 0'
+}
+
 server="$(oc config view --minify -o jsonpath='{.clusters[0].cluster.server}')"
 if [[ "$server" != "https://api.arena.fm2aihpcsed.com:6443" ]]; then
   echo "refusing to run: expected Arena API, found '$server'" >&2
@@ -228,6 +235,7 @@ run_serve_llms() {
 started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 oc wait node/rhgnr1 --for=condition=Ready --timeout=60s >/dev/null
 oc adm uncordon rhgnr1 >/dev/null
+router_restarts_before="$(router_restart_total)"
 
 run_agent_201 >"$result_dir/agent-201/run.log" 2>&1 &
 agent_pid=$!
@@ -246,6 +254,8 @@ agent_rc=$?
 wait "$serve_pid"
 serve_rc=$?
 completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+router_restarts_after="$(router_restart_total)"
+router_restart_increase=$((router_restarts_after - router_restarts_before))
 
 agent_receipt="$(grep '^{' "$result_dir/agent-201/run.log" | tail -n 1)"
 agent_passed=0
@@ -258,7 +268,9 @@ multi_concurrent_passed="$(rg -l '"result":"GREEN-live-participant-wave"' "$resu
 serve_passed="$(rg -l 'grounded=true' "$result_dir"/serve-llms/launchpad-*.tsv 2>/dev/null | wc -l | tr -d ' ')"
 total_passed=$((agent_passed + multi_passed + serve_passed))
 
-if [[ "$agent_rc" -eq 0 && "$multi_rc" -eq 0 && "$serve_rc" -eq 0 && "$total_passed" -eq 75 && "$multi_concurrent_passed" -eq 25 ]]; then
+if [[ "$agent_rc" -eq 0 && "$multi_rc" -eq 0 && "$serve_rc" -eq 0 \
+  && "$total_passed" -eq 75 && "$multi_concurrent_passed" -eq 25 \
+  && "$router_restart_increase" -eq 0 ]]; then
   status="passed"
   exit_code=0
 else
@@ -281,6 +293,9 @@ jq -n \
   --argjson agent_rc "$agent_rc" \
   --argjson multi_rc "$multi_rc" \
   --argjson serve_rc "$serve_rc" \
+  --argjson router_restarts_before "$router_restarts_before" \
+  --argjson router_restarts_after "$router_restarts_after" \
+  --argjson router_restart_increase "$router_restart_increase" \
   '{
     "status": $status,
     "started_at": $started_at,
@@ -292,6 +307,11 @@ jq -n \
       "agent_201": $agent_rc,
       "multi_agent": $multi_rc,
       "serve_llms": $serve_rc
+    },
+    "resilience": {
+      "router_restarts_before": $router_restarts_before,
+      "router_restarts_after": $router_restarts_after,
+      "router_restart_increase": $router_restart_increase
     },
     "result_dir": $result_dir,
     "workshops": {
