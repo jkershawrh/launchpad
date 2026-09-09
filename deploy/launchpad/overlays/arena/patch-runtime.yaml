@@ -134,11 +134,24 @@ spec:
         - name: gateway
           env:
             - name: PUBLIC_UPSTREAM_TLS_VERIFY
-              value: "false"
+              value: "true"
+            - name: SSL_CERT_FILE
+              value: /etc/launchpad-ca/ca-bundle.crt
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/launchpad-ca/ca-bundle.crt
+          volumeMounts:
+            - name: cluster-ca-bundle
+              mountPath: /etc/launchpad-ca
+              readOnly: true
         - name: oidc-proxy
           env:
             - name: OAUTH2_PROXY_OIDC_ISSUER_URL
               value: https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public
+      volumes:
+        - name: cluster-ca-bundle
+          configMap:
+            name: launchpad-cluster-ca-bundle
+            optional: false
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname

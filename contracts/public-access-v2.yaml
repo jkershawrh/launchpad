@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Same-Origin Participant Access Contract
+  version: 2.0.0
+  description: >-
+    Extends public-access-v1 with multiple order-scoped labs on one trusted
+    origin. Raw execution-cluster URLs are private implementation details.
+paths:
+  /labs/{order_ref}:
+    get:
+      operationId: openParticipantOrder
+      parameters:
+        - {$ref: '#/components/parameters/OrderRef'}
+      responses:
+        '200': {description: Entitled participant landing or uniform join form}
+        '403': {description: Uniform denial}
+  /labs/{order_ref}/showroom/{path}:
+    get:
+      operationId: proxyOrderShowroom
+      parameters:
+        - {$ref: '#/components/parameters/OrderRef'}
+        - {name: path, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Showroom content with order-scoped tab paths}
+        '403': {description: Entitlement denied}
+  /labs/{order_ref}/proxy/tool/{tool_id}/{path}:
+    get:
+      operationId: proxyEntitledOrderTool
+      parameters:
+        - {$ref: '#/components/parameters/OrderRef'}
+        - {name: tool_id, in: path, required: true, schema: {type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'}}
+        - {name: path, in: path, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Catalog-declared tool response}
+        '403': {description: Entitlement denied}
+        '404': {description: Tool is not declared for the catalog item}
+        '503': {description: Declared participant-created tool is not ready}
+  /api/v1/public-access/private/resolve-identity:
+    get:
+      operationId: resolvePathScopedIdentity
+      security: [{brokerKey: []}]
+      parameters:
+        - {name: host, in: query, required: true, schema: {type: string}}
+        - {name: public_path, in: query, required: false, schema: {type: string, pattern: '^/labs/[a-z0-9]+(?:-[a-z0-9]+)*$'}}
+        - {name: username, in: query, required: true, schema: {type: string}}
+      responses:
+        '200': {description: One entitled order, seat, cluster, and server-side tool allowlist}
+        '403': {description: Uniform denial for invalid identity or entitlement}
+components:
+  parameters:
+    OrderRef:
+      name: order_ref
+      in: path
+      required: true
+      schema: {type: string, pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'}
+  securitySchemes:
+    brokerKey: {type: apiKey, in: header, name: X-Access-Broker-Key}
+x-launchpad-security:
+  browser_origin: single trusted origin
+  upstream_authorization: persisted entitlement plus catalog tool allowlist
+  upstream_tls: selected cluster CA bundle; verification required
+  forbidden_client_data:
+    - raw execution-cluster Route URLs
+    - cluster credentials
+    - instructor code hashes
+  compatibility: Host-only v1 orders remain valid only when the hostname identifies exactly one active policy.

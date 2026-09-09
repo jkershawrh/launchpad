@@ -46,3 +46,14 @@ def test_console_oidc_fallback_can_validate_a_code_without_redirect_host_order()
     assert '"/validate-by-code"' in source
     assert 'result.path("order_id").asText()' in source
     assert "email.isBlank() || code.isBlank() || order.isBlank()" not in source
+
+
+def test_shared_origin_login_resolves_order_from_redirect_path():
+    source = (
+        Path(__file__).resolve().parents[2]
+        / "keycloak-authenticator/src/main/java/com/redhat/launchpad/LaunchpadCodeAuthenticator.java"
+    ).read_text()
+
+    assert ".getPath()" in source
+    assert '"&public_path="' in source
+    assert "URLEncoder.encode(publicPath" in source

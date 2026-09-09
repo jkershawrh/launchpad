@@ -16,6 +16,22 @@ def service():
     return PublicAccessService(public_domain="labs.example.io", enabled=True)
 
 
+def test_same_origin_v2_contract_declares_order_scoped_showroom_and_tools():
+    contract_path = (
+        __import__("pathlib").Path(__file__).resolve().parents[2]
+        / "contracts/public-access-v2.yaml"
+    )
+    contract = __import__("yaml").safe_load(contract_path.read_text())
+
+    assert contract["info"]["version"] == "2.0.0"
+    assert "/labs/{order_ref}" in contract["paths"]
+    assert "/labs/{order_ref}/showroom/{path}" in contract["paths"]
+    assert "/labs/{order_ref}/proxy/tool/{tool_id}/{path}" in contract["paths"]
+    assert contract["x-launchpad-security"]["upstream_tls"].endswith(
+        "verification required"
+    )
+
+
 def test_public_gateway_receives_only_catalog_declared_tool_urls():
     session = SimpleNamespace(
         resources={
@@ -233,6 +249,8 @@ def test_full_order_rejects_without_leaking_participants():
     access.claim("full", "first@example.com", code, "192.0.2.1")
     with pytest.raises(ValueError, match="Access request cannot be completed"):
         access.claim("full", "second@example.com", code, "192.0.2.2")
+    assert access.audit_events[-1]["event_type"] == "claim"
+    assert access.audit_events[-1]["outcome"] == "denied"
 
 
 def test_rotation_requires_reauthentication_and_new_code_restores_seat():
@@ -332,6 +350,38 @@ def test_shared_pilot_origin_rejects_a_second_active_order():
             seat_refs=["seat-3"],
             expires_at=datetime.utcnow() + timedelta(hours=1),
         )
+
+
+def test_shared_origin_path_mode_supports_multiple_isolated_orders():
+    access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    first, _ = access.create_policy(
+        order_id="11111111-aaaa-bbbb-cccc-111111111111",
+        order_type="workshop",
+        catalog_slug="serve-llms",
+        seat_refs=["seat-1"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+    second, _ = access.create_policy(
+        order_id="22222222-aaaa-bbbb-cccc-222222222222",
+        order_type="workshop",
+        catalog_slug="build-an-agent",
+        seat_refs=["seat-2"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+
+    assert first.public_url == "https://labs.example.io/labs/serve-llms-11111111"
+    assert second.public_url == "https://labs.example.io/labs/build-an-agent-22222222"
+    assert access.get_policy_by_request(
+        "labs.example.io", "/labs/serve-llms-11111111"
+    ).order_id == first.order_id
+    assert access.get_policy_by_request(
+        "labs.example.io", "/labs/build-an-agent-22222222"
+    ).order_id == second.order_id
+    assert access.get_policy_by_host("labs.example.io") is None
 
 
 def test_public_placement_requires_public_enabled_cluster():
@@ -545,6 +595,57 @@ def test_admin_can_change_only_the_https_origin_for_a_pilot_order():
     )
     with pytest.raises(ValueError, match="already belongs to an active order"):
         access.set_public_url("second-pilot-url", "https://public-pilot.trycloudflare.com")
+
+
+def test_path_scoped_order_keeps_its_path_when_tunnel_origin_changes():
+    access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://first.trycloudflare.com",
+        shared_path_mode=True,
+    )
+    policy, _ = access.create_policy(
+        order_id="abcdef12-aaaa-bbbb-cccc-111111111111",
+        order_type="individual",
+        catalog_slug="serve-llms",
+        seat_refs=["seat-1"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+
+    updated = access.set_public_url(
+        policy.order_id,
+        "https://replacement.trycloudflare.com",
+    )
+
+    assert updated.public_url == (
+        "https://replacement.trycloudflare.com/labs/serve-llms-abcdef12"
+    )
+
+
+def test_path_scoped_tunnel_migrates_a_legacy_origin_only_policy():
+    access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://first.trycloudflare.com",
+        shared_path_mode=True,
+    )
+    policy, _ = access.create_policy(
+        order_id="abcdef12-aaaa-bbbb-cccc-111111111111",
+        order_type="individual",
+        catalog_slug="serve-llms",
+        seat_refs=["seat-1"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+    access._policies[policy.order_id] = policy.model_copy(
+        update={"public_url": "https://legacy.trycloudflare.com"}
+    )
+
+    updated = access.set_public_url(
+        policy.order_id,
+        "https://replacement.trycloudflare.com",
+    )
+
+    assert updated.public_url == (
+        "https://replacement.trycloudflare.com/labs/serve-llms-abcdef12"
+    )
 
 
 def test_public_access_never_uses_placeholder_workspace_url():

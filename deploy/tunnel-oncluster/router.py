@@ -16,6 +16,7 @@ import os
 import re
 import ssl
 import traceback
+from urllib.parse import urlsplit
 
 import httpx
 import websockets
@@ -162,6 +163,41 @@ BACKEND_URL = os.environ.get(
     "BACKEND_URL", "http://backend.partner-ai-launchpad.svc:8000/api/v1"
 )
 BROKER_KEY = os.environ.get("ACCESS_BROKER_KEY", "")
+_PUBLIC_HOST = re.compile(r"^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?(?::[0-9]+)?$", re.IGNORECASE)
+
+
+def _websocket_connection(
+    origin: str,
+    upstream_path: str,
+    query: str,
+    public_host: str,
+) -> tuple[str, dict[str, object]]:
+    """Build a WebSocket URI without losing the browser-visible Host.
+
+    oauth2-proxy binds its secure session to the public origin.  The tunnel
+    still dials the private Service directly, but the WebSocket handshake must
+    carry that public Host just like ordinary HTTP requests do.
+    """
+    parsed = urlsplit(origin)
+    scheme = "wss" if parsed.scheme == "https" else "ws"
+    uri_host = parsed.netloc
+    connect_overrides: dict[str, object] = {}
+    normalized_public_host = public_host.strip().casefold()
+    if (
+        origin.rstrip("/") == GATEWAY_ORIGIN.rstrip("/")
+        and _PUBLIC_HOST.fullmatch(normalized_public_host)
+        and parsed.hostname
+    ):
+        uri_host = normalized_public_host
+        connect_overrides = {
+            "host": parsed.hostname,
+            "port": parsed.port or (443 if parsed.scheme == "https" else 80),
+            "proxy": None,
+        }
+    upstream_url = f"{scheme}://{uri_host}/{upstream_path}"
+    if query:
+        upstream_url += "?" + query
+    return upstream_url, connect_overrides
 
 
 async def _resolve_showroom_ws(headers: dict, path: str) -> str | None:
@@ -341,11 +377,12 @@ async def websocket_route(path: str, client: WebSocket):
     headers["host"] = original_host
 
     origin, upstream_path, is_tls = _select_upstream(path)
-    scheme = "wss" if is_tls else "ws"
-    svc_host = origin.split("://", 1)[1]
-    upstream_url = f"{scheme}://{svc_host}/{upstream_path}"
-    if client.url.query:
-        upstream_url += "?" + client.url.query
+    upstream_url, connect_overrides = _websocket_connection(
+        origin,
+        upstream_path,
+        client.url.query,
+        original_host,
+    )
 
     requested_protocols = [
         value.strip()
@@ -361,6 +398,7 @@ async def websocket_route(path: str, client: WebSocket):
             actual_url = await _resolve_showroom_ws(headers, upstream_path)
             if actual_url:
                 upstream_url = actual_url
+                connect_overrides = {}
 
         ws_kwargs = dict(
             additional_headers={k: v for k, v in headers.items() if k.casefold() != "host"},
@@ -368,6 +406,7 @@ async def websocket_route(path: str, client: WebSocket):
         )
         if upstream_url.startswith("wss://") or is_tls:
             ws_kwargs["ssl"] = NOSSL
+        ws_kwargs.update(connect_overrides)
 
         logging.getLogger("router.ws").info("Connecting WS to %s", upstream_url)
 

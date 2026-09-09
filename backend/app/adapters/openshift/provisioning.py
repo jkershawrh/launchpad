@@ -159,6 +159,7 @@ class OpenShiftProvisioningAdapter:
                 "workshop_id": request.metadata.get("workshop_id", request.request_id),
                 "seat_id": request.metadata.get("seat_id", request.request_id),
                 "participant_id": request.metadata.get("participant_id", request.requester_id),
+                "exposure_policy": request.exposure_policy.value,
                 "required_capabilities": list(catalog_item.required_capabilities),
                 "showroom_content_repo_url": meta.get(
                     "showroom_content_repo_url",
@@ -269,11 +270,13 @@ class OpenShiftProvisioningAdapter:
         )
         self._grant_remote_control_plane_access(demo_namespace)
         self._grant_image_pull(demo_namespace)
-        self._grant_participant_access(
-            demo_namespace,
-            str(res.get("participant_id", "")),
-            grant_application_logs="openshift_logging" in set(res.get("required_capabilities", [])),
-        )
+        if self._grants_direct_participant_access(res):
+            self._grant_participant_access(
+                demo_namespace,
+                str(res.get("participant_id", "")),
+                grant_application_logs="openshift_logging"
+                in set(res.get("required_capabilities", [])),
+            )
         requested_models = list(res.get("requested_models", []))
         # Model-backed workloads mount the same trust bundle on every target.
         # Copy it even when a cluster currently resolves its model through an
@@ -1217,6 +1220,11 @@ http {{
                 raise ValueError(
                     f"Failed to grant application log access to {participant_id}: {exc.reason}"
                 ) from exc
+
+    @staticmethod
+    def _grants_direct_participant_access(resources: dict) -> bool:
+        """Public orders bind only the stable identity returned by Keycloak."""
+        return resources.get("exposure_policy", "internal") != "public_code"
 
     def _create_demo_secrets(self, namespace: str, session_maas_key: str = "") -> None:
         import os

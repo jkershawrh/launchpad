@@ -2537,6 +2537,7 @@ class ProvisioningService:
             catalog_item_id=workshop.catalog_item_id,
             requested_mode=CatalogCategory.QUICK_START,
             ttl=workshop.ttl,
+            exposure_policy=workshop.exposure_policy,
             metadata={
                 "workshop_id": workshop.workshop_id,
                 "seat_id": seat.seat_id,

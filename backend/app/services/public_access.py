@@ -37,6 +37,7 @@ class PublicAccessService:
         self,
         public_domain: str | None = None,
         shared_origin: str | None = None,
+        shared_path_mode: bool | None = None,
         enabled: bool | None = None,
         store=None,
     ) -> None:
@@ -50,6 +51,11 @@ class PublicAccessService:
             self._normalize_https_origin(raw_shared_origin)
             if raw_shared_origin
             else ""
+        )
+        self.shared_path_mode = (
+            shared_path_mode
+            if shared_path_mode is not None
+            else os.getenv("PUBLIC_LABS_SHARED_PATH_MODE", "false").lower() == "true"
         )
         self.enabled = (
             enabled if enabled is not None
@@ -91,6 +97,11 @@ class PublicAccessService:
         raw = secrets.token_hex(10).upper()
         return "-".join(raw[index:index + 4] for index in range(0, len(raw), 4))
 
+    @classmethod
+    def _public_order_ref(cls, catalog_slug: str, order_id: str) -> str:
+        short_id = re.sub(r"[^a-z0-9]", "", order_id.casefold())[:8]
+        return f"{cls._slug(catalog_slug)}-{short_id}"
+
     @staticmethod
     def _token_hash(token: str) -> str:
         return hashlib.sha256(token.encode()).hexdigest()
@@ -111,7 +122,7 @@ class PublicAccessService:
         with self._lock:
             if order_id in self._policies:
                 raise ValueError("Public access policy already exists")
-            if self.shared_origin and any(
+            if self.shared_origin and not self.shared_path_mode and any(
                 policy.enabled
                 and policy.expires_at > datetime.utcnow()
                 and policy.public_url == self.shared_origin
@@ -121,9 +132,10 @@ class PublicAccessService:
             plaintext = self._new_code()
             if self.shared_origin:
                 public_url = self.shared_origin
+                if self.shared_path_mode:
+                    public_url += f"/labs/{self._public_order_ref(catalog_slug, order_id)}"
             else:
-                short_id = re.sub(r"[^a-z0-9]", "", order_id.casefold())[:8]
-                host = f"{self._slug(catalog_slug)}-{short_id}.{self.public_domain}"
+                host = f"{self._public_order_ref(catalog_slug, order_id)}.{self.public_domain}"
                 public_url = f"https://{host}"
             policy = AccessPolicy(
                 order_id=order_id,
@@ -151,15 +163,25 @@ class PublicAccessService:
             policy = self._policies.get(order_id)
             if not policy:
                 raise ValueError("Public access policy not found")
+            existing_path = urlsplit(policy.public_url).path.rstrip("/")
+            if self.shared_path_mode and not existing_path:
+                existing_path = (
+                    f"/labs/{self._public_order_ref(policy.catalog_slug, policy.order_id)}"
+                )
+            updated_url = (
+                f"{origin}{existing_path}"
+                if self.shared_path_mode and existing_path.startswith("/labs/")
+                else origin
+            )
             if any(
                 existing.order_id != order_id
                 and existing.enabled
                 and existing.expires_at > datetime.utcnow()
-                and existing.public_url == origin
+                and existing.public_url == updated_url
                 for existing in self._policies.values()
             ):
                 raise ValueError("Public URL already belongs to an active order")
-            policy = policy.model_copy(update={"public_url": origin})
+            policy = policy.model_copy(update={"public_url": updated_url})
             self._policies[order_id] = policy
             if self.store:
                 self.store.save_policy(policy)
@@ -270,6 +292,8 @@ class PublicAccessService:
                 }
                 seat_ref = next((seat for seat in policy.seat_refs if seat not in claimed), None)
                 if seat_ref is None:
+                    self._record_failure(order_id, normalized, ip_address)
+                    self._audit("claim", order_id, "denied")
                     raise ValueError(GENERIC_DENIAL)
                 entitlement = ParticipantEntitlement(
                     participant_id=identity.participant_id,
@@ -414,6 +438,27 @@ class PublicAccessService:
             policy for policy in self._policies.values()
             if policy.enabled
             and policy.expires_at > datetime.utcnow()
-            and policy.public_url.removeprefix("https://").rstrip("/").casefold() == normalized
+            and (urlsplit(policy.public_url).hostname or "").casefold() == normalized
         ]
-        return max(matches, key=lambda policy: policy.created_at, default=None)
+        # A hostname-only lookup is safe only when it identifies one active
+        # order. Path-scoped shared origins must never silently select the
+        # newest policy and expose the wrong workshop.
+        return matches[0] if len(matches) == 1 else None
+
+    def get_policy_by_request(self, host: str, public_path: str = "") -> AccessPolicy | None:
+        """Resolve one public order using its stable origin and optional path."""
+        normalized_host = host.split(":", 1)[0].casefold()
+        normalized_path = "/" + public_path.strip("/") if public_path.strip("/") else ""
+        if not normalized_path:
+            return self.get_policy_by_host(normalized_host)
+        matches = []
+        for policy in self._policies.values():
+            parsed = urlsplit(policy.public_url)
+            if (
+                policy.enabled
+                and policy.expires_at > datetime.utcnow()
+                and (parsed.hostname or "").casefold() == normalized_host
+                and parsed.path.rstrip("/") == normalized_path.rstrip("/")
+            ):
+                matches.append(policy)
+        return matches[0] if len(matches) == 1 else None

@@ -17,10 +17,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class LaunchpadCodeAuthenticator implements Authenticator {
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final HttpClient HTTP = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3)).build();
+    private static final Pattern PUBLIC_ORDER_PATH = Pattern.compile("^(/labs/[a-z0-9]+(?:-[a-z0-9]+)*)(?:/|$)");
 
     @Override public void authenticate(AuthenticationFlowContext context) {
         String order = context.getUriInfo().getQueryParameters().getFirst("order");
@@ -91,9 +94,14 @@ public final class LaunchpadCodeAuthenticator implements Authenticator {
     private static String resolveOrder(String redirectUri) {
         if (redirectUri == null || redirectUri.isBlank()) return "";
         try {
-            String host = URI.create(redirectUri).getHost();
+            URI redirect = URI.create(redirectUri);
+            String host = redirect.getHost();
+            Matcher pathMatch = PUBLIC_ORDER_PATH.matcher(redirect.getPath());
+            String publicPath = pathMatch.find() ? pathMatch.group(1) : "";
             String validation = required("LAUNCHPAD_ACCESS_VALIDATION_URL");
-            String lookup = validation.substring(0, validation.lastIndexOf('/')) + "/order-by-host?host=" + java.net.URLEncoder.encode(host, StandardCharsets.UTF_8);
+            String lookup = validation.substring(0, validation.lastIndexOf('/'))
+                + "/order-by-host?host=" + java.net.URLEncoder.encode(host, StandardCharsets.UTF_8)
+                + "&public_path=" + java.net.URLEncoder.encode(publicPath, StandardCharsets.UTF_8);
             HttpRequest request = HttpRequest.newBuilder(URI.create(lookup)).timeout(Duration.ofSeconds(5))
                 .header("X-Access-Broker-Key", required("ACCESS_BROKER_KEY")).GET().build();
             HttpResponse<String> response = HTTP.send(request, HttpResponse.BodyHandlers.ofString());

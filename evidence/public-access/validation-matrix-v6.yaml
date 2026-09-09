@@ -1,0 +1,34 @@
+version: 6
+supersedes: validation-matrix-v5.yaml
+feature: public-passwordless-same-origin-lab-access
+stages: [RED, GREEN-local, GREEN-integration, GREEN-live]
+columns: [unit, contract, component, bdd, integration, security, external_browser, fault_injection, cleanup, performance]
+red_evidence: evidence/public-access/red-same-origin-gateway-2026-09-09.yaml
+local_evidence: evidence/public-access/green-local-same-origin-gateway-2026-09-09.yaml
+live_evidence: evidence/public-access/green-live-arena-one-seat-2026-09-09.yaml
+rows:
+  - {id: PA-DNS-001, requirement: Production public DNS and trusted edge TLS, critical: true, stage: RED}
+  - {id: PA-ISO-002, requirement: Production public route isolation, critical: true, stage: RED}
+  - {id: PA-CODE-003, requirement: Order and one-time code creation, critical: true, stage: GREEN-live}
+  - {id: PA-CLAIM-004, requirement: Workshop claims, critical: true, stage: GREEN-live}
+  - {id: PA-CONC-005, requirement: Twenty-five concurrent unique claims, critical: true, stage: GREEN-live}
+  - {id: PA-IDENT-006, requirement: Seat recovery and stable identity, critical: true, stage: GREEN-live}
+  - {id: PA-GATE-007, requirement: Entitlement-aware Showroom and tool proxy, critical: true, stage: GREEN-live}
+  - {id: PA-OIDC-008, requirement: Keycloak OIDC application login, critical: true, stage: GREEN-live}
+  - {id: PA-CONSOLE-009, requirement: OpenShift Console SSO, critical: true, stage: GREEN-live}
+  - {id: PA-DENY-010, requirement: Cross-seat and cluster-scope denial, critical: true, stage: GREEN-live}
+  - {id: PA-ROT-011, requirement: Rotation and reauthentication, critical: true, stage: GREEN-live}
+  - {id: PA-RATE-012, requirement: Rate limiting and uniform denial, critical: true, stage: GREEN-live}
+  - {id: PA-TTL-013, requirement: TTL denial, critical: true, stage: GREEN-local}
+  - {id: PA-CLEAN-014, requirement: Complete operational cleanup, critical: true, stage: RED}
+  - {id: PA-RECOV-015, requirement: Backend and Keycloak restart recovery, critical: true, stage: GREEN-live}
+  - {id: PA-LIVE25-016, requirement: Twenty-five-seat external functional journey, critical: true, stage: GREEN-live}
+  - {id: PA-HOME-017, requirement: Participant home and add-lab/resume experience, critical: true, stage: GREEN-live}
+  - {id: PA-PATH-018, requirement: Multiple orders share one exact hostname using isolated paths, critical: true, stage: GREEN-live}
+  - {id: PA-UPTLS-019, requirement: Gateway validates execution-cluster ingress with installed CA, critical: true, stage: GREEN-integration}
+  - {id: PA-LEAK-020, requirement: Browser receives no raw private cluster tool URLs, critical: true, stage: GREEN-local}
+  - {id: PA-READY-021, requirement: Participant-created unavailable tools show a retryable readiness state, critical: true, stage: GREEN-live}
+release_rule: >-
+  No critical RED row may be counted as release-ready. Quick Tunnel evidence
+  certifies behavior only; production DNS, edge TLS, multi-order Console SSO,
+  cleanup, and the 25-seat external journey remain required.

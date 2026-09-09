@@ -980,6 +980,38 @@ def test_catalog_can_limit_promoted_individual_lab_to_internal_exposure():
     assert result.status == LabRequestStatus.REJECTED
 
 
+def test_public_workshop_seat_preserves_public_exposure_for_rbac_provisioning():
+    service = ProvisioningService()
+    workshop = Workshop(
+        tenant_id="event-tenant",
+        catalog_item_id="pilot-lab",
+        num_users=1,
+        exposure_policy="public_code",
+    )
+    workshop = workshop.model_copy(
+        update={
+            "seats": [
+                WorkshopSeat(
+                    workshop_id=workshop.workshop_id,
+                    seat_number=1,
+                    participant_id="untrusted-request-label",
+                )
+            ]
+        }
+    )
+    captured = []
+
+    def reject_after_capture(request):
+        captured.append(request)
+        return request.model_copy(update={"status": LabRequestStatus.REJECTED})
+
+    service.submit_request = reject_after_capture
+
+    service._provision_workshop_seat(workshop, 0)
+
+    assert captured[0].exposure_policy.value == "public_code"
+
+
 def test_non_admin_cannot_request_workshop_certification_override():
     app.dependency_overrides[get_current_user] = lambda: User(
         username="participant",

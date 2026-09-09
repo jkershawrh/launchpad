@@ -86,8 +86,15 @@ oc patch configmap launchpad-cluster-targets -n "$NAMESPACE" \
 oc set env deployment/backend -n "$NAMESPACE" --containers=backend \
   "PUBLIC_ACCESS_ENABLED=true" \
   "PUBLIC_LABS_SHARED_ORIGIN=$tunnel_url" \
+  "PUBLIC_LABS_SHARED_PATH_MODE=true" \
+  "PUBLIC_ACCESS_PILOT_CLUSTER=arena" >/dev/null
+oc set env deployment/lifecycle-worker -n "$NAMESPACE" --containers=lifecycle-worker \
+  "PUBLIC_ACCESS_ENABLED=true" \
+  "PUBLIC_LABS_SHARED_ORIGIN=$tunnel_url" \
+  "PUBLIC_LABS_SHARED_PATH_MODE=true" \
   "PUBLIC_ACCESS_PILOT_CLUSTER=arena" >/dev/null
 oc rollout status deployment/backend -n "$NAMESPACE" --timeout=180s
+oc rollout status deployment/lifecycle-worker -n "$NAMESPACE" --timeout=180s
 
 log "Configuring strict issuer validation with split browser/back-channel endpoints"
 oc set env deployment/public-access-gateway -n "$NAMESPACE" --containers=oidc-proxy \

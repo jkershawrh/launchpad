@@ -1,0 +1,66 @@
+evidence_id: PA-SAME-ORIGIN-RED-20260909
+stage: RED
+captured_at: 2026-09-09T15:36:16Z
+commit_sha: d369bf55cac477195e7a9c5277d1a085d0cd6f6e
+scope: participant Showroom same-origin URL contract
+command: >-
+  .venv/bin/pytest -q backend/tests/test_public_gateway.py
+  -k 'scopes_tool_paths or drops_unentitled' --disable-warnings
+result: failed-as-designed
+tests:
+  - id: PA-GATE-PATH-RED
+    name: test_public_showroom_config_scopes_tool_paths_to_the_selected_order
+    failure: _rewrite_showroom_config did not accept an order-scoped proxy prefix
+  - id: PA-GATE-ALLOWLIST-RED
+    name: test_public_showroom_drops_unentitled_cluster_private_tabs
+    failure: an undeclared apps.arena.fm2aihpcsed.com tab remained participant-visible
+expected_green:
+  - entitled tools use a gateway-relative order-scoped path
+  - undeclared private cluster tabs are removed
+  - Arena gateway verifies upstream routes with the installed cluster CA bundle
+additional_red_gates:
+  - id: PA-GATE-TLS-RED
+    name: test_arena_gateway_verifies_internal_ingress_with_the_cluster_ca_bundle
+    failure: public-access-gateway had no cluster CA mount and globally disabled TLS verification
+  - id: PA-GATE-MULTIORDER-RED
+    name: test_shared_origin_path_mode_supports_multiple_isolated_orders
+    failure: shared public origin supported only one active order and had no path-scoped resolver
+  - id: PA-GATE-PREFIX-RED
+    name: test_gateway_exposes_participant_home_and_add_lab_routes
+    failure: gateway had no order-prefixed Showroom, tool, or WebSocket routes
+  - id: PA-GATE-TERMINAL-RED
+    name: test_public_showroom_config_scopes_terminal_to_the_selected_order
+    failure: Showroom terminal path did not retain the selected order context
+  - id: PA-GATE-LINKS-RED
+    name: test_order_home_exposes_only_order_scoped_participant_links
+    failure: order landing page linked back to host-global proxy paths
+  - id: PA-GATE-CLAIM-PATH-RED
+    name: test_order_join_form_posts_back_to_the_same_order
+    failure: participant claim form discarded the selected order path
+  - id: PA-OIDC-ORDER-PATH-RED
+    name: test_shared_origin_login_resolves_order_from_redirect_path
+    failure: Keycloak resolved public orders by hostname only
+  - id: PA-GATE-RESPONSE-RED
+    name: test_tool_proxy_rewrites_textual_cluster_urls_to_the_order_mount
+    failure: proxied textual responses could expose absolute execution-cluster URLs
+  - id: PA-GATE-ROTATE-ORIGIN-RED
+    name: test_path_scoped_order_keeps_its_path_when_tunnel_origin_changes
+    failure: Quick Tunnel origin replacement discarded the order-scoped path
+  - id: PA-LIFECYCLE-PILOT-CONFIG-RED
+    name: test_pilot_can_start_before_an_order_and_configures_only_arena_public_placement
+    failure: durable lifecycle workers did not receive the Arena public-pilot placement configuration and rejected queued public orders
+  - id: PA-GATE-WS-HOST-RED
+    name: test_tunnel_websocket_keeps_the_public_host_while_dialing_the_gateway_service
+    failure: the WebSocket dial replaced the OAuth-bound public Host with the internal gateway Service host
+  - id: PA-GATE-WS-TLS-RED
+    name: test_verified_wss_uses_the_websocket_clients_default_tls_context
+    failure: the gateway passed ssl=None for a wss upstream, which websockets 17 rejects
+  - id: PA-GATE-LEGACY-PATH-RED
+    name: test_path_scoped_tunnel_migrates_a_legacy_origin_only_policy
+    failure: rotating a legacy origin-only order did not reconstruct its deterministic /labs path
+  - id: PA-RBAC-DEFER-RED
+    name: test_public_showroom_defers_rbac_until_the_stable_oidc_identity_claims
+    failure: public provisioning granted edit to an untrusted requester label before the stable OIDC claim
+  - id: PA-CLAIM-FULL-AUDIT-RED
+    name: test_full_order_rejects_without_leaking_participants
+    failure: a valid-code claim against a full order returned the uniform denial but did not emit a denied audit event

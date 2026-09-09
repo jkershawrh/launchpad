@@ -1,0 +1,54 @@
+evidence_id: PA-SAME-ORIGIN-GREEN-20260909
+stage: GREEN-local
+captured_at: 2026-09-09T16:57:08Z
+base_commit_sha: d369bf55cac477195e7a9c5277d1a085d0cd6f6e
+scope: same-origin participant gateway and verified Arena upstream TLS
+red_evidence: evidence/public-access/red-same-origin-gateway-2026-09-09.yaml
+focused_test_command: >-
+  .venv/bin/pytest -q backend/tests/test_public_gateway.py
+  backend/tests/test_public_access.py
+  backend/tests/test_public_access_network_policy.py
+  backend/tests/test_public_tunnel_contract.py
+  backend/tests/test_keycloak_authenticator_contract.py
+  backend/tests/test_public_rbac.py
+  backend/tests/test_showroom_provisioning.py
+  backend/tests/test_workshop_order_contract.py --disable-warnings
+focused_test_result:
+  passed: 169
+  failed: 0
+non_local_regression:
+  command: >-
+    .venv/bin/pytest -q backend/tests -m 'not local'
+    --ignore=backend/tests/test_demo_migration.py --disable-warnings
+  passed: 1364
+  skipped: 6
+  deselected: 13
+  failed: 0
+arena_runtime:
+  kubeconfig: /Users/jkershaw/.kube/config-arena
+  deployment: partner-ai-launchpad/public-access-gateway
+  gateway_image_digest: sha256:899f3a348aae85fe066d129d2570a0cad5ce0496273bfb42cf4f62b6df78a897
+  keycloak_image_digest: sha256:a832abd0c5ff245508f656c262ca4c3b9ddebe952f523e081d8b40dbd1342128
+  upstream_tls_verify: true
+  ca_bundle_mount: /etc/launchpad-ca/ca-bundle.crt
+  ca_bundle_sha256: c758e413497af40dcccaee6c2d2cecfb08d68019a4e906ad4b705c76f16fd821
+  live_probe:
+    target: showroom route for seat 76407a
+    result: HTTP 200 with verify=true from the gateway container
+assertions:
+  - entitled Showroom tool tabs use gateway-relative paths
+  - undeclared execution-cluster tabs are removed
+  - shared-origin path mode assigns distinct order URLs
+  - hostname-only lookup fails closed when multiple active policies share a host
+  - landing, claim, Showroom, terminal, tool and WebSocket paths preserve order context
+  - Keycloak order lookup includes the redirect path
+  - textual upstream references are rewritten to the entitled tool mount
+  - public-pilot placement configuration is propagated to API and lifecycle workers
+  - verified wss upstreams use the WebSocket client's default trusted TLS context
+  - legacy Quick Tunnel policies regain their deterministic order path
+  - public provisioning defers edit RBAC until the opaque OIDC identity claims a seat
+  - full-order denials are uniform, rate-limited, and audited
+remaining_live_gates:
+  - run an external browser journey through the Quick Tunnel
+  - certify Console OAuth through the order-scoped path
+  - repeat with two seats and verify cleanup

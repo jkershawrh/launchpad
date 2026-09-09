@@ -32,3 +32,28 @@ Feature: Passwordless public lab access
     When the order TTL expires or the instructor reclaims it
     Then authorization is immediately denied
     And cleanup removes routes namespaces RoleBindings applications entitlements and inactive identities
+
+  Scenario: Multiple orders share one trusted public origin
+    Given two active public workshops use the same approved hostname
+    When a participant opens each order-specific path
+    Then each path resolves only its persisted order and seat
+    And no raw execution-cluster hostname is returned to the browser
+
+  Scenario: Showroom tools remain on the entitled order path
+    Given a participant has an active seat with RAG terminal and Console tools
+    When Showroom loads its generated UI configuration
+    Then every private tool uses an order-scoped gateway-relative path
+    And undeclared private cluster tabs are removed
+    And terminal WebSockets retain the same order context
+
+  Scenario: Participant-created tool is not ready
+    Given the lab guide declares a tool that the participant deploys later
+    When the participant opens its Showroom tab before the Route is ready
+    Then the gateway displays a retryable not-ready panel
+    And the browser does not navigate to an untrusted cluster Route
+
+  Scenario: Gateway verifies private ingress certificates
+    Given the selected cluster ingress CA is installed in the gateway trust bundle
+    When the gateway connects to Showroom Console or an operator Route
+    Then TLS hostname and chain verification succeed
+    And a missing or invalid cluster CA fails closed

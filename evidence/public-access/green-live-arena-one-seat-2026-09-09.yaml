@@ -1,0 +1,89 @@
+evidence_id: PA-ARENA-ONE-SEAT-GREEN-LIVE-20260909
+stage: GREEN-live
+captured_at: 2026-09-09T17:12:03Z
+base_commit_sha: ece6077811a0f685ebdc7aa0831e7392e4529fd9
+scope: one-seat external participant journey through an Arena Cloudflare Quick Tunnel
+environment:
+  cluster: arena
+  order_id: 781069da-6e22-4bd8-994e-f764488dbca5
+  session_id: 6320d8e2-5758-41b8-95da-1d704072929d
+  catalog_item: intel-llm-cpu-serving
+  namespace: launchpad-public-cert-tenant-intel-llm-cpu-serv-781069
+  public_url: https://immediate-century-kenneth-announcements.trycloudflare.com/labs/intel-llm-cpu-serving-781069da
+  session_status: ready
+  seat_limit: 1
+  plaintext_code_recorded: false
+images:
+  launchpad_backend: sha256:899f3a348aae85fe066d129d2570a0cad5ce0496273bfb42cf4f62b6df78a897
+  keycloak: sha256:a832abd0c5ff245508f656c262ca4c3b9ddebe952f523e081d8b40dbd1342128
+test_evidence:
+  focused_public_access:
+    passed: 169
+    failed: 0
+  non_local_backend:
+    passed: 1364
+    skipped: 6
+    deselected: 13
+    failed: 0
+artifact_hashes:
+  red_evidence_sha256: ae7f5935076dd30c887b131612ba2da47ad8ee7086151398914089c70f171c97
+  local_evidence_sha256: 4618d6f5ad8ff34669d8c35249b749a0632de31b897503ed5ae18ccd9b2e6742
+  contract_sha256: ab7399b1fdcc907bb0d0930a3ae737543c3a525d6feb7476efb71e22e944961d
+  bdd_feature_sha256: 2a7a61c3434feca5eac1d32e9bd746f2cc55995f6cd224754527df4a18e12c82
+checks:
+  public_entry_tls:
+    result: pass
+    evidence: trusted TLS; unauthenticated order URL returned HTTP 302 to the same-origin Keycloak path
+  branded_login:
+    result: pass
+    evidence: external browser rendered Red Hat and Intel branding with participant email and instructor-code fields
+  claim_and_recovery:
+    result: pass
+    evidence: repeated login recovered the same opaque identity and same seat after backend and gateway rollouts
+  participant_home:
+    result: pass
+    evidence: order page rendered Your lab is ready, Open Lab, My Lab Access, and Log out of lab
+  my_lab_access:
+    result: pass
+    evidence: active intel-llm-cpu-serving entitlement was resumable and the add-another-lab code form was present
+  showroom:
+    result: pass
+    evidence: content rendered with Terminal, RAG Assistant, and OpenShift Console tabs and no recursive iframe
+  terminal_websocket:
+    result: pass
+    evidence: terminal remained connected, printed LP_TERMINAL_OK, and selected the assigned namespace
+  rag_predeployment_state:
+    result: pass
+    evidence: unavailable participant-created RAG route rendered a retryable Workspace is not ready yet state
+  openshift_console_sso:
+    result: pass
+    evidence: launchpad-public login reused the participant identity and opened the assigned project Pods page
+  seat_workload:
+    result: pass
+    evidence: Showroom pod Running with all three containers ready
+  namespace_authorization:
+    result: pass
+    assigned_namespace_create_deployment: yes
+    other_namespace_create_deployment: no
+    cluster_namespace_list: no
+    rolebinding: launchpad-participant-823200254bb6
+    role: edit
+  legacy_request_label_authorization:
+    result: pass
+    evidence: stale direct requester RoleBinding removed and the legacy requester label cannot create deployments
+  model_catalog:
+    result: pass
+    evidence: authenticated participant terminal request to the seat MaaS /models endpoint returned HTTP 200
+  model_inference:
+    result: pass
+    evidence: authenticated participant terminal chat-completions request returned HTTP 200
+  full_order_denial:
+    result: pass
+    evidence: a second identity received uniform HTTP 403 and the durable audit event was claim:denied
+limitations:
+  - Cloudflare Quick Tunnel certifies behavior only; it is not production ingress or a stable URL.
+  - Production DNS, trusted edge TLS, and public-route isolation remain RED.
+  - rhgnr1 remains cordoned, so lifecycle processing is intentionally one replica and not HA-certified.
+  - Two-seat, five-seat, and twenty-five-seat external concurrency remain separate certification stages.
+  - Rotation, TTL expiration, and complete reclaim evidence are not claimed by this live run.
+  - The participant-created RAG application was not deployed during this infrastructure journey; its not-ready state was validated.

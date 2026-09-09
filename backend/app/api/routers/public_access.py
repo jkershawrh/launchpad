@@ -31,6 +31,7 @@ class IdentityClaimRequest(BaseModel):
     host: str
     username: str
     code: str
+    public_path: str = ""
 
 
 class IdentityCodeClaimRequest(BaseModel):
@@ -365,11 +366,12 @@ def keycloak_validate_by_code(
 @router.get("/private/resolve")
 def resolve_gateway_target(
     host: str,
+    public_path: str = "",
     launchpad_access: str | None = Cookie(default=None),
     x_access_broker_key: str = Header(default=""),
 ):
     _require_broker(x_access_broker_key)
-    policy = public_access_service.get_policy_by_host(host)
+    policy = public_access_service.get_policy_by_request(host, public_path)
     if not policy:
         raise HTTPException(404, "Public order not found")
     try:
@@ -430,18 +432,27 @@ def resolve_gateway_target(
 
 
 @router.get("/private/order-by-host")
-def order_by_host(host: str, x_access_broker_key: str = Header(default="")):
+def order_by_host(
+    host: str,
+    public_path: str = "",
+    x_access_broker_key: str = Header(default=""),
+):
     _require_broker(x_access_broker_key)
-    policy = public_access_service.get_policy_by_host(host)
+    policy = public_access_service.get_policy_by_request(host, public_path)
     if not policy or not policy.enabled:
         raise HTTPException(404, "Public order not found")
     return {"order_id": policy.order_id, "expires_at": policy.expires_at}
 
 
 @router.get("/private/resolve-identity")
-def resolve_oidc_identity(host: str, username: str, x_access_broker_key: str = Header(default="")):
+def resolve_oidc_identity(
+    host: str,
+    username: str,
+    public_path: str = "",
+    x_access_broker_key: str = Header(default=""),
+):
     _require_broker(x_access_broker_key)
-    policy = public_access_service.get_policy_by_host(host)
+    policy = public_access_service.get_policy_by_request(host, public_path)
     identity = next(
         (
             item
@@ -530,6 +541,7 @@ def identity_entitlements(username: str, x_access_broker_key: str = Header(defau
             target = resolve_oidc_identity(
                 host=policy.public_url.split("//", 1)[-1].split("/", 1)[0],
                 username=username,
+                public_path=urlsplit(policy.public_url).path,
                 x_access_broker_key=x_access_broker_key,
             )
         except HTTPException:
@@ -544,7 +556,7 @@ def identity_entitlements(username: str, x_access_broker_key: str = Header(defau
 def claim_oidc_identity(body: IdentityClaimRequest, x_access_broker_key: str = Header(default="")):
     """Add the lab addressed by host to an existing signed-in participant."""
     _require_broker(x_access_broker_key)
-    policy = public_access_service.get_policy_by_host(body.host)
+    policy = public_access_service.get_policy_by_request(body.host, body.public_path)
     identity = next(
         (
             item

@@ -36,7 +36,7 @@ def test_patched_dependency_graphs_and_keycloak_candidate_are_pinned():
     assert jackson.findtext("m:version", namespaces=namespace) == "2.18.9"
 
     deployment = (ROOT / "deploy/launchpad/public-access/keycloak.yaml").read_text()
-    assert "launchpad-keycloak@sha256:aa63ad89397a97be" in deployment
+    assert "launchpad-keycloak@sha256:a832abd0c5ff2455" in deployment
 
 
 def test_security_evidence_is_honest_about_the_live_keycloak_boundary():

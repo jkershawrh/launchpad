@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import html
 import os
+import re
 import ssl
 from datetime import datetime
 from pathlib import Path
@@ -30,10 +31,21 @@ UPSTREAM_TLS_VERIFY = os.getenv("PUBLIC_UPSTREAM_TLS_VERIFY", "true").casefold()
     "no",
 }
 PROXY_METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+_PRIVATE_CLUSTER_ROUTE = re.compile(
+    r"^(?:[a-z0-9-]+\.)*apps\.[a-z0-9-]+\.fm2aihpcsed\.com$"
+)
 
 
 def _host(request: Request) -> str:
     return request.headers.get("host", "").split(":", 1)[0].casefold()
+
+
+def _public_order_prefix(request: Request) -> str:
+    match = re.match(
+        r"^(/labs/[a-z0-9]+(?:-[a-z0-9]+)*)(?:/|$)",
+        request.url.path.casefold(),
+    )
+    return match.group(1) if match else ""
 
 
 def _username(request: Request) -> str:
@@ -50,17 +62,22 @@ def _username(request: Request) -> str:
 async def _resolve(request: Request) -> dict:
     username = _username(request)
     cookie = request.cookies.get("launchpad_access", "")
+    public_path = _public_order_prefix(request)
     async with httpx.AsyncClient(timeout=10) as client:
         if username:
             result = await client.get(
                 f"{BACKEND}/public-access/private/resolve-identity",
-                params={"host": _host(request), "username": username},
+                params={
+                    "host": _host(request),
+                    "username": username,
+                    "public_path": public_path,
+                },
                 headers={"X-Access-Broker-Key": BROKER_KEY},
             )
         else:
             result = await client.get(
                 f"{BACKEND}/public-access/private/resolve",
-                params={"host": _host(request)},
+                params={"host": _host(request), "public_path": public_path},
                 headers={"X-Access-Broker-Key": BROKER_KEY},
                 cookies={"launchpad_access": cookie},
             )
@@ -88,12 +105,72 @@ def _tool_upstream_url(base: str, path: str, query: str) -> str:
     return f"{url}?{query}" if query else url
 
 
+def _rewrite_upstream_content(
+    content: bytes,
+    content_type: str,
+    upstream_origin: str,
+    public_mount: str,
+) -> bytes:
+    """Keep textual tool references on the entitlement-aware public origin."""
+    media_type = content_type.split(";", 1)[0].strip().casefold()
+    textual = (
+        media_type.startswith("text/")
+        or media_type in {
+            "application/javascript",
+            "application/json",
+            "application/manifest+json",
+            "application/xml",
+            "application/xhtml+xml",
+        }
+        or media_type.endswith("+json")
+        or media_type.endswith("+xml")
+    )
+    if not textual:
+        return content
+    try:
+        source = content.decode("utf-8")
+    except UnicodeDecodeError:
+        return content
+    upstream = upstream_origin.rstrip("/")
+    public = public_mount.rstrip("/")
+    source = source.replace(upstream, public)
+    source = source.replace(upstream.replace("/", r"\/"), public.replace("/", r"\/"))
+    return source.encode("utf-8")
+
+
+def _tool_not_ready(tool_id: str) -> HTMLResponse:
+    label = html.escape(tool_id.replace("-", " ").title())
+    return HTMLResponse(
+        _page(
+            f"<h1>{label} is not ready yet</h1>"
+            "<p>Complete the deployment step in the lab guide, then retry this tab.</p>"
+        ).body,
+        status_code=503,
+        headers={"Retry-After": "5"},
+    )
+
+
+def _websocket_tls_options(scheme: str) -> dict[str, ssl.SSLContext]:
+    """Let websockets create its verified context unless verification is disabled."""
+    if scheme != "wss" or UPSTREAM_TLS_VERIFY:
+        return {}
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return {"ssl": context}
+
+
 def _rewrite_showroom_config(
     source: str,
     tool_urls: dict[str, str],
     public_console_url: str | None = None,
+    proxy_prefix: str = "",
 ) -> str:
     """Replace only entitled tab URLs with gateway-relative proxy paths."""
+    if proxy_prefix:
+        if not re.fullmatch(r"/labs/[a-z0-9]+(?:-[a-z0-9]+)*", proxy_prefix):
+            raise ValueError("Invalid public order proxy prefix")
+        proxy_prefix = proxy_prefix.rstrip("/")
     config = yaml.safe_load(source)
     if not isinstance(config, dict) or not isinstance(config.get("tabs"), list):
         raise TypeError("Showroom UI config is not a tab mapping")
@@ -104,6 +181,15 @@ def _rewrite_showroom_config(
     )
     rewritten_tabs = []
     for tab in config["tabs"]:
+        if (
+            proxy_prefix
+            and isinstance(tab, dict)
+            and isinstance(tab.get("path"), str)
+            and tab["path"].startswith("/terminal")
+        ):
+            tab["path"] = f"{proxy_prefix}/showroom{tab['path']}"
+            rewritten_tabs.append(tab)
+            continue
         if not isinstance(tab, dict) or not isinstance(tab.get("url"), str):
             rewritten_tabs.append(tab)
             continue
@@ -111,14 +197,21 @@ def _rewrite_showroom_config(
         tab_host = urlsplit(tab_url).hostname or ""
         if tab_host.startswith("console-openshift-console."):
             if public_console_url:
-                tab["url"] = "/proxy/console/"
+                tab["url"] = f"{proxy_prefix}/proxy/console/"
                 rewritten_tabs.append(tab)
             continue
+        entitled = False
         for tool_id, base in allowed:
             if tab_url == base or tab_url.startswith(base + "/"):
                 suffix = tab_url[len(base) :].lstrip("/")
-                tab["url"] = f"/proxy/tool/{tool_id}/{suffix}"
+                tab["url"] = f"{proxy_prefix}/proxy/tool/{tool_id}/{suffix}"
+                entitled = True
                 break
+        if not entitled and _PRIVATE_CLUSTER_ROUTE.fullmatch(tab_host.casefold()):
+            # Never leave a raw execution-cluster route in participant-facing
+            # configuration. A catalog declaration and entitlement-aware
+            # gateway mapping are required before the tab can be exposed.
+            continue
         rewritten_tabs.append(tab)
     config["tabs"] = rewritten_tabs
     return yaml.safe_dump(config, sort_keys=False)
@@ -163,19 +256,24 @@ def health():
 
 
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+@app.get("/labs/{order_ref}", response_class=HTMLResponse)
+@app.get("/labs/{order_ref}/", response_class=HTMLResponse)
+async def home(request: Request, order_ref: str = ""):
     username = _username(request)
+    proxy_prefix = _public_order_prefix(request)
     try:
         target = await _resolve(request)
     except HTTPException:
         if username:
             return _page(
                 "<h1>Add this lab</h1><p>You are already signed in. Enter only this lab's instructor code.</p>"
-                "<form method=post action=/add-lab><input name=code required autocomplete=one-time-code "
+                f"<form method=post action={proxy_prefix}/add-lab><input name=code required autocomplete=one-time-code "
                 "placeholder='Instructor code'><button>Add lab</button></form><a href='/my-labs'>My Lab Access</a>"
             )
         return _page(
-            "<h1>Join your lab</h1><p>Enter the email label and code supplied by your instructor.</p><small>Email ownership is not verified. The instructor code is the sole secret.</small><form method=post action=/claim><input name=email type=email required placeholder='Email'><input name=code required autocomplete=one-time-code placeholder='Instructor code'><button>Join lab</button></form>"
+            "<h1>Join your lab</h1><p>Enter the email label and code supplied by your instructor.</p><small>Email ownership is not verified. The instructor code is the sole secret.</small>"
+            f"<form method=post action={proxy_prefix}/claim><input name=email type=email required placeholder='Email'>"
+            "<input name=code required autocomplete=one-time-code placeholder='Instructor code'><button>Join lab</button></form>"
         )
     links = []
     for key, label in (
@@ -186,7 +284,12 @@ async def home(request: Request):
         if key == "console_url" and target.get("showroom_url"):
             continue
         if target.get(key):
-            path = "/proxy/" + key.removesuffix("_url") + "/"
+            if key == "showroom_url" and proxy_prefix:
+                path = f"{proxy_prefix}/showroom/"
+            elif key == "workspace_url" and "workspace" in target.get("tool_urls", {}):
+                path = f"{proxy_prefix}/proxy/tool/workspace/"
+            else:
+                path = f"{proxy_prefix}/proxy/{key.removesuffix('_url')}/"
             links.append(f"<a class='button' href='{path}'>{html.escape(label)}</a>")
     return _page(
         f"<h1>Your lab is ready</h1><p>Seat <strong>{html.escape(target['seat_ref'])}</strong></p><div class='actions'>{''.join(links)}<a class='button secondary' href='/my-labs'>My Lab Access</a><a class='button secondary' href='/oauth2/sign_out?rd=%2Frealms%2Flaunchpad-public%2Fprotocol%2Fopenid-connect%2Flogout'>Log out of lab</a></div><small>Logging out preserves your seat. Access ends at {html.escape(str(target['expires_at']))}.</small>"
@@ -226,30 +329,42 @@ async def add_lab_by_code(request: Request, code: str = Form()):
 
 
 @app.post("/add-lab")
-async def add_lab(request: Request, code: str = Form()):
+@app.post("/labs/{order_ref}/add-lab")
+async def add_lab(request: Request, code: str = Form(), order_ref: str = ""):
     username = _username(request)
     if not username:
         return RedirectResponse("/", status_code=303)
     async with httpx.AsyncClient(timeout=15) as client:
         result = await client.post(
             f"{BACKEND}/public-access/private/claim-identity",
-            json={"host": _host(request), "username": username, "code": code},
+            json={
+                "host": _host(request),
+                "username": username,
+                "code": code,
+                "public_path": _public_order_prefix(request),
+            },
             headers={"X-Access-Broker-Key": BROKER_KEY},
         )
     if result.status_code != 200:
         return _page(
             "<h1>Access denied</h1><p>Access request cannot be completed. Check the instructor code.</p><a href='/my-labs'>My Lab Access</a>"
         )
-    return RedirectResponse("/", status_code=303)
+    return RedirectResponse(_public_order_prefix(request) or "/", status_code=303)
 
 
 @app.post("/claim")
-async def claim(request: Request, email: str = Form(), code: str = Form()):
+@app.post("/labs/{order_ref}/claim")
+async def claim(
+    request: Request,
+    email: str = Form(),
+    code: str = Form(),
+    order_ref: str = "",
+):
     host = _host(request)
     async with httpx.AsyncClient(timeout=15) as client:
         policy = await client.get(
             f"{BACKEND}/public-access/private/order-by-host",
-            params={"host": host},
+            params={"host": host, "public_path": _public_order_prefix(request)},
             headers={"X-Access-Broker-Key": BROKER_KEY},
         )
         if policy.status_code != 200:
@@ -262,7 +377,7 @@ async def claim(request: Request, email: str = Form(), code: str = Form()):
         return _page(
             "<h1>Access denied</h1><p>Access request cannot be completed. Check the instructor code.</p>"
         )
-    response = RedirectResponse("/", status_code=303)
+    response = RedirectResponse(_public_order_prefix(request) or "/", status_code=303)
     cookie = result.cookies.get("launchpad_access")
     if cookie:
         expiry = datetime.fromisoformat(result.json()["session_expires_at"])
@@ -279,7 +394,13 @@ async def claim(request: Request, email: str = Form(), code: str = Form()):
 
 
 @app.get("/proxy/{kind}/{path:path}")
-async def proxy(kind: str, path: str, request: Request):
+@app.get("/labs/{order_ref}/proxy/{kind}/{path:path}")
+async def proxy(
+    kind: str,
+    path: str,
+    request: Request,
+    order_ref: str = "",
+):
     # Starlette resolves routes in declaration order.  This legacy catch-all
     # is registered before the more specific HTTP tool proxy below, so forward
     # the tool shape explicitly instead of rejecting it as an unknown kind.
@@ -287,6 +408,8 @@ async def proxy(kind: str, path: str, request: Request):
         tool_id, separator, tool_path = path.partition("/")
         if not tool_id or not separator:
             raise HTTPException(404)
+        if order_ref:
+            return await proxy_tool(tool_id, tool_path, request, order_ref)
         return await proxy_tool(tool_id, tool_path, request)
     if kind not in {"showroom", "workspace", "console"}:
         raise HTTPException(404)
@@ -323,7 +446,15 @@ async def proxy(kind: str, path: str, request: Request):
 
 
 @app.api_route("/proxy/tool/{tool_id}/{path:path}", methods=PROXY_METHODS)
-async def proxy_tool(tool_id: str, path: str, request: Request):
+@app.api_route(
+    "/labs/{order_ref}/proxy/tool/{tool_id}/{path:path}", methods=PROXY_METHODS
+)
+async def proxy_tool(
+    tool_id: str,
+    path: str,
+    request: Request,
+    order_ref: str = "",
+):
     target = await _resolve(request)
     base = target.get("tool_urls", {}).get(tool_id)
     if not base:
@@ -338,17 +469,20 @@ async def proxy_tool(tool_id: str, path: str, request: Request):
         if key.casefold()
         in {"accept", "accept-language", "content-type", "if-none-match", "range", "user-agent"}
     }
-    async with httpx.AsyncClient(
-        timeout=30,
-        follow_redirects=False,
-        verify=UPSTREAM_TLS_VERIFY,
-    ) as client:
-        upstream = await client.request(
-            request.method,
-            url,
-            content=await request.body(),
-            headers=request_headers,
-        )
+    try:
+        async with httpx.AsyncClient(
+            timeout=30,
+            follow_redirects=False,
+            verify=UPSTREAM_TLS_VERIFY,
+        ) as client:
+            upstream = await client.request(
+                request.method,
+                url,
+                content=await request.body(),
+                headers=request_headers,
+            )
+    except httpx.RequestError:
+        return _tool_not_ready(tool_id)
     excluded = {
         "content-length",
         "content-encoding",
@@ -359,6 +493,7 @@ async def proxy_tool(tool_id: str, path: str, request: Request):
     response_headers = {
         key: value for key, value in upstream.headers.items() if key.casefold() not in excluded
     }
+    public_mount = f"{_public_order_prefix(request)}/proxy/tool/{tool_id}"
     location = response_headers.get("location")
     if location:
         redirected = urljoin(base.rstrip("/") + "/", location)
@@ -369,18 +504,36 @@ async def proxy_tool(tool_id: str, path: str, request: Request):
             parsed_base.netloc,
         ):
             suffix = parsed_redirect.path.lstrip("/")
-            response_headers["location"] = f"/proxy/tool/{tool_id}/{suffix}"
+            response_headers["location"] = f"{public_mount}/{suffix}"
             if parsed_redirect.query:
                 response_headers["location"] += f"?{parsed_redirect.query}"
-    return Response(
+    if (
+        upstream.status_code in {502, 503, 504}
+        and request.method == "GET"
+        and "text/html" in request.headers.get("accept", "")
+    ):
+        return _tool_not_ready(tool_id)
+    content = _rewrite_upstream_content(
         upstream.content,
+        upstream.headers.get("content-type", ""),
+        base,
+        public_mount,
+    )
+    return Response(
+        content,
         status_code=upstream.status_code,
         headers=response_headers,
     )
 
 
 @app.websocket("/proxy/tool/{tool_id}/{path:path}")
-async def proxy_tool_socket(client: WebSocket, tool_id: str, path: str):
+@app.websocket("/labs/{order_ref}/proxy/tool/{tool_id}/{path:path}")
+async def proxy_tool_socket(
+    client: WebSocket,
+    tool_id: str,
+    path: str,
+    order_ref: str = "",
+):
     try:
         target = await _resolve(client)
         base = target.get("tool_urls", {}).get(tool_id)
@@ -443,7 +596,11 @@ async def proxy_tool_socket(client: WebSocket, tool_id: str, path: str):
         pass
 
 
-async def _showroom_alias(request: Request, path: str) -> Response:
+async def _showroom_alias(
+    request: Request,
+    path: str,
+    proxy_prefix: str = "",
+) -> Response:
     target = await _resolve(request)
     base = target.get("showroom_url")
     if not base:
@@ -472,6 +629,7 @@ async def _showroom_alias(request: Request, path: str) -> Response:
                 upstream.content.decode(upstream.encoding or "utf-8"),
                 target.get("tool_urls", {}),
                 target.get("console_url"),
+                proxy_prefix=proxy_prefix,
             )
         except (TypeError, UnicodeDecodeError, ValueError, yaml.YAMLError) as exc:
             raise HTTPException(502, "Invalid Showroom UI configuration") from exc
@@ -479,6 +637,28 @@ async def _showroom_alias(request: Request, path: str) -> Response:
         content,
         status_code=upstream.status_code,
         headers={k: v for k, v in upstream.headers.items() if k.casefold() not in excluded},
+    )
+
+
+@app.api_route("/labs/{order_ref}/showroom", methods=["GET", "HEAD"])
+async def order_showroom_redirect(order_ref: str):
+    return RedirectResponse(f"/labs/{order_ref}/showroom/", status_code=302)
+
+
+@app.api_route(
+    "/labs/{order_ref}/showroom/{path:path}",
+    methods=["GET", "HEAD", "POST"],
+)
+async def order_showroom(
+    request: Request,
+    order_ref: str,
+    path: str = "",
+):
+    upstream_path = f"www/{path}" if path == "ui-config.yml" else path
+    return await _showroom_alias(
+        request,
+        upstream_path,
+        proxy_prefix=f"/labs/{order_ref}",
     )
 
 
@@ -522,7 +702,13 @@ async def showroom_terminal_token(request: Request):
 
 @app.websocket("/ws")
 @app.websocket("/terminal/{path:path}")
-async def showroom_terminal_socket(client: WebSocket, path: str = ""):
+@app.websocket("/labs/{order_ref}/showroom/ws")
+@app.websocket("/labs/{order_ref}/showroom/terminal/{path:path}")
+async def showroom_terminal_socket(
+    client: WebSocket,
+    path: str = "",
+    order_ref: str = "",
+):
     try:
         target = await _resolve(client)
     except HTTPException:
@@ -533,15 +719,14 @@ async def showroom_terminal_socket(client: WebSocket, path: str = ""):
         await client.close(code=4404)
         return
     scheme = "wss" if base.startswith("https://") else "ws"
-    upstream_path = "ws" if client.url.path == "/ws" else f"terminal/{path}"
+    upstream_path = (
+        "ws"
+        if client.url.path == "/ws" or client.url.path.endswith("/showroom/ws")
+        else f"terminal/{path}"
+    )
     upstream_url = f"{scheme}://{base.split('://', 1)[-1].rstrip('/')}/{upstream_path}"
     if client.url.query:
         upstream_url += "?" + client.url.query
-    tls = None
-    if scheme == "wss" and not UPSTREAM_TLS_VERIFY:
-        tls = ssl.create_default_context()
-        tls.check_hostname = False
-        tls.verify_mode = ssl.CERT_NONE
     requested_protocols = [
         value.strip() for value in client.headers.get("sec-websocket-protocol", "").split(",")
     ]
@@ -550,8 +735,8 @@ async def showroom_terminal_socket(client: WebSocket, path: str = ""):
     try:
         async with websockets.connect(
             upstream_url,
-            ssl=tls,
             subprotocols=[selected_protocol] if selected_protocol else None,
+            **_websocket_tls_options(scheme),
         ) as upstream:
 
             async def to_upstream():

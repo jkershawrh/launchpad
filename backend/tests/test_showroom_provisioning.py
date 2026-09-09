@@ -45,6 +45,23 @@ def test_guided_catalog_item_adds_showroom_to_plan():
     assert plan.required_resources["workspace_path"] == "/try-it"
 
 
+def test_public_showroom_defers_rbac_until_the_stable_oidc_identity_claims():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._overlay_path = "/tmp/demo"
+    request = LabRequest(
+        tenant_id="partner-a",
+        requester_id="untrusted-request-label",
+        catalog_item_id="guided-rag-on-xeon",
+        requested_mode=CatalogCategory.GUIDED_BUILD,
+        exposure_policy="public_code",
+    )
+
+    plan = adapter.create_plan(request, _guided_item())
+
+    assert plan.required_resources["exposure_policy"] == "public_code"
+    assert adapter._grants_direct_participant_access(plan.required_resources) is False
+
+
 def test_remote_showroom_plan_carries_target_specific_support_images():
     adapter = object.__new__(OpenShiftProvisioningAdapter)
     adapter._overlay_path = "/tmp/demo"

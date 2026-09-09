@@ -58,7 +58,7 @@ def test_arena_public_gateway_validates_the_stable_keycloak_issuer():
     )
 
 
-def test_arena_pilot_accepts_the_internal_ingress_certificate_chain():
+def test_arena_gateway_verifies_internal_ingress_with_the_cluster_ca_bundle():
     rendered = subprocess.run(
         ["oc", "kustomize", str(ARENA_OVERLAY)],
         check=True,
@@ -78,5 +78,17 @@ def test_arena_pilot_accepts_the_internal_ingress_certificate_chain():
         if container["name"] == "gateway"
     )
     env = {item["name"]: item.get("value") for item in gateway["env"]}
+    mounts = {item["name"]: item for item in gateway["volumeMounts"]}
+    volumes = {
+        item["name"]: item
+        for item in deployment["spec"]["template"]["spec"]["volumes"]
+    }
 
-    assert env["PUBLIC_UPSTREAM_TLS_VERIFY"] == "false"
+    assert env["PUBLIC_UPSTREAM_TLS_VERIFY"] == "true"
+    assert env["SSL_CERT_FILE"] == "/etc/launchpad-ca/ca-bundle.crt"
+    assert env["REQUESTS_CA_BUNDLE"] == "/etc/launchpad-ca/ca-bundle.crt"
+    assert mounts["cluster-ca-bundle"]["mountPath"] == "/etc/launchpad-ca"
+    assert volumes["cluster-ca-bundle"]["configMap"] == {
+        "name": "launchpad-cluster-ca-bundle",
+        "optional": False,
+    }

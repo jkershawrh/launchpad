@@ -80,7 +80,9 @@ def test_pilot_can_start_before_an_order_and_configures_only_arena_public_placem
 
     assert '[[ -n "$ORDER_ID" ]] || die' not in script
     assert 'PUBLIC_LABS_SHARED_ORIGIN=$tunnel_url' in script
+    assert 'PUBLIC_LABS_SHARED_PATH_MODE=true' in script
     assert 'PUBLIC_ACCESS_PILOT_CLUSTER=arena' in script
+    assert 'oc set env deployment/lifecycle-worker' in script
     assert 'cluster["public_console_url"] = tunnel_url' in script
     assert 'cluster["public_oauth_url"] = tunnel_url + "/oauth"' in script
     assert "configmap launchpad-cluster-targets" in script
@@ -94,6 +96,8 @@ def test_stopping_the_disposable_pilot_fails_public_ordering_closed():
     assert "PUBLIC_ACCESS_ENABLED-" in script
     assert "PUBLIC_LABS_SHARED_ORIGIN-" in script
     assert "PUBLIC_ACCESS_PILOT_CLUSTER-" in script
+    assert "PUBLIC_LABS_SHARED_PATH_MODE-" in script
+    assert "oc set env deployment/lifecycle-worker" in script
     assert 'cluster["public_console_url"] = ""' in script
     assert 'cluster["public_oauth_url"] = ""' in script
     assert "scale deployment/public-access-gateway --replicas=0" in script
@@ -207,3 +211,24 @@ def test_console_router_keeps_http_only_and_scopes_proxy_cookie_paths():
     assert "SameSite=None" in console_cookie
     assert "HttpOnly" in oauth_cookie
     assert "Path=/oauth" in oauth_cookie
+
+
+def test_tunnel_websocket_keeps_the_public_host_while_dialing_the_gateway_service():
+    router = _router_module()
+
+    url, connect_overrides = router._websocket_connection(
+        router.GATEWAY_ORIGIN,
+        "labs/serve-llms-1234/showroom/terminal/ws",
+        "token=abc",
+        "pilot.trycloudflare.com",
+    )
+
+    assert url == (
+        "ws://pilot.trycloudflare.com/"
+        "labs/serve-llms-1234/showroom/terminal/ws?token=abc"
+    )
+    assert connect_overrides == {
+        "host": "public-access-gateway.partner-ai-launchpad.svc",
+        "port": 8443,
+        "proxy": None,
+    }

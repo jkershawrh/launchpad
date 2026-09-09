@@ -9,6 +9,10 @@ data:
   # TLS certificate, Keycloak broker and OpenShift OIDC integration.
   PUBLIC_ACCESS_ENABLED: "false"
   PUBLIC_LABS_DOMAIN: ""
+  # A shared public origin can host multiple orders only when every order is
+  # addressed by its persisted /labs/<order-ref> path. Keep this disabled in
+  # the base so hostname-only installations retain their existing contract.
+  PUBLIC_LABS_SHARED_PATH_MODE: "false"
   SHOWROOM_ARGOCD_NAMESPACE: argocd
   SHOWROOM_ARGOCD_PROJECT: default
   SHOWROOM_CHART_VERSION: "2.2.*"
