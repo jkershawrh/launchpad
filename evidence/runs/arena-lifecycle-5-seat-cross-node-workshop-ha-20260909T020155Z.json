@@ -1,0 +1,159 @@
+{
+  "schema": "launchpad.redhat.com/workshop-lifecycle-ha-live-certification/v1",
+  "evidence_id": "ARENA-LIFECYCLE-5-SEAT-CROSS-NODE-WORKSHOP-HA-20260909T020913Z",
+  "result": "GREEN-live-five-seat-cross-node-workshop-ha",
+  "source": {
+    "commit": "90413c95682f898c362f512a8f7acd66efb4fa6e",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:90790c6ae143f862e0d0e2c73c69ede394ce71cf97cc68c0b86905c03745ccbf",
+    "cluster_ref": "arena"
+  },
+  "topology": {
+    "worker_processes": 2,
+    "worker_nodes": [
+      "gnr2.fm2aihpcsed.com",
+      "rhgnr1"
+    ],
+    "node_separated_processes": true,
+    "node_ha_certified": false
+  },
+  "workshop": {
+    "workshop_id": "b04d081e-cbc6-4549-9b55-e175effeedeb",
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "cluster_ref": "arena",
+    "seats_requested": 5,
+    "seats_ready": 5,
+    "unique_session_ids": 5,
+    "unique_namespaces": 5,
+    "seat_proofs": [
+      {
+        "seat_number": 1,
+        "seat_id": "ec49fa08-703e-4ad4-9f67-6aef1529d3d8",
+        "session_id": "bee53c1f-81a5-471e-a414-04529b1cdfae",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-ec49fa",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-ec49fa.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 2,
+        "seat_id": "3cbec307-f4f9-4207-a06a-956854b77ff0",
+        "session_id": "16dcfa53-7dfd-45c6-8804-6adef17bcb35",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-3cbec3",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-3cbec3.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 3,
+        "seat_id": "792ffb04-a90e-4037-955a-28a7cb009949",
+        "session_id": "b88cbabd-5704-4770-a985-5fd66c267e66",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-792ffb",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-792ffb.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 4,
+        "seat_id": "c4ce9c1b-b322-4b94-9339-99dfea00b0e0",
+        "session_id": "e811d83a-2818-4c36-94c1-8f88f81783f3",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-c4ce9c",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-c4ce9c.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      },
+      {
+        "seat_number": 5,
+        "seat_id": "0477593e-5f25-4b40-a875-1d8f4889ad68",
+        "session_id": "05815454-abba-45f8-9326-0ab1b22e1f4d",
+        "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-047759",
+        "status": "ready",
+        "showroom_url": "https://showroom-launchpad-ha-cert-tenant-intel-llm-cpu-serv-047759.apps.arena.fm2aihpcsed.com",
+        "showroom_http": 200
+      }
+    ]
+  },
+  "provision_takeover": {
+    "job_id": "1f3882fa-362c-4b63-ac0b-6a3e474978dc",
+    "operation": "PROVISION_WORKSHOP",
+    "initial_owner_node": "gnr2.fm2aihpcsed.com",
+    "deleted_pod": "lifecycle-worker-5b6894cd7c-rswt7",
+    "deleted_at": "2026-09-09T02:02:14Z",
+    "initial": {
+      "operation": "provision_workshop",
+      "status": "running",
+      "owner_id": "lifecycle-worker-5b6894cd7c-rswt7-28e4aabf",
+      "fencing_token": 1,
+      "attempts": 1,
+      "step": "execution-started",
+      "last_error": null
+    },
+    "takeover": {
+      "final": {
+        "operation": "provision_workshop",
+        "status": "succeeded",
+        "owner_id": null,
+        "fencing_token": 2,
+        "attempts": 2,
+        "step": "completed",
+        "last_error": null
+      },
+      "replacement_owner": "lifecycle-worker-5b6894cd7c-jpblv-d364f93a",
+      "takeover_seconds": 30.876,
+      "completion_seconds": 285.308
+    }
+  },
+  "reclaim_takeover": {
+    "job_id": "799c04a6-f8c2-498d-b480-785bcbfe44fc",
+    "operation": "RECLAIM_WORKSHOP",
+    "initial_owner_node": "gnr2.fm2aihpcsed.com",
+    "deleted_pod": "lifecycle-worker-5b6894cd7c-wc9mv",
+    "deleted_at": "2026-09-09T02:07:40Z",
+    "initial": {
+      "operation": "reclaim_workshop",
+      "status": "running",
+      "owner_id": "lifecycle-worker-5b6894cd7c-wc9mv-09abb6fc",
+      "fencing_token": 3,
+      "attempts": 1,
+      "step": "execution-started",
+      "last_error": null
+    },
+    "takeover": {
+      "final": {
+        "operation": "reclaim_workshop",
+        "status": "succeeded",
+        "owner_id": null,
+        "fencing_token": 4,
+        "attempts": 2,
+        "step": "completed",
+        "last_error": null
+      },
+      "replacement_owner": "lifecycle-worker-5b6894cd7c-jpblv-d364f93a",
+      "takeover_seconds": 45.79,
+      "completion_seconds": 49.368
+    }
+  },
+  "cleanup": {
+    "namespaces": 0,
+    "routes": 0,
+    "role_bindings": 0,
+    "argocd_applications": 0
+  },
+  "public_certification_lab_preserved": true,
+  "proof_strategy": {
+    "TDD": "Certifier safety, seat uniqueness and evidence contracts were RED before implementation.",
+    "EDD": "The receipt records immutable source, aggregate jobs, fences, timings, every seat route and aggregate cleanup counts.",
+    "CDD": "Workshop, session, placement, lifecycle-job and resource-label contracts are checked.",
+    "BDD": "A workshop must survive aggregate provision and reclaim owner loss with every seat usable and zero residue.",
+    "CBT": "Queue ownership, placement, sessions, namespaces, Showroom routes, Applications and cleanup are checked independently."
+  },
+  "certification_boundary": {
+    "five_seat_workshop_process_ha": "certified",
+    "twenty_five_seat_workshop_ha": "not certified",
+    "hard_node_failure": "not certified",
+    "flightpath_dr": "not certified"
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  }
+}
