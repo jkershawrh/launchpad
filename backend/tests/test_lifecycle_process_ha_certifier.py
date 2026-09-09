@@ -20,13 +20,15 @@ def test_certifier_is_explicitly_arena_scoped_and_fail_closed():
     assert "The certified 30-second worker lease is not deployed" in script
     assert "target_cluster:\"arena\"" in script
     assert "oc config use-context" not in script
-    assert "oc adm uncordon" not in script
+    assert '"${OC[@]}" adm uncordon "$CORDONED_NODE"' in script
 
 
 def test_certifier_faults_both_jobs_and_requires_fenced_zero_residue_recovery():
     script = _script()
 
-    assert script.count('delete pod "$pod"') == 1
+    # One deletion faults the owner; the second is a post-proof rebalance that
+    # restores one idle worker per node in cross-node mode.
+    assert script.count('delete pod "$pod"') == 2
     assert "--force --grace-period=0 --wait=false" in script
     assert script.count("wait_for_takeover_completion") == 3
     assert '(( fence > initial_fence ))' in script
@@ -49,3 +51,16 @@ def test_certifier_evidence_is_credential_free_and_hashed():
     assert 'ADMIN_KEY=""' in script
     assert 'shasum -a 256 "$OUTPUT_PATH"' in script
     assert "public_certification_lab_preserved:true" in script
+
+
+def test_certifier_supports_reversible_cross_node_process_takeover():
+    script = _script()
+
+    assert "--cross-node" in script
+    assert "Cross-node mode requires two distinct worker nodes" in script
+    assert 'cordon_owner_node "$PROVISION_INITIAL_OWNER"' in script
+    assert 'cordon_owner_node "$RECLAIM_INITIAL_OWNER"' in script
+    assert 'restore_cordoned_node' in script
+    assert "GREEN-live-cross-node-process-ha" in script
+    assert 'cross_node_process_ha:"certified"' in script
+    assert 'hard_node_failure:"not certified"' in script

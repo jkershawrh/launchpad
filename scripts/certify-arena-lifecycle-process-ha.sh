@@ -3,19 +3,24 @@ set -euo pipefail
 
 # Deterministic one-seat lifecycle process-takeover proof for Arena.
 #
-# This intentionally deletes the lifecycle worker that owns each test job. It
-# never uncordons nodes or changes cluster placement. The only shared mutation
-# is deleting the lifecycle-worker process that currently owns the test job;
-# tenant-resource cleanup remains scoped to the generated session.
+# This intentionally deletes the lifecycle worker that owns each test job. In
+# cross-node mode it also cordons only the owning node, then always restores it;
+# it never drains or reboots a node. Tenant-resource cleanup remains scoped to
+# the generated session.
 
 usage() {
-  echo "usage: $0 /absolute/arena.kubeconfig --confirm-worker-deletion" >&2
+  echo "usage: $0 /absolute/arena.kubeconfig --confirm-worker-deletion [--cross-node]" >&2
   exit 2
 }
 
-[[ $# -eq 2 ]] || usage
+[[ $# -eq 2 || $# -eq 3 ]] || usage
 KUBECONFIG_PATH="$1"
 [[ "$2" == "--confirm-worker-deletion" ]] || usage
+CROSS_NODE="false"
+if [[ $# -eq 3 ]]; then
+  [[ "$3" == "--cross-node" ]] || usage
+  CROSS_NODE="true"
+fi
 [[ "$KUBECONFIG_PATH" == /* && -f "$KUBECONFIG_PATH" ]] || {
   echo "Arena kubeconfig must be an explicit absolute file" >&2
   exit 2
@@ -27,7 +32,12 @@ CATALOG_ITEM_ID="${CATALOG_ITEM_ID:-intel-llm-cpu-serving}"
 REQUESTER_ID="${REQUESTER_ID:-arena-process-ha-certifier}"
 LOCAL_PORT="${LOCAL_PORT:-18102}"
 API_BASE="http://127.0.0.1:${LOCAL_PORT}"
-OUTPUT_PATH="${OUTPUT_PATH:-evidence/runs/arena-lifecycle-process-ha-clean-$(date -u +%Y%m%dT%H%M%SZ).json}"
+if [[ "$CROSS_NODE" == "true" ]]; then
+  DEFAULT_OUTPUT_PATH="evidence/runs/arena-lifecycle-cross-node-process-ha-$(date -u +%Y%m%dT%H%M%SZ).json"
+else
+  DEFAULT_OUTPUT_PATH="evidence/runs/arena-lifecycle-process-ha-clean-$(date -u +%Y%m%dT%H%M%SZ).json"
+fi
+OUTPUT_PATH="${OUTPUT_PATH:-$DEFAULT_OUTPUT_PATH}"
 
 OC=(oc --kubeconfig "$KUBECONFIG_PATH")
 PF_PID=""
@@ -36,6 +46,7 @@ PF_LOG="$CERT_TMP/backend-port-forward.log"
 SESSION_ID=""
 RECLAIM_COMPLETED="false"
 ADMIN_KEY=""
+CORDONED_NODE=""
 
 api() {
   local method="$1"
@@ -58,9 +69,17 @@ queue_reclaim_best_effort() {
   fi
 }
 
+restore_cordoned_node() {
+  if [[ -n "$CORDONED_NODE" ]]; then
+    "${OC[@]}" adm uncordon "$CORDONED_NODE" >/dev/null
+    CORDONED_NODE=""
+  fi
+}
+
 cleanup() {
   local exit_code=$?
   trap - EXIT INT TERM
+  restore_cordoned_node >/dev/null 2>&1 || true
   queue_reclaim_best_effort
   if [[ -n "$PF_PID" ]]; then
     kill "$PF_PID" >/dev/null 2>&1 || true
@@ -131,6 +150,52 @@ owner_pod() {
     -l app.kubernetes.io/name=lifecycle-worker \
     -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}')
   echo "Could not map lifecycle owner $owner_id to a running pod" >&2
+  return 1
+}
+
+owner_node() {
+  local owner_id="$1"
+  local pod
+  pod="$(owner_pod "$owner_id")"
+  "${OC[@]}" -n "$NAMESPACE" get pod "$pod" -o jsonpath='{.spec.nodeName}'
+}
+
+cordon_owner_node() {
+  local owner_id="$1"
+  [[ "$CROSS_NODE" == "true" ]] || return 0
+  [[ -z "$CORDONED_NODE" ]] || {
+    echo "Refusing to cordon a second node before restoring $CORDONED_NODE" >&2
+    return 1
+  }
+  CORDONED_NODE="$(owner_node "$owner_id")"
+  "${OC[@]}" adm cordon "$CORDONED_NODE" >/dev/null
+}
+
+restore_worker_spread() {
+  [[ "$CROSS_NODE" == "true" ]] || return 0
+  restore_cordoned_node
+  local distinct pod deadline
+  distinct="$("${OC[@]}" -n "$NAMESPACE" get pods \
+    -l app.kubernetes.io/name=lifecycle-worker -o json \
+    | jq '[.items[].spec.nodeName] | unique | length')"
+  if [[ "$distinct" != "2" ]]; then
+    pod="$("${OC[@]}" -n "$NAMESPACE" get pods \
+      -l app.kubernetes.io/name=lifecycle-worker \
+      --sort-by=.metadata.creationTimestamp \
+      -o jsonpath='{.items[-1].metadata.name}')"
+    "${OC[@]}" -n "$NAMESPACE" delete pod "$pod" --wait=false >/dev/null
+  fi
+  deadline=$((SECONDS + 120))
+  while (( SECONDS < deadline )); do
+    distinct="$("${OC[@]}" -n "$NAMESPACE" get pods \
+      -l app.kubernetes.io/name=lifecycle-worker -o json \
+      | jq '[.items[] | select(.status.containerStatuses[0].ready == true) | .spec.nodeName] | unique | length')"
+    if [[ "$distinct" == "2" ]]; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Lifecycle workers did not return to two distinct nodes" >&2
   return 1
 }
 
@@ -243,10 +308,28 @@ SERVER="$("${OC[@]}" whoami --show-server)"
   exit 1
 }
 
-[[ "$("${OC[@]}" get node rhgnr1 -o jsonpath='{.spec.unschedulable}')" == "true" ]] || {
-  echo "rhgnr1 must remain cordoned while Intel investigates it" >&2
-  exit 1
-}
+if [[ "$CROSS_NODE" == "true" ]]; then
+  [[ "$("${OC[@]}" get node rhgnr1 -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')" == "True" ]] || {
+    echo "rhgnr1 must be Ready for cross-node mode" >&2
+    exit 1
+  }
+  [[ -z "$("${OC[@]}" get node rhgnr1 -o jsonpath='{.spec.unschedulable}')" ]] || {
+    echo "rhgnr1 must be schedulable for cross-node mode" >&2
+    exit 1
+  }
+  DISTINCT_WORKER_NODES="$("${OC[@]}" -n "$NAMESPACE" get pods \
+    -l app.kubernetes.io/name=lifecycle-worker -o json \
+    | jq '[.items[] | select(.status.containerStatuses[0].ready == true) | .spec.nodeName] | unique | length')"
+  [[ "$DISTINCT_WORKER_NODES" == "2" ]] || {
+    echo "Cross-node mode requires two distinct worker nodes" >&2
+    exit 1
+  }
+else
+  [[ "$("${OC[@]}" get node rhgnr1 -o jsonpath='{.spec.unschedulable}')" == "true" ]] || {
+    echo "rhgnr1 must remain cordoned while Intel investigates it" >&2
+    exit 1
+  }
+fi
 [[ "$("${OC[@]}" -n "$NAMESPACE" get deployment lifecycle-worker -o jsonpath='{.status.readyReplicas}')" == "2" ]] || {
   echo "Exactly two lifecycle worker processes must be ready" >&2
   exit 1
@@ -289,7 +372,8 @@ REQUEST_BODY="$(jq -cn \
   --arg tenant "$TENANT_ID" \
   --arg requester "$REQUESTER_ID" \
   --arg catalog "$CATALOG_ITEM_ID" \
-  '{tenant_id:$tenant,requester_id:$requester,catalog_item_id:$catalog,requested_mode:"guided_build",persistence:"ephemeral",ttl:"2h",hardware_profile:"xeon-basic",quota_profile:"small",exposure_policy:"internal",metadata:{target_cluster:"arena",certification:"lifecycle-process-ha-clean"}}')"
+  --arg certification "$(if [[ "$CROSS_NODE" == "true" ]]; then echo lifecycle-cross-node-process-ha; else echo lifecycle-process-ha-clean; fi)" \
+  '{tenant_id:$tenant,requester_id:$requester,catalog_item_id:$catalog,requested_mode:"guided_build",persistence:"ephemeral",ttl:"2h",hardware_profile:"xeon-basic",quota_profile:"small",exposure_policy:"internal",metadata:{target_cluster:"arena",certification:$certification}}')"
 REQUEST="$(api POST /api/v1/lab-requests "$REQUEST_BODY")"
 [[ "$(jq -r '.status' <<<"$REQUEST")" == "accepted" ]] || {
   echo "Certification request was not accepted" >&2
@@ -308,11 +392,14 @@ PROVISION_JOB_ID="$(jq -r '.metadata.lifecycle_job_id' <<<"$PROVISION_RESPONSE")
 PROVISION_INITIAL="$(wait_for_claim "$PROVISION_JOB_ID")"
 PROVISION_INITIAL_FENCE="$(jq -r '.fencing_token' <<<"$PROVISION_INITIAL")"
 PROVISION_INITIAL_OWNER="$(jq -r '.owner_id' <<<"$PROVISION_INITIAL")"
+PROVISION_INITIAL_NODE="$(owner_node "$PROVISION_INITIAL_OWNER")"
+cordon_owner_node "$PROVISION_INITIAL_OWNER"
 PROVISION_DELETED_EPOCH="$(now_epoch)"
 PROVISION_DELETED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 PROVISION_DELETED_POD="$(delete_owner "$PROVISION_INITIAL_OWNER")"
 PROVISION_TAKEOVER="$(wait_for_takeover_completion "$PROVISION_JOB_ID" "$PROVISION_INITIAL_FENCE" "$PROVISION_DELETED_EPOCH")"
 READY_SESSION="$(wait_for_session_status ready)"
+restore_worker_spread
 SESSION_NAMESPACE="$(jq -r '.namespace' <<<"$READY_SESSION")"
 LAB_URL="$(jq -r '.lab_url' <<<"$READY_SESSION")"
 [[ -n "$SESSION_NAMESPACE" && "$SESSION_NAMESPACE" != "null" ]] || exit 1
@@ -331,12 +418,15 @@ RECLAIM_JOB_ID="$(jq -r '.metadata.lifecycle_job_id' <<<"$RECLAIM_RESPONSE")"
 RECLAIM_INITIAL="$(wait_for_claim "$RECLAIM_JOB_ID")"
 RECLAIM_INITIAL_FENCE="$(jq -r '.fencing_token' <<<"$RECLAIM_INITIAL")"
 RECLAIM_INITIAL_OWNER="$(jq -r '.owner_id' <<<"$RECLAIM_INITIAL")"
+RECLAIM_INITIAL_NODE="$(owner_node "$RECLAIM_INITIAL_OWNER")"
+cordon_owner_node "$RECLAIM_INITIAL_OWNER"
 RECLAIM_DELETED_EPOCH="$(now_epoch)"
 RECLAIM_DELETED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 RECLAIM_DELETED_POD="$(delete_owner "$RECLAIM_INITIAL_OWNER")"
 RECLAIM_TAKEOVER="$(wait_for_takeover_completion "$RECLAIM_JOB_ID" "$RECLAIM_INITIAL_FENCE" "$RECLAIM_DELETED_EPOCH")"
 RECLAIMED_SESSION="$(wait_for_session_status reclaimed)"
 RECLAIM_COMPLETED="true"
+restore_worker_spread
 
 RESIDUE="$(wait_for_zero_residue "$SESSION_NAMESPACE" "$SESSION_ID")"
 IFS='|' read -r NAMESPACE_RESIDUE ROUTE_RESIDUE ROLEBINDING_RESIDUE APPLICATION_RESIDUE <<<"$RESIDUE"
@@ -345,10 +435,19 @@ IFS='|' read -r NAMESPACE_RESIDUE ROUTE_RESIDUE ROLEBINDING_RESIDUE APPLICATION_
 WORKER_NODES="$("${OC[@]}" -n "$NAMESPACE" get pods -l app.kubernetes.io/name=lifecycle-worker -o json | jq -c '[.items[].spec.nodeName] | unique')"
 IMAGE="$("${OC[@]}" -n "$NAMESPACE" get deployment lifecycle-worker -o jsonpath='{.spec.template.spec.containers[0].image}')"
 COMMIT="$(git rev-parse HEAD)"
+if [[ "$CROSS_NODE" == "true" ]]; then
+  EVIDENCE_ID_PREFIX="ARENA-LIFECYCLE-CROSS-NODE-PROCESS-HA"
+  RESULT="GREEN-live-cross-node-process-ha"
+else
+  EVIDENCE_ID_PREFIX="ARENA-LIFECYCLE-PROCESS-HA-CLEAN"
+  RESULT="GREEN-live-clean-process-ha"
+fi
 
 mkdir -p "$(dirname "$OUTPUT_PATH")"
 jq -n \
-  --arg evidence_id "ARENA-LIFECYCLE-PROCESS-HA-CLEAN-$(date -u +%Y%m%dT%H%M%SZ)" \
+  --arg evidence_id "$EVIDENCE_ID_PREFIX-$(date -u +%Y%m%dT%H%M%SZ)" \
+  --arg result "$RESULT" \
+  --argjson cross_node "$CROSS_NODE" \
   --arg commit "$COMMIT" \
   --arg image "$IMAGE" \
   --arg request_id "$REQUEST_ID" \
@@ -357,11 +456,13 @@ jq -n \
   --arg provision_job_id "$PROVISION_JOB_ID" \
   --arg provision_deleted_pod "$PROVISION_DELETED_POD" \
   --arg provision_deleted_at "$PROVISION_DELETED_AT" \
+  --arg provision_initial_node "$PROVISION_INITIAL_NODE" \
   --argjson provision_initial "$PROVISION_INITIAL" \
   --argjson provision_takeover "$PROVISION_TAKEOVER" \
   --arg reclaim_job_id "$RECLAIM_JOB_ID" \
   --arg reclaim_deleted_pod "$RECLAIM_DELETED_POD" \
   --arg reclaim_deleted_at "$RECLAIM_DELETED_AT" \
+  --arg reclaim_initial_node "$RECLAIM_INITIAL_NODE" \
   --argjson reclaim_initial "$RECLAIM_INITIAL" \
   --argjson reclaim_takeover "$RECLAIM_TAKEOVER" \
   --argjson worker_nodes "$WORKER_NODES" \
@@ -373,20 +474,20 @@ jq -n \
   '{
     schema:"launchpad.redhat.com/lifecycle-ha-live-certification/v1",
     evidence_id:$evidence_id,
-    result:"GREEN-live-clean-process-ha",
+    result:$result,
     source:{commit:$commit,backend_image:$image,cluster_ref:"arena"},
-    topology:{worker_processes:2,worker_nodes:$worker_nodes,rhgnr1_cordoned:true,node_ha_certified:false},
+    topology:{worker_processes:2,worker_nodes:$worker_nodes,rhgnr1_cordoned:($cross_node | not),node_separated_processes:$cross_node,node_ha_certified:false},
     order:{request_id:$request_id,session_id:$session_id,namespace:$namespace,cluster_ref:"arena",showroom_http:($showroom_http|tonumber)},
-    provision_takeover:{job_id:$provision_job_id,deleted_pod:$provision_deleted_pod,deleted_at:$provision_deleted_at,initial:$provision_initial,takeover:$provision_takeover},
-    reclaim_takeover:{job_id:$reclaim_job_id,deleted_pod:$reclaim_deleted_pod,deleted_at:$reclaim_deleted_at,initial:$reclaim_initial,takeover:$reclaim_takeover},
+    provision_takeover:{job_id:$provision_job_id,initial_owner_node:$provision_initial_node,deleted_pod:$provision_deleted_pod,deleted_at:$provision_deleted_at,initial:$provision_initial,takeover:$provision_takeover},
+    reclaim_takeover:{job_id:$reclaim_job_id,initial_owner_node:$reclaim_initial_node,deleted_pod:$reclaim_deleted_pod,deleted_at:$reclaim_deleted_at,initial:$reclaim_initial,takeover:$reclaim_takeover},
     cleanup:{namespaces:$namespace_residue,routes:$route_residue,role_bindings:$rolebinding_residue,argocd_applications:$application_residue},
     public_certification_lab_preserved:true,
     proof_strategy:{TDD:"Certifier safety and evidence contracts are tested before the live run.",EDD:"The receipt records immutable source, job IDs, fences, timings, route status and cleanup counts.",CDD:"Persisted session, queue, cluster target and resource-label contracts are checked.",BDD:"Deleting each owning process must produce a higher fence, successful completion and zero cleanup residue.",CBT:"Readiness, queue ownership, Showroom, session state and resource cleanup are checked independently."},
-    certification_boundary:{process_ha:"certified",node_ha:"not certified",workshop_ha:"not certified",flightpath_dr:"not certified"},
+    certification_boundary:{process_ha:"certified",hard_node_failure:"not certified",node_ha:"not certified",workshop_ha:"not certified",flightpath_dr:"not certified"} + (if $cross_node then {cross_node_process_ha:"certified"} else {cross_node_process_ha:"not certified"} end),
     security:{contains_plaintext_credentials:false,credential_values_logged:false}
   }' >"$OUTPUT_PATH"
 shasum -a 256 "$OUTPUT_PATH" >"$OUTPUT_PATH.sha256"
 
-echo "Arena clean lifecycle process-HA certification: GREEN"
+echo "Arena lifecycle process-HA certification ($RESULT): GREEN"
 echo "Evidence: $OUTPUT_PATH"
 echo "Checksum: $OUTPUT_PATH.sha256"
