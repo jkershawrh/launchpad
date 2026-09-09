@@ -1,0 +1,54 @@
+{
+  "schema": "launchpad.redhat.com/llm-seat-attribution-deployment-evidence/v1",
+  "evidence_id": "EDD-LLM-SEAT-ATTRIBUTION-DEPLOYMENT-20260909T082931Z",
+  "generated_at": "2026-09-09T08:29:31Z",
+  "source_commit": "804ffd8dc4951c1e4b31232319b602a07ba88536",
+  "target_cluster": "arena",
+  "result": "GREEN-live-backward-compatible-contract",
+  "contains_plaintext_credentials": false,
+  "builds": {
+    "backend": {
+      "name": "launchpad-backend-140",
+      "source_commit": "804ffd8dc4951c1e4b31232319b602a07ba88536",
+      "result": "Complete",
+      "digest": "sha256:b273d6ee8b6ab63abcc3e51f6d6cecac6efaee3ba1f1a4bb1e3325c7e7ecb8a2"
+    },
+    "portal": {
+      "name": "launchpad-portal-9",
+      "source_commit": "804ffd8dc4951c1e4b31232319b602a07ba88536",
+      "result": "Complete",
+      "digest": "sha256:1d1a12f063dcc12981b2c969da515506509ce3fdb018556b19171ecf09a94dc0"
+    }
+  },
+  "rollout": {
+    "backend": "1/1 ready, 1 updated, 0 restarts",
+    "lifecycle_worker": "2/2 ready, 2 updated, 0 restarts",
+    "public_access_gateway": "1/1 ready, 1 updated, 0 restarts",
+    "partner_portal": "1/1 ready, 1 updated, 0 restarts",
+    "scheduler_and_reconciler_templates_pinned": true,
+    "active_managed_lab_namespaces_during_rollout": 0,
+    "rhgnr1_final_state": "Ready and cordoned"
+  },
+  "live_contract": {
+    "health": "ok",
+    "readiness": "ready",
+    "database": "pass",
+    "control_plane_role": "active",
+    "lifecycle_schema": "pass",
+    "schema": "launchpad.admin-observability/v1",
+    "requests_observed": 0,
+    "attributed_requests": 0,
+    "token_measurement": "unavailable",
+    "telemetry_gap": "No LLM request telemetry is currently available",
+    "portal_http_status": 200,
+    "portal_contains_token_formula": true
+  },
+  "live_boundary": {
+    "arena_participant_path": "direct OVMS and vLLM endpoints",
+    "litellm_proxy_deployed_on_arena": false,
+    "authoritative_spend_events_available": false,
+    "one_seat_live_attribution_certified": false,
+    "twenty_five_seat_live_attribution_certified": false,
+    "reason": "This rollout proves the safe contract and explicit unavailable state; it does not change or overclaim Arena's direct inference path."
+  }
+}
