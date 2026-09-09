@@ -297,6 +297,7 @@ def test_tool_proxy_rewrites_root_relative_html_assets_to_the_order_mount():
 
 def test_tool_proxy_adapts_anythingllm_bundle_to_the_order_mount():
     source = (
+        b'const O="modulepreload",P=function(e){return"/"+e};'
         b'const C={}.VITE_API_BASE||"/api";'
         b'function socket(){return new URL({}.VITE_API_BASE).host}'
         b'const DR=Iz([{path:"/",children:[]}]);'
@@ -316,6 +317,7 @@ def test_tool_proxy_adapts_anythingllm_bundle_to_the_order_mount():
     assert f'window.location.host+"{mount}"' in rewritten
     assert f'basename:"{mount}"' in rewritten
     assert f'const logo="{mount}/anything-llm.png"' in rewritten
+    assert f'"modulepreload",P=function(e){{return"{mount}/"+e}}' in rewritten
 
 
 def test_tool_proxy_does_not_rewrite_binary_content():

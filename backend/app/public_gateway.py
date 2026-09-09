@@ -163,6 +163,20 @@ def _rewrite_upstream_content(
             count=1,
         )
         if api_rewrites == 1:
+            # Vite's lazy-chunk preloader prefixes every dependency with `/`.
+            # That includes route-specific stylesheets such as github.css, so
+            # leaving the generated helper unchanged makes those assets escape
+            # the entitled order mount after the SPA first renders.
+            source = re.sub(
+                r'(?P<prefix>["\']modulepreload["\'],)'
+                r'(?P<name>[$A-Za-z_][$\w]*)=function\(e\)\{return"/"\+e\}',
+                lambda match: (
+                    f'{match.group("prefix")}{match.group("name")}=function(e)'
+                    f'{{return"{public}/"+e}}'
+                ),
+                source,
+                count=1,
+            )
             source = source.replace(
                 "new URL({}.VITE_API_BASE).host",
                 f'window.location.host+"{public}"',
