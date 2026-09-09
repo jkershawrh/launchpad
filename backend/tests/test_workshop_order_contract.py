@@ -21,7 +21,9 @@ from app.domain.lifecycle import transition
 from app.domain.models import LabRequest, LabSession, ValidationResult, Workshop, WorkshopSeat
 from app.main import app
 from app.services.cluster_registry import ClusterRegistry
+from app.services.lifecycle_worker import LifecycleQueueService
 from app.services.provisioning import ProvisioningService
+from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
@@ -352,6 +354,48 @@ def test_ha_confirm_enqueues_durable_work_without_api_background_execution(
     current = client.get(f"/api/v1/workshops/{order['workshop_id']}").json()
     assert current["status"] == "queued"
     assert current["metadata"]["lifecycle_job_id"] == "job-provision-1"
+
+
+def test_ha_retry_replaces_a_terminal_provision_job(monkeypatch):
+    workshop = Workshop(
+        tenant_id="ha-retry-terminal-job-tenant",
+        catalog_item_id="inference-overdrive-quickstart",
+        num_users=1,
+        cluster_ref="arena",
+        status=WorkshopStatus.PREFLIGHT_FAILED,
+    )
+    workshop = workshop.model_copy(
+        update={
+            "seats": [
+                WorkshopSeat(workshop_id=workshop.workshop_id, seat_number=1)
+            ],
+            "metadata": {"preflight_failure": "model endpoint unreachable"},
+        }
+    )
+    api_provisioning_service._save_workshop(workshop)
+
+    store = InMemoryLifecycleJobStore()
+    queue = LifecycleQueueService(store)
+    first = queue.enqueue_workshop_provision(workshop)
+    claimed = store.claim_next("worker-1", lease_seconds=30)
+    assert claimed is not None
+    assert store.complete(claimed.job_id, "worker-1", claimed.fencing_token)
+
+    monkeypatch.setenv("LIFECYCLE_HA_ENABLED", "true")
+    monkeypatch.setattr(
+        "app.api.routers.workshops.lifecycle_queue_service",
+        queue,
+    )
+
+    response = client.post(f"/api/v1/workshops/{workshop.workshop_id}/retry-failed")
+
+    assert response.status_code == 202
+    retried = response.json()
+    second = store.get(retried["metadata"]["lifecycle_job_id"])
+    assert second is not None
+    assert second.job_id != first.job_id
+    assert second.status.value == "queued"
+    assert second.idempotency_key.endswith(":provision:v2")
 
 
 def test_ha_direct_workshop_endpoint_also_uses_durable_worker(monkeypatch):

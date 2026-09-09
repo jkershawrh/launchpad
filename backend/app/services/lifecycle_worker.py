@@ -108,6 +108,9 @@ class LifecycleQueueService:
     def enqueue_workshop_provision(self, workshop: Workshop) -> LifecycleJob:
         if not workshop.cluster_ref:
             raise ValueError("Workshop cluster_ref must be persisted before enqueue")
+        generation = int(workshop.metadata.get("lifecycle_provision_generation", 1))
+        if generation < 1:
+            raise ValueError("Workshop lifecycle provision generation must be positive")
         return self.store.enqueue(
             LifecycleJob(
                 operation=LifecycleJobOperation.PROVISION_WORKSHOP,
@@ -115,7 +118,9 @@ class LifecycleQueueService:
                 aggregate_id=workshop.workshop_id,
                 cluster_ref=workshop.cluster_ref,
                 priority=self.PROVISION_PRIORITY,
-                idempotency_key=f"workshop:{workshop.workshop_id}:provision:v1",
+                idempotency_key=(
+                    f"workshop:{workshop.workshop_id}:provision:v{generation}"
+                ),
                 payload={"workshop_id": workshop.workshop_id},
             )
         )

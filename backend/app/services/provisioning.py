@@ -1922,6 +1922,9 @@ class ProvisioningService:
             for key, value in workshop.metadata.items()
             if key not in stale_failure_keys
         }
+        metadata["lifecycle_provision_generation"] = (
+            int(workshop.metadata.get("lifecycle_provision_generation", 1)) + 1
+        )
         queued = workshop.model_copy(update={
             "status": WorkshopStatus.QUEUED,
             "seats": seats,

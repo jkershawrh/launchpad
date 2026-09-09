@@ -297,6 +297,23 @@ def test_arena_model_network_policies_admit_user_workload_prometheus():
     for policy in policies:
         if policy["metadata"]["name"] not in monitored:
             continue
+        control_plane_sources = [
+            source
+            for ingress in policy["spec"]["ingress"]
+            for source in ingress.get("from", [])
+            if source.get("namespaceSelector", {}).get("matchLabels", {}).get(
+                "kubernetes.io/metadata.name"
+            )
+            == "partner-ai-launchpad"
+        ]
+        assert len(control_plane_sources) == 1
+        assert control_plane_sources[0]["podSelector"]["matchExpressions"] == [
+            {
+                "key": "app.kubernetes.io/name",
+                "operator": "In",
+                "values": ["backend", "lifecycle-worker"],
+            }
+        ]
         namespaces = {
             source.get("namespaceSelector", {}).get("matchLabels", {}).get(
                 "kubernetes.io/metadata.name"
