@@ -614,10 +614,19 @@ class ProvisioningService:
             SessionStatus.RESETTING,
             SessionStatus.CLEANUP_FAILED,
         }:
+            namespace_delete_timeout = max(
+                1,
+                int(
+                    os.environ.get(
+                        "INTERRUPTED_NAMESPACE_DELETE_TIMEOUT", "180"
+                    )
+                ),
+            )
             reclaimed = self.force_reclaim_session(
                 session_id,
                 require_cleanup_success=True,
                 lifecycle_guard=lifecycle_guard,
+                cleanup_timeout=namespace_delete_timeout,
             )
             if reclaimed.status != SessionStatus.RECLAIMED:
                 raise ValueError(
@@ -1223,6 +1232,7 @@ class ProvisioningService:
         *,
         require_cleanup_success: bool = False,
         lifecycle_guard: Callable[[], bool] | None = None,
+        cleanup_timeout: int = 0,
     ) -> LabSession:
         self._require_lifecycle_ownership(lifecycle_guard)
         session = self._sessions.get(session_id)
@@ -1247,7 +1257,12 @@ class ProvisioningService:
         if cleanup_adapter and session.namespace:
             self._require_lifecycle_ownership(lifecycle_guard)
             try:
-                cleanup_adapter.cleanup(session.namespace)
+                if cleanup_timeout > 0:
+                    cleanup_adapter.cleanup(
+                        session.namespace, timeout=cleanup_timeout
+                    )
+                else:
+                    cleanup_adapter.cleanup(session.namespace)
             except Exception as e:
                 logger.error("Cleanup failed during force-reclaim of session %s namespace %s: %s", session_id, session.namespace, e)
                 if require_cleanup_success:

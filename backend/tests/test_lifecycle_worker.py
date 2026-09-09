@@ -74,6 +74,32 @@ def test_queued_session_reuses_prepared_identity_and_reaches_ready() -> None:
     assert ready.status == SessionStatus.READY
 
 
+def test_interrupted_session_waits_for_namespace_deletion_before_reprovision(
+    monkeypatch,
+) -> None:
+    cleanup = Mock()
+    service = ProvisioningService(cleanup=cleanup)
+    accepted = service.submit_request(lab_request())
+    prepared = service.prepare_session_provision(accepted.request_id)
+    interrupted = prepared.model_copy(
+        update={
+            "status": SessionStatus.PROVISIONING,
+            "namespace": "launchpad-interrupted-session",
+        }
+    )
+    service._sessions[prepared.session_id] = interrupted
+    service._save_session(interrupted)
+    monkeypatch.setenv("INTERRUPTED_NAMESPACE_DELETE_TIMEOUT", "37")
+
+    ready = service.run_queued_session(prepared.session_id)
+
+    cleanup.cleanup.assert_called_once_with(
+        "launchpad-interrupted-session", timeout=37
+    )
+    assert ready.session_id == prepared.session_id
+    assert ready.status == SessionStatus.READY
+
+
 def test_queue_service_enqueues_idempotent_cluster_bound_provision() -> None:
     store = InMemoryLifecycleJobStore()
     queue = LifecycleQueueService(store)
