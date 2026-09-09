@@ -36,6 +36,11 @@ def test_workshop_certifier_bounds_seat_count_and_faults_both_aggregate_jobs():
     assert "RECLAIM_WORKSHOP" in script
     assert 'wait_for_claim "$PROVISION_JOB_ID" provision_workshop' in script
     assert 'wait_for_claim "$RECLAIM_JOB_ID" reclaim_workshop' in script
+    assert 'claimant_pod="$(owner_pod "$owner" 2>/dev/null || true)"' in script
+    assert '&& -n "$claimant_pod"' in script
+    assert 'local release_cordon_on_takeover="${4:-false}"' in script
+    assert '[[ "$release_cordon_on_takeover" == "true" ]]' in script
+    assert 'wait_for_takeover_completion "$PROVISION_JOB_ID" "$PROVISION_INITIAL_FENCE" "$PROVISION_DELETED_EPOCH" true' in script
     assert 'cordon_owner_node "$PROVISION_INITIAL_OWNER"' in script
     assert 'cordon_owner_node "$RECLAIM_INITIAL_OWNER"' in script
     assert script.count('delete_owner "$') == 2

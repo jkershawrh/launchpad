@@ -186,7 +186,7 @@ wait_for_claim() {
   local job_id="$1"
   local expected_operation="$2"
   local deadline=$((SECONDS + 90))
-  local row status owner operation
+  local row status owner operation claimant_pod
   while (( SECONDS < deadline )); do
     row="$(job_json "$job_id")"
     status="$(jq -r '.status // empty' <<<"$row")"
@@ -196,7 +196,14 @@ wait_for_claim() {
       echo "Job $job_id is $operation, not $expected_operation" >&2
       return 1
     }
-    if [[ "$status" == "running" && -n "$owner" ]]; then
+    claimant_pod=""
+    if [[ -n "$owner" ]]; then
+      # A force-deleted Pod object can briefly leave its old process alive on
+      # the node. Do not treat that orphan process as an injectable owner: wait
+      # until its lease expires and a currently observable Pod owns the job.
+      claimant_pod="$(owner_pod "$owner" 2>/dev/null || true)"
+    fi
+    if [[ "$status" == "running" && -n "$owner" && -n "$claimant_pod" ]]; then
       printf '%s' "$row"
       return 0
     fi
@@ -272,6 +279,7 @@ wait_for_takeover_completion() {
   local job_id="$1"
   local initial_fence="$2"
   local deleted_epoch="$3"
+  local release_cordon_on_takeover="${4:-false}"
   local deadline=$((SECONDS + 1200))
   local row status fence takeover_epoch="" replacement_owner=""
   while (( SECONDS < deadline )); do
@@ -281,6 +289,12 @@ wait_for_takeover_completion() {
     if (( fence > initial_fence )) && [[ -z "$takeover_epoch" ]]; then
       takeover_epoch="$(now_epoch)"
       replacement_owner="$(jq -r '.owner_id // empty' <<<"$row")"
+      # Workshop seat placement may intentionally pin a Showroom pod to the
+      # failed owner's node. Once a higher fence proves that another worker
+      # owns the aggregate, scheduling can safely resume on the restored node.
+      if [[ "$release_cordon_on_takeover" == "true" ]]; then
+        restore_cordoned_node
+      fi
     fi
     if [[ "$status" == "succeeded" ]]; then
       [[ -n "$takeover_epoch" ]] || {
@@ -555,7 +569,7 @@ cordon_owner_node "$PROVISION_INITIAL_OWNER"
 PROVISION_DELETED_EPOCH="$(now_epoch)"
 PROVISION_DELETED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 PROVISION_DELETED_POD="$(delete_owner "$PROVISION_INITIAL_OWNER")"
-PROVISION_TAKEOVER="$(wait_for_takeover_completion "$PROVISION_JOB_ID" "$PROVISION_INITIAL_FENCE" "$PROVISION_DELETED_EPOCH")"
+PROVISION_TAKEOVER="$(wait_for_takeover_completion "$PROVISION_JOB_ID" "$PROVISION_INITIAL_FENCE" "$PROVISION_DELETED_EPOCH" true)"
 READY_WORKSHOP="$(wait_for_workshop_status ready)"
 verify_ready_workshop "$READY_WORKSHOP"
 restore_worker_spread
