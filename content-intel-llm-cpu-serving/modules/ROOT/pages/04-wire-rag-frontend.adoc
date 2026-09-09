@@ -211,6 +211,13 @@ echo "AnythingLLM URL: $\{ANYTHINGLLM_URL\}"
 
 Open that URL in your browser. Complete the initial setup wizard -- select the existing LLM configuration (it will auto-detect the settings from the Secret).
 
+IMPORTANT: Create a workspace -- not an AnythingLLM agent. Do not use *Admin -> Agent Skills*
+for this exercise. Agent Skills, Agent Flows, and MCP
+Servers are used by the separate agent-building labs, so *No MCP servers found*
+is expected in this Serve LLMs lab. If you are viewing Instance
+Settings, select the AnythingLLM logo to return to the main screen, choose
+*Create Workspace*, and name it *HR Assistant*.
+
 == Test the Wiring
 
 Once setup is complete, create a workspace called *HR Assistant* and send a basic prompt:

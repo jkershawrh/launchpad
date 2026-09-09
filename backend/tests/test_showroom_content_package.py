@@ -451,6 +451,17 @@ def test_cpu_serving_showroom_waits_for_the_external_route_to_be_ready():
     assert "OpenShift safely coalesces ingress updates" in page
 
 
+def test_cpu_serving_guides_participants_to_a_rag_workspace_not_agent_admin():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+
+    assert "Create a workspace -- not an AnythingLLM agent" in page
+    assert "Do not use *Admin -> Agent Skills*" in page
+    assert "No MCP servers found" in page
+    assert "Create Workspace" in page
+
+
 def test_tool_calling_hardware_story_respects_participant_rbac_boundary():
     page = (
         ROOT / "content-intel-llm-tool-calling/modules/ROOT/pages/07-intel-story.adoc"
