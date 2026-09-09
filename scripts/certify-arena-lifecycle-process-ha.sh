@@ -47,6 +47,8 @@ SESSION_ID=""
 RECLAIM_COMPLETED="false"
 ADMIN_KEY=""
 CORDONED_NODE=""
+HELD_APPLICATION_NAMESPACE=""
+HELD_APPLICATION_NAME=""
 
 api() {
   local method="$1"
@@ -76,9 +78,54 @@ restore_cordoned_node() {
   fi
 }
 
+release_showroom_application_hold() {
+  if [[ -z "$HELD_APPLICATION_NAME" ]]; then
+    return 0
+  fi
+  local application current_finalizers filtered_finalizers
+  application="$("${OC[@]}" -n "$HELD_APPLICATION_NAMESPACE" get \
+    application.argoproj.io "$HELD_APPLICATION_NAME" -o json 2>/dev/null || true)"
+  if [[ -n "$application" ]]; then
+    current_finalizers="$(jq -c '.metadata.finalizers // []' <<<"$application")"
+    filtered_finalizers="$(jq -c \
+      '[.[] | select(. != "launchpad.redhat.com/certification-hold")]' \
+      <<<"$current_finalizers")"
+    "${OC[@]}" -n "$HELD_APPLICATION_NAMESPACE" patch \
+      application.argoproj.io "$HELD_APPLICATION_NAME" --type=merge \
+      -p "{\"metadata\":{\"finalizers\":$filtered_finalizers}}" >/dev/null
+  fi
+  HELD_APPLICATION_NAMESPACE=""
+  HELD_APPLICATION_NAME=""
+}
+
+hold_showroom_application() {
+  local session_namespace="$1"
+  local application_ref application finalizers held_finalizers
+  application_ref="$("${OC[@]}" get applications.argoproj.io -A -o json \
+    | jq -r --arg namespace "$session_namespace" \
+      '.items[] | select(.spec.destination.namespace == $namespace) | [.metadata.namespace,.metadata.name] | @tsv' \
+    | head -n 1)"
+  [[ -n "$application_ref" ]] || {
+    echo "Could not find the Showroom Application for $session_namespace" >&2
+    return 1
+  }
+  IFS=$'\t' read -r HELD_APPLICATION_NAMESPACE HELD_APPLICATION_NAME \
+    <<<"$application_ref"
+  application="$("${OC[@]}" -n "$HELD_APPLICATION_NAMESPACE" get \
+    application.argoproj.io "$HELD_APPLICATION_NAME" -o json)"
+  finalizers="$(jq -c '.metadata.finalizers // []' <<<"$application")"
+  held_finalizers="$(jq -c \
+    '. + ["launchpad.redhat.com/certification-hold"] | unique' \
+    <<<"$finalizers")"
+  "${OC[@]}" -n "$HELD_APPLICATION_NAMESPACE" patch \
+    application.argoproj.io "$HELD_APPLICATION_NAME" --type=merge \
+    -p "{\"metadata\":{\"finalizers\":$held_finalizers}}" >/dev/null
+}
+
 cleanup() {
   local exit_code=$?
   trap - EXIT INT TERM
+  release_showroom_application_hold >/dev/null 2>&1 || true
   restore_cordoned_node >/dev/null 2>&1 || true
   queue_reclaim_best_effort
   if [[ -n "$PF_PID" ]]; then
@@ -174,17 +221,7 @@ cordon_owner_node() {
 restore_worker_spread() {
   [[ "$CROSS_NODE" == "true" ]] || return 0
   restore_cordoned_node
-  local distinct pod deadline
-  distinct="$("${OC[@]}" -n "$NAMESPACE" get pods \
-    -l app.kubernetes.io/name=lifecycle-worker -o json \
-    | jq '[.items[].spec.nodeName] | unique | length')"
-  if [[ "$distinct" != "2" ]]; then
-    pod="$("${OC[@]}" -n "$NAMESPACE" get pods \
-      -l app.kubernetes.io/name=lifecycle-worker \
-      --sort-by=.metadata.creationTimestamp \
-      -o jsonpath='{.items[-1].metadata.name}')"
-    "${OC[@]}" -n "$NAMESPACE" delete pod "$pod" --wait=false >/dev/null
-  fi
+  local distinct deadline
   deadline=$((SECONDS + 120))
   while (( SECONDS < deadline )); do
     distinct="$("${OC[@]}" -n "$NAMESPACE" get pods \
@@ -324,6 +361,16 @@ if [[ "$CROSS_NODE" == "true" ]]; then
     echo "Cross-node mode requires two distinct worker nodes" >&2
     exit 1
   }
+  [[ "$("${OC[@]}" -n "$NAMESPACE" get deployment lifecycle-worker \
+    -o jsonpath='{.spec.template.spec.topologySpreadConstraints[0].whenUnsatisfiable}')" == "DoNotSchedule" ]] || {
+    echo "Cross-node mode requires hard topology spreading" >&2
+    exit 1
+  }
+  [[ "$("${OC[@]}" -n "$NAMESPACE" get deployment lifecycle-worker \
+    -o jsonpath='{.spec.template.spec.affinity.podAntiAffinity.requiredDuringSchedulingIgnoredDuringExecution[0].topologyKey}')" == "kubernetes.io/hostname" ]] || {
+    echo "Cross-node mode requires hostname pod anti-affinity" >&2
+    exit 1
+  }
 else
   [[ "$("${OC[@]}" get node rhgnr1 -o jsonpath='{.spec.unschedulable}')" == "true" ]] || {
     echo "rhgnr1 must remain cordoned while Intel investigates it" >&2
@@ -413,6 +460,7 @@ SHOWROOM_HTTP="$(curl -ksS -o /dev/null -w '%{http_code}' --max-time 30 "$LAB_UR
   exit 1
 }
 
+hold_showroom_application "$SESSION_NAMESPACE"
 RECLAIM_RESPONSE="$(api POST "/api/v1/lab-sessions/$SESSION_ID/reclaim")"
 RECLAIM_JOB_ID="$(jq -r '.metadata.lifecycle_job_id' <<<"$RECLAIM_RESPONSE")"
 RECLAIM_INITIAL="$(wait_for_claim "$RECLAIM_JOB_ID")"
@@ -423,6 +471,11 @@ cordon_owner_node "$RECLAIM_INITIAL_OWNER"
 RECLAIM_DELETED_EPOCH="$(now_epoch)"
 RECLAIM_DELETED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 RECLAIM_DELETED_POD="$(delete_owner "$RECLAIM_INITIAL_OWNER")"
+# Keep cleanup blocked until the dead owner's 30-second lease is guaranteed to
+# have elapsed. The replacement may claim meanwhile, but cannot finish until
+# this certifier releases the test-only Application finalizer.
+sleep 31
+release_showroom_application_hold
 RECLAIM_TAKEOVER="$(wait_for_takeover_completion "$RECLAIM_JOB_ID" "$RECLAIM_INITIAL_FENCE" "$RECLAIM_DELETED_EPOCH")"
 RECLAIMED_SESSION="$(wait_for_session_status reclaimed)"
 RECLAIM_COMPLETED="true"

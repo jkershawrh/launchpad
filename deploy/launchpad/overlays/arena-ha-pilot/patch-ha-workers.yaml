@@ -6,18 +6,27 @@ spec:
   replicas: 2
   template:
     spec:
-      # Prefer separate workers as Arena recovers, but keep the process-level
-      # takeover pilot runnable while only one worker node is schedulable.
-      # This does not constitute node-HA evidence.
+      # Keep one lifecycle owner per worker node. If one node is unavailable,
+      # its replacement remains Pending while the surviving process takes over
+      # durable jobs; two owners must never collapse onto one failure domain.
       topologySpreadConstraints:
         - $patch: replace
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
+          whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
               app.kubernetes.io/managed-by: kustomize
               app.kubernetes.io/name: lifecycle-worker
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values: [lifecycle-worker]
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: lifecycle-worker
           env:

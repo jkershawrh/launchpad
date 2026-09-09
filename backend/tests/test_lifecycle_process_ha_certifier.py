@@ -26,9 +26,7 @@ def test_certifier_is_explicitly_arena_scoped_and_fail_closed():
 def test_certifier_faults_both_jobs_and_requires_fenced_zero_residue_recovery():
     script = _script()
 
-    # One deletion faults the owner; the second is a post-proof rebalance that
-    # restores one idle worker per node in cross-node mode.
-    assert script.count('delete pod "$pod"') == 2
+    assert script.count('delete pod "$pod"') == 1
     assert "--force --grace-period=0 --wait=false" in script
     assert script.count("wait_for_takeover_completion") == 3
     assert '(( fence > initial_fence ))' in script
@@ -61,6 +59,9 @@ def test_certifier_supports_reversible_cross_node_process_takeover():
     assert 'cordon_owner_node "$PROVISION_INITIAL_OWNER"' in script
     assert 'cordon_owner_node "$RECLAIM_INITIAL_OWNER"' in script
     assert 'restore_cordoned_node' in script
+    assert 'hold_showroom_application "$SESSION_NAMESPACE"' in script
+    assert 'release_showroom_application_hold' in script
+    assert "launchpad.redhat.com/certification-hold" in script
     assert "GREEN-live-cross-node-process-ha" in script
     assert 'cross_node_process_ha:"certified"' in script
     assert 'hard_node_failure:"not certified"' in script

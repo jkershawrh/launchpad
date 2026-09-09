@@ -38,7 +38,7 @@ def test_arena_ha_overlay_has_two_workers_and_no_direct_reconciler() -> None:
         {
             "maxSkew": 1,
             "topologyKey": "kubernetes.io/hostname",
-            "whenUnsatisfiable": "ScheduleAnyway",
+            "whenUnsatisfiable": "DoNotSchedule",
             "labelSelector": {
                 "matchLabels": {
                     "app.kubernetes.io/managed-by": "kustomize",
@@ -47,6 +47,22 @@ def test_arena_ha_overlay_has_two_workers_and_no_direct_reconciler() -> None:
             },
         }
     ]
+    assert worker["spec"]["template"]["spec"]["affinity"]["podAntiAffinity"] == {
+        "requiredDuringSchedulingIgnoredDuringExecution": [
+            {
+                "labelSelector": {
+                    "matchExpressions": [
+                        {
+                            "key": "app.kubernetes.io/name",
+                            "operator": "In",
+                            "values": ["lifecycle-worker"],
+                        }
+                    ]
+                },
+                "topologyKey": "kubernetes.io/hostname",
+            }
+        ]
+    }
     worker_container = next(
         item
         for item in worker["spec"]["template"]["spec"]["containers"]
