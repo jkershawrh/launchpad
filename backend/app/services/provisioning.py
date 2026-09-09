@@ -1886,6 +1886,16 @@ class ProvisioningService:
             raise ValueError(
                 f"Workshop {workshop_id} cannot run from status {workshop.status.value}"
             )
+        # A durable lifecycle job can be reclaimed by another already-running
+        # worker, so process-startup recovery is not the only interrupted path.
+        # Clean persisted partial seats before a takeover creates replacement
+        # sessions that would reuse their deterministic namespaces with stale
+        # session ownership labels.
+        if workshop.status == WorkshopStatus.PROVISIONING:
+            self._require_lifecycle_ownership(lifecycle_guard)
+            workshop = self._cleanup_interrupted_workshop_sessions(workshop)
+            self._require_lifecycle_ownership(lifecycle_guard)
+            workshop = self.queue_failed_workshop_seats(workshop_id)
         return self.provision_workshop(workshop, lifecycle_guard=lifecycle_guard)
 
     def queue_failed_workshop_seats(self, workshop_id: str) -> Workshop:
@@ -2128,10 +2138,6 @@ class ProvisioningService:
                 )
         for workshop_id in interrupted:
             try:
-                workshop = self._workshops[workshop_id]
-                if workshop.status == WorkshopStatus.PROVISIONING:
-                    workshop = self._cleanup_interrupted_workshop_sessions(workshop)
-                    self.queue_failed_workshop_seats(workshop_id)
                 self.run_queued_workshop(workshop_id)
                 recovered.append(workshop_id)
             except Exception:

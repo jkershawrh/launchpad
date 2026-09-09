@@ -562,6 +562,55 @@ def test_interrupted_seat_reclaims_persisted_partial_session_before_retry(monkey
     assert completed.seats[0].session_id != partial.session_id
 
 
+def test_takeover_run_cleans_persisted_partial_session_before_retry(monkeypatch):
+    """A second HA worker must run the same recovery as process startup."""
+    cleanup = Mock()
+    service = ProvisioningService(cleanup=cleanup)
+    monkeypatch.setenv("WORKSHOP_RETRY_NAMESPACE_DELETE_TIMEOUT", "11")
+    order = service.create_workshop_order(
+        Workshop(
+            tenant_id="takeover-seat-tenant",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=1,
+        )
+    )
+    seat = order.seats[0]
+    request = LabRequest(
+        tenant_id=order.tenant_id,
+        requester_id=seat.participant_id,
+        catalog_item_id=order.catalog_item_id,
+        requested_mode=CatalogCategory.QUICK_START,
+        metadata={"workshop_id": order.workshop_id, "seat_id": seat.seat_id},
+    )
+    accepted = service.submit_request(request)
+    partial = LabSession(
+        request_id=accepted.request_id,
+        tenant_id=order.tenant_id,
+        catalog_item_id=order.catalog_item_id,
+        namespace=f"launchpad-partial-{seat.seat_id[:6]}",
+        cluster_ref="arena",
+    )
+    partial = transition(partial, SessionStatus.PROVISIONING)
+    service._save_session(partial)
+    service._save_workshop(
+        order.model_copy(
+            update={
+                "status": WorkshopStatus.PROVISIONING,
+                "seats": [
+                    seat.model_copy(update={"status": WorkshopSeatStatus.PROVISIONING})
+                ],
+            }
+        )
+    )
+
+    completed = service.run_queued_workshop(order.workshop_id)
+
+    cleanup.wait_until_absent.assert_called_once_with(partial.namespace, timeout=11)
+    assert service.get_session(partial.session_id).status == SessionStatus.RECLAIMED
+    assert completed.status == WorkshopStatus.READY
+    assert completed.seats[0].session_id != partial.session_id
+
+
 def test_interrupted_reclaim_recovers_session_created_before_seat_link():
     service = ProvisioningService()
     order = service.create_workshop_order(
