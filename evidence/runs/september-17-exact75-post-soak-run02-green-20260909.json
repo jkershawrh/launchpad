@@ -1,0 +1,73 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-POST-SOAK-RUN02-GREEN-20260909T060615Z",
+  "event_date": "2026-09-17",
+  "started_at": "2026-09-09T05:45:12Z",
+  "completed_at": "2026-09-09T06:06:15Z",
+  "result": "GREEN-live-functional-after-sixty-minute-soak",
+  "functional_streak_credit": false,
+  "functional_streak_position": 2,
+  "interpretation": "This wave proves that the retained 75-seat topology remained functional after the full soak. It strengthens run 2 but does not count as a separately provisioned third repeatability run.",
+  "source": {
+    "driver_commit": "c527e3c9dd9ed8ce5028fd826ce9274aec88a76d",
+    "backend_source_commit": "0989043",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:c4e2d440e8d3270dd338af0a8acd4929b556a5720c6304469617e58d0855b95c",
+    "control_plane": "arena"
+  },
+  "participants": {
+    "started": 75,
+    "passed": 75,
+    "failed": 0
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "208ba076-38da-47b7-8895-09d8b23da075",
+      "cluster_ref": "brutus",
+      "journeys_passed": 25,
+      "own_namespace_edit_passed": 25,
+      "cross_namespace_denied": 25,
+      "node_list_denied": 25
+    },
+    "multi_agent": {
+      "id": "863ca8e9-365a-4844-b5ed-c9715321de58",
+      "cluster_ref": "arena",
+      "concurrent_wave_passed": 25,
+      "deep_journeys_passed": 25,
+      "deep_workflow_latency_ms": {
+        "min": 40751.31,
+        "p95": 52153.89,
+        "max": 52503.53
+      }
+    },
+    "serve_llms": {
+      "id": "2d5fa3c2-bda2-49bf-ab92-ccf3106bdc98",
+      "cluster_ref": "arena",
+      "grounded_journeys_passed": 25,
+      "response_seconds": {
+        "min": 16.141698,
+        "p95": 56.016402,
+        "max": 58.345285
+      }
+    }
+  },
+  "soak": {
+    "evidence": "september-17-exact75-soak-run02-20260909/summary.json",
+    "result": "GREEN-live-sixty-minute-soak",
+    "duration_observed_seconds": 3613,
+    "samples": 51,
+    "failed_samples": 0,
+    "showrooms_available_per_sample": 75,
+    "participant_pod_readiness_failures": 0,
+    "node_readiness_failures": 0,
+    "model_probe_failures": 0,
+    "restart_increase": 0
+  },
+  "raw_artifact_hashes": {
+    "summary": "d8958b0b2704827e3d8a24f545bd9bce3d51266368983e4b97501a2d1977744a",
+    "agent_201_run_log": "b78310a0c3807d5858bc1f3cbf4dc2a00f48ac613cae1ecd3686d4b39cc0510f",
+    "multi_agent_run_log": "ab3346fb57d930ef8218c3c770d5b31c23bf9ed9479cf0b5ef312ed8058222b0",
+    "serve_llms_run_log": "41138d84af900d877869688a80838db28204d53ed926bde4374090cb7a2ecf7d"
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

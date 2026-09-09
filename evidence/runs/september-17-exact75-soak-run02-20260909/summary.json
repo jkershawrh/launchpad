@@ -1,0 +1,35 @@
+{
+  "schema": "launchpad.redhat.com/exact75-soak/v1",
+  "result": "GREEN-live-sixty-minute-soak",
+  "started_at": "2026-09-09T04:44:38Z",
+  "completed_at": "2026-09-09T05:44:51Z",
+  "duration_observed_seconds": 3613,
+  "samples": 51,
+  "failed_samples": 0,
+  "arena_restart_total": {
+    "first": 2,
+    "maximum": 2,
+    "increase": 0
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "208ba076-38da-47b7-8895-09d8b23da075",
+      "cluster_ref": "brutus",
+      "seats": 25
+    },
+    "multi_agent": {
+      "id": "863ca8e9-365a-4844-b5ed-c9715321de58",
+      "cluster_ref": "arena",
+      "seats": 25
+    },
+    "serve_llms": {
+      "id": "2d5fa3c2-bda2-49bf-ab92-ccf3106bdc98",
+      "cluster_ref": "arena",
+      "seats": 25
+    }
+  },
+  "source_commit": "c527e3c9dd9ed8ce5028fd826ce9274aec88a76d",
+  "snapshots": "snapshots.jsonl",
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

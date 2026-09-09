@@ -1,0 +1,71 @@
+{
+  "schema": "launchpad.redhat.com/exact75-cleanup/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-RUN02-CLEANUP-GREEN-20260909T061325Z",
+  "event_date": "2026-09-17",
+  "result": "GREEN-live-zero-residue",
+  "control_plane": "arena",
+  "workshops": [
+    {
+      "workshop_id": "863ca8e9-365a-4844-b5ed-c9715321de58",
+      "catalog_item_id": "multi-agent-quickstart",
+      "cluster_ref": "arena",
+      "seats_reclaimed": 25,
+      "seat_errors": 0,
+      "backend_completed_at": "2026-09-09T06:10:21Z",
+      "remaining_namespaces": 0,
+      "remaining_routes": 0,
+      "remaining_rolebindings": 0,
+      "remaining_argocd_applications": 0
+    },
+    {
+      "workshop_id": "2d5fa3c2-bda2-49bf-ab92-ccf3106bdc98",
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "cluster_ref": "arena",
+      "seats_reclaimed": 25,
+      "seat_errors": 0,
+      "backend_completed_at": "2026-09-09T06:10:52Z",
+      "remaining_namespaces": 0,
+      "remaining_routes": 0,
+      "remaining_rolebindings": 0,
+      "remaining_argocd_applications": 0
+    },
+    {
+      "workshop_id": "208ba076-38da-47b7-8895-09d8b23da075",
+      "catalog_item_id": "intel-xeon-agent-201",
+      "cluster_ref": "brutus",
+      "seats_reclaimed": 25,
+      "seat_errors": 0,
+      "backend_completed_at": "2026-09-09T06:11:20Z",
+      "remaining_namespaces": 0,
+      "remaining_routes": 0,
+      "remaining_rolebindings": 0,
+      "remaining_argocd_applications_on_control_plane": 0
+    }
+  ],
+  "aggregate": {
+    "seat_records_reclaimed": 75,
+    "failed_reclaims": 0,
+    "remaining_namespaces": 0,
+    "remaining_routes": 0,
+    "remaining_rolebindings": 0,
+    "remaining_argocd_applications": 0,
+    "resources_zero_observed_at": "2026-09-09T06:13:25Z",
+    "arena_workers_ready": 2,
+    "arena_workers_schedulable": 1,
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned": true
+  },
+  "linked_evidence": {
+    "pre_soak_functional": "september-17-exact75-functional-run02-green-resilience-warning-20260909.json",
+    "sixty_minute_soak": "september-17-exact75-soak-run02-20260909/summary.json",
+    "post_soak_functional": "september-17-exact75-post-soak-run02-green-20260909.json"
+  },
+  "interpretation": {
+    "functional_streak_position": 2,
+    "cleanup_correctness_proven": true,
+    "zero_residue_proven": true,
+    "finding": "The staggered Arena/Arena/Brutus topology sustained all 75 retained seats for 60 minutes, passed a second 75-participant wave, and reclaimed every seat and labeled resource."
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}
