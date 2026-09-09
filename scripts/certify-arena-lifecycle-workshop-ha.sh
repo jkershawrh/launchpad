@@ -256,7 +256,7 @@ restore_worker_spread() {
   while (( SECONDS < deadline )); do
     read -r ready distinct < <("${OC[@]}" -n "$NAMESPACE" get pods \
       -l app.kubernetes.io/name=lifecycle-worker -o json \
-      | jq -r '[.items[] | select(.status.containerStatuses[0].ready == true)] as $ready | [$ready|length, [$ready[].spec.nodeName]|unique|length] | @tsv')
+      | jq -r '[.items[] | select(.status.containerStatuses[0].ready == true)] as $ready | [($ready|length), ([$ready[].spec.nodeName]|unique|length)] | @tsv')
     if [[ "$ready" == "2" && "$distinct" == "2" ]]; then
       return 0
     fi

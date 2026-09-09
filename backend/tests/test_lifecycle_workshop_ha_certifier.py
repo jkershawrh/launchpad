@@ -130,3 +130,27 @@ def test_workshop_certifier_evidence_filter_compiles_with_jq():
     )
 
     assert result.returncode == 0, result.stderr
+
+
+def test_workshop_worker_spread_filter_counts_ready_pods_and_nodes():
+    match = re.search(
+        r"\| jq -r '(\[\.items\[\].*?\| @tsv)'\)",
+        _script(),
+    )
+    assert match is not None
+    pods = (
+        '{"items":['
+        '{"spec":{"nodeName":"gnr2"},"status":{"containerStatuses":[{"ready":true}]}},'
+        '{"spec":{"nodeName":"rhgnr1"},"status":{"containerStatuses":[{"ready":true}]}}'
+        "]}"
+    )
+
+    result = subprocess.run(
+        ["jq", "-r", match.group(1)],
+        input=pods,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "2\t2"
