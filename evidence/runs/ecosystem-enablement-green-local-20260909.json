@@ -1,0 +1,82 @@
+{
+  "schema": "launchpad.evidence/v1",
+  "run_id": "ecosystem-enablement-green-local-20260909",
+  "recorded_at": "2026-09-09T09:20:00Z",
+  "artifact_commit": "bd1a24b799cf604241b65500102358ecc3e7c482",
+  "decision": "GREEN-local",
+  "live_cluster_mutation": false,
+  "scope": [
+    "Triforce-style presentation and demo walkthrough",
+    "current and target ecosystem architecture",
+    "scale and auto-remediation roadmap",
+    "portable deployment, registration, validation, and reclaim playbooks",
+    "support runbook",
+    "quickstart repository onboarding discovery"
+  ],
+  "checks": {
+    "quickstart_onboarding_tests": {
+      "result": "pass",
+      "passed": 18,
+      "failed": 0,
+      "command": ".venv/bin/pytest -q backend/tests/test_catalog_onboarding.py backend/tests/test_catalog_onboarding_cli.py"
+    },
+    "python_lint": {
+      "result": "pass",
+      "tool": "ruff"
+    },
+    "playbook_yaml": {
+      "result": "pass",
+      "documents": 7
+    },
+    "ansible_syntax": {
+      "result": "not-run",
+      "reason": "ansible-playbook is not installed in the current workspace runtime"
+    },
+    "presentation": {
+      "result": "pass",
+      "slides": 15,
+      "speaker_note_slides": 15,
+      "visual_review": "all rendered slide PNGs inspected; no clipping or overflow remained",
+      "editable_source": "docs/presentations/launchpad-ecosystem-demo.md",
+      "presenter_exports": [
+        "docs/presentations/launchpad-ecosystem-demo.pdf",
+        "docs/presentations/launchpad-ecosystem-demo.pptx"
+      ],
+      "artifact_tool_status": "bundled workspace dependency locator stalled twice; repo-native Marp fallback used"
+    },
+    "local_links_and_assets": {
+      "result": "pass"
+    },
+    "pptx_archive": {
+      "result": "pass"
+    },
+    "staged_secret_scan": {
+      "result": "pass"
+    },
+    "full_backend_regression": {
+      "result": "environment-dependent-failures",
+      "passed": 1338,
+      "failed": 47,
+      "skipped": 7,
+      "classification": "existing Podman/local-sandbox dependencies and process-wide adapter-state contamination after local-mode tests; no failure references the onboarding changes"
+    }
+  },
+  "rubric": {
+    "score": 95,
+    "maximum": 100,
+    "withheld": "Ansible syntax check and controlled cluster dry run"
+  },
+  "sha256": {
+    "deploy/ecosystem/playbooks/deploy-control-plane.yml": "84aff2e966f0d0bba99d3f701bd9dcbe6b840e52ca6f2a18d562c6681e4f4df7",
+    "deploy/ecosystem/playbooks/preflight.yml": "25d8fd877032f7260d7a72281ba6bb1adb3a0d57952eaadf7051f8fb1ce47b25",
+    "deploy/ecosystem/playbooks/reclaim-workshop.yml": "54f897ed1bcc5a11f86e299ea3611f9a9c1cf808ac17eb9fa401ab55ab607850",
+    "deploy/ecosystem/playbooks/register-execution-cluster.yml": "64deb6557800e764895c8bc159a60c2d9ef08c178bfe5c3408c642bfc",
+    "deploy/ecosystem/playbooks/validate.yml": "e55397091c15d6eac473df5bde687b93ddd76ab7f09ddb795325147b40138d11",
+    "docs/ecosystem-architecture-roadmap.md": "d65b33a418611fcab35ac007db16139983fe4d2e421ea470042a66f3fb85cb29",
+    "docs/presentations/launchpad-ecosystem-demo.md": "16a76c2b2397a85e9e091e141f8c8e8f8ba6f0215633afd9db275abd20aebcda",
+    "docs/presentations/launchpad-ecosystem-demo.pdf": "3d87f4daabe171abe11b121c8154425c10da807ed0afe86d74d1702e14dfcfe1",
+    "docs/presentations/launchpad-ecosystem-demo.pptx": "7c0b9bd4561521d63ca00a594970b5c9815104e39434c88be9e49571eb33e666",
+    "docs/presenter-demo-walkthrough.md": "0c2351626a3a3fb3e773128507e3bf1304a4cb7eb6dd900d70310a0b1751a93f",
+    "docs/support-runbook.md": "efda1c782e6d534e9f81ea383e55425049262658f784ba506b33d4930ca0b4ac"
+  }
+}
