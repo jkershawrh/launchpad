@@ -27,7 +27,7 @@ def test_patched_dependency_graphs_and_keycloak_candidate_are_pinned():
 
     pom = ElementTree.parse(ROOT / "keycloak-authenticator/pom.xml").getroot()
     namespace = {"m": "http://maven.apache.org/POM/4.0.0"}
-    assert pom.findtext("m:properties/m:keycloak.version", namespaces=namespace) == "26.7.0"
+    assert pom.findtext("m:properties/m:keycloak.version", namespaces=namespace) == "26.7.2"
     jackson = next(
         dependency
         for dependency in pom.findall("m:dependencies/m:dependency", namespace)
@@ -36,7 +36,7 @@ def test_patched_dependency_graphs_and_keycloak_candidate_are_pinned():
     assert jackson.findtext("m:version", namespaces=namespace) == "2.18.9"
 
     deployment = (ROOT / "deploy/launchpad/public-access/keycloak.yaml").read_text()
-    assert "launchpad-keycloak@sha256:207b8388456f943" in deployment
+    assert "launchpad-keycloak@sha256:aa63ad89397a97be" in deployment
 
 
 def test_security_evidence_is_honest_about_the_live_keycloak_boundary():
@@ -55,6 +55,9 @@ def test_security_evidence_is_honest_about_the_live_keycloak_boundary():
     )
     assert all(value == 0 for value in evidence["green"]["npm_audit"].values())
     assert evidence["green"]["keycloak_candidate"]["build_result"] == "Complete"
+    assert evidence["green"]["keycloak_candidate"]["version"] == "26.7.2"
+    assert evidence["rejected_candidate"]["version"] == "26.7.0"
+    assert evidence["rejected_candidate"]["deployed"] is False
     assert evidence["live_boundary"]["candidate_deployed"] is False
     assert evidence["live_boundary"]["manual_sign_in_certified"] is False
 

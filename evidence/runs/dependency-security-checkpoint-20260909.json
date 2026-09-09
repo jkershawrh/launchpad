@@ -41,12 +41,18 @@
       "demo_frontend": "passed"
     },
     "keycloak_candidate": {
-      "version": "26.7.0",
+      "version": "26.7.2",
       "jackson_databind": "2.18.9",
-      "arena_build": "launchpad-keycloak-19",
+      "arena_build": "launchpad-keycloak-20",
       "build_result": "Complete",
-      "digest": "sha256:207b8388456f94363116e96e934494309ec5ef3b6c6c23770f91270c5bccaee1"
+      "digest": "sha256:aa63ad89397a97be5b961e5c49d76406429af689ebbccb0610c7ab57f20a0dde",
+      "runtime_smoke": "Keycloak 26.7.2, provider present, Succeeded, zero restarts, pod deleted"
     }
+  },
+  "rejected_candidate": {
+    "version": "26.7.0",
+    "reason": "Post-push Dependabot alert 162 reported a critical reset-credentials flow bypass for versions below 26.7.2.",
+    "deployed": false
   },
   "live_boundary": {
     "candidate_deployed": false,
@@ -57,7 +63,7 @@
   },
   "next_gate": [
     "Capture the current Keycloak Custom Resource and realm configuration rollback point.",
-    "Deploy the immutable 26.7.0 candidate digest during a supervised window.",
+    "Deploy the immutable 26.7.2 candidate digest during a supervised window.",
     "Verify instructor-code sign-in, add lab, My Lab Access, OpenShift Console SSO, sign-out, and reauthentication.",
     "Rollback immediately if the custom authenticator or realm flow fails.",
     "Confirm GitHub Dependabot rescans the pushed dependency graphs before any production or GA declaration."

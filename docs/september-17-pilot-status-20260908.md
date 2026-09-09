@@ -119,7 +119,7 @@ DNS/tunnel and SSO prerequisites are intentionally enabled.
    LiteLLM proxy and live-certify per-seat outcomes, tokens, rate limits, and
    latency. The stable virtual-key/session/seat correlation and admin display
    contract are GREEN-local; Arena still uses direct OVMS/vLLM endpoints.
-3. Deploy the compiled Keycloak 26.7.0 candidate and run the manual public
+3. Deploy the compiled Keycloak 26.7.2 candidate and run the manual public
    sign-in, add-lab, resume, Console SSO, sign-out, and rollback checks. All
    four npm dependency trees audit at zero; the existing live Keycloak remains
    on 26.4.2 until this browser gate is available.
@@ -147,10 +147,14 @@ Antora updates now produce zero findings in all four local `npm audit` runs;
 the requester has 57 passing tests, the demo frontend has eight passing tests,
 and the Showroom, requester, admin, and demo production builds pass.
 
-The Keycloak authenticator was updated from 26.4.2 to 26.7.0 and Jackson from
-2.18.2 to 2.18.9. Arena Build `launchpad-keycloak-19` compiled the custom
+The Keycloak authenticator was updated from 26.4.2 to 26.7.2 and Jackson from
+2.18.2 to 2.18.9. A first 26.7.0 candidate was rejected when the post-push
+Dependabot rescan identified a newly applicable critical advisory fixed in
+26.7.2. Arena Build `launchpad-keycloak-20` compiled the replacement custom
 provider and published immutable candidate digest
-`sha256:207b8388456f94363116e96e934494309ec5ef3b6c6c23770f91270c5bccaee1`.
+`sha256:aa63ad89397a97be5b961e5c49d76406429af689ebbccb0610c7ab57f20a0dde`.
+A disposable Arena smoke pod reported Keycloak 26.7.2, confirmed the provider
+JAR, exited successfully with zero restarts, and was deleted.
 The running Keycloak Custom Resource intentionally remains on 26.4.2: the
 authenticator uses an internal Keycloak SPI, so a live change requires the
 manual browser and rollback gate rather than an unobserved rollout.

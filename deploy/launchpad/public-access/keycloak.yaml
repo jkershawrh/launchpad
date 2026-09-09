@@ -6,7 +6,7 @@ kind: Keycloak
 metadata: {name: keycloak, namespace: keycloak}
 spec:
   instances: 1
-  image: image-registry.openshift-image-registry.svc:5000/keycloak/launchpad-keycloak@sha256:207b8388456f94363116e96e934494309ec5ef3b6c6c23770f91270c5bccaee1
+  image: image-registry.openshift-image-registry.svc:5000/keycloak/launchpad-keycloak@sha256:aa63ad89397a97be5b961e5c49d76406429af689ebbccb0610c7ab57f20a0dde
   startOptimized: true
   ingress: {enabled: false}
   http: {httpEnabled: true}
