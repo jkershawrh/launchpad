@@ -38,7 +38,7 @@ You can also query via the API:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-curl -s -X POST $\{ANYTHINGLLM_URL\}/api/v1/workspace/hr-assistant/chat \
+curl -fsS -X POST "$\{ANYTHINGLLM_API_URL\}/api/v1/workspace/hr-assistant/chat" \
   -H "Authorization: Bearer $\{ANYTHINGLLM_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{"message": "What are the eligibility requirements for FMLA leave?", "mode": "chat"}' | python3 -m json.tool
@@ -97,7 +97,7 @@ AnythingLLM supports a *query* mode that shows you exactly which chunks were ret
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-curl -s -X POST $\{ANYTHINGLLM_URL\}/api/v1/workspace/hr-assistant/chat \
+curl -fsS -X POST "$\{ANYTHINGLLM_API_URL\}/api/v1/workspace/hr-assistant/chat" \
   -H "Authorization: Bearer $\{ANYTHINGLLM_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{"message": "What are the FMLA eligibility requirements?", "mode": "query"}' | python3 -m json.tool

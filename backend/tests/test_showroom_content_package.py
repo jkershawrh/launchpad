@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.4",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.5",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -433,9 +433,9 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.4"
+    assert catalog["version"] == "1.0.5"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.4"
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.5"
     )
 
 
@@ -460,6 +460,19 @@ def test_cpu_serving_guides_participants_to_a_rag_workspace_not_agent_admin():
     assert "Do not use *Admin -> Agent Skills*" in page
     assert "No MCP servers found" in page
     assert "Create Workspace" in page
+
+
+def test_cpu_serving_terminal_uses_namespace_service_for_anythingllm_api():
+    pages = ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages"
+    load_documents = (pages / "05-load-documents.adoc").read_text()
+    query_rag = (pages / "06-query-with-rag.adoc").read_text()
+    terminal_exercises = load_documents + query_rag
+
+    assert 'export ANYTHINGLLM_API_URL="http://anythingllm:3001"' in load_documents
+    assert 'curl -fsS "${ANYTHINGLLM_API_URL}/api/ping"' in load_documents
+    assert "ANYTHINGLLM_URL\\}/api/v1" not in terminal_exercises
+    assert terminal_exercises.count("ANYTHINGLLM_API_URL\\}/api/v1") == 7
+    assert "The browser Route is not used for terminal API calls" in load_documents
 
 
 def test_tool_calling_hardware_story_respects_participant_rbac_boundary():

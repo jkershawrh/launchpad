@@ -47,19 +47,22 @@ LLMs have a finite context window. *Chunking* splits documents into passages sma
 
 == Get the AnythingLLM API Key
 
-The AnythingLLM API requires an API key. Retrieve it from the running instance:
-
-[source,bash,role="execute",subs="attributes+"]
-----
-export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} -o custom-columns=HOST:.spec.host --no-headers)"
-echo "Get your API key from: $\{ANYTHINGLLM_URL\}/settings/api-keys"
-----
-
-Open the settings page in your browser and generate an API key. Set it in your terminal:
+The AnythingLLM API requires an API key. In the *RAG Assistant* tab, open
+*Settings -> API Keys* and generate a key. Set it in your terminal:
 
 [source,bash,role="execute"]
 ----
 export ANYTHINGLLM_API_KEY="your-api-key-here"
+----
+
+Use the namespace-local Service for terminal API calls. This remains stable
+when the terminal reconnects and does not depend on public DNS, certificates,
+or the participant gateway. The browser Route is not used for terminal API calls.
+
+[source,bash,role="execute"]
+----
+export ANYTHINGLLM_API_URL="http://anythingllm:3001"
+curl -fsS "${ANYTHINGLLM_API_URL}/api/ping" | python3 -m json.tool
 ----
 
 == Create a Workspace
@@ -68,7 +71,7 @@ Create an HR Assistant workspace via the API:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-curl -s -X POST $\{ANYTHINGLLM_URL\}/api/v1/workspace/new \
+curl -fsS -X POST "$\{ANYTHINGLLM_API_URL\}/api/v1/workspace/new" \
   -H "Authorization: Bearer $\{ANYTHINGLLM_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{"name": "hr-assistant"}' | python3 -m json.tool
@@ -80,7 +83,7 @@ Load an HR compliance document from the web into the workspace:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-curl -s -X POST $\{ANYTHINGLLM_URL\}/api/v1/document/create-link \
+curl -fsS -X POST "$\{ANYTHINGLLM_API_URL\}/api/v1/document/create-link" \
   -H "Authorization: Bearer $\{ANYTHINGLLM_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{"link": "https://www.dol.gov/agencies/whd/fmla"}' | python3 -m json.tool
@@ -94,7 +97,7 @@ After uploading, embed the document so it is searchable:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-curl -s -X POST $\{ANYTHINGLLM_URL\}/api/v1/workspace/hr-assistant/update-embeddings \
+curl -fsS -X POST "$\{ANYTHINGLLM_API_URL\}/api/v1/workspace/hr-assistant/update-embeddings" \
   -H "Authorization: Bearer $\{ANYTHINGLLM_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{"adds": ["custom-documents/url-www.dol.gov-agencies-whd-fmla.json"]}' | python3 -m json.tool
@@ -106,7 +109,7 @@ Check the workspace document list:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-curl -s $\{ANYTHINGLLM_URL\}/api/v1/workspace/hr-assistant \
+curl -fsS "$\{ANYTHINGLLM_API_URL\}/api/v1/workspace/hr-assistant" \
   -H "Authorization: Bearer $\{ANYTHINGLLM_API_KEY\}" | python3 -m json.tool
 ----
 
@@ -120,7 +123,7 @@ Load more documents to build a richer knowledge base:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-curl -s -X POST $\{ANYTHINGLLM_URL\}/api/v1/document/create-link \
+curl -fsS -X POST "$\{ANYTHINGLLM_API_URL\}/api/v1/document/create-link" \
   -H "Authorization: Bearer $\{ANYTHINGLLM_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{"link": "https://www.dol.gov/agencies/whd/overtime"}' | python3 -m json.tool
