@@ -101,6 +101,13 @@ is delivered through the approved secret path.
 7. Repeat at 5 seats and 25 seats. Record job IDs, fencing tokens, image digests,
    cluster state, timings, route probes, screenshots, and cleanup scans.
 
+The deterministic one-seat repetition is implemented by
+`scripts/certify-arena-lifecycle-process-ha.sh`. It requires an explicit Arena
+kubeconfig and destructive-confirmation flag, refuses to run while `rhgnr1` is
+uncordoned or the 30-second lease is absent, faults both provision and reclaim
+owners, verifies higher fences and zero residue, and writes a credential-free
+hashed evidence receipt. It does not alter the global kube context.
+
 ## Flightpath certification sequence
 
 1. Replace the disclosed bootstrap credential with dedicated least-privilege
