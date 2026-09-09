@@ -6,6 +6,7 @@ resources:
 
 patches:
   - path: patch-ha-config.yaml
+  - path: patch-ha-backend-reload.yaml
   - path: patch-ha-workers.yaml
   - path: patch-ha-scheduler.yaml
   - path: patch-disable-legacy-reconciler.yaml

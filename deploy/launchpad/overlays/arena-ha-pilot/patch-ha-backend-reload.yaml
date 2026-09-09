@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  template:
+    metadata:
+      annotations:
+        # envFrom does not restart a Pod when launchpad-config changes. This
+        # declarative marker forces the API onto the HA runtime when the pilot
+        # overlay is applied after the inert Arena base.
+        launchpad.redhat.com/lifecycle-ha-config: arena-ha-pilot-v1

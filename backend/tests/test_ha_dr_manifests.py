@@ -28,11 +28,15 @@ def test_arena_ha_overlay_has_two_workers_and_no_direct_reconciler() -> None:
     items = render("deploy/launchpad/overlays/arena-ha-pilot")
 
     config = resource(items, "ConfigMap", "launchpad-config")
+    backend = resource(items, "Deployment", "backend")
     worker = resource(items, "Deployment", "lifecycle-worker")
     scheduler = resource(items, "CronJob", "lifecycle-scheduler")
     legacy = resource(items, "CronJob", "launchpad-resource-reconciler")
 
     assert config["data"]["LIFECYCLE_HA_ENABLED"] == "true"
+    assert backend["spec"]["template"]["metadata"]["annotations"] == {
+        "launchpad.redhat.com/lifecycle-ha-config": "arena-ha-pilot-v1"
+    }
     assert worker["spec"]["replicas"] == 2
     assert worker["spec"]["strategy"] == {
         "type": "RollingUpdate",
