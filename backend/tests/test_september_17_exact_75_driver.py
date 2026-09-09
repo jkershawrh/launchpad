@@ -2,7 +2,6 @@
 
 import hashlib
 import json
-
 from pathlib import Path
 
 
@@ -73,6 +72,17 @@ def test_exact_75_driver_runs_all_groups_concurrently_and_restores_node_guard():
     assert "wait \"$multi_pid\"" in source
     assert "recordon_rhgnr1" in source
     assert '"participants_started": 75' in source
+
+
+def test_exact_75_driver_builds_the_participant_rag_workload_before_testing_it():
+    source = DRIVER.read_text()
+
+    setup = source.index('"$script_dir/certify-cpu-serving-seat.sh"')
+    readiness = source.index("deployment/anythingllm")
+    journey = source.index('"$script_dir/certify-cpu-serving-rag.sh"')
+
+    assert setup < readiness < journey
+    assert "--for=condition=Available" in source
 
 
 def test_run02_red_receipt_distinguishes_client_routing_from_lab_failure():

@@ -1,0 +1,64 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-REHEARSAL02-SERVE-SETUP-RED-20260909T041306Z",
+  "observed_at": "2026-09-09T04:13:06Z",
+  "event_date": "2026-09-17",
+  "result": "RED-certification-harness-serve-workload-setup",
+  "three_run_streak_credit": false,
+  "source": {
+    "platform_commit": "1cd8e55",
+    "backend_source_commit": "0989043",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:c4e2d440e8d3270dd338af0a8acd4929b556a5720c6304469617e58d0855b95c"
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "208ba076-38da-47b7-8895-09d8b23da075",
+      "cluster_ref": "brutus",
+      "seats_ready": 25,
+      "showroom_http_200": 25,
+      "participant_journeys_passed": 25
+    },
+    "multi_agent": {
+      "id": "863ca8e9-365a-4844-b5ed-c9715321de58",
+      "cluster_ref": "arena",
+      "seats_ready": 25,
+      "showroom_http_200": 25,
+      "concurrent_wave_passed": 25,
+      "deep_journeys_passed": 25
+    },
+    "serve_llms": {
+      "id": "2d5fa3c2-bda2-49bf-ab92-ccf3106bdc98",
+      "cluster_ref": "arena",
+      "seats_ready": 25,
+      "showroom_http_200": 25,
+      "grounded_journeys_passed": 0,
+      "grounded_journeys_failed": 25
+    }
+  },
+  "red_observation": {
+    "evidence_id": "SEP17-R2-RED-SERVE-PARTICIPANT-WORKLOAD-SETUP",
+    "failure": "Error from server (NotFound): routes.route.openshift.io \"rag\" not found",
+    "root_cause": "The Serve LLMs catalog intentionally begins with a Showroom-only namespace. The exact-75 driver invoked the grounded RAG check without first running the participant step that creates AnythingLLM, its Service, and the rag Route.",
+    "lab_provisioning_failure": false,
+    "platform_placement_failure": false,
+    "participant_workload_capacity_tested": false
+  },
+  "tdd": {
+    "red_test": "backend/tests/test_september_17_exact_75_driver.py::test_exact_75_driver_builds_the_participant_rag_workload_before_testing_it",
+    "red_result": "ValueError: certify-cpu-serving-seat.sh invocation was absent",
+    "green_local": "The corrected driver invokes certify-cpu-serving-seat.sh, waits for deployment/anythingllm Available, then invokes certify-cpu-serving-rag.sh; all seven driver contract tests and bash syntax validation pass."
+  },
+  "raw_artifact_hashes": {
+    "agent_201_run_log": "bc708c4850d83416e4630fdb355bb3d4dfca5cad6885561080e9740f4ddf427c",
+    "multi_agent_run_log": "ab3346fb57d930ef8218c3c770d5b31c23bf9ed9479cf0b5ef312ed8058222b0",
+    "serve_llms_run_log": "3cd93733f55c6812ca46861ca58a9f784e10e713ffb1d724dac58aefce9a9c8d",
+    "multi_agent_receipt_set": "9cbe63e69cfc2ab3d6c7e6d506eb26c94656f55242fa9ed22b02bec9739958b7",
+    "serve_llms_receipt_set": "45ef9ea10c218d4c2ac7efad98752310e6f17b424bfc8b2c882f83faddd9f6ab"
+  },
+  "evidence_notes": {
+    "final_driver_summary": "Unavailable because the driver source was corrected before the original long-running shell reached its final parse block. Group receipts and hashes were retained, and the run remains RED regardless.",
+    "rhgnr1_re_cordoned": true,
+    "plaintext_credentials_present": false,
+    "default_kube_context_changed": false
+  }
+}

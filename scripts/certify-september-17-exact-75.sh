@@ -206,10 +206,16 @@ run_serve_llms() {
   [[ "${#namespaces[@]}" -eq 25 ]] || return 3
   pids=()
   for namespace in "${namespaces[@]}"; do
-    env KUBECONFIG="$KUBECONFIG" \
-      CERTIFICATION_RUN_ID="sep17-${namespace##*-}-$(date -u +%H%M%S)" \
-      bash "$script_dir/certify-cpu-serving-rag.sh" "$namespace" arena \
-      >"$result_dir/serve-llms/${namespace}.tsv" 2>&1 &
+    (
+      env KUBECONFIG="$KUBECONFIG" \
+        bash "$script_dir/certify-cpu-serving-seat.sh" "$namespace" arena
+      oc wait -n "$namespace" \
+        --for=condition=Available deployment/anythingllm \
+        --timeout=300s >/dev/null
+      env KUBECONFIG="$KUBECONFIG" \
+        CERTIFICATION_RUN_ID="sep17-${namespace##*-}-$(date -u +%H%M%S)" \
+        bash "$script_dir/certify-cpu-serving-rag.sh" "$namespace" arena
+    ) >"$result_dir/serve-llms/${namespace}.tsv" 2>&1 &
     pids+=($!)
   done
   for pid in "${pids[@]}"; do
