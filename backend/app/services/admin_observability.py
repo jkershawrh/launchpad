@@ -183,6 +183,59 @@ def _percentile(values: list[float], percentile: float) -> float | None:
     return round(ordered[index], 1)
 
 
+def _event_attribution_refs(event: Mapping[str, Any]) -> set[str]:
+    """Extract explicit, non-secret seat correlation IDs from an LLM event."""
+
+    refs: set[str] = set()
+
+    def add(value: Any) -> None:
+        if value is not None and str(value).strip():
+            refs.add(str(value).strip())
+
+    for field in ("session_id", "namespace", "caller", "key_alias"):
+        add(event.get(field))
+    metadata = event.get("metadata")
+    if isinstance(metadata, Mapping):
+        for field in ("session_id", "namespace", "user_api_key_alias"):
+            add(metadata.get(field))
+        for nested_field in (
+            "user_api_key_metadata",
+            "spend_logs_metadata",
+            "key_metadata",
+        ):
+            nested = metadata.get(nested_field)
+            if isinstance(nested, Mapping):
+                for field in ("session_id", "namespace", "key_alias"):
+                    add(nested.get(field))
+    key_metadata = event.get("key_metadata")
+    if isinstance(key_metadata, Mapping):
+        for field in ("session_id", "namespace", "key_alias"):
+            add(key_metadata.get(field))
+    return refs
+
+
+def _event_tokens(event: Mapping[str, Any]) -> tuple[int, int, str]:
+    usage = event.get("usage")
+    if isinstance(usage, Mapping):
+        prompt = usage.get("prompt_tokens", usage.get("input_tokens"))
+        completion = usage.get("completion_tokens", usage.get("output_tokens"))
+        if prompt is not None or completion is not None:
+            return int(prompt or 0), int(completion or 0), "exact"
+    return (
+        int(event.get("tokens_in_est", 0) or 0),
+        int(event.get("tokens_out_est", 0) or 0),
+        "estimated",
+    )
+
+
+def _token_measurement(sources: set[str]) -> str:
+    if not sources:
+        return "unavailable"
+    if len(sources) == 1:
+        return next(iter(sources))
+    return "mixed"
+
+
 def _llm_observability(
     *,
     model_inventory: Mapping[str, Any],
@@ -236,15 +289,16 @@ def _llm_observability(
     attribution_groups: dict[tuple[str, str], dict[str, Any]] = {}
     attributed_requests = 0
     for event in llm_events:
-        caller = str(event.get("caller") or "")
+        refs = _event_attribution_refs(event)
         seat = next(
             (
                 candidate
                 for candidate in seat_lookup
-                if candidate["session_id"] in caller
+                if candidate["session_id"] in refs
+                or f"launchpad-{candidate['session_id']}" in refs
                 or (
                     candidate["namespace"]
-                    and str(candidate["namespace"]) in caller
+                    and str(candidate["namespace"]) in refs
                 )
             ),
             None,
@@ -264,14 +318,28 @@ def _llm_observability(
                 "errors": 0,
                 "rate_limited": 0,
                 "estimated_tokens": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
+                "token_sources": set(),
+                "outcomes": Counter(),
             },
         )
         outcome = str(event.get("outcome") or "success")
         status_code = int(event.get("status_code", 200) or 200)
+        if status_code == 429:
+            outcome = "rate_limited"
+        elif status_code >= 400 and outcome == "success":
+            outcome = "error"
+        input_tokens, output_tokens, token_source = _event_tokens(event)
         group["requests"] += 1
         group["latencies"].append(float(event.get("latency_ms", 0) or 0))
-        group["estimated_tokens"] += int(event.get("tokens_in_est", 0) or 0)
-        group["estimated_tokens"] += int(event.get("tokens_out_est", 0) or 0)
+        group["input_tokens"] += input_tokens
+        group["output_tokens"] += output_tokens
+        group["total_tokens"] += input_tokens + output_tokens
+        group["estimated_tokens"] = group["total_tokens"]
+        group["token_sources"].add(token_source)
+        group["outcomes"][outcome] += 1
         if outcome != "success" or status_code >= 400:
             group["errors"] += 1
         if outcome == "rate_limited" or status_code == 429:
@@ -280,15 +348,23 @@ def _llm_observability(
     attribution = []
     for group in attribution_groups.values():
         latencies = group.pop("latencies")
+        token_sources = group.pop("token_sources")
+        group["outcomes"] = dict(sorted(group["outcomes"].items()))
         group["avg_latency_ms"] = (
             round(sum(latencies) / len(latencies), 1) if latencies else None
         )
+        group["p95_latency_ms"] = _percentile(latencies, 0.95)
+        group["token_measurement"] = _token_measurement(token_sources)
         attribution.append(group)
     attribution.sort(
         key=lambda item: (item["order_id"], item["seat_number"], item["model_id"])
     )
 
     latencies = [float(event.get("latency_ms", 0) or 0) for event in llm_events]
+    token_observations = [_event_tokens(event) for event in llm_events]
+    input_tokens = sum(tokens[0] for tokens in token_observations)
+    output_tokens = sum(tokens[1] for tokens in token_observations)
+    token_sources = {tokens[2] for tokens in token_observations}
     errors = sum(
         1
         for event in llm_events
@@ -324,10 +400,12 @@ def _llm_observability(
             "errors": errors,
             "rate_limited": rate_limited,
             "estimated_tokens": sum(
-                int(event.get("tokens_in_est", 0) or 0)
-                + int(event.get("tokens_out_est", 0) or 0)
-                for event in llm_events
+                tokens[0] + tokens[1] for tokens in token_observations
             ),
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": input_tokens + output_tokens,
+            "token_measurement": _token_measurement(token_sources),
             "attributed_requests": attributed_requests,
         },
         "models": models,

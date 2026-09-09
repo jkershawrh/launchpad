@@ -114,7 +114,10 @@ DNS/tunnel and SSO prerequisites are intentionally enabled.
 
 1. Run the planned requester, participant, lab, and admin visual acceptance in
    one browser journey; do not infer this result from API probes.
-2. Complete per-seat LiteLLM outcome, token, rate-limit, and latency attribution.
+2. Route participant inference through a version-pinned, security-reviewed
+   LiteLLM proxy and live-certify per-seat outcomes, tokens, rate limits, and
+   latency. The stable virtual-key/session/seat correlation and admin display
+   contract are GREEN-local; Arena still uses direct OVMS/vLLM endpoints.
 3. Triage the current dependency findings before any production/GA decision.
 4. Complete the separate public ingress/SSO browser certification after the
    DNS/tunnel path is approved.

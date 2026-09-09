@@ -292,7 +292,7 @@ export default function Observability() {
           <Metric label="Avg latency" value={llm.summary.avg_latency_ms == null ? '—' : `${Math.round(llm.summary.avg_latency_ms)}ms`} detail="observed requests" />
           <Metric label="P95 latency" value={llm.summary.p95_latency_ms == null ? '—' : `${Math.round(llm.summary.p95_latency_ms)}ms`} detail="observed requests" />
           <Metric label="Errors / limits" value={`${llm.summary.errors}/${llm.summary.rate_limited}`} detail="errors / rate limited" tone={llm.summary.errors ? 'text-[#FA6868]' : 'text-[#73BC63]'} />
-          <Metric label="Tokens" value={llm.summary.estimated_tokens.toLocaleString()} detail="estimated in + out" tone="text-[#B6A6E9]" />
+          <Metric label="Tokens" value={llm.summary.total_tokens.toLocaleString()} detail={`${llm.summary.token_measurement} input + output`} tone="text-[#B6A6E9]" />
         </div>
         {llm.telemetry_gaps.length > 0 && (
           <div className="mb-5 rounded border border-[#F0AB00]/30 bg-[#F0AB00]/10 p-4">
@@ -315,7 +315,8 @@ export default function Observability() {
             <div className="max-h-[360px] space-y-2 overflow-y-auto pr-1">{llm.attribution.length === 0 ? <p className="rounded bg-[#181818] p-5 text-sm text-[#8A8D90]">No seat-attributed LLM requests available.</p> : llm.attribution.map((row) => (
               <div key={`${row.session_id}-${row.model_id}`} className="rounded border border-[#333] bg-[#181818] p-3 text-xs">
                 <div className="flex justify-between gap-3"><div><p className="font-medium text-white">{row.catalog_item_id} · seat {row.seat_number}</p><p className="font-mono text-[#6A6E73]">{row.cluster_ref || 'unknown'} · {row.model_id}</p></div><p className="font-mono text-[#B6A6E9]">{row.requests} req</p></div>
-                <p className="mt-2 text-[#8A8D90]">avg {row.avg_latency_ms == null ? '—' : `${Math.round(row.avg_latency_ms)}ms`} · {row.errors} errors · {row.rate_limited} limited · {row.estimated_tokens.toLocaleString()} tokens</p>
+                <p className="mt-2 text-[#8A8D90]">avg {row.avg_latency_ms == null ? '—' : `${Math.round(row.avg_latency_ms)}ms`} · p95 {row.p95_latency_ms == null ? '—' : `${Math.round(row.p95_latency_ms)}ms`} · {row.errors} errors · {row.rate_limited} limited</p>
+                <p className="mt-1 text-[#8A8D90]">{row.input_tokens.toLocaleString()} in + {row.output_tokens.toLocaleString()} out = {row.total_tokens.toLocaleString()} tokens · {row.token_measurement}</p>
               </div>
             ))}</div>
           </div>

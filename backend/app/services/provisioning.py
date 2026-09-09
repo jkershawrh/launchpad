@@ -746,23 +746,37 @@ class ProvisioningService:
         reservation = target_pool.reserve(**reserve_kwargs)
 
         ttl_str = request.ttl or catalog_item.default_ttl or "4h"
+        attribution_session_id = (
+            prepared_session.session_id
+            if prepared_session
+            else str(_uuid.uuid4())
+        )
+        maas_key_id = ""
+        maas_key_alias = ""
         if self.maas_key_broker:
             metadata = catalog_item.metadata or {}
             try:
+                maas_key_alias = f"launchpad-{attribution_session_id}"
+                key_metadata = {
+                    "session_id": attribution_session_id,
+                    "request_id": request.request_id,
+                    "tenant_id": request.tenant_id,
+                    "catalog_item_id": request.catalog_item_id,
+                }
+                for field in ("workshop_id", "seat_id", "seat_number"):
+                    if request.metadata.get(field) is not None:
+                        key_metadata[field] = request.metadata[field]
                 issued_key = self.maas_key_broker.create_key(
-                    alias=f"launchpad-{request.request_id}",
+                    alias=maas_key_alias,
                     duration=ttl_str,
                     models=selected_models,
                     rpm_limit=int(metadata.get(
                         "maas_rpm_limit", os.environ.get("MAAS_RATE_LIMIT_RPM", "60")
                     )),
-                    metadata={
-                        "session_id": request.request_id,
-                        "tenant_id": request.tenant_id,
-                        "catalog_item_id": request.catalog_item_id,
-                    },
+                    metadata=key_metadata,
                 )
                 maas_api_key = issued_key.key
+                maas_key_id = str(issued_key.key_id or "")
             except Exception as exc:
                 target_pool.release(request.request_id)
                 raise ValueError(f"Failed to issue MaaS access key: {exc}") from exc
@@ -803,6 +817,19 @@ class ProvisioningService:
             "metadata": {
                 **(prepared_session.metadata if prepared_session else {}),
                 "requested_models": selected_models,
+                "inference_attribution": (
+                    "litellm_virtual_key"
+                    if maas_key_id
+                    else "direct_endpoint_unattributed"
+                ),
+                **(
+                    {
+                        "maas_key_id": maas_key_id,
+                        "maas_key_alias": maas_key_alias,
+                    }
+                    if maas_key_id
+                    else {}
+                ),
                 "labels": {
                     **(
                         prepared_session.metadata.get("labels", {})
@@ -819,6 +846,7 @@ class ProvisioningService:
             prepared_session.model_copy(update=session_data)
             if prepared_session
             else LabSession(
+                session_id=attribution_session_id,
                 request_id=request.request_id,
                 tenant_id=request.tenant_id,
                 catalog_item_id=request.catalog_item_id,

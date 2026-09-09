@@ -1,0 +1,66 @@
+{
+  "schema": "launchpad.redhat.com/llm-seat-attribution-evidence/v1",
+  "evidence_id": "EDD-LLM-SEAT-ATTRIBUTION-20260909T082007Z",
+  "generated_at": "2026-09-09T08:20:07Z",
+  "repository_base": "dd30377c9d213e0f0e3e9737c7a490ce51c5dd29",
+  "result": "GREEN-local-contract-RED-live-data-path",
+  "contains_plaintext_credentials": false,
+  "red": {
+    "result": "3 failed, 8 passed",
+    "failures": [
+      "virtual-key alias used request identity instead of stable session identity",
+      "workshop and seat identity were absent from virtual-key metadata",
+      "nested LiteLLM key metadata and exact usage fields were not attributed"
+    ]
+  },
+  "green": {
+    "focused_backend": "12 passed",
+    "backend_non_local": "1362 passed, 6 skipped, 13 deselected",
+    "frontend_component": "1 passed",
+    "frontend_production_build": "passed",
+    "ruff_changed_python": "passed E9/F/I",
+    "contract_yaml_parse": "passed",
+    "grafana_json_parse": "passed",
+    "precommit_secret_scan": "passed"
+  },
+  "implemented_contract": {
+    "stable_session_key_alias": true,
+    "session_request_workshop_and_seat_key_metadata": true,
+    "non_secret_key_id_persisted": true,
+    "plaintext_key_excluded_from_metadata": true,
+    "explicit_metadata_join_without_substring_matching": true,
+    "exact_input_output_and_total_tokens": true,
+    "average_and_p95_latency": true,
+    "success_error_and_rate_limit_outcomes": true,
+    "direct_endpoint_state_is_explicitly_unattributed": true,
+    "authenticated_admin_component_updated": true
+  },
+  "live_boundary": {
+    "arena_participant_path": "direct OVMS and vLLM endpoints",
+    "litellm_proxy_deployed_on_arena": false,
+    "authoritative_spend_events_available": false,
+    "live_seat_attribution_certified": false,
+    "cluster_mutations": 0,
+    "reason": "The correlation and display contract is ready, but no direct-endpoint event may be represented as authoritative LiteLLM telemetry."
+  },
+  "red_green_matrix": [
+    {"gate": "stable virtual-key/session identity", "state": "GREEN-local"},
+    {"gate": "workshop and seat correlation metadata", "state": "GREEN-local"},
+    {"gate": "exact token and latency normalization", "state": "GREEN-local"},
+    {"gate": "admin API and component contract", "state": "GREEN-local"},
+    {"gate": "version-pinned security-reviewed proxy", "state": "RED-pending"},
+    {"gate": "one-seat authoritative live event", "state": "RED-pending"},
+    {"gate": "25-seat authoritative live attribution", "state": "RED-pending"}
+  ],
+  "next_gate": [
+    "Pin and security-review a LiteLLM proxy image.",
+    "Use a separate proxy database and disable prompt/response message logging.",
+    "Route Arena model traffic through the proxy and enable virtual-key issuance.",
+    "Ingest bounded spend/outcome events without secrets, prompts, responses, emails, namespaces, or participant IDs as metric labels.",
+    "Certify one seat, rate limiting, reclaim/key revocation, and then 25 concurrent seats."
+  ],
+  "references": [
+    "https://docs.litellm.ai/docs/proxy/virtual_keys",
+    "https://github.com/BerriAI/litellm-docs/blob/main/docs/proxy/cost_tracking.md"
+  ]
+}

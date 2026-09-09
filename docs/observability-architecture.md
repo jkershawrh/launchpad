@@ -75,9 +75,15 @@ error counts. Response bodies and prompts are never metrics.
 - **Selected model:** Launchpad exports configured models and the gateway
   exports route/backend, but the gateway does not emit an allow-listed model
   label for every call. Do not label arbitrary client-supplied model strings.
-- **Per-seat inference attribution:** virtual keys contain lifecycle metadata,
-  but there is no metrics aggregation that safely joins a call to the active
-  workshop and seat. Add this at the key broker/proxy boundary. Aggregate
+- **Per-seat inference attribution:** the key-broker contract now binds an
+  issued virtual-key ID and alias to the stable session, workshop, and seat,
+  and the authenticated admin read model can join LiteLLM spend-log metadata
+  to exact input/output tokens, outcome, rate limit, average latency, and p95
+  latency. This is GREEN-local contract coverage, not GREEN-live telemetry:
+  Arena currently sends participant traffic directly to OVMS and vLLM, so no
+  authoritative LiteLLM spend events reach Launchpad. Route the traffic through
+  a version-pinned, security-reviewed proxy with a separate database and
+  message logging disabled before enabling the live collector. Aggregate
   Prometheus data by `catalog_item` and `cluster`; keep the opaque key-to-seat
   correlation in protected logs or traces and expose the exact join only in
   the authenticated admin drill-down.

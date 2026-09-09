@@ -212,7 +212,7 @@
       "gridPos": {"h": 5, "w": 24, "x": 0, "y": 54},
       "options": {
         "mode": "markdown",
-        "content": "**Not yet end-to-end:** LiteLLM rate-limit rejection counters; exact token usage for OVMS/direct LiteLLM calls; and per-workshop/per-seat inference attribution. Add bounded virtual-key metadata aggregation or exemplars before showing those splits. Never use email, API key, prompt, namespace, participant ID, or raw request ID as a metric label."
+        "content": "**Not yet end-to-end:** Arena participant traffic currently calls OVMS/vLLM directly, so LiteLLM outcomes, rate limits, exact tokens, and latency are unavailable live. The virtual-key metadata and authenticated seat-join contract is implemented for a future vetted proxy. Never show direct-endpoint estimates as LiteLLM telemetry, and never use email, API key, prompt, namespace, participant ID, or raw request ID as a metric label."
       }
     },
     {

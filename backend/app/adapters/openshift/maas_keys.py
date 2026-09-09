@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Any
 
 import httpx
 
@@ -33,7 +34,7 @@ class LiteLLMVirtualKeyBroker:
         duration: str,
         models: Iterable[str],
         rpm_limit: int,
-        metadata: dict[str, str],
+        metadata: dict[str, Any],
     ) -> MaaSKey:
         response = httpx.post(
             f"{self.api_base}/key/generate",

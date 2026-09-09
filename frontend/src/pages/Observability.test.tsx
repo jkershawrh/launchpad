@@ -76,6 +76,10 @@ const snapshot: AdminObservability = {
       errors: 0,
       rate_limited: 0,
       estimated_tokens: 100,
+      input_tokens: 40,
+      output_tokens: 60,
+      total_tokens: 100,
+      token_measurement: 'exact',
       attributed_requests: 2,
     },
     models: [{
@@ -87,7 +91,27 @@ const snapshot: AdminObservability = {
       route: 'LiteLLM: granite',
       backend: 'fleet-llm-d/vllm-granite',
     }],
-    attribution: [],
+    attribution: [{
+      order_id: 'workshop-1',
+      order_type: 'workshop',
+      catalog_item_id: 'agent-lab',
+      cluster_ref: 'arena',
+      seat_number: 1,
+      session_id: 'session-1',
+      namespace: 'agent-seat-1',
+      model_id: 'granite',
+      requests: 2,
+      avg_latency_ms: 1000,
+      p95_latency_ms: 1200,
+      errors: 0,
+      rate_limited: 0,
+      estimated_tokens: 100,
+      input_tokens: 40,
+      output_tokens: 60,
+      total_tokens: 100,
+      token_measurement: 'exact',
+      outcomes: { success: 2 },
+    }],
     telemetry_gaps: [],
   },
 };
@@ -124,6 +148,7 @@ describe('operator observability component', () => {
     expect(screen.getByText('Lifecycle queue and worker ownership')).toBeInTheDocument();
     expect(screen.getByText('1 takeover')).toBeInTheDocument();
     expect(screen.getByText('LiteLLM: granite')).toBeInTheDocument();
+    expect(screen.getByText('40 in + 60 out = 100 tokens · exact')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Show seats' }));
     expect(screen.getByText('agent-seat-1')).toBeInTheDocument();

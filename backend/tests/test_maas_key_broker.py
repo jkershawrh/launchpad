@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from app.adapters.openshift.maas_keys import LiteLLMVirtualKeyBroker
 from app.domain.enums import CatalogCategory
 from app.domain.models import LabRequest
@@ -61,16 +60,56 @@ def _request():
 def test_provisioning_uses_broker_key_and_reclaim_revokes_it():
     broker = MagicMock()
     broker.create_key.return_value.key = "sk-gateway-issued"
+    broker.create_key.return_value.key_id = "token-seat-1"
     service = ProvisioningService(maas_key_broker=broker)
     request = service.submit_request(_request())
 
     session = service.provision(request.request_id)
     assert session.maas_api_key == "sk-gateway-issued"
-    assert broker.create_key.call_args.kwargs["duration"] == "4h"
+    issue = broker.create_key.call_args.kwargs
+    assert issue["duration"] == "4h"
+    assert issue["alias"] == f"launchpad-{session.session_id}"
+    assert issue["metadata"]["session_id"] == session.session_id
+    assert issue["metadata"]["request_id"] == request.request_id
+    assert issue["metadata"]["catalog_item_id"] == request.catalog_item_id
+    assert session.metadata["maas_key_id"] == "token-seat-1"
+    assert session.metadata["maas_key_alias"] == f"launchpad-{session.session_id}"
+    assert session.metadata["inference_attribution"] == "litellm_virtual_key"
+    assert "sk-gateway-issued" not in session.metadata.values()
 
     reclaimed = service.force_reclaim_session(session.session_id)
     broker.revoke_key.assert_called_once_with("sk-gateway-issued")
     assert reclaimed.maas_api_key is None
+    assert reclaimed.metadata["maas_key_id"] == "token-seat-1"
+
+
+def test_virtual_key_metadata_carries_workshop_and_seat_identity():
+    broker = MagicMock()
+    broker.create_key.return_value.key = "sk-workshop-seat"
+    broker.create_key.return_value.key_id = "token-workshop-seat"
+    service = ProvisioningService(maas_key_broker=broker)
+    request = service.submit_request(
+        LabRequest(
+            tenant_id="tenant-a",
+            requester_id="participant-7",
+            catalog_item_id="inference-overdrive-quickstart",
+            requested_mode=CatalogCategory.QUICK_START,
+            ttl="4h",
+            metadata={
+                "workshop_id": "workshop-1",
+                "seat_id": "seat-7",
+                "seat_number": 7,
+            },
+        )
+    )
+
+    session = service.provision(request.request_id)
+    metadata = broker.create_key.call_args.kwargs["metadata"]
+
+    assert metadata["session_id"] == session.session_id
+    assert metadata["workshop_id"] == "workshop-1"
+    assert metadata["seat_id"] == "seat-7"
+    assert metadata["seat_number"] == 7
 
 
 def test_provisioning_fails_closed_and_releases_reservation_on_key_error():
@@ -86,3 +125,16 @@ def test_provisioning_fails_closed_and_releases_reservation_on_key_error():
         service.provision(request.request_id)
 
     pool.release.assert_called_once_with(request.request_id)
+
+
+def test_direct_model_endpoint_is_explicitly_not_reported_as_key_attributed():
+    service = ProvisioningService()
+    request = service.submit_request(_request())
+
+    session = service.provision(request.request_id)
+
+    assert session.metadata["inference_attribution"] == (
+        "direct_endpoint_unattributed"
+    )
+    assert "maas_key_id" not in session.metadata
+    assert "maas_key_alias" not in session.metadata

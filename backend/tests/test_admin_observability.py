@@ -217,6 +217,10 @@ def test_observability_read_model_joins_cluster_lab_and_seat_lifecycle():
         "errors": 1,
         "rate_limited": 1,
         "estimated_tokens": 65,
+        "input_tokens": 30,
+        "output_tokens": 35,
+        "total_tokens": 65,
+        "token_measurement": "estimated",
         "attributed_requests": 2,
     }
     assert result["llm"]["models"][0]["backend"] == (
@@ -283,6 +287,77 @@ def test_observability_keeps_individual_labs_visible_and_does_not_duplicate_work
     assert "LLM endpoint/model inventory is unavailable" in result["llm"]["telemetry_gaps"]
 
 
+def test_observability_attributes_litellm_usage_by_explicit_virtual_key_metadata():
+    from app.services.admin_observability import build_admin_observability
+
+    now = datetime(2026, 9, 9, 12, 0, 0, tzinfo=UTC)
+    session = _session(
+        "seat-explicit-1",
+        status=SessionStatus.READY,
+        started_at=now - timedelta(minutes=2),
+        workshop_id="workshop-explicit",
+        seat_number=1,
+    )
+    workshop = Workshop(
+        workshop_id="workshop-explicit",
+        tenant_id="pilot",
+        catalog_item_id="agent-lab",
+        num_users=1,
+        status=WorkshopStatus.READY,
+        cluster_ref="arena",
+        seats=[
+            WorkshopSeat(
+                workshop_id="workshop-explicit",
+                seat_number=1,
+                session_id=session.session_id,
+                status=WorkshopSeatStatus.READY,
+            )
+        ],
+        session_ids=[session.session_id],
+    )
+
+    result = build_admin_observability(
+        sessions=[session],
+        workshops=[workshop],
+        clusters=[],
+        now=now,
+        model_inventory={"summary": {}, "models": []},
+        llm_events=[
+            {
+                "model": "granite-tools",
+                "latency_ms": 1250,
+                "outcome": "success",
+                "status_code": 200,
+                "usage": {
+                    "prompt_tokens": 21,
+                    "completion_tokens": 34,
+                    "total_tokens": 55,
+                },
+                "metadata": {
+                    "user_api_key_metadata": {
+                        "session_id": session.session_id,
+                        "workshop_id": workshop.workshop_id,
+                        "seat_number": 1,
+                    }
+                },
+            }
+        ],
+    )
+
+    assert result["llm"]["summary"]["attributed_requests"] == 1
+    assert result["llm"]["summary"]["input_tokens"] == 21
+    assert result["llm"]["summary"]["output_tokens"] == 34
+    assert result["llm"]["summary"]["total_tokens"] == 55
+    attribution = result["llm"]["attribution"]
+    assert len(attribution) == 1
+    assert attribution[0]["session_id"] == session.session_id
+    assert attribution[0]["input_tokens"] == 21
+    assert attribution[0]["output_tokens"] == 34
+    assert attribution[0]["total_tokens"] == 55
+    assert attribution[0]["token_measurement"] == "exact"
+    assert attribution[0]["p95_latency_ms"] == 1250.0
+
+
 def test_admin_observability_endpoint_is_versioned_and_read_only(monkeypatch):
     from app.api.deps import provisioning_service
     from app.api.routers import admin
@@ -333,3 +408,28 @@ def test_admin_observability_openapi_contract_names_all_operator_angles():
         "llm",
         "grafana",
     } <= required
+    llm_summary = contract["components"]["schemas"]["LlmObservation"]["properties"][
+        "summary"
+    ]
+    assert {
+        "input_tokens",
+        "output_tokens",
+        "total_tokens",
+        "token_measurement",
+        "attributed_requests",
+    } <= set(llm_summary["required"])
+    attribution = contract["components"]["schemas"]["LlmAttributionObservation"]
+    assert {
+        "session_id",
+        "seat_number",
+        "model_id",
+        "requests",
+        "p95_latency_ms",
+        "errors",
+        "rate_limited",
+        "input_tokens",
+        "output_tokens",
+        "total_tokens",
+        "token_measurement",
+        "outcomes",
+    } <= set(attribution["required"])

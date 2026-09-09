@@ -339,9 +339,15 @@ export interface LlmAttributionObservation {
   model_id: string;
   requests: number;
   avg_latency_ms?: number | null;
+  p95_latency_ms?: number | null;
   errors: number;
   rate_limited: number;
   estimated_tokens: number;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  token_measurement: 'exact' | 'estimated' | 'mixed' | 'unavailable';
+  outcomes: Record<string, number>;
 }
 
 export interface AdminObservability {
@@ -375,6 +381,10 @@ export interface AdminObservability {
       errors: number;
       rate_limited: number;
       estimated_tokens: number;
+      input_tokens: number;
+      output_tokens: number;
+      total_tokens: number;
+      token_measurement: 'exact' | 'estimated' | 'mixed' | 'unavailable';
       attributed_requests: number;
     };
     models: LlmModelObservation[];
