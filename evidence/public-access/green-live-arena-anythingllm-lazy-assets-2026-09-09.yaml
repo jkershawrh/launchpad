@@ -1,0 +1,35 @@
+evidence_id: PA-ARENA-ANYTHINGLLM-LAZY-ASSETS-GREEN-LIVE-20260909
+stage: GREEN-live
+captured_at: 2026-09-09T18:02:12Z
+base_commit_sha: 294f34b91b948cd6873c5e43cc9f3ecd8e280976
+scope: AnythingLLM lazy CSS and JavaScript dependencies through the Arena order path
+environment:
+  cluster: arena
+  order_id: 781069da-6e22-4bd8-994e-f764488dbca5
+  session_id: 6320d8e2-5758-41b8-95da-1d704072929d
+  catalog_item: intel-llm-cpu-serving
+  namespace: launchpad-public-cert-tenant-intel-llm-cpu-serv-781069
+  public_path: /labs/intel-llm-cpu-serving-781069da/proxy/tool/workspace
+  plaintext_code_recorded: false
+images:
+  launchpad_gateway: sha256:db6eb111799fcefc54be129aa5e00461aeaaf3f5e88580f5c19cd8f67240406b
+  anythingllm: sha256:141c3a75bc565c81820bb819e18d495b123ccf9f2bfa133fdd59b58b85660807
+red_evidence:
+  symptom: Unable to preload CSS for /github.css
+  cause: Vite lazy dependency loader prepended the upstream root instead of the entitled order path
+green_evidence:
+  focused_tests:
+    passed: 28
+    failed: 0
+  gateway_rollout: complete
+  vite_preloader_order_path_scoped: true
+  github_css_reference_present: true
+  github_css_http_status: 200
+  github_css_content_type: text/css
+  github_css_bytes: 3323
+authorization:
+  resolution_method: stable participant OIDC username
+  direct_execution_route_exposed: false
+limitations:
+  - Browser refresh remains the final participant visual check.
+  - Cloudflare Quick Tunnel remains temporary ingress and is not production certification.
