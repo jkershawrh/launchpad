@@ -11,9 +11,9 @@ stage never implies a higher one.
 | Evidence ID | Behavior | Unit/component | PostgreSQL | Manifest | Live | Status |
 |---|---|---:|---:|---:|---:|---|
 | HA-QUEUE-01 | Idempotent durable job creation | GREEN | GREEN | — | RED | GREEN-postgres |
-| HA-LEASE-01 | Only one worker owns an aggregate | GREEN | GREEN | — | GREEN (one seat) | GREEN-live-process |
-| HA-FENCE-01 | Expired owner cannot heartbeat, checkpoint, complete, or continue | GREEN | GREEN | — | GREEN (one seat) | GREEN-live-process |
-| HA-TAKEOVER-01 | A replacement worker receives a higher fencing token | GREEN | GREEN | — | GREEN (provision + reclaim) | GREEN-live-process |
+| HA-LEASE-01 | Only one worker owns an aggregate | GREEN | GREEN | — | GREEN (clean one-seat rerun) | GREEN-live-process |
+| HA-FENCE-01 | Expired owner cannot heartbeat, checkpoint, complete, or continue | GREEN | GREEN | — | GREEN (clean one-seat rerun) | GREEN-live-process |
+| HA-TAKEOVER-01 | A replacement worker receives a higher fencing token | GREEN | GREEN | — | GREEN (clean provision + reclaim) | GREEN-live-process |
 | HA-CANCEL-01 | Reclaim cancels provision and waits for aggregate ownership | GREEN | GREEN | — | RED | GREEN-postgres |
 | HA-API-01 | Individual provision/reclaim returns a durable queued session | GREEN | — | — | GREEN (one seat) | GREEN-live-process |
 | HA-API-02 | Workshop confirm, retry, direct create, and reclaim use the queue | GREEN | — | — | RED | GREEN-local |
@@ -45,7 +45,7 @@ requires every item below; this is a binary 100-point gate, not an average.
 |---|---:|---|---:|
 | Durable queue, idempotency, cancellation | 15 | Local and PostgreSQL contracts | 15 |
 | Lease ownership and fencing | 20 | Local, PostgreSQL, and live one-seat provision/reclaim worker-kill proof | 20 |
-| Provision/reclaim/TTL/reconcile integration | 20 | One-seat provision and reclaim takeover; 5/25-seat takeover and clean timing runs pending | 16 |
+| Provision/reclaim/TTL/reconcile integration | 20 | Clean one-seat provision and reclaim takeover; 5/25-seat takeover runs pending | 16 |
 | Database availability and recoverability | 15 | Single PostgreSQL instance; restore drill pending | 0 |
 | Arena worker and node availability | 10 | Two-worker overlay; second schedulable node pending | 0 |
 | Operations UI, metrics, and alerts | 10 | Live lifecycle API plus local UI and rendered alerts | 8 |
@@ -76,6 +76,26 @@ Both lifecycle processes currently run on `gnr2`; `rhgnr1` remains cordoned.
 Therefore node HA remains RED. Five-seat and 25-seat workshop takeover, stable
 public DNS/TLS, and Flightpath DR also remain RED.
 
+## Arena clean process-takeover result
+
+The deterministic rerun on commit `bfef4a4` and backend image digest
+`sha256:492a9fdcc15ca945fcff643b2a7762098f31073bb902cfba3c8ecbcb26131209`
+is `GREEN-live-clean-process-ha`. Provision ownership transferred in 29.670
+seconds and the recovered lab reached Showroom HTTP 200 in 110.754 seconds.
+Reclaim ownership transferred in 30.009 seconds and completed in 30.155
+seconds. Provision and reclaim each completed on the second attempt with a
+higher fencing token. Cleanup left zero Namespace, Route, RoleBinding, or Argo
+CD Application residue, and the public certification lab remained active.
+
+The clean rerun exposed one additional recovery defect before it passed:
+interrupted provisioning requested deletion of its partial namespace and then
+immediately tried to reuse the same deterministic name while OpenShift still
+reported the namespace as `Terminating`. The recovery path now performs a
+bounded wait for namespace deletion before reprovisioning; its RED/GREEN
+regression test and the complete 1,328-test non-local suite passed. The signed
+evidence receipt is
+`evidence/runs/arena-lifecycle-process-ha-clean-20260909T003840Z.json`.
+
 ## Flightpath live preflight status
 
 Read-only credential discovery on September 8 found the dedicated Arena
@@ -94,8 +114,8 @@ is delivered through the approved secret path.
 3. Apply migration `005_lifecycle_jobs.sql` while the feature flag remains off;
    verify `/ready` and a database backup.
 4. Apply `deploy/launchpad/overlays/arena-ha-pilot` in a controlled window.
-5. Repeat the individual provision/reclaim takeover once without changing code
-   or configuration and record clean takeover latency using the 30-second lease.
+5. The clean individual provision/reclaim process-takeover repetition is
+   complete. Retain its receipt as the process-HA baseline for later runs.
 6. Stabilize and uncordon `rhgnr1`, force the owner node unavailable, and repeat
    the proof before calling the deployment node-HA.
 7. Repeat at 5 seats and 25 seats. Record job IDs, fencing tokens, image digests,

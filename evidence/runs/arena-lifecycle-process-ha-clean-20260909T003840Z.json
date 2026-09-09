@@ -1,0 +1,101 @@
+{
+  "schema": "launchpad.redhat.com/lifecycle-ha-live-certification/v1",
+  "evidence_id": "ARENA-LIFECYCLE-PROCESS-HA-CLEAN-20260909T004132Z",
+  "result": "GREEN-live-clean-process-ha",
+  "source": {
+    "commit": "bfef4a456a78a040aca4c65e78b2c6c2b5bfb934",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:492a9fdcc15ca945fcff643b2a7762098f31073bb902cfba3c8ecbcb26131209",
+    "cluster_ref": "arena"
+  },
+  "topology": {
+    "worker_processes": 2,
+    "worker_nodes": [
+      "gnr2.fm2aihpcsed.com"
+    ],
+    "rhgnr1_cordoned": true,
+    "node_ha_certified": false
+  },
+  "order": {
+    "request_id": "85efeb87-762b-42b2-bf5c-033315d368c5",
+    "session_id": "c0e9f9fd-e99b-4cb1-ad3a-bc8c3be70550",
+    "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-85efeb",
+    "cluster_ref": "arena",
+    "showroom_http": 200
+  },
+  "provision_takeover": {
+    "job_id": "6dd58204-44eb-4413-81d8-6036c1942b80",
+    "deleted_pod": "lifecycle-worker-559f44fc6-9qgj9",
+    "deleted_at": "2026-09-09T00:38:50Z",
+    "initial": {
+      "status": "running",
+      "owner_id": "lifecycle-worker-559f44fc6-9qgj9-390454e5",
+      "fencing_token": 1,
+      "attempts": 1,
+      "step": "execution-started",
+      "last_error": null
+    },
+    "takeover": {
+      "final": {
+        "status": "succeeded",
+        "owner_id": null,
+        "fencing_token": 2,
+        "attempts": 2,
+        "step": "completed",
+        "last_error": null
+      },
+      "replacement_owner": "lifecycle-worker-559f44fc6-r64gs-b447f00c",
+      "takeover_seconds": 29.67,
+      "completion_seconds": 110.754
+    }
+  },
+  "reclaim_takeover": {
+    "job_id": "362775ab-d791-4e02-ae8a-eca767aee5c5",
+    "deleted_pod": "lifecycle-worker-559f44fc6-ftlk7",
+    "deleted_at": "2026-09-09T00:40:45Z",
+    "initial": {
+      "status": "running",
+      "owner_id": "lifecycle-worker-559f44fc6-ftlk7-948c9ad5",
+      "fencing_token": 3,
+      "attempts": 1,
+      "step": "execution-started",
+      "last_error": null
+    },
+    "takeover": {
+      "final": {
+        "status": "succeeded",
+        "owner_id": null,
+        "fencing_token": 4,
+        "attempts": 2,
+        "step": "completed",
+        "last_error": null
+      },
+      "replacement_owner": "",
+      "takeover_seconds": 30.009,
+      "completion_seconds": 30.155
+    }
+  },
+  "cleanup": {
+    "namespaces": 0,
+    "routes": 0,
+    "role_bindings": 0,
+    "argocd_applications": 0
+  },
+  "public_certification_lab_preserved": true,
+  "proof_strategy": {
+    "TDD": "Certifier safety and evidence contracts are tested before the live run.",
+    "EDD": "The receipt records immutable source, job IDs, fences, timings, route status and cleanup counts.",
+    "CDD": "Persisted session, queue, cluster target and resource-label contracts are checked.",
+    "BDD": "Deleting each owning process must produce a higher fence, successful completion and zero cleanup residue.",
+    "CBT": "Readiness, queue ownership, Showroom, session state and resource cleanup are checked independently."
+  },
+  "certification_boundary": {
+    "process_ha": "certified",
+    "node_ha": "not certified",
+    "workshop_ha": "not certified",
+    "flightpath_dr": "not certified"
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  }
+}
