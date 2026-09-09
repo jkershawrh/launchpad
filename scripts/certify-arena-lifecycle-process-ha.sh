@@ -543,7 +543,7 @@ jq -n \
     cleanup:{namespaces:$namespace_residue,routes:$route_residue,role_bindings:$rolebinding_residue,argocd_applications:$application_residue},
     public_certification_lab_preserved:true,
     proof_strategy:{TDD:"Certifier safety and evidence contracts are tested before the live run.",EDD:"The receipt records immutable source, job IDs, fences, timings, route status and cleanup counts.",CDD:"Persisted session, queue, cluster target and resource-label contracts are checked.",BDD:"Deleting each owning process must produce a higher fence, successful completion and zero cleanup residue.",CBT:"Readiness, queue ownership, Showroom, session state and resource cleanup are checked independently."},
-    certification_boundary:{process_ha:"certified",hard_node_failure:"not certified",node_ha:"not certified",workshop_ha:"not certified",flightpath_dr:"not certified"} + (if $cross_node then {cross_node_process_ha:"certified"} else {cross_node_process_ha:"not certified"} end),
+    certification_boundary:({process_ha:"certified",hard_node_failure:"not certified",node_ha:"not certified",workshop_ha:"not certified",flightpath_dr:"not certified"} + (if $cross_node then {cross_node_process_ha:"certified"} else {cross_node_process_ha:"not certified"} end)),
     security:{contains_plaintext_credentials:false,credential_values_logged:false}
   }' >"$OUTPUT_PATH"
 shasum -a 256 "$OUTPUT_PATH" >"$OUTPUT_PATH.sha256"

@@ -1,3 +1,5 @@
+import re
+import subprocess
 from pathlib import Path
 
 
@@ -68,3 +70,54 @@ def test_certifier_supports_reversible_cross_node_process_takeover():
     assert "GREEN-live-cross-node-process-ha" in script
     assert 'cross_node_process_ha:"certified"' in script
     assert 'hard_node_failure:"not certified"' in script
+    assert 'certification_boundary:({' in script
+
+
+def test_certifier_evidence_filter_compiles_with_jq():
+    match = re.search(
+        r"\n  '(\{\n    schema:.*?\n  \})' >\"\$OUTPUT_PATH\"",
+        _script(),
+        re.DOTALL,
+    )
+    assert match is not None
+    text_args = [
+        "evidence_id",
+        "result",
+        "commit",
+        "image",
+        "request_id",
+        "session_id",
+        "namespace",
+        "provision_job_id",
+        "provision_deleted_pod",
+        "provision_deleted_at",
+        "provision_initial_node",
+        "reclaim_job_id",
+        "reclaim_deleted_pod",
+        "reclaim_deleted_at",
+        "reclaim_initial_node",
+        "showroom_http",
+    ]
+    json_args = {
+        "cross_node": "true",
+        "provision_initial": "{}",
+        "provision_takeover": "{}",
+        "reclaim_initial": "{}",
+        "reclaim_takeover": "{}",
+        "worker_nodes": "[]",
+        "namespace_residue": "0",
+        "route_residue": "0",
+        "rolebinding_residue": "0",
+        "application_residue": "0",
+    }
+    command = ["jq", "-n"]
+    for name in text_args:
+        command.extend(["--arg", name, "200" if name == "showroom_http" else "x"])
+    for name, value in json_args.items():
+        command.extend(["--argjson", name, value])
+
+    result = subprocess.run(
+        [*command, match.group(1)], capture_output=True, text=True
+    )
+
+    assert result.returncode == 0, result.stderr
