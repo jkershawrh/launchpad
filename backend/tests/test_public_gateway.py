@@ -5,6 +5,8 @@ from app.public_gateway import (
     _public_order_prefix,
     _rewrite_showroom_config,
     _rewrite_upstream_content,
+    _tool_proxy_request_headers,
+    _tool_proxy_response_headers,
     _tool_upstream_url,
     _username,
     app,
@@ -318,6 +320,32 @@ def test_tool_proxy_adapts_anythingllm_bundle_to_the_order_mount():
     assert f'basename:"{mount}"' in rewritten
     assert f'const logo="{mount}/anything-llm.png"' in rewritten
     assert f'"modulepreload",P=function(e){{return"{mount}/"+e}}' in rewritten
+
+
+def test_rewritten_tool_assets_cannot_reuse_an_upstream_cached_representation():
+    request_headers = _tool_proxy_request_headers(
+        {
+            "accept": "application/javascript",
+            "if-none-match": 'W/"upstream-index"',
+            "user-agent": "participant-browser",
+        }
+    )
+    assert request_headers == {
+        "accept": "application/javascript",
+        "user-agent": "participant-browser",
+    }
+
+    response_headers = _tool_proxy_response_headers(
+        {
+            "content-type": "application/javascript; charset=utf-8",
+            "cache-control": "public, max-age=0",
+            "etag": 'W/"upstream-index"',
+            "last-modified": "Tue, 01 Sep 2026 22:38:10 GMT",
+        }
+    )
+    assert response_headers["cache-control"] == "no-store, no-cache, must-revalidate"
+    assert "etag" not in response_headers
+    assert "last-modified" not in response_headers
 
 
 def test_tool_proxy_does_not_rewrite_binary_content():

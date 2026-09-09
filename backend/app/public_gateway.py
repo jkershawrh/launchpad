@@ -5,6 +5,7 @@ import html
 import os
 import re
 import ssl
+from collections.abc import Mapping
 from datetime import datetime
 from pathlib import Path
 from urllib.parse import unquote, urljoin, urlsplit
@@ -105,15 +106,9 @@ def _tool_upstream_url(base: str, path: str, query: str) -> str:
     return f"{url}?{query}" if query else url
 
 
-def _rewrite_upstream_content(
-    content: bytes,
-    content_type: str,
-    upstream_origin: str,
-    public_mount: str,
-) -> bytes:
-    """Keep textual tool references on the entitlement-aware public origin."""
+def _is_textual_content_type(content_type: str) -> bool:
     media_type = content_type.split(";", 1)[0].strip().casefold()
-    textual = (
+    return (
         media_type.startswith("text/")
         or media_type in {
             "application/javascript",
@@ -125,7 +120,49 @@ def _rewrite_upstream_content(
         or media_type.endswith("+json")
         or media_type.endswith("+xml")
     )
-    if not textual:
+
+
+def _tool_proxy_request_headers(headers: Mapping[str, str]) -> dict[str, str]:
+    # A gateway rewrite changes the representation without changing the
+    # upstream ETag. Never let an upstream 304 select a browser-cached copy of
+    # the older, unrewritten bundle.
+    return {
+        key: value
+        for key, value in headers.items()
+        if key.casefold()
+        in {"accept", "accept-language", "content-type", "range", "user-agent"}
+    }
+
+
+def _tool_proxy_response_headers(
+    headers: Mapping[str, str],
+) -> dict[str, str]:
+    excluded = {
+        "content-length",
+        "content-encoding",
+        "connection",
+        "transfer-encoding",
+        "set-cookie",
+    }
+    if _is_textual_content_type(headers.get("content-type", "")):
+        excluded.update({"cache-control", "etag", "expires", "last-modified"})
+    response = {
+        key: value for key, value in headers.items() if key.casefold() not in excluded
+    }
+    if _is_textual_content_type(headers.get("content-type", "")):
+        response["cache-control"] = "no-store, no-cache, must-revalidate"
+    return response
+
+
+def _rewrite_upstream_content(
+    content: bytes,
+    content_type: str,
+    upstream_origin: str,
+    public_mount: str,
+) -> bytes:
+    """Keep textual tool references on the entitlement-aware public origin."""
+    media_type = content_type.split(";", 1)[0].strip().casefold()
+    if not _is_textual_content_type(content_type):
         return content
     try:
         source = content.decode("utf-8")
@@ -528,12 +565,7 @@ async def proxy_tool(
         url = _tool_upstream_url(base, path, request.url.query)
     except ValueError as exc:
         raise HTTPException(404) from exc
-    request_headers = {
-        key: value
-        for key, value in request.headers.items()
-        if key.casefold()
-        in {"accept", "accept-language", "content-type", "if-none-match", "range", "user-agent"}
-    }
+    request_headers = _tool_proxy_request_headers(request.headers)
     try:
         async with httpx.AsyncClient(
             timeout=30,
@@ -548,16 +580,7 @@ async def proxy_tool(
             )
     except httpx.RequestError:
         return _tool_not_ready(tool_id)
-    excluded = {
-        "content-length",
-        "content-encoding",
-        "connection",
-        "transfer-encoding",
-        "set-cookie",
-    }
-    response_headers = {
-        key: value for key, value in upstream.headers.items() if key.casefold() not in excluded
-    }
+    response_headers = _tool_proxy_response_headers(upstream.headers)
     public_mount = f"{_public_order_prefix(request)}/proxy/tool/{tool_id}"
     location = response_headers.get("location")
     if location:
