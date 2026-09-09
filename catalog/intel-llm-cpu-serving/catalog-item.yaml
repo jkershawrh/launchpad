@@ -2,7 +2,7 @@ catalog_item_id: intel-llm-cpu-serving
 display_name: "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs"
 description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
 category: guided_build
-version: "1.0.2"
+version: "1.0.3"
 status: active
 required_capabilities:
   - openshift
@@ -32,7 +32,7 @@ metadata:
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
-  showroom_content_ref: "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.2"
+  showroom_content_ref: "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3"
   showroom_content_playbook: "site-intel-llm-cpu-serving.yml"
   required_models:
     - granite-2b-cpu

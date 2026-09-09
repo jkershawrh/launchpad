@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.2",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -402,10 +402,22 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.2"
+    assert catalog["version"] == "1.0.3"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.2"
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.3"
     )
+
+
+def test_cpu_serving_showroom_waits_for_the_external_route_to_be_ready():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+
+    assert "Wait for the Pod and Route" in page
+    assert "curl -ksS -o /dev/null -w '%{http_code}'" in page
+    assert '"$ANYTHINGLLM_URL/api/ping"' in page
+    assert "for attempt in {1..40}" in page
+    assert "OpenShift safely coalesces ingress updates" in page
 
 
 def test_tool_calling_hardware_story_respects_participant_rbac_boundary():
