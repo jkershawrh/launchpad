@@ -1,0 +1,28 @@
+evidence_id: PA-ARENA-ANYTHINGLLM-TERMINAL-SERVICE-GREEN-LIVE-20260909
+stage: GREEN-live
+captured_at: 2026-09-09T18:27:05Z
+base_commit_sha: 915e842c823ed2bdca4985e2f72c2db336bcf132
+scope: Serve LLMs terminal-to-AnythingLLM API connectivity
+environment:
+  cluster: arena
+  order_id: 781069da-6e22-4bd8-994e-f764488dbca5
+  session_id: 6320d8e2-5758-41b8-95da-1d704072929d
+  catalog_item: intel-llm-cpu-serving
+  namespace: launchpad-public-cert-tenant-intel-llm-cpu-serv-781069
+  plaintext_credentials_recorded: false
+red_evidence:
+  symptom: API response was empty and python JSON parsing failed
+  cause: terminal exercise depended on a browser Route variable that can be unset after reconnect and is unsuitable behind the participant gateway
+green_evidence:
+  focused_tests:
+    passed: 26
+    failed: 0
+  namespace_service_url: http://anythingllm:3001
+  api_ping_http_status: 200
+  api_ping_body: '{"online":true}'
+  catalog_version: 1.0.5
+  immutable_content_ref: pilot-2026-09-17-intel-llm-cpu-serving-v1.0.5
+  backend_rollout: complete
+  backend_available_replicas: 1
+limitations:
+  - The current v1.0.4 Showroom remains immutable; the participant can use the corrected command immediately, while newly provisioned seats receive v1.0.5.
