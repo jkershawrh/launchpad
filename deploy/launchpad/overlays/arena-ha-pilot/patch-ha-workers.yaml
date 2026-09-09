@@ -4,6 +4,11 @@ metadata:
   name: lifecycle-worker
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   template:
     spec:
       # Keep one lifecycle owner per worker node. If one node is unavailable,

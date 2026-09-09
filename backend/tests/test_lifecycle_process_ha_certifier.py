@@ -56,6 +56,9 @@ def test_certifier_supports_reversible_cross_node_process_takeover():
 
     assert "--cross-node" in script
     assert "Cross-node mode requires two distinct worker nodes" in script
+    assert "Cross-node mode requires hard topology spreading" in script
+    assert "Cross-node mode requires hostname pod anti-affinity" in script
+    assert "Cross-node mode requires a no-surge one-at-a-time rollout" in script
     assert 'cordon_owner_node "$PROVISION_INITIAL_OWNER"' in script
     assert 'cordon_owner_node "$RECLAIM_INITIAL_OWNER"' in script
     assert 'restore_cordoned_node' in script

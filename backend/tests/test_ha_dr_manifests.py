@@ -34,6 +34,10 @@ def test_arena_ha_overlay_has_two_workers_and_no_direct_reconciler() -> None:
 
     assert config["data"]["LIFECYCLE_HA_ENABLED"] == "true"
     assert worker["spec"]["replicas"] == 2
+    assert worker["spec"]["strategy"] == {
+        "type": "RollingUpdate",
+        "rollingUpdate": {"maxUnavailable": 1, "maxSurge": 0},
+    }
     assert worker["spec"]["template"]["spec"]["topologySpreadConstraints"] == [
         {
             "maxSkew": 1,

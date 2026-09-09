@@ -371,6 +371,13 @@ if [[ "$CROSS_NODE" == "true" ]]; then
     echo "Cross-node mode requires hostname pod anti-affinity" >&2
     exit 1
   }
+  [[ "$("${OC[@]}" -n "$NAMESPACE" get deployment lifecycle-worker \
+    -o jsonpath='{.spec.strategy.rollingUpdate.maxUnavailable}')" == "1" \
+    && "$("${OC[@]}" -n "$NAMESPACE" get deployment lifecycle-worker \
+    -o jsonpath='{.spec.strategy.rollingUpdate.maxSurge}')" == "0" ]] || {
+    echo "Cross-node mode requires a no-surge one-at-a-time rollout" >&2
+    exit 1
+  }
 else
   [[ "$("${OC[@]}" get node rhgnr1 -o jsonpath='{.spec.unschedulable}')" == "true" ]] || {
     echo "rhgnr1 must remain cordoned while Intel investigates it" >&2
