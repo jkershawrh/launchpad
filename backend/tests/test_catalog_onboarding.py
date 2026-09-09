@@ -8,6 +8,7 @@ from app.adapters.file.catalog import FileCatalogAdapter
 from app.domain.enums import CatalogStatus
 from app.services.catalog_onboarding import (
     build_catalog_item,
+    discover_quickstart_repo,
     load_intake,
     validate_intake,
 )
@@ -359,3 +360,71 @@ def test_validator_rejects_invalid_workshop_node_required_labels(
         "workshop_node_required_labels" in error
         for error in report["errors"]
     )
+
+
+def test_quickstart_discovery_scaffolds_fail_closed_intake(tmp_path: Path):
+    content = tmp_path / "showroom"
+    pages = content / "modules/ROOT/pages"
+    pages.mkdir(parents=True)
+    (tmp_path / "site.yml").write_text(
+        "content:\n  sources:\n    - url: .\n      start_path: showroom\n"
+    )
+    (content / "antora.yml").write_text(
+        "name: example\ntitle: Example\nversion: ~\nnav:\n  - modules/ROOT/nav.adoc\n"
+    )
+    (content / "modules/ROOT/nav.adoc").write_text("* xref:index.adoc[Start]\n")
+    (pages / "index.adoc").write_text("= Start\n")
+
+    chart = tmp_path / "deploy/chart"
+    chart.mkdir(parents=True)
+    (chart / "Chart.yaml").write_text(
+        "apiVersion: v2\nname: example\nversion: 0.1.0\n"
+    )
+    (chart / "values.yaml").write_text("{}\n")
+
+    intake, report = discover_quickstart_repo(
+        tmp_path,
+        repo_url="https://github.com/example/quickstart.git",
+        revision="a" * 40,
+        catalog_id="example-quickstart",
+        display_name="Example Quickstart",
+    )
+
+    assert report["discovery_status"] == "pass"
+    assert report["showroom"]["playbook"] == "site.yml"
+    assert report["showroom"]["start_path"] == "showroom"
+    assert report["workload"] == {
+        "deployment_type": "helm",
+        "deploy_path": "deploy/chart",
+    }
+    assert intake["catalog"]["status"] == "draft"
+    assert intake["sources"]["showroom"]["revision"] == "a" * 40
+    assert intake["sources"]["workload"]["repo_url"].endswith("quickstart.git")
+    assert intake["runtime"]["seat_resources"] == {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0,
+        "storage_gib": 0,
+    }
+    blockers = "\n".join(intake["certification"]["activation_blockers"])
+    assert "resource measurements" in blockers
+    assert "participant tabs" in blockers
+    assert validate_intake(intake)["validation_status"] == "pass"
+    assert validate_intake(intake)["activation_status"] == "blocked"
+
+
+def test_quickstart_discovery_fails_closed_without_showroom_or_workload(tmp_path: Path):
+    (tmp_path / "README.md").write_text("# Empty quickstart\n")
+
+    intake, report = discover_quickstart_repo(
+        tmp_path,
+        repo_url="https://github.com/example/empty.git",
+        revision="b" * 40,
+        catalog_id="empty-quickstart",
+        display_name="Empty Quickstart",
+    )
+
+    assert report["discovery_status"] == "fail"
+    assert any("Antora playbook" in error for error in report["errors"])
+    assert any("deployable workload" in error for error in report["errors"])
+    assert intake["certification"]["max_workshop_seats"] == 1

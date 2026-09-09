@@ -23,6 +23,20 @@ certification expectations, and the evidence to provide when requesting help.
 New catalog experiences use the repository-native
 [catalog onboarding pipeline](docs/catalog-onboarding.md) so source validation,
 catalog generation, Antora builds, and evidence receipts are repeatable.
+An existing quickstart Git repository can now be discovered into a fail-closed
+intake before entering the same review and 1/5/25 certification pipeline.
+
+Pilot presenters and operators should also use the
+[demo walkthrough](docs/presenter-demo-walkthrough.md),
+[ecosystem architecture and scale roadmap](docs/ecosystem-architecture-roadmap.md),
+the [presentation source](docs/presentations/launchpad-ecosystem-demo.md), and
+[support runbook](docs/support-runbook.md). The current TDD/EDD/CDD/BDD/CBT
+status is recorded in the
+[ecosystem enablement proof matrix](docs/ecosystem-enablement-proof-matrix.md).
+The portable
+[ecosystem playbooks](deploy/ecosystem/README.md) wrap the approved deployment,
+remote registration, validation, and group-reclaim paths without changing the
+workstation's Kubernetes context.
 
 Quick paths:
 

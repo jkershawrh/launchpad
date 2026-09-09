@@ -1,0 +1,110 @@
+---
+- name: Register one remote Launchpad execution cluster
+  hosts: launchpad_orchestrator
+  gather_facts: false
+  vars:
+    selected_target_id: "{{ target_cluster_id | default('') }}"
+    target: "{{ execution_clusters.get(selected_target_id, {}) }}"
+  tasks:
+    - name: Require an explicit remote target
+      ansible.builtin.assert:
+        that:
+          - selected_target_id | length > 0
+          - selected_target_id in execution_clusters
+          - target.get('remote', false) | bool
+          - target.get('cluster_id', '') == selected_target_id
+          - target.get('bootstrap_kubeconfig', '') | length > 0
+          - target.get('kubeconfig', '') | length > 0
+          - target.get('credential_secret', '') | length > 0
+          - target.get('rbac_manifest', '') | length > 0
+          - target.get('argocd_registration_manifest', '') | length > 0
+
+    - name: Apply reviewed remote provisioner RBAC with bootstrap authority
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ target.bootstrap_kubeconfig }}
+          - apply
+          - -f
+          - "{{ repository_root }}/{{ target.rbac_manifest }}"
+      register: rbac_apply
+      changed_when: "'created' in rbac_apply.stdout or 'configured' in rbac_apply.stdout"
+
+    - name: Verify the supplied least-privilege identity targets this cluster
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ target.kubeconfig }}
+          - whoami
+          - --show-server
+      register: target_server
+      changed_when: false
+      no_log: true
+
+    - name: Reject a mismatched execution credential
+      ansible.builtin.assert:
+        that: target_server.stdout | trim == target.api_url
+
+    - name: Verify namespace lifecycle permission
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ target.kubeconfig }}
+          - auth
+          - can-i
+          - create
+          - namespaces
+      register: can_create_namespace
+      changed_when: false
+
+    - name: Require the documented provisioner permission
+      ansible.builtin.assert:
+        that: can_create_namespace.stdout | trim == 'yes'
+
+    - name: Render encrypted kubeconfig Secret without printing it
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - -n
+          - "{{ control_plane.namespace }}"
+          - create
+          - secret
+          - generic
+          - "{{ target.credential_secret }}"
+          - --from-file=kubeconfig={{ target.kubeconfig }}
+          - --dry-run=client
+          - -o
+          - yaml
+      register: credential_secret
+      changed_when: false
+      no_log: true
+
+    - name: Store execution credential on the control plane
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - apply
+          - -f
+          - '-'
+        stdin: "{{ credential_secret.stdout }}"
+      no_log: true
+
+    - name: Register separate Argo CD destination identity
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - -n
+          - "{{ control_plane.argocd_namespace }}"
+          - apply
+          - -f
+          - "{{ target.argocd_registration_manifest }}"
+      no_log: true
+
+    - name: Keep normal placement disabled until certification
+      ansible.builtin.debug:
+        msg: >-
+          {{ selected_target_id }} is registered but must remain disabled in
+          config/clusters.yaml until its catalog-specific 1/5/25 gates pass.

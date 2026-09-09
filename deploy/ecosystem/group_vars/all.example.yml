@@ -1,0 +1,32 @@
+repository_root: /absolute/path/to/launchpad
+
+control_plane:
+  cluster_id: arena
+  kubeconfig: /secure/kubeconfigs/arena-admin.kubeconfig
+  api_url: https://api.arena.fm2aihpcsed.com:6443
+  namespace: partner-ai-launchpad
+  overlay: deploy/launchpad/overlays/arena
+  api_base_url: https://launchpad-api.apps.arena.fm2aihpcsed.com
+  argocd_namespace: openshift-gitops
+
+execution_clusters:
+  arena:
+    cluster_id: arena
+    kubeconfig: /secure/kubeconfigs/arena-admin.kubeconfig
+    api_url: https://api.arena.fm2aihpcsed.com:6443
+    storage_class: launchpad-nfs-ephemeral
+    credential_secret: ""
+    remote: false
+  brutus:
+    cluster_id: brutus
+    kubeconfig: /secure/kubeconfigs/brutus-launchpad.kubeconfig
+    bootstrap_kubeconfig: /secure/kubeconfigs/brutus-admin.kubeconfig
+    api_url: https://api.brutus.fm2aihpcsed.com:6443
+    storage_class: launchpad-nfs-ephemeral
+    credential_secret: launchpad-brutus-kubeconfig
+    remote: true
+    rbac_manifest: deploy/multicluster/arena-rbac.yaml
+    argocd_registration_manifest: /secure/manifests/brutus-argocd-cluster-secret.yaml
+
+# The example intentionally contains no tokens, passwords, client secrets, or
+# certificate private keys. LAUNCHPAD_ADMIN_API_KEY is supplied at runtime.

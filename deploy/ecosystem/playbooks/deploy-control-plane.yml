@@ -1,0 +1,69 @@
+---
+- name: Deploy the approved Launchpad control-plane overlay
+  hosts: launchpad_orchestrator
+  gather_facts: false
+  tasks:
+    - name: Inspect approved overlay path
+      ansible.builtin.stat:
+        path: "{{ repository_root }}/{{ control_plane.overlay }}"
+      register: overlay_path
+
+    - name: Validate explicit control-plane boundary
+      ansible.builtin.assert:
+        that:
+          - control_plane.cluster_id == 'arena'
+          - control_plane.kubeconfig | length > 0
+          - control_plane.overlay | length > 0
+          - overlay_path.stat.exists
+          - overlay_path.stat.isdir
+        fail_msg: "This pilot playbook permits only the reviewed Arena control plane"
+
+    - name: Render the repository overlay
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - kustomize
+          - "{{ repository_root }}/{{ control_plane.overlay }}"
+      register: rendered_overlay
+      changed_when: false
+
+    - name: Apply the rendered overlay server-side
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - apply
+          - --server-side
+          - --field-manager=launchpad-ecosystem
+          - -f
+          - '-'
+        stdin: "{{ rendered_overlay.stdout }}"
+      register: apply_result
+      changed_when: "'created' in apply_result.stdout or 'configured' in apply_result.stdout"
+
+    - name: Wait for Launchpad API rollout
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - -n
+          - "{{ control_plane.namespace }}"
+          - rollout
+          - status
+          - deployment/backend
+          - --timeout=10m
+      changed_when: false
+
+    - name: Wait for requester portal rollout
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - -n
+          - "{{ control_plane.namespace }}"
+          - rollout
+          - status
+          - deployment/partner-portal
+          - --timeout=10m
+      changed_when: false

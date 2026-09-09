@@ -14,6 +14,7 @@ XREF = re.compile(r"xref:([^\[#]+)(?:#[^\[]+)?\[")
 VALUE_PATH = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*(?:\.[A-Za-z][A-Za-z0-9_-]*)*$")
 RUNTIME_TEMPLATE_FIELD = re.compile(r"\{([A-Z][A-Z0-9_]*)\}")
 SENSITIVE_RUNTIME_MARKERS = ("PASSWORD", "TOKEN", "SECRET", "API_KEY", "PRIVATE_KEY")
+DISCOVERY_IGNORED_PARTS = {".git", ".venv", "node_modules", "build", "dist"}
 
 
 def load_intake(path: Path | str) -> dict[str, Any]:
@@ -22,6 +23,204 @@ def load_intake(path: Path | str) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise TypeError(f"Catalog onboarding intake must be a YAML mapping: {path}")
     return data
+
+
+def _repository_path(root: Path, path: Path) -> str:
+    relative = path.relative_to(root).as_posix()
+    return relative or "."
+
+
+def _discover_showroom(root: Path) -> tuple[dict[str, str], list[str], list[str]]:
+    candidates: list[dict[str, str]] = []
+    warnings: list[str] = []
+    errors: list[str] = []
+    for playbook in sorted(root.rglob("*.y*ml")):
+        if any(part in DISCOVERY_IGNORED_PARTS for part in playbook.parts):
+            continue
+        try:
+            document = yaml.safe_load(playbook.read_text())
+        except (OSError, UnicodeDecodeError, yaml.YAMLError):
+            continue
+        sources = (((document or {}).get("content") or {}).get("sources") or []) if isinstance(document, dict) else []
+        for source in sources:
+            if not isinstance(source, dict) or source.get("url") != ".":
+                continue
+            start_path = str(source.get("start_path", "."))
+            component = root / start_path / "antora.yml"
+            if component.is_file():
+                candidates.append(
+                    {
+                        "playbook": _repository_path(root, playbook),
+                        "start_path": start_path,
+                    }
+                )
+    if not candidates:
+        errors.append(
+            "No Antora playbook with a local content source and matching antora.yml was discovered."
+        )
+        return {"playbook": "site.yml", "start_path": "."}, warnings, errors
+    if len(candidates) > 1:
+        warnings.append(
+            "Multiple Antora sources were discovered; review the deterministic first selection."
+        )
+    return candidates[0], warnings, errors
+
+
+def _discover_workload(root: Path) -> tuple[dict[str, str], list[str], list[str]]:
+    candidates: list[tuple[int, str, str]] = []
+    warnings: list[str] = []
+    errors: list[str] = []
+
+    for chart in sorted(root.rglob("Chart.yaml")):
+        if any(part in DISCOVERY_IGNORED_PARTS for part in chart.parts):
+            continue
+        if (chart.parent / "values.yaml").is_file():
+            candidates.append((0, _repository_path(root, chart.parent), "helm"))
+    for kustomization in sorted(root.rglob("kustomization.y*ml")):
+        if any(part in DISCOVERY_IGNORED_PARTS for part in kustomization.parts):
+            continue
+        candidates.append((1, _repository_path(root, kustomization.parent), "kustomize"))
+    if not candidates:
+        manifest_dirs: set[Path] = set()
+        for manifest in sorted(root.rglob("*.y*ml")):
+            if any(part in DISCOVERY_IGNORED_PARTS for part in manifest.parts):
+                continue
+            try:
+                text = manifest.read_text()
+            except (OSError, UnicodeDecodeError):
+                continue
+            if re.search(r"(?m)^apiVersion:\s*\S+", text) and re.search(
+                r"(?m)^kind:\s*\S+", text
+            ):
+                manifest_dirs.add(manifest.parent)
+        for directory in sorted(manifest_dirs):
+            candidates.append((2, _repository_path(root, directory), "manifests"))
+
+    if not candidates:
+        errors.append(
+            "No deployable workload package (Helm, Kustomize, or Kubernetes manifests) was discovered."
+        )
+        return {"deployment_type": "manifests", "deploy_path": "."}, warnings, errors
+    candidates.sort(key=lambda item: (item[0], item[1]))
+    if len(candidates) > 1:
+        warnings.append(
+            "Multiple workload packages were discovered; review the deterministic first selection."
+        )
+    _, deploy_path, deployment_type = candidates[0]
+    return {
+        "deployment_type": deployment_type,
+        "deploy_path": deploy_path,
+    }, warnings, errors
+
+
+def discover_quickstart_repo(
+    source: Path | str,
+    *,
+    repo_url: str,
+    revision: str,
+    catalog_id: str,
+    display_name: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Discover a quickstart repository and scaffold a fail-closed intake.
+
+    Discovery identifies repository structure only. Resource sizing, participant
+    tabs, model dependencies, identity wiring, and live certification remain
+    explicit activation blockers and are never inferred from filenames.
+    """
+    root = Path(source).resolve()
+    if not root.is_dir():
+        raise ValueError(f"Quickstart source directory does not exist: {root}")
+    if not CATALOG_ID.fullmatch(catalog_id):
+        raise ValueError("catalog_id must be a DNS-safe kebab-case ID")
+    if not display_name.strip():
+        raise ValueError("display_name is required")
+    if not repo_url.startswith("https://github.com/"):
+        raise ValueError("repo_url must be an HTTPS GitHub URL")
+    if not IMMUTABLE_GIT_SHA.fullmatch(revision):
+        raise ValueError("revision must be an immutable 40-character Git SHA")
+
+    showroom, showroom_warnings, showroom_errors = _discover_showroom(root)
+    workload, workload_warnings, workload_errors = _discover_workload(root)
+    errors = showroom_errors + workload_errors
+    warnings = showroom_warnings + workload_warnings
+
+    blockers = [
+        "Replace zero resource placeholders with measured per-seat resource measurements.",
+        "Review required capabilities, models, participant tabs, routes, identity, and runtime Secret sources.",
+        "Complete source, one-seat, five-seat, and twenty-five-seat certification gates before activation.",
+    ]
+    if warnings:
+        blockers.append("Resolve every repository discovery warning before activation.")
+    if errors:
+        blockers.append("Resolve repository discovery failures before rendering or activation.")
+
+    intake: dict[str, Any] = {
+        "api_version": "launchpad.redhat.com/v1alpha1",
+        "onboarding_contract": f"catalog-onboarding/{catalog_id}.yaml",
+        "catalog": {
+            "catalog_item_id": catalog_id,
+            "display_name": display_name.strip(),
+            "description": f"Repository-discovered onboarding draft for {display_name.strip()}.",
+            "category": "guided_build",
+            "version": "0.1.0",
+            "status": "draft",
+        },
+        "sources": {
+            "showroom": {
+                "repo_url": repo_url,
+                "revision": revision,
+                "playbook": showroom["playbook"],
+                "start_path": showroom["start_path"],
+            },
+            "workload": {
+                "repo_url": repo_url,
+                "revision": revision,
+                "deploy_path": workload["deploy_path"],
+            },
+        },
+        "runtime": {
+            "deployment_type": workload["deployment_type"],
+            "required_capabilities": ["openshift", "showroom"],
+            "required_models": [],
+            "seat_resources": {
+                "cpu_millicores": 0,
+                "memory_mib": 0,
+                "pods": 0,
+                "storage_gib": 0,
+            },
+            "tabs": [{"id": "terminal", "title": "Terminal"}],
+            "allowed_exposure_policies": ["internal"],
+        },
+        "certification": {
+            "stage": "repository-discovery",
+            "max_workshop_seats": 1,
+            "promotion_sequence": [1, 5, 25],
+            "activation_blockers": blockers,
+        },
+        "discovery": {
+            "source": "quickstart-repository",
+            "warnings": warnings,
+            "errors": errors,
+            "provisional_fields": [
+                "catalog.description",
+                "runtime.required_capabilities",
+                "runtime.required_models",
+                "runtime.seat_resources",
+                "runtime.tabs",
+            ],
+        },
+    }
+    report = {
+        "discovery_status": "pass" if not errors else "fail",
+        "catalog_item_id": catalog_id,
+        "repo_url": repo_url,
+        "revision": revision,
+        "showroom": showroom,
+        "workload": workload,
+        "warnings": warnings,
+        "errors": errors,
+    }
+    return intake, report
 
 
 def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:

@@ -18,6 +18,7 @@ sys.path.insert(0, str(REPO_ROOT / "backend"))
 
 from app.services.catalog_onboarding import (
     build_catalog_item,
+    discover_quickstart_repo,
     load_intake,
     validate_intake,
 )
@@ -46,6 +47,24 @@ def _fetch_source(repo_url: str, revision: str, destination: Path) -> None:
         )
 
 
+def _verify_local_source_revision(source: Path, revision: str) -> None:
+    try:
+        actual = _run(["git", "rev-parse", "HEAD"], cwd=source).stdout.strip()
+        dirty = _run(["git", "status", "--porcelain"], cwd=source).stdout.strip()
+    except subprocess.CalledProcessError as exc:
+        raise ValueError(
+            "--source-dir must be a clean Git checkout so its immutable revision can be verified"
+        ) from exc
+    if actual != revision:
+        raise ValueError(
+            f"Local checkout {actual} does not match requested immutable revision {revision}"
+        )
+    if dirty:
+        raise ValueError(
+            "--source-dir has uncommitted changes; discovery requires the exact immutable revision"
+        )
+
+
 def _render(args: argparse.Namespace) -> int:
     intake = load_intake(args.intake)
     rendered = yaml.safe_dump(build_catalog_item(intake), sort_keys=False)
@@ -55,6 +74,43 @@ def _render(args: argparse.Namespace) -> int:
     else:
         print(rendered, end="")
     return 0
+
+
+def _scaffold(args: argparse.Namespace) -> int:
+    temporary: tempfile.TemporaryDirectory[str] | None = None
+    try:
+        if args.source_dir:
+            source = Path(args.source_dir).resolve()
+            _verify_local_source_revision(source, args.revision)
+        else:
+            temporary = tempfile.TemporaryDirectory(prefix="launchpad-quickstart-discovery-")
+            source = Path(temporary.name) / "source"
+            _fetch_source(args.repo_url, args.revision, source)
+
+        intake, report = discover_quickstart_repo(
+            source,
+            repo_url=args.repo_url,
+            revision=args.revision,
+            catalog_id=args.catalog_id,
+            display_name=args.display_name,
+        )
+        rendered = yaml.safe_dump(intake, sort_keys=False)
+        if args.output:
+            Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.output).write_text(rendered)
+        else:
+            print(rendered, end="")
+        if args.report:
+            Path(args.report).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.report).write_text(
+                json.dumps(report, indent=2, sort_keys=True) + "\n"
+            )
+        if report["warnings"] or report["errors"]:
+            print(json.dumps(report, indent=2, sort_keys=True), file=sys.stderr)
+        return 0 if report["discovery_status"] == "pass" else 1
+    finally:
+        if temporary is not None:
+            temporary.cleanup()
 
 
 def _validate(args: argparse.Namespace) -> int:
@@ -124,6 +180,23 @@ def _parser() -> argparse.ArgumentParser:
         description="Render and validate Launchpad catalog onboarding contracts"
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
+
+    scaffold = subparsers.add_parser(
+        "scaffold",
+        help="discover an immutable quickstart repository and generate a fail-closed intake",
+    )
+    scaffold.add_argument("--repo-url", required=True)
+    scaffold.add_argument("--revision", required=True)
+    scaffold.add_argument("--catalog-id", required=True)
+    scaffold.add_argument("--display-name", required=True)
+    scaffold.add_argument(
+        "--source-dir",
+        type=Path,
+        help="inspect an existing checkout instead of fetching the immutable revision",
+    )
+    scaffold.add_argument("--output", type=Path)
+    scaffold.add_argument("--report", type=Path)
+    scaffold.set_defaults(handler=_scaffold)
 
     render = subparsers.add_parser("render", help="render the generated draft catalog YAML")
     render.add_argument("intake", type=Path)

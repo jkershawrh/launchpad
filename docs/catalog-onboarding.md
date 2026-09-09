@@ -33,6 +33,41 @@ cleared and the evidence has been accepted.
 
 ## Local workflow
 
+### Start from an existing quickstart repository
+
+The onboarding CLI can inspect an immutable quickstart revision and generate
+the first fail-closed intake. It discovers a local Antora playbook/component
+pair and a Helm, Kustomize, or manifest workload package. It deliberately does
+not guess resource sizing, models, participant tabs, identity, runtime Secrets,
+or certification results.
+
+Inspect a protected, clean local checkout whose `HEAD` equals the supplied SHA:
+
+```bash
+.venv/bin/python scripts/catalog_onboarding.py scaffold \
+  --repo-url https://github.com/<owner>/<quickstart>.git \
+  --revision <40-character-git-sha> \
+  --catalog-id <catalog-id> \
+  --display-name "<Display name>" \
+  --source-dir /path/to/quickstart \
+  --output catalog-onboarding/<catalog-id>.yaml \
+  --report test-receipts/<catalog-id>-discovery.json
+```
+
+Omit `--source-dir` to fetch and verify the exact immutable revision in a
+temporary checkout. The generated intake is `draft`, internal-only, limited to
+one seat, and carries activation blockers. Its zero resource fields and default
+terminal tab are visible placeholders that a content integrator must replace
+with measured and reviewed contracts. Discovery fails nonzero when no valid
+Antora source or deployable workload is found. Multiple candidates produce a
+warning and block activation until the deterministic selection is reviewed.
+Local discovery rejects a non-Git directory, a different `HEAD`, or uncommitted
+changes so the receipt cannot describe content other than the declared SHA.
+
+After review, commit the intake, render the catalog record, and use the existing
+source/build/certification path below. There is one pipeline, not a per-lab
+adapter or set of manual platform edits.
+
 Render a catalog record:
 
 ```bash
@@ -155,6 +190,14 @@ The automated source gate is only the first layer:
    participant-facing, performance, failure-recovery, and cleanup evidence.
 6. **Activation:** reviewers remove resolved blockers, update measured resource
    values and certification stage, and explicitly promote the catalog item.
+
+The repeatable handoff from a quickstart repository is therefore:
+
+```text
+immutable repo -> discover/scaffold -> reviewed intake -> rendered catalog
+-> source and Antora validation -> runtime integration -> 1/5/25 proof
+-> explicit promotion -> supported use -> zero-residue reclaim
+```
 
 Large labs may stop at a lower certified seat ceiling. The catalog must publish
 the measured safe limit rather than copying the platform-wide maximum.

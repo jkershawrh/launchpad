@@ -1,0 +1,49 @@
+---
+- name: Validate Launchpad control plane and registered targets
+  hosts: launchpad_orchestrator
+  gather_facts: false
+  vars:
+    admin_api_key: "{{ lookup('ansible.builtin.env', 'LAUNCHPAD_ADMIN_API_KEY') }}"
+  tasks:
+    - name: Require API key outside Git
+      ansible.builtin.assert:
+        that: admin_api_key | length > 0
+        fail_msg: "Set LAUNCHPAD_ADMIN_API_KEY in the execution environment"
+      no_log: true
+
+    - name: Verify public API readiness endpoint
+      ansible.builtin.uri:
+        url: "{{ control_plane.api_base_url }}/ready"
+        method: GET
+        return_content: true
+        status_code: 200
+        validate_certs: true
+      register: ready
+
+    - name: Require readiness contract
+      ansible.builtin.assert:
+        that:
+          - ready.json is mapping
+          - ready.json.status == 'ready'
+
+    - name: Fetch complete cluster preflight
+      ansible.builtin.uri:
+        url: "{{ control_plane.api_base_url }}/api/v1/admin/clusters/preflight"
+        method: GET
+        headers:
+          X-API-Key: "{{ admin_api_key }}"
+        return_content: true
+        status_code: 200
+        validate_certs: true
+      register: preflight
+      no_log: true
+
+    - name: Require a non-mutating preflight response
+      ansible.builtin.assert:
+        that:
+          - preflight.json.mutates_cluster == false
+          - preflight.json.clusters | length > 0
+
+    - name: Report cluster eligibility without credentials
+      ansible.builtin.debug:
+        var: preflight.json.clusters

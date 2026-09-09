@@ -1,5 +1,11 @@
 # Architecture
 
+> **Current pilot topology:** Arena is the active control plane, Arena and
+> Brutus are the certified September 17 execution targets, Oberon is excluded,
+> and Flightpath is a passive DR candidate. For the authoritative current/target
+> topology, scale gates, and DeepField/StarGate/GCL-or-GeoLux integration path,
+> see [ecosystem-architecture-roadmap.md](ecosystem-architecture-roadmap.md).
+
 ## Platform Modules
 
 | Module | Purpose | Stack |
@@ -92,15 +98,17 @@ LabRequest arrives
 
 ### Graceful Degradation
 
-Every intelligence component fails open:
+Optional advisory intelligence can degrade without blocking a static
+recommendation, but eligibility, credentials, required capabilities, model
+availability, capacity, workshop affinity, and cleanup targeting fail closed:
 
 | Condition | Behavior |
 |-----------|----------|
-| Brain raises exception | Falls through to classifier, then static |
-| StarGate unreachable | Placement returns fallback, pool picks cluster |
+| Brain raises exception | Falls through to classifier, then a catalog default only within eligible targets |
+| StarGate unreachable | Advisory scoring degrades; required preflight policy does not bypass eligibility |
 | DeepField unreachable | Signals excluded from scoring, decision continues |
 | FeedbackTracker empty | No avoid-list filtering, all clusters eligible |
-| All external systems down | Provisions exactly as a static system would |
+| Required cluster, credential, capacity, or model fact is unavailable | Request is rejected before resources are created |
 
 ## Provisioning Flow
 

@@ -1,0 +1,103 @@
+---
+- name: Reclaim one workshop through Launchpad and verify zero residue
+  hosts: launchpad_orchestrator
+  gather_facts: false
+  vars:
+    admin_api_key: "{{ lookup('ansible.builtin.env', 'LAUNCHPAD_ADMIN_API_KEY') }}"
+    selected_target_id: "{{ target_cluster_id | default('') }}"
+    target: "{{ execution_clusters.get(selected_target_id, {}) }}"
+  tasks:
+    - name: Validate destructive target inputs
+      ansible.builtin.assert:
+        that:
+          - workshop_id is defined
+          - workshop_id | length == 36
+          - selected_target_id | length > 0
+          - selected_target_id in execution_clusters
+          - admin_api_key | length > 0
+      no_log: true
+
+    - name: Read workshop before reclaim
+      ansible.builtin.uri:
+        url: "{{ control_plane.api_base_url }}/api/v1/workshops/{{ workshop_id }}"
+        method: GET
+        headers:
+          X-API-Key: "{{ admin_api_key }}"
+        return_content: true
+        status_code: 200
+        validate_certs: true
+      register: workshop_before
+      no_log: true
+
+    - name: Require persisted target to match the supplied target
+      ansible.builtin.assert:
+        that: workshop_before.json.cluster_ref == selected_target_id
+        fail_msg: "Refusing reclaim: supplied target differs from persisted cluster_ref"
+
+    - name: Queue group reclaim through Launchpad
+      ansible.builtin.uri:
+        url: "{{ control_plane.api_base_url }}/api/v1/workshops/{{ workshop_id }}"
+        method: DELETE
+        headers:
+          X-API-Key: "{{ admin_api_key }}"
+        return_content: true
+        status_code: 202
+        validate_certs: true
+      register: reclaim_request
+      no_log: true
+
+    - name: Wait for terminal reclaimed state
+      ansible.builtin.uri:
+        url: "{{ control_plane.api_base_url }}/api/v1/workshops/{{ workshop_id }}"
+        method: GET
+        headers:
+          X-API-Key: "{{ admin_api_key }}"
+        return_content: true
+        status_code: 200
+        validate_certs: true
+      register: workshop_after
+      until: workshop_after.json.status in ['reclaimed', 'cleanup_failed']
+      retries: 60
+      delay: 10
+      no_log: true
+
+    - name: Reject cleanup failure
+      ansible.builtin.assert:
+        that: workshop_after.json.status == 'reclaimed'
+
+    - name: Count labeled namespaces on the persisted execution cluster
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ target.kubeconfig }}
+          - get
+          - namespaces
+          - -l
+          - "launchpad.redhat.com/workshop-id={{ workshop_id }}"
+          - -o
+          - name
+      register: remaining_namespaces
+      changed_when: false
+
+    - name: Count labeled Argo CD Applications on the control plane
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ control_plane.kubeconfig }}
+          - -n
+          - "{{ control_plane.argocd_namespace }}"
+          - get
+          - applications.argoproj.io
+          - -l
+          - "launchpad.redhat.com/workshop-id={{ workshop_id }}"
+          - -o
+          - name
+      register: remaining_applications
+      changed_when: false
+
+    - name: Require zero residue
+      ansible.builtin.assert:
+        that:
+          - remaining_namespaces.stdout | trim == ''
+          - remaining_applications.stdout | trim == ''
+        fail_msg: "Workshop reached a terminal record but labeled cluster residue remains"

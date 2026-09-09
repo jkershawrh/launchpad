@@ -1,0 +1,83 @@
+---
+- name: Read-only Launchpad ecosystem preflight
+  hosts: launchpad_orchestrator
+  gather_facts: false
+  vars:
+    selected_clusters: "{{ execution_clusters | dict2items }}"
+  tasks:
+    - name: Validate required non-secret inputs
+      ansible.builtin.assert:
+        that:
+          - repository_root | length > 0
+          - control_plane.cluster_id | length > 0
+          - control_plane.kubeconfig | length > 0
+          - control_plane.api_url.startswith('https://')
+          - control_plane.namespace | length > 0
+          - execution_clusters | length > 0
+
+    - name: Verify kubeconfig files exist
+      ansible.builtin.stat:
+        path: "{{ item.value.kubeconfig }}"
+      loop: "{{ selected_clusters }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: kubeconfig_files
+
+    - name: Fail closed when a kubeconfig is missing
+      ansible.builtin.assert:
+        that: item.stat.exists and item.stat.isreg
+        fail_msg: "Missing explicit kubeconfig for {{ item.item.key }}"
+      loop: "{{ kubeconfig_files.results }}"
+      loop_control:
+        label: "{{ item.item.key }}"
+
+    - name: Read authenticated API server for every cluster
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ item.value.kubeconfig }}
+          - whoami
+          - --show-server
+      loop: "{{ selected_clusters }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: authenticated_servers
+      changed_when: false
+      no_log: true
+
+    - name: Assert kubeconfig targets the declared API
+      ansible.builtin.assert:
+        that: item.stdout | trim == execution_clusters[item.item.key].api_url
+        fail_msg: "Kubeconfig API does not match declared target {{ item.item.key }}"
+      loop: "{{ authenticated_servers.results }}"
+      loop_control:
+        label: "{{ item.item.key }}"
+
+    - name: Verify declared storage class exists
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ item.value.kubeconfig }}
+          - get
+          - storageclass
+          - "{{ item.value.storage_class }}"
+          - -o
+          - name
+      loop: "{{ selected_clusters }}"
+      loop_control:
+        label: "{{ item.key }}"
+      changed_when: false
+    - name: Verify all cluster nodes report Ready
+      ansible.builtin.command:
+        argv:
+          - oc
+          - --kubeconfig={{ item.value.kubeconfig }}
+          - wait
+          - --for=condition=Ready
+          - nodes
+          - --all
+          - --timeout=30s
+      loop: "{{ selected_clusters }}"
+      loop_control:
+        label: "{{ item.key }}"
+      changed_when: false
