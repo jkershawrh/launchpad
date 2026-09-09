@@ -14,6 +14,7 @@ stage never implies a higher one.
 | HA-LEASE-01 | Only one worker owns an aggregate | GREEN | GREEN | — | GREEN (clean one-seat rerun) | GREEN-live-process |
 | HA-FENCE-01 | Expired owner cannot heartbeat, checkpoint, complete, or continue | GREEN | GREEN | — | GREEN (clean one-seat rerun) | GREEN-live-process |
 | HA-TAKEOVER-01 | A replacement worker receives a higher fencing token | GREEN | GREEN | — | GREEN (clean provision + reclaim) | GREEN-live-process |
+| HA-XNODE-01 | Node-separated workers take over provision and reclaim jobs across hosts | GREEN | GREEN | GREEN | GREEN (Arena) | GREEN-live-cross-node-process |
 | HA-CANCEL-01 | Reclaim cancels provision and waits for aggregate ownership | GREEN | GREEN | — | RED | GREEN-postgres |
 | HA-API-01 | Individual provision/reclaim returns a durable queued session | GREEN | — | — | GREEN (one seat) | GREEN-live-process |
 | HA-API-02 | Workshop confirm, retry, direct create, and reclaim use the queue | GREEN | — | — | RED | GREEN-local |
@@ -25,7 +26,7 @@ stage never implies a higher one.
 | HA-READY-01 | API readiness rejects standby, DB loss, or missing HA schema | GREEN | — | GREEN | GREEN (active/DB/schema) | GREEN-live-process |
 | HA-OBS-01 | Admin reports jobs, leases, retries, failures, and takeovers | GREEN | — | GREEN | GREEN | GREEN-live-process |
 | HA-ALERT-01 | Stalled jobs, reclaim, and failed jobs have Prometheus alerts | GREEN | — | GREEN | RED | GREEN-render |
-| HA-DEPLOY-01 | Arena overlay selects two workers and disables legacy reconciliation | GREEN | — | GREEN | GREEN (same node) | GREEN-live-process |
+| HA-DEPLOY-01 | Arena overlay selects two anti-affined workers and disables legacy reconciliation | GREEN | — | GREEN | GREEN (one per node) | GREEN-live-cross-node-process |
 | DR-PASSIVE-01 | Flightpath renders with zero Deployments and suspended CronJobs | GREEN | — | GREEN | RED | GREEN-render |
 | DR-FENCE-01 | Runbook requires a hard Arena credential/network fence | GREEN | — | GREEN | RED | GREEN-render |
 | DR-IDENTITY-01 | Flightpath has a distinct least-privilege identity for Arena and Brutus | GREEN | — | GREEN | RED | GREEN-render |
@@ -47,10 +48,10 @@ requires every item below; this is a binary 100-point gate, not an average.
 | Lease ownership and fencing | 20 | Local, PostgreSQL, and live one-seat provision/reclaim worker-kill proof | 20 |
 | Provision/reclaim/TTL/reconcile integration | 20 | Clean one-seat provision and reclaim takeover; 5/25-seat takeover runs pending | 16 |
 | Database availability and recoverability | 15 | Single PostgreSQL instance; restore drill pending | 0 |
-| Arena worker and node availability | 10 | Two-worker overlay; second schedulable node pending | 0 |
+| Arena worker and node availability | 10 | Two anti-affined workers and cross-node process takeover; hard node-loss test pending | 5 |
 | Operations UI, metrics, and alerts | 10 | Live lifecycle API plus local UI and rendered alerts | 8 |
 | Flightpath restore, hard fence, and failback | 10 | Passive overlay and runbook only | 3 |
-| **Total** | **100** | **Pilot enabled; not approved for production HA/DR** | **62** |
+| **Total** | **100** | **Pilot enabled; not approved for production HA/DR** | **67** |
 
 ## Arena live process-takeover result
 
@@ -72,9 +73,9 @@ included defect discovery, deployments, and repeated recovery; it also began
 with the earlier 120-second lease. A fresh uninterrupted run using the current
 30-second lease is required before publishing a failover-time objective.
 
-Both lifecycle processes currently run on `gnr2`; `rhgnr1` remains cordoned.
-Therefore node HA remains RED. Five-seat and 25-seat workshop takeover, stable
-public DNS/TLS, and Flightpath DR also remain RED.
+The earlier clean process proof ran both lifecycle processes on `gnr2` while
+`rhgnr1` was cordoned. The later cross-node proof supersedes that topology,
+but it does not change the boundary of the earlier receipt.
 
 ## Arena clean process-takeover result
 
@@ -96,6 +97,30 @@ regression test and the complete 1,328-test non-local suite passed. The signed
 evidence receipt is
 `evidence/runs/arena-lifecycle-process-ha-clean-20260909T003840Z.json`.
 
+## Arena cross-node process-takeover result
+
+Arena now runs two lifecycle workers with required hostname anti-affinity: one
+on `rhgnr1` and one on `gnr2`. Commit `fa02f59` executed the deterministic
+cross-node proof against the same immutable backend image. In both phases the
+initial owner ran on `rhgnr1` and the replacement owner ran on `gnr2`.
+Provision ownership transferred with fencing token 1 to 2 in 31.623 seconds,
+and the recovered lab reached Showroom HTTP 200 in 102.328 seconds. Reclaim
+ownership transferred with fencing token 3 to 4 in 36.034 seconds and finished
+in 40.010 seconds.
+
+Cleanup left zero Namespace, Route, RoleBinding, or Argo CD Application
+residue; both nodes returned Ready and schedulable; worker placement returned
+to one process per node; and the public certification lab remained active. The
+hashed receipt is
+`evidence/runs/arena-lifecycle-cross-node-process-ha-20260909T011040Z.json`.
+
+This certifies cross-node process takeover, not hard node failure. The proof
+cordoned the owning node without draining it and deleted only the owning
+Launchpad worker pod. A power, kubelet, or network-loss exercise for an entire
+worker remains RED and requires a separate maintenance window because it can
+affect unrelated workloads. Five-seat and 25-seat workshop takeover, stable
+public DNS/TLS, and Flightpath DR also remain RED.
+
 ## Flightpath live preflight status
 
 Read-only credential discovery on September 8 found the dedicated Arena
@@ -116,17 +141,18 @@ is delivered through the approved secret path.
 4. Apply `deploy/launchpad/overlays/arena-ha-pilot` in a controlled window.
 5. The clean individual provision/reclaim process-takeover repetition is
    complete. Retain its receipt as the process-HA baseline for later runs.
-6. Stabilize and uncordon `rhgnr1`, force the owner node unavailable, and repeat
-   the proof before calling the deployment node-HA.
+6. `rhgnr1` is uncordoned and cross-node process takeover is complete. Run a
+   controlled hard node-loss exercise before calling the deployment node-HA.
 7. Repeat at 5 seats and 25 seats. Record job IDs, fencing tokens, image digests,
    cluster state, timings, route probes, screenshots, and cleanup scans.
 
 The deterministic one-seat repetition is implemented by
 `scripts/certify-arena-lifecycle-process-ha.sh`. It requires an explicit Arena
-kubeconfig and destructive-confirmation flag, refuses to run while `rhgnr1` is
-uncordoned or the 30-second lease is absent, faults both provision and reclaim
-owners, verifies higher fences and zero residue, and writes a credential-free
-hashed evidence receipt. It does not alter the global kube context.
+kubeconfig and destructive-confirmation flag. Its baseline mode requires
+`rhgnr1` to remain cordoned; `--cross-node` instead requires two Ready,
+anti-affined workers on distinct nodes. Both modes fault provision and reclaim
+owners, verify higher fences and zero residue, and write a credential-free
+hashed evidence receipt. Neither alters the global kube context.
 
 ## Flightpath certification sequence
 

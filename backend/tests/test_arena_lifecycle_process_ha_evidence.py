@@ -1,9 +1,14 @@
+import hashlib
 import json
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "evidence/runs/arena-lifecycle-process-ha-20260908.json"
+CROSS_NODE_EVIDENCE = (
+    ROOT
+    / "evidence/runs/arena-lifecycle-cross-node-process-ha-20260909T011040Z.json"
+)
 
 
 def _proof() -> dict:
@@ -56,3 +61,36 @@ def test_arena_process_takeover_proof_preserves_certification_boundaries():
     assert boundary["clean_latency_run"].startswith("not certified")
     assert boundary["flightpath_dr"] == "not certified"
     assert boundary["stable_public_dns_tls"].startswith("not certified")
+
+
+def test_arena_cross_node_process_takeover_is_green_and_hashed():
+    raw = CROSS_NODE_EVIDENCE.read_bytes()
+    proof = json.loads(raw)
+    checksum = CROSS_NODE_EVIDENCE.with_suffix(".json.sha256").read_text().split()[0]
+
+    assert hashlib.sha256(raw).hexdigest() == checksum
+    assert proof["result"] == "GREEN-live-cross-node-process-ha"
+    assert proof["topology"]["worker_nodes"] == [
+        "gnr2.fm2aihpcsed.com",
+        "rhgnr1",
+    ]
+    assert proof["topology"]["node_separated_processes"] is True
+    for phase in ("provision_takeover", "reclaim_takeover"):
+        takeover = proof[phase]
+        assert takeover["initial_owner_node"] == "rhgnr1"
+        assert takeover["takeover"]["final"]["fencing_token"] > (
+            takeover["initial"]["fencing_token"]
+        )
+        assert takeover["takeover"]["final"]["attempts"] == 2
+        assert takeover["takeover"]["replacement_owner"].startswith(
+            "lifecycle-worker-"
+        )
+    assert proof["order"]["showroom_http"] == 200
+    assert set(proof["cleanup"].values()) == {0}
+    assert proof["public_certification_lab_preserved"] is True
+    assert proof["certification_boundary"]["cross_node_process_ha"] == (
+        "certified"
+    )
+    assert proof["certification_boundary"]["hard_node_failure"] == (
+        "not certified"
+    )
