@@ -184,6 +184,7 @@ control-plane code.
 | More clusters | Register another CPU execution cluster | Least privilege, images, ingress, model routes, 1/5/25 gates | Playbook path defined |
 | Larger workshops | 50 then 75 seats on one cluster | Measured headroom, node stability, functional load, reclaim | Do not advertise yet |
 | Multi-event fleet | Concurrent orders across three or more targets | Queue fairness, capacity reservations, SLOs, failure-domain tests | Roadmap |
+| Security assurance | Make identity, isolation, secrets, public ingress, software supply chain, data policy, and incident response explicit release gates | Threat model, zero critical/high findings, cross-tenant denial, credential rotation, audit and recovery evidence | Pilot controls active; production assessment pending |
 | Repository and delivery foundation | Sanitize and modularize the current source tree; introduce repeatable CI/CD without destabilizing the pilot | Secret/history scan, ownership map, reproducible builds, signed immutable artifacts, promotion evidence | Pre-event sanitation only; structural work after pilot |
 | Production service | Stable public ingress, HA/DR, security, support, ownership | Complete production rubric and drills | Post-pilot |
 
@@ -569,10 +570,161 @@ needs an OpenShift Console or lab endpoint.
 |---|---|---|
 | Internal pilot | Repeatable catalog, whole-workshop placement, guided participant experience, evidence, and zero-residue reclaim | Supervised operations and internal access |
 | Durable service | Permanent control-plane home, HA lifecycle, stable identity/ingress, centralized observability, and tested DR | Production service ownership and SLO approval |
+| Security foundation | Enterprise administration identity, least-privilege workload identity, managed secrets, private service boundaries, secure supply chain, audit and response | Independent threat model and security review; zero unresolved critical/high findings |
 | Managed fleet | Policy-based cluster registration, reservations, predictive readiness, failure-domain placement, and capacity planning | Certified catalog/cluster pairs only |
 | AI platform | Private multi-hardware serving, semantic routing where justified, per-seat attribution, and model governance | Deterministic eligibility and data policy remain authoritative |
 | Business service | Intel-led opportunity qualification, tenant budgets, showback, rate cards, approved chargeback, catalog economics, and demand forecasts | Sales attribution and Finance-approved allocation rules |
 | Governed autonomy | Evidence-driven recommendations followed by allow-listed automatic remediation and reclaim | One failure class earns autonomy at a time |
+
+## GitOps and Argo CD deployment decision
+
+Argo CD remains the recommended deployment reconciler, while Launchpad remains
+the lifecycle authority. This boundary is important: GitOps describes and
+reconciles desired platform state; it is not the transaction log for workshop
+orders, capacity reservations, seat claims, TTLs, or reclaim.
+
+| Concern | Authoritative owner |
+|---|---|
+| Control-plane services, shared execution-cluster services, policies, cluster baselines, and versioned catalog releases | Git and Argo CD |
+| Orders, workshop and seat assignments, `cluster_ref`, reservations, entitlements, TTL, lifecycle jobs, and audit mutations | Launchpad database and workers |
+| Resource convergence inside a cluster | Kubernetes and installed Operators |
+| Functional readiness, participant journeys, performance, and zero-residue proof | Launchpad certification and evidence pipeline |
+
+For the current fleet, use one highly available central Argo CD instance on the
+dedicated control-plane cluster. Register each execution cluster with its own
+least-privilege GitOps identity, constrain destinations and resource kinds with
+AppProjects, and use ApplicationSets for repeatable long-lived cluster stacks
+and catalog releases. Do not create a Git commit for every participant seat.
+When a catalog needs an Argo CD Application per workshop, Launchpad persists its
+identity and target cluster before creation, observes reconciliation, then runs
+functional probes before declaring the workshop ready.
+
+The main drawbacks and required mitigations are:
+
+- reconciliation is asynchronous, and `Synced` or Kubernetes health does not
+  prove that Showroom, an operator workflow, or a model is usable; retain
+  inference-aware and browser/API functional certification;
+- unreachable destination clusters, finalizers, pruning, and cascading deletion
+  can delay teardown; Launchpad needs durable cleanup jobs, explicit fencing,
+  orphan detection, bounded retries, and an audited manual recovery path;
+- a central Argo CD installation and its remote-cluster credentials create a
+  control-plane dependency and blast radius; run it HA, use separate scoped
+  identities per cluster, monitor it, back it up, and exercise loss-of-cluster
+  and restore scenarios;
+- repo-server manifest generation, application-controller queues, cluster
+  caches, and monorepo traversal can bottleneck as application and cluster count
+  rise; measure reconciliation latency and scale or shard only from evidence;
+- sync waves and hooks help order deployment but are not durable workflow or
+  transaction semantics; lifecycle state, retries, compensation, and capacity
+  ownership remain in Launchpad;
+- automatic self-healing can reverse emergency changes; define a time-bounded,
+  audited incident override and a deliberate path for reconciling the approved
+  fix back to Git;
+- secrets do not belong in Git; use an approved external secrets system or
+  encrypted-secret workflow and deploy immutable, signed image digests with
+  provenance.
+
+Do not add an independent Argo CD instance to every execution cluster for the
+pilot. Reassess central versus regional/failure-domain instances only after
+fleet size, network partitions, organizational boundaries, or measured
+controller load justify the added operational cost. RHACM remains a later
+option when direct registration and policy distribution become unwieldy.
+
+## Security architecture and assurance roadmap
+
+Security is a product capability and release boundary, not a final CI check.
+Launchpad crosses public ingress, identity, control-plane, execution-cluster,
+model-serving, content-supply-chain, and operational-administration trust
+boundaries. Each boundary requires an explicit owner, policy, audit trail,
+failure mode, and certification result.
+
+The governing principles are:
+
+- private by default and fail closed when identity, policy, cluster credentials,
+  model authorization, or audit dependencies are unavailable;
+- least privilege for people, services, cluster provisioners, GitOps, model
+  access, and automation, with no routine use of `kubeadmin` or shared
+  administrator credentials;
+- separation of participant, instructor, requester, platform operator,
+  content-publisher, security reviewer, and break-glass authority;
+- one participant or workshop entitlement grants access only to its assigned
+  seat, namespace, approved tools, model policy, and expiration window;
+- immutable and attributable software, content, configuration, policy, and
+  evidence from source through deployment and reclaim;
+- minimized collection of email labels, prompts, documents, model traces, and
+  customer context, with documented purpose, retention, access, and deletion;
+- deterministic authorization and ownership. AI may summarize evidence or
+  recommend an allow-listed response but cannot grant access, bypass policy,
+  infer resource ownership, or approve destructive remediation.
+
+### Security gates before September 17
+
+The pilot should add only bounded, testable controls before the event freeze:
+
+1. Run repository and history-aware secret detection, dependency scanning,
+   container/image scanning, rendered-manifest review, and license/policy checks
+   on the exact release candidate. Store results in the evidence manifest.
+2. Inventory every public Route and tunnel path. Permit only the participant
+   gateway and required identity endpoints; keep APIs, model endpoints,
+   PostgreSQL, Argo CD, administration, and cluster credentials private.
+3. Revalidate namespace RoleBindings, cross-seat and cross-tenant denial,
+   service-account scope, remote-cluster credentials, NetworkPolicies, and model
+   key scope for all three event catalogs.
+4. Treat the shared instructor code as a bearer secret: reveal it once, transmit
+   it privately, rate-limit attempts, rotate it on suspected disclosure, deny
+   access immediately at rotation or TTL, and audit claims and removals. Pilot
+   email remains an unverified identity label and must be described that way.
+5. Complete the Keycloak 26.7.2 live rollout and rollback browser gate before
+   using public access for the event. If that gate or the 25-claim abuse test is
+   not green, use the internal access path for September 17.
+6. Verify logout, session revocation, RoleBinding removal, model-key revocation,
+   bulk reclaim, and zero identity/namespace/Route residue. Do not infer access
+   cleanup from pod deletion.
+7. Prepare a security incident path covering leaked instructor codes,
+   compromised participant sessions, cross-tenant access, exposed credentials,
+   vulnerable images, audit loss, and public-edge abuse. Name the owner and
+   event-day authority to rotate, disable, isolate, or reclaim.
+
+The pilot security release gate requires zero known critical or high findings,
+zero successful cross-seat or cross-tenant authorization, no plaintext secrets
+in Git or evidence, trusted TLS, successful rate-limit behavior, complete audit
+events, and immediate denial after rotation, expiration, or participant
+removal. Native public OpenShift Console access remains outside the September
+pilot unless separately threat-modeled and certified.
+
+### Production security foundation after September 17
+
+Production maturation adds:
+
+- enterprise federation and MFA for requester, administrator, publisher, and
+  break-glass roles, with documented participant assurance levels by exposure
+  policy and use case;
+- an approved secrets manager, automatic rotation, short-lived workload and
+  cluster identities, certificate lifecycle management, and removal of static
+  credentials from application configuration;
+- dedicated provisioner and GitOps identities per execution cluster, bounded
+  impersonation, admission policy, default-deny networking, controlled egress,
+  and private authenticated connectivity to model and control-plane services;
+- signed images and content bundles, SBOMs, provenance attestations,
+  vulnerability and license policy, dependency update ownership, registry
+  retention, and deployment by immutable digest;
+- centralized tamper-evident audit, security telemetry, alert routing, SIEM
+  integration, incident response, forensic retention, and tested credential and
+  signing-key recovery;
+- explicit data classification for participant identity, uploaded documents,
+  prompts, model output, traces, evidence, sales context, and billing records,
+  including residency, consent, redaction, retention, export, and deletion;
+- independent threat modeling, architecture review, penetration testing, abuse
+  testing, backup/restore validation, DR security review, and recurring access
+  recertification before GA.
+
+Every catalog/cluster certification records its security profile alongside
+functional and capacity proof. Material changes to identity, public exposure,
+OpenShift or Operator versions, network boundary, model route, base image,
+service account, or data policy trigger targeted security recertification.
+Automation graduates from observe to recommend to approve to automatic only
+after one bounded failure class passes abuse, rollback, audit, and blast-radius
+tests.
 
 ## Repository sanitation, organization, and CI/CD
 
@@ -716,6 +868,7 @@ migration always require human authority.
 | Learner journey | `content*/` Antora/AsciiDoc |
 | Deterministic proof | `certification/catalog/` and `scripts/catalog_certification.py` |
 | Immutable run evidence | `evidence/` and `evidence/runs/` |
+| Security boundaries and release gates | This roadmap, `docs/PUBLIC_ACCESS.md`, `deploy/launchpad/public-access/`, NetworkPolicies, RBAC, and security evidence |
 | Support and recovery | `docs/support-runbook.md` and cluster-specific runbooks |
 
 ## Architecture decisions still open
@@ -736,4 +889,10 @@ migration always require human authority.
   approval boundary for internal chargeback;
 - approved CRM, consent and retention policy, account/opportunity ownership,
   and sourced-versus-influenced attribution rules for the Intel sales motion;
+- enterprise identity provider, participant assurance levels, secrets manager,
+  certificate authority, SIEM, security ownership, retention policy, and
+  independent assessment scope;
+- the measured cluster/application threshold for central versus regional Argo
+  CD, ApplicationSet ownership boundaries, and the approved GitOps secrets
+  integration;
 - service ownership and support rotations for a production deployment.
