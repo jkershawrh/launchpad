@@ -1,0 +1,28 @@
+{
+  "schema": "launchpad.redhat.com/public-origin-contract/v1",
+  "evidence_id": "PUBLIC-NAMED-ORIGIN-GREEN-LOCAL-20260909",
+  "recorded_at": "2026-09-09T23:24:15Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "GREEN-local",
+  "public_origin": "https://labs.smg-helix.ai",
+  "checks": [
+    {
+      "command": ".venv/bin/pytest -q backend/tests/test_public_tunnel_contract.py backend/tests/test_public_access_network_policy.py",
+      "result": "19 passed"
+    },
+    {
+      "command": ".venv/bin/pytest -q backend/tests/test_public_access.py backend/tests/test_public_gateway.py backend/tests/test_public_access_network_policy.py backend/tests/test_public_tunnel_contract.py backend/tests/test_workshop_order_contract.py",
+      "result": "136 passed"
+    },
+    {
+      "command": "oc kustomize deploy/tunnel-oncluster && oc kustomize deploy/launchpad/overlays/arena",
+      "result": "passed"
+    },
+    {
+      "command": ".venv/bin/pre-commit run --all-files",
+      "result": "gitleaks passed"
+    }
+  ],
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

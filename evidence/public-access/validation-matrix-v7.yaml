@@ -1,0 +1,136 @@
+version: 7
+supersedes: validation-matrix-v6.yaml
+feature: public-passwordless-permanent-origin-lab-access
+observed_at: "2026-09-10T01:30:10Z"
+stages: [RED, GREEN-local, GREEN-integration, GREEN-live]
+columns: [unit, contract, component, bdd, integration, security, external_browser, fault_injection, cleanup, performance]
+live_evidence:
+  - evidence/runs/permanent-public-origin-green-live-20260909.json
+  - evidence/runs/public-serve-v105-one-seat-green-live-20260909.json
+  - evidence/runs/public-tunnel-connector-failover-green-live-20260909.json
+rows:
+  - id: PA-DNS-001
+    requirement: Permanent public DNS and trusted edge TLS
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/permanent-public-origin-green-live-20260909.json]
+  - id: PA-ISO-002
+    requirement: Public route isolation
+    critical: true
+    stage: GREEN-integration
+    evidence: [backend/tests/test_public_gateway.py, backend/tests/test_public_access_network_policy.py]
+  - id: PA-CODE-003
+    requirement: Order and one-time code creation
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-CLAIM-004
+    requirement: Workshop claim and recovery
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-CONC-005
+    requirement: Twenty-five concurrent unique claims
+    critical: true
+    stage: RED
+    reason: No permanent-origin 25-claim burst has been executed.
+  - id: PA-IDENT-006
+    requirement: Seat recovery and stable identity
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-GATE-007
+    requirement: Entitlement-aware Showroom and tool proxy
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-OIDC-008
+    requirement: Keycloak OIDC application login with the permanent issuer
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-CONSOLE-009
+    requirement: Native OpenShift Console SSO through the public origin
+    critical: false
+    stage: RED
+    reason: Explicitly outside the September public pilot; requires a separate cluster-wide change approval.
+  - id: PA-DENY-010
+    requirement: Cross-seat and cluster-scope denial
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-ROT-011
+    requirement: Code rotation and reauthentication
+    critical: true
+    stage: GREEN-integration
+    evidence: [backend/tests/test_public_access.py]
+  - id: PA-RATE-012
+    requirement: Rate limiting and uniform denial
+    critical: true
+    stage: GREEN-integration
+    evidence: [backend/tests/test_public_access.py]
+  - id: PA-TTL-013
+    requirement: TTL denial
+    critical: true
+    stage: GREEN-local
+    evidence: [backend/tests/test_public_access.py]
+  - id: PA-CLEAN-014
+    requirement: Complete public-order operational cleanup
+    critical: true
+    stage: RED
+    reason: The current two-seat public order is active; permanent-origin zero-residue reclaim is not yet recorded.
+  - id: PA-RECOV-015
+    requirement: Backend and Keycloak restart recovery
+    critical: true
+    stage: GREEN-integration
+    evidence: [backend/tests/test_public_access.py, backend/tests/test_public_tunnel_contract.py]
+  - id: PA-LIVE25-016
+    requirement: Twenty-five-seat external functional journey
+    critical: true
+    stage: RED
+    reason: One permanent-origin participant journey is certified; 25 are not.
+  - id: PA-HOME-017
+    requirement: Participant home and add-lab/resume experience
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-PATH-018
+    requirement: Multiple orders share one exact hostname using isolated paths
+    critical: true
+    stage: GREEN-integration
+    evidence: [backend/tests/test_public_access.py, backend/tests/test_public_gateway.py]
+  - id: PA-UPTLS-019
+    requirement: Gateway validates execution-cluster ingress with the installed CA
+    critical: true
+    stage: GREEN-integration
+    evidence: [backend/tests/test_public_tunnel_contract.py]
+  - id: PA-LEAK-020
+    requirement: Browser receives no raw private cluster tool URLs
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-READY-021
+    requirement: Participant-created unavailable tools show a retryable readiness state
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-serve-v105-one-seat-green-live-20260909.json]
+  - id: PA-TUNNEL-022
+    requirement: Named-tunnel connector and process failover
+    critical: true
+    stage: GREEN-live
+    evidence: [evidence/runs/public-tunnel-connector-failover-green-live-20260909.json]
+  - id: PA-NODEHA-023
+    requirement: Public path survives an Arena worker failure
+    critical: true
+    stage: RED
+    reason: Both tunnel replicas and the application gateway run on gnr2 while rhgnr1 remains cordoned.
+  - id: PA-WSFAIL-024
+    requirement: An established terminal WebSocket survives or transparently recovers from connector loss
+    critical: false
+    stage: RED
+    reason: HTTP/OIDC/lab-entry continuity passed; an established WebSocket was not part of the fault run.
+release_rule: >-
+  No critical RED row is release-ready. The permanent-origin September pilot
+  may proceed under supervision for the proven one-seat path, but production or
+  GA requires the 25-claim and 25-participant live gates, zero-residue cleanup,
+  worker-level resilience, and three consecutive complete certification runs.

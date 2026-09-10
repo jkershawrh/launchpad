@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Start the disposable Arena public-access pilot tunnel and configure only the
-# Launchpad/Keycloak objects owned by this feature. The OpenShift Console
-# operator, its managed OAuthClient, and the cluster OAuth configuration are
-# deliberately left untouched.
+# Reconcile Arena's permanent Cloudflare named tunnel and the Launchpad-owned
+# public-access configuration. The tunnel token is an out-of-Git Secret. This
+# workflow deliberately does not modify the OpenShift Console operator, its
+# managed OAuthClient, or OAuth/cluster.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ARENA_KUBECONFIG="${ARENA_KUBECONFIG:-/Users/jkershaw/.kube/config-arena}"
 export KUBECONFIG="$ARENA_KUBECONFIG"
 
 NAMESPACE="partner-ai-launchpad"
-ORDER_ID="${1:-}"
 KEYCLOAK_NAMESPACE="keycloak"
 KEYCLOAK_INTERNAL="http://keycloak-service.keycloak.svc:8080"
-KEYCLOAK_ISSUER="https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public"
 KEYCLOAK_ADMIN_URL="http://127.0.0.1:18087"
 BACKEND_LOCAL_URL="http://127.0.0.1:18090"
 BACKEND_ADMIN_URL="$BACKEND_LOCAL_URL/api/v1"
+PUBLIC_ORIGIN="${PUBLIC_ORIGIN:-https://labs.smg-helix.ai}"
+ORDER_ID="${1:-}"
 
-log() { printf '[arena-public-pilot] %s\n' "$*"; }
-die() { printf '[arena-public-pilot] ERROR: %s\n' "$*" >&2; exit 1; }
+log() { printf '[arena-public-named] %s\n' "$*"; }
+die() { printf '[arena-public-named] ERROR: %s\n' "$*" >&2; exit 1; }
 
 [[ -f "$KUBECONFIG" ]] || die "Arena kubeconfig not found: $KUBECONFIG"
 
@@ -29,84 +29,117 @@ infrastructure=$(oc get infrastructure cluster -o jsonpath='{.status.infrastruct
 [[ "$infrastructure" == arena-* ]] \
   || die "Refusing cluster '$infrastructure'; this workflow is Arena-only"
 
-console_operator_replicas=$(oc get deployment console-operator \
-  -n openshift-console-operator -o jsonpath='{.spec.replicas}')
-[[ "${console_operator_replicas:-0}" -gt 0 ]] \
-  || die "Console operator is not running; restore the managed operator before starting the pilot"
-
-idp_issuer=$(oc get oauth cluster -o json \
-  | python3 -c 'import json,sys; data=json.load(sys.stdin); print(next((p.get("openID",{}).get("issuer","") for p in data.get("spec",{}).get("identityProviders",[]) if p.get("name")=="launchpad-public"), ""))')
-[[ "$idp_issuer" == "$KEYCLOAK_ISSUER" ]] \
-  || die "launchpad-public must use the stable Arena Keycloak issuer before tunnel startup"
-
-log "Rendering the unprivileged tunnel router"
-oc create configmap tunnel-router -n "$NAMESPACE" \
-  --from-file=router.py="$SCRIPT_DIR/router.py" \
-  --dry-run=client -o yaml | oc apply -f - >/dev/null
-oc apply -f "$SCRIPT_DIR/deployment.yaml" >/dev/null
-oc rollout restart deployment/cloudflare-tunnel -n "$NAMESPACE" >/dev/null
-oc rollout status deployment/cloudflare-tunnel -n "$NAMESPACE" --timeout=180s
-
-log "Waiting for the Cloudflare Quick Tunnel hostname"
-tunnel_url=""
-for ((attempt=1; attempt<=60; attempt++)); do
-  tunnel_url=$(oc logs deployment/cloudflare-tunnel -c cloudflared -n "$NAMESPACE" \
-    | grep -Eo 'https://[a-z0-9-]+\.trycloudflare\.com' | head -1 || true)
-  [[ -n "$tunnel_url" ]] && break
-  sleep 2
-done
-[[ -n "$tunnel_url" ]] || die "Cloudflare did not assign a pilot hostname"
-
-log "Enabling the shared-origin public pilot on Arena"
-cluster_config=$(oc get configmap launchpad-cluster-targets -n "$NAMESPACE" \
-  -o jsonpath='{.data.clusters\.yaml}')
-cluster_patch=$(CLUSTER_CONFIG="$cluster_config" TUNNEL_URL="$tunnel_url" python3 -c '
-import json
+public_host=$(PUBLIC_ORIGIN="$PUBLIC_ORIGIN" python3 -c '
 import os
 from urllib.parse import urlsplit
+
+origin = urlsplit(os.environ["PUBLIC_ORIGIN"])
+if origin.scheme != "https" or origin.hostname != "labs.smg-helix.ai":
+    raise SystemExit("PUBLIC_ORIGIN must be https://labs.smg-helix.ai")
+if origin.path not in {"", "/"} or origin.query or origin.fragment or origin.username:
+    raise SystemExit("PUBLIC_ORIGIN must be an HTTPS origin without path or credentials")
+print(origin.hostname)
+') || die "Invalid permanent public origin"
+
+oc get secret tunnel-token -n "$NAMESPACE" >/dev/null \
+  || die "Missing $NAMESPACE/tunnel-token; create it out of Git from the named-tunnel token"
+oc get secret launchpad-public-access -n "$NAMESPACE" >/dev/null \
+  || die "Missing $NAMESPACE/launchpad-public-access"
+
+log "Applying the checked-in named tunnel and router"
+oc apply -k "$SCRIPT_DIR" >/dev/null
+oc rollout status deployment/cloudflare-tunnel -n "$NAMESPACE" --timeout=180s
+
+log "Persisting Arena public placement and the permanent shared origin"
+oc patch configmap launchpad-config -n "$NAMESPACE" --type=merge --patch "$(
+  PUBLIC_ORIGIN="$PUBLIC_ORIGIN" PUBLIC_HOST="$public_host" python3 -c '
+import json
+import os
+
+print(json.dumps({"data": {
+    "PUBLIC_ACCESS_ENABLED": "true",
+    "PUBLIC_LABS_DOMAIN": os.environ["PUBLIC_HOST"],
+    "PUBLIC_LABS_SHARED_ORIGIN": os.environ["PUBLIC_ORIGIN"],
+    "PUBLIC_LABS_SHARED_PATH_MODE": "true",
+    "PUBLIC_ACCESS_PILOT_CLUSTER": "arena",
+}}))
+'
+)" >/dev/null
+
+cluster_config=$(oc get configmap launchpad-cluster-targets -n "$NAMESPACE" \
+  -o jsonpath='{.data.clusters\.yaml}')
+cluster_patch=$(CLUSTER_CONFIG="$cluster_config" PUBLIC_HOST="$public_host" python3 -c '
+import json
+import os
 
 import yaml
 
 config = yaml.safe_load(os.environ["CLUSTER_CONFIG"])
-tunnel_url = os.environ["TUNNEL_URL"].rstrip("/")
-origin = urlsplit(tunnel_url)
-if origin.scheme != "https" or not origin.hostname or origin.path not in {"", "/"}:
-    raise SystemExit("Cloudflare tunnel did not return a valid HTTPS origin")
 arena = [cluster for cluster in config.get("clusters", []) if cluster.get("cluster_id") == "arena"]
 if len(arena) != 1:
     raise SystemExit("Expected exactly one Arena cluster target")
 cluster = arena[0]
-cluster["public_console_url"] = tunnel_url
-cluster["public_oauth_url"] = tunnel_url + "/oauth"
-cluster["public_ingress_domain"] = origin.hostname
+cluster["public_access_enabled"] = True
+cluster["public_ingress_domain"] = os.environ["PUBLIC_HOST"]
+cluster["public_console_url"] = ""
+cluster["public_oauth_url"] = ""
 print(json.dumps({"data": {"clusters.yaml": yaml.safe_dump(config, sort_keys=False)}}))
 ')
 oc patch configmap launchpad-cluster-targets -n "$NAMESPACE" \
   --type=merge --patch "$cluster_patch" >/dev/null
-oc set env deployment/backend -n "$NAMESPACE" --containers=backend \
-  "PUBLIC_ACCESS_ENABLED=true" \
-  "PUBLIC_LABS_SHARED_ORIGIN=$tunnel_url" \
-  "PUBLIC_LABS_SHARED_PATH_MODE=true" \
-  "PUBLIC_ACCESS_PILOT_CLUSTER=arena" >/dev/null
-oc set env deployment/lifecycle-worker -n "$NAMESPACE" --containers=lifecycle-worker \
-  "PUBLIC_ACCESS_ENABLED=true" \
-  "PUBLIC_LABS_SHARED_ORIGIN=$tunnel_url" \
-  "PUBLIC_LABS_SHARED_PATH_MODE=true" \
-  "PUBLIC_ACCESS_PILOT_CLUSTER=arena" >/dev/null
+
+for deployment in backend lifecycle-worker; do
+  oc set env deployment/"$deployment" -n "$NAMESPACE" --containers="$deployment" \
+    "PUBLIC_ACCESS_ENABLED=true" \
+    "PUBLIC_LABS_DOMAIN=$public_host" \
+    "PUBLIC_LABS_SHARED_ORIGIN=$PUBLIC_ORIGIN" \
+    "PUBLIC_LABS_SHARED_PATH_MODE=true" \
+    "PUBLIC_ACCESS_PILOT_CLUSTER=arena" >/dev/null
+done
 oc rollout status deployment/backend -n "$NAMESPACE" --timeout=180s
 oc rollout status deployment/lifecycle-worker -n "$NAMESPACE" --timeout=180s
 
-log "Configuring strict issuer validation with split browser/back-channel endpoints"
+log "Persisting the permanent Keycloak frontend issuer"
+keycloak_patch=$(PUBLIC_ORIGIN="$PUBLIC_ORIGIN" python3 -c '
+import json
+import os
+
+print(json.dumps({"spec": {"hostname": {
+    "hostname": os.environ["PUBLIC_ORIGIN"],
+    "strict": True,
+    "backchannelDynamic": True,
+}}}))
+')
+oc patch keycloak keycloak -n "$KEYCLOAK_NAMESPACE" \
+  --type=merge --patch "$keycloak_patch" >/dev/null
+keycloak_generation=$(oc get keycloak keycloak -n "$KEYCLOAK_NAMESPACE" \
+  -o jsonpath='{.metadata.generation}')
+keycloak_ready="false"
+for ((attempt=1; attempt<=90; attempt++)); do
+  observed_generation=$(oc get keycloak keycloak -n "$KEYCLOAK_NAMESPACE" \
+    -o jsonpath='{.status.observedGeneration}')
+  ready_status=$(oc get keycloak keycloak -n "$KEYCLOAK_NAMESPACE" \
+    -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')
+  if [[ "$observed_generation" == "$keycloak_generation" && "$ready_status" == "True" ]]; then
+    keycloak_ready="true"
+    break
+  fi
+  sleep 2
+done
+[[ "$keycloak_ready" == "true" ]] \
+  || die "Keycloak did not reconcile the permanent hostname"
+oc rollout status statefulset/keycloak -n "$KEYCLOAK_NAMESPACE" --timeout=300s
+
+log "Configuring strict OIDC issuer validation with private back-channel endpoints"
 oc set env deployment/public-access-gateway -n "$NAMESPACE" --containers=oidc-proxy \
-  "OAUTH2_PROXY_OIDC_ISSUER_URL=$KEYCLOAK_ISSUER" \
-  "OAUTH2_PROXY_LOGIN_URL=$tunnel_url/realms/launchpad-public/protocol/openid-connect/auth" \
+  "OAUTH2_PROXY_OIDC_ISSUER_URL=$PUBLIC_ORIGIN/realms/launchpad-public" \
+  "OAUTH2_PROXY_LOGIN_URL=$PUBLIC_ORIGIN/realms/launchpad-public/protocol/openid-connect/auth" \
   "OAUTH2_PROXY_REDEEM_URL=$KEYCLOAK_INTERNAL/realms/launchpad-public/protocol/openid-connect/token" \
   "OAUTH2_PROXY_OIDC_JWKS_URL=$KEYCLOAK_INTERNAL/realms/launchpad-public/protocol/openid-connect/certs" \
-  "OAUTH2_PROXY_REDIRECT_URL=$tunnel_url/oauth2/callback" \
+  "OAUTH2_PROXY_REDIRECT_URL=$PUBLIC_ORIGIN/oauth2/callback" \
   "OAUTH2_PROXY_SKIP_OIDC_DISCOVERY=true" \
   "OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION=false" >/dev/null
 oc scale deployment/public-access-gateway --replicas=1 -n "$NAMESPACE" >/dev/null
-oc rollout status deployment/public-access-gateway -n "$NAMESPACE" --timeout=180s
 
 keycloak_forward_pid=""
 backend_forward_pid=""
@@ -115,6 +148,7 @@ cleanup_forwards() {
   [[ -z "$backend_forward_pid" ]] || kill "$backend_forward_pid" 2>/dev/null || true
 }
 trap cleanup_forwards EXIT
+
 oc port-forward service/keycloak-service 18087:8080 -n "$KEYCLOAK_NAMESPACE" >/dev/null 2>&1 &
 keycloak_forward_pid=$!
 oc port-forward service/backend 18090:8000 -n "$NAMESPACE" >/dev/null 2>&1 &
@@ -129,7 +163,6 @@ done
 kill -0 "$keycloak_forward_pid" 2>/dev/null || die "Keycloak port-forward failed"
 kill -0 "$backend_forward_pid" 2>/dev/null || die "Backend port-forward failed"
 
-log "Updating the Keycloak gateway client without changing the Console client"
 keycloak_user=$(oc get secret keycloak-bootstrap-admin -n "$KEYCLOAK_NAMESPACE" \
   -o jsonpath='{.data.username}' | base64 -d)
 keycloak_password=$(oc get secret keycloak-bootstrap-admin -n "$KEYCLOAK_NAMESPACE" \
@@ -140,15 +173,44 @@ keycloak_token=$(curl -sf "$KEYCLOAK_ADMIN_URL/realms/master/protocol/openid-con
   --data-urlencode "password=$keycloak_password" \
   -d grant_type=password \
   | python3 -c 'import json,sys; print(json.load(sys.stdin)["access_token"])')
+
+log "Persisting the permanent launchpad-public realm frontend URL"
+realm_json=$(curl -sf "$KEYCLOAK_ADMIN_URL/admin/realms/launchpad-public" \
+  -H "Authorization: Bearer $keycloak_token")
+updated_realm=$(printf '%s' "$realm_json" | PUBLIC_ORIGIN="$PUBLIC_ORIGIN" python3 -c '
+import json
+import os
+import sys
+
+realm = json.load(sys.stdin)
+origin = os.environ["PUBLIC_ORIGIN"]
+realm.setdefault("attributes", {})
+realm["attributes"]["frontendUrl"] = origin
+print(json.dumps(realm))
+')
+curl -sf -X PUT "$KEYCLOAK_ADMIN_URL/admin/realms/launchpad-public" \
+  -H "Authorization: Bearer $keycloak_token" \
+  -H 'Content-Type: application/json' \
+  --data "$updated_realm" >/dev/null
+
+internal_issuer=$(curl -fsS "$KEYCLOAK_ADMIN_URL/realms/launchpad-public/.well-known/openid-configuration" \
+  | python3 -c 'import json,sys; print(json.load(sys.stdin).get("issuer", ""))')
+[[ "$internal_issuer" == "$PUBLIC_ORIGIN/realms/launchpad-public" ]] \
+  || die "Keycloak is issuing tokens from unexpected issuer '$internal_issuer'"
+
+log "Persisting the permanent callback on the Launchpad gateway client"
 gateway_client=$(curl -sf "$KEYCLOAK_ADMIN_URL/admin/realms/launchpad-public/clients?clientId=launchpad-public-gateway" \
   -H "Authorization: Bearer $keycloak_token")
 gateway_client_id=$(printf '%s' "$gateway_client" \
   | python3 -c 'import json,sys; clients=json.load(sys.stdin); print(clients[0]["id"] if len(clients)==1 else "")')
 [[ -n "$gateway_client_id" ]] || die "Expected exactly one launchpad-public-gateway client"
-updated_client=$(printf '%s' "$gateway_client" | TUNNEL_URL="$tunnel_url" python3 -c '
-import json, os, sys
+updated_client=$(printf '%s' "$gateway_client" | PUBLIC_ORIGIN="$PUBLIC_ORIGIN" python3 -c '
+import json
+import os
+import sys
+
 client = json.load(sys.stdin)[0]
-origin = os.environ["TUNNEL_URL"]
+origin = os.environ["PUBLIC_ORIGIN"]
 client["redirectUris"] = [origin + "/oauth2/callback"]
 client["webOrigins"] = [origin]
 print(json.dumps(client))
@@ -157,22 +219,33 @@ curl -sf -X PUT "$KEYCLOAK_ADMIN_URL/admin/realms/launchpad-public/clients/$gate
   -H "Authorization: Bearer $keycloak_token" \
   -H 'Content-Type: application/json' \
   --data "$updated_client" >/dev/null
+unset keycloak_password keycloak_token realm_json updated_realm gateway_client updated_client
 
 if [[ -n "$ORDER_ID" ]]; then
-  log "Moving the existing order to the current pilot origin"
+  log "Moving the existing order to the permanent origin without rotating its code"
   admin_key=$(oc get secret launchpad-api-keys -n "$NAMESPACE" \
     -o jsonpath='{.data.admin}' | base64 -d)
   curl -sf -X PATCH \
     "$BACKEND_ADMIN_URL/public-access/admin/orders/$ORDER_ID/public-url" \
     -H "X-API-Key: $admin_key" \
     -H 'Content-Type: application/json' \
-    --data "{\"public_url\":\"$tunnel_url\"}" >/dev/null
+    --data "{\"public_url\":\"$PUBLIC_ORIGIN\"}" >/dev/null
+  unset admin_key
 fi
 
-log "Pilot URL: $tunnel_url"
+oc rollout status deployment/public-access-gateway -n "$NAMESPACE" --timeout=180s
+
+log "Verifying the permanent edge and OIDC discovery contract"
+curl -fsS --retry 5 --retry-all-errors --retry-delay 2 "$PUBLIC_ORIGIN/health" >/dev/null
+issuer=$(curl -fsS "$PUBLIC_ORIGIN/realms/launchpad-public/.well-known/openid-configuration" \
+  | python3 -c 'import json,sys; print(json.load(sys.stdin).get("issuer", ""))')
+[[ "$issuer" == "$PUBLIC_ORIGIN/realms/launchpad-public" ]] \
+  || die "OIDC discovery returned unexpected issuer '$issuer'"
+
+log "Permanent public origin ready: $PUBLIC_ORIGIN"
 if [[ -n "$ORDER_ID" ]]; then
   log "The existing instructor code was not changed."
 else
-  log "Create a public individual lab or workshop now; its URL will use this origin."
+  log "Create a fresh public order for participant browser certification."
 fi
-log "This Quick Tunnel is disposable and does not certify production ingress."
+log "OpenShift Console-through-tunnel remains outside this pilot gate."

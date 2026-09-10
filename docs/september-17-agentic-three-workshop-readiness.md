@@ -18,9 +18,17 @@ prior readiness contract and RED 25-seat capacity evidence remain immutable.
 
 The order is **Multi-Agent first**, Serve LLMs second, and Building an AI
 Agent third. The Multi-Agent workshop has the longest measured provisioning
-time, so starting it first preserves the most recovery time. Do not submit the
-next order until every seat in the preceding workshop is Ready. Do not reclaim
-an earlier workshop while creating the next one.
+time, so starting it first preserves the most recovery time. Later orders may
+be submitted while it runs, but they must remain queued until every seat in the
+preceding workshop is Ready. Do not reclaim an earlier workshop while creating
+the next one.
+
+As of September 9, this sequence is enforced rather than advisory. With
+`SERIALIZE_WORKSHOP_PROVISIONING=true`, all lifecycle worker replicas share a
+PostgreSQL-atomic claim guard: at most one workshop provisioning job runs
+fleet-wide, later workshop orders remain queued, and higher-priority reclaim
+jobs remain eligible. Parallel workshop provisioning requires an explicit
+configuration change and a separate certification gate.
 
 The approved event topology uses **two execution clusters**. Arena hosts two
 complete workshops and Brutus hosts one. Every workshop retains whole-workshop
@@ -415,3 +423,32 @@ approved public path, per-seat LiteLLM attribution, and dependency-security
 triage remain outside this automated gate. See
 `docs/september-17-pilot-status-20260908.md` and the September 9 exact-run
 evidence under `evidence/runs/`.
+
+## September 9 retained-topology recheck — functional GREEN / resilience RED
+
+The currently retained Arena/Arena/Brutus workshops were exercised again
+without uncordoning `rhgnr1`. Agent 201 passed 25/25, Multi-Agent passed both
+its 25/25 concurrent wave and 25/25 deep checks, and Serve LLMs passed 25/25
+grounded RAG journeys. A following 612-second steady-state soak passed all ten
+samples with 75/75 Showrooms, zero unready participant pods, healthy shared
+model endpoints, and no restart increase.
+
+This repeat does not receive resilience-streak credit. During initial
+participant setup, `gnr2` carried 213 pods and 511 running containers with 83%
+of CPU requested. Kubelet logged correlated probe timeouts across participant,
+DNS, monitoring, storage, and ingress namespaces; one ingress router exited
+137 after liveness failures. The second Arena worker remained deliberately
+cordoned. This is a current single-worker density and burst-resilience failure
+even though application retries delivered 75/75 functional success.
+
+Qualify and uncordon `rhgnr1`, or add another certified execution worker, then
+repeat the exact burst with zero router restart increase and no correlated
+probe wave. The permanent `labs.smg-helix.ai` path is now GREEN-live for one
+Serve LLMs v1.0.5 participant: claim, callback, My Lab Access, Showroom,
+terminal, namespace isolation, embedded AnythingLLM, MaaS inference, and
+logout all passed. Its two tunnel connectors also passed a controlled
+single-pod loss with zero failures across 120 external HTTP/OIDC/lab-entry
+checks, but both connectors share `gnr2`; worker-level HA, public Console, and
+25 simultaneous public claims remain separate gates. See
+`evidence/runs/public-serve-v105-one-seat-green-live-20260909.json` and
+`evidence/runs/september-17-exact75-current-functional-green-resilience-red-20260909.json`.

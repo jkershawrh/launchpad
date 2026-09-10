@@ -2,12 +2,17 @@
 
 ## Decision
 
-The automated exact three-workshop gate is **GREEN-live for a supervised
-internal pilot**. Three independently provisioned event topologies have passed,
-the exact topology completed a 60-minute soak, and the latest run reclaimed
-with zero residue. It is **not production or GA certified** because manual
-frontend acceptance, public access, the Keycloak security rollout, and
-per-seat LiteLLM attribution remain separate gates.
+Historical automated exact-three-workshop evidence is **GREEN-live for a
+supervised internal pilot**, including three independently provisioned event
+topologies, a 60-minute soak, and zero-residue reclaim. The currently retained
+three-order topology is **GREEN-functional but RED for burst resilience**:
+75/75 participant journeys passed, but one ingress router restarted during a
+node-wide probe storm on the only active Arena execution worker. The present
+topology is therefore not the final event candidate until a second worker is
+qualified and the exact burst is repeated. It is also **not production or GA
+certified** because manual frontend acceptance, worker-level availability,
+25-seat public claim concurrency, and per-seat LiteLLM attribution remain
+separate gates.
 
 The successful rehearsals used three staggered 25-seat orders and then ran all
 75 participant journeys with overlap. The September 9 run also reproduced 25
@@ -45,7 +50,7 @@ context was never changed.
 
 | Gate | State | Evidence |
 |---|---|---|
-| Staggered three-order provisioning | GREEN-live | Three distinct 25-seat workshops reached Ready on their persisted targets |
+| Staggered three-order provisioning | GREEN-live-policy | Three distinct 25-seat workshops reached Ready on their persisted targets; the live durable queue now reports `workshop_provisioning_policy: serialized` and permits only one active workshop provision lease fleet-wide |
 | Participant functionality | GREEN-live | 75/75 catalog-specific journeys passed |
 | Namespace isolation | GREEN-live | Tested identities could edit their own namespace and were denied cross-namespace and node access |
 | Real LLM behavior | GREEN-live | Multi-Agent and grounded RAG calls completed under the combined load |
@@ -55,10 +60,12 @@ context was never changed.
 | Showroom namespace-owned cleanup | GREEN-live | One-seat rerun passed 100/100 with zero residue and no Showroom finalizer recovery |
 | Launchpad metrics scrape | GREEN-live | Arena user-workload Prometheus reports the backend target `up=1` |
 | vLLM and TEI scrape | GREEN-live | Two vLLM targets and one TEI target report `up=1`; vLLM request metrics are queryable |
-| Arena node/network resilience | GREEN-live-after-RED | Supported 30-second ingress reload coalescing prevented router restarts during 25-Route churn; the exact driver now fails on any restart increase |
+| Arena node/network resilience | RED-current | Current 75/75 run restarted one gnr2 ingress router during broad node-wide probe timeouts; qualify rhgnr1 or another execution worker and rerun |
 | 60-minute concurrent soak | GREEN-live | 3,613 seconds, 51/51 samples, 75/75 Showrooms each sample, zero readiness/model failures, and no restart increase |
 | Manual requester/participant frontend | RED-pending | Scheduled for the next-day manual acceptance session |
-| Public browser/SSO access | DEFERRED | Separate infrastructure and browser certification stream |
+| Public DNS/TLS/OIDC infrastructure | GREEN-live | Permanent `labs.smg-helix.ai` named tunnel, trusted TLS, strict gateway issuer, discovery, and callback configuration verified |
+| Public connector/process resilience | GREEN-live | Two connection-aware named-tunnel replicas, rolling replacement, `minAvailable: 1`, and zero failures across 120 external checks during one controlled connector deletion. Both replicas share gnr2, so worker-level resilience remains RED. |
+| Public claim/browser access | GREEN-live (one seat) | A fresh two-seat Serve LLMs v1.0.5 order passed branded email/code login, signed OIDC callback, claim recovery, My Lab Access, Showroom, terminal, cross-seat denial, embedded AnythingLLM, a live `granite-2b-cpu` response, and logout. Both seats are now claimed; the second participant's full manual journey has not yet been recorded. Public Console and 25-claim concurrency remain separate gates. |
 | Three exact functional rehearsals | GREEN-3-of-3 | Three successful exact 75-participant runs are recorded; run 3 retained immutable RED-to-GREEN ingress evidence |
 
 ## Pilot rubric
@@ -119,12 +126,13 @@ DNS/tunnel and SSO prerequisites are intentionally enabled.
    LiteLLM proxy and live-certify per-seat outcomes, tokens, rate limits, and
    latency. The stable virtual-key/session/seat correlation and admin display
    contract are GREEN-local; Arena still uses direct OVMS/vLLM endpoints.
-3. Deploy the compiled Keycloak 26.7.2 candidate and run the manual public
-   sign-in, add-lab, resume, Console SSO, sign-out, and rollback checks. All
-   four npm dependency trees audit at zero; the existing live Keycloak remains
-   on 26.4.2 until this browser gate is available.
-4. Complete the separate public ingress/SSO browser certification after the
-   DNS/tunnel path is approved.
+3. Record the already-claimed second seat's manual public sign-in, resume,
+   Showroom, terminal, workspace, and sign-out acceptance. The live Keycloak
+   26.7.2 image now has its CR hostname and realm `frontendUrl` pinned to the
+   permanent public origin.
+4. Certify the 25-simultaneous-claim burst separately; it is not inferred from
+   the successful one-seat browser journey. Native OpenShift Console/OAuth is
+   outside the public September pilot and requires separate change approval.
 5. Keep `rhgnr1` cordoned outside supervised provisioning and participant test
    windows; the runbook should uncordon it only after Ready/pressure preflight.
 

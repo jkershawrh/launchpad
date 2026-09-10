@@ -1,0 +1,22 @@
+{
+  "schema": "launchpad.redhat.com/lifecycle-queue-contract/v1",
+  "evidence_id": "WORKSHOP-PROVISION-SERIALIZATION-RED-20260909",
+  "recorded_at": "2026-09-10T00:24:21Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "RED",
+  "command": ".venv/bin/pytest -q backend/tests/test_lifecycle_job_queue.py backend/tests/test_lifecycle_worker.py backend/tests/test_lifecycle_worker_manifest.py backend/tests/test_lifecycle_postgres.py",
+  "summary": {
+    "passed": 33,
+    "failed": 5,
+    "skipped": 7
+  },
+  "failed_contracts": [
+    "only one workshop provisioning aggregate may hold an active lease",
+    "reclaim remains claimable while a workshop provision lease is active",
+    "parallel workshop provisioning requires explicit opt-in",
+    "lifecycle workers pass the serialization policy into durable claiming",
+    "the shipped pilot configuration enables serialization"
+  ],
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

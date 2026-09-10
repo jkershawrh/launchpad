@@ -255,10 +255,10 @@ done
 completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 completed_epoch="$(date +%s)"
 duration_observed=$((completed_epoch - started_epoch))
-result="GREEN-live-sixty-minute-soak"
+result="GREEN-live-soak"
 exit_code=0
 if [[ "$failure_samples" -ne 0 ]]; then
-  result="RED-live-sixty-minute-soak"
+  result="RED-live-soak"
   exit_code=1
 fi
 
@@ -270,6 +270,7 @@ jq -n \
   --arg multi_workshop_id "$multi_workshop_id" \
   --arg serve_workshop_id "$serve_workshop_id" \
   --arg source_commit "$(git rev-parse HEAD)" \
+  --argjson requested_duration_seconds "$SOAK_DURATION_SECONDS" \
   --argjson duration_observed_seconds "$duration_observed" \
   --argjson samples "$sample_number" \
   --argjson failed_samples "$failure_samples" \
@@ -280,6 +281,7 @@ jq -n \
     result: $result,
     started_at: $started_at,
     completed_at: $completed_at,
+    "requested_duration_seconds": $requested_duration_seconds,
     duration_observed_seconds: $duration_observed_seconds,
     samples: $samples,
     failed_samples: $failed_samples,

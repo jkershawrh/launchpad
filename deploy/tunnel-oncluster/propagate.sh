@@ -1,23 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Compatibility helper for reading a Quick Tunnel hostname from a log file.
-# It deliberately performs no Kubernetes, Keycloak, OAuth, database, or code
-# mutations. Arena configuration is applied by apply.sh using the operator's
-# explicitly pinned kubeconfig and the Launchpad admin API.
+# Compatibility helper retained for callers that previously scraped a
+# disposable hostname. The public hostname is permanent now; apply.sh owns all
+# configuration reconciliation.
 
-TUNNEL_LOG="${TUNNEL_LOG:-/shared/cloudflared.log}"
-
-for ((attempt=1; attempt<=90; attempt++)); do
-    if [[ -f "$TUNNEL_LOG" ]]; then
-        tunnel_host=$(grep -Eo 'https://[a-z0-9-]+\.trycloudflare\.com' "$TUNNEL_LOG" | head -1 || true)
-        if [[ -n "$tunnel_host" ]]; then
-            printf '%s\n' "$tunnel_host"
-            exit 0
-        fi
-    fi
-    sleep 2
-done
-
-printf 'Quick Tunnel hostname was not available after 180 seconds\n' >&2
-exit 1
+PUBLIC_ORIGIN="${PUBLIC_ORIGIN:-https://labs.smg-helix.ai}"
+[[ "$PUBLIC_ORIGIN" == "https://labs.smg-helix.ai" ]] || {
+  printf 'Unexpected public origin: %s\n' "$PUBLIC_ORIGIN" >&2
+  exit 1
+}
+printf '%s\n' "$PUBLIC_ORIGIN"

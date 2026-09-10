@@ -1,0 +1,21 @@
+{
+  "schema": "launchpad.redhat.com/public-origin-contract/v1",
+  "evidence_id": "PUBLIC-NAMED-ORIGIN-RED-20260909",
+  "recorded_at": "2026-09-09T23:19:58Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "RED",
+  "command": ".venv/bin/pytest -q backend/tests/test_public_tunnel_contract.py backend/tests/test_public_access_network_policy.py",
+  "summary": {
+    "passed": 13,
+    "failed": 5
+  },
+  "failed_contracts": [
+    "named tunnel uses precreated token",
+    "startup uses the permanent public origin",
+    "Arena overlay persists permanent origin and strict OIDC",
+    "named tunnel source has no disposable hostname discovery",
+    "Arena gateway validates the permanent external issuer"
+  ],
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

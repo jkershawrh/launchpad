@@ -19,6 +19,7 @@ result_dir="${4:-/tmp/launchpad-september17-exact75-$(date -u +%Y%m%dT%H%M%SZ)}"
 : "${CORDON_ATTEMPTS:=12}"
 : "${MULTI_POLICY_CONCURRENCY:=5}"
 : "${MULTI_DEEP_CONCURRENCY:=5}"
+: "${EXERCISE_RHGNR1:=false}"
 
 for concurrency in "$MULTI_POLICY_CONCURRENCY" "$MULTI_DEEP_CONCURRENCY"; do
   [[ "$concurrency" =~ ^[1-9][0-9]*$ ]] || {
@@ -26,6 +27,10 @@ for concurrency in "$MULTI_POLICY_CONCURRENCY" "$MULTI_DEEP_CONCURRENCY"; do
     exit 64
   }
 done
+[[ "$EXERCISE_RHGNR1" == "false" || "$EXERCISE_RHGNR1" == "true" ]] || {
+  echo "EXERCISE_RHGNR1 must be true or false" >&2
+  exit 64
+}
 
 [[ ! -e "$result_dir" ]] || {
   echo "result directory already exists: $result_dir" >&2
@@ -96,7 +101,9 @@ recordon_rhgnr1() {
 }
 
 cleanup() {
-  recordon_rhgnr1 || true
+  if [[ "$EXERCISE_RHGNR1" == "true" ]]; then
+    recordon_rhgnr1 || true
+  fi
   case "$secret_work_dir" in
     "${TMPDIR:-/tmp}"/launchpad-exact75-secrets.*)
       rm -rf -- "$secret_work_dir"
@@ -234,7 +241,15 @@ run_serve_llms() {
 
 started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 oc wait node/rhgnr1 --for=condition=Ready --timeout=60s >/dev/null
-oc adm uncordon rhgnr1 >/dev/null
+rhgnr1_unschedulable="$(oc get node rhgnr1 -o jsonpath='{.spec.unschedulable}')"
+if [[ "$EXERCISE_RHGNR1" == "true" ]]; then
+  oc adm uncordon rhgnr1 >/dev/null
+else
+  [[ "$rhgnr1_unschedulable" == "true" ]] || {
+    echo "refusing protected run: rhgnr1 must already be cordoned" >&2
+    exit 5
+  }
+fi
 router_restarts_before="$(router_restart_total)"
 
 run_agent_201 >"$result_dir/agent-201/run.log" 2>&1 &
@@ -244,11 +259,13 @@ multi_pid=$!
 run_serve_llms >"$result_dir/serve-llms/run.log" 2>&1 &
 serve_pid=$!
 
-# Multi-Agent is the only group that intentionally restarts seat workloads on
-# rhgnr1. Restore the scheduling guard as soon as that group is complete.
+# Multi-Agent intentionally restarts seat workloads. Restore the scheduling
+# guard immediately only when this run explicitly exercised rhgnr1.
 wait "$multi_pid"
 multi_rc=$?
-recordon_rhgnr1
+if [[ "$EXERCISE_RHGNR1" == "true" ]]; then
+  recordon_rhgnr1
+fi
 wait "$agent_pid"
 agent_rc=$?
 wait "$serve_pid"
@@ -296,6 +313,7 @@ jq -n \
   --argjson router_restarts_before "$router_restarts_before" \
   --argjson router_restarts_after "$router_restarts_after" \
   --argjson router_restart_increase "$router_restart_increase" \
+  --arg exercise_rhgnr1 "$EXERCISE_RHGNR1" \
   '{
     "status": $status,
     "started_at": $started_at,
@@ -309,6 +327,7 @@ jq -n \
       "serve_llms": $serve_rc
     },
     "resilience": {
+      "exercise_rhgnr1": ($exercise_rhgnr1 == "true"),
       "router_restarts_before": $router_restarts_before,
       "router_restarts_after": $router_restarts_after,
       "router_restart_increase": $router_restart_increase

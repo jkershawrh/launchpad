@@ -1,0 +1,12 @@
+{
+  "schema": "launchpad.redhat.com/lifecycle-queue-contract/v1",
+  "evidence_id": "WORKSHOP-PROVISION-SERIALIZATION-ADMIN-RED-20260909",
+  "recorded_at": "2026-09-10T00:27:54Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "RED",
+  "command": ".venv/bin/pytest -q backend/tests/test_admin.py::test_admin_lifecycle_view_reports_queue_health_without_secret_payloads",
+  "summary": {"passed": 0, "failed": 1},
+  "failed_contract": "The authenticated lifecycle admin response does not expose whether workshop provisioning is serialized.",
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

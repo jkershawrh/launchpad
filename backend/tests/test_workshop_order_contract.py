@@ -328,6 +328,61 @@ def test_order_waits_for_confirmation_before_provisioning():
     assert len(completed.json()["session_ids"]) == 3
 
 
+def test_public_workshop_order_persists_generated_public_url():
+    workshop = Workshop(
+        tenant_id="public-url-persistence-tenant",
+        catalog_item_id="intel-llm-cpu-serving",
+        num_users=1,
+        status=WorkshopStatus.AWAITING_CONFIRMATION,
+        exposure_policy="public_code",
+    )
+    workshop = workshop.model_copy(
+        update={
+            "seats": [
+                WorkshopSeat(
+                    workshop_id=workshop.workshop_id,
+                    seat_number=1,
+                )
+            ]
+        }
+    )
+    public_url = "https://labs.example.io/labs/intel-llm-cpu-serving-12345678"
+
+    with (
+        patch.object(
+            api_provisioning_service,
+            "create_workshop_order",
+            return_value=workshop,
+        ),
+        patch.object(
+            api_provisioning_service,
+            "_save_workshop",
+            wraps=api_provisioning_service._save_workshop,
+        ) as save_workshop,
+        patch(
+            "app.api.routers.workshops.public_access_service.get_policy",
+            return_value=SimpleNamespace(public_url=public_url),
+        ),
+    ):
+        response = client.post(
+            "/api/v1/workshops/orders",
+            json={
+                "tenant_id": workshop.tenant_id,
+                "catalog_item_id": workshop.catalog_item_id,
+                "num_users": 1,
+                "ttl": "4h",
+                "exposure_policy": "public_code",
+            },
+        )
+
+    assert response.status_code == 201
+    assert response.json()["public_url"] == public_url
+    assert any(
+        call.args[0].public_url == public_url
+        for call in save_workshop.call_args_list
+    )
+
+
 def test_ha_confirm_enqueues_durable_work_without_api_background_execution(
     monkeypatch,
 ):

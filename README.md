@@ -28,8 +28,9 @@ intake before entering the same review and 1/5/25 certification pipeline.
 
 Pilot presenters and operators should also use the
 [demo walkthrough](docs/presenter-demo-walkthrough.md),
-[ecosystem architecture and scale roadmap](docs/ecosystem-architecture-roadmap.md),
-the [presentation source](docs/presentations/launchpad-ecosystem-demo.md), and
+[ecosystem architecture and product roadmap](docs/ecosystem-architecture-roadmap.md),
+the [presentation source](docs/presentations/launchpad-ecosystem-demo.md),
+the [template-based PowerPoint deck](docs/presentations/launchpad-ecosystem-demo-gcl-template.pptx), and
 [support runbook](docs/support-runbook.md). The current TDD/EDD/CDD/BDD/CBT
 status is recorded in the
 [ecosystem enablement proof matrix](docs/ecosystem-enablement-proof-matrix.md).
@@ -57,6 +58,7 @@ Quick paths:
 | Partner portal | <https://launchpad.apps.arena.fm2aihpcsed.com> |
 | Admin dashboard | <https://launchpad-admin.apps.arena.fm2aihpcsed.com> |
 | Backend API | <https://launchpad-api.apps.arena.fm2aihpcsed.com> |
+| Public participant gateway | <https://labs.smg-helix.ai> |
 
 The portal and API are protected by OpenShift OAuth. The deployment is managed by the `launchpad` Argo CD Application using `deploy/launchpad/overlays/arena`.
 
@@ -156,18 +158,23 @@ workshop stays wholly on its assigned cluster, and all 75 environments must
 remain available concurrently through one Launchpad entry point. The exact
 combined rehearsal and capacity gate are tracked in
 [docs/september-17-agentic-three-workshop-readiness.md](docs/september-17-agentic-three-workshop-readiness.md).
-On September 8 the exact two-cluster rehearsal provisioned all three orders,
-then passed 75/75 overlapping participant journeys: Multi-Agent and Serve LLMs
-on Arena, and Building an AI Agent on Brutus through Arena's persisted remote
-client. All 75 seats were then reclaimed with zero namespaces or Argo CD
-Applications remaining. This is stronger functional load than the intended
-one-workshop-at-a-time participant use and makes the internal pilot a
-conditional candidate for the manual frontend journey. It is not production
-certification: correlated Arena probe pressure and retryable connection resets
-remain RED, the 60-minute soak is pending, public browser access is separate,
-and only one exact combined pass is recorded. `rhgnr1` remains cordoned outside
-supervised operations. The current matrix, rubric, and manual acceptance
-boundary are in
+The durable lifecycle queue now enforces one active workshop-provision job
+fleet-wide. Organizers may submit later orders, but they remain queued until
+the preceding workshop finishes; reclaim and individual-session lifecycle jobs
+remain eligible.
+Historical September 8–9 rehearsals proved three provision/reclaim cycles and
+one 60-minute retained-topology soak. The current retained orders were tested
+again on September 9: all 75 overlapping participant journeys passed, followed
+by a 10-minute 10/10 steady-state soak. The current exact burst is nevertheless
+RED for resilience because `gnr2` carried 213 pods and 511 running containers,
+node-wide probe timeouts restarted one ingress router, and `rhgnr1` remained
+deliberately cordoned. Qualify the second worker and repeat the exact burst
+before treating this topology as the event candidate. Public DNS/TLS and OIDC
+configuration now use the permanent `labs.smg-helix.ai` named tunnel. One
+Serve LLMs participant completed the claim, resume, Showroom, terminal,
+AnythingLLM, inference, isolation, and logout journey; 25 simultaneous public
+claims and worker-level resilience remain separate gates. The current matrix,
+rubric, and manual acceptance boundary are in
 [docs/september-17-pilot-status-20260908.md](docs/september-17-pilot-status-20260908.md).
 
 ## Repository layout

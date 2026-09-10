@@ -18,7 +18,11 @@ logger = logging.getLogger("launchpad.lifecycle-worker")
 
 
 def build_lifecycle_admin_view(
-    jobs: list[LifecycleJob], *, enabled: bool, now: datetime | None = None
+    jobs: list[LifecycleJob],
+    *,
+    enabled: bool,
+    serialize_workshop_provisioning: bool = False,
+    now: datetime | None = None,
 ) -> dict[str, Any]:
     now = now or datetime.now(UTC)
 
@@ -83,6 +87,9 @@ def build_lifecycle_admin_view(
         )
     return {
         "enabled": enabled,
+        "workshop_provisioning_policy": (
+            "serialized" if serialize_workshop_provisioning else "parallel"
+        ),
         "summary": {
             **counts,
             "reclaim_pending": reclaim_pending,
@@ -277,6 +284,7 @@ class LifecycleWorker:
         worker_id: str,
         lease_seconds: int = 120,
         heartbeat_interval_seconds: int = 15,
+        serialize_workshop_provisioning: bool = False,
     ) -> None:
         if heartbeat_interval_seconds >= lease_seconds:
             logger.warning(
@@ -289,6 +297,7 @@ class LifecycleWorker:
         self.worker_id = worker_id
         self.lease_seconds = lease_seconds
         self.heartbeat_interval_seconds = heartbeat_interval_seconds
+        self.serialize_workshop_provisioning = serialize_workshop_provisioning
 
     def _refresh_workshop(self, workshop_id: str) -> None:
         db = getattr(self.provisioning_service, "db", None)
@@ -406,7 +415,11 @@ class LifecycleWorker:
         return evidence
 
     def run_once(self) -> str:
-        job = self.store.claim_next(self.worker_id, lease_seconds=self.lease_seconds)
+        job = self.store.claim_next(
+            self.worker_id,
+            lease_seconds=self.lease_seconds,
+            serialize_workshop_provisioning=self.serialize_workshop_provisioning,
+        )
         if not job:
             return "idle"
         if not self.store.checkpoint(

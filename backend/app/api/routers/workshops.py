@@ -196,7 +196,7 @@ def create_workshop_order(
                     expires_at=datetime.utcnow() + delta,
                 )
             workshop.public_url = policy.public_url
-            provisioning_service._workshops[workshop.workshop_id] = workshop
+            provisioning_service._save_workshop(workshop)
             result["public_url"] = policy.public_url
             if plaintext:
                 result["one_time_access_code"] = plaintext

@@ -16,11 +16,14 @@ metadata:
   labels:
     app.kubernetes.io/name: cloudflare-tunnel
     app.kubernetes.io/part-of: partner-ai-launchpad
-    launchpad.redhat.com/purpose: public-access-pilot
+    launchpad.redhat.com/purpose: permanent-public-access-pilot
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: cloudflare-tunnel
@@ -29,10 +32,21 @@ spec:
       labels:
         app.kubernetes.io/name: cloudflare-tunnel
         app.kubernetes.io/part-of: partner-ai-launchpad
-        launchpad.redhat.com/purpose: public-access-pilot
+        launchpad.redhat.com/purpose: permanent-public-access-pilot
     spec:
       serviceAccountName: launchpad-public-tunnel
       automountServiceAccountToken: false
+      affinity:
+        podAntiAffinity:
+          # Prefer separate workers when Arena has more than one schedulable
+          # worker, but remain runnable during the current single-worker pilot.
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: cloudflare-tunnel
       securityContext:
         runAsNonRoot: true
         seccompProfile: {type: RuntimeDefault}
@@ -41,7 +55,7 @@ spec:
           configMap: {name: tunnel-router}
       containers:
         - name: router
-          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend:latest
+          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:e25c347d2d108f48173b9e405431cc0bb2b73decc2324e05497b156ee35770c9
           command: [uvicorn]
           args: [router:app, --host, 0.0.0.0, --port, "8080", --app-dir, /opt/tunnel]
           env:
@@ -68,11 +82,43 @@ spec:
             allowPrivilegeEscalation: false
             capabilities: {drop: [ALL]}
         - name: cloudflared
-          image: cloudflare/cloudflared:latest
-          args: [tunnel, --url, http://127.0.0.1:8080, --no-autoupdate]
+          image: cloudflare/cloudflared@sha256:b7a6db450ae2e2f773d4fbe9ffb48e7b5fc451e17329daab1b4dda5a2487e2cc
+          args: [tunnel, --no-autoupdate, --loglevel, info, --metrics, 0.0.0.0:2000, run]
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef: {name: tunnel-token, key: token}
+          ports:
+            - {name: metrics, containerPort: 2000}
+          # /ready returns 200 only after this replica has an active Cloudflare
+          # edge connection. Router health alone is insufficient for readiness.
+          readinessProbe:
+            httpGet: {path: /ready, port: metrics}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: {path: /ready, port: metrics}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 3
           resources:
             requests: {cpu: 50m, memory: 64Mi}
             limits: {cpu: 500m, memory: 256Mi}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities: {drop: [ALL]}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: cloudflare-tunnel
+  namespace: partner-ai-launchpad
+  labels:
+    app.kubernetes.io/name: cloudflare-tunnel
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloudflare-tunnel

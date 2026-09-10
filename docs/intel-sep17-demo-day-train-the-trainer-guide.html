@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151515">
+  <title>Intel September 17 Demo Day - Train-the-Trainer Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&family=Red+Hat+Text:wght@400;500;600&display=swap');
+    :root {
+      --red: #ee0000;
+      --red-dark: #b80000;
+      --blue: #0071c5;
+      --blue-light: #58a6e7;
+      --green: #3e8635;
+      --amber: #f0ab00;
+      --black: #151515;
+      --surface: #212121;
+      --surface-2: #292929;
+      --border: #3c3f42;
+      --muted: #b8bbbe;
+      --quiet: #8a8d90;
+      --white: #fff;
+      --content: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: #e8e8e8;
+      background: var(--black);
+      font-family: "Red Hat Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+    h1, h2, h3 { margin-top: 0; color: var(--white); font-family: "Red Hat Display", system-ui, sans-serif; line-height: 1.18; }
+    h1 { max-width: 850px; font-size: clamp(2.4rem, 6vw, 4.8rem); letter-spacing: -.045em; }
+    h2 { margin-bottom: 1rem; font-size: clamp(1.7rem, 3vw, 2.35rem); }
+    h3 { margin-bottom: .5rem; font-size: 1.12rem; }
+    p { margin: 0 0 1rem; }
+    a { color: var(--blue-light); }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .topbar {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      border-bottom: 1px solid #333;
+      background: rgba(21, 21, 21, .96);
+      backdrop-filter: blur(14px);
+    }
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: var(--content);
+      height: 68px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+    .brand img { width: auto; object-fit: contain; }
+    .brand img:nth-of-type(1) { height: 29px; }
+    .brand img:nth-of-type(2) { height: 21px; }
+    .brand-x { color: #fff; font-weight: 700; }
+    .brand-name { margin-left: 10px; padding-left: 18px; border-left: 1px solid #444; color: #fff; font-family: "Red Hat Display"; font-weight: 600; white-space: nowrap; }
+    .status { display: flex; align-items: center; gap: 8px; color: #b8d9b4; font-size: .78rem; font-weight: 600; }
+    .status::before { width: 8px; height: 8px; border-radius: 50%; background: #6ec664; content: ""; box-shadow: 0 0 0 4px rgba(62, 134, 53, .2); }
+    .color-rule { display: grid; grid-template-columns: repeat(3, 1fr); height: 3px; }
+    .color-rule span:nth-child(1) { background: var(--red); }
+    .color-rule span:nth-child(2) { background: var(--blue); }
+    .color-rule span:nth-child(3) { background: var(--green); }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid #2e2e2e;
+      background:
+        radial-gradient(circle at 82% 5%, rgba(0, 113, 197, .36), transparent 30%),
+        radial-gradient(circle at 12% 115%, rgba(238, 0, 0, .28), transparent 35%),
+        linear-gradient(125deg, #151515 30%, #1d2024 70%, #101b24);
+    }
+    .hero::after {
+      position: absolute;
+      inset: 0;
+      opacity: .25;
+      background-image: linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size: 34px 34px;
+      content: "";
+      mask-image: linear-gradient(to right, transparent, black 55%);
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: var(--content); margin: 0 auto; padding: 80px 24px 72px; }
+    .eyebrow { margin-bottom: 18px; color: #ff6b6b; font-size: .78rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; }
+    .hero-copy { max-width: 740px; color: #d2d2d2; font-size: 1.2rem; }
+    .badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+    .badge { border: 1px solid #4b4b4b; border-radius: 999px; padding: 7px 12px; background: rgba(0,0,0,.18); color: #e5e5e5; font-size: .78rem; font-weight: 600; }
+    .page { display: grid; grid-template-columns: 235px minmax(0, 1fr); gap: 52px; max-width: var(--content); margin: 0 auto; padding: 50px 24px 80px; }
+    .toc { position: sticky; top: 96px; align-self: start; border-left: 1px solid var(--border); }
+    .toc strong { display: block; padding: 0 0 12px 18px; color: #fff; font-family: "Red Hat Display"; }
+    .toc a { display: block; border-left: 2px solid transparent; padding: 7px 14px 7px 18px; color: var(--quiet); font-size: .83rem; text-decoration: none; }
+    .toc a:hover { border-left-color: var(--red); color: #fff; background: rgba(255,255,255,.035); }
+    main { min-width: 0; }
+    section { margin-bottom: 72px; scroll-margin-top: 98px; }
+    .lead { color: var(--muted); font-size: 1.08rem; }
+    .callout { display: grid; grid-template-columns: 5px 1fr; overflow: hidden; margin: 24px 0; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+    .callout::before { background: var(--red); content: ""; }
+    .callout.blue::before { background: var(--blue); }
+    .callout.amber::before { background: var(--amber); }
+    .callout.green::before { background: var(--green); }
+    .callout > div { padding: 18px 20px; }
+    .callout p:last-child { margin-bottom: 0; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--border); border-radius: 9px; padding: 22px; background: var(--surface); }
+    .card p:last-child, .card ul:last-child { margin-bottom: 0; }
+    .card-label { margin-bottom: 8px; color: var(--blue-light); font-size: .74rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .step { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 16px; margin: 22px 0; }
+    .step-no { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: var(--red); color: #fff; font-family: "Red Hat Display"; font-weight: 700; }
+    .step p:last-child { margin-bottom: 0; }
+    .lab-header { position: relative; overflow: hidden; margin-bottom: 28px; border: 1px solid var(--border); border-radius: 10px; padding: 28px; background: linear-gradient(130deg, #212121, #17232c); }
+    .lab-header::after { position: absolute; right: -26px; bottom: -58px; width: 180px; height: 180px; border: 30px solid rgba(0, 113, 197, .12); border-radius: 50%; content: ""; }
+    .lab-number { display: inline-grid; width: 38px; height: 38px; margin-bottom: 14px; place-items: center; border-radius: 7px; color: #fff; background: var(--red); font-family: "Red Hat Display"; font-size: 1.15rem; font-weight: 700; }
+    .lab-header h2 { position: relative; z-index: 1; margin-bottom: 8px; }
+    .lab-header p { position: relative; z-index: 1; max-width: 780px; margin-bottom: 0; color: var(--muted); }
+    .track-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+    .track { border-top: 3px solid var(--blue); border-radius: 5px; padding: 16px; background: var(--surface); }
+    .track strong { display: block; margin-bottom: 5px; color: #fff; }
+    pre { overflow-x: auto; margin: 16px 0 22px; border: 1px solid #414141; border-radius: 7px; padding: 18px; color: #f0f0f0; background: #0d0d0d; font-size: .82rem; line-height: 1.55; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: .9rem; }
+    th { border-bottom: 2px solid #555; padding: 12px; color: #fff; background: #181818; text-align: left; }
+    td { border-bottom: 1px solid #3b3b3b; padding: 12px; vertical-align: top; }
+    tbody tr:hover { background: rgba(255,255,255,.025); }
+    ul, ol { padding-left: 1.3rem; }
+    li { margin-bottom: .45rem; }
+    .checklist { padding: 0; list-style: none; }
+    .checklist li { position: relative; padding: 10px 10px 10px 34px; border-bottom: 1px solid #353535; }
+    .checklist li::before { position: absolute; left: 8px; top: 13px; width: 13px; height: 13px; border: 1px solid #747474; border-radius: 3px; content: ""; }
+    .button { display: inline-block; margin: 6px 8px 6px 0; border-radius: 6px; padding: 11px 16px; color: #fff; background: var(--red); font-weight: 600; text-decoration: none; }
+    .button:hover { background: var(--red-dark); }
+    .button.secondary { background: var(--blue); }
+    .live-lab { position: relative; overflow: hidden; border: 1px solid #376b8e; border-radius: 10px; padding: 24px; background: linear-gradient(130deg, #17232c, #202c35); }
+    .live-lab::after { position: absolute; right: -38px; top: -70px; width: 180px; height: 180px; border: 28px solid rgba(88, 166, 231, .1); border-radius: 50%; content: ""; }
+    .live-lab > * { position: relative; z-index: 1; }
+    .live-meta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, .55fr); gap: 16px; margin: 18px 0; }
+    .live-field { border: 1px solid #43525d; border-radius: 7px; padding: 13px 15px; background: rgba(0, 0, 0, .22); }
+    .live-field span { display: block; margin-bottom: 4px; color: var(--quiet); font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .live-field code { overflow-wrap: anywhere; color: #fff; font-size: .88rem; }
+    .footer { border-top: 1px solid #333; padding: 30px 24px; color: var(--quiet); background: #111; font-size: .82rem; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; max-width: var(--content); margin: 0 auto; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; opacity: .72; }
+    .footer img:first-child { height: 21px; width: auto; }
+    .footer img:last-child { height: 15px; width: auto; }
+    .print-note { color: var(--quiet); font-size: .82rem; }
+    @media (max-width: 850px) {
+      .brand-name, .status, .toc { display: none; }
+      .page { grid-template-columns: 1fr; }
+      .grid, .grid.three, .track-list, .live-meta { grid-template-columns: 1fr; }
+      .hero-inner { padding-top: 58px; }
+      .footer-inner { align-items: flex-start; flex-direction: column; gap: 15px; }
+    }
+    @media print {
+      @page { margin: 15mm; }
+      body { color: #222; background: #fff; font-size: 10pt; }
+      .toc, .footer, .print-note, .status { display: none; }
+      .topbar { position: static; display: block; border: 0; background: #151515 !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .topbar-inner { height: 42px; padding: 0 20px; }
+      .brand img:nth-of-type(1) { height: 22px; }
+      .brand img:nth-of-type(2) { height: 16px; }
+      .brand-name { font-size: 9pt; }
+      .color-rule { height: 2px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .hero { color: #fff; background: #151515 !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .hero-inner { padding: 22px 20px 20px; }
+      .hero::after { display: none; }
+      .hero h1 { margin-bottom: 8px; font-size: 27pt; }
+      .hero-copy { margin-bottom: 0; font-size: 10pt; }
+      .badges { display: none; }
+      .page { display: block; max-width: none; padding: 26px 0; }
+      section { margin-bottom: 35px; break-inside: auto; }
+      h2, h3 { color: #151515; break-after: avoid; }
+      .lead { color: #444; }
+      .grid { gap: 10px; break-inside: avoid; }
+      .card, .callout { color: #222; background: #f5f5f5; break-inside: avoid; }
+      .card { padding: 13px 15px; }
+      .card h3, .callout h3 { color: #151515; }
+      pre { white-space: pre-wrap; color: #fff; background: #151515; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      a { color: #0068b5; text-decoration: none; }
+      table { break-inside: auto; }
+      tr { break-inside: avoid; }
+      .lab-header { color: #fff; background: #151515 !important; break-before: page; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .lab-header h2 { color: #fff; }
+      .track-list { break-inside: avoid; }
+      .track { color: #222; background: #f5f5f5; }
+      .track strong { color: #151515; }
+      #reclaim { break-before: page; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="../frontend/public/logos/redhat.png" alt="Red Hat">
+        <span class="brand-x">X</span>
+        <img src="../frontend/public/logos/intel.png" alt="Intel">
+        <span class="brand-name">Partner AI Launchpad</span>
+      </div>
+      <span class="status">Trainer guide</span>
+    </div>
+    <div class="color-rule" aria-hidden="true"><span></span><span></span><span></span></div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Facilitator enablement · supervised pilot</p>
+      <h1>September 17 Demo Day trainer guide</h1>
+      <p class="hero-copy">One master facilitator path for Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs, Intel Xeon 6 201: Building an AI Agent, and Build Multi-Agent AI Systems with Open Protocols—from participant access through evidence and reclaim.</p>
+      <div class="badges">
+        <span class="badge">Three guided labs</span>
+        <span class="badge">90-minute trainer agenda</span>
+        <span class="badge">75-seat pilot topology</span>
+        <span class="badge">Arena + Brutus</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="page">
+    <nav class="toc" aria-label="On this page">
+      <strong>On this page</strong>
+      <a href="#handoff">Trainer handoff</a>
+      <a href="#live-example">Live external example</a>
+      <a href="#agenda">Agenda</a>
+      <a href="#prepare">Prepare</a>
+      <a href="#login">Participant login</a>
+      <a href="#showroom">Showroom</a>
+      <a href="#serve">1. Intel AI Quickstart</a>
+      <a href="#rag">RAG proof</a>
+      <a href="#build-agent">2. Intel Xeon 6 201</a>
+      <a href="#multi-agent">3. Build Multi-Agent AI Systems</a>
+      <a href="#platform">Platform story</a>
+      <a href="#troubleshoot">Troubleshooting</a>
+      <a href="#reclaim">Reclaim</a>
+    </nav>
+
+    <main>
+      <section id="handoff">
+        <p class="eyebrow">Start here</p>
+        <h2>Trainer handoff</h2>
+        <p class="lead">The event owner supplies the participant URL and instructor code immediately before the session. Keep the code out of Git, slides, recordings, and tickets.</p>
+        <div class="grid">
+          <article class="card"><p class="card-label">Event catalog</p><h3>Three guided labs</h3><p>Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs; Intel Xeon 6 201: Building an AI Agent; and Build Multi-Agent AI Systems with Open Protocols.</p></article>
+          <article class="card"><p class="card-label">Workshop shape</p><h3>Three orders x 25 seats</h3><p>Orders are staggered; all 75 participant environments operate concurrently.</p></article>
+          <article class="card"><p class="card-label">Execution</p><h3>Arena + Brutus</h3><p>Each whole workshop is persisted to one eligible cluster before resources are created.</p></article>
+          <article class="card"><p class="card-label">Escalation</p><h3>Launchpad operator</h3><p>Capture order, session, cluster, namespace, time, and error—never credentials.</p></article>
+        </div>
+        <div class="callout amber"><div><h3>Pilot boundary</h3><p>Temporary Quick Tunnels and public OpenShift Console SSO are not production-ready. Complete trainer proof may use the internal Showroom paths while public ingress and trusted certificates remain separate gates.</p></div></div>
+      </section>
+
+      <section id="live-example">
+        <p class="eyebrow">Temporary trainer handoff</p>
+        <div class="live-lab" id="live-lab-card" hidden>
+          <h2>Live external lab example</h2>
+          <p>This link demonstrates the participant email-and-code flow for <strong>Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs</strong>. It is temporary and must be replaced for the event.</p>
+          <div class="live-meta">
+            <div class="live-field"><span>Quick Tunnel</span><code id="live-tunnel"></code></div>
+            <div class="live-field"><span>Instructor code</span><code id="live-code"></code></div>
+          </div>
+          <p><a class="button" id="live-url" href="#" target="_blank" rel="noopener noreferrer">Open external lab</a></p>
+          <p class="print-note">Scheduled expiry: <span id="live-expiry"></span>. If the link stops resolving earlier, the temporary tunnel process must be restarted and a new hostname distributed.</p>
+        </div>
+        <div class="callout amber" id="live-lab-missing"><div><h3>No live example configured</h3><p>Ask the event owner for the current participant URL and instructor code.</p></div></div>
+      </section>
+
+      <section id="agenda">
+        <p class="eyebrow">Run of show</p>
+        <h2>Recommended 90-minute trainer agenda</h2>
+        <table>
+          <thead><tr><th>Time</th><th>Topic</th><th>Proof</th></tr></thead>
+          <tbody>
+            <tr><td>0–10</td><td>Platform, access, and scope</td><td>Git defines each experience; Launchpad owns the common lifecycle.</td></tr>
+            <tr><td>10–20</td><td>Showroom and namespace</td><td>The Terminal starts inside the assigned seat boundary.</td></tr>
+            <tr><td>20–38</td><td>1. Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs</td><td>Real CPU inference and a grounded RAG answer.</td></tr>
+            <tr><td>38–56</td><td>2. Intel Xeon 6 201: Building an AI Agent</td><td>MCP tools, agent orchestration, and a tuned solution brief.</td></tr>
+            <tr><td>56–74</td><td>3. Build Multi-Agent AI Systems with Open Protocols</td><td>Three tracks, routing depth, and a live executor policy change.</td></tr>
+            <tr><td>74–82</td><td>Operations</td><td>Placement, seat progress, cluster state, and lifecycle are visible.</td></tr>
+            <tr><td>82–87</td><td>Recovery</td><td>The trainer uses one bounded recovery path.</td></tr>
+            <tr><td>87–90</td><td>Reclaim and close</td><td>Launchpad owns cleanup and evidence.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="prepare">
+        <p class="eyebrow">15 minutes before</p>
+        <h2>Prepare the session</h2>
+        <ul class="checklist">
+          <li>Connect to the Intel network or VPN for internal routes.</li>
+          <li>Confirm the branded participant login renders without claiming the seat.</li>
+          <li>Confirm all three intended orders are Ready and have enough TTL remaining.</li>
+          <li>Use separate private browser profiles for instructor and participant identities.</li>
+          <li>For internal use, establish browser trust for Arena and Brutus before embedding cluster routes.</li>
+          <li>Keep one prepared seat and recorded evidence available as a clearly identified fallback.</li>
+        </ul>
+        <p>
+          <a class="button" href="https://launchpad.apps.arena.fm2aihpcsed.com">Requester portal</a>
+          <a class="button secondary" href="https://launchpad-admin.apps.arena.fm2aihpcsed.com">Operations portal</a>
+        </p>
+        <p class="print-note">Internal links require VPN and OpenShift authentication.</p>
+      </section>
+
+      <section id="login">
+        <p class="eyebrow">Participant journey</p>
+        <h2>Claim or resume a seat</h2>
+        <div class="step"><span class="step-no">1</span><div><h3>Open the supplied link</h3><p>Use a fresh private browser window so instructor and participant SSO cookies do not mix.</p></div></div>
+        <div class="step"><span class="step-no">2</span><div><h3>Enter email and code</h3><p>The first valid claim assigns the open seat atomically. Email is an unverified identity label; the instructor code is the secret.</p></div></div>
+        <div class="step"><span class="step-no">3</span><div><h3>Open the lab</h3><p>On <strong>My Lab Access</strong>, select the environment and then <strong>Open Lab</strong>.</p></div></div>
+        <div class="step"><span class="step-no">4</span><div><h3>Resume safely</h3><p>Reopen the same link and use the same normalized email and code. Launchpad recovers the seat instead of assigning another.</p></div></div>
+      </section>
+
+      <section id="showroom">
+        <p class="eyebrow">Lab orientation</p>
+        <h2>Showroom and namespace proof</h2>
+        <div class="grid three">
+          <article class="card"><p class="card-label">Instructions</p><h3>Guided content</h3><p>Concepts, exercises, expected results, and next steps.</p></article>
+          <article class="card"><p class="card-label">Terminal</p><h3>Scoped OpenShift CLI</h3><p>An authenticated shell already assigned to the seat namespace.</p></article>
+          <article class="card"><p class="card-label">Application</p><h3>Catalog-specific workspace</h3><p>RAG Assistant, Solution Architect, or Multi-Agent Workspace.</p></article>
+        </div>
+        <pre><code>oc whoami
+oc project -q
+oc get pods
+oc auth can-i create deployments.apps
+oc auth can-i get nodes</code></pre>
+        <div class="callout green"><div><h3>Expected</h3><p>The project matches the assigned namespace, namespaced deployments are allowed, and cluster node access is denied. Stop and escalate if the namespace is wrong.</p></div></div>
+      </section>
+
+      <section id="serve">
+        <div class="lab-header">
+          <span class="lab-number">1</span>
+          <h2>Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs</h2>
+          <p>Prove shared CPU inference, then build a namespace-isolated AnythingLLM workspace and compare grounded RAG with a direct model response.</p>
+        </div>
+        <p class="eyebrow">Real inference</p>
+        <h3>Verify the Intel Xeon model path</h3>
+        <p>The flow is <strong>Participant → AnythingLLM → OpenAI-compatible endpoint → Granite → Intel Xeon</strong>. AnythingLLM consumes the model; it does not host it.</p>
+        <pre><code>printf 'Model: %s\n' "$MAAS_MODEL"
+curl -fsS "${MAAS_ENDPOINT}/v1/models" \
+  -H "Authorization: Bearer ${MAAS_API_KEY}" | python3 -m json.tool
+
+curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
+  -H "Authorization: Bearer ${MAAS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d "{\"model\":\"${MAAS_MODEL}\",\"messages\":[{\"role\":\"user\",\"content\":\"Explain RAG in two sentences.\"}],\"max_tokens\":100,\"temperature\":0}" \
+  | python3 -m json.tool</code></pre>
+        <div class="callout blue"><div><h3>Proof requirement</h3><p>Show a structurally valid response from the configured model. A Running pod by itself is not functional evidence.</p></div></div>
+      </section>
+
+      <section id="rag">
+        <p class="eyebrow">Lab 1 · core exercise</p>
+        <h2>Build the RAG Assistant</h2>
+        <div class="step"><span class="step-no">1</span><div><h3>Create a workspace</h3><p>Open <strong>RAG Assistant</strong>, return to the home screen if Admin is visible, and create an <strong>HR Assistant</strong> workspace—not an AnythingLLM agent.</p></div></div>
+        <div class="step"><span class="step-no">2</span><div><h3>Generate an AnythingLLM API key</h3><p>Use <strong>Settings → API Keys</strong>. Keep it off-screen and do not record it.</p></div></div>
+        <pre><code>export ANYTHINGLLM_API_KEY="paste-the-generated-key"
+export ANYTHINGLLM_API_URL="http://anythingllm:3001"
+curl -fsS "${ANYTHINGLLM_API_URL}/api/ping" | python3 -m json.tool
+
+curl -fsS -X POST "${ANYTHINGLLM_API_URL}/api/v1/workspace/new" \
+  -H "Authorization: Bearer ${ANYTHINGLLM_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"hr-assistant"}' | python3 -m json.tool</code></pre>
+        <div class="step"><span class="step-no">3</span><div><h3>Load and embed the FMLA source</h3><p>Follow <strong>Load and Chunk Documents</strong> in Showroom. Confirm the workspace document count is greater than zero.</p></div></div>
+        <div class="step"><span class="step-no">4</span><div><h3>Compare answers</h3><p>Ask, “What are the eligibility requirements for FMLA leave?” through RAG and directly through MaaS. The grounded answer should contain specific retrieved requirements and source evidence.</p></div></div>
+        <div class="callout"><div><h3>Common wrong turn</h3><p>If <strong>Agent Skills</strong> or “No MCP servers found” appears, return home and create a workspace. MCP belongs to the agent labs, not this exercise.</p></div></div>
+      </section>
+
+      <section id="build-agent">
+        <div class="lab-header">
+          <span class="lab-number">2</span>
+          <h2>Intel Xeon 6 201: Building an AI Agent</h2>
+          <p>Build an auditable solution-advisor agent with a system prompt, LangGraph workflow, three MCP tools, and a participant-visible interface.</p>
+        </div>
+        <p class="eyebrow">Agentic workflow</p>
+        <h3>Establish the seat baseline</h3>
+        <p>The initial namespace contains Showroom only. Follow the immutable manifest links rendered in the lab instructions rather than copying a branch name from this guide.</p>
+        <pre><code>oc project -q
+oc get pods</code></pre>
+        <h3>Deploy and inspect the MCP tools</h3>
+        <pre><code>oc rollout status deployment/solution-agent --timeout=90s
+oc get pods -l app=solution-agent
+export MCP_URL="http://solution-tools:8095"
+curl -fsS -X POST "${MCP_URL}/mcp" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":"1","method":"tools/list","params":{}}' \
+  | jq '.result.tools[] | {name, description}'</code></pre>
+        <p>The result should list Intel hardware, OpenShift capability, and reference-architecture tools. Call at least one tool and show its structured response before invoking the model.</p>
+        <h3>Wire the agent and generate a brief</h3>
+        <pre><code>oc rollout status deployment/solution-ui --timeout=90s
+oc get pods -l app=solution-agent
+oc get pods -l app=solution-ui
+export ADVISOR_API_URL="http://solution-agent:8082"
+
+curl -fsS -X POST "${ADVISOR_API_URL}/api/v1/advise" \
+  -H "Content-Type: application/json" \
+  -d '{"query":"A retail chain needs real-time inventory prediction across 500 stores with on-premises processing and a controlled infrastructure budget."}' \
+  | jq '.'</code></pre>
+        <p>Open <strong>Solution Architect</strong> and repeat the query. The response should include requirements, Intel hardware choices, OpenShift capabilities, architecture, and an inference/tool log.</p>
+        <h3>Tune and compare</h3>
+        <p>In <strong>Make It Yours</strong>, inspect <code>advisor-prompt</code>, apply the customer-specific prompt exactly as instructed, restart <code>solution-agent</code>, and repeat the query. Capture the authorized model, LLM and MCP call counts, latency, recommendations, and changed behavior.</p>
+        <div class="callout green"><div><h3>Lab 2 completion evidence</h3><p>Two ready workload pods, three discoverable tools, one structured solution brief, visible tool and inference logs, and a demonstrated prompt change.</p></div></div>
+      </section>
+
+      <section id="multi-agent">
+        <div class="lab-header">
+          <span class="lab-number">3</span>
+          <h2>Build Multi-Agent AI Systems with Open Protocols</h2>
+          <p>One lab, one seat namespace, and three learning tracks—from the application pattern through live OpenShift operation and advanced platform alignment.</p>
+        </div>
+        <div class="track-list">
+          <div class="track"><strong>Track 1 · Run locally</strong><span>Understand the source and application pattern using the pre-provisioned runtime.</span></div>
+          <div class="track"><strong>Track 2 · OpenShift</strong><span>Operate the live, 25-seat-certified workload and apply a bounded policy change.</span></div>
+          <div class="track"><strong>Track 3 · Blueprint</strong><span>Map the system to Kagenti, OpenTelemetry, workload identity, and governance.</span></div>
+        </div>
+        <div class="callout amber"><div><h3>Track 3 boundary</h3><p>This is architecture and manifest exploration. Do not claim that every optional operator in the blueprint is installed in the participant namespace.</p></div></div>
+        <h3>Verify the deployed system and boundary</h3>
+        <pre><code>oc project -q
+oc auth can-i get pods
+oc auth can-i create deployments.apps
+oc auth can-i get pods -n partner-ai-launchpad
+oc auth can-i get nodes
+oc get deployments,pods,services,routes
+oc rollout status deployment/multi-agent --timeout=5m</code></pre>
+        <h3>Compare routing depth</h3>
+        <p>In <strong>Multi-Agent Workspace</strong>, select <code>auto</code> and run these in order:</p>
+        <pre><code>Create a short task to verify a fictional service health endpoint.
+
+Research a fictional API latency increase, analyze likely causes,
+and create a remediation task.</code></pre>
+        <p>The first prompt should take the shorter route. The second should use research, analyst, and executor roles. Record routing decision, agents, steps, MCP data, and workflow errors.</p>
+        <h3>Apply and prove an executor policy</h3>
+        <pre><code>oc create configmap workflow-policy \
+  --from-literal=AGENT_MAX_TOKENS_OVERRIDE=48 \
+  --dry-run=client -o yaml | oc apply -f -
+
+oc rollout restart deployment/multi-agent
+oc rollout status deployment/multi-agent --timeout=5m
+oc exec deployment/multi-agent -c executor -- \
+  python -c 'import agent; print(agent.AGENT_MAX_TOKENS)'</code></pre>
+        <p>The final command must print <code>48</code>. Repeat the comprehensive workflow and confirm all roles and MCP data complete without an error.</p>
+        <h3>Restore the certified baseline</h3>
+        <pre><code>oc delete configmap workflow-policy
+oc rollout restart deployment/multi-agent
+oc rollout status deployment/multi-agent --timeout=5m
+test "$(oc get configmap workflow-policy --ignore-not-found)" = ""
+test "$(oc exec deployment/multi-agent -c executor -- \
+  python -c 'import agent; print(agent.AGENT_MAX_TOKENS)')" = "96"</code></pre>
+        <div class="callout green"><div><h3>Lab 3 completion evidence</h3><p>A successful before/after workflow, token bound 48, restored token bound 96, and no temporary workflow-policy ConfigMap.</p></div></div>
+      </section>
+
+      <section id="platform">
+        <p class="eyebrow">Instructor story</p>
+        <h2>Connect the lab to the platform</h2>
+        <table>
+          <thead><tr><th>Catalog</th><th>Learning outcome</th><th>Pilot placement</th></tr></thead>
+          <tbody>
+            <tr><td>Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs</td><td>Shared CPU inference plus a namespace-isolated RAG assistant.</td><td>Arena</td></tr>
+            <tr><td>Intel Xeon 6 201: Building an AI Agent</td><td>LangGraph workflow, MCP tools, prompt tuning, and solution brief.</td><td>Brutus</td></tr>
+            <tr><td>Build Multi-Agent AI Systems with Open Protocols</td><td>Local pattern, OpenShift runtime, and advanced blueprint tracks in one lab.</td><td>Arena</td></tr>
+          </tbody>
+        </table>
+        <ol>
+          <li>Show the catalog and each item's required capabilities.</li>
+          <li>Preview a 25-seat workshop but do not submit unless authorized.</li>
+          <li>Explain whole-workshop placement: seats never split silently across clusters.</li>
+          <li>Show grouped seat progress and the persisted execution cluster.</li>
+          <li>Show cluster health and provisioning analytics in Operations.</li>
+          <li>Explain group-scoped, idempotent reclaim and zero-residue verification.</li>
+        </ol>
+        <div class="callout blue"><div><h3>Scale statement</h3><p>“We staggered three 25-seat orders, then ran all 75 participant environments concurrently across Arena and Brutus.” Do not claim simultaneous provisioning of all 75 or arbitrary catalog portability.</p></div></div>
+      </section>
+
+      <section id="troubleshoot">
+        <p class="eyebrow">Stay bounded</p>
+        <h2>Troubleshooting during training</h2>
+        <table>
+          <thead><tr><th>Symptom</th><th>Trainer action</th></tr></thead>
+          <tbody>
+            <tr><td>Code rejected</td><td>Confirm the link/code pair and remove spaces. Use the same email to resume a claimed seat.</td></tr>
+            <tr><td>Different user already authenticated</td><td>Sign out, close the private window, and start a clean private session.</td></tr>
+            <tr><td>Participant URL stops resolving</td><td>Escalate to the operator; the temporary tunnel process must remain running.</td></tr>
+            <tr><td>Internal certificate error</td><td>Open the cluster route top-level, establish certificate trust, and reload Showroom.</td></tr>
+            <tr><td>Terminal reconnects</td><td>Wait 30 seconds and retry once; then have the operator check the Showroom pod.</td></tr>
+            <tr><td>Model is warming</td><td>Use the documented bounded retry; never substitute a different model silently.</td></tr>
+            <tr><td>AnythingLLM API returns HTML</td><td>Set <code>ANYTHINGLLM_API_URL=http://anythingllm:3001</code> and retry <code>/api/ping</code>.</td></tr>
+            <tr><td>MCP tool list returns 404 or TLS errors</td><td>Use the namespace-local <code>http://solution-tools:8095/mcp</code> endpoint from Terminal.</td></tr>
+            <tr><td>Solution Architect is unavailable</td><td>Verify <code>solution-agent</code> and <code>solution-ui</code> rollouts before retrying the application tab.</td></tr>
+            <tr><td>Multi-Agent workflow stalls</td><td>Check the <code>multi-agent</code> rollout and workflow errors; restore the certified policy baseline before escalating.</td></tr>
+            <tr><td>Public Console fails</td><td>Use the namespace-scoped Terminal; public Console SSO is not certified.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="reclaim">
+        <p class="eyebrow">Finish cleanly</p>
+        <h2>Reclaim and close</h2>
+        <ol>
+          <li>End participant activity.</li>
+          <li>Reclaim the individual order or entire workshop through Launchpad.</li>
+          <li>Wait for every seat to reach a terminal reclaimed state.</li>
+          <li>Verify no owned Namespace, Route, RoleBinding, Secret, storage, model key, or Argo CD Application remains.</li>
+          <li>Capture sanitized evidence and turn failures into regression tests.</li>
+        </ol>
+        <div class="callout green"><div><h3>Closing message</h3><p>Git defines the catalog and guide. Launchpad owns placement, access, validation, visibility, and reclaim. Stable public ingress, trusted certificates, public Console SSO, and production HA/DR remain later gates.</p></div></div>
+        <p><a class="button secondary" href="train-the-trainer-guide.md">Open the maintainable Markdown source</a></p>
+      </section>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="../frontend/public/logos/redhat.png" alt="Red Hat">
+        <span class="brand-x">X</span>
+        <img src="../frontend/public/logos/intel.png" alt="Intel">
+      </div>
+      <span>Intel × Red Hat Partner AI Launchpad · Trainer enablement</span>
+    </div>
+  </footer>
+  <script src="train-the-trainer-live.js"></script>
+  <script>
+    (() => {
+      const lab = window.launchpadLiveLab;
+      if (!lab) return;
+      const card = document.getElementById("live-lab-card");
+      const missing = document.getElementById("live-lab-missing");
+      const link = document.getElementById("live-url");
+      link.href = lab.url;
+      link.textContent = lab.label || "Open external lab";
+      document.getElementById("live-tunnel").textContent = lab.tunnel;
+      document.getElementById("live-code").textContent = lab.code;
+      document.getElementById("live-expiry").textContent = lab.expires;
+      card.hidden = false;
+      missing.hidden = true;
+    })();
+  </script>
+</body>
+</html>

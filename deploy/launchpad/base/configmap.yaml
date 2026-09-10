@@ -34,6 +34,10 @@ data:
   LIFECYCLE_JOB_LEASE_SECONDS: "120"
   LIFECYCLE_HEARTBEAT_INTERVAL_SECONDS: "15"
   LIFECYCLE_POLL_INTERVAL_SECONDS: "2"
+  # Pilot workshop orders are durable and may queue together, but their
+  # provisioning jobs start one at a time across all lifecycle worker replicas.
+  # Reclaim, TTL, reconciliation, and individual-session jobs remain eligible.
+  SERIALIZE_WORKSHOP_PROVISIONING: "true"
   # Optional deep link for historical cluster, network and LLM telemetry.
   # Launchpad remains the source of truth for order and seat lifecycle state.
   GRAFANA_LAUNCHPAD_DASHBOARD_URL: ""

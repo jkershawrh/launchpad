@@ -13,7 +13,13 @@ data:
         storage_class: launchpad-nfs-ephemeral
         local: true
         priority: 10
-        public_access_enabled: false
+        public_access_enabled: true
+        public_ingress_domain: labs.smg-helix.ai
+        # Public Console/OAuth proxying is not part of the September pilot
+        # release gate. Keep participant Console links fail-closed while the
+        # named tunnel serves the training dashboard, Showroom and lab tools.
+        public_console_url: ""
+        public_oauth_url: ""
         capabilities: [cpu, openshift, operators, openshift-ai, rhoai, showroom, model_endpoint, embedding_endpoint, mlflow, openshift_logging, agentops_observability_stack, user_workload_monitoring, data_science_pipelines, control-plane]
         service_urls:
           mlflow: https://rh-ai.apps.arena.fm2aihpcsed.com/mlflow

@@ -1,0 +1,123 @@
+{
+  "schema": "launchpad.evidence/v1",
+  "evidence_id": "public-tunnel-connector-failover-green-live-20260909",
+  "requirement": "The permanent public named tunnel remains available when one connector pod is lost.",
+  "result": "GREEN-live",
+  "source": {
+    "commit_sha": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+    "git_dirty": true,
+    "uncommitted_change_count_at_capture": 73,
+    "manifest": "deploy/tunnel-oncluster/deployment.yaml",
+    "contract_test": "backend/tests/test_public_tunnel_contract.py::test_named_tunnel_has_two_connection_aware_replicas_and_a_disruption_budget"
+  },
+  "red": {
+    "observed": true,
+    "test_result": "failed",
+    "failure": "PodDisruptionBudget/cloudflare-tunnel was absent from the rendered source; the Deployment also had one replica and Recreate strategy.",
+    "test_id": "test_named_tunnel_has_two_connection_aware_replicas_and_a_disruption_budget"
+  },
+  "green_local": {
+    "targeted_contract_suite": {
+      "passed": 20,
+      "failed": 0
+    },
+    "public_regression_suite": {
+      "passed": 140,
+      "failed": 0,
+      "warnings": 1138,
+      "files": [
+        "backend/tests/test_public_access.py",
+        "backend/tests/test_public_gateway.py",
+        "backend/tests/test_requester_api_contract.py",
+        "backend/tests/test_workshop_order_contract.py",
+        "backend/tests/test_public_tunnel_contract.py"
+      ]
+    }
+  },
+  "deployment": {
+    "cluster_ref": "arena",
+    "namespace": "partner-ai-launchpad",
+    "deployment": "cloudflare-tunnel",
+    "desired_replicas": 2,
+    "ready_replicas": 2,
+    "available_replicas": 2,
+    "strategy": {
+      "type": "RollingUpdate",
+      "max_unavailable": 0,
+      "max_surge": 1
+    },
+    "pod_disruption_budget": {
+      "min_available": 1,
+      "current_healthy": 2,
+      "disruptions_allowed": 1
+    },
+    "router_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:e25c347d2d108f48173b9e405431cc0bb2b73decc2324e05497b156ee35770c9",
+    "cloudflared_image": "cloudflare/cloudflared@sha256:b7a6db450ae2e2f773d4fbe9ffb48e7b5fc451e17329daab1b4dda5a2487e2cc",
+    "edge_readiness_path": "http://127.0.0.1:2000/ready",
+    "replicas_after_recovery": [
+      {
+        "pod": "cloudflare-tunnel-f4b657cbb-f7k5v",
+        "connector_id": "0d6f277e-4cf8-467a-a6a7-a5c306fc8f53",
+        "node": "gnr2.fm2aihpcsed.com",
+        "containers_ready": "2/2",
+        "edge_readiness_http_status": 200
+      },
+      {
+        "pod": "cloudflare-tunnel-f4b657cbb-rk8pt",
+        "connector_id": "68252b0f-e5b2-4684-8c13-b6a71b8f42cc",
+        "node": "gnr2.fm2aihpcsed.com",
+        "containers_ready": "2/2",
+        "edge_readiness_http_status": 200
+      }
+    ]
+  },
+  "fault_injection": {
+    "started_at": "2026-09-10T01:26:52Z",
+    "completed_at": "2026-09-10T01:27:35Z",
+    "action": "Deleted exactly one Ready connector pod and allowed its Deployment to replace it.",
+    "deleted_pod": "cloudflare-tunnel-f4b657cbb-5drnp",
+    "replacement_pod": "cloudflare-tunnel-f4b657cbb-rk8pt",
+    "probe_iterations": 40,
+    "checks_per_iteration": 3,
+    "total_external_checks": 120,
+    "failed_iterations": 0,
+    "checks": [
+      {
+        "url": "https://labs.smg-helix.ai/health",
+        "expected_http_status": 200
+      },
+      {
+        "url": "https://labs.smg-helix.ai/realms/launchpad-public/.well-known/openid-configuration",
+        "expected_http_status": 200,
+        "expected_issuer": "https://labs.smg-helix.ai/realms/launchpad-public"
+      },
+      {
+        "url": "https://labs.smg-helix.ai/labs/intel-llm-cpu-serving-359ecbe2",
+        "expected_http_status": 302
+      }
+    ]
+  },
+  "tls_after_recovery": {
+    "subject": "CN=smg-helix.ai",
+    "issuer": "C=US, O=Let's Encrypt, CN=YE2",
+    "not_after": "2026-11-24T13:43:20Z"
+  },
+  "alerts": [
+    "CloudflareTunnelReplicaDegraded",
+    "CloudflareTunnelUnavailable"
+  ],
+  "boundaries": {
+    "connector_process_resilience": "GREEN-live",
+    "worker_resilience": "RED",
+    "reason": "Both connector replicas run on gnr2 because rhgnr1 remains cordoned.",
+    "public_access_gateway_replicas": 1,
+    "long_lived_websocket_continuity": "not tested; a session may reconnect when its serving connector stops",
+    "native_openshift_console": "not modified and not certified",
+    "simultaneous_public_claims_25": "pending"
+  },
+  "secrets": {
+    "plaintext_instructor_code_persisted": false,
+    "tunnel_token_persisted": false,
+    "credentials_persisted": false
+  }
+}

@@ -22,4 +22,8 @@ def test_exact_75_soak_is_bounded_fail_closed_and_credential_free():
     assert "contains_plaintext_credentials: false" in source
     assert "snapshots.jsonl" in source
     assert "summary.json.sha256" in source
+    assert '"requested_duration_seconds"' in source
+    assert 'result="GREEN-live-soak"' in source
+    assert 'result="RED-live-soak"' in source
+    assert 'result="GREEN-live-sixty-minute-soak"' not in source
     assert "oc config use-context" not in source

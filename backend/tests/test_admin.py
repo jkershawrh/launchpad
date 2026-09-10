@@ -89,13 +89,20 @@ def test_admin_lifecycle_view_reports_queue_health_without_secret_payloads(clien
         idempotency_key="must-not-be-returned",
         payload={"secret": "must-not-be-returned"},
     )
-    with patch.object(lifecycle_job_store, "list_all", return_value=[queued]):
+    with (
+        patch.object(lifecycle_job_store, "list_all", return_value=[queued]),
+        patch.dict(
+            "os.environ",
+            {"SERIALIZE_WORKSHOP_PROVISIONING": "true"},
+        ),
+    ):
         response = client.get("/api/v1/admin/lifecycle")
 
     assert response.status_code == 200
     body = response.json()
     assert body["summary"]["queued"] == 1
     assert body["summary"]["reclaim_pending"] == 1
+    assert body["workshop_provisioning_policy"] == "serialized"
     assert body["jobs"][0]["aggregate_id"] == "workshop-admin-view"
     assert "payload" not in body["jobs"][0]
     assert "idempotency_key" not in body["jobs"][0]

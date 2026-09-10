@@ -37,14 +37,16 @@ Keycloak/OAuth resources and merge only the described provider/client/flow.
 Run `scripts/certify_public_access.py --host <test-order-host>` from an external
 network and retain its immutable output in the certification evidence bundle.
 
-## Arena disposable pilot
+## Arena named-tunnel pilot
 
-Until stable public DNS and ingress exist, use
-`deploy/tunnel-oncluster/README.md` for a temporary Arena-only browser test.
-That workflow keeps the Console and authentication operators managed, uses an
-unprivileged tunnel identity, updates the order origin through the Launchpad
-API, and never rotates the instructor code implicitly. A Quick Tunnel result is
-functional evidence only and cannot make the production DNS/TLS rows green.
+Arena now uses the permanent `https://labs.smg-helix.ai` named tunnel described
+in `deploy/tunnel-oncluster/README.md`. The checked-in workflow keeps Console
+and authentication operators managed, uses an unprivileged tunnel identity,
+loads its token from an out-of-Git Secret, updates an existing order only
+through the audited Launchpad API, and never rotates the instructor code
+implicitly. DNS, trusted TLS, health, OIDC discovery, and the Keycloak gateway
+callback are GREEN-live. A fresh claim/callback and participant browser journey
+are still required before public workshop access is certified.
 
 The Keycloak authenticator first reuses its existing SSO cookie. If an embedded
 OpenShift Console cannot send that cookie, the form can recover the unique

@@ -12,7 +12,9 @@ spec:
   http: {httpEnabled: true}
   proxy: {headers: xforwarded}
   hostname:
-    strict: false
+    hostname: https://labs.smg-helix.ai
+    strict: true
+    backchannelDynamic: true
   db:
     vendor: postgres
     host: keycloak-postgres

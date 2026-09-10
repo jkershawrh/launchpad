@@ -1,63 +1,68 @@
-# Arena public-access pilot tunnel
+# Arena permanent public pilot tunnel
 
-This deployment provides a disposable, single-host Cloudflare Quick Tunnel for
-manual public-access certification on Arena. It is not production ingress.
+Arena exposes the participant access gateway at
+`https://labs.smg-helix.ai` through a Cloudflare named tunnel. The hostname and
+DNS record are stable across pod restarts. Two fixed connector replicas now
+provide pod/process failover; this remains a pilot transport until node-level
+redundancy and the full public browser matrix are certified.
 
-The router keeps the participant gateway, Keycloak, OpenShift OAuth, Console,
-Showroom, and terminal reachable through one temporary origin. OpenShift's
-native OAuth callback remains unchanged; only browser-visible, plain-text route
-locations are rewritten. Encoded `redirect_uri` values are intentionally left
-alone so the Console's operator-managed OAuth client remains authoritative.
+## Source of truth
 
-## Safety boundary
+- `kustomization.yaml` generates the router ConfigMap and applies the
+  unprivileged tunnel ServiceAccount and Deployment.
+- `deployment.yaml` runs two router-plus-`cloudflared` replicas using a pinned
+  image, connection-aware `/ready` probes, rolling replacement, a disruption
+  budget, and preferred worker anti-affinity.
+- `partner-ai-launchpad/tunnel-token` supplies `TUNNEL_TOKEN` and is created
+  out of Git.
+- the Arena Launchpad overlay persists the public origin, path mode, placement
+  eligibility, and strict OIDC gateway settings.
+- `apply.sh` reconciles the Keycloak gateway client's callback because that
+  client is stored in Keycloak rather than Kubernetes YAML.
 
-- Every cluster command is pinned to `/Users/jkershaw/.kube/config-arena`.
-- The tunnel has a dedicated ServiceAccount with no Kubernetes API token or
-  RBAC permissions.
-- The Console operator, `OAuthClient/console`, and `OAuth/cluster` are never
-  patched by this deployment.
-- The gateway validates the stable Arena Keycloak issuer. Split browser and
-  back-channel endpoints do not disable token issuer verification.
-- A new pilot order receives the shared tunnel origin from the backend. An
-  existing order is moved through an authenticated, audited Launchpad API;
-  PostgreSQL is not edited directly.
-- Starting a tunnel never changes the instructor code.
+The tunnel has no Kubernetes API token or RBAC. The script is pinned to
+`/Users/jkershaw/.kube/config-arena` and refuses another cluster. It never
+patches the Console operator, `OAuthClient/console`, or `OAuth/cluster`.
 
-## Start
-
-The backend and Keycloak authenticator images containing the current commit
-must be deployed first. Start the tunnel before creating a new public order:
+## Reconcile
 
 ```sh
 ./scripts/start-tunnel.sh
 ```
 
-The command refuses any cluster other than Arena, verifies that the Console
-operator is running and the `launchpad-public` identity provider uses Arena's
-stable Keycloak issuer, enables public placement only on Arena, then prints the
-temporary public URL. Create one public individual lab or workshop through the
-requester portal and use the one-time instructor code returned with the order.
+The command verifies the token Secret, applies the checked-in tunnel source,
+persists `https://labs.smg-helix.ai`, updates only the Keycloak gateway client,
+enables Arena public placement, and verifies edge health plus the OIDC issuer.
 
-To reuse an already-created public order without changing its code, pass its ID:
+To move a still-active test order to the permanent origin without changing its
+instructor code:
 
 ```sh
 ./scripts/start-tunnel.sh <public-order-id>
 ```
 
-## Stop
+New orders should normally be created after reconciliation so their persisted
+URL is correct from the beginning.
+
+## Emergency stop
 
 ```sh
 ./scripts/stop-tunnel.sh
 ```
 
-Stopping disables the Arena pilot placement override, removes the shared
-origin, scales down the public gateway and tunnel, and restores the checked-in
-`PUBLIC_ACCESS_ENABLED=false` setting. It does not modify OpenShift
-authentication or Console operators.
+Stopping scales the gateway and tunnel to zero and writes explicit fail-closed
+runtime overrides. Re-running `start-tunnel.sh` restores the checked-in state.
 
-## Production boundary
+## Pilot boundary
 
-Quick Tunnel hostnames change after a restart. Because every pilot order shares
-one hostname, only one active public order may be tested at a time. Production
-requires owned DNS, trusted TLS, a stable named tunnel or public ingress,
-explicit public-route isolation, and a fresh external certification run.
+The permanent hostname retires random tunnel URLs and repeated OAuth
+propagation. On September 9, 2026, a controlled deletion of one of the two
+connector pods produced zero failures across 120 external health, OIDC, and
+protected-lab entry checks while Kubernetes replaced the pod. Both replicas
+currently run on `gnr2` because `rhgnr1` remains cordoned, so this proves
+connector/process resilience, not worker or site resilience. Long-lived
+WebSocket sessions may reconnect when their serving connector stops.
+
+The September pilot gate covers participant login, My Lab Access, Showroom,
+terminal, and declared lab tools. Native OpenShift Console access remains on
+the internal/VPN path until separately approved and certified.

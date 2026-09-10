@@ -1,4 +1,4 @@
-"""On-cluster tunnel router for Cloudflare Quick Tunnel.
+"""On-cluster router for the Cloudflare named tunnel.
 
 Runs as a pod on Arena and routes tunnel traffic to in-cluster services:
   /console/…        → OpenShift Console  (console.openshift-console.svc:443)

@@ -31,7 +31,7 @@ registration was authorized by this documentation iteration.
 | Portable deployment | Implicit global context or shared admin credentials | Explicit kubeconfigs, dedicated identities, fail-closed asserts | Ansible syntax check and non-production dry run |
 | Reclaim | Cleanup may target a fallback cluster | Persisted target assertion and zero-residue checks | Controlled workshop reclaim run |
 | Quickstart onboarding | Every repo needs manual platform edits | Discovery/scaffold → existing render/validate/certify path | Onboard the next real quickstart revision |
-| Presentation | No reusable deck | Git-editable Marp source, 15-slide visual render, PDF and PPTX exports | Stakeholder delivery rehearsal |
+| Presentation | No reusable deck | Git-editable Marp source plus a 15-slide PowerPoint deck rebuilt from the approved GCL/EvalHub reference template, with speaker notes, native tables, and full-slide visual validation | Stakeholder delivery rehearsal |
 
 ## Release rubric
 

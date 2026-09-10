@@ -35,6 +35,22 @@ spec:
           annotations:
             summary: Launchpad component {{ $labels.deployment }} is unavailable
             description: Requests or participant access may fail while this deployment has no available replica.
+        - alert: CloudflareTunnelReplicaDegraded
+          expr: kube_deployment_status_replicas_available{namespace="partner-ai-launchpad",deployment="cloudflare-tunnel"} < 2
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: Arena public tunnel has lost connector redundancy
+            description: Public access remains available with one connector, but pod-level failover is degraded.
+        - alert: CloudflareTunnelUnavailable
+          expr: kube_deployment_status_replicas_available{namespace="partner-ai-launchpad",deployment="cloudflare-tunnel"} < 1
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: Arena public tunnel has no available connector
+            description: Public participant access through labs.smg-helix.ai is unavailable.
         - alert: LaunchpadReconcilerFailed
           expr: kube_job_status_failed{namespace="partner-ai-launchpad",job_name=~"launchpad-resource-reconciler-.*"} > 0
           for: 5m

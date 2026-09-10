@@ -105,6 +105,116 @@ def test_only_one_worker_can_own_an_aggregate() -> None:
     assert first.aggregate_id == claimed.aggregate_id
 
 
+def test_serialized_workshop_provisioning_allows_only_one_active_workshop() -> None:
+    store = InMemoryLifecycleJobStore()
+    first = store.enqueue(
+        job(
+            LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_id="workshop-1",
+        )
+    )
+    second = store.enqueue(
+        job(
+            LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_id="workshop-2",
+        )
+    )
+
+    owner = store.claim_next(
+        "worker-a",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+    blocked = store.claim_next(
+        "worker-b",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+
+    assert owner is not None
+    assert owner.job_id == first.job_id
+    assert blocked is None
+    assert store.get(second.job_id).status == LifecycleJobStatus.QUEUED
+
+    assert store.complete(owner.job_id, "worker-a", owner.fencing_token)
+    next_owner = store.claim_next(
+        "worker-b",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+    assert next_owner is not None
+    assert next_owner.job_id == second.job_id
+
+
+def test_serialized_workshop_provisioning_does_not_block_reclaim() -> None:
+    store = InMemoryLifecycleJobStore()
+    store.enqueue(
+        job(
+            LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_id="workshop-1",
+        )
+    )
+    owner = store.claim_next(
+        "worker-a",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+    assert owner is not None
+    store.enqueue(
+        job(
+            LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_id="workshop-2",
+        )
+    )
+    reclaim = store.enqueue(
+        job(
+            LifecycleJobOperation.RECLAIM_WORKSHOP,
+            aggregate_id="workshop-3",
+            priority=10,
+        )
+    )
+
+    second_owner = store.claim_next(
+        "worker-b",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+
+    assert second_owner is not None
+    assert second_owner.job_id == reclaim.job_id
+
+
+def test_parallel_workshop_provisioning_remains_an_explicit_opt_in() -> None:
+    store = InMemoryLifecycleJobStore()
+    store.enqueue(
+        job(
+            LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_id="workshop-1",
+        )
+    )
+    store.enqueue(
+        job(
+            LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_id="workshop-2",
+        )
+    )
+
+    first = store.claim_next(
+        "worker-a",
+        lease_seconds=30,
+        serialize_workshop_provisioning=False,
+    )
+    second = store.claim_next(
+        "worker-b",
+        lease_seconds=30,
+        serialize_workshop_provisioning=False,
+    )
+
+    assert first is not None
+    assert second is not None
+    assert first.aggregate_id != second.aggregate_id
+
+
 def test_expired_lease_is_taken_over_with_a_new_fencing_token() -> None:
     clock = Clock()
     store = InMemoryLifecycleJobStore(clock=clock)

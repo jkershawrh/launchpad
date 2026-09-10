@@ -54,8 +54,9 @@ def test_arena_public_gateway_validates_the_stable_keycloak_issuer():
     env = {item["name"]: item.get("value") for item in proxy["env"]}
 
     assert env["OAUTH2_PROXY_OIDC_ISSUER_URL"] == (
-        "https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public"
+        "https://labs.smg-helix.ai/realms/launchpad-public"
     )
+    assert env["OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION"] == "false"
 
 
 def test_arena_gateway_verifies_internal_ingress_with_the_cluster_ca_bundle():

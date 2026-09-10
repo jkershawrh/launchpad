@@ -49,3 +49,4 @@ def test_lifecycle_ha_feature_flag_defaults_off() -> None:
     assert config["data"]["LAUNCHPAD_CONTROL_PLANE_ROLE"] == "active"
     assert config["data"]["LIFECYCLE_JOB_LEASE_SECONDS"] == "120"
     assert config["data"]["LIFECYCLE_HEARTBEAT_INTERVAL_SECONDS"] == "15"
+    assert config["data"]["SERIALIZE_WORKSHOP_PROVISIONING"] == "true"

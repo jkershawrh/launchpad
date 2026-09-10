@@ -1,0 +1,33 @@
+{
+  "schema": "launchpad.redhat.com/public-origin-contract/v1",
+  "evidence_id": "PUBLIC-NAMED-ORIGIN-GREEN-LIVE-20260909",
+  "recorded_at": "2026-09-10T00:05:00Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "GREEN-live-infrastructure",
+  "public_origin": "https://labs.smg-helix.ai",
+  "cluster": "arena",
+  "checks": {
+    "cloudflare_named_tunnel_ready": true,
+    "token_loaded_from_secret_reference": true,
+    "service_account_token_automount": false,
+    "edge_health_http_status": 200,
+    "tls_verify_result": 0,
+    "oidc_issuer": "https://labs.smg-helix.ai/realms/launchpad-public",
+    "gateway_redirect_uri": "https://labs.smg-helix.ai/oauth2/callback",
+    "gateway_web_origin": "https://labs.smg-helix.ai",
+    "strict_issuer_validation": true,
+    "backend_origin_converged": true,
+    "lifecycle_worker_origin_converged": true,
+    "arena_cluster_target_converged": true,
+    "console_operator_or_oauthclient_modified": false
+  },
+  "not_certified": [
+    "participant email and instructor-code claim through the permanent origin",
+    "OIDC callback and authenticated participant session through the permanent origin",
+    "My Lab Access, Showroom, terminal, and declared tool browser journey",
+    "OpenShift Console through the public tunnel",
+    "multiple Cloudflare connectors and transport failover"
+  ],
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

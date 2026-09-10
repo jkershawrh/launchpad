@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "evidence_id": "EDD-PUBLIC-SERVE-V105-ONE-SEAT-20260909",
+  "generated_at": "2026-09-10T01:16:37Z",
+  "commit_sha": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "worktree_clean": false,
+  "scope": "One claimed participant seat and one reserved manual seat on the permanent public Arena origin",
+  "outcome": "GREEN-live-limited",
+  "order": {
+    "workshop_id": "359ecbe2-6065-42c4-b360-745c522817bc",
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "catalog_version": "1.0.5",
+    "showroom_content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.5",
+    "cluster_ref": "arena",
+    "public_url": "https://labs.smg-helix.ai/labs/intel-llm-cpu-serving-359ecbe2",
+    "expires_at": "2026-09-10T04:48:31.721015",
+    "seat_limit": 2,
+    "ready_seats": 2,
+    "claimed_seats": 1,
+    "unclaimed_seats": 1,
+    "plaintext_access_code_persisted": false
+  },
+  "seat_1": {
+    "seat_ref": "3502b30d-093c-4bde-ba1e-7f4db20a49c6",
+    "session_id": "e40a4b4a-5fc8-49fb-9407-9d5741ba9704",
+    "namespace": "launchpad-smoke-test-tenant-intel-llm-cpu-serv-3502b3",
+    "identity": "synthetic-certification-identity",
+    "showroom_pods": "3/3 Running",
+    "workload_pods": "1/1 Running",
+    "participant_can_create_deployments_in_assigned_namespace": true,
+    "participant_can_get_pods_in_other_seat_namespace": false,
+    "terminal_service_account_can_create_deployments_in_assigned_namespace": true,
+    "terminal_service_account_can_get_pods_in_other_seat_namespace": false
+  },
+  "seat_2": {
+    "seat_ref": "84d36ee9-8bea-40d9-a259-292a2a616eea",
+    "session_id": "47c3d90a-c467-45e6-a4a1-3b2ed40d523a",
+    "namespace": "launchpad-smoke-test-tenant-intel-llm-cpu-serv-84d36e",
+    "showroom_pods": "3/3 Running",
+    "claimed": false,
+    "purpose": "reserved for manual participant-browser acceptance"
+  },
+  "red_green": [
+    {
+      "requirement": "Public workshop URL survives confirmation and database reload",
+      "red": "Live confirmed workshop returned public_url=null; regression test failed before implementation",
+      "green": "Router now calls _save_workshop after policy creation; workshop contract suite passes and live API returns the permanent URL"
+    },
+    {
+      "requirement": "Signed OIDC token issuer matches the permanent public origin",
+      "red": "OAuth2 callback returned 500 because the ID token issuer was https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public",
+      "green": "Keycloak CR hostname and launchpad-public realm frontendUrl are reconciled to https://labs.smg-helix.ai; direct internal and external discovery both report the permanent issuer"
+    },
+    {
+      "requirement": "Keycloak reconciliation waits for the replacement pod before probing",
+      "red": "First reconciliation exposed a port-forward race while the Keycloak pod was replacing",
+      "green": "The checked-in workflow waits for StatefulSet rollout before private issuer validation"
+    }
+  ],
+  "validation_matrix": [
+    {"id": "PUBLIC-DNS-TLS", "status": "GREEN-live", "evidence": "HTTPS health returned 200 and protected lab URL returned 302 to the permanent Keycloak origin"},
+    {"id": "PUBLIC-OIDC-CALLBACK", "status": "GREEN-live", "evidence": "Branded login, custom email/code authenticator, signed callback, and participant session completed"},
+    {"id": "PUBLIC-SEAT-CLAIM", "status": "GREEN-live", "evidence": "One seat was claimed and the same identity recovered the same seat after retry; claim_count remained one"},
+    {"id": "PUBLIC-MY-LABS", "status": "GREEN-live", "evidence": "My Lab Access listed intel-llm-cpu-serving and resumed the correct order"},
+    {"id": "PUBLIC-SHOWROOM", "status": "GREEN-live", "evidence": "Showroom rendered the v1.0.5 eight-module Serve LLMs journey"},
+    {"id": "PUBLIC-TERMINAL", "status": "GREEN-live", "evidence": "Embedded terminal WebSocket connected and assigned/cross-seat RBAC checks returned yes/no"},
+    {"id": "PUBLIC-WORKSPACE", "status": "GREEN-live", "evidence": "AnythingLLM was deployed from Module 4 and rendered both directly and inside the Showroom RAG Assistant tab"},
+    {"id": "PUBLIC-LLM", "status": "GREEN-live", "evidence": "granite-2b-cpu returned a readable HR response through AnythingLLM/MaaS in 4.6 seconds at 8.66 tokens/second"},
+    {"id": "PUBLIC-LOGOUT", "status": "GREEN-live", "evidence": "Participant OIDC session logged out while the entitlement and seat remained recoverable"},
+    {"id": "PUBLIC-CONSOLE", "status": "NOT-IN-PILOT-GATE", "evidence": "Native OpenShift Console-through-tunnel remains intentionally disabled pending separate Console/OAuth certification"},
+    {"id": "PUBLIC-25-CONCURRENCY", "status": "NOT-RUN", "evidence": "This run proves one browser seat only; 25 simultaneous public claims remain a later certification stage"}
+  ],
+  "test_results": {
+    "command": ".venv/bin/pytest -q backend/tests/test_public_access.py backend/tests/test_public_gateway.py backend/tests/test_requester_api_contract.py backend/tests/test_workshop_order_contract.py backend/tests/test_public_tunnel_contract.py",
+    "passed": 137,
+    "failed": 0,
+    "warnings": 1138
+  },
+  "live_images": {
+    "backend_and_lifecycle_worker": "sha256:138114a0e1fe81b026a4676d7804c964353910b7b6a51b66e68baadf2f0838fd",
+    "public_gateway": "sha256:ca102b3adb3cacb96111c84687a10f3e922eecbcdef37926098a3b093456d3b8",
+    "tunnel_router": "sha256:e25c347d2d108f48173b9e405431cc0bb2b73decc2324e05497b156ee35770c9",
+    "keycloak": "sha256:a832abd0c5ff245508f656c262ca4c3b9ddebe952f523e081d8b40dbd1342128"
+  },
+  "constraints": {
+    "arena_worker_rhgnr1": "Ready and cordoned",
+    "active_execution_worker": "gnr2.fm2aihpcsed.com",
+    "browser_screenshot_capture": "Unavailable in the in-app browser runtime; semantic DOM observations and live service logs were captured instead"
+  }
+}

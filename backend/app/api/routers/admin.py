@@ -59,6 +59,10 @@ def lifecycle_queue_health() -> Dict[str, Any]:
     return build_lifecycle_admin_view(
         lifecycle_job_store.list_all(),
         enabled=os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true",
+        serialize_workshop_provisioning=(
+            os.environ.get("SERIALIZE_WORKSHOP_PROVISIONING", "true").lower()
+            == "true"
+        ),
     )
 
 

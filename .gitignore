@@ -65,6 +65,8 @@ deploy/prod-dns/dns-credentials.yaml
 # Build artifacts
 www/
 *.tar.gz
+/output/
+/tmp/
 
 # Cloned upstream quickstart repos — reference by URL, don't vendor
 demos/quickstarts/
@@ -73,3 +75,6 @@ secret.yaml
 gateway-secret.yaml
 postgres-secret.yaml
 test-receipts/
+
+# Local, short-lived trainer handoff values (public URL and instructor code)
+docs/train-the-trainer-live.js

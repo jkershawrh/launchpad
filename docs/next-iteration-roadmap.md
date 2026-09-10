@@ -4,6 +4,12 @@ This document parks improvements that are valuable after the current visual
 Showroom-scale release gate. They are not blockers for completing the present
 25-seat participant-experience certification unless explicitly stated.
 
+The authoritative long-range product roadmap, including the permanent
+production control-plane home, intelligent execution-cluster placement,
+AI-serving and semantic routing, lifecycle reclamation, governed automation,
+and showback/chargeback, is maintained in
+[`ecosystem-architecture-roadmap.md`](ecosystem-architecture-roadmap.md).
+
 ## Immediate release gate
 
 The dated release gate is now the approved September 17 agentic event
@@ -87,8 +93,8 @@ in `evidence/brutus-agent-201-three-pod-certification-2026-09-05.json`.
 
 ## Pathway 1: provisioning performance
 
-- Replace in-request workshop execution with a durable queue and bounded workers.
-- Permit organizers to submit multiple orders while execution is safely staggered.
+- Completed for the pilot: workshop execution uses durable, fenced lifecycle jobs and bounded per-seat workers.
+- Completed for the pilot: organizers may submit multiple orders, but the durable claim path allows only one active workshop provision lease fleet-wide; later orders remain queued and reclaim remains eligible.
 - Measure per-cluster seat, Argo sync, route-ready, and collective-ready latency.
 - Tune Argo and worker concurrency from observed saturation rather than static limits.
 - Preserve whole-workshop cluster affinity and fail-closed capacity reservations.

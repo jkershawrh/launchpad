@@ -1,0 +1,36 @@
+{
+  "schema": "launchpad.redhat.com/lifecycle-queue-contract/v1",
+  "evidence_id": "WORKSHOP-PROVISION-SERIALIZATION-GREEN-LOCAL-20260909",
+  "recorded_at": "2026-09-10T00:32:20Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "GREEN-local",
+  "policy": {
+    "scope": "fleet-wide workshop provisioning",
+    "maximum_active_workshop_provision_jobs": 1,
+    "later_workshop_orders": "remain queued",
+    "reclaim_blocked": false,
+    "parallel_provisioning": "explicit opt-in only"
+  },
+  "checks": [
+    {
+      "type": "unit_component_contract",
+      "result": "39 passed",
+      "coverage": "in-memory queue, worker propagation, admin policy response, and manifest default"
+    },
+    {
+      "type": "postgres_cross_process_integration",
+      "result": "8 passed",
+      "coverage": "transaction advisory lock, competing worker claims, fencing, takeover, cancellation, and reclaim eligibility"
+    },
+    {
+      "type": "lifecycle_workshop_ha_regression",
+      "result": "113 passed, 8 environment-gated PostgreSQL tests skipped in the combined invocation and run separately above"
+    },
+    {
+      "type": "manifest_security",
+      "result": "base, Arena, and Arena HA Kustomize renders passed; gitleaks passed"
+    }
+  ],
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

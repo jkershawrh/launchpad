@@ -1,0 +1,98 @@
+{
+  "schema": "launchpad.redhat.com/exact75-run/v1",
+  "evidence_id": "SEPTEMBER-17-EXACT75-CURRENT-FUNCTIONAL-GREEN-RESILIENCE-RED-20260909",
+  "event_date": "2026-09-17",
+  "started_at": "2026-09-09T23:28:36Z",
+  "completed_at": "2026-09-09T23:51:12Z",
+  "result": "GREEN-live-functional-RED-single-worker-burst-resilience",
+  "three_run_streak_credit": false,
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "participants": {
+    "started": 75,
+    "passed": 75,
+    "failed": 0
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "d082ee05-0140-4c71-b8da-48faf3073075",
+      "cluster_ref": "brutus",
+      "passed": 25,
+      "own_namespace_edit_passed": 25,
+      "cross_namespace_denied": 25,
+      "node_list_denied": 25
+    },
+    "multi_agent": {
+      "id": "d5c8880b-6527-4574-be6a-b02e3518eaba",
+      "cluster_ref": "arena",
+      "concurrent_wave_passed": 25,
+      "deep_journeys_passed": 25,
+      "workflow_latency_ms": {
+        "min": 41909.23,
+        "p95": 52860.97,
+        "max": 55678.01
+      }
+    },
+    "serve_llms": {
+      "id": "544bfc22-4cb5-4df6-aa68-e27333349d4c",
+      "cluster_ref": "arena",
+      "grounded_journeys_passed": 25,
+      "response_seconds": {
+        "min": 11.201701,
+        "p95": 65.673013,
+        "max": 67.015094
+      }
+    }
+  },
+  "protected_worker": {
+    "node": "rhgnr1",
+    "remained_cordoned": true,
+    "exercised": false
+  },
+  "arena_single_worker_pressure": {
+    "node": "gnr2.fm2aihpcsed.com",
+    "pods_after_participant_setup": 213,
+    "running_containers": 511,
+    "cpu_requests_percent": 83,
+    "cpu_limits_percent": 146,
+    "pod_capacity": 250
+  },
+  "resilience": {
+    "router_restarts_before": 0,
+    "router_restarts_after": 1,
+    "router_restart_increase": 1,
+    "termination_exit_code": 137,
+    "node_wide_probe_timeouts": true,
+    "affected_namespaces_included": [
+      "launchpad participant namespaces",
+      "openshift-dns",
+      "openshift-monitoring",
+      "openshift-storage",
+      "openshift-ingress"
+    ]
+  },
+  "steady_state_followup": {
+    "evidence": "september-17-exact75-current-soak-20260909/summary.json",
+    "requested_duration_seconds": 600,
+    "observed_duration_seconds": 612,
+    "samples": 10,
+    "failed_samples": 0,
+    "showroom_http_200_per_sample": 75,
+    "restart_increase": 0,
+    "result": "GREEN-live-soak"
+  },
+  "interpretation": {
+    "lab_functionality": "passed",
+    "steady_state": "passed",
+    "burst_resilience": "failed",
+    "finding": "All three 25-seat participant journeys passed, but the one active Arena execution worker experienced broad kubelet probe timeouts during the initial concurrent setup wave and restarted one ingress router. This is a node-density and burst-resilience failure, not a lab-content failure.",
+    "required_next_action": "Qualify and uncordon rhgnr1 or add another certified execution worker, then repeat the exact 75-seat burst and require zero router restarts and zero node-wide probe storms."
+  },
+  "raw_artifact_hashes": {
+    "summary": "4a183d3d32f8710e1115b671c9d9393759713d865a010c91263c4cf9a6fc16da",
+    "agent_201_run_log": "17e51a9e9bb57967274f27cc160c7a9f2c6141ba28d4483883e10373ed8befe9",
+    "multi_agent_run_log": "ab3346fb57d930ef8218c3c770d5b31c23bf9ed9479cf0b5ef312ed8058222b0",
+    "serve_llms_run_log": "41138d84af900d877869688a80838db28204d53ed926bde4374090cb7a2ecf7d"
+  },
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

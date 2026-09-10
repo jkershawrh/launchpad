@@ -1,0 +1,33 @@
+{
+  "schema": "launchpad.redhat.com/public-origin-contract/v1",
+  "evidence_id": "PUBLIC-NAMED-ORIGIN-CLAIM-BLOCKED-CAPACITY-20260909",
+  "recorded_at": "2026-09-10T00:16:32Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "RED-live-capacity",
+  "public_origin": "https://labs.smg-helix.ai",
+  "request": {
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "seats": 2,
+    "target_cluster": "arena",
+    "exposure_policy": "public_code",
+    "ttl": "4h"
+  },
+  "capacity_preview": {
+    "can_provision": false,
+    "reason": "Requested 2 seats but cluster supports 0 (CPU: 0, Memory: 243, Pods: 11; Eligible nodes: 1)",
+    "estimated_cpu_millicores": 1330,
+    "estimated_memory_mib": 2976,
+    "estimated_pods": 4
+  },
+  "live_state": {
+    "retained_arena_workshop_seats": 50,
+    "retained_brutus_workshop_seats": 25,
+    "active_public_policies": 0,
+    "arena_schedulable_execution_workers": 1,
+    "gnr2_pods": 214,
+    "rhgnr1_cordoned": true
+  },
+  "decision": "No order was created and no capacity override was used. Reclaim one retained Arena workshop or qualify additional Arena worker capacity before the public browser claim.",
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

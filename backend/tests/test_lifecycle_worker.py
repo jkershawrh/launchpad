@@ -174,6 +174,26 @@ def test_worker_executes_and_validates_prepared_session() -> None:
     assert store.list_all()[0].evidence["session_status"] == "ready"
 
 
+def test_worker_passes_workshop_serialization_policy_to_durable_claim() -> None:
+    store = Mock()
+    store.claim_next.return_value = None
+    worker = LifecycleWorker(
+        store=store,
+        provisioning_service=SimpleNamespace(),
+        worker_id="worker-a",
+        lease_seconds=30,
+        heartbeat_interval_seconds=60,
+        serialize_workshop_provisioning=True,
+    )
+
+    assert worker.run_once() == "idle"
+    store.claim_next.assert_called_once_with(
+        "worker-a",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+
+
 def test_worker_executes_provision_and_records_completion_evidence() -> None:
     store = InMemoryLifecycleJobStore()
     queue = LifecycleQueueService(store)

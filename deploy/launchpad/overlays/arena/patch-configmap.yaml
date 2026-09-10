@@ -19,6 +19,10 @@ data:
   OPENSHIFT_CONSOLE_URL: "https://console-openshift-console.apps.arena.fm2aihpcsed.com"
   SMART_PLACEMENT_ENABLED: "false"
   ORCHESTRATION_BRAIN_ENABLED: "false"
-  PUBLIC_ACCESS_ENABLED: "false"
-  PUBLIC_LABS_DOMAIN: ""
-  PUBLIC_LABS_SHARED_PATH_MODE: "false"
+  # Arena's public pilot uses a permanent Cloudflare named tunnel. Individual
+  # catalog requests remain internal unless exposure_policy=public_code.
+  PUBLIC_ACCESS_ENABLED: "true"
+  PUBLIC_LABS_DOMAIN: "labs.smg-helix.ai"
+  PUBLIC_LABS_SHARED_ORIGIN: "https://labs.smg-helix.ai"
+  PUBLIC_LABS_SHARED_PATH_MODE: "true"
+  PUBLIC_ACCESS_PILOT_CLUSTER: "arena"

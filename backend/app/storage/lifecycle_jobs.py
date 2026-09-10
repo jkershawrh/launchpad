@@ -22,7 +22,13 @@ class LifecycleJobStore(Protocol):
 
     def list_all(self) -> list[LifecycleJob]: ...
 
-    def claim_next(self, worker_id: str, *, lease_seconds: int) -> LifecycleJob | None: ...
+    def claim_next(
+        self,
+        worker_id: str,
+        *,
+        lease_seconds: int,
+        serialize_workshop_provisioning: bool = False,
+    ) -> LifecycleJob | None: ...
 
     def heartbeat(
         self, job_id: str, worker_id: str, fencing_token: int, *, lease_seconds: int
@@ -131,10 +137,27 @@ class InMemoryLifecycleJobStore:
                 }
             )
 
-    def claim_next(self, worker_id: str, *, lease_seconds: int) -> LifecycleJob | None:
+    def claim_next(
+        self,
+        worker_id: str,
+        *,
+        lease_seconds: int,
+        serialize_workshop_provisioning: bool = False,
+    ) -> LifecycleJob | None:
         now = self._clock()
         with self._lock:
             self._expire_abandoned_cancellations(now)
+            active_workshop_provision = any(
+                job.operation == LifecycleJobOperation.PROVISION_WORKSHOP
+                and job.status
+                in {
+                    LifecycleJobStatus.RUNNING,
+                    LifecycleJobStatus.CANCEL_REQUESTED,
+                }
+                and job.lease_until is not None
+                and job.lease_until > now
+                for job in self._jobs.values()
+            )
             candidates = [
                 job
                 for job in self._jobs.values()
@@ -148,6 +171,11 @@ class InMemoryLifecycleJobStore:
                     )
                 )
                 and self._lease_is_available(job, now)
+                and not (
+                    serialize_workshop_provisioning
+                    and active_workshop_provision
+                    and job.operation == LifecycleJobOperation.PROVISION_WORKSHOP
+                )
             ]
             if not candidates:
                 return None
@@ -499,12 +527,24 @@ class PostgresLifecycleJobStore:
         finally:
             conn.close()
 
-    def claim_next(self, worker_id: str, *, lease_seconds: int) -> LifecycleJob | None:
+    def claim_next(
+        self,
+        worker_id: str,
+        *,
+        lease_seconds: int,
+        serialize_workshop_provisioning: bool = False,
+    ) -> LifecycleJob | None:
         conn = _get_sync_conn()
         if not conn:
             raise PersistenceUnavailableError("lifecycle jobs require PostgreSQL")
         try:
             with conn.cursor() as cur:
+                if serialize_workshop_provisioning:
+                    # Two HA workers can otherwise evaluate different workshop
+                    # aggregate leases before either claim commits. Serialize
+                    # the short claim transaction so the second worker observes
+                    # the first active provision lease and leaves its job queued.
+                    cur.execute("SELECT pg_advisory_xact_lock(%s, %s)", (735012, 17))
                 # A cancellation can outlive its worker. Close it only after
                 # that worker's lease has expired, then release the aggregate
                 # so the higher-priority reclaim can take ownership.
@@ -536,9 +576,21 @@ class PostgresLifecycleJobStore:
                          AND (j.status = 'queued'
                               OR (j.status = 'running' AND j.lease_until <= NOW()))
                          AND (l.lease_until IS NULL OR l.lease_until <= NOW())
+                         AND (
+                           %s = FALSE
+                           OR j.operation <> 'provision_workshop'
+                           OR NOT EXISTS (
+                             SELECT 1
+                             FROM lifecycle_jobs active
+                             WHERE active.operation = 'provision_workshop'
+                               AND active.status IN ('running', 'cancel_requested')
+                               AND active.lease_until > NOW()
+                           )
+                         )
                        ORDER BY j.priority, j.next_attempt_at, j.created_at, j.job_id
                        FOR UPDATE OF l SKIP LOCKED
-                       LIMIT 1"""
+                       LIMIT 1""",
+                    (serialize_workshop_provisioning,),
                 )
                 candidate = cur.fetchone()
                 if not candidate:

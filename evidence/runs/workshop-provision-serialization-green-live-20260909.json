@@ -1,0 +1,29 @@
+{
+  "schema": "launchpad.redhat.com/lifecycle-queue-contract/v1",
+  "evidence_id": "WORKSHOP-PROVISION-SERIALIZATION-GREEN-LIVE-20260909",
+  "recorded_at": "2026-09-10T00:32:20Z",
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "stage": "GREEN-live-policy",
+  "cluster": "arena",
+  "image_digest": "sha256:3a495e4248842ea2b409047f9fda097ca0679bdf6e17a92b02e25da0e9e938e5",
+  "live_checks": {
+    "backend_ready": "1/1",
+    "lifecycle_worker_ready": "1/1",
+    "lifecycle_ha_enabled": true,
+    "workshop_provisioning_policy": "serialized",
+    "queued_jobs_after_rollout": 0,
+    "running_jobs_after_rollout": 0,
+    "failed_jobs": 0,
+    "rhgnr1_ready": true,
+    "rhgnr1_cordoned": true,
+    "permanent_public_health": "ok"
+  },
+  "retained_workshops": [
+    {"catalog_item_id": "multi-agent-quickstart", "cluster": "arena", "ready_seats": 25},
+    {"catalog_item_id": "intel-llm-cpu-serving", "cluster": "arena", "ready_seats": 25},
+    {"catalog_item_id": "intel-xeon6-agent-201", "cluster": "brutus", "ready_seats": 25}
+  ],
+  "acceptance_boundary": "The policy and immutable image are live. A two-order live queue demonstration remains deferred until protected Arena capacity is available; no retained workshop was reclaimed or altered for this rollout.",
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

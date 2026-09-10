@@ -1,0 +1,35 @@
+{
+  "status": "failed",
+  "started_at": "2026-09-09T23:28:36Z",
+  "completed_at": "2026-09-09T23:51:12Z",
+  "participants_started": 75,
+  "participants_passed": 75,
+  "contains_plaintext_credentials": false,
+  "return_codes": {
+    "agent_201": 0,
+    "multi_agent": 0,
+    "serve_llms": 0
+  },
+  "resilience": {
+    "exercise_rhgnr1": false,
+    "router_restarts_before": 0,
+    "router_restarts_after": 1,
+    "router_restart_increase": 1
+  },
+  "result_dir": "evidence/runs/september-17-exact75-current-20260909",
+  "workshops": {
+    "agent_201": {
+      "id": "d082ee05-0140-4c71-b8da-48faf3073075",
+      "passed": 25
+    },
+    "multi_agent": {
+      "id": "d5c8880b-6527-4574-be6a-b02e3518eaba",
+      "passed": 25,
+      "concurrent_wave_passed": 25
+    },
+    "serve_llms": {
+      "id": "544bfc22-4cb5-4df6-aa68-e27333349d4c",
+      "passed": 25
+    }
+  }
+}

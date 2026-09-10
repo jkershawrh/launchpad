@@ -45,6 +45,9 @@ def main() -> int:
         os.environ.get("LIFECYCLE_HEARTBEAT_INTERVAL_SECONDS", "15")
     )
     poll_seconds = float(os.environ.get("LIFECYCLE_POLL_INTERVAL_SECONDS", "2"))
+    serialize_workshop_provisioning = (
+        os.environ.get("SERIALIZE_WORKSHOP_PROVISIONING", "true").lower() == "true"
+    )
     stop = threading.Event()
 
     def request_stop(*_args) -> None:
@@ -58,8 +61,13 @@ def main() -> int:
         worker_id=worker_id,
         lease_seconds=lease_seconds,
         heartbeat_interval_seconds=heartbeat_seconds,
+        serialize_workshop_provisioning=serialize_workshop_provisioning,
     )
-    logger.info("Lifecycle worker %s started", worker_id)
+    logger.info(
+        "Lifecycle worker %s started (serialize_workshop_provisioning=%s)",
+        worker_id,
+        serialize_workshop_provisioning,
+    )
     while not stop.is_set():
         result = worker.run_once()
         if result == "idle":

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Compatibility entry point. The tunnel now runs inside Arena; no laptop port
+# Compatibility entry point for Arena's permanent named tunnel. No laptop port
 # forwards or global kube-context changes are used.
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

@@ -1,0 +1,36 @@
+{
+  "schema": "launchpad.redhat.com/exact75-soak/v1",
+  "result": "GREEN-live-soak",
+  "started_at": "2026-09-09T23:54:17Z",
+  "completed_at": "2026-09-10T00:04:29Z",
+  "requested_duration_seconds": 600,
+  "duration_observed_seconds": 612,
+  "samples": 10,
+  "failed_samples": 0,
+  "arena_restart_total": {
+    "first": 26,
+    "maximum": 26,
+    "increase": 0
+  },
+  "workshops": {
+    "agent_201": {
+      "id": "d082ee05-0140-4c71-b8da-48faf3073075",
+      "cluster_ref": "brutus",
+      "seats": 25
+    },
+    "multi_agent": {
+      "id": "d5c8880b-6527-4574-be6a-b02e3518eaba",
+      "cluster_ref": "arena",
+      "seats": 25
+    },
+    "serve_llms": {
+      "id": "544bfc22-4cb5-4df6-aa68-e27333349d4c",
+      "cluster_ref": "arena",
+      "seats": 25
+    }
+  },
+  "source_commit": "6894fa230ce6e413f91dbc4ecc2f56431c8c8e4d",
+  "snapshots": "snapshots.jsonl",
+  "contains_plaintext_credentials": false,
+  "default_kube_context_changed": false
+}

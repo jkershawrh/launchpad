@@ -119,9 +119,9 @@ kind: Deployment
 metadata:
   name: public-access-gateway
 spec:
-  # Public access is disabled by default on Arena. The disposable pilot starts
-  # one gateway replica explicitly; production HA belongs with stable ingress
-  # and at least two schedulable worker nodes.
+  # The application gateway remains a singleton during the one-worker pilot.
+  # The separate named-tunnel Deployment has two connector pods, but end-to-end
+  # node HA still requires a second certified, schedulable Arena worker.
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -146,7 +146,19 @@ spec:
         - name: oidc-proxy
           env:
             - name: OAUTH2_PROXY_OIDC_ISSUER_URL
-              value: https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public
+              value: https://labs.smg-helix.ai/realms/launchpad-public
+            - name: OAUTH2_PROXY_LOGIN_URL
+              value: https://labs.smg-helix.ai/realms/launchpad-public/protocol/openid-connect/auth
+            - name: OAUTH2_PROXY_REDEEM_URL
+              value: http://keycloak-service.keycloak.svc:8080/realms/launchpad-public/protocol/openid-connect/token
+            - name: OAUTH2_PROXY_OIDC_JWKS_URL
+              value: http://keycloak-service.keycloak.svc:8080/realms/launchpad-public/protocol/openid-connect/certs
+            - name: OAUTH2_PROXY_REDIRECT_URL
+              value: https://labs.smg-helix.ai/oauth2/callback
+            - name: OAUTH2_PROXY_SKIP_OIDC_DISCOVERY
+              value: "true"
+            - name: OAUTH2_PROXY_INSECURE_OIDC_SKIP_ISSUER_VERIFICATION
+              value: "false"
       volumes:
         - name: cluster-ca-bundle
           configMap:

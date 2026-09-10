@@ -73,6 +73,15 @@ def test_exact_75_driver_runs_all_groups_concurrently_and_restores_node_guard():
     assert '"participants_started": 75' in source
 
 
+def test_exact_75_driver_keeps_rhgnr1_cordoned_unless_explicitly_exercised():
+    source = DRIVER.read_text()
+
+    assert ': "${EXERCISE_RHGNR1:=false}"' in source
+    assert '"$EXERCISE_RHGNR1" == "false" ||' in source
+    assert '[[ "$rhgnr1_unschedulable" == "true" ]]' in source
+    assert 'if [[ "$EXERCISE_RHGNR1" == "true" ]]' in source
+
+
 def test_exact_75_driver_builds_the_participant_rag_workload_before_testing_it():
     source = DRIVER.read_text()
 

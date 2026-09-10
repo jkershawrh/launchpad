@@ -83,6 +83,85 @@ def test_postgres_aggregate_lease_allows_only_one_concurrent_owner() -> None:
     assert sum(item is not None for item in claims) == 1
 
 
+def test_postgres_serializes_different_workshop_provision_aggregates() -> None:
+    store = PostgresLifecycleJobStore()
+    store.enqueue(lifecycle_job())
+    store.enqueue(
+        LifecycleJob(
+            operation=LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_type="workshop",
+            aggregate_id="workshop-two",
+            cluster_ref="brutus",
+            idempotency_key="workshop:two:provision:v1",
+        )
+    )
+    barrier = threading.Barrier(3)
+    claims = []
+
+    def claim(worker_id: str) -> None:
+        barrier.wait()
+        claims.append(
+            PostgresLifecycleJobStore().claim_next(
+                worker_id,
+                lease_seconds=30,
+                serialize_workshop_provisioning=True,
+            )
+        )
+
+    first = threading.Thread(target=claim, args=("worker-a",))
+    second = threading.Thread(target=claim, args=("worker-b",))
+    first.start()
+    second.start()
+    barrier.wait()
+    first.join(timeout=5)
+    second.join(timeout=5)
+
+    assert sum(item is not None for item in claims) == 1
+    assert sum(
+        item.status == LifecycleJobStatus.QUEUED
+        for item in PostgresLifecycleJobStore().list_all()
+    ) == 1
+
+
+def test_postgres_serialization_keeps_reclaim_eligible() -> None:
+    store = PostgresLifecycleJobStore()
+    store.enqueue(lifecycle_job())
+    active = store.claim_next(
+        "worker-a",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+    assert active is not None
+    store.enqueue(
+        LifecycleJob(
+            operation=LifecycleJobOperation.PROVISION_WORKSHOP,
+            aggregate_type="workshop",
+            aggregate_id="workshop-two",
+            cluster_ref="arena",
+            idempotency_key="workshop:two:provision:v1",
+        )
+    )
+    reclaim = store.enqueue(
+        LifecycleJob(
+            operation=LifecycleJobOperation.RECLAIM_WORKSHOP,
+            aggregate_type="workshop",
+            aggregate_id="workshop-three",
+            cluster_ref="arena",
+            priority=10,
+            idempotency_key="workshop:three:reclaim:v1",
+        )
+    )
+
+    next_job = store.claim_next(
+        "worker-b",
+        lease_seconds=30,
+        serialize_workshop_provisioning=True,
+    )
+
+    assert next_job is not None
+    assert next_job.job_id == reclaim.job_id
+
+
 def test_postgres_takeover_fences_the_stale_worker() -> None:
     store = PostgresLifecycleJobStore()
     store.enqueue(lifecycle_job())
