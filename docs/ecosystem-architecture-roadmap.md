@@ -13,9 +13,12 @@ service. Historical runs proved three staggered 25-seat workshops, 75
 overlapping participant journeys, a 60-minute soak, and zero-residue reclaim.
 The current retained topology again passed 75/75 functionality but is RED for
 single-worker burst resilience after a node-wide probe storm restarted one
-Arena ingress router. Manual visual acceptance, a fresh permanent-host public
-claim, transport HA, and live per-seat LiteLLM attribution remain separate
-gates.
+Arena ingress router. A later permanent-host public claim passed the complete
+one-seat browser journey and the named tunnel survived a connector-pod loss,
+but the September 10 `gnr2` outage proved that connector redundancy did not
+provide end-to-end worker or stateful control-plane resilience. Manual visual
+acceptance, worker-level availability, 25-seat public claim concurrency, and
+live per-seat LiteLLM attribution remain separate gates.
 
 ## Certified current topology
 
@@ -38,13 +41,50 @@ flowchart LR
 
 | Capability | Current state | Boundary |
 |---|---|---|
-| Arena control plane | Active | API, database, requester/admin surfaces, lifecycle workers, Keycloak, and Argo CD |
+| Arena control plane | Pilot authority; degraded during the September 10 `gnr2` incident | API and PostgreSQL are single replicas pinned to `gnr2`; this topology is not worker-HA |
 | Arena execution | Certified for the two named 25-seat event workshops | The two orders are staggered; capacity is not a promise for arbitrary catalogs |
 | Brutus execution | Certified for the 25-seat Building an AI Agent workshop | Internal access only; placement uses the persisted remote client |
 | Oberon execution | Excluded | KubeVirt/HCO and namespace deletion must be remediated and recertified |
 | Flightpath | Passive DR candidate | No active writer; promotion requires Arena fencing, restore, and a drill |
-| Public participant access | Permanent-host pilot | `labs.smg-helix.ai` DNS/TLS/OIDC infrastructure is GREEN-live; participant claim/browser and transport-HA certification remain pending |
+| Public participant access | Permanent-host pilot | `labs.smg-helix.ai` and one complete participant journey are GREEN-live; 25-claim concurrency and end-to-end worker HA remain pending |
 | Model attribution | Contract GREEN-local | Arena participant inference still uses direct OVMS/vLLM endpoints; live per-seat LiteLLM metrics are unavailable |
+
+## September 10 resilience finding and correction
+
+When `gnr2` stopped reporting, both named-tunnel connector replacements, the
+public gateway, portal, and admin application recovered after `rhgnr1` was
+uncordoned. The public edge health check returned HTTP 200 again. PostgreSQL and
+the backend did not recover because their single replicas are pinned to
+`gnr2`; the lifecycle worker correctly refused to operate without PostgreSQL.
+The resulting service could display an edge health response but could not
+reliably accept claims, orders, provisioning, validation, or reclaim work.
+
+This incident establishes the following boundaries:
+
+- multiple pods and a PodDisruptionBudget do not protect against loss of their
+  only eligible worker;
+- preferred anti-affinity does not create a second failure domain;
+- a singleton RWO database remains the control-plane availability boundary;
+- hostname pinning converts one worker outage into an application outage;
+- edge or router health must not be treated as transaction-path health;
+- a Ready worker requires workload-start, network, ingress, storage, model, and
+  sustained-stability proof before it becomes placement-eligible.
+
+The pre-event response is to restore and qualify `gnr2`, retain `rhgnr1` only
+after its workload canary and stability soak pass, pause admission whenever the
+control-plane dependency set or required worker count is unhealthy, back up the
+database, and repeat the exact staggered 75-seat rehearsal. An untested database
+move while the failed node is unfenced is prohibited. September 17 remains a
+supervised pilot with tested recovery rather than an HA declaration.
+
+The post-pilot correction externalizes process-local backend state, runs
+multiple stateless API and gateway replicas across failure domains, replaces
+hostname pins with a certified control-plane pool, introduces HA PostgreSQL and
+durable lifecycle coordination, separates control-plane capacity from
+participant bursts, and exercises Flightpath as a fenced warm recovery site.
+End-to-end readiness must prove identity, database, API, lifecycle queue, model
+routing, and participant authorization instead of returning green for the
+tunnel router alone.
 
 ## Order-to-reclaim lifecycle
 
@@ -83,6 +123,57 @@ healthy:
 Missing credentials, health, capacity, or capabilities make the target
 ineligible. A theoretical allocatable total is never a published seat limit.
 
+## Heterogeneous cluster and catalog compatibility model
+
+Launchpad should not require every execution cluster to have identical
+hardware, Operators, networking, storage, models, or data boundaries. It should
+standardize how those differences are declared, validated, selected, observed,
+and reclaimed. The support and placement unit is:
+
+`catalog version x cluster profile x certified seat count`
+
+A catalog package declares required capabilities rather than a preferred
+cluster name. Requirements include Operators and OpenShift features, CPU and
+accelerator classes, per-seat and shared resources, storage behavior, model
+capabilities, network and data policy, exposure policy, readiness, functional
+journeys, observability, cleanup, and supported scale. A cluster publishes live
+facts for the same vocabulary plus recent provisioning latency, failure rate,
+capacity reservations, and certification evidence.
+
+Useful profiles include:
+
+| Cluster profile | Distinguishing capabilities | Example experience |
+|---|---|---|
+| CPU and Operator | Xeon, OpenShift Operators, standard persistent storage | Serve LLMs, agent building, Operator workshops |
+| Accelerator | Gaudi or GPU device classes, model runtime, accelerator quotas | Large-model inference, training, hardware comparison |
+| Virtualization | KubeVirt/HCO, nested networking and virtualization storage | Infrastructure and virtualization roadshows |
+| Public-enabled | Certified public ingress, identity, TLS, WAF, external reachability | External workshops and customer proofs |
+| Private or data-local | Approved network and residency boundary, private model access | Regulated or customer-controlled datasets |
+| Edge or disconnected | Restricted egress, mirrored images, locally available models | Factory, retail, telco, and sovereign demonstrations |
+
+Placement first applies deterministic eligibility: the required capability,
+credential, image, storage, model, network, policy, certification, and complete
+workshop capacity must all be present. It then ranks only eligible targets by
+retained headroom, catalog-specific reliability, readiness percentile,
+reservations, failure-domain preference, locality, energy, and cost. Every
+input, rejection, score, policy version, and selected `cluster_ref` is persisted
+before any resource is created. AI may forecast readiness or recommend among
+the eligible set but cannot make an ineligible pairing eligible.
+
+The participant continues to use one Launchpad entry point. Cluster identity is
+an administrator and support concern; generated Showroom, workspace, Console,
+and model routes resolve from the persisted binding. One workshop remains on
+one execution cluster. If no certified target can fit the entire order,
+Launchpad rejects it before creating seats rather than splitting it silently.
+
+Compatibility growth is controlled through certified-pair allowlists, a small
+set of versioned cluster profiles, continuous conformance checks, immutable
+catalog releases, and targeted recertification triggers. A materially changed
+catalog, Operator set, OpenShift version, model, cluster profile, access mode,
+or scale invalidates only the affected proof rows. This permits meaningful
+cluster differences without turning each lab/cluster combination into bespoke
+control-plane code.
+
 ## Scale roadmap
 
 | Stage | Objective | Required proof | Status |
@@ -93,6 +184,7 @@ ineligible. A theoretical allocatable total is never a published seat limit.
 | More clusters | Register another CPU execution cluster | Least privilege, images, ingress, model routes, 1/5/25 gates | Playbook path defined |
 | Larger workshops | 50 then 75 seats on one cluster | Measured headroom, node stability, functional load, reclaim | Do not advertise yet |
 | Multi-event fleet | Concurrent orders across three or more targets | Queue fairness, capacity reservations, SLOs, failure-domain tests | Roadmap |
+| Repository and delivery foundation | Sanitize and modularize the current source tree; introduce repeatable CI/CD without destabilizing the pilot | Secret/history scan, ownership map, reproducible builds, signed immutable artifacts, promotion evidence | Pre-event sanitation only; structural work after pilot |
 | Production service | Stable public ingress, HA/DR, security, support, ownership | Complete production rubric and drills | Post-pilot |
 
 Provisioning performance should be improved through durable queues, bounded
@@ -481,6 +573,89 @@ needs an OpenShift Console or lab endpoint.
 | AI platform | Private multi-hardware serving, semantic routing where justified, per-seat attribution, and model governance | Deterministic eligibility and data policy remain authoritative |
 | Business service | Intel-led opportunity qualification, tenant budgets, showback, rate cards, approved chargeback, catalog economics, and demand forecasts | Sales attribution and Finance-approved allocation rules |
 | Governed autonomy | Evidence-driven recommendations followed by allow-listed automatic remediation and reclaim | One failure class earns autonomy at a time |
+
+## Repository sanitation, organization, and CI/CD
+
+Repository work is part of the product architecture because source ownership,
+artifact provenance, deployment promotion, and secret boundaries determine
+whether Launchpad can be operated safely. It must be staged so repository
+reorganization does not destabilize the September 17 pilot.
+
+### Before September 17: sanitation without structural migration
+
+Keep the current monorepo for the event candidate. Apply only low-risk controls:
+
+- run pre-commit secret detection, dependency audits, tests, rendered-manifest
+  validation, and generated-file checks on every event-candidate change;
+- inventory ignored and untracked files, remove conflicting obsolete deployment
+  paths from the release process, and keep kubeconfigs, access codes, tunnel
+  tokens, local evidence, and credentials outside Git;
+- document the authoritative location for backend, web surfaces, public access,
+  deployment overlays, catalog content, certification, and runbooks;
+- freeze release inputs by commit SHA, image digest, catalog version, Showroom
+  tag, and evidence manifest;
+- avoid Git-history rewrites, repository extraction, directory-wide renames, or
+  build-system replacement during the event freeze.
+
+The event branch should require a compact pilot CI lane: formatting and lint,
+unit tests, provider/consumer contracts, frontend builds, `kustomize` rendering,
+secret scanning, dependency scanning, and the deterministic certification
+driver. Live `1 -> 5 -> 25` certification remains a controlled promotion gate,
+not a job executed on every pull request.
+
+### After September 17: modularize first, then extract
+
+Do not split the monorepo merely to reduce its file count. First define bounded
+modules, dependency direction, owners, versioned APIs, and artifact boundaries
+inside the current repository. Add CODEOWNERS, architecture decision records,
+component manifests, independent test commands, and independent image/version
+metadata. A module is ready to extract only when it has a stable contract, a
+named owner, an independent release cadence, and no reliance on relative source
+paths or shared mutable deployment state.
+
+The recommended initial destination is a small three-repository model:
+
+1. **Launchpad product:** API, lifecycle workers, placement, participant access,
+   requester/admin applications, shared schemas, and contract tests. Split a
+   component further only if its security or release ownership diverges.
+2. **Launchpad catalog and content:** catalog records, Antora/Showroom content,
+   intake definitions, catalog certification profiles, and immutable content
+   releases. Individual lab source repositories can publish versioned catalog
+   packages through the onboarding pipeline.
+3. **Launchpad environments:** sanitized GitOps configuration for control-plane
+   and execution targets, promotion policy, and environment-specific references.
+   Credentials and secret values remain in an approved secrets manager, never
+   in this repository.
+
+Large run evidence belongs in durable object storage in production. Git should
+retain schemas, signed manifests, hashes, compact decisions, and links rather
+than indefinitely accumulating pod dumps, logs, screenshots, and generated
+reports. Binary presentations and other non-runtime artifacts should use Git
+LFS or a versioned release/document store if their volume becomes material.
+
+### Delivery and promotion pipeline
+
+The target CI/CD flow is:
+
+1. **Change validation:** formatting, lint, unit, component, contract, BDD,
+   frontend accessibility/build, manifest schema/render, secret, dependency,
+   license, and policy checks.
+2. **Artifact build:** reproducible component images and content bundles tagged
+   by version and commit, each with SBOM, vulnerability result, signature, and
+   provenance attestation.
+3. **Integration promotion:** deploy by digest to a disposable or development
+   environment; run migrations, contracts, one-seat lifecycle, public/internal
+   routing, model, authorization, rollback, and zero-residue reclaim tests.
+4. **Pilot certification:** run catalog/cluster `1 -> 5 -> 25` gates, concurrency
+   and fault tests, then publish an immutable evidence manifest and rubric.
+5. **Production promotion:** promote the identical digests and content versions
+   through GitOps after approval. Never rebuild between environments. Verify
+   health, migrations, rollback, audit events, and post-deployment evidence.
+
+Branch protection should require the appropriate CI lane and review ownership.
+Emergency changes use the same immutable build and evidence path with an
+expedited approval record; direct mutable cluster edits are reconciled back to
+Git or explicitly recorded as incident actions.
 
 ## Operations intelligence and auto-remediation
 
