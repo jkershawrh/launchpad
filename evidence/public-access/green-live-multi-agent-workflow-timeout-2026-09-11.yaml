@@ -1,0 +1,51 @@
+evidence_id: PA-MULTI-AGENT-LONG-WORKFLOW-2026-09-11
+recorded_at: 2026-09-11T14:56:00Z
+commit: 622e80b
+scope: public path-scoped Multi-Agent Workspace on Brutus through the Arena control plane
+order_ref: multi-agent-quickstart-821b55eb
+namespace: launchpad-public-cert-tenant-multi-agent-165d80
+deployment:
+  control_plane: arena
+  execution_cluster: brutus
+  public_gateway_image: sha256:f294eb6bc1d60a72b2f058956ae166478346dae894fb653b142ea81fdfa5d4be
+  application_gateway_read_timeout_seconds: 330
+  oauth_proxy_upstream_timeout_seconds: 330
+red:
+  participant_symptom: comprehensive query timed out while the agent result completed server-side
+  server_result:
+    http_status: 200
+    workflow: comprehensive
+    agents: [research, analyst, executor]
+    latency_ms: 36392.28
+  public_result_stream:
+    path: /labs/multi-agent-quickstart-821b55eb/proxy/tool/workspace/queue/data
+    http_status: 502
+    elapsed_seconds: 30.019
+    cause: oauth2-proxy default upstream timeout terminated the Gradio result stream
+green:
+  browser_journey:
+    entry: public Showroom Multi-Agent Workspace tab
+    query: Look up record REC-001 and recommend next steps
+    workflow: comprehensive
+    visible_agents: [research, analyst, executor]
+    visible_steps: 3
+    mcp_data_visible: true
+    workflow_latency_ms: 38703.96
+  public_result_stream:
+    path: /labs/multi-agent-quickstart-821b55eb/proxy/tool/workspace/queue/data
+    http_status: 200
+    elapsed_seconds: 38.625
+  workload_health:
+    multi_agent_containers_ready: 7
+    showroom_containers_ready: 4
+    restarts: 0
+verification:
+  - command: .venv/bin/pytest -q backend/tests/test_public_gateway.py backend/tests/test_public_access.py backend/tests/test_public_access_network_policy.py backend/tests/test_arena_reliability_manifests.py
+    result: 77 passed
+  - command: .venv/bin/pre-commit run --all-files
+    result: Detect hardcoded secrets passed
+  - check: live Chrome browser replay through labs.smg-helix.ai
+    result: comprehensive output and MCP evidence rendered without timeout
+notes:
+  - No participant email, access code, token, model key, or broker credential is recorded.
+  - The timeout increase is limited to entitled lab-tool traffic; identity and backend calls keep their existing short budgets.
