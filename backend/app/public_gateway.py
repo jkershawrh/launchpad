@@ -646,6 +646,9 @@ async def proxy_tool_socket(
         async with websockets.connect(
             upstream_url,
             subprotocols=[selected_protocol] if selected_protocol else None,
+            ping_interval=20,
+            ping_timeout=60,
+            close_timeout=10,
             **_websocket_tls_options(scheme),
         ) as upstream:
 
@@ -820,6 +823,9 @@ async def showroom_terminal_socket(
         async with websockets.connect(
             upstream_url,
             subprotocols=[selected_protocol] if selected_protocol else None,
+            ping_interval=20,
+            ping_timeout=60,
+            close_timeout=10,
             **_websocket_tls_options(scheme),
         ) as upstream:
 

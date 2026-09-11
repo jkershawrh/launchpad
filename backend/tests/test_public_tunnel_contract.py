@@ -120,6 +120,7 @@ def test_named_tunnel_has_two_connection_aware_replicas_and_a_disruption_budget(
         "preferredDuringSchedulingIgnoredDuringExecution"
     ]
     assert preferred[0]["podAffinityTerm"]["topologyKey"] == "kubernetes.io/hostname"
+    assert "nodeSelector" not in pod_spec
     assert disruption_budget["spec"]["minAvailable"] == 1
     assert disruption_budget["spec"]["selector"]["matchLabels"] == {
         "app.kubernetes.io/name": "cloudflare-tunnel"
@@ -503,3 +504,13 @@ def test_tunnel_websocket_keeps_the_public_host_while_dialing_the_gateway_servic
         "port": 8443,
         "proxy": None,
     }
+
+
+def test_public_terminal_websockets_use_bounded_keepalive_timeouts():
+    tunnel_router = (ROOT / "deploy/tunnel-oncluster/router.py").read_text()
+    public_gateway = (ROOT / "backend/app/public_gateway.py").read_text()
+
+    for source in (tunnel_router, public_gateway):
+        assert "ping_interval=20" in source
+        assert "ping_timeout=60" in source
+        assert "close_timeout=10" in source

@@ -432,6 +432,11 @@ async def websocket_route(path: str, client: WebSocket):
         ws_kwargs = dict(
             additional_headers={k: v for k, v in headers.items() if k.casefold() != "host"},
             subprotocols=[selected_protocol] if selected_protocol else None,
+            # Keep long-lived terminal sessions alive across quiet lab steps
+            # while allowing a slow tunnel edge to recover before disconnect.
+            ping_interval=20,
+            ping_timeout=60,
+            close_timeout=10,
         )
         if upstream_url.startswith("wss://") or is_tls:
             ws_kwargs["ssl"] = NOSSL

@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-showroom-execute-v1.0.1",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.7",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -403,7 +403,7 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "DISABLE_TELEMETRY" in page
     assert "LLM_PROVIDER: generic-openai" in page
     assert "LLM_PROVIDER: genericOpenAi" not in page
-    assert "--timeout=300s" in page
+    assert "--timeout=600s" in page
     assert page.count('httpGet:') >= 2
     assert page.count('path: "/api/ping"') >= 2
     assert "tcpSocket:" not in page
@@ -415,6 +415,31 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "chgrp -R 0 /app" in containerfile
     assert "rm -rf /app/server/node_modules/.prisma/client" in containerfile
     assert "name: anythingllm-openshift" in build_config
+
+
+def test_cpu_serving_workbench_request_matches_the_certified_seat_envelope():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
+    )
+
+    assert 'cpu: "500m"' in page
+    assert 'cpu: "1"' not in page
+    assert catalog["metadata"]["seat_cpu_millicores"] == 665
+    assert "progressDeadlineSeconds: 900" in page
+
+
+def test_cpu_serving_rollout_failure_prints_participant_actionable_diagnostics():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+
+    assert "oc get pods -n {project_name} -l app=anythingllm -o wide" in page
+    assert "oc describe deployment/anythingllm -n {project_name}" in page
+    assert "oc logs deployment/anythingllm -n {project_name} --tail=100" in page
+    assert "AnythingLLM did not become ready" in page
 
 
 def test_cpu_serving_workbench_is_embeddable_only_by_its_seat_showroom():
@@ -451,9 +476,9 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.6"
+    assert catalog["version"] == "1.0.7"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-showroom-execute-v1.0.1"
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.7"
     )
 
 

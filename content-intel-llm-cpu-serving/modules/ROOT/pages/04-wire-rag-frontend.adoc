@@ -97,6 +97,9 @@ metadata:
   name: anythingllm
 spec:
   replicas: 1
+  # Slow or contended workshop nodes must not mark this deployment failed
+  # while the application is still completing its first initialization.
+  progressDeadlineSeconds: 900
   selector:
     matchLabels:
       app: anythingllm
@@ -141,7 +144,9 @@ spec:
                 - ALL
           resources:
             requests:
-              cpu: "1"
+              # This matches the CPU already reserved by the certified
+              # Launchpad seat envelope and can burst during initialization.
+              cpu: "500m"
               memory: 1Gi
             limits:
               cpu: "2"
@@ -164,16 +169,23 @@ oc annotate route rag haproxy.router.openshift.io/timeout=120s --overwrite -n {p
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc rollout status deployment/anythingllm -n {project_name} --timeout=300s
-curl -fsS http://anythingllm:3001/api/ping
-export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} -o custom-columns=HOST:.spec.host --no-headers)"
-ANYTHINGLLM_ROUTE_STATUS=""
-for attempt in {1..40}; do
-  ANYTHINGLLM_ROUTE_STATUS="$(curl -ksS -o /dev/null -w '%{http_code}' "$ANYTHINGLLM_URL/api/ping" || true)"
-  [ "$ANYTHINGLLM_ROUTE_STATUS" = "200" ] && break
-  sleep 3
-done
-[ "$ANYTHINGLLM_ROUTE_STATUS" = "200" ] || { echo "The RAG Assistant route did not become ready"; false; }
+if ! oc rollout status deployment/anythingllm -n {project_name} --timeout=600s; then
+  echo "AnythingLLM did not become ready. Capture this output for the instructor:"
+  oc get pods -n {project_name} -l app=anythingllm -o wide
+  oc describe deployment/anythingllm -n {project_name}
+  oc logs deployment/anythingllm -n {project_name} --tail=100 || true
+  false
+else
+  curl -fsS http://anythingllm:3001/api/ping
+  export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} -o custom-columns=HOST:.spec.host --no-headers)"
+  ANYTHINGLLM_ROUTE_STATUS=""
+  for attempt in {1..40}; do
+    ANYTHINGLLM_ROUTE_STATUS="$(curl -ksS -o /dev/null -w '%{http_code}' "$ANYTHINGLLM_URL/api/ping" || true)"
+    [ "$ANYTHINGLLM_ROUTE_STATUS" = "200" ] && break
+    sleep 3
+  done
+  [ "$ANYTHINGLLM_ROUTE_STATUS" = "200" ] || { echo "The RAG Assistant route did not become ready"; false; }
+fi
 ----
 
 === Verify: Pod is Running
