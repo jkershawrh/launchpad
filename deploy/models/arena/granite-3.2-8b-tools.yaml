@@ -47,7 +47,7 @@ metadata:
     app.kubernetes.io/managed-by: launchpad
     app.kubernetes.io/part-of: partner-ai-launchpad
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: vllm-granite-3-2-8b-tools
@@ -66,6 +66,13 @@ spec:
     spec:
       nodeSelector:
         node-role.kubernetes.io/worker-cpu-tuned: ""
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: vllm-granite-3-2-8b-tools
       terminationGracePeriodSeconds: 120
       containers:
         - name: model-server
@@ -155,6 +162,20 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 20Gi
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: vllm-granite-3-2-8b-tools
+  namespace: fleet-llm-d
+  labels:
+    app.kubernetes.io/managed-by: launchpad
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: vllm-granite-3-2-8b-tools
 ---
 apiVersion: v1
 kind: Service

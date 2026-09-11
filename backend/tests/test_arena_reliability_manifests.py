@@ -212,7 +212,7 @@ def test_cpu_model_readiness_does_not_flap_during_a_participant_burst():
     assert "ovms-granite-2b-readiness.yaml" in driver
 
 
-def test_agent_model_has_two_replicas_for_concurrent_participant_use():
+def test_agent_model_has_four_replicas_for_concurrent_participant_use():
     resources = list(
         yaml.safe_load_all(
             (ROOT / "deploy/models/arena/granite-3.2-8b-tools.yaml").read_text()
@@ -220,7 +220,7 @@ def test_agent_model_has_two_replicas_for_concurrent_participant_use():
     )
     deployment = next(resource for resource in resources if resource["kind"] == "Deployment")
 
-    assert deployment["spec"]["replicas"] == 2
+    assert deployment["spec"]["replicas"] == 4
     container = deployment["spec"]["template"]["spec"]["containers"][0]
     assert "--max-num-seqs=64" in container["args"]
     assert container["readinessProbe"]["timeoutSeconds"] == 5

@@ -19,7 +19,17 @@ def test_tool_calling_model_is_private_shared_arena_infrastructure():
     network_policy = next(doc for doc in documents if doc["kind"] == "NetworkPolicy")
 
     assert deployment["metadata"]["namespace"] == "fleet-llm-d"
-    assert deployment["spec"]["replicas"] == 2
+    assert deployment["spec"]["replicas"] == 4
+    assert deployment["spec"]["template"]["spec"]["topologySpreadConstraints"] == [
+        {
+            "maxSkew": 1,
+            "topologyKey": "kubernetes.io/hostname",
+            "whenUnsatisfiable": "DoNotSchedule",
+            "labelSelector": {
+                "matchLabels": {"app": "vllm-granite-3-2-8b-tools"}
+            },
+        }
+    ]
     container = deployment["spec"]["template"]["spec"]["containers"][0]
     assert container["image"].startswith("registry.redhat.io/rhaii/vllm-cpu-rhel9@sha256:")
     assert "--enable-auto-tool-choice" in container["args"]
@@ -54,6 +64,26 @@ def test_tool_calling_model_is_private_shared_arena_infrastructure():
     assert network_policy["spec"]["podSelector"]["matchLabels"]["app"] == (
         "vllm-granite-3-2-8b-tools"
     )
+
+
+def test_tool_calling_model_retains_half_capacity_during_disruption():
+    documents = _documents()
+    pdb = next(doc for doc in documents if doc["kind"] == "PodDisruptionBudget")
+
+    assert pdb["metadata"] == {
+        "name": "vllm-granite-3-2-8b-tools",
+        "namespace": "fleet-llm-d",
+        "labels": {
+            "app.kubernetes.io/managed-by": "launchpad",
+            "app.kubernetes.io/part-of": "partner-ai-launchpad",
+        },
+    }
+    assert pdb["spec"] == {
+        "minAvailable": 2,
+        "selector": {
+            "matchLabels": {"app": "vllm-granite-3-2-8b-tools"}
+        },
+    }
 
 
 def test_arena_registries_and_tool_lab_use_dedicated_endpoint():
