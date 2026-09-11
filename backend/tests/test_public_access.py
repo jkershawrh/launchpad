@@ -719,6 +719,66 @@ def test_backend_restart_recovers_policy_identity_entitlement_and_session():
     )
 
 
+def test_parallel_process_refreshes_expired_policy_and_entitlement_from_store():
+    class Store:
+        def __init__(self):
+            self.policies = {}
+            self.identities = {}
+            self.entitlements = {}
+            self.sessions = {}
+
+        def save_policy(self, value):
+            self.policies[value.order_id] = value
+
+        def save_identity(self, value):
+            self.identities[value.participant_id] = value
+
+        def save_entitlement(self, value):
+            self.entitlements[value.entitlement_id] = value
+
+        def save_session(self, value):
+            self.sessions[value.session_id] = value
+
+        def list_policies(self):
+            return list(self.policies.values())
+
+        def list_identities(self):
+            return list(self.identities.values())
+
+        def list_entitlements(self):
+            return list(self.entitlements.values())
+
+        def list_sessions(self):
+            return list(self.sessions.values())
+
+    store = Store()
+    lifecycle_process = PublicAccessService(
+        public_domain="labs.example.io", enabled=True, store=store
+    )
+    policy, code = lifecycle_process.create_policy(
+        order_id="shared-order",
+        order_type="individual",
+        catalog_slug="sandbox",
+        seat_refs=["seat"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+    claim = lifecycle_process.claim(
+        policy.order_id, "person@example.com", code, "192.0.2.40"
+    )
+    gateway_process = PublicAccessService(
+        public_domain="labs.example.io", enabled=True, store=store
+    )
+
+    lifecycle_process.expire_order(policy.order_id)
+
+    assert gateway_process.get_policy(policy.order_id).enabled is False
+    assert gateway_process.entitlements_for(claim.identity.participant_id)[0].status == (
+        EntitlementStatus.EXPIRED
+    )
+    with pytest.raises(ValueError, match="Access denied"):
+        gateway_process.validate_session(claim.session_token, policy.order_id)
+
+
 def test_final_entitlement_expiry_disables_identity_and_revokes_session():
     access = service()
     _, code = access.create_policy(

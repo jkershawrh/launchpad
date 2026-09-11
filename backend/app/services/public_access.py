@@ -75,14 +75,44 @@ class PublicAccessService:
     def _load(self) -> None:
         if not self.store:
             return
-        for policy in self.store.list_policies():
-            self._policies[policy.order_id] = policy
-        for identity in self.store.list_identities():
-            self._identities[identity.normalized_email] = identity
-        for entitlement in self.store.list_entitlements():
-            self._entitlements[(entitlement.order_id, entitlement.participant_id)] = entitlement
-        for session in self.store.list_sessions():
-            self._sessions[session.token_hash] = session
+        self._replace_from_store()
+
+    def _replace_from_store(self) -> None:
+        """Refresh authoritative access state shared by backend processes.
+
+        Lifecycle workers, API replicas, and the public gateway are separate
+        processes.  Their in-memory maps are only request-local caches; every
+        authorization-sensitive read must observe rotations, expiry, reclaim,
+        and new claims persisted by another process.
+        """
+        if not self.store:
+            return
+        if hasattr(self.store, "load_all"):
+            snapshot = self.store.load_all()
+            policies = snapshot["policies"]
+            identities = snapshot["identities"]
+            entitlements = snapshot["entitlements"]
+            sessions = snapshot["sessions"]
+        else:
+            policies = self.store.list_policies()
+            identities = self.store.list_identities()
+            entitlements = self.store.list_entitlements()
+            sessions = self.store.list_sessions()
+        self._policies = {policy.order_id: policy for policy in policies}
+        self._identities = {
+            identity.normalized_email: identity for identity in identities
+        }
+        self._entitlements = {
+            (entitlement.order_id, entitlement.participant_id): entitlement
+            for entitlement in entitlements
+        }
+        self._sessions = {session.token_hash: session for session in sessions}
+
+    def _refresh(self) -> None:
+        if not self.store:
+            return
+        with self._lock:
+            self._replace_from_store()
 
     @staticmethod
     def normalize_email(email: str) -> str:
@@ -119,6 +149,7 @@ class PublicAccessService:
             raise ValueError("Public access is not enabled")
         if not seat_refs:
             raise ValueError("Public access requires at least one seat")
+        self._refresh()
         with self._lock:
             if order_id in self._policies:
                 raise ValueError("Public access policy already exists")
@@ -159,6 +190,7 @@ class PublicAccessService:
         event while still restricting the value to a bare HTTPS origin.
         """
         origin = self._normalize_https_origin(public_url)
+        self._refresh()
         with self._lock:
             policy = self._policies.get(order_id)
             if not policy:
@@ -252,6 +284,7 @@ class PublicAccessService:
     def claim(self, order_id: str, email: str, code: str, ip_address: str) -> ClaimResult:
         normalized = self.normalize_email(email)
         self._check_rate_limit(order_id, normalized, ip_address)
+        self._refresh()
         with self._lock:
             policy = self._policies.get(order_id)
             now = datetime.utcnow()
@@ -329,6 +362,7 @@ class PublicAccessService:
             )
 
     def validate_session(self, token: str, order_id: str) -> AccessSession:
+        self._refresh()
         now = datetime.utcnow()
         session = self._sessions.get(self._token_hash(token))
         entitlement = self._entitlements.get((order_id, session.participant_id)) if session else None
@@ -345,6 +379,7 @@ class PublicAccessService:
         return session
 
     def rotate_code(self, order_id: str) -> str:
+        self._refresh()
         with self._lock:
             policy = self._policies.get(order_id)
             if not policy:
@@ -370,6 +405,7 @@ class PublicAccessService:
             return plaintext
 
     def remove_participant(self, order_id: str, participant_id: str) -> None:
+        self._refresh()
         with self._lock:
             entitlement = self._entitlements.get((order_id, participant_id))
             if not entitlement:
@@ -407,6 +443,7 @@ class PublicAccessService:
                     self.store.save_session(revoked)
 
     def expire_order(self, order_id: str) -> None:
+        self._refresh()
         with self._lock:
             policy = self._policies.get(order_id)
             if policy:
@@ -427,12 +464,15 @@ class PublicAccessService:
             self._audit("expire", order_id, "completed")
 
     def entitlements_for(self, participant_id: str) -> list[ParticipantEntitlement]:
+        self._refresh()
         return [item for item in self._entitlements.values() if item.participant_id == participant_id]
 
     def get_policy(self, order_id: str) -> AccessPolicy | None:
+        self._refresh()
         return self._policies.get(order_id)
 
     def get_policy_by_host(self, host: str) -> AccessPolicy | None:
+        self._refresh()
         normalized = host.split(":", 1)[0].casefold()
         matches = [
             policy for policy in self._policies.values()
@@ -447,6 +487,7 @@ class PublicAccessService:
 
     def get_policy_by_request(self, host: str, public_path: str = "") -> AccessPolicy | None:
         """Resolve one public order using its stable origin and optional path."""
+        self._refresh()
         normalized_host = host.split(":", 1)[0].casefold()
         normalized_path = "/" + public_path.strip("/") if public_path.strip("/") else ""
         if not normalized_path:

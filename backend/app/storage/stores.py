@@ -79,6 +79,41 @@ class PostgresAccessStore:
         finally:
             conn.close()
 
+    def load_all(self) -> dict[str, list[Any]]:
+        """Read one consistent access snapshot for a service process refresh."""
+        conn = _get_sync_conn()
+        if not conn:
+            return {
+                "policies": [],
+                "identities": [],
+                "entitlements": [],
+                "sessions": [],
+            }
+        result: dict[str, list[Any]] = {}
+        names = {
+            "policies": "access_policies",
+            "identities": "participant_identities",
+            "entitlements": "participant_entitlements",
+            "sessions": "access_sessions",
+        }
+        try:
+            with conn.cursor() as cur:
+                for result_name, table in names.items():
+                    _, model = self._models[table]
+                    cur.execute(f"SELECT data FROM {table}")
+                    result[result_name] = [
+                        model.model_validate(_decode_json(row[0]))
+                        for row in cur.fetchall()
+                    ]
+            return result
+        except Exception as exc:
+            logger.warning("DB access snapshot error: %s", exc)
+            raise PersistenceUnavailableError(
+                "Authoritative public access state is unavailable"
+            ) from exc
+        finally:
+            conn.close()
+
     def save_policy(self, value: AccessPolicy) -> None:
         self._save("access_policies", value.order_id, value)
 
