@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "evidence_id": "SHOWROOM-BRAND-EXECUTE-20260911",
+  "captured_at": "2026-09-11T14:14:32Z",
+  "implementation_commit": "f6f141fd03ede04d659ef712369ca5fab3f21761",
+  "content_ref": "pilot-2026-09-17-showroom-brand-v1.0.0",
+  "requirements": {
+    "SHOWROOM-EXECUTE-001": "Runnable AsciiDoc blocks expose the shared Execute control without removing the theme copy control.",
+    "SHOWROOM-BRAND-001": "Every September pilot Showroom displays Intel and Red Hat Demo Platform branding in the shared header."
+  },
+  "local_verification": {
+    "pytest": {
+      "command": ".venv/bin/python -m pytest -q backend/tests/test_showroom_content_package.py backend/tests/test_multi_agent_quickstart_import.py",
+      "result": "passed",
+      "passed": 40,
+      "failed": 0
+    },
+    "antora_builds": [
+      {
+        "playbook": "site-intel-llm-cpu-serving.yml",
+        "result": "passed",
+        "pages_with_execute_blocks": 8
+      },
+      {
+        "playbook": "site-intel-xeon6-agent-201.yml",
+        "result": "passed",
+        "pages_with_execute_blocks": 5
+      },
+      {
+        "playbook": "site-multi-agent-quickstart.yml",
+        "result": "passed",
+        "pages_with_execute_blocks": 8
+      }
+    ],
+    "pre_commit": {
+      "hook": "gitleaks",
+      "result": "passed"
+    }
+  },
+  "live_verification": {
+    "control_plane": "arena",
+    "workshops": [
+      {
+        "workshop_id": "994a2a10-a939-4c1d-a04e-844a78379ac9",
+        "catalog_item_id": "intel-llm-cpu-serving",
+        "cluster_ref": "arena",
+        "showrooms": 25,
+        "healthy": 25,
+        "synced": 25,
+        "representative_execute_blocks": 7,
+        "brand_present": true,
+        "intel_asset_status": 200
+      },
+      {
+        "workshop_id": "c4459740-7272-437d-98b4-765e9f04a728",
+        "catalog_item_id": "intel-xeon6-agent-201",
+        "cluster_ref": "arena",
+        "showrooms": 25,
+        "healthy": 25,
+        "synced": 25,
+        "representative_execute_blocks": 7,
+        "brand_present": true,
+        "intel_asset_status": 200
+      },
+      {
+        "workshop_id": "821b55eb-a22a-4e9f-a303-b2278df8ec74",
+        "catalog_item_id": "multi-agent-quickstart",
+        "cluster_ref": "brutus",
+        "showrooms": 25,
+        "healthy": 25,
+        "synced": 25,
+        "representative_execute_blocks": 6,
+        "brand_present": true,
+        "intel_asset_status": 200
+      }
+    ]
+  },
+  "artifact_sha256": {
+    "content/supplemental-ui/partials/header-content.hbs": "56002fc46614d57d9538614a024f3541528ebff985933924b3ea6e87c06d03cc",
+    "content/supplemental-ui/css/site-extra.css": "da6774118a26950eb253fb5f38f82d3fb29572af5c606a3ac71a9e77b8d745f7",
+    "content/supplemental-ui/js/execute.js": "7e78bd6d33650d1dc7dded8817c61b641c3e964b0947c4787097a31ed1cad72e",
+    "content/supplemental-ui/img/intel-logo.svg": "1986c2a2d4b3991fc58bce96d18e75e170c59c15a1330c1289db66a7df4e5379"
+  },
+  "result": "green"
+}
