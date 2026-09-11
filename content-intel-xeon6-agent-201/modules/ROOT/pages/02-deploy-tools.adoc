@@ -20,7 +20,7 @@ oc project -q
 
 [source,bash,role="execute",subs=attributes+]
 ----
-oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.13/content-intel-xeon6-agent-201/manifests/advisor-prompt-configmap.yaml
+oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.14/content-intel-xeon6-agent-201/manifests/advisor-prompt-configmap.yaml
 
 oc create configmap racmaas-connection \
   --from-literal=api-base='{maas_endpoint}' \
@@ -30,8 +30,8 @@ oc create secret generic litellm-api-key \
   --from-literal=api-key="$MAAS_API_KEY" \
   --dry-run=client -o yaml | oc apply -f -
 
-oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.13/content-intel-xeon6-agent-201/manifests/solution-tools.yaml
-oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.13/content-intel-xeon6-agent-201/manifests/solution-agent.yaml
+oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.14/content-intel-xeon6-agent-201/manifests/solution-tools.yaml
+oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.14/content-intel-xeon6-agent-201/manifests/solution-agent.yaml
 oc set env deployment/solution-agent --containers=solution-agent ADVISOR_MODEL='{maas_model}'
 ----
 

@@ -19,7 +19,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: solution-agent
-          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/solution-agent-workshop@sha256:6fcb7f37313fb7515aa8d6c2d5d293e5da4568be859ba971efbc56b24d2ca102
+          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/solution-agent-workshop@sha256:5fc8c0d69af7cd4b30023354152f6ac8b2470256afc46365590bbf9c1014aa91
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

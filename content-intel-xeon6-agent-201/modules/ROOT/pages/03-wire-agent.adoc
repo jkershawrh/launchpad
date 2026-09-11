@@ -64,7 +64,7 @@ Deploy the chat interface:
 
 [source,bash,role="execute",subs=attributes+]
 ----
-oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.13/content-intel-xeon6-agent-201/manifests/solution-ui.yaml
+oc apply -f https://raw.githubusercontent.com/rhpds/launchpad/intel-guided-content-v1.0.14/content-intel-xeon6-agent-201/manifests/solution-ui.yaml
 oc rollout status deploy/solution-ui --timeout=60s
 ----
 
