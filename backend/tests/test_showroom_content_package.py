@@ -18,7 +18,7 @@ INTEL_GUIDED_LABS = [
         "title": "Intel Xeon 6 201 — Building an AI Agent",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
-        "content_ref": "946175fde859e791568b95f1181833d92c448e8a",
+        "content_ref": "44a72bde226fe42b2e7e1182ce328bbd06c827c4",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.5",
+        "content_ref": "44a72bde226fe42b2e7e1182ce328bbd06c827c4",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -42,7 +42,7 @@ INTEL_GUIDED_LABS = [
         "title": "Enable AI Tool Calling on OpenShift",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "",
-        "content_ref": "59563b0a77252e8b91077c30c23ab524a8402bce",
+        "content_ref": "44a72bde226fe42b2e7e1182ce328bbd06c827c4",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -450,9 +450,9 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.5"
+    assert catalog["version"] == "1.0.6"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.5"
+        "44a72bde226fe42b2e7e1182ce328bbd06c827c4"
     )
 
 

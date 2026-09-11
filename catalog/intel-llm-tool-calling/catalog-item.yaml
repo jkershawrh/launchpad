@@ -2,7 +2,7 @@ catalog_item_id: intel-llm-tool-calling
 display_name: "Intel AI Quickstart: LLM Tool Calling on Intel"
 description: "Learn the tool-calling protocol and build single- and multi-tool applications against shared Intel Xeon inference."
 category: guided_build
-version: "1.0.0"
+version: "1.0.1"
 status: active
 required_capabilities:
   - openshift
@@ -30,7 +30,7 @@ metadata:
   showroom_journey: intel-llm-tool-calling
   showroom_title: "LLM Tool Calling on Intel"
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
-  showroom_content_ref: "59563b0a77252e8b91077c30c23ab524a8402bce"
+  showroom_content_ref: "44a72bde226fe42b2e7e1182ce328bbd06c827c4"
   showroom_content_playbook: "site-intel-llm-tool-calling.yml"
   required_models:
     - granite-3.2-8b-tools
