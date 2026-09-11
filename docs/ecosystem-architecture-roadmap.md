@@ -186,6 +186,7 @@ control-plane code.
 | Multi-event fleet | Concurrent orders across three or more targets | Queue fairness, capacity reservations, SLOs, failure-domain tests | Roadmap |
 | Security assurance | Make identity, isolation, secrets, public ingress, software supply chain, data policy, and incident response explicit release gates | Threat model, zero critical/high findings, cross-tenant denial, credential rotation, audit and recovery evidence | Pilot controls active; production assessment pending |
 | Repository and delivery foundation | Sanitize and modularize the current source tree; introduce repeatable CI/CD without destabilizing the pilot | Secret/history scan, ownership map, reproducible builds, signed immutable artifacts, promotion evidence | Pre-event sanitation only; structural work after pilot |
+| Durable image distribution | Replace execution-cluster-local image storage as the source of truth with a resilient registry and retrieval plane | Cold-node pull, registry restart, retention, replication, signature, rollback, and disconnected-cluster evidence | Persistent local storage is a pilot mitigation; production design required |
 | Production service | Stable public ingress, HA/DR, security, support, ownership | Complete production rubric and drills | Post-pilot |
 
 Provisioning performance should be improved through durable queues, bounded
@@ -250,6 +251,14 @@ flowchart TB
         ROUTER --> ACCEL
     end
 
+    subgraph SUPPLY[Software and content supply plane]
+        BUILD[Reproducible build, scan, SBOM, sign and attest]
+        REGISTRY[(HA image and artifact registry)]
+        MIRROR[Regional or cluster pull-through mirrors]
+        BUILD --> REGISTRY
+        REGISTRY --> MIRROR
+    end
+
     GITOPS --> E1
     GITOPS --> E2
     GITOPS --> EN
@@ -260,6 +269,9 @@ flowchart TB
     E2 --> GATEWAY
     EN --> GATEWAY
     AI --> OBS
+    MIRROR --> E1
+    MIRROR --> E2
+    MIRROR --> EN
 
     DR[Warm control-plane recovery site]
     DB -. encrypted backup or replication .-> DR
@@ -319,6 +331,66 @@ Fleet-level scheduling can place separate workshops on different clusters. A
 future split-workshop feature requires an explicit product decision because it
 changes participant support, failure handling, networking, evidence, and
 reclaim semantics.
+
+### Durable image retrieval and registry architecture
+
+Execution-cluster-local registries must not remain the authoritative source for
+Launchpad runtime images. The September pilot proved why: an ImageStream can
+retain a digest reference after the underlying registry manifest has been lost,
+leaving a workshop permanently stuck in `ImagePullBackOff`. Adding persistent
+storage to an on-cluster registry is a useful pilot mitigation, but it does not
+separate artifact availability from execution-cluster health or provide a fleet
+distribution contract.
+
+The production golden path is:
+
+1. Build each platform, Showroom, terminal, and catalog workload image once in
+   CI from an immutable source revision.
+2. Scan it, generate an SBOM, sign the image, attach provenance and policy
+   results, and publish it to an approved highly available registry whose
+   storage, retention, backup, and recovery are independent of any execution
+   cluster.
+3. Promote the same digest between environments. Catalogs and generated
+   workloads reference immutable digests, never mutable tags or an
+   `image-registry.openshift-image-registry.svc` address from another cluster.
+4. Replicate approved images to regional repositories or use authenticated
+   pull-through mirrors near execution clusters. Cluster-local registries may
+   remain caches, but loss of a cache must be recoverable from the authoritative
+   registry without rebuilding the image.
+5. Make image reachability a deterministic placement prerequisite. Before an
+   order is accepted, verify registry credentials, trust, architecture, policy,
+   and digest availability; before a large workshop, run a cold-pull canary on
+   every eligible worker pool or prove that the digest is pre-seeded.
+6. Observe pull latency, cache hit rate, throttling, manifest or blob failures,
+   credential expiry, replication lag, storage consumption, pruning, and image
+   age. Feed failures into capacity and readiness decisions rather than waiting
+   for participant pods to expose them.
+
+Private or disconnected clusters use an explicitly synchronized mirror with a
+documented allow-list and freshness SLA. Credentials come from the approved
+secrets system and are scoped per cluster or repository. Registry retention must
+preserve every active catalog digest plus its rollback window; pruning requires
+an inventory proving that no active session, certified catalog, or recovery
+plan references the candidate artifact.
+
+Migration is deliberately incremental:
+
+- inventory all current internal-registry references and map each digest to its
+  source commit, build recipe, catalog versions, and active sessions;
+- rebuild any orphaned image from reviewed source, publish it externally, and
+  verify signatures and cold pulls before changing a catalog;
+- dual-publish during transition, then update catalog versions and Showroom
+  content to the authoritative digest;
+- certify one, five, and twenty-five-seat cold-start and warm-cache runs,
+  including registry restart, cache loss, credential rotation, throttling, and
+  execution-node replacement;
+- remove the external dependency on an execution cluster's registry only after
+  every active and rollback catalog revision has a verified durable copy.
+
+The exit gate requires three consecutive fleet certifications with no missing
+manifest or blob, predictable image-pull percentiles, successful cold-node
+recovery, validated retention and restore, signed provenance, and zero workshop
+dependency on the loss of any one execution cluster or its local registry.
 
 ### Shared AI-serving and semantic routing plane
 
@@ -551,7 +623,7 @@ persisted execution target.
 | Phase | Product outcome | Required exit evidence |
 |---|---|---|
 | 0. Supervised pilot | Preserve the current Arena control plane and certified Arena/Brutus pairings | Manual visual acceptance, current 3 x 25 evidence, support rehearsal |
-| 1. Portable foundation | Remove cluster-local assumptions from images, secrets, storage, ingress, model routes, and configuration | Clean install and one-seat order on a temporary control-plane target |
+| 1. Portable foundation | Remove cluster-local assumptions from images, secrets, storage, ingress, model routes, and configuration; establish the authoritative HA registry and optional execution-cluster mirrors | Clean install, signed cold image pulls, registry/cache-loss recovery, and one-seat order on a temporary control-plane target |
 | 2. Production home | Install the dedicated control plane, enterprise identity, HA database, durable queue, GitOps, evidence store, observability, and secrets management | Restore, restart, fencing, audit, and one-seat lifecycle tests |
 | 3. Execution fleet | Register Arena, Brutus, and later clusters with dedicated provisioner and GitOps identities | Per catalog/cluster 1, 5, and 25 proof plus zero-residue reclaim |
 | 4. AI-serving plane | Introduce the private model gateway, catalog, routing policy, scoped keys, and usage attribution | Required-model, fallback, isolation, load, and cost-meter tests |
@@ -571,6 +643,7 @@ needs an OpenShift Console or lab endpoint.
 | Internal pilot | Repeatable catalog, whole-workshop placement, guided participant experience, evidence, and zero-residue reclaim | Supervised operations and internal access |
 | Durable service | Permanent control-plane home, HA lifecycle, stable identity/ingress, centralized observability, and tested DR | Production service ownership and SLO approval |
 | Security foundation | Enterprise administration identity, least-privilege workload identity, managed secrets, private service boundaries, secure supply chain, audit and response | Independent threat model and security review; zero unresolved critical/high findings |
+| Artifact supply chain | HA external registry, signed immutable images, SBOM and provenance, regional replication or pull-through mirrors, retention and restore | No execution-cluster registry as source of truth; cold-pull and registry-loss certification |
 | Managed fleet | Policy-based cluster registration, reservations, predictive readiness, failure-domain placement, and capacity planning | Certified catalog/cluster pairs only |
 | AI platform | Private multi-hardware serving, semantic routing where justified, per-seat attribution, and model governance | Deterministic eligibility and data policy remain authoritative |
 | Business service | Intel-led opportunity qualification, tenant budgets, showback, rate cards, approved chargeback, catalog economics, and demand forecasts | Sales attribution and Finance-approved allocation rules |
