@@ -71,6 +71,7 @@ def test_shared_showroom_ui_adds_execute_without_removing_copy():
     assert "copy-button" not in script
     assert "findTerminalIframe" in script
     assert "xterm-helper-textarea" in script
+    assert "Terminal unavailable" in script
     assert ".launchpad-execute-button" in styles
 
 

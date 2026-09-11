@@ -57,48 +57,51 @@
   }
 
   function pasteCommand(frame, command) {
-    var frameWindow = frame.contentWindow;
-    if (frameWindow.wetty_socket && typeof frameWindow.wetty_socket.emit === 'function') {
-      frameWindow.wetty_socket.emit('input', command + '\r');
-      return true;
-    }
-
-    var document = terminalDocument();
-    if (!document) return false;
-    var textarea = document.querySelector('.xterm-helper-textarea');
-    if (!textarea) return false;
-
-    textarea.focus();
     try {
-      var transfer = new frameWindow.DataTransfer();
-      transfer.setData('text/plain', command);
-      textarea.dispatchEvent(new frameWindow.ClipboardEvent('paste', {
-        clipboardData: transfer,
-        bubbles: true,
-        cancelable: true
-      }));
-    } catch (error) {
-      textarea.value = command;
-      textarea.dispatchEvent(new frameWindow.InputEvent('input', {
-        data: command,
-        inputType: 'insertText',
-        bubbles: true
-      }));
-    }
+      var frameWindow = frame.contentWindow;
+      if (frameWindow.wetty_socket && typeof frameWindow.wetty_socket.emit === 'function') {
+        frameWindow.wetty_socket.emit('input', command + '\r');
+        return true;
+      }
 
-    window.setTimeout(function () {
-      ['keydown', 'keypress', 'keyup'].forEach(function (eventName) {
-        textarea.dispatchEvent(new frameWindow.KeyboardEvent(eventName, {
-          key: 'Enter',
-          code: 'Enter',
-          keyCode: 13,
-          which: 13,
+      var document = terminalDocument();
+      if (!document) return false;
+      var textarea = document.querySelector('.xterm-helper-textarea');
+      if (!textarea) return false;
+
+      textarea.focus();
+      try {
+        var transfer = new frameWindow.DataTransfer();
+        transfer.setData('text/plain', command);
+        textarea.dispatchEvent(new frameWindow.ClipboardEvent('paste', {
+          clipboardData: transfer,
           bubbles: true,
           cancelable: true
         }));
-      });
-    }, 60);
-    return true;
+      } catch (clipboardError) {
+        textarea.value = command;
+        textarea.dispatchEvent(new frameWindow.InputEvent('input', {
+          data: command,
+          inputType: 'insertText',
+          bubbles: true
+        }));
+      }
+      window.setTimeout(function () {
+        ['keydown', 'keypress', 'keyup'].forEach(function (eventName) {
+          textarea.dispatchEvent(new frameWindow.KeyboardEvent(eventName, {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true,
+            cancelable: true
+          }));
+        });
+      }, 60);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   function setButtonState(button, label, state) {
