@@ -94,7 +94,7 @@ def test_named_tunnel_has_two_connection_aware_replicas_and_a_disruption_budget(
     assert spec["replicas"] == 2
     assert spec["strategy"] == {
         "type": "RollingUpdate",
-        "rollingUpdate": {"maxUnavailable": 0, "maxSurge": 1},
+        "rollingUpdate": {"maxUnavailable": 1, "maxSurge": 1},
     }
     assert cloudflared["args"] == [
         "tunnel",
@@ -116,10 +116,10 @@ def test_named_tunnel_has_two_connection_aware_replicas_and_a_disruption_budget(
         "path": "/ready",
         "port": "metrics",
     }
-    preferred = pod_spec["affinity"]["podAntiAffinity"][
-        "preferredDuringSchedulingIgnoredDuringExecution"
+    required = pod_spec["affinity"]["podAntiAffinity"][
+        "requiredDuringSchedulingIgnoredDuringExecution"
     ]
-    assert preferred[0]["podAffinityTerm"]["topologyKey"] == "kubernetes.io/hostname"
+    assert required[0]["topologyKey"] == "kubernetes.io/hostname"
     assert "nodeSelector" not in pod_spec
     assert disruption_budget["spec"]["minAvailable"] == 1
     assert disruption_budget["spec"]["selector"]["matchLabels"] == {

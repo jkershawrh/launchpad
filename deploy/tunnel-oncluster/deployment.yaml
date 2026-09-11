@@ -22,7 +22,10 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 0
+      # Required anti-affinity plus two eligible workers needs one old pod to
+      # leave before its replacement can occupy that worker. The PDB below
+      # still guarantees that one connector remains available throughout.
+      maxUnavailable: 1
       maxSurge: 1
   selector:
     matchLabels:
@@ -38,15 +41,14 @@ spec:
       automountServiceAccountToken: false
       affinity:
         podAntiAffinity:
-          # Prefer separate workers when Arena has more than one schedulable
-          # worker, but remain runnable during the current single-worker pilot.
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/name: cloudflare-tunnel
+          # A named-tunnel replica cannot protect against a worker failure when
+          # both connectors share that worker. Arena has multiple schedulable
+          # workers, so enforce one connector per node.
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: cloudflare-tunnel
       securityContext:
         runAsNonRoot: true
         seccompProfile: {type: RuntimeDefault}
