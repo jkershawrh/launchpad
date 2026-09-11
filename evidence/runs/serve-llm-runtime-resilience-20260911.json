@@ -1,0 +1,78 @@
+{
+  "evidence_id": "EDD-SERVE-LLM-RUNTIME-20260911",
+  "recorded_at": "2026-09-11T11:28:04Z",
+  "cluster": "arena",
+  "source_commit": "eacb28c8f5b2b374944649babe31b404564c5d86",
+  "content_revision": {
+    "tag": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.8",
+    "commit": "93c6ac82c88148aeb152604775a0cff64dc30afe"
+  },
+  "seat": {
+    "namespace": "launchpad-public-cert-tenant-intel-llm-cpu-serv-2d81a6",
+    "catalog_item": "intel-llm-cpu-serving",
+    "workshop_id": "92ee020d-ee5d-4caa-89eb-a766656fe6bc"
+  },
+  "root_causes": [
+    "The pinned AnythingLLM digest was recorded by the ImageStream but its registry manifest no longer existed after registry storage migration.",
+    "The participant deployment requested 1 CPU while the certified seat envelope reserves 665 millicores for the complete seat.",
+    "The public tunnel had drifted to one replica pinned to gnr2, so terminal WebSocket recovery depended on one worker.",
+    "Preferred anti-affinity did not guarantee that two tunnel connectors used different workers."
+  ],
+  "live_results": {
+    "anythingllm_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613",
+    "anythingllm_ready": "1/1",
+    "anythingllm_cpu_request": "500m",
+    "anythingllm_progress_deadline_seconds": 900,
+    "anythingllm_internal_ping": {
+      "status": 200,
+      "body": {"online": true}
+    },
+    "anythingllm_route_ping": {
+      "status": 200,
+      "body": {"online": true}
+    },
+    "showroom_route_status": 200,
+    "showroom_content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.8",
+    "public_root_status": 302,
+    "public_lab_status": 302,
+    "public_redirect_interpretation": "Expected unauthenticated redirect to the identity provider.",
+    "tunnel": {
+      "desired_replicas": 2,
+      "ready_replicas": 2,
+      "connector_restarts": 0,
+      "required_cross_node_placement": true,
+      "nodes": ["gnr2.fm2aihpcsed.com", "rhgnr1"],
+      "websocket_keepalive": {
+        "ping_interval_seconds": 20,
+        "ping_timeout_seconds": 60,
+        "close_timeout_seconds": 10
+      }
+    },
+    "registry": {
+      "storage_class": "nfs-storage",
+      "claim": "image-registry-storage",
+      "capacity": "100Gi",
+      "anythingllm_rebuild": "anythingllm-openshift-7",
+      "backend_catalog_rebuild": "launchpad-backend-159"
+    }
+  },
+  "proof_matrix": {
+    "TDD": "GREEN: cross-node placement contract failed before required anti-affinity was implemented, then passed.",
+    "EDD": "GREEN: this immutable, non-secret evidence record links source, content, live resources, and probes.",
+    "CDD": "GREEN: Showroom content, seat certifier, catalog metadata, and tunnel deployment contracts agree.",
+    "BDD": "PENDING: authenticated participant terminal idle/reconnect journey requires a browser soak.",
+    "CBT": "GREEN: focused Showroom and public-tunnel component suites passed 54 tests.",
+    "red_green": "GREEN after manifest, resource-envelope, image-pull, and scheduler defects were reproduced and corrected."
+  },
+  "automated_checks": {
+    "focused_tests": "54 passed",
+    "antora_render": "passed",
+    "python_compile": "passed",
+    "git_diff_check": "passed",
+    "hardcoded_secret_check": "passed"
+  },
+  "remaining_acceptance": [
+    "Keep an authenticated participant terminal idle, then use it again without repeated reconnects.",
+    "Run the updated AnythingLLM deployment block from the participant Showroom and confirm it remains idempotent."
+  ]
+}
