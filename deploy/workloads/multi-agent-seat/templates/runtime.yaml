@@ -52,6 +52,8 @@ spec:
             - {name: AGENT_URLS, value: "http://127.0.0.1:8001,http://127.0.0.1:8002,http://127.0.0.1:8003"}
             - {name: AGENT_DISCOVERY_INTERVAL, value: "2"}
             - {name: A2A_CLIENT_TIMEOUT, value: "180"}
+            - {name: SSL_CERT_FILE, value: "/etc/launchpad-ca/ca-bundle.crt"}
+            - {name: REQUESTS_CA_BUNDLE, value: "/etc/launchpad-ca/ca-bundle.crt"}
           readinessProbe:
             httpGet: {path: /ready, port: orchestrator}
             timeoutSeconds: 5
@@ -73,6 +75,7 @@ spec:
             {{- toYaml .Values.resources.orchestrator | nindent 12 }}
           volumeMounts:
             - {name: runtime-tmp, mountPath: /tmp}
+            - {name: model-ca-bundle, mountPath: /etc/launchpad-ca, readOnly: true}
         {{- range $agent := list
           (dict "name" "research" "port" 8001 "skills" "investigate,summarize")
           (dict "name" "analyst" "port" 8002 "skills" "analyze,recommend")
@@ -95,6 +98,8 @@ spec:
             - {name: MCP_SERVER_URL, value: "http://127.0.0.1:8004"}
             - {name: GUARDRAILS_URL, value: "http://127.0.0.1:8005"}
             - {name: GUARDRAILS_FAIL_MODE, value: "closed"}
+            - {name: SSL_CERT_FILE, value: "/etc/launchpad-ca/ca-bundle.crt"}
+            - {name: REQUESTS_CA_BUNDLE, value: "/etc/launchpad-ca/ca-bundle.crt"}
           {{- if eq $agent.name "executor" }}
           envFrom:
             - configMapRef:
@@ -117,6 +122,7 @@ spec:
             {{- toYaml $.Values.resources.agent | nindent 12 }}
           volumeMounts:
             - {name: runtime-tmp, mountPath: /tmp}
+            - {name: model-ca-bundle, mountPath: /etc/launchpad-ca, readOnly: true}
         {{- end }}
         - name: mcp-server
           image: {{ include "multiAgent.image" . | quote }}
@@ -198,6 +204,9 @@ spec:
       volumes:
         - name: runtime-tmp
           emptyDir: {}
+        - name: model-ca-bundle
+          configMap:
+            name: launchpad-model-ca-bundle
 ---
 {{- $services := list
   (dict "name" "multi-agent" "port" 8000 "target" "orchestrator")

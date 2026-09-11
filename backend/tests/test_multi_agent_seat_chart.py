@@ -207,6 +207,30 @@ def test_multi_agent_model_and_service_auth_come_only_from_the_runtime_secret():
     }
 
 
+def test_multi_agent_model_callers_trust_the_cluster_model_ca_bundle():
+    _, documents = _render()
+    deployment = next(item for item in documents if item["kind"] == "Deployment")
+    pod_spec = deployment["spec"]["template"]["spec"]
+    containers = {item["name"]: item for item in pod_spec["containers"]}
+
+    assert {item["name"]: item for item in pod_spec["volumes"]}[
+        "model-ca-bundle"
+    ]["configMap"] == {"name": "launchpad-model-ca-bundle"}
+    for name in ("orchestrator", "research", "analyst", "executor"):
+        env = _env(containers[name])
+        assert env["SSL_CERT_FILE"]["value"] == "/etc/launchpad-ca/ca-bundle.crt"
+        assert env["REQUESTS_CA_BUNDLE"]["value"] == (
+            "/etc/launchpad-ca/ca-bundle.crt"
+        )
+        assert {
+            mount["name"]: mount for mount in containers[name]["volumeMounts"]
+        }["model-ca-bundle"] == {
+            "name": "model-ca-bundle",
+            "mountPath": "/etc/launchpad-ca",
+            "readOnly": True,
+        }
+
+
 def test_multi_agent_probes_tolerate_a_long_participant_workflow():
     _, documents = _render()
     deployment = next(item for item in documents if item["kind"] == "Deployment")
