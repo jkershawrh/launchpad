@@ -16,12 +16,13 @@ import os
 import re
 import ssl
 import traceback
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 import httpx
 import websockets
 
 from fastapi import FastAPI, Request, Response, WebSocket, WebSocketDisconnect
+from fastapi.responses import RedirectResponse
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("router")
@@ -104,6 +105,32 @@ def _fix_cookie_samesite(
         cookie += "; Secure"
     cookie += f"; SameSite={same_site}"
     return cookie
+
+
+def _rewrite_response_cookie(cookie: str, origin: str) -> str:
+    """Rewrite only cookies that cross the Console/OAuth proxy boundary.
+
+    Gateway cookies are already issued for the public first-party origin. In
+    particular, oauth2-proxy's CSRF cookie must retain SameSite=Lax so browsers
+    send it back after the Keycloak redirect.
+    """
+    if origin == GATEWAY_ORIGIN:
+        return cookie
+    if origin == CONSOLE_ORIGIN:
+        return _fix_cookie_samesite(cookie, path_prefix="console/")
+    if origin == OAUTH_ORIGIN:
+        return _fix_cookie_samesite(cookie, path_prefix="oauth/")
+    return _fix_cookie_samesite(cookie)
+
+
+def _csrf_recovery_url(path: str, cookies: dict, state: str) -> str | None:
+    """Restart an OAuth flow whose short-lived CSRF cookie was lost."""
+    if path != "oauth2/callback" or cookies.get("_oauth2_proxy_csrf"):
+        return None
+    _, separator, redirect_path = state.partition(":")
+    if not separator or not redirect_path.startswith("/") or redirect_path.startswith("//"):
+        return None
+    return f"/oauth2/start?rd={quote(redirect_path, safe='')}"
 
 
 def _rewrite_url(value: str, tunnel_host: str) -> str:
@@ -277,6 +304,14 @@ async def route(path: str, request: Request):
             headers={"location": f"/{canonical_path}{query}"},
         )
     path = canonical_path
+    csrf_recovery = _csrf_recovery_url(
+        path,
+        request.cookies,
+        request.query_params.get("state", ""),
+    )
+    if csrf_recovery:
+        return RedirectResponse(csrf_recovery, status_code=302)
+
     origin, upstream_path, is_tls = _select_upstream(path)
     tunnel_host = request.headers.get("host", "")
 
@@ -343,14 +378,8 @@ async def route(path: str, request: Request):
             "frame-ancestors 'self' "
             f"https://{tunnel_host} https://*.apps.arena.fm2aihpcsed.com"
         )
-    cookie_prefix = ""
-    if origin == CONSOLE_ORIGIN:
-        cookie_prefix = "console/"
-    elif origin == OAUTH_ORIGIN:
-        cookie_prefix = "oauth/"
     for cookie in upstream.headers.get_list("set-cookie"):
-        cookie = _fix_cookie_samesite(cookie, path_prefix=cookie_prefix)
-        response.headers.append("set-cookie", cookie)
+        response.headers.append("set-cookie", _rewrite_response_cookie(cookie, origin))
 
     return response
 

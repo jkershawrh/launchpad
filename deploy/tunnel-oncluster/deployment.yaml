@@ -56,6 +56,9 @@ spec:
       containers:
         - name: router
           image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:e25c347d2d108f48173b9e405431cc0bb2b73decc2324e05497b156ee35770c9
+          # The pilot registry may be temporarily unreachable from a worker;
+          # retain the pinned digest in the node cache across tunnel rollouts.
+          imagePullPolicy: IfNotPresent
           command: [uvicorn]
           args: [router:app, --host, 0.0.0.0, --port, "8080", --app-dir, /opt/tunnel]
           env:

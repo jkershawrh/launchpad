@@ -444,6 +444,46 @@ def test_console_router_keeps_http_only_and_scopes_proxy_cookie_paths():
     assert "Path=/oauth" in oauth_cookie
 
 
+def test_gateway_cookie_preserves_first_party_samesite_policy():
+    router = _router_module()
+
+    cookie = (
+        "_oauth2_proxy_csrf=secret; Path=/; Max-Age=900; "
+        "HttpOnly; Secure; SameSite=Lax"
+    )
+
+    assert router._rewrite_response_cookie(cookie, router.GATEWAY_ORIGIN) == cookie
+
+
+def test_missing_csrf_cookie_recovers_the_original_lab_path():
+    router = _router_module()
+
+    recovery = router._csrf_recovery_url(
+        "oauth2/callback",
+        {},
+        "csrf-state:/labs/intel-llm-cpu-serving-92ee020d",
+    )
+
+    assert recovery == (
+        "/oauth2/start?rd=%2Flabs%2Fintel-llm-cpu-serving-92ee020d"
+    )
+
+
+def test_csrf_recovery_does_not_override_valid_or_unsafe_callbacks():
+    router = _router_module()
+
+    assert router._csrf_recovery_url(
+        "oauth2/callback",
+        {"_oauth2_proxy_csrf": "present"},
+        "csrf-state:/labs/serve",
+    ) is None
+    assert router._csrf_recovery_url(
+        "oauth2/callback",
+        {},
+        "csrf-state://attacker.example",
+    ) is None
+
+
 def test_tunnel_websocket_keeps_the_public_host_while_dialing_the_gateway_service():
     router = _router_module()
 
