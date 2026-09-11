@@ -5,7 +5,7 @@ description: 'Follow three learning tracks in one environment: study the local m
   blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry, guardrails, and service
   authentication on Intel infrastructure.'
 category: guided_build
-version: 0.2.7
+version: 0.2.9
 status: active
 required_capabilities:
 - openshift
@@ -44,13 +44,12 @@ metadata:
   - Mirror the Arena-built, digest-pinned candidate image to a durable external registry
     or durable control-plane mirror before production; Arena's internal registry is
     sufficient only for certification.
-  - Certify public-code participant login, entitlement enforcement, and cross-seat
-    denial before enabling external participant access.
   - Track 3 is currently an architecture and manifest exploration path; certify Kagenti
     and OpenTelemetry runtime integrations before presenting those optional blueprint
     components as deployed services.
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: multi-agent-quickstart
   showroom_title: Build Multi-Agent AI Systems with Open Protocols
   namespace_slug: multi-agent
@@ -100,7 +99,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/rhpds/launchpad.git
-  workload_revision: 6aa0e07f6111bc81b37025cbbf4412f171e13867
+  workload_revision: 100bcd4d4dd40e2ab74b59e984112c3d86fbac9b
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: deploy/workloads/multi-agent-seat
@@ -110,7 +109,7 @@ metadata:
   workload_helm_values:
     image:
       repository: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/multi-agent-quickstart
-      digest: sha256:ec2952fa2812fdbcbbb28e02c0aded65f0507058e728ab5b68c5015b634b4629
+      digest: sha256:f7f93a82cbb06680aa834178b85c929198eafd535d90ee7d363a6393e43a4a5a
   workload_ignore_differences: []
   workload_runtime_secret_name: multi-agent-runtime
   workload_runtime_secret_sources:

@@ -10,7 +10,7 @@ catalog:
     advanced blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry,
     guardrails, and service authentication on Intel infrastructure.
   category: guided_build
-  version: "0.2.7"
+  version: "0.2.9"
   status: active
   supported_branding:
     - redhat-intel-default
@@ -24,7 +24,7 @@ sources:
     start_path: content-multi-agent-quickstart
   workload:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "6aa0e07f6111bc81b37025cbbf4412f171e13867"
+    revision: "100bcd4d4dd40e2ab74b59e984112c3d86fbac9b"
     deploy_path: deploy/workloads/multi-agent-seat
 
 references:
@@ -59,6 +59,7 @@ runtime:
     - granite-3.2-8b-tools
   allowed_exposure_policies:
     - internal
+    - public_code
   single_environment: true
   learning_tracks:
     - id: track-1-local
@@ -111,7 +112,7 @@ runtime:
       image:
         repository: >-
           image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/multi-agent-quickstart
-        digest: sha256:ec2952fa2812fdbcbbb28e02c0aded65f0507058e728ab5b68c5015b634b4629
+        digest: sha256:f7f93a82cbb06680aa834178b85c929198eafd535d90ee7d363a6393e43a4a5a
     routes:
       ui: multi-agent-ui
       orchestrator: multi-agent
@@ -130,9 +131,6 @@ certification:
       Mirror the Arena-built, digest-pinned candidate image to a durable
       external registry or durable control-plane mirror before production;
       Arena's internal registry is sufficient only for certification.
-    - >-
-      Certify public-code participant login, entitlement enforcement, and
-      cross-seat denial before enabling external participant access.
     - >-
       Track 3 is currently an architecture and manifest exploration path;
       certify Kagenti and OpenTelemetry runtime integrations before presenting

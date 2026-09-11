@@ -19,12 +19,12 @@ SHOWROOM_CHART_VERSION = "2.2.*"
 SHOWROOM_TERMINAL_IMAGE = (
     "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/"
     "launchpad-showroom-terminal@sha256:"
-    "164aa93d20af95dc916aa695556a1cae2ec057385ee1b254157df9eead099d9b"
+    "5f0024af3b0aec55f96bb200a1192ac9790b82b76be692017345b6f9abcf023f"
 )
 SHOWROOM_GIT_CLONER_IMAGE = (
     "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/"
     "launchpad-showroom-git-cloner@sha256:"
-    "3ae8e259f03888ee90526fd7d76375c4a6340df31242ede6be423604c3fdc26d"
+    "9083067bc09ae0d6e4f48306739e080a194056e6baed57bdc3fe8c05c9effdf8"
 )
 SHOWROOM_RUNTIME_SECRET_NAME = "launchpad-participant-runtime"
 

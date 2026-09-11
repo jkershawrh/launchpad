@@ -25,8 +25,9 @@ def test_showroom_uses_immutable_git_cloner_that_marks_repo_safe_before_entering
         "launchpad-showroom-git-cloner@sha256:"
     )
     assert entrypoint.index('git config --global --add safe.directory "${CLONE_DIR}"') < (
-        entrypoint.index('cd "${CLONE_DIR}"')
+        entrypoint.index('git -C "${CLONE_DIR}" init')
     )
+    assert 'fetch --depth 1 origin "${GIT_REPO_REF}"' in entrypoint
 
     app = build_showroom_application(
         ShowroomSeat(
@@ -152,7 +153,7 @@ def test_operator_workshop_places_namespace_console_inside_showroom():
     assert values["terminal"]["image"] == (
         "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/"
         "launchpad-showroom-terminal@sha256:"
-        "164aa93d20af95dc916aa695556a1cae2ec057385ee1b254157df9eead099d9b"
+        "5f0024af3b0aec55f96bb200a1192ac9790b82b76be692017345b6f9abcf023f"
     )
     assert values["wetty"]["setup"] == "false"
 

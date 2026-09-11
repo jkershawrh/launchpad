@@ -10,6 +10,7 @@ spec:
   kubeconfig_server: https://api.arena.fm2aihpcsed.com:6443
   allowed_exposure_policies:
     - internal
+    - public_code
 
   # Every profile creates one workshop order. Launchpad's catalog contract
   # controls staggered seat provisioning; this runner starts functional probes

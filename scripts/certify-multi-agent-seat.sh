@@ -1,13 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-namespace="${1:?usage: certify-multi-agent-seat.sh <namespace>}"
-: "${KUBECONFIG:?KUBECONFIG must point to the Arena execution cluster credential}"
+namespace="${1:?usage: certify-multi-agent-seat.sh <namespace> <cluster-id>}"
+expected_cluster="${2:?usage: certify-multi-agent-seat.sh <namespace> <cluster-id>}"
+: "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
+: "${CONTROL_KUBECONFIG:=$KUBECONFIG}"
 
 # Keep the live target explicit even for commands nested inside this driver.
 # ``command`` bypasses this wrapper and invokes the real OpenShift CLI.
 oc() {
   command oc --kubeconfig "$KUBECONFIG" "$@"
+}
+
+# Argo CD remains centralized on the Launchpad control plane even when the
+# participant workload runs on a remote execution cluster.
+control_oc() {
+  command oc --kubeconfig "$CONTROL_KUBECONFIG" "$@"
 }
 
 stage="bootstrap"
@@ -90,8 +98,8 @@ actual_cluster="$(
   oc get namespace "$namespace" \
     -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}'
 )"
-if [[ "$actual_cluster" != "arena" ]]; then
-  echo "refusing to certify cluster '${actual_cluster}'; expected 'arena'" >&2
+if [[ "$actual_cluster" != "$expected_cluster" ]]; then
+  echo "refusing to certify cluster '${actual_cluster}'; expected '${expected_cluster}'" >&2
   exit 2
 fi
 
@@ -250,7 +258,7 @@ runtime_keys="$(
 
 stage="argocd-application"
 application="$(
-  oc get applications.argoproj.io -n openshift-gitops -o json \
+  control_oc get applications.argoproj.io -n openshift-gitops -o json \
     | jq -c --arg namespace "$namespace" \
       '.items[] | select(.spec.destination.namespace == $namespace and .metadata.labels["app.kubernetes.io/component"] == "workload")'
 )"

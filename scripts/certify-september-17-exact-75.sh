@@ -201,7 +201,7 @@ run_multi_agent() {
     env KUBECONFIG="$KUBECONFIG" \
       POLICY_CONCURRENCY="$MULTI_POLICY_CONCURRENCY" \
       POLICY_LOCK_DIR="$result_dir/policy-slots" \
-      bash "$script_dir/certify-multi-agent-seat.sh" "$namespace" \
+      bash "$script_dir/certify-multi-agent-seat.sh" "$namespace" arena \
       >"$result_dir/multi-agent/${namespace}.json" 2>&1 &
     pids+=($!)
     done

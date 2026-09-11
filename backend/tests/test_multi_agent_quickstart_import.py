@@ -16,18 +16,21 @@ TRACKS = {
 }
 
 
-def test_multi_agent_quickstart_is_active_for_internal_event_orders():
+def test_multi_agent_quickstart_is_active_for_public_event_orders():
     intake = load_intake(INTAKE_PATH)
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
 
     assert catalog == build_catalog_item(intake)
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert catalog["display_name"] == "Build Multi-Agent AI Systems with Open Protocols"
-    assert catalog["version"] == "0.2.7"
+    assert catalog["version"] == "0.2.9"
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
     assert catalog["metadata"]["activation_blockers"] == []
-    assert catalog["metadata"]["allowed_exposure_policies"] == ["internal"]
+    assert catalog["metadata"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
     assert catalog["metadata"]["production_blockers"]
     assert catalog["metadata"]["certification_stage"] == (
         "twenty-five-seat-certified"
@@ -50,8 +53,9 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
     }
     assert metadata["workload_repo"] == "https://github.com/rhpds/launchpad.git"
     assert metadata["workload_revision"] == (
-        "6aa0e07f6111bc81b37025cbbf4412f171e13867"
+        "100bcd4d4dd40e2ab74b59e984112c3d86fbac9b"
     )
+    assert len(metadata["workload_revision"]) == 40
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
     assert metadata["workload_source_kind"] == "launchpad-seat-chart"
     assert metadata["workload_gitops_ready"] is True
@@ -71,7 +75,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
                 "partner-ai-launchpad/multi-agent-quickstart"
             ),
             "digest": (
-                "sha256:ec2952fa2812fdbcbbb28e02c0aded65f0507058e728ab5b68c5015b634b4629"
+                "sha256:f7f93a82cbb06680aa834178b85c929198eafd535d90ee7d363a6393e43a4a5a"
             ),
         }
     }

@@ -18,7 +18,9 @@ INTEL_GUIDED_LABS = [
         "title": "Intel Xeon 6 201 — Building an AI Agent",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
-        "content_ref": "pilot-2026-09-17-showroom-execute-v1.0.1",
+        # v1.0.14 descends from the shared execute-control revision and also
+        # pins the rebuilt Agent 201 runtime image used by the live workshop.
+        "content_ref": "intel-guided-content-v1.0.14",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },

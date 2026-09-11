@@ -17,7 +17,12 @@ fi
 
 echo "Cloning ${GIT_REPO_URL} into ${CLONE_DIR}"
 
-clone_args=(clone --progress)
+# The emptyDir can be owned by a supplemental OpenShift group rather than the
+# container UID. Trust the destination before any repository-aware command,
+# including init and fetch for an immutable commit SHA.
+git config --global --add safe.directory "${CLONE_DIR}"
+
+clone_args=(clone --progress --depth 1)
 checkout_sha=false
 if [[ -n "${GIT_REPO_REF}" ]]; then
     if [[ "${GIT_REPO_REF}" =~ ^[0-9a-fA-F]{7,40}$ ]]; then
@@ -28,27 +33,32 @@ if [[ -n "${GIT_REPO_REF}" ]]; then
 else
     clone_args+=(--single-branch)
 fi
-clone_args+=("${GIT_REPO_URL}" "${CLONE_DIR}")
-
 clone_success=false
-for attempt in {1..10}; do
-    if git "${clone_args[@]}"; then
-        clone_success=true
-        break
-    fi
-    echo "Clone attempt ${attempt} failed; retrying in 10 seconds"
-    sleep 10
-done
-[[ "${clone_success}" == true ]] || exit 1
-
-# OpenShift may assign the pod a supplemental group that owns the emptyDir.
-# Mark the repository safe before entering it or running any repository-aware
-# command; doing this after cd causes Git 2.35+ to reject the repository.
-git config --global --add safe.directory "${CLONE_DIR}"
-
 if [[ "${checkout_sha}" == true ]]; then
-    git -C "${CLONE_DIR}" checkout "${GIT_REPO_REF}"
+    mkdir -p "${CLONE_DIR}"
+    git -C "${CLONE_DIR}" init
+    git -C "${CLONE_DIR}" remote add origin "${GIT_REPO_URL}"
+    for attempt in {1..10}; do
+        if git -C "${CLONE_DIR}" fetch --depth 1 origin "${GIT_REPO_REF}"; then
+            git -C "${CLONE_DIR}" checkout --detach FETCH_HEAD
+            clone_success=true
+            break
+        fi
+        echo "Fetch attempt ${attempt} failed; retrying in 10 seconds"
+        sleep 10
+    done
+else
+    clone_args+=("${GIT_REPO_URL}" "${CLONE_DIR}")
+    for attempt in {1..10}; do
+        if git "${clone_args[@]}"; then
+            clone_success=true
+            break
+        fi
+        echo "Clone attempt ${attempt} failed; retrying in 10 seconds"
+        sleep 10
+    done
 fi
+[[ "${clone_success}" == true ]] || exit 1
 
 cd "${CLONE_DIR}"
 touch .git-cloner

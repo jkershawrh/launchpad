@@ -25,8 +25,8 @@ data:
           mlflow: https://rh-ai.apps.arena.fm2aihpcsed.com/mlflow
           rhoai: https://rh-ai.apps.arena.fm2aihpcsed.com/
         image_references:
-          showroom_git_cloner: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-git-cloner@sha256:3ae8e259f03888ee90526fd7d76375c4a6340df31242ede6be423604c3fdc26d
-          showroom_terminal: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-terminal@sha256:164aa93d20af95dc916aa695556a1cae2ec057385ee1b254157df9eead099d9b
+          showroom_git_cloner: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-git-cloner@sha256:9083067bc09ae0d6e4f48306739e080a194056e6baed57bdc3fe8c05c9effdf8
+          showroom_terminal: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-terminal@sha256:5f0024af3b0aec55f96bb200a1192ac9790b82b76be692017345b6f9abcf023f
         model_endpoints:
           granite-2b-cpu: http://ovms-granite-2b.fleet-llm-d.svc:8080/v1
           granite-3.2-8b-tools: http://vllm-granite-3-2-8b-tools.fleet-llm-d.svc:8080/v1
@@ -70,16 +70,17 @@ data:
         credential_secret: partner-ai-launchpad/launchpad-brutus-kubeconfig
         local: false
         priority: 20
-        # Enabled only for explicitly targeted, supervised internal pilot orders.
-        # Public access remains fail-closed and Oberon remains disabled.
+        # Enabled for explicitly targeted, supervised pilot orders. Public
+        # traffic remains behind Arena's entitlement-aware single-host gateway;
+        # Brutus application routes are never advertised directly.
         enabled: true
-        public_access_enabled: false
-        public_ingress_domain: ""
+        public_access_enabled: true
+        public_ingress_domain: labs.smg-helix.ai
         public_console_url: ""
         public_oauth_url: ""
         image_references:
-          showroom_git_cloner: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-git-cloner@sha256:3ae8e259f03888ee90526fd7d76375c4a6340df31242ede6be423604c3fdc26d
-          showroom_terminal: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-terminal@sha256:164aa93d20af95dc916aa695556a1cae2ec057385ee1b254157df9eead099d9b
+          showroom_git_cloner: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-git-cloner@sha256:9083067bc09ae0d6e4f48306739e080a194056e6baed57bdc3fe8c05c9effdf8
+          showroom_terminal: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-showroom-terminal@sha256:5f0024af3b0aec55f96bb200a1192ac9790b82b76be692017345b6f9abcf023f
         capabilities: [cpu, openshift, operators, showroom, model_endpoint]
         model_endpoints:
           granite-3.2-8b-tools: https://vllm-granite-3-2-8b-tools-fleet-llm-d.apps.arena.fm2aihpcsed.com/v1
