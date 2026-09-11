@@ -30,7 +30,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.7",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.8",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -397,7 +397,7 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "anything-llm:latest" not in page
     assert (
         "partner-ai-launchpad/anythingllm-openshift@sha256:"
-        "141c3a75bc565c81820bb819e18d495b123ccf9f2bfa133fdd59b58b85660807" in page
+        "20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613" in page
     )
     assert "STORAGE_DIR" in page
     assert "DISABLE_TELEMETRY" in page
@@ -424,11 +424,18 @@ def test_cpu_serving_workbench_request_matches_the_certified_seat_envelope():
     catalog = yaml.safe_load(
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
+    seat_driver = (ROOT / "scripts/certify-cpu-serving-seat.sh").read_text()
 
     assert 'cpu: "500m"' in page
     assert 'cpu: "1"' not in page
+    assert 'requests: {cpu: "500m", memory: "1Gi"}' in seat_driver
     assert catalog["metadata"]["seat_cpu_millicores"] == 665
     assert "progressDeadlineSeconds: 900" in page
+    assert "progressDeadlineSeconds: 900" in seat_driver
+    assert (
+        "20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613"
+        in seat_driver
+    )
 
 
 def test_cpu_serving_rollout_failure_prints_participant_actionable_diagnostics():
@@ -476,9 +483,9 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.7"
+    assert catalog["version"] == "1.0.8"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.7"
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.8"
     )
 
 

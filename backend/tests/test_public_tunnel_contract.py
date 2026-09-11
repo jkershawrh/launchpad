@@ -514,3 +514,27 @@ def test_public_terminal_websockets_use_bounded_keepalive_timeouts():
         assert "ping_interval=20" in source
         assert "ping_timeout=60" in source
         assert "close_timeout=10" in source
+
+
+def test_named_tunnel_preserves_runtime_contract_when_reconciled():
+    manifest = list(
+        yaml.safe_load_all(
+            (ROOT / "deploy/tunnel-oncluster/deployment.yaml").read_text()
+        )
+    )
+    deployment = next(item for item in manifest if item["kind"] == "Deployment")
+    pod_spec = deployment["spec"]["template"]["spec"]
+    containers = {item["name"]: item for item in pod_spec["containers"]}
+
+    router_env = {item["name"]: item for item in containers["router"]["env"]}
+    cloudflared_env = {
+        item["name"]: item for item in containers["cloudflared"]["env"]
+    }
+    volumes = {item["name"]: item for item in pod_spec["volumes"]}
+
+    assert router_env["BACKEND_URL"]["value"].endswith("/api/v1")
+    assert cloudflared_env["HOME"]["value"] == "/tmp"
+    assert volumes["cloudflared-home"]["emptyDir"] == {}
+    assert containers["cloudflared"]["volumeMounts"] == [
+        {"name": "cloudflared-home", "mountPath": "/tmp"}
+    ]

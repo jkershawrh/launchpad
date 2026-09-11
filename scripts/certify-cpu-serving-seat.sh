@@ -42,7 +42,7 @@ jq -nc \
   --arg model "$model" \
   --arg api_key "$api_key" \
   --arg frame_ancestor "$frame_ancestor" \
-  --arg image "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:141c3a75bc565c81820bb819e18d495b123ccf9f2bfa133fdd59b58b85660807" \
+  --arg image "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613" \
   '{
     apiVersion: "v1",
     kind: "List",
@@ -68,6 +68,7 @@ jq -nc \
         metadata: {name: "anythingllm"},
         spec: {
           replicas: 1,
+          progressDeadlineSeconds: 900,
           selector: {matchLabels: {app: "anythingllm"}},
           template: {
             metadata: {labels: {app: "anythingllm"}},
@@ -100,7 +101,7 @@ jq -nc \
                     capabilities: {drop: ["ALL"]}
                   },
                   resources: {
-                    requests: {cpu: "1", memory: "1Gi"},
+                    requests: {cpu: "500m", memory: "1Gi"},
                     limits: {cpu: "2", memory: "2Gi"}
                   }
                 }
