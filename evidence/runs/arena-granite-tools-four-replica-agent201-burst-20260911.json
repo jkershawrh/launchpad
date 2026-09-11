@@ -1,0 +1,96 @@
+{
+  "schema": "launchpad.redhat.com/model-capacity-certification/v1",
+  "evidence_id": "AGENT-MODEL-CAPACITY-25-20260911",
+  "captured_at": "2026-09-11T15:20:34Z",
+  "commit_sha": "6ec753b0dff676e6e3ffe089787be907c4590400",
+  "cluster_id": "arena",
+  "workshop": {
+    "catalog_item_id": "intel-xeon6-agent-201",
+    "workshop_id": "c4459740-7272-437d-98b4-765e9f04a728",
+    "seat_count": 25,
+    "ready_seats_before_test": 25
+  },
+  "model_pool": {
+    "namespace": "fleet-llm-d",
+    "deployment": "vllm-granite-3-2-8b-tools",
+    "model": "granite-3.2-8b-tools",
+    "manifest_sha256": "27f1f2d274d978d42b7338baecf083b92cfc182f27bd587cf7cc18a65b8dcc76",
+    "desired_replicas": 4,
+    "ready_replicas": 4,
+    "ready_endpoints": 4,
+    "restart_count": 0,
+    "placement": {
+      "gnr2.fm2aihpcsed.com": 2,
+      "rhgnr1": 2
+    },
+    "pod_disruption_budget": {
+      "min_available": 2,
+      "healthy": 4,
+      "disruptions_allowed": 2
+    },
+    "post_test_running_requests": 0,
+    "post_test_waiting_requests": 0
+  },
+  "red_green": {
+    "red": {
+      "tests_passed": 10,
+      "tests_failed": 3,
+      "findings": [
+        "deployment declared two replicas instead of four",
+        "deployment had no hostname spread contract",
+        "model pool had no disruption budget"
+      ]
+    },
+    "green_local": {
+      "tests_passed": 16,
+      "tests_failed": 0,
+      "git_diff_check": "passed",
+      "hardcoded_secret_scan": "passed"
+    },
+    "green_live": {
+      "rollout": "complete",
+      "replicas_ready": "4/4",
+      "nodes_ready": "2/2",
+      "zero_restart_assertion": true
+    }
+  },
+  "model_endpoint_burst": {
+    "concurrency": 25,
+    "requests": 25,
+    "successful": 25,
+    "failed": 0,
+    "p50_seconds": 1.024,
+    "p95_seconds": 1.152,
+    "max_seconds": 1.154,
+    "wall_seconds": 1.194,
+    "requests_observed_by_replica": [9, 6, 6, 4]
+  },
+  "participant_workflow_burst": {
+    "journey": "sourced Intel and Red Hat architecture recommendation with three MCP tools",
+    "concurrency": 25,
+    "requests": 25,
+    "successful": 25,
+    "failed": 0,
+    "p50_seconds": 162.586,
+    "p95_seconds": 165.578,
+    "max_seconds": 165.667,
+    "wall_seconds": 166.299,
+    "gateway_timeout_seconds": 330,
+    "functional_gate": "passed",
+    "latency_assessment": "within gateway timeout but still compute-bound under a synchronized participant burst"
+  },
+  "certifier_harness_observation": {
+    "status": "follow-up-required",
+    "finding": "The persisted Arena provisioner credential was forbidden from creating temporary certification pods in participant namespaces.",
+    "impact": "The control-plane certifier stopped before mutating or testing the labs; this was not a participant workload failure.",
+    "proof_path_used": "Existing seat routes were exercised concurrently with the repository's remote journey contract.",
+    "security_decision": "Do not broaden the provisioner credential merely to satisfy the proof harness; define a dedicated bounded certification identity or remove the temporary-pod dependency."
+  },
+  "decision": {
+    "result": "GREEN-live-functional-with-latency-warning",
+    "finding": "Four warm replicas eliminate the two-replica capacity bottleneck for one synchronized 25-seat Build Agent workshop.",
+    "boundary": "This certifies one 25-seat Build Agent workflow burst. It does not yet certify a simultaneous Build Agent plus Multi-Agent mixed burst.",
+    "next_gate": "Run the 25-seat Multi-Agent comprehensive journey, then a mixed Build Agent plus Multi-Agent wave while retaining zero model errors and no node or router instability."
+  },
+  "contains_plaintext_credentials": false
+}
