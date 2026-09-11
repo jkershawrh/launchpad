@@ -1,5 +1,54 @@
 /* Intel x Red Hat branding overrides */
 
+.launchpad-showroom-navbar-brand {
+  align-items: center;
+  display: flex;
+  max-width: none;
+  width: 100%;
+}
+
+.launchpad-showroom-brand {
+  align-items: center;
+  display: inline-flex;
+  flex: none;
+  gap: 0.6rem;
+  padding-right: 1rem;
+  text-decoration: none;
+}
+
+.launchpad-showroom-brand:hover {
+  background: transparent;
+  text-decoration: none;
+}
+
+.launchpad-showroom-intel {
+  display: block;
+  height: 1.15rem;
+  width: auto;
+}
+
+.launchpad-showroom-partnership {
+  color: #a3a3a3;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.launchpad-showroom-rhdp {
+  display: block;
+  height: 1.55rem;
+  max-width: 13rem;
+  width: auto;
+}
+
+.launchpad-showroom-title {
+  border-left: 1px solid #4f5255;
+  min-width: 0;
+  overflow: hidden;
+  padding-left: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .doc .listingblock.execute .content {
   position: relative;
 }
@@ -61,6 +110,25 @@
 }
 
 @media (max-width: 640px) {
+  .launchpad-showroom-brand {
+    gap: 0.4rem;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+  }
+
+  .launchpad-showroom-intel {
+    height: 1rem;
+  }
+
+  .launchpad-showroom-rhdp {
+    height: 1.25rem;
+    max-width: 10.5rem;
+  }
+
+  .launchpad-showroom-title {
+    display: none;
+  }
+
   .doc .listingblock.execute pre {
     padding-top: 3.25rem;
     padding-right: 1rem;

@@ -20,7 +20,7 @@ INTEL_GUIDED_LABS = [
         "workspace_route": "app",
         # v1.0.14 descends from the shared execute-control revision and also
         # pins the rebuilt Agent 201 runtime image used by the live workshop.
-        "content_ref": "intel-guided-content-v1.0.14",
+        "content_ref": "pilot-2026-09-17-showroom-brand-v1.0.0",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -32,7 +32,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.8",
+        "content_ref": "pilot-2026-09-17-showroom-brand-v1.0.0",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -62,6 +62,7 @@ def test_antora_playbook_builds_content_from_this_repository():
 def test_shared_showroom_ui_adds_execute_without_removing_copy():
     supplemental = ROOT / "content/supplemental-ui"
     head = (supplemental / "partials/head-meta.hbs").read_text()
+    header = (supplemental / "partials/header-content.hbs").read_text()
     script = (supplemental / "js/execute.js").read_text()
     styles = (supplemental / "css/site-extra.css").read_text()
 
@@ -75,6 +76,34 @@ def test_shared_showroom_ui_adds_execute_without_removing_copy():
     assert "xterm-helper-textarea" in script
     assert "Terminal unavailable" in script
     assert ".launchpad-execute-button" in styles
+    assert "intel-logo.svg" in header
+    assert (supplemental / "img/intel-logo.svg").is_file()
+    assert "logo-demo-platform.svg" in header
+    assert "Red Hat Demo Platform" in header
+    assert ".launchpad-showroom-brand" in styles
+
+
+@pytest.mark.parametrize(
+    ("playbook_name", "content_path"),
+    [
+        ("site-intel-llm-cpu-serving.yml", "content-intel-llm-cpu-serving"),
+        ("site-intel-xeon6-agent-201.yml", "content-intel-xeon6-agent-201"),
+        ("site-multi-agent-quickstart.yml", "content-multi-agent-quickstart"),
+    ],
+)
+def test_september_showrooms_share_branding_and_executable_steps(
+    playbook_name, content_path
+):
+    playbook = yaml.safe_load((ROOT / playbook_name).read_text())
+    assert playbook["ui"]["supplemental_files"] == "./content/supplemental-ui"
+
+    pages = ROOT / content_path / "modules/ROOT/pages"
+    execute_blocks = sum(
+        page.read_text().count('role="execute"')
+        + page.read_text().count("role=execute")
+        for page in pages.glob("*.adoc")
+    )
+    assert execute_blocks > 0
 
 
 def test_operator_workshop_playbook_starts_on_operator_journey():
@@ -491,7 +520,7 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
 
     assert catalog["version"] == "1.0.8"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.8"
+        "pilot-2026-09-17-showroom-brand-v1.0.0"
     )
 
 

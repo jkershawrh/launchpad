@@ -91,6 +91,10 @@ def test_multi_agent_showroom_is_native_launchpad_content():
         {"url": ".", "start_path": "content-multi-agent-quickstart"}
     ]
     assert "releases/download/patternfly-6/" in playbook["ui"]["bundle"]["url"]
+    catalog = yaml.safe_load(CATALOG_PATH.read_text())
+    assert catalog["metadata"]["showroom_content_ref"] == (
+        "pilot-2026-09-17-showroom-brand-v1.0.0"
+    )
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
     assert component["asciidoc"]["attributes"]["maas_model"] == "%maas_model%"
     assert "Launchpad has already authenticated this terminal" in guide
