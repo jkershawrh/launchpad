@@ -32,6 +32,12 @@ UPSTREAM_TLS_VERIFY = os.getenv("PUBLIC_UPSTREAM_TLS_VERIFY", "true").casefold()
     "no",
 }
 PROXY_METHODS = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+TOOL_PROXY_TIMEOUT = httpx.Timeout(
+    float(os.getenv("PUBLIC_TOOL_PROXY_READ_TIMEOUT", "330")),
+    connect=10,
+    write=30,
+    pool=10,
+)
 _PRIVATE_CLUSTER_ROUTE = re.compile(
     r"^(?:[a-z0-9-]+\.)*apps\.[a-z0-9-]+\.fm2aihpcsed\.com$"
 )
@@ -568,7 +574,7 @@ async def proxy_tool(
     request_headers = _tool_proxy_request_headers(request.headers)
     try:
         async with httpx.AsyncClient(
-            timeout=30,
+            timeout=TOOL_PROXY_TIMEOUT,
             follow_redirects=False,
             verify=UPSTREAM_TLS_VERIFY,
         ) as client:

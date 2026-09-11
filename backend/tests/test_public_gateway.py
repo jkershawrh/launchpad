@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from app.public_gateway import (
+    TOOL_PROXY_TIMEOUT,
     _lab_cards,
     _public_order_prefix,
     _rewrite_showroom_config,
@@ -260,6 +261,19 @@ def test_tool_proxy_url_cannot_escape_its_authorized_origin():
             pass
         else:
             raise AssertionError(f"unsafe tool path was accepted: {path}")
+
+
+def test_tool_proxy_read_timeout_covers_the_multi_agent_ui_workflow_budget():
+    """A comprehensive workflow can legitimately run longer than 30 seconds."""
+    assert TOOL_PROXY_TIMEOUT.connect == 10
+    assert TOOL_PROXY_TIMEOUT.read >= 300
+
+    manifest = (
+        Path(__file__).resolve().parents[2]
+        / "deploy/launchpad/base/public-access-gateway.yaml"
+    ).read_text()
+    assert 'name: PUBLIC_TOOL_PROXY_READ_TIMEOUT, value: "330"' in manifest
+    assert "--upstream-timeout=330s" in manifest
 
 
 def test_tool_proxy_rewrites_textual_cluster_urls_to_the_order_mount():

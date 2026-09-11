@@ -32,6 +32,9 @@ spec:
             # Keep TLS verification enabled. A cluster certification overlay may
             # temporarily disable it until that cluster's ingress CA is mounted.
             - {name: PUBLIC_UPSTREAM_TLS_VERIFY, value: "true"}
+            # Multi-agent workflows may legitimately take several minutes. Keep
+            # the participant proxy above the UI's 300-second workflow budget.
+            - {name: PUBLIC_TOOL_PROXY_READ_TIMEOUT, value: "330"}
             - name: ACCESS_BROKER_KEY
               valueFrom:
                 secretKeyRef: {name: launchpad-public-access, key: ACCESS_BROKER_KEY, optional: true}
@@ -58,6 +61,9 @@ spec:
             - --cookie-samesite=lax
             - --cookie-expire=24h
             - --cookie-refresh=5m
+            # The application gateway enforces the same bounded lab-tool
+            # budget. This outer proxy must not terminate valid agent runs.
+            - --upstream-timeout=330s
             - --skip-provider-button=true
             # Each new order host must execute the code authenticator even
             # when the device already has a Keycloak SSO session.
