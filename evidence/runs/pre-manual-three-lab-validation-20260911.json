@@ -1,0 +1,325 @@
+{
+  "schema": "launchpad.redhat.com/pre-manual-pilot-gate/v1",
+  "evidence_id": "PRE-MANUAL-THREE-LAB-GATE-20260911T135252Z",
+  "generated_at": "2026-09-11T13:52:52Z",
+  "source": {
+    "branch": "codex/ha-lifecycle",
+    "commit": "7784af76f69f9927ded31e14fad2e667bd71364e",
+    "backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:5760f49246d77d5578d1a808fb62b14dd1f56ec9800269a1d985d0ef698b33d2",
+    "multi_agent_workload_revision": "100bcd4d4dd40e2ab74b59e984112c3d86fbac9b",
+    "multi_agent_workload_image_digest": "sha256:f7f93a82cbb06680aa834178b85c929198eafd535d90ee7d363a6393e43a4a5a",
+    "agent_201_content_ref": "intel-guided-content-v1.0.14"
+  },
+  "decision": {
+    "result": "GREEN-pre-manual-supervised-pilot",
+    "meaning": "All automatable participant, workload, authorization, public ingress, and lifecycle gates passed. Manual browser review is now limited to visual and usability acceptance.",
+    "public_ga": false
+  },
+  "control_plane": {
+    "cluster": "arena",
+    "health": "pass",
+    "readiness": {
+      "control_plane_role": "pass",
+      "database": "pass",
+      "lifecycle_schema": "pass"
+    },
+    "deployments": {
+      "backend": "1/1",
+      "lifecycle_worker": "1/1",
+      "public_access_gateway": "1/1",
+      "cloudflare_tunnel": "2/2"
+    }
+  },
+  "retained_event_workshops": [
+    {
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "workshop_id": "994a2a10-a939-4c1d-a04e-844a78379ac9",
+      "cluster_ref": "arena",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "public_entry_status": 302,
+      "argocd_applications": 25,
+      "argocd_synced": 25,
+      "argocd_healthy": 25
+    },
+    {
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "workshop_id": "c4459740-7272-437d-98b4-765e9f04a728",
+      "cluster_ref": "arena",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "public_entry_status": 302,
+      "argocd_applications": 25,
+      "argocd_synced": 25,
+      "argocd_healthy": 25
+    },
+    {
+      "catalog_item_id": "multi-agent-quickstart",
+      "workshop_id": "821b55eb-a22a-4e9f-a303-b2278df8ec74",
+      "cluster_ref": "brutus",
+      "seat_count": 25,
+      "ready_seats": 25,
+      "public_entry_status": 302,
+      "argocd_applications": 50,
+      "argocd_synced": 50,
+      "argocd_healthy": 50
+    }
+  ],
+  "participant_functional_wave": {
+    "intel_llm_cpu_serving": {
+      "setup_passed": 25,
+      "rag_journey_passed": 25,
+      "journey": "AnythingLLM deployment, document ingestion, retrieval, source-grounded model answer",
+      "latency_seconds": {
+        "minimum": 21.048,
+        "mean": 31.905,
+        "p95": 37.623,
+        "maximum": 40.082
+      },
+      "transient_bundle_sha256": "0229ab995beba9e9aa914c65efee4ed70de40319f4a270d114a1f832e474c900"
+    },
+    "intel_xeon6_agent_201": {
+      "setup_passed": 25,
+      "agent_journey_passed": 25,
+      "journey": "MCP tools, agent workflow, structured solution output, real shared model inference",
+      "latency_seconds": {
+        "minimum": 76.233,
+        "mean": 95.833,
+        "p95": 118.066,
+        "maximum": 118.801
+      },
+      "transient_bundle_sha256": "576b52c8758686a01f97d025fd346ce765cda50e3951b11e5d3b7a74d1866d07"
+    },
+    "multi_agent_quickstart": {
+      "seats_passed": 25,
+      "seats_failed": 0,
+      "duration_seconds": 156.027,
+      "journey": "Three-agent workflow, MCP data retrieval, UI workflow, guardrails, semantic routing, runtime secret contract, Showroom pages, and namespace authorization",
+      "deep_seat": {
+        "agents_discovered": 3,
+        "mcp_steps": 3,
+        "guardrail_blocked_agents": 3,
+        "semantic_routing_status": "ok",
+        "own_namespace_edit": true,
+        "cross_namespace_read_denied": true,
+        "node_list_denied": true
+      },
+      "artifact_sha256": "29e908a78a19fa662f9074cc3855250ba2c49680a58076bc07f33af56751d1ea"
+    }
+  },
+  "showroom_and_terminal": {
+    "arena_seats": {
+      "seats_checked": 50,
+      "declared_antora_pages_passed": 50,
+      "ui_config_mappings_passed": 50,
+      "terminal_http_passed": 50,
+      "terminal_websocket_passed": 50
+    },
+    "brutus_multi_agent_seats": {
+      "seats_checked": 25,
+      "showroom_pages_per_seat": 4,
+      "terminal_http_passed": 25,
+      "terminal_websocket_passed": 25
+    }
+  },
+  "disposable_public_lifecycle": {
+    "intel_llm_cpu_serving": {
+      "workshop_id": "f827295a-b0e7-469a-adab-8b377f721d00",
+      "cluster_ref": "arena",
+      "result": "passed",
+      "checks": [
+        "capacity and placement",
+        "ready",
+        "email and instructor-code OIDC login",
+        "claim and resume",
+        "My Lab Access",
+        "Showroom",
+        "complete document RAG journey",
+        "workspace proxy and lazy CSS assets",
+        "reclaim",
+        "eventual zero namespace residue",
+        "post-reclaim authorization denied"
+      ]
+    },
+    "intel_xeon6_agent_201": {
+      "workshop_id": "3ef58c3f-b510-49ba-8cc5-84bc0a0b120c",
+      "cluster_ref": "arena",
+      "result": "passed",
+      "checks": [
+        "claim",
+        "public Showroom configuration",
+        "public terminal WebSocket",
+        "complete agent workflow",
+        "public Solution Architect workspace",
+        "namespace RBAC",
+        "reclaim",
+        "eventual zero residue",
+        "post-reclaim authorization denied"
+      ]
+    },
+    "multi_agent_quickstart": {
+      "workshop_id": "6a6e77a8-0f5e-4e4d-9d95-a56d019a1e61",
+      "cluster_ref": "brutus",
+      "seat_count": 2,
+      "result": "passed",
+      "provisioning": {
+        "clean_reorder": true,
+        "immutable_workload_revision": true,
+        "all_seats_ready": true
+      },
+      "public_access": {
+        "branded_email_code_login": "pass",
+        "participant_home": "pass",
+        "my_lab_access": "pass",
+        "seat_recovery": "pass",
+        "showroom": "pass",
+        "tabs": [
+          "Terminal",
+          "Multi-Agent Workspace"
+        ],
+        "public_console_removed": true,
+        "terminal_http": "pass",
+        "terminal_websocket": "pass",
+        "workspace": "pass"
+      },
+      "workload_and_isolation": {
+        "seats_passed": 2,
+        "three_agent_workflow": "pass",
+        "mcp": "pass",
+        "guardrails": "pass",
+        "semantic_routing": "pass",
+        "cross_seat_access_denied": "pass",
+        "argocd": "Synced/Healthy",
+        "duration_seconds": 92.622,
+        "artifact_sha256": "7d8abe2fcd78bc2030007a9d138afc071b4cae8f4d61726e5388b52bed45e918"
+      },
+      "reclaim": {
+        "status": "completed",
+        "seconds": 40.76,
+        "post_reclaim_http_status": 403,
+        "access_policy_enabled": false,
+        "active_claim_count": 0,
+        "brutus_resource_counts": {
+          "namespaces": 0,
+          "pods": 0,
+          "deployments": 0,
+          "services": 0,
+          "configmaps": 0,
+          "secrets": 0,
+          "persistent_volume_claims": 0,
+          "rolebindings": 0,
+          "routes": 0
+        },
+        "arena_argocd_applications": 0
+      }
+    }
+  },
+  "red_green_findings": [
+    {
+      "red": "The deployed catalog rejected a clean Multi-Agent public order even though repository source and the retained workshop allowed public_code.",
+      "root_cause": "The control-plane image embedded a stale catalog.",
+      "green": "Rebuilt and deployed one backend digest to the API and lifecycle worker; a fresh public capacity preview and order then succeeded."
+    },
+    {
+      "red": "The clean Multi-Agent reorder failed every seat with 'Workload revision must be an immutable 40-character Git SHA'.",
+      "root_cause": "Catalog v0.2.9 used a release tag where the GitOps contract requires a commit SHA.",
+      "green": "Pinned commit 100bcd4d4dd40e2ab74b59e984112c3d86fbac9b, added the 40-character provenance assertion, redeployed, and completed the disposable lifecycle proof."
+    },
+    {
+      "red": "Two regression assertions still referenced superseded content and terminal image revisions.",
+      "root_cause": "Test/source version drift after live runtime repinning.",
+      "green": "Aligned assertions to the certified immutable revisions; the selected regression gate passed 245/245."
+    }
+  ],
+  "automated_test_gate": {
+    "backend_selected_regressions": {
+      "passed": 245,
+      "failed": 0,
+      "coverage": [
+        "public access",
+        "workshop order and lifecycle",
+        "Multi-Agent import and certification",
+        "Showroom content and GitOps",
+        "public gateway and tunnel contracts",
+        "durable lifecycle queue and worker",
+        "HA certifier contract"
+      ]
+    },
+    "requester_frontend": {
+      "tests_passed": 57,
+      "production_build": "pass"
+    },
+    "admin_frontend": {
+      "eslint": "pass",
+      "production_build": "pass"
+    },
+    "secret_scan": "pass",
+    "git_diff_check": "pass"
+  },
+  "proof_strategy": {
+    "TDD": "Each discovered source/runtime defect is represented by a failing assertion before the green rerun.",
+    "EDD": "This manifest records immutable source and image revisions, live workshop IDs, per-lab functional results, public access behavior, reclaim timing, and residue counts.",
+    "CDD": "Catalog, workshop, public access, gateway, Showroom, GitOps, lifecycle queue, and cleanup contracts are included in the 245-test gate.",
+    "BDD": "Given a public workshop, participants can claim, resume, use the complete lab, remain seat-isolated, and lose access after bulk reclaim.",
+    "CBT": "Catalog, placement, workload, Showroom, terminal, workspace, identity, RBAC, public tunnel, and lifecycle were validated independently and together.",
+    "red_green_matrix": "Every defect listed in red_green_findings reached GREEN-local and GREEN-live before this gate was marked green."
+  },
+  "public_release_rubric": {
+    "score": 88,
+    "maximum": 100,
+    "categories": {
+      "identity_and_claims": "18/20",
+      "authorization_and_isolation": "20/20",
+      "public_ingress_dns_tls": "14/15",
+      "keycloak_and_openshift_sso": "10/15",
+      "rotation_expiry_cleanup": "14/15",
+      "participant_instructor_usability": "4/5",
+      "auditability_and_evidence": "4/5",
+      "repeatability_and_recovery": "4/5"
+    },
+    "release_gate": "not-general-availability"
+  },
+  "remaining_gates": [
+    {
+      "priority": "pilot",
+      "item": "Manual visual and usability pass in a real browser for each retained lab.",
+      "reason": "Automation proves behavior and content, but cannot approve layout, instructional clarity, or presenter experience."
+    },
+    {
+      "priority": "pilot",
+      "item": "Do not sync Application/launchpad-arena until the source branch is promoted.",
+      "reason": "The control-plane Application is Healthy but OutOfSync; syncing main now could revert the working pilot image and named-tunnel state."
+    },
+    {
+      "priority": "general_availability",
+      "item": "Run 25 simultaneous public code claims and three consecutive complete public certification runs.",
+      "reason": "All 75 participant workloads were functionally exercised, but public identity concurrency was sampled rather than burst-certified."
+    },
+    {
+      "priority": "general_availability",
+      "item": "Certify public OpenShift Console OIDC or keep it explicitly excluded.",
+      "reason": "The external participant Showroom intentionally removes the Console tab; namespace work is available through the authenticated terminal."
+    },
+    {
+      "priority": "general_availability",
+      "item": "Verify hard Keycloak account/session deletion after the final entitlement.",
+      "reason": "Application authorization, entitlement, role binding, and identity disablement are proven; identity-provider hard deletion is not yet evidenced."
+    },
+    {
+      "priority": "production",
+      "item": "Move workshop images to a durable external registry or durable mirror.",
+      "reason": "The pilot remains dependent on the Arena-hosted internal registry."
+    },
+    {
+      "priority": "production",
+      "item": "Keep September 17 workshop provisioning staggered.",
+      "reason": "The retained 75 seats run concurrently, but simultaneous provisioning of all three workshops is not certified as reliable on the current clusters."
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "contains_instructor_codes": false,
+    "retained_event_workshops_modified": false,
+    "disposable_certification_resources_removed": true
+  }
+}
