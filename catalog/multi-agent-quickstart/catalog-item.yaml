@@ -55,7 +55,7 @@ metadata:
   showroom_title: Build Multi-Agent AI Systems with Open Protocols
   namespace_slug: multi-agent
   showroom_content_repo_url: https://github.com/rhpds/launchpad.git
-  showroom_content_ref: 44a72bde226fe42b2e7e1182ce328bbd06c827c4
+  showroom_content_ref: 262843696b1164d22675d46cd74be783feea5d96
   showroom_content_playbook: site-multi-agent-quickstart.yml
   showroom_content_start_path: content-multi-agent-quickstart
   showroom_terminal_storage: false
@@ -130,7 +130,7 @@ metadata:
     orchestrator: multi-agent
   workload_readiness: []
   source_content_repo: https://github.com/rhpds/launchpad.git
-  source_content_revision: 44a72bde226fe42b2e7e1182ce328bbd06c827c4
+  source_content_revision: 262843696b1164d22675d46cd74be783feea5d96
   source_references:
     original_lab:
       repo_url: https://github.com/jkershawrh/multi-agent-quickstart.git
