@@ -57,6 +57,23 @@ def test_antora_playbook_builds_content_from_this_repository():
     assert "rhdp_showroom_theme" in playbook["ui"]["bundle"]["url"]
 
 
+def test_shared_showroom_ui_adds_execute_without_removing_copy():
+    supplemental = ROOT / "content/supplemental-ui"
+    head = (supplemental / "partials/head-meta.hbs").read_text()
+    script = (supplemental / "js/execute.js").read_text()
+    styles = (supplemental / "css/site-extra.css").read_text()
+
+    assert '{{uiRootPath}}/js/execute.js' in head
+    assert '{{uiRootPath}}/css/site-extra.css' in head
+    assert "div.listingblock.execute" in script
+    assert "launchpad-execute-button" in script
+    assert "Execute" in script
+    assert "copy-button" not in script
+    assert "findTerminalIframe" in script
+    assert "xterm-helper-textarea" in script
+    assert ".launchpad-execute-button" in styles
+
+
 def test_operator_workshop_playbook_starts_on_operator_journey():
     playbook = yaml.safe_load((ROOT / "site-openshift-operators.yml").read_text())
 
@@ -147,7 +164,7 @@ def test_intel_guided_lab_is_native_launchpad_content(lab):
     assert playbook["site"]["start_page"] == "modules::index.adoc"
     assert playbook["content"]["sources"] == [{"url": ".", "start_path": lab["content_path"]}]
     assert "rhdp_showroom_theme" in playbook["ui"]["bundle"]["url"]
-    assert playbook["ui"]["supplemental_files"] == [{"path": "./content/supplemental-ui"}]
+    assert playbook["ui"]["supplemental_files"] == "./content/supplemental-ui"
     assert playbook["output"]["dir"] == "./www"
 
     component = yaml.safe_load((ROOT / lab["content_path"] / "antora.yml").read_text())
