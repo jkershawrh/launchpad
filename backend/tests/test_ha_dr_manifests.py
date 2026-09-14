@@ -86,6 +86,17 @@ def test_arena_ha_overlay_has_two_workers_and_no_direct_reconciler() -> None:
     assert legacy["spec"]["suspend"] is True
 
 
+def test_arena_singleton_control_plane_can_reschedule_between_workers() -> None:
+    items = render("deploy/launchpad/overlays/arena")
+
+    for deployment_name in ("backend", "postgres"):
+        deployment = resource(items, "Deployment", deployment_name)
+        node_selector = deployment["spec"]["template"]["spec"].get(
+            "nodeSelector", {}
+        )
+        assert "kubernetes.io/hostname" not in node_selector
+
+
 def test_arena_model_network_policy_allows_api_and_lifecycle_workers() -> None:
     policy = yaml.safe_load(
         (ROOT / "deploy/launchpad/overlays/arena/fleet-model-access.yaml").read_text()

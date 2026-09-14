@@ -11,11 +11,9 @@ spec:
     type: Recreate
   template:
     spec:
-      # The backend is intentionally single-replica until its in-memory session
-      # cache is externalized. Keep that control-plane singleton on Arena's
-      # stable worker so a transient rhgnr1 outage cannot stall workshop cleanup.
-      nodeSelector:
-        kubernetes.io/hostname: gnr2.fm2aihpcsed.com
+      # The backend remains a singleton until its in-memory session cache is
+      # externalized, but it must be free to reschedule onto either certified
+      # Arena worker after a node failure.
       containers:
         - name: backend
           # Workshop state, validation results, and concurrent Kubernetes
@@ -54,19 +52,6 @@ spec:
           configMap:
             name: launchpad-cluster-ca-bundle
             optional: true
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: postgres
-spec:
-  template:
-    spec:
-      # Postgres is also a single-replica control-plane dependency. Its RWO
-      # NFS claim can move between Arena workers, and the Recreate strategy in
-      # the base prevents simultaneous mounts during this placement change.
-      nodeSelector:
-        kubernetes.io/hostname: gnr2.fm2aihpcsed.com
 ---
 apiVersion: apps/v1
 kind: Deployment
