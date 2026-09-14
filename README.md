@@ -75,7 +75,8 @@ Flightpath is registered only as an inactive control-plane DR standby. Its
 overlay renders all Deployments at zero replicas and suspends CronJobs so it
 cannot become a second writer by accident. Promotion requires a hard Arena
 fence, verified data/secret restoration, and staged validation. See the
-[Flightpath DR runbook](docs/flightpath-dr-runbook.md) and the current
+[control-plane DR roadmap](docs/control-plane-dr-roadmap.md), the
+[Flightpath DR runbook](docs/flightpath-dr-runbook.md), and the current
 [HA/DR certification matrix](docs/ha-dr-certification-20260908.md). Neither
 overlay has been applied to a live cluster by this change.
 

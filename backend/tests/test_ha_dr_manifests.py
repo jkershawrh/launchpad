@@ -322,6 +322,63 @@ def test_dr_runbook_requires_fencing_before_promotion() -> None:
     assert "three consecutive" in runbook
 
 
+def test_dr_roadmap_separates_local_recovery_from_control_plane_promotion() -> None:
+    roadmap = " ".join(
+        (ROOT / "docs/control-plane-dr-roadmap.md")
+        .read_text()
+        .lower()
+        .split()
+    )
+
+    assert "execution-worker incident" in roadmap
+    assert "does not promote flightpath" in roadmap
+    assert "control-plane incident" in roadmap
+    assert "hard split-brain fence" in roadmap
+    assert "arena remains the active pilot control plane" in roadmap
+    assert "flightpath remains the passive recovery control plane" in roadmap
+
+
+def test_dr_roadmap_has_complete_state_edge_and_gitops_recovery_gates() -> None:
+    roadmap = " ".join(
+        (ROOT / "docs/control-plane-dr-roadmap.md")
+        .read_text()
+        .lower()
+        .split()
+    )
+
+    required_contracts = (
+        "five-minute rpo",
+        "15-minute rto",
+        "scheduled encrypted backup",
+        "secret bundle",
+        "public edge cutover",
+        "identity reauthentication",
+        "gitops ownership transfer",
+        "in-flight provision",
+        "in-flight reclaim",
+        "zero residue",
+        "failback",
+        "three consecutive drills",
+    )
+    for contract in required_contracts:
+        assert contract in roadmap
+
+
+def test_dr_roadmap_defines_pilot_transition_and_production_destination() -> None:
+    roadmap = " ".join(
+        (ROOT / "docs/control-plane-dr-roadmap.md")
+        .read_text()
+        .lower()
+        .split()
+    )
+
+    assert "flightpath becomes the transitional primary control plane" in roadmap
+    assert "arena becomes its warm standby" in roadmap
+    assert "dedicated production control-plane cluster" in roadmap
+    assert "separate recovery failure domain" in roadmap
+    assert "no active/active writers" in roadmap
+
+
 def test_flightpath_is_registered_but_fail_closed_in_source_and_runtime() -> None:
     source = yaml.safe_load((ROOT / "config/clusters.yaml").read_text())
     source_target = next(

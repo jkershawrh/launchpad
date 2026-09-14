@@ -17,6 +17,32 @@ there must be zero Launchpad-owned Applications, and all Launchpad Deployments
 and CronJobs remain stopped. This lets the GitOps controller be proven before
 an incident without reconciling participant resources from two control planes.
 
+## Choose local recovery or site recovery
+
+Do not promote Flightpath for an execution-worker or execution-cluster outage
+while the Arena control plane remains healthy. Disable the affected target for
+new placement, preserve every persisted `cluster_ref`, and recover participant
+workloads locally. Site recovery is reserved for loss of Arena's database,
+lifecycle authority, identity, or order path that cannot be safely restored
+inside the 15-minute objective. The full decision tree and delivery gates are
+in [control-plane-dr-roadmap.md](control-plane-dr-roadmap.md).
+
+## Recovery-set gate
+
+Before promotion, bind the database recovery point, encrypted Secret bundle,
+Git revision, migration level, image digests, catalog/content versions, public
+edge configuration, and Launchpad-owned Argo CD Application inventory into one
+evidence manifest. Flightpath may regenerate or adopt only Applications backed
+by restored Launchpad state. Arena's Launchpad Applications and remote GitOps
+credentials must be stopped or revoked before Flightpath takes ownership; two
+controllers must never reconcile the same participant resource.
+
+The first public promotion may invalidate browser sessions. Participants must
+be able to reauthenticate at the same `labs.smg-helix.ai` URL using the same
+email label and instructor code, recover the existing entitlement, and remain
+bound to the original seat namespace. The reverse DNS/tunnel action must be
+known before the forward public edge cutover starts.
+
 ## Service objectives and prerequisites
 
 - Initial target: control-plane RPO of 5 minutes or less and RTO of 15 minutes

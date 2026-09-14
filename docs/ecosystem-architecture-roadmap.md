@@ -86,6 +86,30 @@ End-to-end readiness must prove identity, database, API, lifecycle queue, model
 routing, and participant authorization instead of returning green for the
 tunnel router alone.
 
+## Control-plane HA/DR delivery path
+
+The control-plane recovery decision is now fixed. Arena remains active through
+the September 17 pilot and Flightpath remains fail-closed as its passive
+recovery site. After the event, a hard-fenced promotion, public-access recovery,
+failback, and three consecutive evidence-backed drills are required before
+Flightpath can become the transitional primary and Arena its warm standby. The
+production destination remains a dedicated control-plane cluster and a warm
+recovery site in a separate failure domain; execution clusters do not become DR
+sites merely because they run participant seats.
+
+The complete phased plan, failure decision tree, five-minute RPO, 15-minute RTO,
+recovery-state contract, GitOps ownership transfer, edge/identity recovery,
+stop conditions, certification evidence, and production migration are defined
+in [control-plane-dr-roadmap.md](control-plane-dr-roadmap.md). The operator
+procedure remains [flightpath-dr-runbook.md](flightpath-dr-runbook.md), and the
+current proof boundary remains
+[ha-dr-certification-20260908.md](ha-dr-certification-20260908.md).
+
+An execution-worker failure uses local workload recovery and placement fencing;
+it does not trigger Flightpath. A control-plane incident triggers site recovery
+only after Arena is hard-fenced. This prevents the worker-level problem seen in
+September from being confused with control-plane disaster recovery.
+
 ## Order-to-reclaim lifecycle
 
 ```mermaid
@@ -948,15 +972,16 @@ migration always require human authority.
 
 - physical owner, region, funding source, and service name for the permanent
   production control-plane cluster;
-- active/standby topology, database replication method, recovery objectives,
-  and durable evidence/backup location;
+- approved production PostgreSQL HA implementation, scheduled encrypted backup
+  object store, evidence retention, and secrets-management platform;
 - GCL versus GeoLux as the governed decision provider;
 - durable public DNS, certificate, and ingress ownership;
 - dedicated AI-serving cluster versus certified model pools distributed across
   execution clusters;
 - live per-seat LiteLLM routing, semantic-routing policy, data retention, and
   attribution;
-- Flightpath promotion/failback rehearsal and recovery objectives;
+- execution date and incident owners for the three Flightpath
+  promotion/failback certification drills;
 - third execution cluster and larger single-cluster workshop limits;
 - showback allocation rules, rate-card ownership, budget enforcement, and the
   approval boundary for internal chargeback;

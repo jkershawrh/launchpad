@@ -40,8 +40,13 @@ stage never implies a higher one.
 | DR-DATA-01 | Verified PostgreSQL backup restores the exact application table counts | GREEN | GREEN | GREEN | GREEN (18 tables, 19,795 rows) | GREEN-live-one-run |
 | DR-RPO-01 | Scheduled encrypted backups meet the five-minute RPO | RED | RED | RED | RED | RED-not-implemented |
 | DR-GITOPS-01 | Passive Flightpath Argo CD can reach Arena and Brutus without owning active Applications | GREEN | — | GREEN | GREEN (zero Launchpad Applications) | GREEN-live |
+| DR-GITOPS-XFER-01 | Arena Application ownership is fenced before Flightpath recreates or adopts restored Applications | GREEN | — | GREEN | RED | RED-live |
+| DR-EDGE-01 | Stable public hostname, TLS, OIDC, and gateway cut over to Flightpath and roll back | GREEN | — | GREEN | RED | RED-live |
+| DR-ACCESS-01 | A participant reauthenticates and resumes the original entitlement and namespace after promotion | GREEN | — | GREEN | RED | RED-live |
 | DR-FAILOVER-01 | In-flight provision and reclaim survive Arena loss | — | — | GREEN | RED | RED-live |
+| DR-FAILBACK-01 | Arena is restored through the same fence-first state, GitOps, identity, and edge sequence | — | — | GREEN | RED | RED-live |
 | DR-RTO-01 | Flightpath recovery meets the 15-minute target three times | — | — | GREEN | RED | RED-live |
+| DR-3RUN-01 | Full failover, public recovery, zero-residue cleanup, and failback pass three consecutive drills | GREEN | — | GREEN | RED | RED-live |
 
 ## Release rubric
 
