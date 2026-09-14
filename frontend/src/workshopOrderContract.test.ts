@@ -5,6 +5,7 @@ import {
   validateSeatCount,
   workshopProgressLabel,
   workshopReadiness,
+  workshopSeatAccess,
 } from './workshopOrderContract';
 
 describe('workshop order contract', () => {
@@ -35,5 +36,36 @@ describe('workshop order contract', () => {
     expect(workshopProgressLabel('reclaiming', 0, 12, 25)).toBe('12/25 seats reclaimed');
     expect(reclaimActionLabel('provisioning')).toBe('Cancel provisioning');
     expect(reclaimActionLabel('ready')).toBe('Reclaim workshop');
+  });
+
+  it('never exposes a private seat route for a public workshop', () => {
+    expect(workshopSeatAccess(
+      {
+        public_url: 'https://labs.smg-helix.ai/labs/multi-agent-quickstart-order-1',
+        exposure_policy: 'public_code',
+      },
+      {
+        showroom_url: 'https://showroom-seat.apps.brutus.fm2aihpcsed.com',
+        lab_url: 'https://multi-agent-ui-seat.apps.brutus.fm2aihpcsed.com',
+      },
+    )).toEqual({
+      url: 'https://labs.smg-helix.ai/labs/multi-agent-quickstart-order-1',
+      label: 'Open participant portal',
+      public: true,
+    });
+  });
+
+  it('retains direct Showroom access for an internal workshop', () => {
+    expect(workshopSeatAccess(
+      { exposure_policy: 'internal' },
+      {
+        showroom_url: 'https://showroom-seat.apps.brutus.fm2aihpcsed.com',
+        lab_url: 'https://multi-agent-ui-seat.apps.brutus.fm2aihpcsed.com',
+      },
+    )).toEqual({
+      url: 'https://showroom-seat.apps.brutus.fm2aihpcsed.com',
+      label: 'Open Showroom',
+      public: false,
+    });
   });
 });

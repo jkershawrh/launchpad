@@ -34,3 +34,28 @@ export function reclaimActionLabel(status: string): string {
     ? 'Cancel provisioning'
     : 'Reclaim workshop';
 }
+
+type WorkshopAccess = {
+  exposure_policy?: 'internal' | 'public_code';
+  public_url?: string;
+};
+
+type WorkshopSeatAccess = {
+  showroom_url?: string;
+  lab_url?: string;
+};
+
+export function workshopSeatAccess(
+  workshop: WorkshopAccess,
+  seat: WorkshopSeatAccess,
+): { url: string; label: string; public: boolean } | null {
+  if (workshop.exposure_policy === 'public_code' && workshop.public_url) {
+    return {
+      url: workshop.public_url,
+      label: 'Open participant portal',
+      public: true,
+    };
+  }
+  const url = seat.showroom_url || seat.lab_url;
+  return url ? { url, label: 'Open Showroom', public: false } : null;
+}
