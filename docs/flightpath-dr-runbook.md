@@ -23,7 +23,11 @@ clusters are not control-plane DR merely because they run participant labs.
   Argo CD using the separate `launchpad-argocd-manager-flightpath` identity.
   Never copy either of Arena's existing remote tokens.
 - Mirror the exact backend, portal, admin, public-gateway, Keycloak extension,
-  and Showroom image digests to a registry reachable from Flightpath.
+  and Showroom image digests to a registry reachable from Flightpath. The pilot
+  control-plane images are mirrored under `quay.io/redhat-gpte` and pinned by
+  digest. Because those repositories are private, provision the
+  `launchpad-registry-pull` Secret from a dedicated Quay robot account. Never
+  copy a developer's personal registry credential into Flightpath or Git.
 - Replicate the PostgreSQL database, public-access signing/encryption material,
   OAuth/OIDC client secrets, CA bundles, and cluster credential Secrets through
   an approved encrypted backup path. Git is not a secret backup system.
@@ -39,6 +43,9 @@ clusters are not control-plane DR merely because they run participant labs.
 2. Replace every first-party image with an immutable `@sha256:` reference in a
    registry reachable from Flightpath. An execution cluster's internal
    `image-registry.openshift-image-registry.svc` address is invalid for DR.
+   Confirm the private registry robot can pull each digest, then create
+   `launchpad-registry-pull` out of band in `partner-ai-launchpad`; the overlay
+   references the Secret but deliberately does not create or contain it.
 3. Restore the encrypted Secret set through the approved secret-management
    path: database credentials, public-access signing/encryption material,
    OAuth/OIDC clients, CA bundles, and the dedicated Arena/Brutus kubeconfigs.

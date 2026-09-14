@@ -136,6 +136,70 @@ def test_flightpath_dr_overlay_is_passive_and_contains_no_credentials() -> None:
     assert "pass" + "word:" not in overlay_text
 
 
+def test_flightpath_dr_uses_digest_pinned_external_first_party_images() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-dr")
+    expected = {
+        "backend": (
+            "quay.io/redhat-gpte/launchpad-backend@"
+            "sha256:1e097350a1cb07eea5a991fa40d4fe8afe44cc48923f8a223a3eef07adeb8dcb"
+        ),
+        "partner-portal": (
+            "quay.io/redhat-gpte/launchpad-portal@"
+            "sha256:f97cd9cd7a3d51eb5709c92131c11ae02e73901b5232ad7731171f286d6b10c3"
+        ),
+        "admin": (
+            "quay.io/redhat-gpte/launchpad-admin@"
+            "sha256:d76bf69b7720efced8ed328e0a0ac863d2e6f96b056f67bb3e6507a73a37ee4e"
+        ),
+    }
+    observed: dict[str, set[str]] = {name: set() for name in expected}
+
+    for item in items:
+        pod_spec = None
+        if item["kind"] == "Deployment":
+            pod_spec = item["spec"]["template"]["spec"]
+        elif item["kind"] == "CronJob":
+            pod_spec = item["spec"]["jobTemplate"]["spec"]["template"]["spec"]
+        if pod_spec is None:
+            continue
+        for container in pod_spec.get("containers", []):
+            if container["name"] in observed:
+                observed[container["name"]].add(container["image"])
+
+    assert observed == {
+        name: {image}
+        for name, image in expected.items()
+    }
+
+
+def test_flightpath_dr_private_registry_access_is_explicit_and_out_of_band() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-dr")
+    workloads = [
+        item
+        for item in items
+        if item["kind"] in {"Deployment", "CronJob"}
+    ]
+
+    assert workloads
+    for item in workloads:
+        if item["kind"] == "Deployment":
+            pod_spec = item["spec"]["template"]["spec"]
+        else:
+            pod_spec = item["spec"]["jobTemplate"]["spec"]["template"]["spec"]
+        assert pod_spec["imagePullSecrets"] == [
+            {"name": "launchpad-registry-pull"}
+        ]
+
+    assert not any(
+        item["kind"] == "Secret"
+        and item["metadata"]["name"] == "launchpad-registry-pull"
+        for item in items
+    )
+
+    preflight = (ROOT / "scripts/flightpath-dr-preflight.sh").read_text()
+    assert "launchpad-registry-pull" in preflight
+
+
 def test_dr_runbook_requires_fencing_before_promotion() -> None:
     runbook = " ".join(
         (ROOT / "docs/flightpath-dr-runbook.md").read_text().lower().split()

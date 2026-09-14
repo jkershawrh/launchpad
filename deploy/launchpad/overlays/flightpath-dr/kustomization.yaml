@@ -7,6 +7,17 @@ resources:
   - ../../base
   - flightpath-clusters.yaml
 
+images:
+  - name: backend
+    newName: quay.io/redhat-gpte/launchpad-backend
+    digest: sha256:1e097350a1cb07eea5a991fa40d4fe8afe44cc48923f8a223a3eef07adeb8dcb
+  - name: partner-portal
+    newName: quay.io/redhat-gpte/launchpad-portal
+    digest: sha256:f97cd9cd7a3d51eb5709c92131c11ae02e73901b5232ad7731171f286d6b10c3
+  - name: admin
+    newName: quay.io/redhat-gpte/launchpad-admin
+    digest: sha256:d76bf69b7720efced8ed328e0a0ac863d2e6f96b056f67bb3e6507a73a37ee4e
+
 patches:
   - path: patch-configmap.yaml
   - path: patch-postgres-pvc.yaml
@@ -19,6 +30,10 @@ patches:
       - op: replace
         path: /spec/replicas
         value: 0
+      - op: add
+        path: /spec/template/spec/imagePullSecrets
+        value:
+          - name: launchpad-registry-pull
   - target:
       group: batch
       version: v1
@@ -27,3 +42,7 @@ patches:
       - op: replace
         path: /spec/suspend
         value: true
+      - op: add
+        path: /spec/jobTemplate/spec/template/spec/imagePullSecrets
+        value:
+          - name: launchpad-registry-pull
