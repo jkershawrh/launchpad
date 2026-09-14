@@ -126,6 +126,7 @@ def test_flightpath_dr_overlay_is_passive_and_contains_no_credentials() -> None:
     assert all(item["spec"]["replicas"] == 0 for item in deployments)
     assert all(item["spec"].get("suspend") is True for item in cronjobs)
     assert config["data"]["LAUNCHPAD_CONTROL_PLANE_ROLE"] == "standby"
+    assert not [item for item in items if item["kind"] == "Secret"]
 
     overlay_text = "\n".join(
         path.read_text()
@@ -198,6 +199,16 @@ def test_flightpath_dr_private_registry_access_is_explicit_and_out_of_band() -> 
 
     preflight = (ROOT / "scripts/flightpath-dr-preflight.sh").read_text()
     assert "launchpad-registry-pull" in preflight
+
+
+def test_flightpath_control_plane_has_no_local_cluster_provisioner_binding() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-dr")
+
+    assert not any(
+        item["kind"] in {"ClusterRole", "ClusterRoleBinding"}
+        and item["metadata"]["name"].startswith("launchpad-provisioner")
+        for item in items
+    )
 
 
 def test_dr_runbook_requires_fencing_before_promotion() -> None:

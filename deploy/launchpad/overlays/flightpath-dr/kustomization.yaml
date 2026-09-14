@@ -22,6 +22,7 @@ patches:
   - path: patch-configmap.yaml
   - path: patch-postgres-pvc.yaml
   - path: patch-generated-secrets.yaml
+  - path: patch-local-provisioner-rbac.yaml
   - target:
       group: apps
       version: v1

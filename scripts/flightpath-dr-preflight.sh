@@ -48,6 +48,8 @@ for secret_name in \
   launchpad-public-access \
   backend-tls \
   backend-oauth-cookie \
+  portal-oauth-cookie \
+  admin-oauth-cookie \
   launchpad-registry-pull; do
   KUBECONFIG="$flightpath_kubeconfig" oc -n "$namespace" get secret "$secret_name" -o name >/dev/null \
     || fail "required Flightpath Secret $secret_name is missing"

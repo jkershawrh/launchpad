@@ -7,6 +7,9 @@ and suspends every CronJob. After the pilot and three successful drills,
 Flightpath becomes the primary control plane and Arena becomes the warm
 control-plane standby. Arena and Brutus remain execution capacity: execution
 clusters are not control-plane DR merely because they run participant labs.
+The Flightpath overlay deliberately removes the base local cluster-wide
+provisioner binding; all execution mutations use the distinct, revocable
+remote identities described below.
 
 ## Service objectives and prerequisites
 
@@ -48,7 +51,10 @@ clusters are not control-plane DR merely because they run participant labs.
    references the Secret but deliberately does not create or contain it.
 3. Restore the encrypted Secret set through the approved secret-management
    path: database credentials, public-access signing/encryption material,
-   OAuth/OIDC clients, CA bundles, and the dedicated Arena/Brutus kubeconfigs.
+   OAuth/OIDC clients and cookie keys, CA bundles, the dedicated registry robot
+   pull secret, and the dedicated Arena/Brutus kubeconfigs. The Flightpath
+   overlay renders no Secret objects; unresolved template credentials therefore
+   cannot be applied accidentally.
 4. Create and bind the Flightpath PostgreSQL PVC using the certified RBD
    storage class. Start only PostgreSQL when performing a restore.
 5. Run the read-only gate:
