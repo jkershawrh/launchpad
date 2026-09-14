@@ -219,10 +219,15 @@ failing closed when that burst cannot fit.
 
 `multi-agent-quickstart` is registered as a distinct draft candidate from
 `jkershawrh/multi-agent-quickstart` at
-`8a8e0241265e69be81bf28060c4a96be38d5c244`. Its Launchpad-native Antora
-journey is pinned at `ab79b6628d07c2a30caebc220d057a5bbaa99e1a` and covers
+`243870fa4675987bf77c310a53deee672a4f4af2`. Its Launchpad-native Antora
+journey is pinned at `pilot-2026-09-17-showroom-multi-agent-v1.0.3` and covers
 A2A discovery, semantic routing, MCP tool calls, guardrails, OpenTelemetry,
 namespace isolation, and customization.
+
+Revision `243870fa4675987bf77c310a53deee672a4f4af2` also exposes ordered workflow
+progress so Research, Analyst, and Executor results appear when each dependent
+stage completes, plus bounded seat-browser run history. The matching Showroom
+content calls the contract-advertised MCP tool `search_knowledge_base`.
 
 The Launchpad seat chart now deploys the orchestrator, three agents, MCP server,
 guardrails, and Gradio UI with a runtime Secret and complete ownership labels.

@@ -238,6 +238,16 @@ def test_runtime_secret_resolver_accepts_only_explicit_dynamic_sources():
         )
 
 
+def test_runtime_secret_resolver_derives_openai_compatible_maas_api_url():
+    for endpoint in ("https://models.example.com", "https://models.example.com/v1"):
+        resolved = OpenShiftProvisioningAdapter._resolve_workload_runtime_secret(
+            {"MODEL_ENDPOINT": {"source": "maas_api_url"}},
+            {"maas_endpoint": endpoint},
+        )
+
+        assert resolved == {"MODEL_ENDPOINT": "https://models.example.com/v1"}
+
+
 def test_runtime_secret_resolver_generates_and_composes_credentials_without_catalog_secrets():
     resolved = OpenShiftProvisioningAdapter._resolve_workload_runtime_secret(
         {

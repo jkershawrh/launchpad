@@ -728,9 +728,15 @@ http {{
         model_endpoints = resources.get("model_endpoints", {})
         if not isinstance(model_endpoints, dict):
             model_endpoints = {}
+        maas_endpoint = str(resources.get("maas_endpoint", "")).rstrip("/")
         available = {
             "maas_api_key": str(resources.get("maas_api_key", "")),
-            "maas_endpoint": str(resources.get("maas_endpoint", "")),
+            "maas_endpoint": maas_endpoint,
+            "maas_api_url": (
+                maas_endpoint if maas_endpoint.endswith("/v1") else f"{maas_endpoint}/v1"
+            )
+            if maas_endpoint
+            else "",
             "requested_model": requested_models[0] if requested_models else "",
             "namespace": str(resources.get("namespace", "")),
         }

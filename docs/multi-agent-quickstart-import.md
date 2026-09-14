@@ -4,11 +4,22 @@
 
 Launchpad imports the lab journey from
 [`jkershawrh/multi-agent-quickstart`](https://github.com/jkershawrh/multi-agent-quickstart)
-at immutable revision `8a8e0241265e69be81bf28060c4a96be38d5c244`.
+at immutable revision `243870fa4675987bf77c310a53deee672a4f4af2`.
 The original repository remains the application and protocol source. Launchpad
 owns the Antora/Showroom participant journey in
 `content-multi-agent-quickstart` so runtime identity, namespace, model, and
 cluster values are rendered for each seat.
+
+The current candidate streams the dependent Research, Analyst, and Executor
+stages in execution order. The participant UI publishes each result as it
+completes, records the actual model and stage duration, and retains the newest
+20 runs in the current seat browser session with an explicit clear-history
+action. The existing non-streaming workflow API remains compatible.
+
+The MCP instructions use the exact tool name advertised by `tools/list`:
+`search_knowledge_base`. Candidate proof, including a live three-stage model
+run and MCP invocation, is recorded in
+`evidence/runs/multi-agent-progressive-history-one-seat-green-live-20260914.json`.
 
 This is a separate catalog item from the legacy `agent-swarm` visualization
 and the larger `agentops-observability` workshop.

@@ -182,7 +182,7 @@ spec:
     type: Git
     git:
       uri: "https://github.com/jkershawrh/multi-agent-quickstart.git"
-      ref: "8a8e0241265e69be81bf28060c4a96be38d5c244"
+      ref: "243870fa4675987bf77c310a53deee672a4f4af2"
     contextDir: src
     dockerfile: |
       FROM registry.access.redhat.com/ubi9/python-311@sha256:7b6cb58d3ff034df7b300800bd89a469d9bd2f739d43250d76b9c9e805307ab5
@@ -195,17 +195,16 @@ spec:
           opentelemetry-api==1.41.1 opentelemetry-sdk==1.41.1 \
           opentelemetry-exporter-otlp-proto-grpc==1.41.1
       RUN sed -i '/^MODEL_NAME = /a MODEL_API_KEY = os.environ.get("MODEL_API_KEY", "")' agent.py orchestrator.py && \
-          sed -i '/^MCP_SERVER_URL = /a AGENT_AUTH_TOKEN = os.environ.get("AGENT_AUTH_TOKEN", "")\nUI_WORKFLOW_TIMEOUT = float(os.environ.get("UI_WORKFLOW_TIMEOUT", "300"))' ui.py && \
           sed -i 's|OPEN_PATHS = {"/health", |OPEN_PATHS = {"/health", "/ready", |' auth.py && \
           sed -i '/f"{use_endpoint}\/chat\/completions",/a\                headers={"Authorization": f"Bearer {MODEL_API_KEY}"} if MODEL_API_KEY else {},' agent.py && \
           sed -i '/f"{classify_endpoint}\/chat\/completions",/a\                    headers={"Authorization": f"Bearer {MODEL_API_KEY}"} if MODEL_API_KEY else {},' orchestrator.py && \
-          sed -i '/f"{ORCHESTRATOR_URL}\/api\/v1\/workflow",/a\            headers={"Authorization": f"Bearer {AGENT_AUTH_TOKEN}"} if AGENT_AUTH_TOKEN else {},' ui.py && \
-          sed -i 's/timeout=120.0/timeout=UI_WORKFLOW_TIMEOUT/' ui.py && \
           sed -i 's|AGENT_MAX_TOKENS = int(os.environ.get("AGENT_MAX_TOKENS", "64"))|AGENT_MAX_TOKENS = int(os.environ.get("AGENT_MAX_TOKENS_OVERRIDE", os.environ.get("AGENT_MAX_TOKENS", "64")))|' agent.py && \
           grep -q 'Bearer {MODEL_API_KEY}' agent.py && \
           grep -q 'Bearer {MODEL_API_KEY}' orchestrator.py && \
           grep -q 'Bearer {AGENT_AUTH_TOKEN}' ui.py && \
           grep -q 'timeout=UI_WORKFLOW_TIMEOUT' ui.py && \
+          grep -q '/api/v1/workflow/stream' ui.py && \
+          grep -q 'HISTORY_LIMIT = 20' ui.py && \
           grep -q 'AGENT_MAX_TOKENS_OVERRIDE' agent.py && \
           grep -q '"/ready"' auth.py
       USER 1001
@@ -215,7 +214,7 @@ spec:
     type: Docker
     dockerStrategy: {}
   output:
-    to: {kind: ImageStreamTag, name: "multi-agent-quickstart:source-8a8e024"}
+    to: {kind: ImageStreamTag, name: "multi-agent-quickstart:source-243870f"}
   resources:
     requests: {cpu: "1", memory: 2Gi, ephemeral-storage: 4Gi}
     limits: {cpu: "4", memory: 4Gi, ephemeral-storage: 12Gi}

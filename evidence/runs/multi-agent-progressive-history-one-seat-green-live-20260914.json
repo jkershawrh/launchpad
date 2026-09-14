@@ -1,0 +1,81 @@
+{
+  "schema": "launchpad.redhat.com/catalog-delta-evidence/v1",
+  "evidence_id": "MULTI-AGENT-PROGRESSIVE-HISTORY-ONE-SEAT-20260914T152143Z",
+  "captured_at": "2026-09-14T15:21:43Z",
+  "cluster": "arena",
+  "catalog_item_id": "multi-agent-quickstart",
+  "catalog_candidate_version": "0.2.12",
+  "source": {
+    "repository": "https://github.com/jkershawrh/multi-agent-quickstart.git",
+    "commit": "243870fa4675987bf77c310a53deee672a4f4af2",
+    "branch": "codex/progressive-workflow-history"
+  },
+  "image": {
+    "tag": "source-243870f",
+    "digest": "sha256:09c25dbaf402ac5def6a39183b624b2bd115938339c283d9990c3877f978e12e"
+  },
+  "red": [
+    {
+      "requirement": "publish each dependent agent result when it completes",
+      "proof": "four focused tests failed before workflow_events and seat-local history existed"
+    },
+    {
+      "requirement": "Showroom MCP command matches tools/list",
+      "proof": "knowledge_search returned JSON-RPC -32601; the contract advertises search_knowledge_base"
+    }
+  ],
+  "green": {
+    "source_contract_unit_publication_tests": {
+      "passed": 78,
+      "failed": 0
+    },
+    "source_integration_tests": {
+      "passed": 9,
+      "failed": 0
+    },
+    "launchpad_focused_tests": {
+      "passed": 68,
+      "failed": 0
+    },
+    "live_workflow": {
+      "run_id": "2fdb8980-68bc-4774-8cdf-95c243e0624c",
+      "events_in_order": [
+        "workflow_started",
+        "research_started",
+        "research_completed",
+        "analyst_started",
+        "analyst_completed",
+        "executor_started",
+        "executor_completed",
+        "workflow_completed"
+      ],
+      "agent_latency_ms": {
+        "research": 11698.64,
+        "analyst": 12542.25,
+        "executor": 13304.51
+      },
+      "model": "granite-3.2-8b-tools",
+      "model_http_200_per_agent": true,
+      "fallback_detected": false
+    },
+    "component_ui": {
+      "live_workflow_timeline": true,
+      "bounded_history_entries": 20,
+      "history_scope": "seat browser session",
+      "clear_history": true
+    },
+    "mcp": {
+      "tool": "search_knowledge_base",
+      "has_result": true,
+      "is_error": false,
+      "content_count": 1
+    },
+    "cleanup": {
+      "namespace": "launchpad-cert-multi-agent-progress-243870",
+      "namespace_remaining": false,
+      "temporary_image_pull_binding_removed": true
+    }
+  },
+  "current_workshops_changed": false,
+  "promotion_status": "candidate-not-yet-promoted"
+}

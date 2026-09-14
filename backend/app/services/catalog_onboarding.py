@@ -542,6 +542,7 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                 if isinstance(field_contract, str):
                     if field_contract not in {
                         "maas_api_key",
+                        "maas_api_url",
                         "maas_endpoint",
                         "requested_model",
                         "namespace",
@@ -572,6 +573,7 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                     if source not in {
                         "generated_password",
                         "maas_api_key",
+                        "maas_api_url",
                         "maas_endpoint",
                         "model_endpoint",
                         "requested_model",

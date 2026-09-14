@@ -22,7 +22,11 @@ curl -fsS http://127.0.0.1:18004/mcp \
   | python3 -m json.tool
 ----
 
-Find the input schema for record lookup, knowledge search, and task creation. The model does not execute these tools. It requests a tool call; application code validates the arguments and invokes the tool.
+Find the input schema for record lookup, knowledge search, and task creation.
+The `name` passed to `tools/call` must exactly match the value returned by
+`tools/list`; for knowledge search that name is `search_knowledge_base`. The
+model does not execute these tools. It requests a tool call; application code
+validates the arguments and invokes the tool.
 
 == Call a Tool
 
@@ -35,7 +39,7 @@ curl -fsS http://127.0.0.1:18004/mcp \
     "id":"search",
     "method":"tools/call",
     "params":{
-      "name":"knowledge_search",
+      "name":"search_knowledge_base",
       "arguments":{"query":"Kubernetes resource requests"}
     }
   }' | python3 -m json.tool

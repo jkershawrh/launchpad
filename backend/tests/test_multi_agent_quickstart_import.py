@@ -23,7 +23,7 @@ def test_multi_agent_quickstart_is_active_for_public_event_orders():
     assert catalog == build_catalog_item(intake)
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert catalog["display_name"] == "Build Multi-Agent AI Systems with Open Protocols"
-    assert catalog["version"] == "0.2.11"
+    assert catalog["version"] == "0.2.12"
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
     assert catalog["metadata"]["activation_blockers"] == []
@@ -48,7 +48,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
 
     assert metadata["source_references"]["original_lab"] == {
         "repo_url": "https://github.com/jkershawrh/multi-agent-quickstart.git",
-        "revision": "8a8e0241265e69be81bf28060c4a96be38d5c244",
+        "revision": "243870fa4675987bf77c310a53deee672a4f4af2",
         "path": ".",
     }
     assert metadata["workload_repo"] == "https://github.com/rhpds/launchpad.git"
@@ -63,7 +63,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
     assert metadata["workload_runtime_secret_name"] == "multi-agent-runtime"
     assert metadata["workload_runtime_secret_value_path"] == "runtime.existingSecret"
     assert metadata["workload_runtime_secret_sources"] == {
-        "MODEL_ENDPOINT": {"source": "maas_endpoint"},
+        "MODEL_ENDPOINT": {"source": "maas_api_url"},
         "MODEL_API_KEY": {"source": "maas_api_key"},
         "MODEL_NAME": {"source": "requested_model"},
         "AGENT_AUTH_TOKEN": {"source": "generated_password", "length": 48},
@@ -75,7 +75,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
                 "partner-ai-launchpad/multi-agent-quickstart"
             ),
             "digest": (
-                "sha256:f7f93a82cbb06680aa834178b85c929198eafd535d90ee7d363a6393e43a4a5a"
+                "sha256:09c25dbaf402ac5def6a39183b624b2bd115938339c283d9990c3877f978e12e"
             ),
         }
     }
@@ -93,7 +93,7 @@ def test_multi_agent_showroom_is_native_launchpad_content():
     assert "releases/download/patternfly-6/" in playbook["ui"]["bundle"]["url"]
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-showroom-multi-agent-v1.0.2"
+        "pilot-2026-09-17-showroom-multi-agent-v1.0.3"
     )
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
     assert component["asciidoc"]["attributes"]["maas_model"] == "%maas_model%"
@@ -230,6 +230,15 @@ def test_track_one_teaches_the_participant_ui_workflow_and_checkpoint_concepts()
     assert "Agents discovered: 3" in workflows_text
     assert "research`, `analyst`, and `executor" in workflows_text
     assert "health panel" not in workflows_text
+
+
+def test_mcp_walkthrough_uses_the_server_contract_tool_name():
+    page = (
+        CONTENT_ROOT / "modules/ROOT/pages/04-tools-and-guardrails.adoc"
+    ).read_text()
+
+    assert '"name":"search_knowledge_base"' in page
+    assert '"name":"knowledge_search"' not in page
 
 
 def test_track_two_explains_expected_rbac_warning_and_workload_pod():

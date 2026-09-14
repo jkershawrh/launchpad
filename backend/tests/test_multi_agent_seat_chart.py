@@ -11,7 +11,7 @@ CHART = ROOT / "deploy/workloads/multi-agent-seat"
 BUILD_CONFIG = ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml"
 
 SOURCE_REPOSITORY = "https://github.com/jkershawrh/multi-agent-quickstart.git"
-SOURCE_REVISION = "8a8e0241265e69be81bf28060c4a96be38d5c244"
+SOURCE_REVISION = "243870fa4675987bf77c310a53deee672a4f4af2"
 IMAGE_REPOSITORY = (
     "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/"
     "multi-agent-quickstart"
@@ -306,7 +306,9 @@ def test_multi_agent_arena_build_is_pinned_and_adds_model_bearer_support():
     assert "AGENT_AUTH_TOKEN" in dockerfile
     assert "UI_WORKFLOW_TIMEOUT" in dockerfile
     assert "AGENT_MAX_TOKENS_OVERRIDE" in dockerfile
-    assert 'headers={"Authorization": f"Bearer {AGENT_AUTH_TOKEN}"}' in dockerfile
+    assert "Bearer {AGENT_AUTH_TOKEN}" in dockerfile
+    assert "/api/v1/workflow/stream" in dockerfile
+    assert "HISTORY_LIMIT = 20" in dockerfile
     assert "ui.py" in dockerfile
     assert 'huggingface-hub==0.25.2' in dockerfile
     assert '"/ready"' in dockerfile
@@ -314,5 +316,5 @@ def test_multi_agent_arena_build_is_pinned_and_adds_model_bearer_support():
     assert "requirements.txt" not in dockerfile
     assert ":latest" not in dockerfile
     assert build["spec"]["output"]["to"]["name"] == (
-        "multi-agent-quickstart:source-8a8e024"
+        "multi-agent-quickstart:source-243870f"
     )
