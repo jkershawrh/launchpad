@@ -50,6 +50,46 @@ def _catalog_with_workshop_limit(
 client = TestClient(app)
 
 
+def test_workshop_seat_reset_is_rejected_without_mutating_the_order():
+    service = ProvisioningService()
+    workshop = service.provision_workshop(
+        Workshop(
+            tenant_id="seat-reset-guard-tenant",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=1,
+        )
+    )
+    session_id = workshop.seats[0].session_id
+    assert session_id is not None
+    activated = service.activate_session(session_id)
+
+    with pytest.raises(ValueError, match="workshop seat"):
+        service.reset_session(session_id)
+
+    assert service.get_session(session_id).status == SessionStatus.ACTIVE
+    assert service.get_workshop(workshop.workshop_id).status == WorkshopStatus.READY
+    assert activated.status == SessionStatus.ACTIVE
+
+
+def test_workshop_seat_queued_reclaim_requires_workshop_cleanup():
+    service = ProvisioningService()
+    workshop = service.provision_workshop(
+        Workshop(
+            tenant_id="seat-reclaim-guard-tenant",
+            catalog_item_id="inference-overdrive-quickstart",
+            num_users=1,
+        )
+    )
+    session_id = workshop.seats[0].session_id
+    assert session_id is not None
+
+    with pytest.raises(ValueError, match="workshop seat"):
+        service.queue_session_reclaim(session_id)
+
+    assert service.get_session(session_id).status == SessionStatus.READY
+    assert service.get_workshop(workshop.workshop_id).status == WorkshopStatus.READY
+
+
 def test_direct_provision_persists_cluster_override_before_creating_seats():
     registry = ClusterRegistry([
         ClusterTarget(

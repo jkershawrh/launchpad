@@ -1145,14 +1145,33 @@ class ProvisioningService:
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
+        workshop_id = self._workshop_id_for_session(session)
+        if workshop_id:
+            raise ValueError(
+                f"Session {session_id} is a workshop seat; manage cleanup from "
+                f"workshop {workshop_id}"
+            )
         session = transition(session, SessionStatus.RESETTING, reason="reset requested")
         self._save_session(session)
         return session
+
+    def _workshop_id_for_session(self, session: LabSession) -> str | None:
+        request = self._requests.get(session.request_id)
+        if not request:
+            return None
+        workshop_id = request.metadata.get("workshop_id")
+        return str(workshop_id) if workshop_id else None
 
     def queue_session_reclaim(self, session_id: str) -> LabSession:
         session = self._sessions.get(session_id)
         if not session:
             raise ValueError(f"Session {session_id} not found")
+        workshop_id = self._workshop_id_for_session(session)
+        if workshop_id:
+            raise ValueError(
+                f"Session {session_id} is a workshop seat; manage cleanup from "
+                f"workshop {workshop_id}"
+            )
         if session.status in {SessionStatus.RESETTING, SessionStatus.RECLAIMED}:
             return session
         queued = transition(

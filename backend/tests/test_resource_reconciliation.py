@@ -292,6 +292,48 @@ def test_reconcile_does_not_complete_workshop_with_an_active_session(lab_session
     assert report["workshops_reconciled"] == []
 
 
+def test_reconcile_does_not_expire_workshop_for_isolated_resetting_seat(
+    lab_session,
+):
+    workshop_id = "isolated-seat-reset-workshop"
+    resetting = lab_session.model_copy(
+        update={"status": SessionStatus.RESETTING}
+    )
+    workshop = Workshop(
+        workshop_id=workshop_id,
+        tenant_id=lab_session.tenant_id,
+        catalog_item_id=lab_session.catalog_item_id,
+        num_users=1,
+        status=WorkshopStatus.READY,
+        session_ids=[resetting.session_id],
+        seats=[
+            WorkshopSeat(
+                workshop_id=workshop_id,
+                seat_number=1,
+                status=WorkshopSeatStatus.READY,
+                session_id=resetting.session_id,
+            )
+        ],
+    )
+    access = MagicMock()
+    service = SimpleNamespace(
+        _sessions={resetting.session_id: resetting},
+        _workshops={workshop_id: workshop},
+        cleanup=None,
+        public_access_service=access,
+        _save_session=MagicMock(),
+        _save_workshop=MagicMock(),
+    )
+
+    from app.services.resource_reconciliation import reconcile_resources
+
+    report = reconcile_resources(service, delete_orphans=False)
+
+    service._save_workshop.assert_not_called()
+    access.expire_order.assert_not_called()
+    assert report["workshops_reclaiming"] == []
+
+
 def test_reconcile_marks_partially_reclaimed_legacy_workshop_reclaiming(
     lab_session,
 ):

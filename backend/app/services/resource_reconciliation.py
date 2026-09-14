@@ -290,14 +290,20 @@ def reconcile_resources(
                 )
                 report_key = "workshops_reconciled"
             else:
-                cleanup_states = {
+                # RESETTING by itself is a seat-scoped administrative state,
+                # not proof that the entire workshop is being reclaimed. The
+                # aggregate reclaim path persists WorkshopStatus.RECLAIMING
+                # before mutating seats, while TTL expiry leaves an EXPIRED or
+                # terminal child record. Treating an isolated RESETTING seat
+                # as aggregate cleanup disabled every participant entitlement.
+                aggregate_cleanup_states = {
                     SessionStatus.EXPIRED,
-                    SessionStatus.RESETTING,
                     SessionStatus.RECLAIMED,
                     SessionStatus.CLEANUP_FAILED,
                 }
                 if not any(
-                    session is not None and session.status in cleanup_states
+                    session is not None
+                    and session.status in aggregate_cleanup_states
                     for session in seat_sessions.values()
                 ):
                     continue
