@@ -70,3 +70,14 @@ def test_multi_agent_live_driver_can_bound_the_restart_heavy_policy_stage():
     assert "acquire_policy_slot" in source
     assert "release_policy_slot" in source
     assert 'stage="learner-policy-slot"' in source
+
+
+def test_multi_agent_live_driver_consumes_the_streaming_participant_ui_contract():
+    source = DRIVER.read_text()
+
+    assert 'events=list(ui.run_workflow(' in source
+    assert '"lightweight",[]' in source
+    assert 'final=events[-1]' in source
+    assert '"history_count":len(final[5])' in source
+    assert '"step_count_one":"1. Proposed governed action" in timeline' in source
+    assert 'routing,agents,tools=ui.run_workflow(' not in source

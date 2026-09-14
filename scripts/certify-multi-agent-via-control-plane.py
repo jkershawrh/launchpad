@@ -322,23 +322,29 @@ os.environ["UI_WORKFLOW_TIMEOUT"] = "300"
 try:
     import ui
 
-    routing, agents, tools = ui.run_workflow(
-        "Create a short status task", "lightweight"
+    events = list(
+        ui.run_workflow("Create a short status task", "lightweight", [])
     )
+    routing, agents, tools, timeline, _history_html, history = events[-1]
 except Exception:
     fail("ui-workflow-exception")
 ui_text = routing + agents + tools
 ui_workflow = {
     "http_error": routing.startswith("HTTP error")
     or routing.startswith("Connection error"),
-    "executor_present": "executor" in ui_text.lower(),
-    "step_count_one": "Steps:           1" in routing,
+    "executor_present": "executor" in ui_text.lower()
+    or "Proposed governed action" in timeline,
+    "step_count_one": "1. Proposed governed action" in timeline,
+    "history_count": len(history),
+    "event_count": len(events),
 }
 if not all(
     [
         not ui_workflow["http_error"],
         ui_workflow["executor_present"],
         ui_workflow["step_count_one"],
+        ui_workflow["history_count"] == 1,
+        ui_workflow["event_count"] >= 2,
     ]
 ):
     fail("ui-workflow")

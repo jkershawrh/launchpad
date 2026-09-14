@@ -144,12 +144,14 @@ printf '%s' "$journey" | jq -e '
 stage="participant-ui-workflow"
 participant_ui_journey="$(
   oc_exec_json participant-ui \
-    'import json,ui; routing,agents,tools=ui.run_workflow("Create a short status task","lightweight"); print(json.dumps({"http_error":routing.startswith("HTTP error") or routing.startswith("Connection error"),"executor_present":"executor" in (routing+agents).lower(),"step_count_one":"Steps:           1" in routing}))'
+    'import json,ui; events=list(ui.run_workflow("Create a short status task","lightweight",[])); final=events[-1]; routing,agents,tools,timeline,history_html,history=final; print(json.dumps({"http_error":routing.startswith("HTTP error") or routing.startswith("Connection error"),"executor_present":"executor" in (routing+agents).lower() or "Proposed governed action" in timeline,"step_count_one":"1. Proposed governed action" in timeline,"history_count":len(final[5]),"event_count":len(events)}))'
 )"
 printf '%s' "$participant_ui_journey" | jq -e '
   .http_error == false
   and .executor_present == true
   and .step_count_one == true
+  and .history_count == 1
+  and .event_count >= 2
 ' >/dev/null
 
 stage="learner-policy-slot"
@@ -172,12 +174,14 @@ applied_max_tokens="$(
 stage="learner-policy-workflow"
 policy_ui_journey="$(
   oc_exec_json participant-ui \
-    'import json,ui; routing,agents,tools=ui.run_workflow("Create a bounded status task","lightweight"); print(json.dumps({"http_error":routing.startswith("HTTP error") or routing.startswith("Connection error"),"executor_present":"executor" in (routing+agents).lower(),"step_count_one":"Steps:           1" in routing}))'
+    'import json,ui; events=list(ui.run_workflow("Create a bounded status task","lightweight",[])); final=events[-1]; routing,agents,tools,timeline,history_html,history=final; print(json.dumps({"http_error":routing.startswith("HTTP error") or routing.startswith("Connection error"),"executor_present":"executor" in (routing+agents).lower() or "Proposed governed action" in timeline,"step_count_one":"1. Proposed governed action" in timeline,"history_count":len(final[5]),"event_count":len(events)}))'
 )"
 printf '%s' "$policy_ui_journey" | jq -e '
   .http_error == false
   and .executor_present == true
   and .step_count_one == true
+  and .history_count == 1
+  and .event_count >= 2
 ' >/dev/null
 
 stage="learner-policy-rollback"
