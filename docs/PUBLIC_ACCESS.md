@@ -36,17 +36,19 @@ scale-down cannot arbitrarily terminate a participant's long-lived connection.
 source, strict OIDC settings, Keycloak client callback, backend/lifecycle
 origin, and Arena cluster target. The token is loaded from the out-of-Git
 `partner-ai-launchpad/tunnel-token` Secret. `scripts/stop-tunnel.sh` is the
-explicit fail-closed emergency stop. Neither script changes the current
-Kubernetes context or patches the Console operator, `OAuthClient/console`, or
-`OAuth/cluster`.
+explicit fail-closed emergency stop. The base tunnel reconcile still does not
+patch `OAuth/cluster`. Public Console is a separate, explicitly gated Arena
+canary because it changes the cluster's supported custom Console route and
+canonical Console callback.
 
 The connector/process failover gate is `GREEN-live`: deleting one connector
 produced zero failures across 120 external checks while the replacement became
-Ready. Both connectors currently share `gnr2`, however, so Arena worker-level
-public availability remains `RED` until another worker is qualified and the
-same test passes with replicas on separate nodes. This distinction also means
-that a currently open terminal WebSocket may reconnect during connector loss;
-new and ordinary HTTP requests remained available in the certified test.
+Ready. The deployment is temporarily running one active connector on `rhgnr1`
+while `gnr2` remains cordoned; an old `gnr2` pod is still terminating. Arena
+worker-level public availability remains `RED` until two qualified workers host
+separate active replicas and the fault test is repeated. A currently open
+terminal WebSocket may reconnect during connector loss; new and ordinary HTTP
+requests remained available in the certified process-level test.
 
 The reconciliation also pins both the Keycloak CR hostname and the
 `launchpad-public` realm `frontendUrl` to the permanent origin. Verification
@@ -83,10 +85,13 @@ Use one of these mutually exclusive production patterns:
 Both patterns require a single-origin URL contract. The selected named-tunnel
 implementation uses `https://labs.smg-helix.ai/labs/<catalog>-<order>`. The entitlement gateway
 must route order paths to private seat services and preserve WebSocket traffic.
-Keycloak/OIDC callback URLs must use the same stable origin. Native OpenShift
-Console exposure either needs separately approved exact Console and OAuth
-hostnames or must remain behind the same tested gateway; dynamic seat Routes
-must never be published individually.
+Keycloak/OIDC callback URLs must use the same stable origin. Arena's one-seat
+Console canary uses the same tested gateway and exact public origin. The
+Console operator owns the custom `labs.smg-helix.ai` route and its OAuth
+callback; the tunnel translates only browser-facing locations. The
+OpenShift-to-Keycloak `redirect_uri` remains bound to Arena's native OAuth
+callback so authorization-code redemption matches. Dynamic seat Routes must
+never be published individually.
 
 ### Multi-cluster participant routing
 
@@ -101,8 +106,10 @@ storage, and origin-health checks. Each OpenShift cluster must trust the same
 stable Keycloak issuer, map the same opaque participant username, and create
 RoleBindings only in that participant's assigned namespaces. Console/OAuth
 callbacks must use stable, explicitly approved hosts or a separately certified
-same-origin proxy. Public Console-through-tunnel remains outside the September
-pilot gate.
+same-origin proxy. Arena Public Console-through-tunnel is GREEN-live for one
+seat, including the embedded Showroom operator tab and namespace isolation.
+Brutus remains fail-closed until it has its own stable Console/OAuth front
+door; the Arena router must never send a Brutus participant to Arena's Console.
 
 Use one account-managed named Cloudflare Tunnel with redundant connectors and
 explicit path/hostname rules, or one stable front door whose private network
@@ -125,9 +132,11 @@ and [Quick Tunnel limitations](https://developers.cloudflare.com/cloudflare-one/
 
 - Contract: `contracts/public-access-v1.yaml`
 - Behavior: `features/public_lab_access.feature`
-- RED/GREEN record: `evidence/public-access/validation-matrix-v7.yaml`
+- RED/GREEN record: `evidence/public-access/validation-matrix-v8.yaml`
 - Component suites: `backend/tests/test_public_access.py` and
   `backend/tests/test_public_tunnel_contract.py`
+- Arena Console canary:
+  `evidence/runs/arena-public-console-one-seat-green-live-20260914.json`
 
 General availability requires every critical matrix row at `GREEN-live`, a
 100/100 rubric, zero high/critical findings, three consecutive 25-seat browser

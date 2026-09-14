@@ -16,7 +16,7 @@ import os
 import re
 import ssl
 import traceback
-from urllib.parse import quote, urlsplit
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 import httpx
 import websockets
@@ -167,7 +167,36 @@ def _rewrite_url(value: str, tunnel_host: str) -> str:
         value,
     )
     value = value.replace(f"https://{tunnel_host}/oauth/oauth/", f"https://{tunnel_host}/oauth/")
-    return value
+    return _rewrite_nested_redirect_uri(value, tunnel_host)
+
+
+def _rewrite_nested_redirect_uri(value: str, tunnel_host: str) -> str:
+    """Keep the Console callback on the public same-origin proxy.
+
+    The OpenShift-to-Keycloak callback deliberately stays bound to Arena's
+    native OAuth URL. Keycloak's browser-facing Location header is translated
+    later by the plain-text origin rewrite. Rewriting this nested value would
+    bind the authorization code to the public URL while OpenShift redeems it
+    with the native URL, and Keycloak correctly rejects that token exchange.
+    """
+    parsed = urlsplit(value)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc or not parsed.query:
+        return value
+    rewrites = {
+        f"https://{ARENA_CONSOLE_HOST}/auth/callback": (
+            f"https://{tunnel_host}/auth/callback"
+        ),
+    }
+    query = parse_qsl(parsed.query, keep_blank_values=True)
+    updated = [
+        (key, rewrites.get(item, item) if key == "redirect_uri" else item)
+        for key, item in query
+    ]
+    if updated == query:
+        return value
+    return urlunsplit(
+        (parsed.scheme, parsed.netloc, parsed.path, urlencode(updated), parsed.fragment)
+    )
 
 
 def _canonical_public_path(path: str) -> str:

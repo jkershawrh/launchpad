@@ -2,6 +2,7 @@ import importlib.util
 import json
 from pathlib import Path
 import subprocess
+from urllib.parse import parse_qs, quote, urlsplit
 
 import yaml
 
@@ -279,6 +280,8 @@ def test_arena_overlay_persists_the_named_public_origin_and_strict_oidc_contract
     assert config["PUBLIC_ACCESS_PILOT_CLUSTER"] == "arena"
     assert arena["public_access_enabled"] is True
     assert arena["public_ingress_domain"] == "labs.smg-helix.ai"
+    assert arena["public_console_url"] == PUBLIC_ORIGIN
+    assert arena["public_oauth_url"] == f"{PUBLIC_ORIGIN}/oauth"
     assert env["OAUTH2_PROXY_OIDC_ISSUER_URL"] == (
         f"{PUBLIC_ORIGIN}/realms/launchpad-public"
     )
@@ -336,7 +339,7 @@ def test_named_tunnel_source_has_no_disposable_hostname_discovery():
     assert "grep -Eo" not in source
 
 
-def test_console_router_rewrites_origins_but_preserves_encoded_redirect_uri():
+def test_console_router_rewrites_origins_and_the_exact_console_redirect_uri():
     router = _router_module()
     tunnel_host = "pilot.trycloudflare.com"
     encoded_callback = (
@@ -351,7 +354,9 @@ def test_console_router_rewrites_origins_but_preserves_encoded_redirect_uri():
     rewritten = router._rewrite_url(source, tunnel_host)
 
     assert rewritten.startswith(f"https://{tunnel_host}/oauth/authorize")
-    assert encoded_callback in rewritten
+    assert parse_qs(urlsplit(rewritten).query)["redirect_uri"] == [
+        f"https://{tunnel_host}/auth/callback"
+    ]
 
 
 def test_console_router_uses_root_spa_paths_after_oauth_callback():
@@ -424,6 +429,39 @@ def test_console_url_rewrite_preserves_json_boundaries():
         f"https://{tunnel_host}/k8s/ns/participant-seat/core~v1~Pod"
     )
     assert parsed["items"][0]["metadata"]["annotations"]["status"] == "ready"
+
+
+def test_console_callback_is_public_but_idp_callback_binding_stays_native():
+    router = _router_module()
+    tunnel_host = "labs.example.test"
+
+    console_login = router._rewrite_url(
+        "https://oauth-openshift.apps.arena.fm2aihpcsed.com/oauth/authorize"
+        "?client_id=console&redirect_uri="
+        + quote(
+            "https://console-openshift-console.apps.arena.fm2aihpcsed.com/auth/callback",
+            safe="",
+        ),
+        tunnel_host,
+    )
+    console_redirect = parse_qs(urlsplit(console_login).query)["redirect_uri"]
+    assert console_redirect == [f"https://{tunnel_host}/auth/callback"]
+
+    keycloak_login = router._rewrite_url(
+        "https://keycloak.apps.arena.fm2aihpcsed.com/realms/launchpad-public/"
+        "protocol/openid-connect/auth?client_id=openshift-launchpad-public&redirect_uri="
+        + quote(
+            "https://oauth-openshift.apps.arena.fm2aihpcsed.com/"
+            "oauth2callback/launchpad-public",
+            safe="",
+        ),
+        tunnel_host,
+    )
+    keycloak_redirect = parse_qs(urlsplit(keycloak_login).query)["redirect_uri"]
+    assert keycloak_redirect == [
+        "https://oauth-openshift.apps.arena.fm2aihpcsed.com/"
+        "oauth2callback/launchpad-public"
+    ]
 
 
 def test_console_router_keeps_http_only_and_scopes_proxy_cookie_paths():
@@ -538,3 +576,16 @@ def test_named_tunnel_preserves_runtime_contract_when_reconciled():
     assert containers["cloudflared"]["volumeMounts"] == [
         {"name": "cloudflared-home", "mountPath": "/tmp"}
     ]
+
+
+def test_arena_console_canary_uses_supported_route_and_audited_order_flag():
+    script = (ROOT / "scripts/certify-arena-public-console.sh").read_text()
+
+    assert '--kubeconfig "$ARENA_KUBECONFIG"' in script
+    assert "https://api.arena.fm2aihpcsed.com:6443" in script
+    assert 'get secret "$CONSOLE_TLS_SECRET"' in script
+    assert "patch console.operator.openshift.io cluster --type=merge" in script
+    assert "wait clusteroperator/console --for=condition=Available=True" in script
+    assert "get oauthclient console" in script
+    assert "/public-access/admin/orders/$order_id/console" in script
+    assert "patch oauthclient" not in script.casefold()

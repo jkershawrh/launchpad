@@ -471,6 +471,7 @@ def test_owner_summary_counts_only_active_claims(monkeypatch):
         expires_at=datetime.utcnow() + timedelta(hours=1),
         seat_limit=2,
         code_version=1,
+        public_console_enabled=False,
     )
     fake_service = SimpleNamespace(
         get_policy=lambda order_id: policy,
@@ -668,6 +669,30 @@ def test_public_access_never_falls_back_to_private_console_url():
     assert "public_console_url or cluster.console_url" not in source
     assert "console_url = target.public_console_url" in source
     assert "console_url = cluster.public_console_url" in source
+
+
+def test_public_console_is_fail_closed_and_can_be_enabled_per_order():
+    access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.test",
+        shared_path_mode=True,
+    )
+    policy, _ = access.create_policy(
+        order_id="console-canary-order",
+        order_type="individual",
+        catalog_slug="operator-canary",
+        seat_refs=["seat-1"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+
+    assert policy.public_console_enabled is False
+
+    enabled = access.set_public_console_enabled(policy.order_id, True)
+    assert enabled.public_console_enabled is True
+    assert access.get_policy(policy.order_id).public_console_enabled is True
+
+    disabled = access.set_public_console_enabled(policy.order_id, False)
+    assert disabled.public_console_enabled is False
 
 
 def test_backend_restart_recovers_policy_identity_entitlement_and_session():

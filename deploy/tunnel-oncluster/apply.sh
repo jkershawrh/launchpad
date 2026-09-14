@@ -81,8 +81,8 @@ if len(arena) != 1:
 cluster = arena[0]
 cluster["public_access_enabled"] = True
 cluster["public_ingress_domain"] = os.environ["PUBLIC_HOST"]
-cluster["public_console_url"] = ""
-cluster["public_oauth_url"] = ""
+cluster["public_console_url"] = os.environ["PUBLIC_ORIGIN"]
+cluster["public_oauth_url"] = os.environ["PUBLIC_ORIGIN"] + "/oauth"
 print(json.dumps({"data": {"clusters.yaml": yaml.safe_dump(config, sort_keys=False)}}))
 ')
 oc patch configmap launchpad-cluster-targets -n "$NAMESPACE" \

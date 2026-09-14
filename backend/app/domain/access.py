@@ -28,6 +28,7 @@ class AccessPolicy(BaseModel):
     code_hash: str
     code_version: int = 1
     enabled: bool = True
+    public_console_enabled: bool = False
     seat_refs: list[str]
     public_url: str
     expires_at: datetime

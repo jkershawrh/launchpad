@@ -63,6 +63,24 @@ paths:
       responses:
         '200': {description: Updated public-order summary}
         '400': {description: Invalid origin or missing policy}
+  /api/v1/public-access/admin/orders/{order_id}/console:
+    patch:
+      operationId: setPublicConsoleCanary
+      description: Admin-only per-order gate for a separately certified public OpenShift Console path.
+      parameters:
+        - {name: order_id, in: path, required: true, schema: {type: string}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [enabled]
+              properties:
+                enabled: {type: boolean, default: false}
+      responses:
+        '200': {description: Updated public-order summary}
+        '404': {description: Public order does not exist}
 components:
   securitySchemes:
     brokerKey: {type: apiKey, in: header, name: X-Access-Broker-Key}

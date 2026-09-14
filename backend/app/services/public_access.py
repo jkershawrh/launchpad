@@ -404,6 +404,24 @@ class PublicAccessService:
             self._audit("rotate", order_id, "completed")
             return plaintext
 
+    def set_public_console_enabled(self, order_id: str, enabled: bool) -> AccessPolicy:
+        """Gate public OpenShift Console access to one explicitly certified order."""
+        self._refresh()
+        with self._lock:
+            policy = self._policies.get(order_id)
+            if not policy:
+                raise ValueError("Access policy not found")
+            policy = policy.model_copy(update={"public_console_enabled": enabled})
+            self._policies[order_id] = policy
+            if self.store:
+                self.store.save_policy(policy)
+            self._audit(
+                "public_console",
+                order_id,
+                "enabled" if enabled else "disabled",
+            )
+            return policy
+
     def remove_participant(self, order_id: str, participant_id: str) -> None:
         self._refresh()
         with self._lock:

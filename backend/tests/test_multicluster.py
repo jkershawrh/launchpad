@@ -399,7 +399,7 @@ def test_repository_cluster_config_registers_remote_targets_fail_closed():
     }
 
 
-def test_arena_overlay_enables_brutus_for_internal_pilot_only():
+def test_arena_overlay_enables_brutus_for_supervised_public_pilot():
     root = Path(__file__).resolve().parents[2]
     document = __import__("yaml").safe_load(
         (root / "deploy/launchpad/overlays/arena/arena-clusters.yaml").read_text()
@@ -412,7 +412,7 @@ def test_arena_overlay_enables_brutus_for_internal_pilot_only():
     assert targets["arena"]["local"] is True
     assert targets["oberon"]["enabled"] is False
     assert targets["brutus"]["enabled"] is True
-    assert targets["brutus"]["public_access_enabled"] is False
+    assert targets["brutus"]["public_access_enabled"] is True
     assert targets["flightpath"]["enabled"] is False
     assert targets["flightpath"]["public_access_enabled"] is False
     assert "dr-standby" in targets["flightpath"]["capabilities"]

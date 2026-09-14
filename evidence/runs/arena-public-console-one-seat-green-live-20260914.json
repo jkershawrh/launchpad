@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "evidence_id": "PA-CONSOLE-009-ARENA-20260914",
+  "observed_at": "2026-09-14T14:08:26Z",
+  "result": "GREEN-live-one-seat-arena",
+  "source": {
+    "base_commit": "4bacaff2ff4f8b2577d3a1e9fca3c6b24b845304",
+    "working_tree_changes_pending_commit": true,
+    "backend_image": "sha256:9ab9fa6064a6f402f04256247410a4af033652a2d4926de642d536d314c3a807",
+    "tunnel_router_image": "sha256:a71bcaea9cbec67e3bffdfe1de8c2236df57c5af4cf3bae242f4652beadb9f38",
+    "cloudflared_image": "sha256:b7a6db450ae2e2f773d4fbe9ffb48e7b5fc451e17329daab1b4dda5a2487e2cc",
+    "keycloak_version": "26.7.2",
+    "keycloak_image": "sha256:a8ad6755438eb0e94d708b379cfec1462ab15b95210df43eaf13113c3a53e586"
+  },
+  "scope": {
+    "cluster": "arena",
+    "catalog_item": "intel-xeon6-agent-201",
+    "workshop_id": "47414b8f-26f0-4862-8d3a-2f073e5dc58c",
+    "seat_session_id": "5d20ca88-523c-4f8b-abaf-2ce568200429",
+    "namespace": "launchpad-public-cert-tenant-intel-xeon6-agent-5d20ca",
+    "public_origin": "https://labs.smg-helix.ai",
+    "participant_email": "synthetic value removed from evidence",
+    "participant_identity": "synthetic value removed after certification"
+  },
+  "red": {
+    "observed_at": "2026-09-14T13:57:13Z",
+    "browser_result": "OpenShift authentication error",
+    "oauth_server_result": "Incorrect redirect_uri",
+    "root_cause": "The proxy rewrote the nested OpenShift-to-Keycloak callback before authorization, so Keycloak bound the code to the public URL while OpenShift redeemed it with Arena's native callback."
+  },
+  "green": {
+    "local_contract_tests": {
+      "command": ".venv/bin/pytest -q backend/tests/test_public_tunnel_contract.py backend/tests/test_public_access.py backend/tests/test_public_gateway.py backend/tests/test_multicluster.py",
+      "passed": 115,
+      "failed": 0
+    },
+    "backend_nonlocal_regression": {
+      "command": ".venv/bin/pytest -q backend/tests -m 'not local' --ignore=backend/tests/test_demo_migration.py",
+      "passed": 1432,
+      "skipped": 8,
+      "deselected": 13,
+      "failed": 0
+    },
+    "cluster_operators": {
+      "console": {"available": true, "degraded": false, "progressing": false},
+      "authentication": {"available": true, "degraded": false, "progressing": false}
+    },
+    "console_route": {
+      "host": "labs.smg-helix.ai",
+      "service": "console",
+      "termination": "reencrypt"
+    },
+    "browser_journey": [
+      "Claimed one existing unclaimed Arena workshop seat with a synthetic participant identity.",
+      "Opened the Showroom through the permanent public origin.",
+      "Selected launchpad-public on the OpenShift login page.",
+      "Completed Keycloak SSO without a second participant-code prompt.",
+      "Reached the assigned namespace Pods page.",
+      "Reloaded the Showroom and displayed the Pods page inside the OpenShift Console operator tab without a redirect loop, 404, or authentication error."
+    ],
+    "rbac": {
+      "get_pods_assigned_namespace": "yes",
+      "create_deployments_assigned_namespace": "yes",
+      "get_pods_control_plane_namespace": "no",
+      "get_cluster_nodes": "no"
+    },
+    "cleanup": {
+      "entitlement": "revoked",
+      "launchpad_identity": "disabled",
+      "assigned_namespace_access_after_removal": "no",
+      "keycloak_user": "deleted",
+      "openshift_identity": "deleted",
+      "openshift_user": "deleted",
+      "workshop_reclaimed": false,
+      "seat_reopened": true
+    }
+  },
+  "certification_boundary": [
+    "This certifies one Arena participant and one existing Build an AI Agent seat, not 25 simultaneous Console users.",
+    "Serve LLMs uses the same Arena Console path and was enabled only after this canary; its participant journey was not repeated in this evidence run.",
+    "Brutus Console/OAuth is not proxied by the Arena tunnel and remains fail-closed.",
+    "The Console custom-route TLS Secret is live operational state and must be replaced by durable certificate management before production.",
+    "The active tunnel Deployment is temporarily one replica while worker-level resilience remains under repair."
+  ]
+}

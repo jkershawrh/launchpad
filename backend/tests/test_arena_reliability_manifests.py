@@ -135,7 +135,7 @@ def test_backend_single_replica_limit_is_explicit():
     }
 
 
-def test_arena_backend_runs_on_the_stable_execution_worker():
+def test_arena_backend_can_reschedule_across_certified_workers():
     documents = _documents("patch-runtime.yaml")
     backend = next(
         item
@@ -143,22 +143,19 @@ def test_arena_backend_runs_on_the_stable_execution_worker():
         if item["kind"] == "Deployment" and item["metadata"]["name"] == "backend"
     )
 
-    assert backend["spec"]["template"]["spec"]["nodeSelector"] == {
-        "kubernetes.io/hostname": "gnr2.fm2aihpcsed.com"
-    }
+    assert "nodeSelector" not in backend["spec"]["template"]["spec"]
 
 
-def test_arena_postgres_runs_on_the_stable_execution_worker():
-    documents = _documents("patch-runtime.yaml")
-    postgres = next(
-        item
-        for item in documents
-        if item["kind"] == "Deployment" and item["metadata"]["name"] == "postgres"
+def test_arena_postgres_can_reschedule_across_certified_workers():
+    runtime_documents = _documents("patch-runtime.yaml")
+    assert not any(
+        item["kind"] == "Deployment" and item["metadata"]["name"] == "postgres"
+        for item in runtime_documents
     )
-
-    assert postgres["spec"]["template"]["spec"]["nodeSelector"] == {
-        "kubernetes.io/hostname": "gnr2.fm2aihpcsed.com"
-    }
+    postgres = yaml.safe_load(
+        (ROOT / "deploy/launchpad/base/postgres-deployment.yaml").read_text()
+    )
+    assert "nodeSelector" not in postgres["spec"]["template"]["spec"]
 
 
 def test_arena_reconciler_runs_on_the_stable_execution_worker():

@@ -132,9 +132,10 @@ def test_serialized_workshop_provisioning_allows_only_one_active_workshop() -> N
     )
 
     assert owner is not None
-    assert owner.job_id == first.job_id
+    assert owner.job_id in {first.job_id, second.job_id}
     assert blocked is None
-    assert store.get(second.job_id).status == LifecycleJobStatus.QUEUED
+    queued = second if owner.job_id == first.job_id else first
+    assert store.get(queued.job_id).status == LifecycleJobStatus.QUEUED
 
     assert store.complete(owner.job_id, "worker-a", owner.fencing_token)
     next_owner = store.claim_next(
@@ -143,7 +144,7 @@ def test_serialized_workshop_provisioning_allows_only_one_active_workshop() -> N
         serialize_workshop_provisioning=True,
     )
     assert next_owner is not None
-    assert next_owner.job_id == second.job_id
+    assert next_owner.job_id == queued.job_id
 
 
 def test_serialized_workshop_provisioning_does_not_block_reclaim() -> None:

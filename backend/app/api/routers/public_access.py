@@ -43,6 +43,10 @@ class PublicUrlRequest(BaseModel):
     public_url: str
 
 
+class PublicConsoleRequest(BaseModel):
+    enabled: bool
+
+
 def _require_broker(key: str) -> None:
     expected = os.getenv("ACCESS_BROKER_KEY", "")
     if not expected or not __import__("secrets").compare_digest(expected, key):
@@ -174,6 +178,7 @@ def _owner_summary(order_id: str) -> dict:
         "seat_limit": policy.seat_limit,
         "claim_count": len(entitlements),
         "code_version": policy.code_version,
+        "public_console_enabled": policy.public_console_enabled,
     }
 
 
@@ -270,6 +275,19 @@ def update_public_url(
         public_access_service.set_public_url(order_id, body.public_url)
     except ValueError as exc:
         raise HTTPException(400, str(exc))
+    return _owner_summary(order_id)
+
+
+@router.patch("/admin/orders/{order_id}/console")
+def update_public_console(
+    order_id: str,
+    body: PublicConsoleRequest,
+    _user: User = Depends(require_admin),
+):
+    try:
+        public_access_service.set_public_console_enabled(order_id, body.enabled)
+    except ValueError as exc:
+        raise HTTPException(404, str(exc))
     return _owner_summary(order_id)
 
 
@@ -413,7 +431,7 @@ def resolve_gateway_target(
         # Public participants must never be redirected to the cluster's
         # private Console route. The tab stays unavailable until this target
         # has a separately certified public Console/OAuth path.
-        console_url = target.public_console_url
+        console_url = target.public_console_url if policy.public_console_enabled else ""
         if console_url and lab_session.namespace:
             console_url = f"{console_url.rstrip('/')}/k8s/ns/{lab_session.namespace}/core~v1~Pod"
         if workspace_url and (
@@ -499,7 +517,7 @@ def resolve_oidc_identity(
         cluster = provisioning_service.cluster_registry.get(lab_session.cluster_ref)
         # Fail closed rather than leaking an internal Console hostname into a
         # public participant session.
-        console_url = cluster.public_console_url
+        console_url = cluster.public_console_url if policy.public_console_enabled else ""
         if console_url and lab_session.namespace:
             console_url = f"{console_url.rstrip('/')}/k8s/ns/{lab_session.namespace}/core~v1~Pod"
         if workspace_url and (

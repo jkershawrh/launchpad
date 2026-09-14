@@ -64,8 +64,9 @@ context was never changed.
 | 60-minute concurrent soak | GREEN-live | 3,613 seconds, 51/51 samples, 75/75 Showrooms each sample, zero readiness/model failures, and no restart increase |
 | Manual requester/participant frontend | RED-pending | Scheduled for the next-day manual acceptance session |
 | Public DNS/TLS/OIDC infrastructure | GREEN-live | Permanent `labs.smg-helix.ai` named tunnel, trusted TLS, strict gateway issuer, discovery, and callback configuration verified |
-| Public connector/process resilience | GREEN-live | Two connection-aware named-tunnel replicas, rolling replacement, `minAvailable: 1`, and zero failures across 120 external checks during one controlled connector deletion. Both replicas share gnr2, so worker-level resilience remains RED. |
-| Public claim/browser access | GREEN-live (one seat) | A fresh two-seat Serve LLMs v1.0.5 order passed branded email/code login, signed OIDC callback, claim recovery, My Lab Access, Showroom, terminal, cross-seat denial, embedded AnythingLLM, a live `granite-2b-cpu` response, and logout. Both seats are now claimed; the second participant's full manual journey has not yet been recorded. Public Console and 25-claim concurrency remain separate gates. |
+| Public connector/process resilience | GREEN-live historical / RED-current topology | The two-replica fault run had zero failures across 120 checks. The deployment is temporarily one active connector on rhgnr1 while gnr2 remains cordoned and an old connector pod terminates there, so current worker-level resilience is RED. |
+| Public claim/browser access | GREEN-live (one seat) | A fresh two-seat Serve LLMs v1.0.5 order passed branded email/code login, signed OIDC callback, claim recovery, My Lab Access, Showroom, terminal, cross-seat denial, embedded AnythingLLM, a live `granite-2b-cpu` response, and logout. Public 25-claim concurrency remains a separate gate. |
+| Arena public OpenShift Console | GREEN-live (one-seat canary) | A Build an AI Agent participant completed Keycloak SSO and reached the assigned Pods page inside the Showroom Console tab. Own-namespace read/edit returned yes; Launchpad-namespace and node access returned no. Synthetic identity artifacts were removed and the seat reopened. Brutus and 25-user Console concurrency remain RED. |
 | Three exact functional rehearsals | GREEN-3-of-3 | Three successful exact 75-participant runs are recorded; run 3 retained immutable RED-to-GREEN ingress evidence |
 
 ## Pilot rubric
@@ -131,8 +132,9 @@ DNS/tunnel and SSO prerequisites are intentionally enabled.
    26.7.2 image now has its CR hostname and realm `frontendUrl` pinned to the
    permanent public origin.
 4. Certify the 25-simultaneous-claim burst separately; it is not inferred from
-   the successful one-seat browser journey. Native OpenShift Console/OAuth is
-   outside the public September pilot and requires separate change approval.
+   either successful one-seat browser journey. Arena Console is one-seat
+   GREEN-live; Brutus Console, 25-user Console concurrency, and durable custom
+   route certificate rotation are still separate gates.
 5. Keep `rhgnr1` cordoned outside supervised provisioning and participant test
    windows; the runbook should uncordon it only after Ready/pressure preflight.
 
@@ -165,6 +167,7 @@ A disposable Arena smoke pod reported Keycloak 26.7.2, confirmed the provider
 JAR, exited successfully with zero restarts, and was deleted.
 After commit `3cc7787`, GitHub's Dependabot rescan reports zero open alerts on
 main, down from 105 at the RED baseline.
-The running Keycloak Custom Resource intentionally remains on 26.4.2: the
-authenticator uses an internal Keycloak SPI, so a live change requires the
-manual browser and rollback gate rather than an unobserved rollout.
+The running Keycloak Custom Resource now uses the immutable 26.7.2 digest. The
+September 14 Arena Console canary completed the supervised browser sign-in gate
+against that image; rollback and restart recovery remain required for a full
+production promotion because the authenticator uses an internal Keycloak SPI.
