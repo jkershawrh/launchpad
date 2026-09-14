@@ -11,7 +11,7 @@ CHART = ROOT / "deploy/workloads/multi-agent-seat"
 BUILD_CONFIG = ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml"
 
 SOURCE_REPOSITORY = "https://github.com/jkershawrh/multi-agent-quickstart.git"
-SOURCE_REVISION = "243870fa4675987bf77c310a53deee672a4f4af2"
+SOURCE_REVISION = "159113ab9f8df39e09e08926b51c7c32da0fc1af"
 IMAGE_REPOSITORY = (
     "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/"
     "multi-agent-quickstart"
@@ -316,5 +316,5 @@ def test_multi_agent_arena_build_is_pinned_and_adds_model_bearer_support():
     assert "requirements.txt" not in dockerfile
     assert ":latest" not in dockerfile
     assert build["spec"]["output"]["to"]["name"] == (
-        "multi-agent-quickstart:source-243870f"
+        "multi-agent-quickstart:source-159113a"
     )

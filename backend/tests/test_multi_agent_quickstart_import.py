@@ -23,7 +23,7 @@ def test_multi_agent_quickstart_is_active_for_public_event_orders():
     assert catalog == build_catalog_item(intake)
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert catalog["display_name"] == "Build Multi-Agent AI Systems with Open Protocols"
-    assert catalog["version"] == "0.2.12"
+    assert catalog["version"] == "0.2.13"
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
     assert catalog["metadata"]["activation_blockers"] == []
@@ -48,7 +48,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
 
     assert metadata["source_references"]["original_lab"] == {
         "repo_url": "https://github.com/jkershawrh/multi-agent-quickstart.git",
-        "revision": "243870fa4675987bf77c310a53deee672a4f4af2",
+        "revision": "159113ab9f8df39e09e08926b51c7c32da0fc1af",
         "path": ".",
     }
     assert metadata["workload_repo"] == "https://github.com/rhpds/launchpad.git"
@@ -75,7 +75,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
                 "partner-ai-launchpad/multi-agent-quickstart"
             ),
             "digest": (
-                "sha256:09c25dbaf402ac5def6a39183b624b2bd115938339c283d9990c3877f978e12e"
+                "sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661"
             ),
         }
     }
@@ -93,7 +93,7 @@ def test_multi_agent_showroom_is_native_launchpad_content():
     assert "releases/download/patternfly-6/" in playbook["ui"]["bundle"]["url"]
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-showroom-multi-agent-v1.0.3"
+        "pilot-2026-09-17-showroom-multi-agent-v1.0.4"
     )
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
     assert component["asciidoc"]["attributes"]["maas_model"] == "%maas_model%"
@@ -213,9 +213,13 @@ def test_track_one_teaches_the_participant_ui_workflow_and_checkpoint_concepts()
     track_1_text = " ".join(track_1.split())
     workflows_text = " ".join(workflows.split())
 
-    assert "entering each request in the *Query* box on the *Workflow* tab" in track_1_text
-    assert "clicking *Run Workflow*" in track_1_text
-    for panel in ("Routing Decision", "Agent Results", "MCP Tool Data"):
+    assert "entering each request in the *Fictional incident or operations request* box" in track_1_text
+    assert "clicking *Investigate Incident*" in track_1_text
+    for panel in (
+        "Incident Response Package",
+        "Supporting Evidence",
+        "Why This Response Path Was Selected",
+    ):
         assert f"=== {panel}" in track_1
     for explanation in (
         "SIMPLE`, `MEDIUM`, `COMPLEX`, or `REASONING",
@@ -226,10 +230,33 @@ def test_track_one_teaches_the_participant_ui_workflow_and_checkpoint_concepts()
     ):
         assert explanation in track_1_text
 
-    assert "Open *System Status* and click *Refresh*" in workflows_text
+    assert "open *Technical Details*, expand *Runtime health*, and click *Refresh*" in workflows_text
     assert "Agents discovered: 3" in workflows_text
     assert "research`, `analyst`, and `executor" in workflows_text
     assert "health panel" not in workflows_text
+
+
+def test_multi_agent_journey_leads_with_a_business_workload_and_takeaway():
+    pages = CONTENT_ROOT / "modules/ROOT/pages"
+    index = (pages / "index.adoc").read_text()
+    track_1 = (pages / TRACKS["track-1-local"]).read_text()
+    conclusion = (pages / "99-conclusion.adoc").read_text()
+    guide = "\n".join((index, track_1, conclusion))
+
+    for phrase in (
+        "fictional service incident",
+        "business workload",
+        "openshift workload",
+        "incident response package",
+        "human review",
+    ):
+        assert phrase in guide.lower()
+
+    assert "The system is domain-agnostic" not in index
+    assert "Gather Evidence" in track_1
+    assert "Assess Likely Causes" in track_1
+    assert "Prepare a Governed Action" in track_1
+    assert "reusable incident-response blueprint" in conclusion.lower()
 
 
 def test_mcp_walkthrough_uses_the_server_contract_tool_name():

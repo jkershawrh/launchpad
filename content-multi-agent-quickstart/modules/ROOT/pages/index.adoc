@@ -30,14 +30,29 @@ not order three separate environments or choose a different starting point.
   governance, and the production architecture.
 |===
 
-== What You Will Build
+== The Business Workload
 
-In this lab you will explore and customize a working multi-agent system on Red Hat OpenShift. Three specialized agents cooperate through the Agent-to-Agent (A2A) protocol, call external tools through the Model Context Protocol (MCP), and use semantic routing to choose the right workflow for each request.
+You are helping an IT operations team respond to a fictional service incident.
+Instead of asking one model for an unstructured answer, you will use a
+multi-agent workflow to gather evidence, assess likely causes, and prepare a
+governed action for human review. The result is an *incident response package*
+that an operator can inspect before approving any change.
 
-The system is domain-agnostic. The research, analyst, and executor agents provide a starting point that can be adapted to operations, healthcare, finance, customer support, or another approved use case.
+This business workload is the incident investigation and response process. The
+*OpenShift workload* is the set of application services that implements that
+process. Keeping those meanings separate makes it easier to connect the
+business outcome to the platform architecture you will operate later.
+
+Three specialized agents cooperate through the Agent-to-Agent (A2A) protocol,
+call governed data tools through the Model Context Protocol (MCP), and use
+semantic routing to choose an appropriate workflow depth. The fictional
+incident scenario is the primary journey; the same open pattern can later be
+adapted to another approved business process.
 
 By the end of the lab, you will be able to:
 
+* produce and review an incident response package;
+* explain how research, analysis, and action preparation contribute to it;
 * discover agents through A2A agent cards;
 * trace a request through one-agent and three-agent workflows;
 * call and inspect MCP tools;
@@ -83,7 +98,8 @@ The final command must return `{project_name}`. Launchpad has already authentica
 | Provides OpenAI-compatible inference on Intel hardware through Launchpad MaaS.
 
 | Participant UI
-| Lets you run workflows and inspect routing, agent results, tools, and health.
+| Lets you investigate an incident, review the response package and supporting
+  evidence, and inspect technical diagnostics when needed.
 |===
 
 == Your Guided Route

@@ -3,10 +3,11 @@
 
 == Purpose
 
-The source project's first track teaches the application pattern before adding
-platform concerns. It can run the orchestrator, three A2A agents, the MCP
-server, guardrails, and participant UI with Docker Compose and an optional
-local model.
+The source project's first track teaches the application pattern through a
+fictional IT operations incident. You will first produce something useful: an
+incident response package containing gathered evidence, likely causes, and a
+proposed governed action. Then you will inspect how the orchestrator, three A2A
+agents, MCP server, guardrails, and participant UI created it.
 
 In a Launchpad workshop you already have a *pre-provisioned OpenShift runtime*
 containing the same application services. You will inspect the local source
@@ -16,26 +17,51 @@ while preserving the source track's learning objectives.
 
 == Run Your First Workflow
 
-Open the *Multi-Agent Workspace* tab and run the following two sanitized
-requests one after another by entering each request in the *Query* box on the
-*Workflow* tab and clicking *Run Workflow*:
+Open the *Multi-Agent Workspace* tab. On the *Incident Workspace*, run the
+following scenarios by entering each request in the *Fictional incident or operations request* box and
+clicking *Investigate Incident*. Run the requests one after another so you can compare
+their completed timelines and response packages.
 
 [source,text]
 ----
-Create a short task to verify a fictional service health endpoint.
+Check the health of the fictional checkout service and prepare a verification task.
 ----
 
 [source,text]
 ----
-Research a fictional API latency increase, analyze likely causes, and create a remediation task.
+The fictional checkout API is slow after a deployment. Gather relevant evidence,
+assess likely causes, and prepare a safe remediation task for operator approval.
 ----
 
-Use `auto` routing for both. The first request should choose a shorter path;
-the second should involve research, analyst, and executor roles. Do not worry
-about every field yet—the rest of this phase explains what you are seeing.
+Leave the response depth on its automatic setting. The first request should
+choose a shorter path; the second should involve research, analyst, and
+executor roles. Watch *Live Incident Response Progress*: the stages complete
+one at a time because each agent receives the accumulated context from the
+previous stage.
 
 *Expected result:* both requests complete without a workflow error, and the
-*Routing Decision*, *Agent Results*, and *MCP Tool Data* boxes update.
+*Incident Response Package*, *Supporting Evidence*, and *Why this response
+path was selected* sections update. *Prior incident runs* preserves the
+completed history for comparison.
+
+== Read the Incident Response Package
+
+=== Gather Evidence
+
+The research agent collects relevant fictional records and operational
+knowledge. Its output is evidence for the next stage, not a final diagnosis.
+
+=== Assess Likely Causes
+
+The analyst correlates the gathered evidence, distinguishes observations from
+inferences, and identifies useful next steps. The analyst does not make a
+production change.
+
+=== Prepare a Governed Action
+
+The executor turns the accumulated context into a proposed task or response.
+The package ends at a human approval boundary: a qualified operator must verify
+the evidence and approve any real action.
 
 == Inspect the Application Topology
 
@@ -63,7 +89,7 @@ guardrails are called before and after model work.
 
 == Follow One Query Through the System
 
-When you click *Run Workflow*, the participant UI sends the query and selected
+When you click *Investigate Incident*, the participant UI sends the request and selected
 workflow type to the orchestrator. With `auto` selected, the semantic router
 classifies the request as `SIMPLE`, `MEDIUM`, `COMPLEX`, or `REASONING`. That
 classification selects both the workflow depth and the model tier: a simple
@@ -79,26 +105,26 @@ screen the generated response before it returns to the orchestrator. The
 result of one step becomes context for the next step, and the UI separates the
 combined response into three boxes.
 
-=== Routing Decision
+=== Why This Response Path Was Selected
 
-This box explains _why_ the request took its path. For `auto` routing it shows
+This expandable section explains _why_ the request took its path. For automatic routing it shows
 the active classifier, chosen workflow, selected model tier, classification
 signal scores, agents involved, step count, and total latency. Compare the two
 requests: the signal and workflow should change as the requested work becomes
 more complex. If static routing is shown, the selected workflow was used
 directly instead of a semantic classification.
 
-=== Agent Results
+=== Incident Response Package
 
-This box shows the ordered output from each participating agent. Each section
-names the agent and action and reports that step's latency. The research result
-becomes context for the analyst, and the accumulated context becomes input for
-the executor. These are AI-generated results, so the disclaimer is a reminder
-to verify recommendations rather than treat them as approved actions.
+This section shows the ordered contribution from each participating agent and
+the time and actual model used for each stage. The research result becomes
+context for the analyst, and the accumulated context becomes input for the
+executor. These are AI-generated results, so the human-review notice is a
+control boundary rather than permission to apply the recommendation.
 
-=== MCP Tool Data
+=== Supporting Evidence
 
-This box shows structured results returned by tools such as `lookup_record`,
+This section shows structured results returned by governed tools such as `lookup_record`,
 `search_knowledge_base`, or `create_task`. MCP keeps deterministic data lookup
 and actions outside the language model so they can be schema-controlled,
 authorized, tested, and audited independently. This is external tool data, not
@@ -117,6 +143,7 @@ the Launchpad terminal.
 
 You have completed Track 1 when you can explain:
 
+* what business result the incident workflow produces;
 * why each agent is independently discoverable;
 * how semantic routing changes workflow depth;
 * why MCP tools are separate from the model; and
@@ -124,6 +151,9 @@ You have completed Track 1 when you can explain:
 
 Use these observations to check your explanation:
 
+* The business result is an incident response package: gathered evidence,
+  assessed likely causes, and a proposed governed action that still requires
+  human review.
 * Each agent is independently discoverable because it publishes its own A2A
   agent card, service URL, and skills. The orchestrator learns that contract
   without importing the agent's implementation.

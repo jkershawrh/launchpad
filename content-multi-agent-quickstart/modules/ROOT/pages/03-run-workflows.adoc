@@ -2,10 +2,11 @@
 
 == Open the Participant UI
 
-Select the *Multi-Agent Workspace* tab. Open *System Status* and click
-*Refresh*. In the *System Health* box, confirm `Agents discovered: 3` and the
-agent names `research`, `analyst`, and `executor`. Then return to the
-*Workflow* tab before sending a request.
+Select the *Multi-Agent Workspace* tab. The *Incident Workspace* is the primary
+business view. If you want to verify the implementation before beginning, open
+*Technical Details*, expand *Runtime health*, and click *Refresh*. Confirm
+`Agents discovered: 3` and the agent names `research`, `analyst`, and
+`executor`, then return to *Incident Workspace*.
 
 Start with a simple fictional request:
 
@@ -14,13 +15,13 @@ Start with a simple fictional request:
 Create a short task to verify the health endpoint for a sample service.
 ----
 
-Choose `auto` routing. Inspect:
+Leave response depth on the automatic setting. Inspect:
 
-* the complexity label;
-* the selected workflow and model;
-* the agents involved;
-* the latency of each step; and
-* the AI-generated-content disclaimer.
+* the stages in *Live Incident Response Progress*;
+* the ordered *Incident Response Package*;
+* the governed *Supporting Evidence*;
+* why the response path and model tier were selected; and
+* the human-review boundary.
 
 == Compare Workflow Depth
 
@@ -32,7 +33,10 @@ Investigate a fictional API error spike in the EMEA test environment,
 analyze likely causes, and create a remediation task.
 ----
 
-Run it first as a lightweight workflow and then as a comprehensive workflow. The comprehensive path should involve research, analyst, and executor agents.
+Open *Advanced response options*. Run it first with a lightweight response
+depth and then with a comprehensive response depth. The comprehensive path
+should involve research, analyst, and executor agents. Compare the stage times
+and outputs in *Prior incident runs* rather than relying on a single total.
 
 == Call the API Directly
 
@@ -66,10 +70,10 @@ The orchestration layer owns workflow state. Agents receive bounded tasks throug
 
 == Workflow Checkpoint
 
-You are ready to continue when you can point to the routing choice, ordered
-agent results, MCP data, and per-step latency for a completed request—and
-explain why the comprehensive workflow has more steps than the lightweight
-workflow.
+You are ready to continue when you can point to the response package,
+supporting evidence, routing explanation, and per-stage latency for a completed
+incident—and explain why the comprehensive workflow has more stages than the
+lightweight workflow.
 
 [.next-nav]
 xref:04-tools-and-guardrails.adoc[Next: MCP Tools and Guardrails ->]

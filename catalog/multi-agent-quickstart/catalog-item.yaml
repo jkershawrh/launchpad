@@ -1,11 +1,11 @@
 catalog_item_id: multi-agent-quickstart
 display_name: Build Multi-Agent AI Systems with Open Protocols
-description: 'Follow three learning tracks in one environment: study the local multi-agent
-  application pattern, build and operate it on OpenShift, and explore its advanced
-  blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry, guardrails, and service
-  authentication on Intel infrastructure.'
+description: Investigate a fictional service incident with specialized agents, produce
+  an evidence-backed response package for human review, operate the workload on OpenShift,
+  and explore its advanced blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry,
+  guardrails, and service authentication on Intel infrastructure.
 category: guided_build
-version: 0.2.12
+version: 0.2.13
 status: active
 required_capabilities:
 - openshift
@@ -54,7 +54,7 @@ metadata:
   showroom_title: Build Multi-Agent AI Systems with Open Protocols
   namespace_slug: multi-agent
   showroom_content_repo_url: https://github.com/rhpds/launchpad.git
-  showroom_content_ref: pilot-2026-09-17-showroom-multi-agent-v1.0.3
+  showroom_content_ref: pilot-2026-09-17-showroom-multi-agent-v1.0.4
   showroom_content_playbook: site-multi-agent-quickstart.yml
   showroom_content_start_path: content-multi-agent-quickstart
   showroom_terminal_storage: false
@@ -109,7 +109,7 @@ metadata:
   workload_helm_values:
     image:
       repository: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/multi-agent-quickstart
-      digest: sha256:09c25dbaf402ac5def6a39183b624b2bd115938339c283d9990c3877f978e12e
+      digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
   workload_ignore_differences: []
   workload_runtime_secret_name: multi-agent-runtime
   workload_runtime_secret_sources:
@@ -129,9 +129,9 @@ metadata:
     orchestrator: multi-agent
   workload_readiness: []
   source_content_repo: https://github.com/rhpds/launchpad.git
-  source_content_revision: pilot-2026-09-17-showroom-multi-agent-v1.0.3
+  source_content_revision: pilot-2026-09-17-showroom-multi-agent-v1.0.4
   source_references:
     original_lab:
       repo_url: https://github.com/jkershawrh/multi-agent-quickstart.git
-      revision: 243870fa4675987bf77c310a53deee672a4f4af2
+      revision: 159113ab9f8df39e09e08926b51c7c32da0fc1af
       path: .

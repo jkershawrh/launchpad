@@ -182,7 +182,7 @@ spec:
     type: Git
     git:
       uri: "https://github.com/jkershawrh/multi-agent-quickstart.git"
-      ref: "243870fa4675987bf77c310a53deee672a4f4af2"
+      ref: "159113ab9f8df39e09e08926b51c7c32da0fc1af"
     contextDir: src
     dockerfile: |
       FROM registry.access.redhat.com/ubi9/python-311@sha256:7b6cb58d3ff034df7b300800bd89a469d9bd2f739d43250d76b9c9e805307ab5
@@ -214,7 +214,7 @@ spec:
     type: Docker
     dockerStrategy: {}
   output:
-    to: {kind: ImageStreamTag, name: "multi-agent-quickstart:source-243870f"}
+    to: {kind: ImageStreamTag, name: "multi-agent-quickstart:source-159113a"}
   resources:
     requests: {cpu: "1", memory: 2Gi, ephemeral-storage: 4Gi}
     limits: {cpu: "4", memory: 4Gi, ephemeral-storage: 12Gi}

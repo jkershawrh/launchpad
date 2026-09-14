@@ -12,6 +12,11 @@ You also discovered three agents through A2A cards, compared semantic routing
 paths, executed model-backed workflows, called MCP tools, verified a guardrail
 denial, and connected namespace RBAC with service and model authorization.
 
+Most importantly, you leave with a *reusable incident-response blueprint*:
+gather evidence, assess likely causes, prepare a governed action, and preserve
+human review before execution. The business workflow and the OpenShift
+workload are now connected without making the protocol details the product.
+
 == Production Path
 
 The source project is an educational quickstart. A production implementation should add supported identity federation, fine-grained service identity, durable telemetry, production guardrails, policy-controlled tool access, workload autoscaling, explicit data retention, and measured capacity limits.
