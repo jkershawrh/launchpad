@@ -32,7 +32,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.9",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.10",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -544,9 +544,9 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.9"
+    assert catalog["version"] == "1.0.10"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.9"
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.10"
     )
 
 
@@ -596,6 +596,17 @@ def test_cpu_serving_uses_the_anythingllm_v116_link_upload_contract():
     assert 'export ADDITIONAL_DOCUMENT_PATH=' in page
     assert "custom-documents/url-www.dol.gov-agencies-whd-fmla.json" not in page
     assert page.count("/update-embeddings") >= 2
+
+
+def test_cpu_serving_document_ingestion_requires_manual_api_key_entry():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/05-load-documents.adoc"
+    ).read_text()
+
+    assert "Copy the generated key" in page
+    assert "replace `your-api-key-here`" in page
+    assert 'test "$ANYTHINGLLM_API_KEY" != "your-api-key-here"' in page
+    assert 'role="execute"' not in page
 
 
 def test_cpu_serving_terminal_uses_namespace_service_for_anythingllm_api():
