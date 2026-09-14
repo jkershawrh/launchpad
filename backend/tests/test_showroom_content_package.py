@@ -32,7 +32,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.10",
+        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.11",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -572,9 +572,9 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.10"
+    assert catalog["version"] == "1.0.11"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.10"
+        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.11"
     )
 
 
@@ -634,7 +634,11 @@ def test_cpu_serving_document_ingestion_requires_manual_api_key_entry():
     assert "Copy the generated key" in page
     assert "replace `your-api-key-here`" in page
     assert 'test "$ANYTHINGLLM_API_KEY" != "your-api-key-here"' in page
-    assert 'role="execute"' not in page
+    assert (
+        '[source,bash]\n----\nexport ANYTHINGLLM_API_KEY="your-api-key-here"'
+        in page
+    )
+    assert page.count('role="execute"') == 6
 
 
 def test_cpu_serving_terminal_uses_namespace_service_for_anythingllm_api():
