@@ -48,7 +48,9 @@ remote identities described below.
    `image-registry.openshift-image-registry.svc` address is invalid for DR.
    Confirm the private registry robot can pull each digest, then create
    `launchpad-registry-pull` out of band in `partner-ai-launchpad`; the overlay
-   references the Secret but deliberately does not create or contain it.
+   references the Secret but deliberately does not create or contain it. Pin
+   third-party database and OAuth proxy images by digest as well; no standby
+   workload may render a mutable tag.
 3. Restore the encrypted Secret set through the approved secret-management
    path: database credentials, public-access signing/encryption material,
    OAuth/OIDC clients and cookie keys, CA bundles, the dedicated registry robot

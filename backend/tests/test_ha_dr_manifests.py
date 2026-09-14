@@ -173,6 +173,27 @@ def test_flightpath_dr_uses_digest_pinned_external_first_party_images() -> None:
     }
 
 
+def test_every_flightpath_workload_image_is_digest_pinned() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-dr")
+    images: list[str] = []
+
+    for item in items:
+        pod_spec = None
+        if item["kind"] == "Deployment":
+            pod_spec = item["spec"]["template"]["spec"]
+        elif item["kind"] == "CronJob":
+            pod_spec = item["spec"]["jobTemplate"]["spec"]["template"]["spec"]
+        if pod_spec is not None:
+            images.extend(
+                container["image"]
+                for container in pod_spec.get("containers", [])
+            )
+
+    assert images
+    assert all("@sha256:" in image for image in images)
+    assert not any(":latest" in image for image in images)
+
+
 def test_flightpath_dr_private_registry_access_is_explicit_and_out_of_band() -> None:
     items = render("deploy/launchpad/overlays/flightpath-dr")
     workloads = [

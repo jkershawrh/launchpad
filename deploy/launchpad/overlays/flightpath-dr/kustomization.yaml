@@ -17,6 +17,15 @@ images:
   - name: admin
     newName: quay.io/redhat-gpte/launchpad-admin
     digest: sha256:d76bf69b7720efced8ed328e0a0ac863d2e6f96b056f67bb3e6507a73a37ee4e
+  - name: postgres
+    newName: docker.io/library/postgres
+    digest: sha256:075f7ba66bc9b3ce7d6b8b635208ff61cd7cf1a67d71ec530eec5d7ae0cbe571
+  - name: registry.redhat.io/openshift4/ose-oauth-proxy
+    newName: registry.redhat.io/openshift4/ose-oauth-proxy
+    digest: sha256:e68637bc28cd2e0820d75650ed3019b64247d9b2760e455bf6c1af7d5d66b7af
+  - name: quay.io/oauth2-proxy/oauth2-proxy
+    newName: quay.io/oauth2-proxy/oauth2-proxy
+    digest: sha256:786bed0f000c0f8a7b31619244ebab02406a8856a4faf3f5fb1df61fbd6c30ed
 
 patches:
   - path: patch-configmap.yaml
