@@ -20,7 +20,7 @@ INTEL_GUIDED_LABS = [
         "workspace_route": "app",
         # The Agent 201 pilot fix release keeps terminal API calls inside the
         # namespace and keeps the browser UI beneath the public order mount.
-        "content_ref": "pilot-2026-09-17-showroom-agent201-v1.0.2",
+        "content_ref": "pilot-2026-09-17-showroom-agent201-v1.0.3",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -357,9 +357,9 @@ def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass()
         for filename in ("03-wire-agent.adoc", "04-test-and-tune.adoc")
     )
 
-    assert catalog["version"] == "1.0.6"
+    assert catalog["version"] == "1.0.7"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-showroom-agent201-v1.0.2"
+        "pilot-2026-09-17-showroom-agent201-v1.0.3"
     )
     assert 'ADVISOR_API_URL="http://solution-agent:8082"' in exercises
     assert exercises.count("${ADVISOR_API_URL}/api/v1/advise") == 5
@@ -383,6 +383,21 @@ def test_agent_201_explains_when_and_how_to_open_the_public_solution_ui():
     assert "Open Lab" in page
     assert "refresh the *Solution Architect* tab" in page
     assert "Do not open the raw OpenShift Route" in page
+
+
+def test_agent_201_shows_where_the_learner_edits_and_mounts_a_custom_prompt():
+    page = (
+        ROOT / "content-intel-xeon6-agent-201/modules/ROOT/pages/04-test-and-tune.adoc"
+    ).read_text()
+
+    assert "The file you edit is `/tmp/advisor-system-prompt.txt`" in page
+    assert "vi /tmp/advisor-system-prompt.txt" in page
+    assert "press `i`" in page
+    assert "`:wq`" in page
+    assert "ConfigMap key named `system_prompt`" in page
+    assert "`/etc/advisor/system_prompt`" in page
+    assert "not a vector-embedding step" in page
+    assert "CUSTOMER-SPECIFIC INSTRUCTIONS" in page
 
 
 def test_agentops_showroom_is_native_launchpad_content():

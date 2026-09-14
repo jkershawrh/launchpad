@@ -78,44 +78,58 @@ First, read the current prompt:
 oc get configmap advisor-prompt -o jsonpath='{.data.system_prompt}'
 ----
 
-Now write your own. Pick a customer or industry you work with and fill in this template:
+Now write your own. The file you edit is `/tmp/advisor-system-prompt.txt` in
+the lab terminal. Start by copying the complete working prompt from the
+ConfigMap into that file:
+
+[source,bash,role="execute"]
+----
+oc get configmap advisor-prompt -o jsonpath='{.data.system_prompt}' \
+  > /tmp/advisor-system-prompt.txt
+printf '\n' >> /tmp/advisor-system-prompt.txt
+----
+
+Open the working file in the terminal editor:
 
 [source,bash]
 ----
-# Edit this prompt for YOUR customer scenario, then run the block below to deploy it.
-#
-# Replace the bracketed sections with specifics from your territory:
-# - Who is the customer? (industry, size, region)
-# - What is their pain point? (cost, speed, compliance, modernization)
-# - What should the agent emphasize? (edge, security, migration, TCO)
+vi /tmp/advisor-system-prompt.txt
 ----
 
-Deploy your custom prompt:
+In `vi`, press `i` to enter insert mode. Move to the end of the existing prompt
+and add a customer-specific section like the following. Replace every bracketed
+value with information from your own customer or territory:
+
+[source,text]
+----
+CUSTOMER-SPECIFIC INSTRUCTIONS
+Customer profile: [industry, organization size, and region]
+Primary pain point: [cost, latency, compliance, modernization, or another need]
+Current environment: [virtualization, databases, hardware, and operating model]
+Prioritize: [edge deployment, security, migration, TCO, or another outcome]
+Required constraints: [budget, latency target, data residency, and timeline]
+
+Use these details in every recommendation. Explain why the proposed Intel
+hardware and Red Hat platform components satisfy the stated constraints.
+----
+
+Press `Esc`, type `:wq`, and press Enter to save and exit. Review exactly what
+will be deployed:
+
+[source,bash,role="execute"]
+----
+sed -n '1,160p' /tmp/advisor-system-prompt.txt
+grep -A7 'CUSTOMER-SPECIFIC INSTRUCTIONS' /tmp/advisor-system-prompt.txt
+----
+
+This keeps the original persona, reasoning process, tool instructions, and
+output format while adding your customer context. It is not a vector-embedding step:
+the text becomes part of the agent's system instructions for every request.
+
+Deploy the file as a ConfigMap key named `system_prompt`:
 
 [source,bash,role="execute",subs=attributes+]
 ----
-cat > /tmp/advisor-system-prompt.txt << 'PROMPT_EOF'
-You are a Red Hat + Intel Solution Architect specializing in helping enterprise customers modernize their AI infrastructure.
-
-When a customer describes their workload, follow this process:
-1. Identify the workload type and key constraints
-2. Look up matching Intel hardware using the intel_hardware_lookup tool
-3. Check which OpenShift operators and capabilities apply using openshift_capabilities
-4. Find a reference architecture using reference_architectures
-5. Generate a solution brief
-
-Your recommendation must include:
-- Executive Summary (2-3 sentences)
-- Recommended Intel Hardware by deployment tier
-- OpenShift Platform Components with specific operator names
-- Architecture Overview showing how the pieces connect
-- Cost Considerations comparing on-premises vs cloud
-- Why Red Hat + Intel Together — the specific integration advantages
-
-Always cite specific product names (Xeon 6, Gaudi, OpenShift AI, AMQ Streams).
-Always include a "Migration Path" section for customers on legacy infrastructure.
-Keep the brief under 800 words.
-PROMPT_EOF
 
 oc create configmap advisor-prompt \
   --from-file=system_prompt=/tmp/advisor-system-prompt.txt \
@@ -128,6 +142,16 @@ Restart the agent to pick up the new prompt:
 ----
 oc rollout restart deploy/solution-agent
 oc rollout status deploy/solution-agent --timeout=90s
+----
+
+The deployment mounts that ConfigMap key at `/etc/advisor/system_prompt`, and
+the agent reads that file through its `PROMPT_PATH` setting. Confirm the running
+container received your text:
+
+[source,bash,role="execute"]
+----
+oc exec deploy/solution-agent -c solution-agent -- \
+  grep -A7 'CUSTOMER-SPECIFIC INSTRUCTIONS' /etc/advisor/system_prompt
 ----
 
 == Exercise 3: Test Your Prompt
