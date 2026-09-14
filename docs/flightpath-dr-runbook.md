@@ -11,6 +11,12 @@ The Flightpath overlay deliberately removes the base local cluster-wide
 provisioner binding; all execution mutations use the distinct, revocable
 remote identities described below.
 
+The OpenShift GitOps operator and an empty Argo CD instance may run on the
+passive standby. They are not Launchpad writers. While Flightpath is standby,
+there must be zero Launchpad-owned Applications, and all Launchpad Deployments
+and CronJobs remain stopped. This lets the GitOps controller be proven before
+an incident without reconciling participant resources from two control planes.
+
 ## Service objectives and prerequisites
 
 - Initial target: control-plane RPO of 5 minutes or less and RTO of 15 minutes
@@ -67,12 +73,32 @@ remote identities described below.
      /secure/flightpath-admin.kubeconfig
    ```
 
-   The gate intentionally fails until the complete standby, Secret and image
-   inputs are present. It never changes either cluster.
-6. Confirm Flightpath has a healthy Argo CD/Application controller and that its
-   separately registered Arena and Brutus destinations match the API URLs in
-   `flightpath-clusters.yaml`. Showroom provisioning cannot fail over through
-   the Launchpad database alone.
+   The gate intentionally fails until the complete standby, Secret, image and
+   GitOps inputs are present. It never changes either cluster.
+6. Install Flightpath's GitOps prerequisite in two explicit phases. The
+   operator Subscription is pinned to the same minor release as Arena and uses
+   manual InstallPlan approval:
+
+   ```sh
+   oc apply -k deploy/launchpad/overlays/flightpath-dr-gitops/operator
+   # Review and approve the generated InstallPlan, then wait for its CSV.
+   oc apply -k deploy/launchpad/overlays/flightpath-dr-gitops/control-plane
+   ```
+
+   Do not switch the Subscription to automatic approval during the pilot.
+7. Register each enabled execution destination in Flightpath Argo CD using the
+   dedicated `launchpad-argocd-manager-flightpath` identity, the target API CA,
+   and a bound, expiring token. Create the cluster Secrets out of band in
+   `openshift-gitops`, label them
+   `argocd.argoproj.io/secret-type=cluster`, record token expiry as an
+   annotation, and never commit their data. At minimum, the enabled Arena
+   destination must be `launchpad-arena-argocd-cluster`. Brutus must also be
+   registered before a drill that can resume or reclaim Brutus sessions.
+8. Confirm the Argo CD Application controller is Available, the Flightpath
+   backend can manage Applications only in `openshift-gitops`, it can read only
+   the named remote kubeconfig Secrets, and there are zero Launchpad-owned
+   Applications. Showroom provisioning cannot fail over through the Launchpad
+   database alone.
 
 ## Encrypted database backup and restore
 

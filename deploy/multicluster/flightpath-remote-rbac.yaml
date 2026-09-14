@@ -177,7 +177,7 @@ spec:
         'system:serviceaccount:partner-ai-launchpad:launchpad-provisioner-flightpath'
         || (request.resource.resource == 'namespaces'
           ? (request.operation == 'DELETE' ? oldObject.metadata.name : object.metadata.name).startsWith('launchpad-')
-          : request.namespace.startsWith('launchpad-') || request.namespace == 'partner-ai-launchpad')
+          : request.namespace.startsWith('launchpad-'))
       message: Flightpath provisioner writes are restricted to Launchpad-owned namespaces.
 ---
 apiVersion: admissionregistration.k8s.io/v1

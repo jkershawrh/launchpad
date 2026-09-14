@@ -72,6 +72,59 @@ while IFS= read -r image; do
 done <<< "$images"
 pass "workload images are immutable and externally reachable"
 
+KUBECONFIG="$flightpath_kubeconfig" oc get crd applications.argoproj.io -o name >/dev/null \
+  || fail "Flightpath Argo CD Application CRD is unavailable"
+
+argocd_available_replicas="$(KUBECONFIG="$flightpath_kubeconfig" oc \
+  -n openshift-gitops get statefulset \
+  openshift-gitops-application-controller \
+  -o jsonpath='{.status.availableReplicas}')"
+[[ "${argocd_available_replicas:-0}" -ge 1 ]] \
+  || fail "Flightpath Argo CD Application controller is unavailable"
+
+KUBECONFIG="$flightpath_kubeconfig" oc -n openshift-gitops \
+  get role launchpad-application-manager -o name >/dev/null \
+  || fail "Flightpath launchpad-application-manager Role is missing"
+
+backend_identity="system:serviceaccount:${namespace}:launchpad-backend"
+can_read_remote_secret="$(KUBECONFIG="$flightpath_kubeconfig" oc auth can-i \
+  get secret/launchpad-arena-kubeconfig -n "$namespace" \
+  --as="$backend_identity")"
+[[ "$can_read_remote_secret" == "yes" ]] \
+  || fail "Flightpath backend cannot read the Arena credential Secret"
+
+can_manage_applications="$(KUBECONFIG="$flightpath_kubeconfig" oc auth can-i \
+  create applications.argoproj.io -n openshift-gitops \
+  --as="$backend_identity")"
+[[ "$can_manage_applications" == "yes" ]] \
+  || fail "Flightpath backend cannot create Argo CD Applications"
+
+for cluster_spec in \
+  "launchpad-arena-argocd-cluster|https://api.arena.fm2aihpcsed.com:6443" \
+  "launchpad-brutus-argocd-cluster|https://api.brutus.fm2aihpcsed.com:6443"; do
+  IFS='|' read -r argocd_cluster_secret expected_server <<< "$cluster_spec"
+  argocd_secret_type="$(KUBECONFIG="$flightpath_kubeconfig" oc \
+    -n openshift-gitops get secret "$argocd_cluster_secret" \
+    -o jsonpath='{.metadata.labels.argocd\.argoproj\.io/secret-type}')"
+  [[ "$argocd_secret_type" == "cluster" ]] \
+    || fail "Flightpath Argo CD destination $argocd_cluster_secret is not registered"
+
+  expected_server_b64="$(printf '%s' "$expected_server" | base64 | tr -d '\n')"
+  registered_server_b64="$(KUBECONFIG="$flightpath_kubeconfig" oc \
+    -n openshift-gitops get secret "$argocd_cluster_secret" \
+    -o jsonpath='{.data.server}')"
+  [[ "$registered_server_b64" == "$expected_server_b64" ]] \
+    || fail "Flightpath Argo CD destination $argocd_cluster_secret points to the wrong API"
+done
+
+managed_applications="$(KUBECONFIG="$flightpath_kubeconfig" oc \
+  get applications.argoproj.io -A \
+  -l app.kubernetes.io/managed-by=launchpad --no-headers 2>/dev/null \
+  | wc -l | tr -d ' ')"
+[[ "$managed_applications" == "0" ]] \
+  || fail "Flightpath passive standby already contains Launchpad Applications"
+pass "Flightpath GitOps controller, backend RBAC, and execution destinations are ready and passive"
+
 public_enabled="$(KUBECONFIG="$flightpath_kubeconfig" oc -n "$namespace" get configmap launchpad-config -o jsonpath='{.data.PUBLIC_ACCESS_ENABLED}')"
 [[ "$public_enabled" == "false" ]] || fail "public access must remain disabled for the first promotion drill"
 pass "public access remains gated"

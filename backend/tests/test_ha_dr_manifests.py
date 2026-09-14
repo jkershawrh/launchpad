@@ -137,6 +137,79 @@ def test_flightpath_dr_overlay_is_passive_and_contains_no_credentials() -> None:
     assert "pass" + "word:" not in overlay_text
 
 
+def test_flightpath_dr_gitops_install_is_pinned_and_manually_approved() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-dr-gitops/operator")
+    subscription = resource(
+        items, "Subscription", "openshift-gitops-operator"
+    )
+
+    assert subscription["metadata"]["namespace"] == (
+        "openshift-gitops-operator"
+    )
+    assert subscription["spec"] == {
+        "channel": "gitops-1.21",
+        "installPlanApproval": "Manual",
+        "name": "openshift-gitops-operator",
+        "source": "redhat-operators",
+        "sourceNamespace": "openshift-marketplace",
+        "startingCSV": "openshift-gitops-operator.v1.21.4",
+    }
+
+
+def test_flightpath_dr_gitops_control_plane_is_narrow_and_passive() -> None:
+    items = render(
+        "deploy/launchpad/overlays/flightpath-dr-gitops/control-plane"
+    )
+    argocd = resource(items, "ArgoCD", "openshift-gitops")
+    local_reader = resource(
+        items, "Role", "launchpad-remote-cluster-config-reader"
+    )
+    application_manager = resource(
+        items, "Role", "launchpad-application-manager"
+    )
+    application_binding = resource(
+        items, "RoleBinding", "launchpad-application-manager"
+    )
+
+    assert argocd["metadata"]["namespace"] == "openshift-gitops"
+    assert argocd["spec"]["controller"]["resources"]["requests"] == {
+        "cpu": "500m",
+        "memory": "4Gi",
+    }
+    assert local_reader["metadata"]["namespace"] == "partner-ai-launchpad"
+    secret_rule = next(
+        rule for rule in local_reader["rules"]
+        if "secrets" in rule.get("resources", [])
+    )
+    assert secret_rule["resourceNames"] == [
+        "launchpad-arena-kubeconfig",
+        "launchpad-brutus-kubeconfig",
+    ]
+    assert secret_rule["verbs"] == ["get"]
+    assert application_manager["metadata"]["namespace"] == "openshift-gitops"
+    assert application_manager["rules"] == [
+        {
+            "apiGroups": ["argoproj.io"],
+            "resources": ["applications"],
+            "verbs": ["create", "delete", "get", "list", "patch", "update", "watch"],
+        }
+    ]
+    assert application_binding["subjects"] == [
+        {
+            "kind": "ServiceAccount",
+            "name": "launchpad-backend",
+            "namespace": "partner-ai-launchpad",
+        }
+    ]
+
+    config = resource(
+        render("deploy/launchpad/overlays/flightpath-dr"),
+        "ConfigMap",
+        "launchpad-config",
+    )
+    assert config["data"]["SHOWROOM_ARGOCD_NAMESPACE"] == "openshift-gitops"
+
+
 def test_flightpath_dr_uses_digest_pinned_external_first_party_images() -> None:
     items = render("deploy/launchpad/overlays/flightpath-dr")
     expected = {
@@ -342,6 +415,13 @@ def test_flightpath_has_a_distinct_remote_execution_identity() -> None:
     text = (ROOT / "deploy/multicluster/flightpath-remote-rbac.yaml").read_text()
     assert "kind: Secret" not in text
     assert "cluster-admin" not in text.lower()
+    policy = resource(
+        items,
+        "ValidatingAdmissionPolicy",
+        "launchpad-flightpath-namespace-boundary",
+    )
+    expression = policy["spec"]["validations"][0]["expression"]
+    assert "request.namespace == 'partner-ai-launchpad'" not in expression
 
 
 def test_flightpath_preflight_is_read_only_and_fail_closed() -> None:
@@ -354,6 +434,11 @@ def test_flightpath_preflight_is_read_only_and_fail_closed() -> None:
     assert "@sha256:" in script
     assert "image-registry.openshift-image-registry.svc" in script
     assert "LAUNCHPAD_CONTROL_PLANE_ROLE" in script
+    assert "applications.argoproj.io" in script
+    assert "openshift-gitops-application-controller" in script
+    assert "launchpad-arena-argocd-cluster" in script
+    assert "launchpad-brutus-argocd-cluster" in script
+    assert "launchpad-application-manager" in script
     for mutation in (" oc apply", " oc delete", " oc scale", " oc patch"):
         assert mutation not in script
 

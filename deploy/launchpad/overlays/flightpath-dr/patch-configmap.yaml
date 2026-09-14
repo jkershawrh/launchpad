@@ -11,6 +11,7 @@ data:
   REMOTE_PROVISIONER_SERVICE_ACCOUNT: "launchpad-provisioner-flightpath"
   REMOTE_ARGOCD_SERVICE_ACCOUNT: "launchpad-argocd-manager-flightpath"
   REMOTE_CONTROL_PLANE_SERVICE_ACCOUNT_NAMESPACE: "partner-ai-launchpad"
+  SHOWROOM_ARGOCD_NAMESPACE: "openshift-gitops"
   LIFECYCLE_HA_ENABLED: "false"
   OPENSHIFT_INGRESS_DOMAIN: "apps.flightpath.fm2aihpcsed.com"
   OPENSHIFT_CONSOLE_URL: "https://console-openshift-console.apps.flightpath.fm2aihpcsed.com"
