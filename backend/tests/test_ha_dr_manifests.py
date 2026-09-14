@@ -1,3 +1,4 @@
+import json
 import subprocess
 from pathlib import Path
 
@@ -458,3 +459,52 @@ def test_dr_backup_tool_encrypts_and_requires_explicit_restore_confirmation() ->
     assert "KUBECONFIG=\"$cluster_kubeconfig\" oc" in script
     assert "mktemp -d" in script
     assert "trap cleanup EXIT" in script
+
+
+def test_flightpath_passive_dr_receipt_preserves_the_certification_boundary() -> None:
+    evidence = json.loads(
+        (
+            ROOT
+            / "evidence/runs/flightpath-passive-dr-20260914.json"
+        ).read_text()
+    )
+
+    assert evidence["database_restore"] == {
+        "source_cluster": "arena",
+        "target_cluster": "flightpath",
+        "encrypted_backup_sha256": (
+            "d21f77a2af074934382c4015acf6ac3b8517d380e8b03e25a913319cdde98a40"
+        ),
+        "encryption": "age-v1.3.2",
+        "table_count": 18,
+        "total_rows": 19795,
+        "source_table_counts_sha256": (
+            "364fad72da366495c65e1254a057f2634772f3025ea209a638145de8212b0685"
+        ),
+        "target_table_counts_sha256": (
+            "364fad72da366495c65e1254a057f2634772f3025ea209a638145de8212b0685"
+        ),
+        "exact_table_count_match": True,
+        "restore_duration_seconds": 12,
+    }
+    assert set(evidence["gitops"]["registered_destinations"]) == {
+        "arena",
+        "brutus",
+    }
+    assert all(
+        replicas == 0
+        for replicas in evidence["passive_standby"][
+            "launchpad_deployment_replicas"
+        ].values()
+    )
+    assert evidence["passive_standby"]["launchpad_application_count"] == 0
+    assert evidence["participant_workload_guard"] == {
+        "ready_workshops": 3,
+        "ready_seats": 75,
+        "arena_seat_namespaces": 50,
+        "brutus_seat_namespaces": 25,
+        "participant_resources_mutated": False,
+    }
+    assert evidence["result"]["passive_preflight"] == "GREEN-live"
+    assert evidence["result"]["full_failover"] == "RED-not-run"
+    assert evidence["result"]["failback"] == "RED-not-run"

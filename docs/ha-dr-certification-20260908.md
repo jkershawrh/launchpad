@@ -31,13 +31,15 @@ stage never implies a higher one.
 | HA-ALERT-01 | Stalled jobs, reclaim, and failed jobs have Prometheus alerts | GREEN | — | GREEN | RED | GREEN-render |
 | HA-DEPLOY-01 | Arena overlay selects two anti-affined workers and disables legacy reconciliation | GREEN | — | GREEN | GREEN (one per node) | GREEN-live-cross-node-process |
 | HA-DEPLOY-02 | Applying the Arena HA overlay restarts the API onto its HA ConfigMap runtime | GREEN | — | GREEN | GREEN (Arena) | GREEN-live |
-| DR-PASSIVE-01 | Flightpath renders with zero Deployments and suspended CronJobs | GREEN | — | GREEN | RED | GREEN-render |
+| DR-PASSIVE-01 | Flightpath renders with zero Launchpad Deployments and suspended CronJobs | GREEN | — | GREEN | GREEN (zero Launchpad replicas) | GREEN-live |
 | DR-FENCE-01 | Runbook requires a hard Arena credential/network fence | GREEN | — | GREEN | RED | GREEN-render |
-| DR-IDENTITY-01 | Flightpath has a distinct least-privilege identity for Arena and Brutus | GREEN | — | GREEN | RED | GREEN-render |
-| DR-PREFLIGHT-01 | Read-only promotion gate rejects missing Secrets, mutable/internal images, storage, or incorrect roles | GREEN | — | GREEN | RED | GREEN-local |
-| DR-BACKUP-TOOL-01 | Backup tool encrypts and checksums data and requires explicit Flightpath restore confirmation | GREEN | — | GREEN | RED | GREEN-local |
-| DR-SECRET-01 | Dedicated service accounts and encrypted secret restoration | — | — | RED | RED | RED-blocked |
-| DR-DATA-01 | Verified PostgreSQL backup and restore meets RPO | — | — | RED | RED | RED-blocked |
+| DR-IDENTITY-01 | Flightpath has distinct least-privilege identities for Arena and Brutus | GREEN | — | GREEN | GREEN (provisioner and Argo identities) | GREEN-live-pilot |
+| DR-PREFLIGHT-01 | Read-only promotion gate rejects missing Secrets, mutable/internal images, storage, GitOps, or incorrect roles | GREEN | — | GREEN | GREEN (Arena + Flightpath) | GREEN-live |
+| DR-BACKUP-TOOL-01 | Backup tool encrypts and checksums data and requires explicit Flightpath restore confirmation | GREEN | GREEN | GREEN | GREEN (one restore) | GREEN-live-one-run |
+| DR-SECRET-01 | Dedicated service accounts and encrypted secret restoration | GREEN | — | GREEN (references only) | GREEN (expiring pilot credentials) | GREEN-live-pilot |
+| DR-DATA-01 | Verified PostgreSQL backup restores the exact application table counts | GREEN | GREEN | GREEN | GREEN (18 tables, 19,795 rows) | GREEN-live-one-run |
+| DR-RPO-01 | Scheduled encrypted backups meet the five-minute RPO | RED | RED | RED | RED | RED-not-implemented |
+| DR-GITOPS-01 | Passive Flightpath Argo CD can reach Arena and Brutus without owning active Applications | GREEN | — | GREEN | GREEN (zero Launchpad Applications) | GREEN-live |
 | DR-FAILOVER-01 | In-flight provision and reclaim survive Arena loss | — | — | GREEN | RED | RED-live |
 | DR-RTO-01 | Flightpath recovery meets the 15-minute target three times | — | — | GREEN | RED | RED-live |
 
@@ -51,11 +53,11 @@ requires every item below; this is a binary 100-point gate, not an average.
 | Durable queue, idempotency, cancellation | 15 | Local and PostgreSQL contracts | 15 |
 | Lease ownership and fencing | 20 | Local, PostgreSQL, and live one-seat provision/reclaim worker-kill proof | 20 |
 | Provision/reclaim/TTL/reconcile integration | 20 | Clean one-seat, five-seat, and 25-seat workshop provision/reclaim takeover | 20 |
-| Database availability and recoverability | 15 | Single PostgreSQL instance; restore drill pending | 0 |
+| Database availability and recoverability | 15 | Single active PostgreSQL instance; one exact encrypted restore passed; scheduled RPO pending | 8 |
 | Arena worker and node availability | 10 | Two anti-affined workers and cross-node process takeover; hard node-loss test pending | 5 |
 | Operations UI, metrics, and alerts | 10 | Live lifecycle API plus local UI and rendered alerts | 8 |
-| Flightpath restore, hard fence, and failback | 10 | Passive overlay and runbook only | 3 |
-| **Total** | **100** | **Pilot enabled; not approved for production HA/DR** | **71** |
+| Flightpath restore, hard fence, and failback | 10 | Passive restore and GitOps readiness passed; hard fence, promotion, and failback pending | 5 |
+| **Total** | **100** | **Pilot enabled; not approved for production HA/DR** | **81** |
 
 ## Arena live process-takeover result
 
@@ -193,14 +195,30 @@ This result certifies one 25-seat CPU Serving workshop under lifecycle-worker
 process loss. It does not certify simultaneous 25-seat workshops, hard node
 loss, public workshop access, or Flightpath DR.
 
-## Flightpath live preflight status
+## Flightpath passive restore and GitOps readiness result
 
-Read-only credential discovery on September 8 found the dedicated Arena
-kubeconfig but no dedicated Flightpath kubeconfig. The promotion preflight was
-therefore not run against Flightpath. This is the expected fail-closed result:
-the disclosed bootstrap credential was not used, copied, or retained. Live DR
-preflight remains blocked until a distinct least-privilege Flightpath credential
-is delivered through the approved secret path.
+The September 14 passive drill restored a fresh encrypted Arena backup to
+Flightpath while every application writer remained stopped. The restore
+completed in 12 seconds. All 18 application tables matched exactly across
+19,795 rows, and the source and target count artifacts had the same SHA-256.
+PostgreSQL was then returned to zero replicas and the complete passive
+preflight returned GREEN.
+
+Flightpath now has OpenShift GitOps 1.21.4 with manual InstallPlan approval,
+an Available Argo CD controller, narrow backend Roles, and dedicated Arena and
+Brutus cluster registrations. There are zero Launchpad-owned Applications on
+Flightpath. The provisioner and Argo credentials for both destinations are
+bound, CA-pinned pilot tokens expiring September 21. A live admission test
+proved that the provisioner cannot self-bind inside the shared control
+namespace while still being able to bind its approved seat role inside a
+Launchpad seat namespace.
+
+The drill did not fence Arena, activate a Flightpath writer, switch ingress,
+resume an in-flight job, or fail back. It therefore proves passive database and
+GitOps readiness only—not control-plane failover, the five-minute RPO, the
+15-minute RTO, or production DR. All three ready 25-seat workshops remained
+untouched. The credential-free receipt is
+`evidence/runs/flightpath-passive-dr-20260914.json`.
 
 ## Arena activation sequence
 
