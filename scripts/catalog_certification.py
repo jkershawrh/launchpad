@@ -38,6 +38,7 @@ from app.services.catalog_onboarding import load_intake
 TERMINAL_WORKSHOP_STATUSES = {"ready", "active", "partially_ready", "failed"}
 TERMINAL_CLEANUP_STATUSES = {"completed", "cleanup_failed"}
 CLUSTER_SCOPED_RESOURCES = {"namespaces", "persistentvolumes"}
+CONTROL_PLANE_RESOURCES = {"applications.argoproj.io"}
 PROBE_FAILURE_STAGE = re.compile(
     r"(?:^|\s)seat_probe_failure stage=([a-z0-9-]+) exit_code=\d+(?:\s|$)"
 )
@@ -333,15 +334,24 @@ def _seat_probe(
 
 
 def _resource_counts(
-    resources: list[str], *, workshop_id: str, kubeconfig: str
+    resources: list[str],
+    *,
+    workshop_id: str,
+    kubeconfig: str,
+    control_kubeconfig: str | None = None,
 ) -> dict[str, int]:
     selector = f"launchpad.redhat.com/workshop-id={workshop_id}"
     counts: dict[str, int] = {}
     for resource in resources:
+        resource_kubeconfig = (
+            control_kubeconfig
+            if resource in CONTROL_PLANE_RESOURCES and control_kubeconfig
+            else kubeconfig
+        )
         command = [
             "oc",
             "--kubeconfig",
-            kubeconfig,
+            resource_kubeconfig,
             "get",
             resource,
         ]
@@ -369,6 +379,7 @@ def _wait_for_zero_resources(
     *,
     workshop_id: str,
     kubeconfig: str,
+    control_kubeconfig: str | None = None,
     timeout_seconds: float,
     interval_seconds: float,
 ) -> tuple[dict[str, int], float]:
@@ -379,6 +390,7 @@ def _wait_for_zero_resources(
             resources,
             workshop_id=workshop_id,
             kubeconfig=kubeconfig,
+            control_kubeconfig=control_kubeconfig,
         )
         elapsed = time.monotonic() - started
         if counts and all(count == 0 for count in counts.values()):
@@ -494,6 +506,7 @@ def _run_command(args: argparse.Namespace) -> int:
     plan["mutates_cluster"] = True
     api_key = os.environ.get(args.api_key_env, "")
     kubeconfig = os.environ.get("KUBECONFIG", "")
+    control_kubeconfig = getattr(args, "control_kubeconfig", None) or kubeconfig
     if not api_key:
         raise ValueError(f"{args.api_key_env} must contain the Launchpad API credential")
     if not kubeconfig:
@@ -650,6 +663,7 @@ def _run_command(args: argparse.Namespace) -> int:
                 contract["spec"]["cleanup"]["resources"],
                 workshop_id=workshop_id,
                 kubeconfig=kubeconfig,
+                control_kubeconfig=control_kubeconfig,
                 timeout_seconds=remaining_cleanup_seconds,
                 interval_seconds=args.poll_interval,
             )
@@ -817,6 +831,13 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--output")
     run.add_argument("--poll-interval", type=float, default=5.0)
     run.add_argument("--ca-bundle")
+    run.add_argument(
+        "--control-kubeconfig",
+        help=(
+            "Kubeconfig for centralized control-plane resources such as Argo CD "
+            "Applications; defaults to KUBECONFIG"
+        ),
+    )
     run.add_argument("--insecure", action="store_true")
     run.add_argument("--allow-dirty", action="store_true")
     run.add_argument(

@@ -367,6 +367,33 @@ def test_cleanup_observation_waits_for_zero_residue(monkeypatch):
     assert elapsed >= 0
 
 
+def test_cleanup_observation_uses_control_plane_for_argocd(monkeypatch):
+    runner = _runner_module()
+    calls = []
+
+    def run(command, **_kwargs):
+        calls.append(command)
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(runner.subprocess, "run", run)
+
+    counts = runner._resource_counts(
+        ["namespaces", "applications.argoproj.io", "secrets"],
+        workshop_id="workshop-1",
+        kubeconfig="brutus-kubeconfig",
+        control_kubeconfig="arena-kubeconfig",
+    )
+
+    assert counts == {
+        "namespaces": 0,
+        "applications.argoproj.io": 0,
+        "secrets": 0,
+    }
+    assert calls[0][2] == "brutus-kubeconfig"
+    assert calls[1][2] == "arena-kubeconfig"
+    assert calls[2][2] == "brutus-kubeconfig"
+
+
 def test_failed_seat_probe_preserves_safe_stage_diagnostic(monkeypatch):
     runner = _runner_module()
     contract = load_certification_contract(CONTRACT_PATH)
