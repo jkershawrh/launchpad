@@ -23,6 +23,11 @@ def _catalog_item(catalog_item_id: str) -> dict:
 
 
 def test_thirty_seat_is_next_candidate_without_bypassing_public_certification():
+    platform_config = yaml.safe_load(
+        (REPO_ROOT / "deploy/launchpad/base/configmap.yaml").read_text()
+    )
+    assert int(platform_config["data"]["MAX_ACTIVE_SESSIONS_PER_WORKSHOP"]) >= 30
+
     for catalog_item_id in CATALOG_ITEMS:
         metadata = _catalog_item(catalog_item_id)["metadata"]
 

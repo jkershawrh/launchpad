@@ -20,7 +20,9 @@ data:
   SHOWROOM_CONTENT_REF: main
   SHOWROOM_ROUTE_TIMEOUT: "600"
   SHOWROOM_DELETE_TIMEOUT: "30"
-  MAX_ACTIVE_SESSIONS_PER_WORKSHOP: "25"
+  # The platform permits the next internal certification target. Individual
+  # catalog limits remain fail-closed at their last proven public scale.
+  MAX_ACTIVE_SESSIONS_PER_WORKSHOP: "30"
   WORKSHOP_PROVISION_CONCURRENCY: "5"
   WORKSHOP_STABILITY_TIMEOUT: "300"
   WORKSHOP_STABILITY_INTERVAL: "5"
