@@ -27,6 +27,8 @@ metadata:
   content_only: true
   certification_stage: twenty-five-seat
   max_workshop_seats: 25
+  promotion_sequence:
+    - 30
   showroom_journey: intel-xeon6-agent-201
   showroom_title: "Intel Xeon 6 201: Building an AI Agent"
   workspace_route_name: app

@@ -53,6 +53,7 @@ def test_multi_agent_is_the_reference_reusable_certification_contract():
         1,
         5,
         25,
+        30,
     ]
     assert intake["certification"]["proof_contract"] == (
         "certification/catalog/multi-agent-quickstart.yaml"
@@ -82,7 +83,7 @@ def test_twenty_five_seat_plan_is_one_order_on_one_cluster():
     assert plan["required_consecutive_runs"] == 3
     assert plan["showroom_pages_per_seat"] == 4
     assert plan["current_certified_seats"] == 25
-    assert plan["next_promotion_target"] is None
+    assert plan["next_promotion_target"] == 30
     assert plan["execution_eligible"] is True
 
 
@@ -99,6 +100,9 @@ def test_only_certified_or_next_scale_profile_can_execute():
     twenty_five = build_certification_plan(
         contract, intake=intake, seats=25, exposure_policy="internal"
     )
+    thirty = build_certification_plan(
+        contract, intake=intake, seats=30, exposure_policy="internal"
+    )
 
     assert one["execution_eligible"] is True
     assert one["certification_override"] is False
@@ -106,7 +110,10 @@ def test_only_certified_or_next_scale_profile_can_execute():
     assert five["certification_override"] is False
     assert twenty_five["execution_eligible"] is True
     assert twenty_five["certification_override"] is False
-    assert twenty_five["next_promotion_target"] is None
+    assert twenty_five["next_promotion_target"] == 30
+    assert thirty["execution_eligible"] is True
+    assert thirty["certification_override"] is True
+    assert thirty["next_promotion_target"] == 30
 
 
 def test_contract_rejects_unsafe_or_nonrepeatable_configuration():

@@ -38,6 +38,7 @@ metadata:
   - 1
   - 5
   - 25
+  - 30
   activation_blockers: []
   certification_proof_contract: certification/catalog/multi-agent-quickstart.yaml
   production_blockers:

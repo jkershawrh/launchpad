@@ -126,6 +126,7 @@ certification:
     - 1
     - 5
     - 25
+    - 30
   activation_blockers: []
   production_blockers:
     - >-
