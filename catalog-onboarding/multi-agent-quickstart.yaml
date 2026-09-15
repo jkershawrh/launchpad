@@ -11,7 +11,7 @@ catalog:
     Kagenti, OpenTelemetry, guardrails, and service authentication on Intel
     infrastructure.
   category: guided_build
-  version: "0.2.13"
+  version: "0.2.14"
   status: active
   supported_branding:
     - redhat-intel-default
@@ -20,7 +20,7 @@ catalog:
 sources:
   showroom:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "pilot-2026-09-17-showroom-multi-agent-v1.0.4"
+    revision: "pilot-2026-09-17-showroom-multi-agent-v1.0.5"
     playbook: site-multi-agent-quickstart.yml
     start_path: content-multi-agent-quickstart
   workload:

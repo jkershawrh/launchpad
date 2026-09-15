@@ -67,8 +67,10 @@ its generated suffix. It contains the `orchestrator`, `research`, `analyst`,
 separate Showroom pod supplies this guide and terminal. The model remains a
 shared Launchpad MaaS service; it is not loaded once per participant namespace.
 
-Open the *Multi-Agent Workspace*, choose `comprehensive`, and run this
-sanitized baseline request:
+Open the *Multi-Agent Workspace* and remain on *Incident Workspace*. Expand
+*Advanced response options*, open *Response depth*, and select
+`comprehensive`. Enter this sanitized baseline request in *Fictional incident
+or operations request*, then click *Investigate Incident*:
 
 [source,text]
 ----

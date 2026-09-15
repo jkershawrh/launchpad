@@ -23,7 +23,7 @@ def test_multi_agent_quickstart_is_active_for_public_event_orders():
     assert catalog == build_catalog_item(intake)
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert catalog["display_name"] == "Build Multi-Agent AI Systems with Open Protocols"
-    assert catalog["version"] == "0.2.13"
+    assert catalog["version"] == "0.2.14"
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
     assert catalog["metadata"]["activation_blockers"] == []
@@ -93,7 +93,7 @@ def test_multi_agent_showroom_is_native_launchpad_content():
     assert "releases/download/patternfly-6/" in playbook["ui"]["bundle"]["url"]
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-showroom-multi-agent-v1.0.4"
+        "pilot-2026-09-17-showroom-multi-agent-v1.0.5"
     )
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
     assert component["asciidoc"]["attributes"]["maas_model"] == "%maas_model%"
@@ -328,7 +328,27 @@ def test_showroom_commands_do_not_collide_with_content_or_wetty_ports():
     assert "127.0.0.1:18000/health" in explore
     assert "127.0.0.1:18001/.well-known/agent-card.json" in explore
     assert "127.0.0.1:18000/api/v1/workflow" in workflows
+    assert "jsonpath='{.data.AGENT_AUTH_TOKEN}' | base64 -d" in workflows
+    assert 'test -n "$AGENT_AUTH_TOKEN"' in workflows
     assert "service/multi-agent-orchestrator" not in explore
     assert "service/multi-agent-mcp 18004:8004" in tools_and_guardrails
     assert "127.0.0.1:18004/health" in tools_and_guardrails
     assert "service/multi-agent-mcp-server" not in tools_and_guardrails
+
+
+def test_workspace_and_guardrail_steps_name_the_exact_ui_controls():
+    pages = CONTENT_ROOT / "modules/ROOT/pages"
+    workflows = (pages / "03-run-workflows.adoc").read_text()
+    guardrails = (pages / "04-tools-and-guardrails.adoc").read_text()
+    track_two = (pages / "track-2-openshift.adoc").read_text()
+
+    for page in (workflows, track_two):
+        page_text = " ".join(page.lower().split())
+        assert "expand *advanced response options*" in page_text
+        assert "*Response depth*" in page
+        assert "`comprehensive`" in page
+        assert "*Investigate Incident*" in page
+
+    assert "*Fictional incident or operations request*" in guardrails
+    assert "*Investigate Incident*" in guardrails
+    assert "Request blocked by guardrails" in guardrails

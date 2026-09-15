@@ -2,8 +2,10 @@
 
 == Open the Participant UI
 
-Select the *Multi-Agent Workspace* tab. The *Incident Workspace* is the primary
-business view. If you want to verify the implementation before beginning, open
+Select the *Multi-Agent Workspace* tab, then remain on its *Incident Workspace*
+page. Enter each request in *Fictional incident or operations request* and click
+*Investigate Incident*. The results appear below the request area. If you want
+to verify the implementation before beginning, open
 *Technical Details*, expand *Runtime health*, and click *Refresh*. Confirm
 `Agents discovered: 3` and the agent names `research`, `analyst`, and
 `executor`, then return to *Incident Workspace*.
@@ -33,10 +35,14 @@ Investigate a fictional API error spike in the EMEA test environment,
 analyze likely causes, and create a remediation task.
 ----
 
-Open *Advanced response options*. Run it first with a lightweight response
-depth and then with a comprehensive response depth. The comprehensive path
-should involve research, analyst, and executor agents. Compare the stage times
-and outputs in *Prior incident runs* rather than relying on a single total.
+In *Multi-Agent Workspace*, expand *Advanced response options*. Open the
+*Response depth* list, select `lightweight`, enter the request above in
+*Fictional incident or operations request*, and click *Investigate Incident*.
+Wait for that run to finish. Then select `comprehensive` from *Response depth*
+and click *Investigate Incident* again with the same request. The comprehensive
+path should involve research, analyst, and executor agents. Compare the stage
+times and outputs in *Previous incident runs* rather than relying on a single
+total.
 
 == Call the API Directly
 
@@ -46,8 +52,12 @@ If the earlier orchestrator port-forward is no longer running, recreate it as sh
 ----
 AGENT_AUTH_TOKEN="$(
   oc get secret multi-agent-runtime \
-    -o go-template='{{index .data "AGENT_AUTH_TOKEN" | base64decode}}'
+    -o jsonpath='{.data.AGENT_AUTH_TOKEN}' | base64 -d
 )"
+test -n "$AGENT_AUTH_TOKEN" || {
+  echo "Unable to read the seat-specific agent token" >&2
+  false
+}
 curl -fsS http://127.0.0.1:18000/api/v1/workflow \
   -H "Authorization: Bearer ${AGENT_AUTH_TOKEN}" \
   -H 'Content-Type: application/json' \
@@ -61,6 +71,10 @@ unset AGENT_AUTH_TOKEN
 The token is read into a shell variable and never printed. It authorizes this
 seat's UI and orchestrator request; the orchestrator uses the same protected
 service boundary when it delegates A2A tasks.
+
+If the API returns `401`, run the complete block again. The non-empty check
+stops before `curl` when the seat-specific token was not loaded, instead of
+sending an unauthenticated request.
 
 The response must contain `steps`, `total_latency_ms`, `agents_involved`, and `ai_disclaimer`. Each step should name the responsible agent and report its own latency.
 
