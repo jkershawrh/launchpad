@@ -28,13 +28,18 @@ metadata:
   certification_stage: twenty-five-seat
   max_workshop_seats: 25
   promotion_sequence:
+    - 1
+    - 5
+    - 25
     - 30
+  onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
+  certification_proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
   showroom_journey: intel-xeon6-agent-201
   showroom_title: "Intel Xeon 6 201: Building an AI Agent"
   workspace_route_name: app
   workspace_title: "Solution Architect"
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
-  showroom_content_ref: "pilot-2026-09-17-showroom-agent201-v1.0.3"
+  showroom_content_ref: "e21dfe221c1ad7d2683f3a67b63437abb8788a43"
   showroom_content_playbook: "site-intel-xeon6-agent-201.yml"
   required_models:
     - granite-3.2-8b-tools

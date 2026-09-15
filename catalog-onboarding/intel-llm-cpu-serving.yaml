@@ -1,0 +1,83 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
+
+catalog:
+  catalog_item_id: intel-llm-cpu-serving
+  display_name: "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs"
+  description: >-
+    Explore CPU inference through a shared model endpoint, then build and test
+    a namespace-isolated RAG assistant on OpenShift.
+  category: guided_build
+  version: "1.0.11"
+  status: active
+  supported_branding:
+    - redhat-intel-default
+    - intel-internal
+
+sources:
+  showroom:
+    repo_url: "https://github.com/rhpds/launchpad.git"
+    revision: "d140e734f49fcf58c546a4f484ab1dcdfbb345c8"
+    playbook: site-intel-llm-cpu-serving.yml
+    start_path: content-intel-llm-cpu-serving
+  workload:
+    repo_url: "https://github.com/rhpds/llm-cpu-serving.git"
+    revision: "88867e14b1eede7d9aa563069aa093c122a4a53a"
+    deploy_path: .
+
+runtime:
+  namespace_slug: intel-llm-cpu-serving
+  deployment_type: manifests
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  provisioner_refs:
+    - openshift-provisioner
+    - showroom
+  validation_refs:
+    - pod-ready
+    - route-accessible
+    - inference-health
+  observability_profile: intel-cpu-rag
+  default_hardware_profile: xeon-basic
+  default_quota_profile: standard
+  default_ttl: "4h"
+  inference_endpoint: litellm
+  required_capabilities:
+    - openshift
+    - showroom
+    - model_endpoint
+  required_models:
+    - granite-2b-cpu
+  allowed_exposure_policies:
+    - internal
+    - public_code
+  seat_resources:
+    cpu_millicores: 665
+    memory_mib: 1488
+    pods: 2
+    storage_gib: 0
+  workshop_provision_concurrency: 5
+  workshop_node_spread: true
+  workshop_node_min_ready_seconds: 900
+  tabs:
+    - id: terminal
+      title: Terminal
+    - id: workspace
+      title: RAG Assistant
+    - id: openshift-console
+      title: OpenShift Console
+
+certification:
+  stage: twenty-five-seat-certified
+  max_workshop_seats: 25
+  proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
+  promotion_sequence:
+    - 1
+    - 5
+    - 25
+    - 30
+  activation_blockers: []
+  production_blockers:
+    - >-
+      Mirror the AnythingLLM image to a durable external registry before the
+      production control plane is moved away from Arena.

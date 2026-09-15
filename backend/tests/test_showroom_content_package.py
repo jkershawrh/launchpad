@@ -18,9 +18,8 @@ INTEL_GUIDED_LABS = [
         "title": "Intel Xeon 6 201 — Building an AI Agent",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
-        # The Agent 201 pilot fix release keeps terminal API calls inside the
-        # namespace and keeps the browser UI beneath the public order mount.
-        "content_ref": "pilot-2026-09-17-showroom-agent201-v1.0.3",
+        # Immutable commit behind the Agent 201 pilot fix release.
+        "content_ref": "e21dfe221c1ad7d2683f3a67b63437abb8788a43",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -32,7 +31,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.11",
+        "content_ref": "d140e734f49fcf58c546a4f484ab1dcdfbb345c8",
         "max_workshop_seats": 25,
         "certification_stage": "twenty-five-seat",
     },
@@ -359,7 +358,7 @@ def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass()
 
     assert catalog["version"] == "1.0.7"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-showroom-agent201-v1.0.3"
+        "e21dfe221c1ad7d2683f3a67b63437abb8788a43"
     )
     assert 'ADVISOR_API_URL="http://solution-agent:8082"' in exercises
     assert exercises.count("${ADVISOR_API_URL}/api/v1/advise") == 5
@@ -574,7 +573,7 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
 
     assert catalog["version"] == "1.0.11"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "pilot-2026-09-17-intel-llm-cpu-serving-v1.0.11"
+        "d140e734f49fcf58c546a4f484ab1dcdfbb345c8"
     )
 
 

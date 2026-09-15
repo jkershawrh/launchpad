@@ -1,0 +1,83 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
+
+catalog:
+  catalog_item_id: intel-xeon6-agent-201
+  display_name: "Intel Xeon 6 201: Building an AI Agent"
+  description: >-
+    Build and tune a namespace-isolated AI solution advisor with LangGraph,
+    MCP tools, and shared Intel Xeon inference.
+  category: guided_build
+  version: "1.0.7"
+  status: active
+  supported_branding:
+    - redhat-intel-default
+    - intel-internal
+
+sources:
+  showroom:
+    repo_url: "https://github.com/rhpds/launchpad.git"
+    revision: "e21dfe221c1ad7d2683f3a67b63437abb8788a43"
+    playbook: site-intel-xeon6-agent-201.yml
+    start_path: content-intel-xeon6-agent-201
+  workload:
+    repo_url: "https://github.com/rhpds/triforce.git"
+    revision: "2f94711efc01384ee4c334caa1720e2962180b14"
+    deploy_path: .
+
+runtime:
+  namespace_slug: intel-xeon6-agent-201
+  deployment_type: manifests
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  provisioner_refs:
+    - openshift-provisioner
+    - showroom
+  validation_refs:
+    - pod-ready
+    - route-accessible
+    - inference-health
+  observability_profile: intel-agent-201
+  default_hardware_profile: xeon-basic
+  default_quota_profile: standard
+  default_ttl: "4h"
+  inference_endpoint: litellm
+  required_capabilities:
+    - openshift
+    - showroom
+    - model_endpoint
+  required_models:
+    - granite-3.2-8b-tools
+  allowed_exposure_policies:
+    - internal
+    - public_code
+  seat_resources:
+    cpu_millicores: 415
+    memory_mib: 912
+    pods: 3
+    storage_gib: 0
+  workshop_provision_concurrency: 5
+  workshop_node_spread: true
+  workshop_node_min_ready_seconds: 900
+  tabs:
+    - id: terminal
+      title: Terminal
+    - id: workspace
+      title: Solution Architect
+    - id: openshift-console
+      title: OpenShift Console
+
+certification:
+  stage: twenty-five-seat-certified
+  max_workshop_seats: 25
+  proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
+  promotion_sequence:
+    - 1
+    - 5
+    - 25
+    - 30
+  activation_blockers: []
+  production_blockers:
+    - >-
+      Mirror all participant workload images to a durable external registry
+      before the production control plane is moved away from Arena.
