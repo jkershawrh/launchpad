@@ -338,16 +338,15 @@ def _resource_counts(
     *,
     workshop_id: str,
     kubeconfig: str,
+    cleanup_kubeconfig: str | None = None,
     control_kubeconfig: str | None = None,
 ) -> dict[str, int]:
     selector = f"launchpad.redhat.com/workshop-id={workshop_id}"
     counts: dict[str, int] = {}
     for resource in resources:
-        resource_kubeconfig = (
-            control_kubeconfig
-            if resource in CONTROL_PLANE_RESOURCES and control_kubeconfig
-            else kubeconfig
-        )
+        resource_kubeconfig = cleanup_kubeconfig or kubeconfig
+        if resource in CONTROL_PLANE_RESOURCES and control_kubeconfig:
+            resource_kubeconfig = control_kubeconfig
         command = [
             "oc",
             "--kubeconfig",
@@ -379,6 +378,7 @@ def _wait_for_zero_resources(
     *,
     workshop_id: str,
     kubeconfig: str,
+    cleanup_kubeconfig: str | None = None,
     control_kubeconfig: str | None = None,
     timeout_seconds: float,
     interval_seconds: float,
@@ -390,6 +390,7 @@ def _wait_for_zero_resources(
             resources,
             workshop_id=workshop_id,
             kubeconfig=kubeconfig,
+            cleanup_kubeconfig=cleanup_kubeconfig,
             control_kubeconfig=control_kubeconfig,
         )
         elapsed = time.monotonic() - started
@@ -506,6 +507,7 @@ def _run_command(args: argparse.Namespace) -> int:
     plan["mutates_cluster"] = True
     api_key = os.environ.get(args.api_key_env, "")
     kubeconfig = os.environ.get("KUBECONFIG", "")
+    cleanup_kubeconfig = getattr(args, "cleanup_kubeconfig", None) or kubeconfig
     control_kubeconfig = getattr(args, "control_kubeconfig", None) or kubeconfig
     if not api_key:
         raise ValueError(f"{args.api_key_env} must contain the Launchpad API credential")
@@ -663,6 +665,7 @@ def _run_command(args: argparse.Namespace) -> int:
                 contract["spec"]["cleanup"]["resources"],
                 workshop_id=workshop_id,
                 kubeconfig=kubeconfig,
+                cleanup_kubeconfig=cleanup_kubeconfig,
                 control_kubeconfig=control_kubeconfig,
                 timeout_seconds=remaining_cleanup_seconds,
                 interval_seconds=args.poll_interval,
@@ -831,6 +834,13 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--output")
     run.add_argument("--poll-interval", type=float, default=5.0)
     run.add_argument("--ca-bundle")
+    run.add_argument(
+        "--cleanup-kubeconfig",
+        help=(
+            "Read-only observer kubeconfig for execution-cluster residue checks; "
+            "defaults to KUBECONFIG"
+        ),
+    )
     run.add_argument(
         "--control-kubeconfig",
         help=(

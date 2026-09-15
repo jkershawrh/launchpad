@@ -381,6 +381,7 @@ def test_cleanup_observation_uses_control_plane_for_argocd(monkeypatch):
         ["namespaces", "applications.argoproj.io", "secrets"],
         workshop_id="workshop-1",
         kubeconfig="brutus-kubeconfig",
+        cleanup_kubeconfig="brutus-observer-kubeconfig",
         control_kubeconfig="arena-kubeconfig",
     )
 
@@ -389,9 +390,9 @@ def test_cleanup_observation_uses_control_plane_for_argocd(monkeypatch):
         "applications.argoproj.io": 0,
         "secrets": 0,
     }
-    assert calls[0][2] == "brutus-kubeconfig"
+    assert calls[0][2] == "brutus-observer-kubeconfig"
     assert calls[1][2] == "arena-kubeconfig"
-    assert calls[2][2] == "brutus-kubeconfig"
+    assert calls[2][2] == "brutus-observer-kubeconfig"
 
 
 def test_failed_seat_probe_preserves_safe_stage_diagnostic(monkeypatch):
