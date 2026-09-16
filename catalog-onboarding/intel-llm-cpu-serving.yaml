@@ -27,6 +27,7 @@ sources:
 
 runtime:
   namespace_slug: intel-llm-cpu-serving
+  workshop_cluster_ref: arena
   deployment_type: manifests
   deployment_scope: seat
   showroom_terminal_storage: false

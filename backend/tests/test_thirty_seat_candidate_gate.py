@@ -16,6 +16,11 @@ CATALOG_ITEMS = (
     "intel-xeon6-agent-201",
     "multi-agent-quickstart",
 )
+EVENT_CLUSTERS = {
+    "intel-llm-cpu-serving": "arena",
+    "intel-xeon6-agent-201": "brutus",
+    "multi-agent-quickstart": "arena",
+}
 
 
 def _catalog_item(catalog_item_id: str) -> dict:
@@ -60,6 +65,7 @@ def test_thirty_seat_is_promoted_only_after_three_repeatable_green_live_runs():
         assert metadata["certification_stage"] == "thirty-seat-certified"
         assert metadata["max_workshop_seats"] == 30
         assert metadata["promotion_sequence"][-1] == 30
+        assert metadata["workshop_cluster_ref"] == EVENT_CLUSTERS[catalog_item_id]
 
 
 @pytest.mark.parametrize(

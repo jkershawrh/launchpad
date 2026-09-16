@@ -30,6 +30,7 @@ metadata:
   showroom: true
   operator_workshop: true
   content_only: false
+  workshop_cluster_ref: arena
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/multi-agent-quickstart.yaml
   certification_stage: thirty-seat-certified

@@ -1628,7 +1628,11 @@ class ProvisioningService:
         require_public_access = (
             workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE
         )
-        fixed_target = workshop.cluster_ref or workshop.target_cluster
+        fixed_target = (
+            workshop.cluster_ref
+            or workshop.target_cluster
+            or (catalog_item.metadata or {}).get("workshop_cluster_ref")
+        )
         if fixed_target:
             return [
                 self.cluster_registry.select(
@@ -1671,7 +1675,16 @@ class ProvisioningService:
                 },
             }
         selected_cluster = workshop.cluster_ref or workshop.target_cluster
-        placement_reason = "single-cluster placement"
+        catalog_target = (
+            (catalog_item.metadata or {}).get("workshop_cluster_ref")
+            if catalog_item
+            else None
+        )
+        placement_reason = (
+            f"catalog placement pins the entire workshop to {catalog_target}"
+            if catalog_target and not selected_cluster
+            else "single-cluster placement"
+        )
         if self.cluster_registry and catalog_item:
             try:
                 candidates = self._workshop_cluster_candidates(
@@ -1708,7 +1721,7 @@ class ProvisioningService:
                             f"higher-priority targets could not fit ({rejected}); "
                             "seats will not be split"
                         )
-                    else:
+                    elif not catalog_target:
                         placement_reason = (
                             f"Entire workshop assigned to {selected_cluster}; "
                             "seats will not be split"

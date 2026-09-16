@@ -326,6 +326,11 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
                 runtime.get("showroom_terminal_storage", True)
             ),
             "showroom_tabs": runtime["tabs"],
+            **(
+                {"workshop_cluster_ref": runtime["workshop_cluster_ref"]}
+                if runtime.get("workshop_cluster_ref")
+                else {}
+            ),
             "required_models": runtime["required_models"],
             "inference_endpoint": runtime.get("inference_endpoint", "litellm"),
             "seat_cpu_millicores": resources["cpu_millicores"],

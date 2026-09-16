@@ -36,6 +36,7 @@ references:
 
 runtime:
   namespace_slug: multi-agent
+  workshop_cluster_ref: arena
   deployment_type: helm
   deployment_scope: seat
   showroom_terminal_storage: false

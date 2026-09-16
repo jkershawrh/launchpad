@@ -29,7 +29,10 @@ from pydantic import ValidationError
 
 
 def _catalog_with_workshop_limit(
-    limit: int, *, allowed_exposure_policies: list[str] | None = None
+    limit: int,
+    *,
+    allowed_exposure_policies: list[str] | None = None,
+    workshop_cluster_ref: str | None = None,
 ):
     catalog = SimpleNamespace()
     catalog.get_item = lambda _item_id: SimpleNamespace(
@@ -41,10 +44,48 @@ def _catalog_with_workshop_limit(
                 if allowed_exposure_policies is not None
                 else {}
             ),
+            **(
+                {"workshop_cluster_ref": workshop_cluster_ref}
+                if workshop_cluster_ref is not None
+                else {}
+            ),
         },
         required_capabilities=[],
     )
     return catalog
+
+
+def test_catalog_workshop_cluster_ref_pins_normal_order_placement():
+    registry = ClusterRegistry([
+        ClusterTarget(
+            cluster_id="arena",
+            display_name="Arena",
+            ingress_domain="apps.arena.example.com",
+            capabilities=["openshift"],
+        ),
+        ClusterTarget(
+            cluster_id="brutus",
+            display_name="Brutus",
+            ingress_domain="apps.brutus.example.com",
+            capabilities=["openshift"],
+        ),
+    ])
+    service = ProvisioningService(
+        catalog=_catalog_with_workshop_limit(30, workshop_cluster_ref="brutus"),
+        cluster_registry=registry,
+    )
+    workshop = Workshop(
+        tenant_id="event-tenant",
+        catalog_item_id="pilot-lab",
+        num_users=30,
+    )
+
+    with patch.object(service, "check_workshop_capacity", return_value=(True, "ok")):
+        preview = service.preview_workshop_capacity(workshop)
+
+    assert preview["can_provision"] is True
+    assert preview["selected_cluster"] == "brutus"
+    assert "catalog placement" in preview["placement_reason"]
 
 
 client = TestClient(app)

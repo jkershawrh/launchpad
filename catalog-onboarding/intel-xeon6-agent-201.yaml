@@ -27,6 +27,7 @@ sources:
 
 runtime:
   namespace_slug: intel-xeon6-agent-201
+  workshop_cluster_ref: brutus
   deployment_type: manifests
   deployment_scope: seat
   showroom_terminal_storage: false
