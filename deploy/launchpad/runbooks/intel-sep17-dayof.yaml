@@ -53,6 +53,9 @@ spec:
               mountPath: /opt/app-root/src/live.js
               subPath: live.js
               readOnly: true
+            - name: brand-assets
+              mountPath: /opt/app-root/src/logos
+              readOnly: true
       volumes:
         - name: page
           configMap:
@@ -60,6 +63,9 @@ spec:
         - name: live-handoff
           secret:
             secretName: intel-sep17-dayof-live
+        - name: brand-assets
+          configMap:
+            name: intel-sep17-dayof-assets
 ---
 apiVersion: v1
 kind: Service
