@@ -257,7 +257,7 @@ arbitrary model name; the order controls the authorized model.
 This is one lab with one namespace and three tracks:
 
 1. **Run locally** explains the source and application pattern.
-2. **Build and operate on OpenShift** is the live 25-seat-certified path.
+2. **Build and operate on OpenShift** is the live 30-seat event path.
 3. **Advanced blueprint alignment** maps the live system to Kagenti,
    OpenTelemetry, workload identity, and governance.
 
@@ -336,7 +336,7 @@ test "$(oc exec deployment/multi-agent -c executor -- \
 | Intel Xeon 6 201: Building an AI Agent | LangGraph, MCP tools, prompt tuning, and a solution brief | Brutus |
 | Build Multi-Agent AI Systems with Open Protocols | Local pattern, OpenShift operation, and advanced blueprint | Arena |
 
-Show the catalog, preview a 25-seat workshop without submitting it, explain
+Show the catalog, preview a 30-seat workshop without submitting it, explain
 whole-workshop placement, show grouped seat state and cluster health, and end
 with group-scoped idempotent reclaim.
 
@@ -345,7 +345,7 @@ Use this scale statement:
 > We staggered three 30-seat orders, then ran all 90 participant environments
 > concurrently across Arena and Brutus.
 
-Do not claim simultaneous provisioning of all 75 seats or arbitrary catalog
+Do not claim simultaneous provisioning of all 90 seats or arbitrary catalog
 portability.
 
 ## Troubleshooting
