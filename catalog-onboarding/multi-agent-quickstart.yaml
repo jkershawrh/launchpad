@@ -119,8 +119,8 @@ runtime:
       orchestrator: multi-agent
 
 certification:
-  stage: twenty-five-seat-certified
-  max_workshop_seats: 25
+  stage: thirty-seat-certified
+  max_workshop_seats: 30
   proof_contract: certification/catalog/multi-agent-quickstart.yaml
   promotion_sequence:
     - 1

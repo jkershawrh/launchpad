@@ -13,12 +13,13 @@ describe('workshop order contract', () => {
     expect(validateSeatCount(1)).toBeNull();
     expect(validateSeatCount(20)).toBeNull();
     expect(validateSeatCount(25)).toBeNull();
-    expect(MAX_WORKSHOP_SEATS).toBe(25);
+    expect(validateSeatCount(30)).toBeNull();
+    expect(MAX_WORKSHOP_SEATS).toBe(30);
   });
 
   it('rejects unsafe seat counts', () => {
-    expect(validateSeatCount(0)).toMatch(/between 1 and 25/);
-    expect(validateSeatCount(26)).toMatch(/between 1 and 25/);
+    expect(validateSeatCount(0)).toMatch(/between 1 and 30/);
+    expect(validateSeatCount(31)).toMatch(/between 1 and 30/);
     expect(validateSeatCount(2.5)).toMatch(/whole number/);
   });
 

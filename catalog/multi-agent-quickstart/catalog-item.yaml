@@ -32,8 +32,8 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/multi-agent-quickstart.yaml
-  certification_stage: twenty-five-seat-certified
-  max_workshop_seats: 25
+  certification_stage: thirty-seat-certified
+  max_workshop_seats: 30
   promotion_sequence:
   - 1
   - 5

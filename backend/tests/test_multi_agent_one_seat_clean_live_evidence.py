@@ -67,12 +67,12 @@ def test_clean_one_seat_reclaim_left_zero_labeled_residue():
     assert evidence["security"]["credential_values_logged"] is False
 
 
-def test_clean_one_seat_evidence_remains_valid_after_twenty_five_seat_promotion():
+def test_clean_one_seat_evidence_remains_valid_after_thirty_seat_promotion():
     evidence = _evidence()
     contract = yaml.safe_load(ONBOARDING.read_text())
 
-    assert contract["certification"]["stage"] == "twenty-five-seat-certified"
-    assert contract["certification"]["max_workshop_seats"] == 25
+    assert contract["certification"]["stage"] == "thirty-seat-certified"
+    assert contract["certification"]["max_workshop_seats"] == 30
     assert evidence["release_boundary"] == {
         "internal_one_seat_functional_gate": True,
         "clean_first_pass": True,

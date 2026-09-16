@@ -20,8 +20,8 @@ INTEL_GUIDED_LABS = [
         "workspace_route": "app",
         # Immutable commit behind the Agent 201 pilot fix release.
         "content_ref": "e21dfe221c1ad7d2683f3a67b63437abb8788a43",
-        "max_workshop_seats": 25,
-        "certification_stage": "twenty-five-seat",
+        "max_workshop_seats": 30,
+        "certification_stage": "thirty-seat-certified",
     },
     {
         "catalog_id": "intel-llm-cpu-serving",
@@ -32,8 +32,8 @@ INTEL_GUIDED_LABS = [
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
         "content_ref": "d140e734f49fcf58c546a4f484ab1dcdfbb345c8",
-        "max_workshop_seats": 25,
-        "certification_stage": "twenty-five-seat",
+        "max_workshop_seats": 30,
+        "certification_stage": "thirty-seat-certified",
     },
     {
         "catalog_id": "intel-llm-tool-calling",

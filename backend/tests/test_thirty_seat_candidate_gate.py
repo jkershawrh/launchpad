@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -22,7 +23,18 @@ def _catalog_item(catalog_item_id: str) -> dict:
     return yaml.safe_load(path.read_text())
 
 
-def test_thirty_seat_is_next_candidate_without_bypassing_public_certification():
+def _successful_thirty_seat_runs(catalog_item_id: str) -> list[dict]:
+    runs = []
+    for path in sorted(
+        (REPO_ROOT / "evidence/runs").glob(f"{catalog_item_id}-30-seat-*.json")
+    ):
+        evidence = json.loads(path.read_text())
+        if evidence["result"] == "GREEN-live":
+            runs.append(evidence)
+    return runs
+
+
+def test_thirty_seat_is_promoted_only_after_three_repeatable_green_live_runs():
     platform_config = yaml.safe_load(
         (REPO_ROOT / "deploy/launchpad/base/configmap.yaml").read_text()
     )
@@ -31,16 +43,23 @@ def test_thirty_seat_is_next_candidate_without_bypassing_public_certification():
     for catalog_item_id in CATALOG_ITEMS:
         metadata = _catalog_item(catalog_item_id)["metadata"]
 
-        # Public orders remain fail-closed at the last proven scale. The
-        # internal certification runner may exercise only the declared next
-        # target before a separate promotion changes this limit.
-        assert metadata["max_workshop_seats"] == 25
-        larger_targets = sorted(
-            target
-            for target in metadata["promotion_sequence"]
-            if target > metadata["max_workshop_seats"]
-        )
-        assert larger_targets == [30]
+        runs = _successful_thirty_seat_runs(catalog_item_id)
+        assert len(runs) >= 3
+        for evidence in runs[-3:]:
+            assert evidence["rubric"] == {
+                **evidence["rubric"],
+                "passed": True,
+                "score": 100,
+            }
+            assert evidence["cleanup"]["status"] == "completed"
+            assert evidence["cleanup"]["model_keys_revoked"] is True
+            assert set(evidence["cleanup"]["resource_counts"].values()) == {0}
+
+        # The public/catalog limit can advance only after the repeatability
+        # evidence above has passed. This keeps source promotion fail-closed.
+        assert metadata["certification_stage"] == "thirty-seat-certified"
+        assert metadata["max_workshop_seats"] == 30
+        assert metadata["promotion_sequence"][-1] == 30
 
 
 @pytest.mark.parametrize(
@@ -75,7 +94,8 @@ def test_every_thirty_seat_candidate_has_a_valid_repeatable_proof_contract(
         25,
         30,
     ]
-    assert intake["certification"]["max_workshop_seats"] == 25
+    assert intake["certification"]["stage"] == "thirty-seat-certified"
+    assert intake["certification"]["max_workshop_seats"] == 30
     assert intake["certification"]["proof_contract"] == str(
         contract_path.relative_to(REPO_ROOT)
     )
@@ -90,9 +110,11 @@ def test_every_thirty_seat_candidate_has_a_valid_repeatable_proof_contract(
         exposure_policy="internal",
     )
     assert plan["cluster_ref"] == cluster_ref
-    assert plan["certification_override"] is True
+    assert plan["certification_override"] is False
     assert plan["execution_eligible"] is True
     assert plan["required_consecutive_runs"] == 3
+    assert plan["current_certified_seats"] == 30
+    assert plan["next_promotion_target"] is None
 
 
 def test_multi_agent_contract_matches_current_showroom_and_probe_interface():

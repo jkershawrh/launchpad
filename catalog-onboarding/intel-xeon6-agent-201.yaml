@@ -68,8 +68,8 @@ runtime:
       title: OpenShift Console
 
 certification:
-  stage: twenty-five-seat-certified
-  max_workshop_seats: 25
+  stage: thirty-seat-certified
+  max_workshop_seats: 30
   proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
   promotion_sequence:
     - 1

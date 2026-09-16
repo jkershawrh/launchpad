@@ -32,10 +32,8 @@ def test_multi_agent_quickstart_is_active_for_public_event_orders():
         "public_code",
     ]
     assert catalog["metadata"]["production_blockers"]
-    assert catalog["metadata"]["certification_stage"] == (
-        "twenty-five-seat-certified"
-    )
-    assert catalog["metadata"]["max_workshop_seats"] == 25
+    assert catalog["metadata"]["certification_stage"] == "thirty-seat-certified"
+    assert catalog["metadata"]["max_workshop_seats"] == 30
     assert catalog["metadata"]["certification_proof_contract"] == (
         "certification/catalog/multi-agent-quickstart.yaml"
     )

@@ -1,4 +1,4 @@
-export const MAX_WORKSHOP_SEATS = 25;
+export const MAX_WORKSHOP_SEATS = 30;
 
 export function validateSeatCount(value: number, maximum = MAX_WORKSHOP_SEATS): string | null {
   if (!Number.isInteger(value)) return 'Seat count must be a whole number.';

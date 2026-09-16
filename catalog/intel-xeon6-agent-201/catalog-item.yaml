@@ -25,8 +25,8 @@ metadata:
   showroom: true
   operator_workshop: true
   content_only: true
-  certification_stage: twenty-five-seat
-  max_workshop_seats: 25
+  certification_stage: thirty-seat-certified
+  max_workshop_seats: 30
   promotion_sequence:
     - 1
     - 5
