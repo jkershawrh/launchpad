@@ -17,9 +17,29 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
+      initContainers:
+        - name: prepare-solution-agent
+          image: quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              cp -R /app/. /workdir/
+              sed -i \
+                -e 's/_get_llm(max_tokens=512)/_get_llm(max_tokens=int(os.environ.get("REQUIREMENTS_MAX_TOKENS", "192")))/' \
+                -e 's/_get_llm(max_tokens=2048)/_get_llm(max_tokens=int(os.environ.get("BRIEF_MAX_TOKENS", "512")))/' \
+                /workdir/graph.py
+              grep -F 'REQUIREMENTS_MAX_TOKENS' /workdir/graph.py
+              grep -F 'BRIEF_MAX_TOKENS' /workdir/graph.py
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: solution-agent-app
+              mountPath: /workdir
       containers:
         - name: solution-agent
-          image: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/solution-agent-workshop@sha256:5fc8c0d69af7cd4b30023354152f6ac8b2470256afc46365590bbf9c1014aa91
+          image: quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -52,6 +72,8 @@ spec:
             - name: PROMPT_PATH
               value: /etc/advisor/system_prompt
           volumeMounts:
+            - name: solution-agent-app
+              mountPath: /app
             - name: prompt
               mountPath: /etc/advisor
             - name: model-ca-bundle
@@ -92,6 +114,8 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 10
       volumes:
+        - name: solution-agent-app
+          emptyDir: {}
         - name: prompt
           configMap:
             name: advisor-prompt

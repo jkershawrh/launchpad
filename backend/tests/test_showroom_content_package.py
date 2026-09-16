@@ -340,10 +340,10 @@ def test_agent_201_runtime_bounds_cpu_generation_for_workshop_scale():
     assert "REQUESTS_CA_BUNDLE" in manifest
     assert "SSL_CERT_FILE" in manifest
     assert "launchpad-model-ca-bundle" in manifest
-    assert (
-        "solution-agent-workshop@sha256:"
-        "5fc8c0d69af7cd4b30023354152f6ac8b2470256afc46365590bbf9c1014aa91"
-    ) in manifest
+    assert "prepare-solution-agent" in manifest
+    assert "cp -R /app/. /workdir/" in manifest
+    assert "triforce-solution-agent@sha256:60897d" in manifest
+    assert "image-registry.openshift-image-registry.svc" not in manifest
 
 
 def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass():
