@@ -1,0 +1,1765 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 25,
+    "certification_override": true,
+    "certification_target_seats": 30,
+    "estimated_resources": {
+      "cpu_millicores": 12450,
+      "memory_mib": 27360,
+      "pods": 90
+    },
+    "placement_reason": "Entire workshop assigned to brutus; seats will not be split",
+    "reason": "Cluster can support 30 seats (CPU: 156, Memory: 835, Pods: 30; Eligible nodes: 1; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 415,
+        "memory_mib": 912,
+        "pods": 3
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 5,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 30,
+    "selected_cluster": "brutus"
+  },
+  "catalog_item_id": "intel-xeon6-agent-201",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 97.333,
+    "status": "completed"
+  },
+  "completed_at": "2026-09-16T00:03:26.874351Z",
+  "contract": {
+    "catalog_version": "1.0.7",
+    "git_commit": "7f94a2c5ae12a071b97f4a6ebbbfe35eae7e75a3",
+    "intake_path": "catalog-onboarding/intel-xeon6-agent-201.yaml",
+    "path": "certification/catalog/intel-xeon6-agent-201.yaml",
+    "sha256": "25cee4fe2b61c2c8682cce264cde72ac5eaef2076eb5d7cb5d2aa9b94e50b16c"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": false,
+    "ready_within_limit": true,
+    "seat_probes_passed": false,
+    "sensitive_values_absent": false,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "brutus",
+    "namespaces": [
+      "launchpad-launchpad-public-c-intel-xeon6-agent-59945c",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-bc395a",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-789ae8",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-030793",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-e9d4a9",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-406aac",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-bc7f97",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-b6c46c",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-d517c6",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-ffbfe7",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-7140fa",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-80c2d4",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-6dc345",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-32d2e0",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-20026e",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-5eecbe",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-262cb9",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-fc16ab",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-eb758d",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-7f5666",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-2aaa32",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-c1947f",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-e04d00",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-7fcdc4",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-7d6993",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-d20b95",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-5628f2",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-11de5a",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-5e755c",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-a76690"
+    ],
+    "ready_seconds": 208.734,
+    "seat_count": 30,
+    "session_ids": [
+      "cba8e1c9-ad0e-46f5-b51e-63ae4bcd3bf8",
+      "8487365f-c95e-430e-a0c7-99c3fb0819a3",
+      "c895f2d5-0578-4d77-9fe9-9d55a9024f64",
+      "cb10189e-ef40-4929-a727-ee69d56b0e7a",
+      "93215943-e7da-4e4d-920c-9260f0f3195a",
+      "41f8a2c5-1a05-4853-9dde-ac84b4785926",
+      "c5ef271c-396d-469d-b15e-d5f2fd8dc673",
+      "836fa436-97ff-4679-babb-90589f55d0fa",
+      "0cb25dab-d25f-46df-95e8-ff3ea7d2a51d",
+      "7c5b4cbb-d5eb-492f-a865-a7f17ca78de3",
+      "2892965b-e6f5-4991-988f-2205cc7d16e6",
+      "03bef438-8c85-4a30-a4f7-1ded02c97edf",
+      "49a024a5-f8db-43a7-bd26-49f37f574624",
+      "8990432a-aa35-4dd3-9ba7-84f51b6dc8c4",
+      "f721b6e7-7489-41da-b8b4-0062cd043f65",
+      "19e97504-7ba8-4aab-ae69-cc5d400b4806",
+      "b90af28a-9c6d-4ade-b35a-40a8bd030e62",
+      "5f94713a-39d4-414c-a35b-c9b78969cae3",
+      "a183b1bf-67d0-4758-a1f8-3f50b8596500",
+      "f98a81e1-bc4e-4649-98df-562eaf85e3cf",
+      "61333a2c-2d86-41bf-b1e0-b9417862f5ec",
+      "e65c3a43-67e8-4ed0-b6e0-cd3ac85d032c",
+      "bd3d3c74-d12d-4deb-8929-65c045a51868",
+      "47514676-a143-44ec-942f-174503c3487a",
+      "844fc8cc-f585-4abc-949e-b10b00192c39",
+      "c7529277-be1e-4492-8258-cb9e731d3ae7",
+      "18333f48-d73f-4bd8-8908-7119004a25ea",
+      "32352ce4-d5d0-4e8a-aa16-e891ae23957c",
+      "ff51a871-74bb-40f5-8597-880f782c2bd3",
+      "61e600b0-adec-4987-aed5-7cd40a1f18b8"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "07ec9ab0-c786-453d-920a-0bdb9fd18420"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "intel-xeon6-agent-201",
+    "certification_override": true,
+    "cluster_ref": "brutus",
+    "current_certified_seats": 25,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.brutus.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 1500,
+    "maximum_ready_seconds": 3300,
+    "mutates_cluster": true,
+    "next_promotion_target": 30,
+    "probe_concurrency": 10,
+    "provision_concurrency": 5,
+    "required_consecutive_runs": 3,
+    "seat_probe_count": 30,
+    "seats": 30,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 0,
+    "eligible": false,
+    "required_consecutive_runs": 3
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "RED-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": false,
+    "required": 100,
+    "score": 60
+  },
+  "run_id": "20260915T235759Z-e87ebbc7",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-59945c",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.941,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "59945c41-3615-4292-b70d-8a10f6e0c5d8",
+      "seat_number": 1,
+      "session_id": "cba8e1c9-ad0e-46f5-b51e-63ae4bcd3bf8",
+      "showroom": [
+        {
+          "duration_seconds": 0.595,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.472,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.43,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.38,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-bc395a",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.954,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "bc395a00-e7d8-45be-a761-c105cbe584a4",
+      "seat_number": 2,
+      "session_id": "8487365f-c95e-430e-a0c7-99c3fb0819a3",
+      "showroom": [
+        {
+          "duration_seconds": 0.65,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.47,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.41,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.374,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-789ae8",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.93,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "789ae80b-0202-4e1b-a46f-4fa7e37307e1",
+      "seat_number": 3,
+      "session_id": "c895f2d5-0578-4d77-9fe9-9d55a9024f64",
+      "showroom": [
+        {
+          "duration_seconds": 0.641,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.463,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.434,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.383,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-030793",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.9,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "0307932e-6244-4e5e-a533-49ca32d6b5c7",
+      "seat_number": 4,
+      "session_id": "cb10189e-ef40-4929-a727-ee69d56b0e7a",
+      "showroom": [
+        {
+          "duration_seconds": 0.64,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.453,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.417,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.398,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-e9d4a9",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 3.057,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "e9d4a92a-f19d-481a-adef-2490a0df2b27",
+      "seat_number": 5,
+      "session_id": "93215943-e7da-4e4d-920c-9260f0f3195a",
+      "showroom": [
+        {
+          "duration_seconds": 0.638,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.453,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.32,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.385,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-406aac",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.862,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "406aacfa-29c1-41f9-8f97-38719e228b0a",
+      "seat_number": 6,
+      "session_id": "41f8a2c5-1a05-4853-9dde-ac84b4785926",
+      "showroom": [
+        {
+          "duration_seconds": 0.691,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.452,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.411,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.391,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-bc7f97",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.838,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "bc7f9706-bcd5-453c-868a-40ac6171f814",
+      "seat_number": 7,
+      "session_id": "c5ef271c-396d-469d-b15e-d5f2fd8dc673",
+      "showroom": [
+        {
+          "duration_seconds": 0.692,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.473,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.405,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.401,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-b6c46c",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.798,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "b6c46cff-0c2d-49aa-9c8f-9cc7a4211753",
+      "seat_number": 8,
+      "session_id": "836fa436-97ff-4679-babb-90589f55d0fa",
+      "showroom": [
+        {
+          "duration_seconds": 0.691,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.465,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.432,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.421,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-d517c6",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.884,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "d517c6a5-ae0d-43db-921d-0c7a445630c9",
+      "seat_number": 9,
+      "session_id": "0cb25dab-d25f-46df-95e8-ff3ea7d2a51d",
+      "showroom": [
+        {
+          "duration_seconds": 0.693,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.467,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.401,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.392,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-ffbfe7",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.81,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "ffbfe746-2668-446d-a2b8-ab30e150d9c0",
+      "seat_number": 10,
+      "session_id": "7c5b4cbb-d5eb-492f-a865-a7f17ca78de3",
+      "showroom": [
+        {
+          "duration_seconds": 0.691,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.467,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.411,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.427,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-7140fa",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.329,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "7140fa09-d927-4234-8d31-2e27536a3a2b",
+      "seat_number": 11,
+      "session_id": "2892965b-e6f5-4991-988f-2205cc7d16e6",
+      "showroom": [
+        {
+          "duration_seconds": 0.391,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.306,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.319,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.301,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-80c2d4",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.391,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "80c2d445-b1bf-4e25-a583-a71f861e6dfc",
+      "seat_number": 12,
+      "session_id": "03bef438-8c85-4a30-a4f7-1ded02c97edf",
+      "showroom": [
+        {
+          "duration_seconds": 0.391,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.317,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.311,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.316,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-6dc345",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.377,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "6dc345ea-5e00-4b7d-9ff1-0a4b579dea97",
+      "seat_number": 13,
+      "session_id": "49a024a5-f8db-43a7-bd26-49f37f574624",
+      "showroom": [
+        {
+          "duration_seconds": 0.386,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.311,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-32d2e0",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.384,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "32d2e0f8-839a-4a12-bbb5-debe2a3551eb",
+      "seat_number": 14,
+      "session_id": "8990432a-aa35-4dd3-9ba7-84f51b6dc8c4",
+      "showroom": [
+        {
+          "duration_seconds": 0.387,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.318,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.318,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.359,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-20026e",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.34,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "20026ee8-7f9e-47e3-9620-d4e2d5b8e1a4",
+      "seat_number": 15,
+      "session_id": "f721b6e7-7489-41da-b8b4-0062cd043f65",
+      "showroom": [
+        {
+          "duration_seconds": 0.39,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.33,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.32,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.353,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-5eecbe",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.32,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "5eecbe79-ab6e-40a9-b010-75b784366cb6",
+      "seat_number": 16,
+      "session_id": "19e97504-7ba8-4aab-ae69-cc5d400b4806",
+      "showroom": [
+        {
+          "duration_seconds": 0.388,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.31,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.328,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.307,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-262cb9",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.386,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "262cb9e1-a48c-4df7-89ba-948c7cc68ab6",
+      "seat_number": 17,
+      "session_id": "b90af28a-9c6d-4ade-b35a-40a8bd030e62",
+      "showroom": [
+        {
+          "duration_seconds": 0.392,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.297,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.305,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-fc16ab",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.383,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "fc16ab69-e803-48a5-b308-935ea1ed42fa",
+      "seat_number": 18,
+      "session_id": "5f94713a-39d4-414c-a35b-c9b78969cae3",
+      "showroom": [
+        {
+          "duration_seconds": 0.394,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.311,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.326,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.321,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-eb758d",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.311,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "eb758d79-96ab-4d90-b2a7-2db66703b22f",
+      "seat_number": 19,
+      "session_id": "a183b1bf-67d0-4758-a1f8-3f50b8596500",
+      "showroom": [
+        {
+          "duration_seconds": 0.393,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.316,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.316,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.332,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-7f5666",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.25,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "7f56662f-b376-4984-9069-785713c2fe61",
+      "seat_number": 20,
+      "session_id": "f98a81e1-bc4e-4649-98df-562eaf85e3cf",
+      "showroom": [
+        {
+          "duration_seconds": 0.394,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.319,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.311,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.337,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-2aaa32",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.516,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "2aaa3200-abb9-4773-836a-dd2fadffe4d7",
+      "seat_number": 21,
+      "session_id": "61333a2c-2d86-41bf-b1e0-b9417862f5ec",
+      "showroom": [
+        {
+          "duration_seconds": 0.31,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.267,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.261,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.256,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-c1947f",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.438,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "c1947f1e-ca4b-469c-b2d9-ce09347f022d",
+      "seat_number": 22,
+      "session_id": "e65c3a43-67e8-4ed0-b6e0-cd3ac85d032c",
+      "showroom": [
+        {
+          "duration_seconds": 0.338,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.242,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.249,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.279,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-e04d00",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.339,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "e04d006d-13ef-498c-9ef6-6607cb2ea390",
+      "seat_number": 23,
+      "session_id": "bd3d3c74-d12d-4deb-8929-65c045a51868",
+      "showroom": [
+        {
+          "duration_seconds": 0.302,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.271,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.254,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.251,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-7fcdc4",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.4,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "7fcdc46f-383b-478a-87d9-3aaad90001f0",
+      "seat_number": 24,
+      "session_id": "47514676-a143-44ec-942f-174503c3487a",
+      "showroom": [
+        {
+          "duration_seconds": 0.309,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.276,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.253,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.255,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-7d6993",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.473,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "7d6993ac-86a7-4f50-b260-be6ee25cd854",
+      "seat_number": 25,
+      "session_id": "844fc8cc-f585-4abc-949e-b10b00192c39",
+      "showroom": [
+        {
+          "duration_seconds": 0.321,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.257,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.259,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.236,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-d20b95",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.358,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "d20b9519-81d5-491b-9f52-a3e4a007317c",
+      "seat_number": 26,
+      "session_id": "c7529277-be1e-4492-8258-cb9e731d3ae7",
+      "showroom": [
+        {
+          "duration_seconds": 0.333,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.246,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.264,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.277,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-5628f2",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.307,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "5628f2ff-1a7d-44e9-aef4-67b6418a3ce2",
+      "seat_number": 27,
+      "session_id": "18333f48-d73f-4bd8-8908-7119004a25ea",
+      "showroom": [
+        {
+          "duration_seconds": 0.325,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.25,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.288,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.297,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-11de5a",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.314,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "11de5a57-2d4e-4051-8f72-18a40849fd24",
+      "seat_number": 28,
+      "session_id": "32352ce4-d5d0-4e8a-aa16-e891ae23957c",
+      "showroom": [
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.263,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.272,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.288,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-5e755c",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.348,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "5e755cdc-9346-4c96-919a-1b77b8d5d386",
+      "seat_number": 29,
+      "session_id": "ff51a871-74bb-40f5-8597-880f782c2bd3",
+      "showroom": [
+        {
+          "duration_seconds": 0.303,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.246,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.258,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.28,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-a76690",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 2.304,
+        "exit_code": 1,
+        "failure_stage": "setup",
+        "passed": false
+      },
+      "seat_id": "a76690f1-70fd-4e34-9a2a-cb0419ee4d7b",
+      "seat_number": 30,
+      "session_id": "61e600b0-adec-4987-aed5-7cd40a1f18b8",
+      "showroom": [
+        {
+          "duration_seconds": 0.302,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.269,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.258,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.299,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-15T23:57:59.473675Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "RED-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "RED-live",
+    "sensitive_values_absent": "RED-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

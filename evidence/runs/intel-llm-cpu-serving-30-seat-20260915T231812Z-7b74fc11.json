@@ -1,0 +1,2335 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 25,
+    "certification_override": true,
+    "certification_target_seats": 30,
+    "estimated_resources": {
+      "cpu_millicores": 19950,
+      "memory_mib": 44640,
+      "pods": 60
+    },
+    "placement_reason": "Entire workshop assigned to arena; seats will not be split",
+    "reason": "Cluster can support 184 seats (CPU: 194, Memory: 856, Pods: 184; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 665,
+        "memory_mib": 1488,
+        "pods": 2
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 5,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 30,
+    "selected_cluster": "arena"
+  },
+  "catalog_item_id": "intel-llm-cpu-serving",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 69.636,
+    "status": "completed"
+  },
+  "completed_at": "2026-09-15T23:28:03.223866Z",
+  "contract": {
+    "catalog_version": "1.0.11",
+    "git_commit": "1be65a1f98bd3e55c2c035a70dbd221a49cb5702",
+    "intake_path": "catalog-onboarding/intel-llm-cpu-serving.yaml",
+    "path": "certification/catalog/intel-llm-cpu-serving.yaml",
+    "sha256": "281ab6739b169b9d5af06e8b95d33210cc3803a9fab39d78b34508e45f9ef86e"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "arena",
+    "namespaces": [
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-55b78f",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-4391f7",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-092157",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-2e5a0d",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-e8c51c",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-5ad1fd",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-8d31eb",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-94aab4",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-05ff89",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-301b20",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-07e9da",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-aed1dc",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-81a6d3",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-c1cd2b",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-aec446",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-357adc",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-44756e",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-c2a3a7",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-d1b3cc",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-33206d",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-852c2e",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-4c550a",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-4de422",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-0e53cb",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-27e835",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-527399",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-6a7283",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-903601",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-86383c",
+      "launchpad-launchpad-public-c-intel-llm-cpu-serv-b0332e"
+    ],
+    "ready_seconds": 374.344,
+    "seat_count": 30,
+    "session_ids": [
+      "f6cdd8fc-4b74-49c8-9230-e6f828d7b9b1",
+      "dfa8c230-03e6-4d92-867a-1a23ebccf96c",
+      "966d32b9-7778-4799-8934-9c1b306d26b9",
+      "34ed7a6f-5d67-4845-8d41-5a70775d7875",
+      "303be303-c4ed-4e27-8d41-2a21c15e6bde",
+      "20c8a884-d379-436f-bf3b-b0caf7b271f4",
+      "988e36d6-6d70-4d49-82b8-2442f509efff",
+      "5b2b8ee8-a47c-428a-a5cf-5def40674689",
+      "db8ea6db-6c1d-4718-9db3-03678cb23287",
+      "d952a414-7d68-48c7-8c0a-5075ab3e1914",
+      "d9c17be3-6338-4f39-9651-f86beb610471",
+      "d251885a-36c3-4321-a137-1eb711ae0177",
+      "24f00da3-29d1-4d64-bf97-3de6ed5ca839",
+      "158e88c8-b0c3-4a68-8425-f0a3e4fd99e9",
+      "685ec01a-b657-4956-b4f0-4e7c16813894",
+      "50adb302-b5d2-4f8f-ab86-bf8dd2efd37c",
+      "4060b0ca-3f4c-4d6e-9b45-722f6522c18c",
+      "f4783bb7-b99c-4c84-8e9b-f7d63d17eb69",
+      "9597ea59-bee3-4ede-994b-6e93c44f6f80",
+      "fcbdfee0-88b6-4ddd-9842-ff86d515f073",
+      "0e8e3a19-4bc4-4e13-877a-e5cb0d005b8b",
+      "7778958b-9509-4006-9a9f-8f3a694af6db",
+      "89165757-3024-47f7-b045-8b27a40a7983",
+      "f35e23c4-2967-4d86-856a-23b3457c0d1f",
+      "069d7d8d-80d9-4a35-b7b6-906075f847b0",
+      "ccb91d88-7e11-4fa0-b7e3-08df19cd0254",
+      "6a6651b0-33cf-4c24-87d0-b28b1626a807",
+      "d541ed19-eeeb-490b-9e0a-390292615d2b",
+      "de981aa0-3107-49f8-ba6f-e7e5a198fc36",
+      "4d2a9eb3-ab1a-45dd-b5b3-7a3c5fd8e6ae"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "a3ae19cd-88dc-446c-b13d-9d81b7ac41c5"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "intel-llm-cpu-serving",
+    "certification_override": true,
+    "cluster_ref": "arena",
+    "current_certified_seats": 25,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.arena.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 1500,
+    "maximum_ready_seconds": 3300,
+    "mutates_cluster": true,
+    "next_promotion_target": 30,
+    "probe_concurrency": 10,
+    "provision_concurrency": 5,
+    "required_consecutive_runs": 3,
+    "seat_probe_count": 30,
+    "seats": 30,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 3,
+    "eligible": true,
+    "required_consecutive_runs": 3
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "20260915T231812Z-7b74fc11",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-55b78f",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 47.726,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-55b78f",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-55b78f",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "55b78f47-b9d3-47b9-ab28-e5af5b45ce31",
+      "seat_number": 1,
+      "session_id": "f6cdd8fc-4b74-49c8-9230-e6f828d7b9b1",
+      "showroom": [
+        {
+          "duration_seconds": 0.458,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.401,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.462,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.291,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-4391f7",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 51.849,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-4391f7",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-4391f7",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "4391f791-75ed-4fcc-9cb8-e35fe99bf69f",
+      "seat_number": 2,
+      "session_id": "dfa8c230-03e6-4d92-867a-1a23ebccf96c",
+      "showroom": [
+        {
+          "duration_seconds": 0.558,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.504,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.35,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.324,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-092157",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 51.203,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-092157",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-092157",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "09215752-fba1-4b6f-9bff-ba1bacd08f9e",
+      "seat_number": 3,
+      "session_id": "966d32b9-7778-4799-8934-9c1b306d26b9",
+      "showroom": [
+        {
+          "duration_seconds": 0.501,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.445,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.399,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.332,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-2e5a0d",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 47.59,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-2e5a0d",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-2e5a0d",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "2e5a0d3f-566d-489b-b4a4-8d095bce2e14",
+      "seat_number": 4,
+      "session_id": "34ed7a6f-5d67-4845-8d41-5a70775d7875",
+      "showroom": [
+        {
+          "duration_seconds": 0.445,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.39,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.436,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.372,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-e8c51c",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 53.481,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-e8c51c",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-e8c51c",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "e8c51cbd-34a9-4e11-b0f6-c86c1a42fc2a",
+      "seat_number": 5,
+      "session_id": "303be303-c4ed-4e27-8d41-2a21c15e6bde",
+      "showroom": [
+        {
+          "duration_seconds": 0.543,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.463,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.389,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.322,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-5ad1fd",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 49.473,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-5ad1fd",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-5ad1fd",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "5ad1fd23-c3de-4b39-8929-c803b13dd90e",
+      "seat_number": 6,
+      "session_id": "20c8a884-d379-436f-bf3b-b0caf7b271f4",
+      "showroom": [
+        {
+          "duration_seconds": 0.553,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.505,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.372,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.304,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-8d31eb",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 50.226,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-8d31eb",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-8d31eb",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "8d31eb8d-4a15-45fa-aa5b-20c28ec46399",
+      "seat_number": 7,
+      "session_id": "988e36d6-6d70-4d49-82b8-2442f509efff",
+      "showroom": [
+        {
+          "duration_seconds": 0.498,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.456,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.406,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.33,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-94aab4",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 51.991,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-94aab4",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-94aab4",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "94aab453-b7e9-47ba-ac20-9e76237ee845",
+      "seat_number": 8,
+      "session_id": "5b2b8ee8-a47c-428a-a5cf-5def40674689",
+      "showroom": [
+        {
+          "duration_seconds": 0.44,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.446,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.4,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.299,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-05ff89",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 49.506,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-05ff89",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-05ff89",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "05ff89da-abd9-4ce4-a7c0-3dd31d3b4a7d",
+      "seat_number": 9,
+      "session_id": "db8ea6db-6c1d-4718-9db3-03678cb23287",
+      "showroom": [
+        {
+          "duration_seconds": 0.55,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.509,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.385,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.324,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-301b20",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 47.468,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-301b20",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-301b20",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "301b2039-2e09-4670-8dd0-945edd55348b",
+      "seat_number": 10,
+      "session_id": "d952a414-7d68-48c7-8c0a-5075ab3e1914",
+      "showroom": [
+        {
+          "duration_seconds": 0.54,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.465,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.392,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.308,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-07e9da",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 32.144,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-07e9da",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-07e9da",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "07e9da9e-b454-4192-be9e-e27b2825f829",
+      "seat_number": 11,
+      "session_id": "d9c17be3-6338-4f39-9651-f86beb610471",
+      "showroom": [
+        {
+          "duration_seconds": 0.415,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.363,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.305,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.333,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-aed1dc",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 29.538,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-aed1dc",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-aed1dc",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "aed1dc01-7ee4-4b05-9663-66625b262053",
+      "seat_number": 12,
+      "session_id": "d251885a-36c3-4321-a137-1eb711ae0177",
+      "showroom": [
+        {
+          "duration_seconds": 0.354,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.327,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.305,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-81a6d3",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 27.735,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-81a6d3",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-81a6d3",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "81a6d3c6-3a44-4381-8f42-80ad46208163",
+      "seat_number": 13,
+      "session_id": "24f00da3-29d1-4d64-bf97-3de6ed5ca839",
+      "showroom": [
+        {
+          "duration_seconds": 0.369,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.33,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.293,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.333,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-c1cd2b",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 30.171,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-c1cd2b",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-c1cd2b",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "c1cd2b6d-1d9a-4360-a583-2bb2e1701e1b",
+      "seat_number": 14,
+      "session_id": "158e88c8-b0c3-4a68-8425-f0a3e4fd99e9",
+      "showroom": [
+        {
+          "duration_seconds": 0.32,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.432,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.335,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.279,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-aec446",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 27.475,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-aec446",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-aec446",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "aec4469c-6693-4fb8-a398-5e82b5a28b8a",
+      "seat_number": 15,
+      "session_id": "685ec01a-b657-4956-b4f0-4e7c16813894",
+      "showroom": [
+        {
+          "duration_seconds": 0.303,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.431,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.322,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-357adc",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 27.552,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-357adc",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-357adc",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "357adc89-fe28-4988-bda6-9276fe1ea4d0",
+      "seat_number": 16,
+      "session_id": "50adb302-b5d2-4f8f-ab86-bf8dd2efd37c",
+      "showroom": [
+        {
+          "duration_seconds": 0.42,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.291,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.256,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.233,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-44756e",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 28.605,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-44756e",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-44756e",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "44756e8c-db3c-4320-bd5d-cddfd465f8d9",
+      "seat_number": 17,
+      "session_id": "4060b0ca-3f4c-4d6e-9b45-722f6522c18c",
+      "showroom": [
+        {
+          "duration_seconds": 0.339,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.317,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.283,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-c2a3a7",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 23.633,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-c2a3a7",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-c2a3a7",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "c2a3a744-570b-4c47-b3e2-ff442c43d720",
+      "seat_number": 18,
+      "session_id": "f4783bb7-b99c-4c84-8e9b-f7d63d17eb69",
+      "showroom": [
+        {
+          "duration_seconds": 0.303,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.277,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.307,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.32,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-d1b3cc",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 23.605,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-d1b3cc",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-d1b3cc",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "d1b3ccf5-2652-4664-8239-c9dcffaa0404",
+      "seat_number": 19,
+      "session_id": "9597ea59-bee3-4ede-994b-6e93c44f6f80",
+      "showroom": [
+        {
+          "duration_seconds": 0.306,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.303,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.304,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.293,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-33206d",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 58.083,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-33206d",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-33206d",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "33206d24-671a-4d01-926c-ea58d34984d5",
+      "seat_number": 20,
+      "session_id": "fcbdfee0-88b6-4ddd-9842-ff86d515f073",
+      "showroom": [
+        {
+          "duration_seconds": 0.348,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.283,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.295,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.3,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-852c2e",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 34.335,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-852c2e",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-852c2e",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "852c2e41-af1c-455f-8b7f-431203c98267",
+      "seat_number": 21,
+      "session_id": "0e8e3a19-4bc4-4e13-877a-e5cb0d005b8b",
+      "showroom": [
+        {
+          "duration_seconds": 0.388,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.341,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.341,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-4c550a",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 31.569,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-4c550a",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-4c550a",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "4c550a0e-0642-4884-b43f-2f7022069ebd",
+      "seat_number": 22,
+      "session_id": "7778958b-9509-4006-9a9f-8f3a694af6db",
+      "showroom": [
+        {
+          "duration_seconds": 0.376,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.35,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.32,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.298,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-4de422",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 35.754,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-4de422",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-4de422",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "4de422d1-c086-4e8c-9e9b-68d76247e1be",
+      "seat_number": 23,
+      "session_id": "89165757-3024-47f7-b045-8b27a40a7983",
+      "showroom": [
+        {
+          "duration_seconds": 0.407,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.347,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-0e53cb",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 29.457,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-0e53cb",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-0e53cb",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "0e53cbe5-201a-4ea7-8bd3-f46f43ef4117",
+      "seat_number": 24,
+      "session_id": "f35e23c4-2967-4d86-856a-23b3457c0d1f",
+      "showroom": [
+        {
+          "duration_seconds": 0.414,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.35,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.235,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-27e835",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 27.917,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-27e835",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-27e835",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "27e83529-6423-4116-a68e-c9724c1ff6d4",
+      "seat_number": 25,
+      "session_id": "069d7d8d-80d9-4a35-b7b6-906075f847b0",
+      "showroom": [
+        {
+          "duration_seconds": 0.361,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.285,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.348,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.235,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-527399",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 32.5,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-527399",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-527399",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "52739987-148f-4dfd-b27a-09297cb8eadc",
+      "seat_number": 26,
+      "session_id": "ccb91d88-7e11-4fa0-b7e3-08df19cd0254",
+      "showroom": [
+        {
+          "duration_seconds": 0.404,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.282,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.317,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-6a7283",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 24.814,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-6a7283",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-6a7283",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "6a7283e3-bc13-4d5c-b6f7-cb5eb1bf1f6b",
+      "seat_number": 27,
+      "session_id": "6a6651b0-33cf-4c24-87d0-b28b1626a807",
+      "showroom": [
+        {
+          "duration_seconds": 0.354,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.267,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.31,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.273,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-903601",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 25.098,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-903601",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-903601",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "9036016d-05d6-4956-b927-32bcadda712d",
+      "seat_number": 28,
+      "session_id": "d541ed19-eeeb-490b-9e0a-390292615d2b",
+      "showroom": [
+        {
+          "duration_seconds": 0.325,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.312,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.31,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.277,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-86383c",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 27.688,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-86383c",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-86383c",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "86383cca-49cb-4455-aec5-4f6bfe43f472",
+      "seat_number": 29,
+      "session_id": "de981aa0-3107-49f8-ba6f-e7e5a198fc36",
+      "showroom": [
+        {
+          "duration_seconds": 0.345,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.332,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-b0332e",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 25.446,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "arena",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-llm-cpu-serv-b0332e",
+          "rag_journey": {
+            "grounded_answer": true
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-llm-cpu-serv-b0332e",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "b0332ef0-374b-490a-b11c-8474d84fae77",
+      "seat_number": 30,
+      "session_id": "4d2a9eb3-ab1a-45dd-b5b3-7a3c5fd8e6ae",
+      "showroom": [
+        {
+          "duration_seconds": 0.415,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.298,
+          "http_status": 200,
+          "id": "wire-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.414,
+          "http_status": 200,
+          "id": "load-documents",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.453,
+          "http_status": 200,
+          "id": "query-rag",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-15T23:18:12.232444Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

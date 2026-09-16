@@ -1,0 +1,2335 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 25,
+    "certification_override": true,
+    "certification_target_seats": 30,
+    "estimated_resources": {
+      "cpu_millicores": 12450,
+      "memory_mib": 27360,
+      "pods": 90
+    },
+    "placement_reason": "Entire workshop assigned to brutus; seats will not be split",
+    "reason": "Cluster can support 30 seats (CPU: 156, Memory: 835, Pods: 30; Eligible nodes: 1; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 415,
+        "memory_mib": 912,
+        "pods": 3
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 5,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 30,
+    "selected_cluster": "brutus"
+  },
+  "catalog_item_id": "intel-xeon6-agent-201",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 69.98,
+    "status": "completed"
+  },
+  "completed_at": "2026-09-16T00:53:16.959799Z",
+  "contract": {
+    "catalog_version": "1.0.7",
+    "git_commit": "66f47203c04985797e98f39623796d3dd264eb9a",
+    "intake_path": "catalog-onboarding/intel-xeon6-agent-201.yaml",
+    "path": "certification/catalog/intel-xeon6-agent-201.yaml",
+    "sha256": "25cee4fe2b61c2c8682cce264cde72ac5eaef2076eb5d7cb5d2aa9b94e50b16c"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "brutus",
+    "namespaces": [
+      "launchpad-launchpad-public-c-intel-xeon6-agent-fa6752",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-98cca1",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-b9db90",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-091b86",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-18aa62",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-9ce185",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-a4beff",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-9c3b80",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-821d3d",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-b6235c",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-e92c77",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-d04b47",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-3c82fc",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-3e4249",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-2857da",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-1db491",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-8fcabf",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-24f7f0",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-533f6c",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-9ed630",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-3692e5",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-00b968",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-ac734c",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-085d74",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-f51713",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-77e71b",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-253758",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-db44b5",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-faa1bc",
+      "launchpad-launchpad-public-c-intel-xeon6-agent-5267b5"
+    ],
+    "ready_seconds": 198.225,
+    "seat_count": 30,
+    "session_ids": [
+      "bc80d4a5-6323-4deb-b64b-0b83f7b6ac5f",
+      "503f013d-2414-4a1f-ba9e-5323f8e6b5e2",
+      "97d49739-a8d0-4e1e-8717-3012ba27ee29",
+      "dd06d620-5da9-407f-9d7c-573e35dd1b68",
+      "53135475-ee70-4828-8dde-8f74e4325b60",
+      "4668da35-f607-4b7b-ae98-8299f555b147",
+      "4a78aa73-7533-4597-b701-487895cc8f6d",
+      "9b9d25d9-8e40-404f-8aad-cefec8b8aca5",
+      "ca115289-0985-4927-aa02-19f2a61ccf87",
+      "021d48fd-bd77-49f9-bef2-19c5bae2d5b2",
+      "ed2ee870-4934-43db-b7c1-0d42ddf0381b",
+      "6331aa6b-df60-4528-8f3f-4fbb8509cf66",
+      "332966e9-7a8b-48e6-a95e-137dc6834d98",
+      "a14df413-5092-4e2a-a9d1-f51c6396993e",
+      "d471a2f2-023f-498d-ab4c-ed6890040445",
+      "19aaebe9-f3fc-4e1d-a97c-f6ed27b212b9",
+      "7b7ec49c-6f28-46e1-b80f-0878d32382b7",
+      "9dd18abf-9967-41d5-8150-c3423263d0b5",
+      "44522e2f-2496-4428-9db5-920b59c75674",
+      "3630d7c3-1e8b-4fcd-b0a5-b7b6ead6f2ca",
+      "fa93a557-2ebf-44a4-9859-99dfc40f0b2b",
+      "700cc99c-b1d9-476f-a3fd-4d2a6adbcf36",
+      "4b6c4d54-0649-41db-8a4f-157051a6acab",
+      "f198638e-16aa-48d5-aecc-a2f9ca69c166",
+      "17347f71-c6d4-489a-a2b1-3345210e47a5",
+      "ed1d96e3-c957-4ca6-92a3-8c1b7185b7bc",
+      "0765f5a0-4f91-49a7-903d-65d629a20f05",
+      "4e31dcfe-bb81-4f5e-a70f-9d8afd08666b",
+      "cf6f5de2-fda1-467b-9a6c-6bd7e2b71dd8",
+      "8e333758-be55-4d0d-bf4f-53f8257b24a1"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "f4c2e7c4-8b98-4208-9c40-c78f489ec48c"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "intel-xeon6-agent-201",
+    "certification_override": true,
+    "cluster_ref": "brutus",
+    "current_certified_seats": 25,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.brutus.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 1500,
+    "maximum_ready_seconds": 3300,
+    "mutates_cluster": true,
+    "next_promotion_target": 30,
+    "probe_concurrency": 10,
+    "provision_concurrency": 5,
+    "required_consecutive_runs": 3,
+    "seat_probe_count": 30,
+    "seats": 30,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 3,
+    "eligible": true,
+    "required_consecutive_runs": 3
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "20260916T004231Z-0288d942",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-fa6752",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 107.639,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-fa6752",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-fa6752",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "fa675206-e925-4ace-bc83-2d7955613df8",
+      "seat_number": 1,
+      "session_id": "bc80d4a5-6323-4deb-b64b-0b83f7b6ac5f",
+      "showroom": [
+        {
+          "duration_seconds": 0.353,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.351,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.331,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.313,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-98cca1",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 109.337,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-98cca1",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-98cca1",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "98cca1b7-0d83-4d96-9ae8-cc4c9ff2ff21",
+      "seat_number": 2,
+      "session_id": "503f013d-2414-4a1f-ba9e-5323f8e6b5e2",
+      "showroom": [
+        {
+          "duration_seconds": 0.403,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.306,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.317,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.313,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-b9db90",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 108.916,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-b9db90",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-b9db90",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "b9db90ea-08b1-42db-ba83-21b74a4d601e",
+      "seat_number": 3,
+      "session_id": "97d49739-a8d0-4e1e-8717-3012ba27ee29",
+      "showroom": [
+        {
+          "duration_seconds": 0.402,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.342,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.289,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.31,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-091b86",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 108.193,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-091b86",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-091b86",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "091b8698-1ee8-4d91-b5c4-cb7301c49927",
+      "seat_number": 4,
+      "session_id": "dd06d620-5da9-407f-9d7c-573e35dd1b68",
+      "showroom": [
+        {
+          "duration_seconds": 0.35,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.344,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.304,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-18aa62",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 107.548,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-18aa62",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-18aa62",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "18aa62af-149f-4d51-bdeb-57bd97737b4a",
+      "seat_number": 5,
+      "session_id": "53135475-ee70-4828-8dde-8f74e4325b60",
+      "showroom": [
+        {
+          "duration_seconds": 0.403,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.339,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.305,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-9ce185",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 107.742,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-9ce185",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-9ce185",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "9ce1851a-2763-4c59-bc2f-528f879daeed",
+      "seat_number": 6,
+      "session_id": "4668da35-f607-4b7b-ae98-8299f555b147",
+      "showroom": [
+        {
+          "duration_seconds": 0.351,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.346,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.326,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.322,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-a4beff",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 107.275,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-a4beff",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-a4beff",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "a4beff5a-b12a-4df5-984d-7e1364f885ba",
+      "seat_number": 7,
+      "session_id": "4a78aa73-7533-4597-b701-487895cc8f6d",
+      "showroom": [
+        {
+          "duration_seconds": 0.404,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.299,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.324,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.306,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-9c3b80",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 107.075,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-9c3b80",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-9c3b80",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "9c3b80ac-eeb0-4d1c-8009-760cf40ad3cd",
+      "seat_number": 8,
+      "session_id": "9b9d25d9-8e40-404f-8aad-cefec8b8aca5",
+      "showroom": [
+        {
+          "duration_seconds": 0.4,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.345,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.288,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.328,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-821d3d",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 109.279,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-821d3d",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-821d3d",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "821d3d46-8bc5-495a-96db-65100308ce24",
+      "seat_number": 9,
+      "session_id": "ca115289-0985-4927-aa02-19f2a61ccf87",
+      "showroom": [
+        {
+          "duration_seconds": 0.404,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.342,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.295,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.366,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-b6235c",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 109.191,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-b6235c",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-b6235c",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "b6235c29-2c88-4958-9fc6-41a5979dc200",
+      "seat_number": 10,
+      "session_id": "021d48fd-bd77-49f9-bef2-19c5bae2d5b2",
+      "showroom": [
+        {
+          "duration_seconds": 0.455,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.293,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.295,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.343,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-e92c77",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 127.144,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-e92c77",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-e92c77",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "e92c770e-cd02-4d03-81a4-4d4d77ab500e",
+      "seat_number": 11,
+      "session_id": "ed2ee870-4934-43db-b7c1-0d42ddf0381b",
+      "showroom": [
+        {
+          "duration_seconds": 0.312,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.242,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.249,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-d04b47",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 105.603,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-d04b47",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-d04b47",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "d04b479a-9525-4b4f-a87f-3e6e2895da4c",
+      "seat_number": 12,
+      "session_id": "6331aa6b-df60-4528-8f3f-4fbb8509cf66",
+      "showroom": [
+        {
+          "duration_seconds": 0.315,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.261,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.266,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.277,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-3c82fc",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 103.434,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-3c82fc",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-3c82fc",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "3c82fcb8-afa7-4a90-8dae-6c170a070125",
+      "seat_number": 13,
+      "session_id": "332966e9-7a8b-48e6-a95e-137dc6834d98",
+      "showroom": [
+        {
+          "duration_seconds": 0.33,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.248,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.272,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-3e4249",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 106.014,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-3e4249",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-3e4249",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "3e424917-fe6c-47c5-a1cf-df715a170544",
+      "seat_number": 14,
+      "session_id": "a14df413-5092-4e2a-a9d1-f51c6396993e",
+      "showroom": [
+        {
+          "duration_seconds": 0.303,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.284,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.256,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-2857da",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 104.973,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-2857da",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-2857da",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "2857dab6-a77f-4f95-941d-b18cc761ffec",
+      "seat_number": 15,
+      "session_id": "d471a2f2-023f-498d-ab4c-ed6890040445",
+      "showroom": [
+        {
+          "duration_seconds": 0.321,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.278,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.309,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.249,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-1db491",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 104.047,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-1db491",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-1db491",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "1db491fa-85fb-4456-b2ba-9c710e07ad11",
+      "seat_number": 16,
+      "session_id": "19aaebe9-f3fc-4e1d-a97c-f6ed27b212b9",
+      "showroom": [
+        {
+          "duration_seconds": 0.322,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.262,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.246,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.268,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-8fcabf",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 104.759,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-8fcabf",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-8fcabf",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "8fcabfd2-528a-417d-9bb7-a76bae96c430",
+      "seat_number": 17,
+      "session_id": "7b7ec49c-6f28-46e1-b80f-0878d32382b7",
+      "showroom": [
+        {
+          "duration_seconds": 0.328,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.263,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.292,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.248,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-24f7f0",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 126.664,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-24f7f0",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-24f7f0",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "24f7f02d-5b67-442a-8650-be987d7f834d",
+      "seat_number": 18,
+      "session_id": "9dd18abf-9967-41d5-8150-c3423263d0b5",
+      "showroom": [
+        {
+          "duration_seconds": 0.33,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.261,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.27,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.252,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-533f6c",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 125.939,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-533f6c",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-533f6c",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "533f6cd0-8a82-4ad0-a26d-71f18f52d4c9",
+      "seat_number": 19,
+      "session_id": "44522e2f-2496-4428-9db5-920b59c75674",
+      "showroom": [
+        {
+          "duration_seconds": 0.316,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.241,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.247,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.505,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-9ed630",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 126.975,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-9ed630",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-9ed630",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "9ed630d2-a25a-43b9-9639-d6d46f180d9b",
+      "seat_number": 20,
+      "session_id": "3630d7c3-1e8b-4fcd-b0a5-b7b6ead6f2ca",
+      "showroom": [
+        {
+          "duration_seconds": 0.329,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.256,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.256,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.571,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-3692e5",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 105.161,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-3692e5",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-3692e5",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "3692e52d-53a0-4c02-a5e2-f5e14adc144c",
+      "seat_number": 21,
+      "session_id": "fa93a557-2ebf-44a4-9859-99dfc40f0b2b",
+      "showroom": [
+        {
+          "duration_seconds": 0.619,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.341,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.325,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.325,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-00b968",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 103.586,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-00b968",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-00b968",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "00b96862-fbe4-4568-b3f9-9ba58689a9da",
+      "seat_number": 22,
+      "session_id": "700cc99c-b1d9-476f-a3fd-4d2a6adbcf36",
+      "showroom": [
+        {
+          "duration_seconds": 0.437,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.342,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.273,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.279,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-ac734c",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 102.535,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-ac734c",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-ac734c",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "ac734c94-1940-48f0-9331-622fff371709",
+      "seat_number": 23,
+      "session_id": "4b6c4d54-0649-41db-8a4f-157051a6acab",
+      "showroom": [
+        {
+          "duration_seconds": 0.382,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.235,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.271,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.279,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-085d74",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 102.445,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-085d74",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-085d74",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "085d7432-af25-4b1a-b5cc-eb81b3c181ef",
+      "seat_number": 24,
+      "session_id": "f198638e-16aa-48d5-aecc-a2f9ca69c166",
+      "showroom": [
+        {
+          "duration_seconds": 0.34,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.285,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.301,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-f51713",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 126.182,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-f51713",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-f51713",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "f517139d-59e6-48dd-aec6-b9f07127b7bd",
+      "seat_number": 25,
+      "session_id": "17347f71-c6d4-489a-a2b1-3345210e47a5",
+      "showroom": [
+        {
+          "duration_seconds": 0.373,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.278,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.286,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-77e71b",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 128.288,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-77e71b",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-77e71b",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "77e71bf5-f10c-4813-9bc7-71f15adf412a",
+      "seat_number": 26,
+      "session_id": "ed1d96e3-c957-4ca6-92a3-8c1b7185b7bc",
+      "showroom": [
+        {
+          "duration_seconds": 0.309,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.269,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.257,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.296,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-253758",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 105.045,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-253758",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-253758",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "253758ef-45a0-4523-89c8-51d9520313f5",
+      "seat_number": 27,
+      "session_id": "0765f5a0-4f91-49a7-903d-65d629a20f05",
+      "showroom": [
+        {
+          "duration_seconds": 0.45,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.32,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.324,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.272,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-db44b5",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 104.5,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-db44b5",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-db44b5",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "db44b526-6ba0-4e4d-a259-f95f5d88f535",
+      "seat_number": 28,
+      "session_id": "4e31dcfe-bb81-4f5e-a70f-9d8afd08666b",
+      "showroom": [
+        {
+          "duration_seconds": 0.388,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.265,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.251,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.289,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-faa1bc",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 105.638,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-faa1bc",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-faa1bc",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "faa1bce3-9890-4f6b-9513-9c2913b27a37",
+      "seat_number": 29,
+      "session_id": "cf6f5de2-fda1-467b-9a6c-6bd7e2b71dd8",
+      "showroom": [
+        {
+          "duration_seconds": 0.314,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.277,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.285,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "brutus",
+      "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-5267b5",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 127.557,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "agent_journey": {
+            "functional_agent": true
+          },
+          "cluster_ref": "brutus",
+          "contains_sensitive_values": false,
+          "namespace": "launchpad-launchpad-public-c-intel-xeon6-agent-5267b5",
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "MAAS_API_KEY",
+            "MAAS_API_URL",
+            "MAAS_ENDPOINT",
+            "MAAS_MODEL"
+          ],
+          "setup_passed": true,
+          "terminal_scope": [
+            "project=launchpad-launchpad-public-c-intel-xeon6-agent-5267b5",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "5267b5cd-5815-4f17-8fd4-68863783c5a2",
+      "seat_number": 30,
+      "session_id": "8e333758-be55-4d0d-bf4f-53f8257b24a1",
+      "showroom": [
+        {
+          "duration_seconds": 0.378,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "deploy-tools",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.276,
+          "http_status": 200,
+          "id": "wire-agent",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.277,
+          "http_status": 200,
+          "id": "test-and-tune",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-16T00:42:31.215791Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

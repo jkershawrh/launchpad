@@ -1,0 +1,1735 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 25,
+    "certification_override": true,
+    "certification_target_seats": 30,
+    "estimated_resources": {
+      "cpu_millicores": 36000,
+      "memory_mib": 61440,
+      "pods": 60
+    },
+    "placement_reason": "Entire workshop assigned to arena; seats will not be split",
+    "reason": "Cluster can support 107 seats (CPU: 107, Memory: 622, Pods: 184; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 1200,
+        "memory_mib": 2048,
+        "pods": 2
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 2,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 30,
+    "selected_cluster": "arena"
+  },
+  "catalog_item_id": "multi-agent-quickstart",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 227.649,
+    "status": "completed"
+  },
+  "completed_at": "2026-09-16T01:13:10.031153Z",
+  "contract": {
+    "catalog_version": "0.2.14",
+    "git_commit": "66f47203c04985797e98f39623796d3dd264eb9a",
+    "intake_path": "catalog-onboarding/multi-agent-quickstart.yaml",
+    "path": "certification/catalog/multi-agent-quickstart.yaml",
+    "sha256": "030387c4124844f55eec576f71727e7e6a78774ca56565b0e8810266f7909a5d"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": false,
+    "ready_within_limit": true,
+    "seat_probes_passed": false,
+    "sensitive_values_absent": false,
+    "showroom_pages_passed": false,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "arena",
+    "namespaces": [
+      "launchpad-launchpad-public-c-multi-agent-ac2834",
+      "launchpad-launchpad-public-c-multi-agent-bdc153",
+      "launchpad-launchpad-public-c-multi-agent-52b0e4",
+      "launchpad-launchpad-public-c-multi-agent-11688e",
+      "launchpad-launchpad-public-c-multi-agent-078a26",
+      "launchpad-launchpad-public-c-multi-agent-8702ea",
+      "launchpad-launchpad-public-c-multi-agent-b5fd0e",
+      "launchpad-launchpad-public-c-multi-agent-6cb5a9",
+      "launchpad-launchpad-public-c-multi-agent-1664a5",
+      "launchpad-launchpad-public-c-multi-agent-1b6d80",
+      "launchpad-launchpad-public-c-multi-agent-3a5424",
+      "launchpad-launchpad-public-c-multi-agent-b243a4",
+      "launchpad-launchpad-public-c-multi-agent-f40bb9",
+      "launchpad-launchpad-public-c-multi-agent-06ce2e",
+      "launchpad-launchpad-public-c-multi-agent-f4db09",
+      "launchpad-launchpad-public-c-multi-agent-a39895",
+      "launchpad-launchpad-public-c-multi-agent-bfa77b",
+      "launchpad-launchpad-public-c-multi-agent-bf3bf9",
+      "launchpad-launchpad-public-c-multi-agent-83a553",
+      "launchpad-launchpad-public-c-multi-agent-d6b9a7",
+      "launchpad-launchpad-public-c-multi-agent-a842ae",
+      "launchpad-launchpad-public-c-multi-agent-90f5ad",
+      "launchpad-launchpad-public-c-multi-agent-ba356f",
+      "launchpad-launchpad-public-c-multi-agent-fc76e8",
+      "launchpad-launchpad-public-c-multi-agent-5c70af",
+      "launchpad-launchpad-public-c-multi-agent-f7f790",
+      "launchpad-launchpad-public-c-multi-agent-c7e66e",
+      "launchpad-launchpad-public-c-multi-agent-6ff623",
+      "launchpad-launchpad-public-c-multi-agent-e37453",
+      "launchpad-launchpad-public-c-multi-agent-c1ba3c"
+    ],
+    "ready_seconds": 928.281,
+    "seat_count": 30,
+    "session_ids": [
+      "bf1bf68e-7c03-4618-b4d8-e3e97dc95271",
+      "15a68180-386a-476d-adbf-86fe68e7ebdf",
+      "5e684135-397c-4d39-9170-7c26324cdfa4",
+      "0965fb1a-3d90-43bc-8e12-492ae20b0093",
+      "54ae6f90-de47-49dd-8f58-7e5dc2cebe2f",
+      "f311ba72-bac3-4be6-882d-811389afe540",
+      "a1964050-9f99-46d6-9a23-a7c40e98c6c9",
+      "6b418712-d4c5-453d-925c-1951bc91757e",
+      "2c42c305-9ab8-49e9-a222-64e71b2622d8",
+      "72d28e5d-f6a6-46bb-8b9c-c858c7cab5af",
+      "41283709-88c9-421b-9897-636c45df0b1e",
+      "d86a78b6-b510-49a1-9d92-33d6721c4a63",
+      "bc1c88e0-96fd-477b-bddd-0fbd5726431b",
+      "ef1bdb20-333b-4956-8164-d37a94b01413",
+      "51041021-8a22-4127-9cfd-fbcbc21a0cef",
+      "931b1a21-31a0-45c8-bb1e-d428db51d5ef",
+      "a7ecc8c8-51a2-47a6-bf69-08d465397c0b",
+      "04e7b293-a187-414f-a59c-89901fba3ad8",
+      "d812b97c-d98a-4296-b19b-7806fc60a69f",
+      "25a779d8-1e11-4cad-b37a-8ff026963fad",
+      "eac375df-1e3a-45dd-bd88-7356d36668d2",
+      "339e073b-39c6-49b7-97b5-53054cfcec66",
+      "e4d47497-f52c-43c7-ac67-29d6458ba7bf",
+      "d5674b27-5c07-4d93-9025-ca73af36f58c",
+      "c3d4a904-80c8-46c0-8e80-14aed1880ba4",
+      "99376671-6e9c-46da-a90a-4d8197b2d4d3",
+      "675133d3-7168-4b50-b78b-7d435520a4b0",
+      "53407eab-e9e7-44d0-856c-0102245a2fee",
+      "6367c535-8076-41db-a418-ef0c6aefeebc",
+      "235621e4-8eb7-4fe4-a2ae-6bcba2ade72b"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "286e8b72-78ad-4b40-be5b-6c6e6ed55435"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "multi-agent-quickstart",
+    "certification_override": true,
+    "cluster_ref": "arena",
+    "current_certified_seats": 25,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.arena.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 1500,
+    "maximum_ready_seconds": 3000,
+    "mutates_cluster": true,
+    "next_promotion_target": 30,
+    "probe_concurrency": 10,
+    "provision_concurrency": 2,
+    "required_consecutive_runs": 3,
+    "seat_probe_count": 30,
+    "seats": 30,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 0,
+    "eligible": false,
+    "required_consecutive_runs": 3
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "RED-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": false,
+    "required": 100,
+    "score": 60
+  },
+  "run_id": "20260916T005337Z-f1e00899",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-ac2834",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.025,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "ac283450-b197-4197-adb9-4cfd1e9f3a94",
+      "seat_number": 1,
+      "session_id": "bf1bf68e-7c03-4618-b4d8-e3e97dc95271",
+      "showroom": [
+        {
+          "duration_seconds": 0.458,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.43,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.433,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.367,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-bdc153",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.01,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "bdc15327-18b7-4b80-9ee1-d57b34fa7e23",
+      "seat_number": 2,
+      "session_id": "15a68180-386a-476d-adbf-86fe68e7ebdf",
+      "showroom": [
+        {
+          "duration_seconds": 0.568,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.428,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.396,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.343,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-52b0e4",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.02,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "52b0e4c5-fda5-4f03-b6a4-81a34c53fb0b",
+      "seat_number": 3,
+      "session_id": "5e684135-397c-4d39-9170-7c26324cdfa4",
+      "showroom": [
+        {
+          "duration_seconds": 0.516,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.501,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.324,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.36,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-11688e",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.01,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "11688e8f-bd69-4c66-8d28-50fb550ffedb",
+      "seat_number": 4,
+      "session_id": "0965fb1a-3d90-43bc-8e12-492ae20b0093",
+      "showroom": [
+        {
+          "duration_seconds": 0.619,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.484,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.397,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.254,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-078a26",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.024,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "078a261e-973e-4acd-8a58-3d4ba543359f",
+      "seat_number": 5,
+      "session_id": "54ae6f90-de47-49dd-8f58-7e5dc2cebe2f",
+      "showroom": [
+        {
+          "duration_seconds": 0.565,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.436,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.375,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.26,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-8702ea",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.014,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "8702eade-38f4-4549-9ee0-d5c3d425864e",
+      "seat_number": 6,
+      "session_id": "f311ba72-bac3-4be6-882d-811389afe540",
+      "showroom": [
+        {
+          "duration_seconds": 0.617,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.488,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.397,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.298,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-b5fd0e",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.019,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "b5fd0e6d-b4b4-433d-ad3a-49029f133cd2",
+      "seat_number": 7,
+      "session_id": "a1964050-9f99-46d6-9a23-a7c40e98c6c9",
+      "showroom": [
+        {
+          "duration_seconds": 0.513,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.485,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.339,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.352,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-6cb5a9",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.016,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "6cb5a9fb-4d2f-4fc1-a8a4-bd21d26896a0",
+      "seat_number": 8,
+      "session_id": "6b418712-d4c5-453d-925c-1951bc91757e",
+      "showroom": [
+        {
+          "duration_seconds": 0.619,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.49,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.395,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.291,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-1664a5",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.009,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "1664a5c9-03e0-492b-be1e-7b808b923391",
+      "seat_number": 9,
+      "session_id": "2c42c305-9ab8-49e9-a222-64e71b2622d8",
+      "showroom": [
+        {
+          "duration_seconds": 0.67,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.452,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.388,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.299,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-1b6d80",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.009,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "1b6d80b8-49e3-4ca9-a9ab-18fa862578f6",
+      "seat_number": 10,
+      "session_id": "72d28e5d-f6a6-46bb-8b9c-c858c7cab5af",
+      "showroom": [
+        {
+          "duration_seconds": 0.622,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.424,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.346,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.325,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-3a5424",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.022,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "3a542411-d3a6-4ffe-8d73-3eb985a1a3fa",
+      "seat_number": 11,
+      "session_id": "41283709-88c9-421b-9897-636c45df0b1e",
+      "showroom": [
+        {
+          "duration_seconds": 0.352,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.328,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.324,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.301,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-b243a4",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.014,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "b243a473-3966-4c11-b2bf-38f98d2bb3d1",
+      "seat_number": 12,
+      "session_id": "d86a78b6-b510-49a1-9d92-33d6721c4a63",
+      "showroom": [
+        {
+          "duration_seconds": 0.33,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.358,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.283,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-f40bb9",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.013,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "f40bb9c9-6b1f-460b-b106-16a010b19bb5",
+      "seat_number": 13,
+      "session_id": "bc1c88e0-96fd-477b-bddd-0fbd5726431b",
+      "showroom": [
+        {
+          "duration_seconds": 0.351,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.336,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.319,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.247,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-06ce2e",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.01,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "06ce2e23-d674-476d-b933-29ec9b15b19b",
+      "seat_number": 14,
+      "session_id": "ef1bdb20-333b-4956-8164-d37a94b01413",
+      "showroom": [
+        {
+          "duration_seconds": 0.353,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.322,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.33,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-f4db09",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.019,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "f4db090c-9b79-4eb6-9488-094f34b5f3fa",
+      "seat_number": 15,
+      "session_id": "51041021-8a22-4127-9cfd-fbcbc21a0cef",
+      "showroom": [
+        {
+          "duration_seconds": 0.365,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.307,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.305,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.251,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-a39895",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.014,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "a3989566-dbc3-483a-aa4b-f7f8c45aae7a",
+      "seat_number": 16,
+      "session_id": "931b1a21-31a0-45c8-bb1e-d428db51d5ef",
+      "showroom": [
+        {
+          "duration_seconds": 0.354,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.303,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.318,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.26,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-bfa77b",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.009,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "bfa77b67-c9e0-4bda-8a15-8a3e05fa9ab3",
+      "seat_number": 17,
+      "session_id": "a7ecc8c8-51a2-47a6-bf69-08d465397c0b",
+      "showroom": [
+        {
+          "duration_seconds": 0.374,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.31,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.289,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-bf3bf9",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.012,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "bf3bf986-cb39-45a5-aef2-62d2074af978",
+      "seat_number": 18,
+      "session_id": "04e7b293-a187-414f-a59c-89901fba3ad8",
+      "showroom": [
+        {
+          "duration_seconds": 0.368,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.328,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.326,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.284,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-83a553",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.015,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "83a5536e-af37-494b-a939-c7339be4c5fb",
+      "seat_number": 19,
+      "session_id": "d812b97c-d98a-4296-b19b-7806fc60a69f",
+      "showroom": [
+        {
+          "duration_seconds": 0.372,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.329,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.292,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.27,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-d6b9a7",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.012,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "d6b9a7f5-c7a0-4888-ad3c-1687b4231b35",
+      "seat_number": 20,
+      "session_id": "25a779d8-1e11-4cad-b37a-8ff026963fad",
+      "showroom": [
+        {
+          "duration_seconds": 0.383,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.307,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.323,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.265,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-a842ae",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.012,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "a842ae61-7227-42ed-b864-046aab175ca6",
+      "seat_number": 21,
+      "session_id": "eac375df-1e3a-45dd-bd88-7356d36668d2",
+      "showroom": [
+        {
+          "duration_seconds": 0.337,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.277,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.263,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.244,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-90f5ad",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.016,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "90f5add8-08c3-486f-a11b-49b8c9758dfb",
+      "seat_number": 22,
+      "session_id": "339e073b-39c6-49b7-97b5-53054cfcec66",
+      "showroom": [
+        {
+          "duration_seconds": 0.332,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.253,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.271,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.245,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-ba356f",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.018,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "ba356f94-4c99-48a4-99ad-4a52110f482a",
+      "seat_number": 23,
+      "session_id": "e4d47497-f52c-43c7-ac67-29d6458ba7bf",
+      "showroom": [
+        {
+          "duration_seconds": 0.303,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.244,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.265,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-fc76e8",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.012,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "fc76e840-8f3c-45d0-9a2d-bb1029f1be84",
+      "seat_number": 24,
+      "session_id": "d5674b27-5c07-4d93-9025-ca73af36f58c",
+      "showroom": [
+        {
+          "duration_seconds": 0.337,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.282,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.245,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.26,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-5c70af",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.011,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "5c70af55-d985-49af-bed3-9f50fc8d94c1",
+      "seat_number": 25,
+      "session_id": "c3d4a904-80c8-46c0-8e80-14aed1880ba4",
+      "showroom": [
+        {
+          "duration_seconds": 0.345,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.272,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.25,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.259,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-f7f790",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.009,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "f7f790a4-9372-43f3-81c7-1e9e54ec2b70",
+      "seat_number": 26,
+      "session_id": "99376671-6e9c-46da-a90a-4d8197b2d4d3",
+      "showroom": [
+        {
+          "duration_seconds": 0.327,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.279,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.241,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-c7e66e",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.012,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "c7e66e76-87c1-41b0-9764-12de34180052",
+      "seat_number": 27,
+      "session_id": "675133d3-7168-4b50-b78b-7d435520a4b0",
+      "showroom": [
+        {
+          "duration_seconds": 0.325,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.27,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.247,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-6ff623",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.018,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "6ff6234e-8124-498f-b56c-622fb80bd010",
+      "seat_number": 28,
+      "session_id": "53407eab-e9e7-44d0-856c-0102245a2fee",
+      "showroom": [
+        {
+          "duration_seconds": 0.357,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.275,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.243,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.237,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-e37453",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.019,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "e37453d1-0465-4c24-bd77-b13be0c395f7",
+      "seat_number": 29,
+      "session_id": "6367c535-8076-41db-a418-ef0c6aefeebc",
+      "showroom": [
+        {
+          "duration_seconds": 0.358,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.262,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.283,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.249,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "arena",
+      "namespace": "launchpad-launchpad-public-c-multi-agent-c1ba3c",
+      "probe": {
+        "assertion_failures": [
+          "seat probe exited with status 1"
+        ],
+        "duration_seconds": 0.021,
+        "exit_code": 1,
+        "passed": false
+      },
+      "seat_id": "c1ba3cad-1582-47d1-9cb1-53d9abb56c32",
+      "seat_number": 30,
+      "session_id": "235621e4-8eb7-4fe4-a2ae-6bcba2ade72b",
+      "showroom": [
+        {
+          "duration_seconds": 0.337,
+          "http_status": 200,
+          "id": "track-chooser",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.26,
+          "http_status": 200,
+          "id": "track-1-local",
+          "marker_present": false,
+          "passed": false,
+          "track_id": "track-1-local"
+        },
+        {
+          "duration_seconds": 0.282,
+          "http_status": 200,
+          "id": "track-2-openshift",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-2-openshift"
+        },
+        {
+          "duration_seconds": 0.304,
+          "http_status": 200,
+          "id": "track-3-blueprint",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "track-3-blueprint"
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-16T00:53:37.250219Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "RED-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "RED-live",
+    "sensitive_values_absent": "RED-live",
+    "showroom_pages_passed": "RED-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}
