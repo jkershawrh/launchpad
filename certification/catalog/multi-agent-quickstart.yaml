@@ -41,11 +41,11 @@ spec:
     pages:
       - id: track-chooser
         path: /www/modules/index.html
-        marker: "One Lab, Three Tracks"
+        marker: "One Lab, One Guided Journey"
       - id: track-1-local
         track_id: track-1-local
         path: /www/modules/track-1-local.html
-        marker: "Track 1: Run Locally"
+        marker: "Track 1: Understand the Application Pattern"
       - id: track-2-openshift
         track_id: track-2-openshift
         path: /www/modules/track-2-openshift.html
@@ -63,6 +63,7 @@ spec:
       - bash
       - scripts/certify-multi-agent-seat.sh
       - "{namespace}"
+      - "{cluster_ref}"
     timeout_seconds: 600
     result_format: json
     json_assertions:

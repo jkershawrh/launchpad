@@ -93,3 +93,20 @@ def test_every_thirty_seat_candidate_has_a_valid_repeatable_proof_contract(
     assert plan["certification_override"] is True
     assert plan["execution_eligible"] is True
     assert plan["required_consecutive_runs"] == 3
+
+
+def test_multi_agent_contract_matches_current_showroom_and_probe_interface():
+    contract = load_certification_contract(
+        REPO_ROOT / "certification/catalog/multi-agent-quickstart.yaml"
+    )
+
+    markers = {
+        page["id"]: page["marker"]
+        for page in contract["spec"]["showroom"]["pages"]
+    }
+    assert markers["track-chooser"] == "One Lab, One Guided Journey"
+    assert markers["track-1-local"] == "Track 1: Understand the Application Pattern"
+    assert contract["spec"]["seat_probe"]["argv"][-2:] == [
+        "{namespace}",
+        "{cluster_ref}",
+    ]
