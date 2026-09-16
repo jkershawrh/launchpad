@@ -9,6 +9,22 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
 
+# The remote provisioner intentionally has no cluster-wide pods/exec grant.
+# Give this proof runner temporary access only inside the seat namespace, using
+# the existing allow-listed edit role, and remove it even when a probe fails.
+probe_binding="launchpad-certification-probe"
+cleanup_probe_access() {
+  oc --kubeconfig "$KUBECONFIG" delete rolebinding "$probe_binding" \
+    --namespace "$namespace" --ignore-not-found >/dev/null 2>&1 || true
+}
+trap cleanup_probe_access EXIT
+oc --kubeconfig "$KUBECONFIG" create rolebinding "$probe_binding" \
+  --clusterrole=edit \
+  --serviceaccount=partner-ai-launchpad:launchpad-provisioner \
+  --namespace "$namespace" \
+  --dry-run=client -o yaml \
+  | oc --kubeconfig "$KUBECONFIG" apply -f - >/dev/null
+
 setup_result="$(
   bash "$repo_root/scripts/certify-agent-201-remote-seat.sh" \
     "$namespace" "$expected_cluster"

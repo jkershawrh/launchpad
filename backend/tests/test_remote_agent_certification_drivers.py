@@ -28,3 +28,13 @@ def test_remote_agent_drivers_exercise_the_participant_boundary_and_tools():
     assert "intel_hardware_lookup" in journey
     assert "openshift_capabilities" in journey
     assert "reference_architectures" in journey
+
+
+def test_catalog_agent_driver_limits_probe_exec_access_to_the_seat_namespace():
+    driver = (ROOT / "scripts/certify-agent-201-catalog-seat.sh").read_text()
+
+    assert "launchpad-certification-probe" in driver
+    assert "--clusterrole=edit" in driver
+    assert "--serviceaccount=partner-ai-launchpad:launchpad-provisioner" in driver
+    assert 'delete rolebinding "$probe_binding"' in driver
+    assert '--namespace "$namespace"' in driver
