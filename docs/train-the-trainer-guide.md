@@ -14,9 +14,9 @@ Showroom journey, connects workloads to shared inference, validates the
 participant-facing result, and reclaims the whole workshop through one managed
 lifecycle.
 
-This is a supervised pilot. Do not describe temporary Cloudflare Quick
-Tunnels, public OpenShift Console access, or automated remediation as
-production-ready.
+This is a supervised pilot. Participant access uses the permanent
+`labs.smg-helix.ai` named Cloudflare tunnel. Do not describe public OpenShift
+Console access, full HA/DR, or automated remediation as production-ready.
 
 ## Trainer handoff
 
@@ -30,7 +30,7 @@ Git-ignored `train-the-trainer-live.js` file.
 | Participant URL | Supplied by the event owner |
 | Instructor code | Supplied once by the event owner |
 | Allowed email | Any email for an unclaimed seat; reuse it to resume |
-| Duration | Four hours from order creation unless otherwise specified |
+| Duration | Through September 22 evening; verify the remaining TTL before class |
 | Placement | Serve LLMs and Multi-Agent on Arena; Building an AI Agent on Brutus |
 | Support | Launchpad operator |
 
@@ -73,6 +73,7 @@ Internal operator links:
 - Operations: <https://launchpad-admin.apps.arena.fm2aihpcsed.com>
 - System health: <https://launchpad-admin.apps.arena.fm2aihpcsed.com/system>
 - Analytics: <https://launchpad-admin.apps.arena.fm2aihpcsed.com/analytics>
+- Observability: <https://launchpad-admin.apps.arena.fm2aihpcsed.com/observability>
 
 The internal portals use OpenShift authentication. The public participant flow
 uses an email identity label plus the instructor code.
@@ -341,7 +342,7 @@ with group-scoped idempotent reclaim.
 
 Use this scale statement:
 
-> We staggered three 25-seat orders, then ran all 75 participant environments
+> We staggered three 30-seat orders, then ran all 90 participant environments
 > concurrently across Arena and Brutus.
 
 Do not claim simultaneous provisioning of all 75 seats or arbitrary catalog

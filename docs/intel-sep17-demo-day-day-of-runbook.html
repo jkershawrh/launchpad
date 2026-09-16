@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#151515">
-  <title>Intel September 17 Demo Day - Train-the-Trainer Guide</title>
+  <title>Intel September 17 Tech Day - Day-of Facilitator Runbook</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;600;700&family=Red+Hat+Text:wght@400;500;600&display=swap');
     :root {
@@ -201,19 +201,21 @@
         <img src="../frontend/public/logos/intel.png" alt="Intel">
         <span class="brand-name">Partner AI Launchpad</span>
       </div>
-      <span class="status">Trainer guide</span>
+      <span class="status">Day-of runbook</span>
     </div>
     <div class="color-rule" aria-hidden="true"><span></span><span></span><span></span></div>
   </header>
 
   <section class="hero">
     <div class="hero-inner">
-      <p class="eyebrow">Facilitator enablement · supervised pilot</p>
-      <h1>September 17 Demo Day trainer guide</h1>
-      <p class="hero-copy">One master facilitator path for Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs, Intel Xeon 6 201: Building an AI Agent, and Build Multi-Agent AI Systems with Open Protocols—from participant access through evidence and reclaim.</p>
+      <p class="eyebrow">Day-of facilitator runbook · supervised pilot</p>
+      <h1>September 17 Intel and Red Hat AI Tech Day</h1>
+      <p class="hero-copy">The live delivery path for participant access and three two-hour sessions: Serve LLMs on Intel Xeon CPUs, Build an AI Agent, and Build Multi-Agent AI Systems with Open Protocols.</p>
       <div class="badges">
         <span class="badge">Three guided labs</span>
-        <span class="badge">90-minute trainer agenda</span>
+        <span class="badge">Three two-hour sessions</span>
+        <span class="badge">30–45 minute discussion</span>
+        <span class="badge">60–90 minute labs</span>
         <span class="badge">75-seat pilot topology</span>
         <span class="badge">Arena + Brutus</span>
       </div>
@@ -224,7 +226,7 @@
     <nav class="toc" aria-label="On this page">
       <strong>On this page</strong>
       <a href="#handoff">Trainer handoff</a>
-      <a href="#live-example">Live external example</a>
+      <a href="#live-example">Public participant access</a>
       <a href="#agenda">Agenda</a>
       <a href="#prepare">Prepare</a>
       <a href="#login">Participant login</a>
@@ -249,29 +251,29 @@
           <article class="card"><p class="card-label">Execution</p><h3>Arena + Brutus</h3><p>Each whole workshop is persisted to one eligible cluster before resources are created.</p></article>
           <article class="card"><p class="card-label">Escalation</p><h3>Launchpad operator</h3><p>Capture order, session, cluster, namespace, time, and error—never credentials.</p></article>
         </div>
-        <div class="callout amber"><div><h3>Pilot boundary</h3><p>Participant access uses the permanent <strong>labs.smg-helix.ai</strong> named tunnel. Public OpenShift Console SSO, full HA/DR, and automated remediation are not production-ready gates for this pilot.</p></div></div>
+        <div class="callout green"><div><h3>Public participant access is available</h3><p>Participants use the permanent Launchpad gateway at <strong>labs.smg-helix.ai</strong>. The event owner still supplies the order-specific participant link and instructor code. The lab path uses Showroom, Terminal, and the catalog application; public OpenShift Console access is not required.</p></div></div>
       </section>
 
       <section id="live-example">
-        <p class="eyebrow">Temporary trainer handoff</p>
+        <p class="eyebrow">Day-of participant access</p>
         <div id="live-labs" class="grid"></div>
-        <div class="callout amber" id="live-lab-missing"><div><h3>No live example configured</h3><p>Ask the event owner for the current participant URL and instructor code.</p></div></div>
+        <div class="callout amber" id="live-lab-missing"><div><h3>Order-specific link required</h3><p>Open <a href="https://labs.smg-helix.ai">labs.smg-helix.ai</a> to verify the public gateway, then ask the event owner for the current participant path and instructor code.</p></div></div>
       </section>
 
       <section id="agenda">
         <p class="eyebrow">Run of show</p>
-        <h2>Recommended 90-minute trainer agenda</h2>
+        <h2>Six-hour day-of agenda</h2>
         <table>
           <thead><tr><th>Time</th><th>Topic</th><th>Proof</th></tr></thead>
           <tbody>
-            <tr><td>0–10</td><td>Platform, access, and scope</td><td>Git defines each experience; Launchpad owns the common lifecycle.</td></tr>
-            <tr><td>10–20</td><td>Showroom and namespace</td><td>The Terminal starts inside the assigned seat boundary.</td></tr>
-            <tr><td>20–38</td><td>1. Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs</td><td>Real CPU inference and a grounded RAG answer.</td></tr>
-            <tr><td>38–56</td><td>2. Intel Xeon 6 201: Building an AI Agent</td><td>MCP tools, agent orchestration, and a tuned solution brief.</td></tr>
-            <tr><td>56–74</td><td>3. Build Multi-Agent AI Systems with Open Protocols</td><td>Three tracks, routing depth, and a live executor policy change.</td></tr>
-            <tr><td>74–82</td><td>Operations</td><td>Placement, seat progress, cluster state, and lifecycle are visible.</td></tr>
-            <tr><td>82–87</td><td>Recovery</td><td>The trainer uses one bounded recovery path.</td></tr>
-            <tr><td>87–90</td><td>Reclaim and close</td><td>Launchpad owns cleanup and evidence.</td></tr>
+            <tr><td>0:00–0:10</td><td>Welcome, Launchpad login, and Showroom orientation</td><td>Every participant opens the assigned environment and verifies the namespace.</td></tr>
+            <tr><td>0:10–0:45</td><td>Session 1 presentation and discussion</td><td>CPU inference fit, managed MaaS, API access, RAG, and measurements.</td></tr>
+            <tr><td>0:45–2:00</td><td>Lab 1: Serve LLMs on Intel Xeon CPUs</td><td>Valid model response and a grounded AnythingLLM answer.</td></tr>
+            <tr><td>2:00–2:35</td><td>Session 2 presentation and discussion</td><td>Agent anatomy, MCP tools, LangGraph workflow, and trust boundaries.</td></tr>
+            <tr><td>2:35–4:00</td><td>Lab 2: Intel Xeon 6 201</td><td>Structured solution brief with visible tool and inference evidence.</td></tr>
+            <tr><td>4:00–4:35</td><td>Session 3 presentation and discussion</td><td>A2A, MCP, semantic routing, guardrails, and OpenShift boundaries.</td></tr>
+            <tr><td>4:35–5:50</td><td>Lab 3: Build Multi-Agent AI Systems with Open Protocols</td><td>Compare workflow depth, apply the executor policy, verify it, and roll back.</td></tr>
+            <tr><td>5:50–6:00</td><td>Debrief and close</td><td>Capture customer follow-ups and confirm Launchpad reclaim ownership.</td></tr>
           </tbody>
         </table>
       </section>
@@ -281,10 +283,10 @@
         <h2>Prepare the session</h2>
         <ul class="checklist">
           <li>Connect to the Intel network or VPN for internal routes.</li>
-          <li>Confirm the branded participant login renders without claiming the seat.</li>
+          <li>Confirm <a href="https://labs.smg-helix.ai">labs.smg-helix.ai</a> and the order-specific participant link render without claiming the seat.</li>
           <li>Confirm all three intended orders are Ready and have enough TTL remaining.</li>
           <li>Use separate private browser profiles for instructor and participant identities.</li>
-          <li>For internal use, establish browser trust for Arena and Brutus before embedding cluster routes.</li>
+          <li>Keep internal Arena and Brutus access available to the operator; participants use the public Launchpad flow.</li>
           <li>Keep one prepared seat and recorded evidence available as a clearly identified fallback.</li>
         </ul>
         <p>
@@ -298,7 +300,7 @@
         <p class="eyebrow">Participant journey</p>
         <h2>Claim or resume a seat</h2>
         <div class="step"><span class="step-no">1</span><div><h3>Open the supplied link</h3><p>Use a fresh private browser window so instructor and participant SSO cookies do not mix.</p></div></div>
-        <div class="step"><span class="step-no">2</span><div><h3>Enter email and code</h3><p>The first valid claim assigns the open seat atomically. Email is an unverified identity label; the instructor code is the secret.</p></div></div>
+        <div class="step"><span class="step-no">2</span><div><h3>Enter email and instructor code</h3><p>Use the email assigned to the seat and select <strong>Enter lab</strong>. Email is an unverified identity label; the instructor code is the secret.</p></div></div>
         <div class="step"><span class="step-no">3</span><div><h3>Open the lab</h3><p>On <strong>My Lab Access</strong>, select the environment and then <strong>Open Lab</strong>.</p></div></div>
         <div class="step"><span class="step-no">4</span><div><h3>Resume safely</h3><p>Reopen the same link and use the same normalized email and code. Launchpad recovers the seat instead of assigning another.</p></div></div>
       </section>
@@ -471,7 +473,7 @@ test "$(oc exec deployment/multi-agent -c executor -- \
           <tbody>
             <tr><td>Code rejected</td><td>Confirm the link/code pair and remove spaces. Use the same email to resume a claimed seat.</td></tr>
             <tr><td>Different user already authenticated</td><td>Sign out, close the private window, and start a clean private session.</td></tr>
-            <tr><td>Participant URL stops resolving</td><td>Escalate to the operator; the temporary tunnel process must remain running.</td></tr>
+            <tr><td>Participant URL stops resolving</td><td>Check <code>https://labs.smg-helix.ai</code>. If the gateway is healthy, confirm the order-specific path with the operator.</td></tr>
             <tr><td>Internal certificate error</td><td>Open the cluster route top-level, establish certificate trust, and reload Showroom.</td></tr>
             <tr><td>Terminal reconnects</td><td>Wait 30 seconds and retry once; then have the operator check the Showroom pod.</td></tr>
             <tr><td>Model is warming</td><td>Use the documented bounded retry; never substitute a different model silently.</td></tr>
@@ -479,7 +481,7 @@ test "$(oc exec deployment/multi-agent -c executor -- \
             <tr><td>MCP tool list returns 404 or TLS errors</td><td>Use the namespace-local <code>http://solution-tools:8095/mcp</code> endpoint from Terminal.</td></tr>
             <tr><td>Solution Architect is unavailable</td><td>Verify <code>solution-agent</code> and <code>solution-ui</code> rollouts before retrying the application tab.</td></tr>
             <tr><td>Multi-Agent workflow stalls</td><td>Check the <code>multi-agent</code> rollout and workflow errors; restore the certified policy baseline before escalating.</td></tr>
-            <tr><td>Public Console fails</td><td>Use the namespace-scoped Terminal; public Console SSO is not certified.</td></tr>
+            <tr><td>OpenShift Console is unavailable</td><td>Continue with the namespace-scoped Terminal. Console access is not required for the participant lab path.</td></tr>
           </tbody>
         </table>
       </section>
@@ -494,7 +496,7 @@ test "$(oc exec deployment/multi-agent -c executor -- \
           <li>Verify no owned Namespace, Route, RoleBinding, Secret, storage, model key, or Argo CD Application remains.</li>
           <li>Capture sanitized evidence and turn failures into regression tests.</li>
         </ol>
-        <div class="callout green"><div><h3>Closing message</h3><p>Git defines the catalog and guide. Launchpad owns placement, access, validation, visibility, and reclaim. Stable public ingress, trusted certificates, public Console SSO, and production HA/DR remain later gates.</p></div></div>
+        <div class="callout green"><div><h3>Closing message</h3><p>Git defines the catalog and guide. Launchpad owns placement, public participant access, validation, visibility, and reclaim. Public Console SSO and production HA/DR remain separate platform concerns.</p></div></div>
         <p><a class="button secondary" href="train-the-trainer-guide.md">Open the maintainable Markdown source</a></p>
       </section>
     </main>
@@ -507,13 +509,13 @@ test "$(oc exec deployment/multi-agent -c executor -- \
         <span class="brand-x">X</span>
         <img src="../frontend/public/logos/intel.png" alt="Intel">
       </div>
-      <span>Intel × Red Hat Partner AI Launchpad · Trainer enablement</span>
+      <span>Intel × Red Hat Partner AI Launchpad · Day-of facilitator runbook</span>
     </div>
   </footer>
-  <script src="train-the-trainer-live.js"></script>
+  <script src="live.js"></script>
   <script>
     (() => {
-      const labs = window.launchpadLiveLabs || (window.launchpadLiveLab ? [window.launchpadLiveLab] : []);
+      const labs = window.launchpadLiveLabs || [];
       if (!labs.length) return;
       const container = document.getElementById("live-labs");
       const missing = document.getElementById("live-lab-missing");

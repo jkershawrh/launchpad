@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intel-sep17-dayof
+  namespace: partner-ai-launchpad
+  labels:
+    app.kubernetes.io/name: intel-sep17-dayof
+    app.kubernetes.io/part-of: launchpad
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: intel-sep17-dayof
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: intel-sep17-dayof
+    spec:
+      containers:
+        - name: web
+          image: registry.access.redhat.com/ubi9/python-311:latest
+          command:
+            - python3
+            - -m
+            - http.server
+            - "8080"
+            - --directory
+            - /opt/app-root/src
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: page
+              mountPath: /opt/app-root/src/index.html
+              subPath: index.html
+              readOnly: true
+            - name: live-handoff
+              mountPath: /opt/app-root/src/live.js
+              subPath: live.js
+              readOnly: true
+      volumes:
+        - name: page
+          configMap:
+            name: intel-sep17-dayof
+        - name: live-handoff
+          secret:
+            secretName: intel-sep17-dayof-live
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: intel-sep17-dayof
+  namespace: partner-ai-launchpad
+  labels:
+    app.kubernetes.io/name: intel-sep17-dayof
+spec:
+  selector:
+    app.kubernetes.io/name: intel-sep17-dayof
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: intel-sep17-dayof
+  namespace: partner-ai-launchpad
+  labels:
+    app.kubernetes.io/name: intel-sep17-dayof
+spec:
+  host: intel-sep17-dayof.apps.arena.fm2aihpcsed.com
+  to:
+    kind: Service
+    name: intel-sep17-dayof
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
