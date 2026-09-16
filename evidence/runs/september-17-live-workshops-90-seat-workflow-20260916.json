@@ -1,0 +1,61 @@
+{
+  "schema": "launchpad.redhat.com/live-workshop-workflow-proof/v1",
+  "completed_at": "2026-09-16T04:13:22Z",
+  "commit_sha": "0e8e2acd41424886593bb32d82c1948d82ddfcf5",
+  "scope": {
+    "workshops": 3,
+    "seats_per_workshop": 30,
+    "seats_tested": 90,
+    "exposure_policy": "public_code",
+    "participant_claims_consumed": 0,
+    "cleanup_performed": false,
+    "cleanup_reason": "Live September 17 workshops remain available for participants."
+  },
+  "results": [
+    {
+      "catalog_item_id": "intel-llm-cpu-serving",
+      "workshop_id": "d6071355-6c9f-4996-96cd-e4f97750b8f7",
+      "cluster_ref": "arena",
+      "workflow": "AnythingLLM deployment and grounded RAG journey",
+      "seats_tested": 30,
+      "seats_passed": 30,
+      "seats_failed": 0,
+      "result": "GREEN-live",
+      "sanitized_seat_evidence_digest": "9110215c64d6aa673c532d50f0bc2aad9133708ad9cdd61155e0ff9b42e15560"
+    },
+    {
+      "catalog_item_id": "intel-xeon6-agent-201",
+      "workshop_id": "4876c3c0-9c56-41f6-a335-c6ba0c6f15a9",
+      "cluster_ref": "brutus",
+      "workflow": "MCP discovery and solution architecture agent journey",
+      "seats_tested": 30,
+      "seats_passed": 30,
+      "seats_failed": 0,
+      "result": "GREEN-live-with-retries",
+      "transient_http_503_seats": 18,
+      "retry_policy_recovered_all_seats": true,
+      "sanitized_seat_evidence_digest": "ca5f25dc8e8668c056dadff1748b808b8596f231f99f159e1e84e6b58431fb3a"
+    },
+    {
+      "catalog_item_id": "multi-agent-quickstart",
+      "workshop_id": "7efa1c81-c9db-409e-8b88-1630636b04e5",
+      "cluster_ref": "arena",
+      "workflow": "Comprehensive orchestration, participant UI, policy rollback, and guardrails",
+      "seats_tested": 30,
+      "seats_passed": 30,
+      "seats_failed": 0,
+      "result": "GREEN-live",
+      "workflow_policy_residue": 0,
+      "sanitized_seat_evidence_digest": "ecedaada650de982a918b9d943f7803fc5f6a803210e80bd1244db0af8da45f0"
+    }
+  ],
+  "post_test_state": {
+    "workshops_ready": 3,
+    "seats_ready": 90,
+    "seats_failed": 0,
+    "public_access_policies_enabled": 3,
+    "public_entry_redirects_to_login": true,
+    "trusted_tls": true,
+    "contains_plaintext_credentials": false
+  }
+}
