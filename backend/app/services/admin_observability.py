@@ -99,6 +99,7 @@ def _seat_row(
     seat_number: int,
     fallback_status: str,
     fallback_error: str | None,
+    resource_usage: Mapping[str, Any] | None,
     now: datetime,
 ) -> dict[str, Any]:
     status = _value(session.status) if session else fallback_status
@@ -117,6 +118,17 @@ def _seat_row(
         "resolution_state": _resolution_state(status),
         "error": fallback_error or (_session_error(session) if session else None),
         "detail_url": f"/sessions/{session.session_id}" if session else None,
+        "resource_usage": dict(resource_usage or {
+            "available": False,
+            "reason": "metrics not collected",
+            "cpu_millicores": None,
+            "memory_mib": None,
+            "pod_count": None,
+            "ready_pods": None,
+            "restarts": None,
+            "terminal_reconnects": None,
+            "observed_at": None,
+        }),
     }
 
 
@@ -424,12 +436,14 @@ def build_admin_observability(
     catalog_names: Mapping[str, str] | None = None,
     model_inventory: Mapping[str, Any] | None = None,
     llm_events: list[dict[str, Any]] | None = None,
+    seat_metrics: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build the versioned CDD response without mutating platform state."""
 
     # Domain records are currently persisted as naive UTC timestamps.
     now = now or datetime.now(UTC).replace(tzinfo=None)
     catalog_names = catalog_names or {}
+    seat_metrics = seat_metrics or {}
     session_by_id = {session.session_id: session for session in sessions}
     claimed_session_ids: set[str] = set()
     labs: list[dict[str, Any]] = []
@@ -449,6 +463,7 @@ def build_admin_observability(
                     seat_number=seat.seat_number,
                     fallback_status=_value(seat.status),
                     fallback_error=seat.error,
+                    resource_usage=(seat_metrics.get(session.session_id) if session else None),
                     now=now,
                 )
             )
@@ -482,6 +497,7 @@ def build_admin_observability(
             seat_number=1,
             fallback_status=_value(session.status),
             fallback_error=None,
+            resource_usage=seat_metrics.get(session.session_id),
             now=now,
         )
         labs.append(

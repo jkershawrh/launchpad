@@ -172,6 +172,18 @@ def test_observability_read_model_joins_cluster_lab_and_seat_lifecycle():
                 "status_code": 429,
             },
         ],
+        seat_metrics={
+            "seat-1": {
+                "available": True,
+                "cpu_millicores": 425,
+                "memory_mib": 768,
+                "pod_count": 3,
+                "ready_pods": 3,
+                "restarts": 0,
+                "terminal_reconnects": None,
+                "observed_at": "2026-09-08T12:00:00+00:00",
+            }
+        },
     )
 
     assert result["schema"] == "launchpad.admin-observability/v1"
@@ -193,6 +205,17 @@ def test_observability_read_model_joins_cluster_lab_and_seat_lifecycle():
     assert lab["failed_seats"] == 1
     assert lab["max_ready_seconds"] == 90
     assert [seat["seat_number"] for seat in lab["seats"]] == [1, 2, 3]
+    assert lab["seats"][0]["resource_usage"] == {
+        "available": True,
+        "cpu_millicores": 425,
+        "memory_mib": 768,
+        "pod_count": 3,
+        "ready_pods": 3,
+        "restarts": 0,
+        "terminal_reconnects": None,
+        "observed_at": "2026-09-08T12:00:00+00:00",
+    }
+    assert lab["seats"][1]["resource_usage"]["available"] is False
 
     assert result["inflight"][0]["stage_counts"] == {"provisioning": 1}
     assert result["inflight"][0]["oldest_seconds"] == 180

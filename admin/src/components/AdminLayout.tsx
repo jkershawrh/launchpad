@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { path: '/catalog', label: 'Catalog' },
   { path: '/reports', label: 'Reports' },
   { path: '/analytics', label: 'Analytics' },
+  { path: '/observability', label: 'Observability' },
 ];
 
 export default function AdminLayout() {
@@ -29,7 +30,7 @@ export default function AdminLayout() {
               <span className="text-white text-sm font-semibold" style={{ fontFamily: 'Red Hat Display' }}>Launchpad Operations</span>
               <span className="text-[11px] font-medium bg-white/15 px-2 py-1 rounded">ADMIN</span>
             </div>
-            <nav className="flex gap-1">
+            <nav className="flex max-w-[65vw] gap-1 overflow-x-auto">
               {NAV_ITEMS.map((item) => (
                 <Link
                   key={item.path}

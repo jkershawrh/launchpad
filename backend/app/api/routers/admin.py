@@ -15,6 +15,7 @@ from app.services.health import check_health_detailed
 from app.services.lifecycle_worker import build_lifecycle_admin_view
 from app.services.model_inventory import get_model_inventory
 from app.services.resource_reconciliation import reconcile_resources
+from app.services.seat_resource_metrics import collect_seat_resource_metrics
 from app.services.system_monitor import SystemMonitor
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
@@ -38,14 +39,22 @@ def admin_observability() -> Dict[str, Any]:
     except Exception:  # noqa: BLE001 - inventory degrades independently of workflow state
         inventory = {"summary": {}, "models": []}
     provisioning_service.refresh_persisted_state()
+    sessions = list(provisioning_service._sessions.values())
+    seat_metrics = {}
+    if provisioning_service.cluster_client_factory:
+        seat_metrics = collect_seat_resource_metrics(
+            sessions,
+            provisioning_service.cluster_client_factory,
+        )
     return build_admin_observability(
-        sessions=provisioning_service._sessions.values(),
+        sessions=sessions,
         workshops=provisioning_service._workshops.values(),
         clusters=provisioning_service.get_cluster_fleet_health(),
         grafana_url=os.environ.get("GRAFANA_LAUNCHPAD_DASHBOARD_URL", ""),
         catalog_names=catalog_names,
         model_inventory=inventory,
         llm_events=get_llm_audit_log(),
+        seat_metrics=seat_metrics,
     )
 
 

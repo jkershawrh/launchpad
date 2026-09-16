@@ -269,6 +269,17 @@ export interface SeatObservation {
   resolution_state: 'none' | 'attention' | 'resolving' | 'resolved';
   error?: string | null;
   detail_url?: string | null;
+  resource_usage?: {
+    available: boolean;
+    reason?: string | null;
+    cpu_millicores?: number | null;
+    memory_mib?: number | null;
+    pod_count?: number | null;
+    ready_pods?: number | null;
+    restarts?: number | null;
+    terminal_reconnects?: number | null;
+    observed_at?: string | null;
+  };
 }
 
 export interface ProvisioningObservation {

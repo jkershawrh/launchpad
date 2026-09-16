@@ -219,6 +219,22 @@ export interface ContainerInfo {
   id: string;
 }
 
+export interface SeatResourceUsage { available: boolean; reason?: string | null; cpu_millicores?: number | null; memory_mib?: number | null; pod_count?: number | null; ready_pods?: number | null; restarts?: number | null; terminal_reconnects?: number | null; observed_at?: string | null }
+export interface SeatObservation { seat_number: number; session_id?: string | null; namespace?: string | null; status: string; provisioning_seconds?: number | null; resolution_state: string; error?: string | null; detail_url?: string | null; resource_usage?: SeatResourceUsage }
+export interface ProvisioningObservation { order_id: string; order_type: string; name: string; catalog_item_id: string; cluster_ref?: string | null; status: string; seats_requested: number; ready_seats: number; failed_seats: number; inflight_seats: number; status_counts: Record<string, number>; max_ready_seconds?: number | null; oldest_inflight_seconds?: number | null; seats: SeatObservation[]; detail_url?: string | null }
+export interface LlmAttributionObservation { order_id: string; catalog_item_id: string; cluster_ref?: string | null; seat_number: number; session_id: string; namespace?: string | null; model_id: string; requests: number; avg_latency_ms?: number | null; p95_latency_ms?: number | null; errors: number; rate_limited: number; total_tokens: number }
+export interface AdminObservability {
+  schema: string; generated_at: string;
+  summary: { clusters_healthy: number; clusters_total: number; labs_active: number; seats_active: number; seats_inflight: number; seats_attention: number };
+  clusters: Array<{ cluster_id: string; cluster_name?: string; healthy: boolean; eligible: boolean; reason?: string; available_cpu_millicores: number; available_memory_mib: number; available_pods: number; active_sessions: number; active_workshops: number; active_seats: number }>;
+  provisioning: ProvisioningObservation[];
+  inflight: Array<{ order_id: string; name: string; cluster_ref?: string | null; inflight_seats: number; stage_counts: Record<string, number>; oldest_seconds?: number | null }>;
+  resolution: Array<{ order_id: string; name: string; cluster_ref?: string | null; seat_number: number; session_id?: string | null; status: string; state: string; message?: string | null; detail_url?: string | null }>;
+  grafana: { configured: boolean; url?: string | null; purpose: string };
+  llm: { summary: { models_configured: number; models_running: number; models_healthy: number; requests_observed: number; avg_latency_ms?: number | null; p95_latency_ms?: number | null; errors: number; rate_limited: number; total_tokens: number; attributed_requests: number }; models: Array<{ model_id: string; display_name: string; hardware?: string | null; status: string; desired_replicas: number; ready_replicas: number; route: string; backend?: string | null }>; attribution: LlmAttributionObservation[]; telemetry_gaps: string[] };
+}
+export interface LifecycleHealth { enabled: boolean; summary: { queued: number; running: number; failed: number; takeovers: number; reclaim_pending: number }; jobs: Array<{ job_id: string; operation: string; cluster_ref?: string | null; status: string; attempts: number; max_attempts: number; last_error?: string | null }> }
+
 export interface SystemStatus {
   containers: number;
   active_sessions: number;

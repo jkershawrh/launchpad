@@ -55,6 +55,16 @@ const snapshot: AdminObservability = {
       provisioning_seconds: 90,
       resolution_state: 'none',
       detail_url: '/sessions/session-1',
+      resource_usage: {
+        available: true,
+        cpu_millicores: 425,
+        memory_mib: 768,
+        pod_count: 3,
+        ready_pods: 3,
+        restarts: 0,
+        terminal_reconnects: null,
+        observed_at: '2026-09-08T12:00:00Z',
+      },
     }],
     detail_url: '/workshops/workshop-1',
   }],
@@ -119,7 +129,7 @@ const snapshot: AdminObservability = {
 afterEach(() => vi.clearAllMocks());
 
 describe('operator observability component', () => {
-  it('renders all workflow angles and expands a lab to seat scope', async () => {
+  it('renders control-room tabs with lab-selected seat tiles', async () => {
     vi.mocked(api.getAdminObservability).mockResolvedValue(snapshot);
     vi.mocked(api.getLifecycleHealth).mockResolvedValue({
       enabled: true,
@@ -140,18 +150,26 @@ describe('operator observability component', () => {
     const view = render(<MemoryRouter><Observability /></MemoryRouter>);
 
     expect(await screen.findByText('Lab observability')).toBeInTheDocument();
-    expect(screen.getByText('Cluster readiness and capacity')).toBeInTheDocument();
-    expect(screen.getByText('Provisioning by lab and seat')).toBeInTheDocument();
-    expect(screen.getByText('In-flight work')).toBeInTheDocument();
-    expect(screen.getByText('Resolution and cleanup')).toBeInTheDocument();
-    expect(screen.getByText('AI and LLM traffic')).toBeInTheDocument();
-    expect(screen.getByText('Lifecycle queue and worker ownership')).toBeInTheDocument();
-    expect(screen.getByText('1 takeover')).toBeInTheDocument();
-    expect(screen.getByText('LiteLLM: granite')).toBeInTheDocument();
-    expect(screen.getByText('40 in + 60 out = 100 tokens · exact')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'Show seats' }));
+    expect(screen.getByRole('tab', { name: 'Labs & seats' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'AI models' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Clusters' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Events & alerts' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Select a lab')).toHaveValue('workshop-1');
+    expect(screen.getByText('Seat 01')).toBeInTheDocument();
     expect(screen.getByText('agent-seat-1')).toBeInTheDocument();
+    expect(screen.getByText('425m')).toBeInTheDocument();
+    expect(screen.getByText('768 MiB')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'AI models' }));
+    expect(screen.getByText('Granite')).toBeInTheDocument();
+    expect(screen.getByText('2 / 2')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Clusters' }));
+    expect(screen.getByText('Arena')).toBeInTheDocument();
+    expect(screen.getByText('80 cores')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Events & alerts' }));
+    expect(screen.getByText('Lifecycle and platform events')).toBeInTheDocument();
     await waitFor(() => expect(api.getAdminObservability).toHaveBeenCalledTimes(1));
     view.unmount();
   });

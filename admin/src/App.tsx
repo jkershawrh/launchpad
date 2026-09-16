@@ -8,6 +8,7 @@ import SessionDetail from './pages/SessionDetail';
 import Sessions from './pages/Sessions';
 import SystemStatus from './pages/SystemStatus';
 import Tenants from './pages/Tenants';
+import Observability from './pages/Observability';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/catalog" element={<CatalogManagement />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/analytics" element={<ProvisioningAnalytics />} />
+          <Route path="/observability" element={<Observability />} />
         </Route>
       </Routes>
     </BrowserRouter>
