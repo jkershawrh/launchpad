@@ -74,6 +74,7 @@ Internal operator links:
 - System health: <https://launchpad-admin.apps.arena.fm2aihpcsed.com/system>
 - Analytics: <https://launchpad-admin.apps.arena.fm2aihpcsed.com/analytics>
 - Observability: <https://launchpad-admin.apps.arena.fm2aihpcsed.com/observability>
+- Presentation deck: <https://docs.google.com/presentation/d/1ffzE-mmqgPnle57s8c4qf27K7nuDTKp5/edit?usp=sharing&ouid=110448248052185511944&rtpof=true&sd=true>
 
 The internal portals use OpenShift authentication. The public participant flow
 uses an email identity label plus the instructor code.
