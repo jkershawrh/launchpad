@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jkershawrh/launchpad/schemas/vef/launchpad-pilot-input.v1alpha1.schema.json",
+  "title": "Launchpad bounded pilot VEF input",
+  "type": "object",
+  "required": ["schema_version", "pilot_id", "period", "population", "baseline", "treatment", "safety", "ai_usage", "economics", "attribution", "approvals", "evidence_sources"],
+  "properties": {
+    "schema_version": {"const": "launchpad.vef-pilot-input.v1alpha1"},
+    "pilot_id": {"type": "string", "minLength": 1},
+    "period": {
+      "type": "object",
+      "required": ["start", "end"],
+      "properties": {"start": {"type": "string", "format": "date-time"}, "end": {"type": "string", "format": "date-time"}}
+    },
+    "population": {
+      "type": "object",
+      "required": ["provisioned_seats", "enrolled_users", "active_users", "successful_journeys", "unknown_outcomes"],
+      "properties": {
+        "provisioned_seats": {"type": "integer", "minimum": 1},
+        "enrolled_users": {"type": "integer", "minimum": 1},
+        "active_users": {"type": "integer", "minimum": 0},
+        "successful_journeys": {"type": "integer", "minimum": 0},
+        "unknown_outcomes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "baseline": {"$ref": "#/$defs/cohort"},
+    "treatment": {"$ref": "#/$defs/cohort"},
+    "safety": {
+      "type": "object",
+      "required": ["accounting_complete", "failed_journeys", "probe_failures", "restart_increase", "cleanup_residue", "failure_threshold_breached"],
+      "properties": {
+        "accounting_complete": {"type": "boolean"},
+        "failed_journeys": {"type": "integer", "minimum": 0},
+        "probe_failures": {"type": "integer", "minimum": 0},
+        "restart_increase": {"type": "integer", "minimum": 0},
+        "cleanup_residue": {"type": "integer", "minimum": 0},
+        "failure_threshold_breached": {"type": "boolean"}
+      }
+    },
+    "ai_usage": {
+      "type": "object",
+      "required": ["measurement_state", "actual_requests", "input_tokens", "output_tokens", "inference_cost_usd"],
+      "properties": {
+        "measurement_state": {"enum": ["unavailable", "partial", "authoritative"]},
+        "actual_requests": {"type": ["integer", "null"], "minimum": 0},
+        "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "inference_cost_usd": {"type": ["number", "null"], "minimum": 0}
+      }
+    },
+    "economics": {
+      "type": "object",
+      "required": ["currency", "engineering_effort", "support_hours", "support_loaded_rate_usd", "other_realization_cost_usd", "marginal_delivery_cost_measured"],
+      "properties": {
+        "currency": {"const": "USD"},
+        "engineering_effort": {"type": "array", "items": {"$ref": "#/$defs/effort"}, "minItems": 1},
+        "support_hours": {"type": "number", "minimum": 0},
+        "support_loaded_rate_usd": {"type": "number", "minimum": 0},
+        "other_realization_cost_usd": {"type": "number", "minimum": 0},
+        "marginal_delivery_cost_measured": {"type": "boolean"}
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "required": ["product_share", "competing_factors"],
+      "properties": {
+        "product_share": {"type": "number", "minimum": 0, "maximum": 1},
+        "competing_factors": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "required": ["manual_acceptance_complete", "security_triage_complete", "customer_validated", "finance_approved", "privacy_approved"],
+      "properties": {
+        "manual_acceptance_complete": {"type": "boolean"},
+        "security_triage_complete": {"type": "boolean"},
+        "customer_validated": {"type": "boolean"},
+        "finance_approved": {"type": "boolean"},
+        "privacy_approved": {"type": "boolean"}
+      }
+    },
+    "evidence_sources": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "$defs": {
+    "cohort": {
+      "type": "object",
+      "required": ["method", "independent", "matched_population", "successful_journeys", "operating_cost_usd"],
+      "properties": {
+        "method": {"enum": ["matched_control", "historical_baseline", "unmeasured"]},
+        "independent": {"type": "boolean"},
+        "matched_population": {"type": "boolean"},
+        "successful_journeys": {"type": "integer", "minimum": 1},
+        "operating_cost_usd": {"type": "number", "minimum": 0}
+      }
+    },
+    "effort": {
+      "type": "object",
+      "required": ["activity", "lifecycle", "role", "hours", "loaded_rate_usd", "source"],
+      "properties": {
+        "activity": {"type": "string", "minLength": 1},
+        "lifecycle": {"enum": ["initial", "recurring"]},
+        "role": {"type": "string", "minLength": 1},
+        "hours": {"type": "number", "minimum": 0},
+        "loaded_rate_usd": {"type": "number", "minimum": 0},
+        "source": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

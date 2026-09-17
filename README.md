@@ -224,6 +224,15 @@ LAUNCHPAD_ADMIN_API_KEY='set-outside-git' \
 
 Never put the API key in the command line, contract, logs, or evidence.
 
+## Value evidence pilot
+
+Launchpad includes a read-only VEF adapter for bounded pilot scorecards. It
+consumes sanitized aggregate evidence and private cost inputs without changing
+participant labs, lab content, links, routing, deployments, or model traffic.
+Start with [`examples/vef-launchpad-pilot-intake.yaml`](examples/vef-launchpad-pilot-intake.yaml)
+and follow [`docs/vef-pilot.md`](docs/vef-pilot.md). Missing outcomes, costs,
+approvals, or authoritative AI usage fail closed and are never treated as zero.
+
 Use Arena's dedicated kubeconfig for every cluster command; do not change the current kubeconfig context:
 
 ```bash

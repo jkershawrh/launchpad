@@ -1,0 +1,10 @@
+exporters:
+  - scripts/vef_export_pilot.py
+evidence_schemas:
+  - schemas/vef/launchpad-pilot-input.v1alpha1.schema.json
+  - schemas/vef/launchpad-pilot-claim.v1alpha1.schema.json
+test_commands:
+  - pytest -q backend/tests/test_vef_pilot.py
+ignore_paths:
+  - .vef-private/
+  - vef-output/

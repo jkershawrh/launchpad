@@ -1,0 +1,30 @@
+name: VEF readiness report
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install focused test dependency
+        run: python -m pip install 'pytest>=8'
+      - name: Verify Launchpad VEF adapter
+        run: python -m pytest -q backend/tests/test_vef_pilot.py
+      - name: Install pinned VEF inspector
+        run: python -m pip install 'git+https://github.com/jkershawrh/value-evidence-framework.git@d91fafeaeaf924196782f6239e26ce668f2f2077'
+      - name: Generate non-blocking readiness report
+        run: vef inspect . --format json --output vef-readiness.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vef-readiness
+          path: vef-readiness.json

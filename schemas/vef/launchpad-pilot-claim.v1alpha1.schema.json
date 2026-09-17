@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jkershawrh/launchpad/schemas/vef/launchpad-pilot-claim.v1alpha1.schema.json",
+  "type": "object",
+  "required": ["schema_version", "proof_state", "value_eligible", "eligibility_gaps", "claim"],
+  "properties": {
+    "schema_version": {"const": "launchpad.vef-pilot-claim.v1alpha1"},
+    "proof_state": {"enum": ["unproven", "directional", "decision-grade"]},
+    "value_eligible": {"type": "boolean"},
+    "eligibility_gaps": {"type": "array", "items": {"type": "string"}},
+    "claim": {"type": "object"}
+  }
+}
