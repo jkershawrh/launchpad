@@ -263,7 +263,7 @@ You should see a response from the model in the AnythingLLM chat interface. The 
 
 If you see an error like "Could not connect to LLM provider":
 
-. Check that the MaaS endpoint is reachable: `curl -s ${MAAS_ENDPOINT}/v1/models -H "Authorization: Bearer ${MAAS_API_KEY}"`
+. Check that the MaaS endpoint is reachable: `curl -ks ${MAAS_ENDPOINT}/v1/models -H "Authorization: Bearer ${MAAS_API_KEY}"`
 . Check the secret values: `oc get secret anythingllm-config -n {project_name} -o yaml`
 
 === Troubleshooting

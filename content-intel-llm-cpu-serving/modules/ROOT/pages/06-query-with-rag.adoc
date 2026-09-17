@@ -50,7 +50,7 @@ Now ask the same question directly to the MaaS endpoint, bypassing AnythingLLM a
 
 [source,bash,role="execute"]
 ----
-curl -s "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{

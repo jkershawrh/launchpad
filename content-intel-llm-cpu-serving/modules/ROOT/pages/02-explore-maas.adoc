@@ -53,7 +53,7 @@ The MaaS endpoint exposes an OpenAI-compatible `/v1/models` endpoint. Query it t
 
 [source,bash,role="execute"]
 ----
-curl -s "${MAAS_ENDPOINT}/v1/models" \
+curl -ks "${MAAS_ENDPOINT}/v1/models" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" | python3 -m json.tool
 ----
 
@@ -97,7 +97,7 @@ You can query for details about a specific model:
 
 [source,bash,role="execute"]
 ----
-curl -s "${MAAS_ENDPOINT}/v1/models" \
+curl -ks "${MAAS_ENDPOINT}/v1/models" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" | \
   python3 -c "
 import sys, json
@@ -116,7 +116,7 @@ Send a minimal request to verify end-to-end connectivity:
 
 [source,bash,role="execute"]
 ----
-curl -s "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -143,7 +143,7 @@ If this works, you have a live connection to CPU inference on {intel_platform} -
 |Symptom |Resolution
 
 |`Connection refused` or `Connection timed out`
-|The MaaS endpoint may not be reachable from your cluster. Check network connectivity: `curl -s -o /dev/null -w "%\{http_code\}" ${MAAS_ENDPOINT}/v1/models -H "Authorization: Bearer ${MAAS_API_KEY}"`
+|The MaaS endpoint may not be reachable from your cluster. Check network connectivity: `curl -ks -o /dev/null -w "%\{http_code\}" ${MAAS_ENDPOINT}/v1/models -H "Authorization: Bearer ${MAAS_API_KEY}"`
 
 |`401 Unauthorized`
 |Your API key is invalid or expired. Verify `MAAS_API_KEY` is set correctly. LiteLLM virtual keys have a 7-day TTL.

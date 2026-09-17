@@ -21,7 +21,7 @@ echo "=== Latency Test: 3 sequential requests ==="
 for i in 1 2 3; do
   echo -n "Request $i: "
   START=$(date +%s%N)
-  RESPONSE=$(curl -s "${MAAS_ENDPOINT}/v1/chat/completions" \
+  RESPONSE=$(curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
     -H "Authorization: Bearer ${MAAS_API_KEY}" \
     -H "Content-Type: application/json" \
     -d "{
@@ -67,7 +67,7 @@ See how response time scales with the number of tokens requested:
 for max_tok in 50 100 200; do
   echo -n "max_tokens=${max_tok}: "
   START=$(date +%s%N)
-  RESPONSE=$(curl -s "${MAAS_ENDPOINT}/v1/chat/completions" \
+  RESPONSE=$(curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
     -H "Authorization: Bearer ${MAAS_API_KEY}" \
     -H "Content-Type: application/json" \
     -d "{

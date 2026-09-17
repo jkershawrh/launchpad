@@ -471,6 +471,8 @@ def test_cpu_serving_content_uses_route_name_that_fits_launchpad_namespace():
         '-o custom-columns=HOST:.spec.host --no-headers)"'
     ) in content
     assert "jsonpath=" not in content
+    assert 'curl -s "${MAAS_ENDPOINT}' not in content
+    assert 'curl -ks "${MAAS_ENDPOINT}' in content
 
 
 def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
