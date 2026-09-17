@@ -43,6 +43,12 @@ KEYCLOAK_ORIGIN = os.environ.get("KEYCLOAK_ORIGIN", "http://keycloak-service.key
 GATEWAY_ORIGIN = os.environ.get(
     "GATEWAY_ORIGIN", "http://public-access-gateway.partner-ai-launchpad.svc:8443"
 )
+UPSTREAM_TIMEOUT = httpx.Timeout(
+    float(os.environ.get("TUNNEL_UPSTREAM_READ_TIMEOUT", "330")),
+    connect=10,
+    write=30,
+    pool=10,
+)
 
 ARENA_CONSOLE_HOST = "console-openshift-console.apps.arena.fm2aihpcsed.com"
 ARENA_OAUTH_HOST = "oauth-openshift.apps.arena.fm2aihpcsed.com"
@@ -356,7 +362,7 @@ async def route(path: str, request: Request):
         headers["host"] = ARENA_OAUTH_HOST
 
     async with httpx.AsyncClient(
-        timeout=60, follow_redirects=False, verify=False
+        timeout=UPSTREAM_TIMEOUT, follow_redirects=False, verify=False
     ) as client:
         upstream = await client.request(
             request.method,

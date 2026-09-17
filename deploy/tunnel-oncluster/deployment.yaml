@@ -71,6 +71,10 @@ spec:
                 secretKeyRef: {name: launchpad-public-access, key: ACCESS_BROKER_KEY}
             - name: BACKEND_URL
               value: http://backend.partner-ai-launchpad.svc:8000/api/v1
+            # Agent workflows can legitimately exceed one minute under event
+            # concurrency. Match the gateway and OAuth proxy request budget.
+            - name: TUNNEL_UPSTREAM_READ_TIMEOUT
+              value: "330"
           ports:
             - {name: http, containerPort: 8080}
           volumeMounts:

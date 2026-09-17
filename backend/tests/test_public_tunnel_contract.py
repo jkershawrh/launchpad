@@ -66,6 +66,16 @@ def test_named_tunnel_uses_the_precreated_token_without_a_shell():
     assert "tee /shared/cloudflared.log" not in manifest
 
 
+def test_named_tunnel_http_budget_covers_agent_workflows():
+    manifest = (ROOT / "deploy/tunnel-oncluster/deployment.yaml").read_text()
+    router = _router_module()
+
+    assert 'name: TUNNEL_UPSTREAM_READ_TIMEOUT' in manifest
+    assert 'value: "330"' in manifest
+    assert router.UPSTREAM_TIMEOUT.connect == 10
+    assert router.UPSTREAM_TIMEOUT.read >= 300
+
+
 def test_named_tunnel_has_two_connection_aware_replicas_and_a_disruption_budget():
     rendered = subprocess.run(
         ["oc", "kustomize", str(ROOT / "deploy/tunnel-oncluster")],
