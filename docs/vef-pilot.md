@@ -18,6 +18,52 @@ including three successful exact-75 functional runs and a clean 60-minute
 soak. It does not certify 90 simultaneous active users. The current release
 decision remains a conditional go for a supervised internal pilot.
 
+## Successful participant paths
+
+Success is counted per enrolled participant, not per provisioned seat. A
+participant succeeds only when one assigned seat becomes ready and the
+preregistered contract for that participant's track completes within the
+bounded pilot window. An unused seat, an HTTP response alone, or a partially
+completed track is not a successful journey. Missing outcomes remain unknown.
+
+The existing certification behavior defines the three paths:
+
+- **Building an AI Agent:** the tools, agent, and application routes are
+  healthy; the expected tool contract is present; the agent produces the
+  required sourced architecture response without inference errors; the
+  participant can edit only their own project and cannot read another project
+  or list cluster nodes.
+- **Multi-Agent Quickstart:** the participant UI and Showroom are reachable;
+  research, analyst, and executor are ready and each completes an MCP-backed
+  step without error; the participant UI workflow succeeds; the bounded
+  learner policy works and rolls back; guardrail, semantic-routing, and
+  authorization checks pass.
+- **Serve LLMs:** the participant route is ready; authentication, workspace
+  creation, and document ingestion succeed; the model answers with the planted
+  fact and cites the supplied document; no application error is present.
+
+An overall pilot success additionally requires complete participant
+accounting, all preregistered safety thresholds, no isolation failure, no
+cleanup residue, and completion of the manual requester/participant/admin
+browser walkthrough. Report each track separately before reporting an overall
+rate so one strong track cannot hide another track's failures.
+
+## What the combined data can support
+
+Operational data can state the number and rate of seats provisioned, enrolled
+users, observed active users, successful journeys by track, unknown and failed
+outcomes, journey latency, support interventions, platform health, isolation
+checks, and cleanup completeness. With an independent matched baseline and a
+complete cost ledger, it can also state observed cost per successful journey,
+the difference from the current/manual process, attributable value, realization
+cost, net value, time to value, and marginal cost per additional participant.
+
+It cannot by itself state customer ROI, causal savings, 90-user concurrency,
+or exact inference cost. Those conclusions require customer/finance validation,
+the independent counterfactual, and authoritative request/token/pricing data.
+The current 75-user evidence is capacity and operational proof, not a claim
+that every provisioned seat or every successful technical check created value.
+
 ## Before the pilot
 
 1. Copy `examples/vef-launchpad-pilot-intake.yaml` to an approved private

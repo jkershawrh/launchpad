@@ -16,7 +16,12 @@ value_hypothesis:
   provisioned_seats: 90
   enrolled_users: 75
   active_users: "measured during pilot; never default to enrolled users"
-  successful_journey: unknown
+  successful_journey: "one enrolled participant activates one assigned seat and completes the preregistered track contract within the pilot window"
+  successful_paths:
+    building_an_ai_agent: "all three participant routes healthy; expected tools present; sourced architecture response satisfies the response contract without inference errors; own-project edit allowed; cross-project and cluster-wide reads denied"
+    multi_agent_quickstart: "UI and Showroom reachable; three agents ready; research, analyst, and executor each complete an MCP-backed step without error; participant UI succeeds; bounded policy change works and rolls back; guardrail and semantic-routing checks pass; authorization remains scoped"
+    serve_llms: "participant route ready; authenticated workspace and document ingestion succeed; the answer contains the planted fact and cites the supplied document without an application error"
+  common_success_gates: ["seat ready", "participant route admitted", "assigned track contract passed", "no unknown outcome", "no isolation failure"]
   period_start: unknown
   period_end: unknown
   minimum_meaningful_improvement: unknown
