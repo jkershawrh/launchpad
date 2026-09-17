@@ -51,7 +51,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
     }
     assert metadata["workload_repo"] == "https://github.com/rhpds/launchpad.git"
     assert metadata["workload_revision"] == (
-        "100bcd4d4dd40e2ab74b59e984112c3d86fbac9b"
+        "5292234017bf3f538767e6b6a3c627d146fca086"
     )
     assert len(metadata["workload_revision"]) == 40
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"

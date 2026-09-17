@@ -40,7 +40,7 @@ metadata:
   workspace_route_name: app
   workspace_title: "Solution Architect"
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
-  showroom_content_ref: "e21dfe221c1ad7d2683f3a67b63437abb8788a43"
+  showroom_content_ref: "5292234017bf3f538767e6b6a3c627d146fca086"
   showroom_content_playbook: "site-intel-xeon6-agent-201.yml"
   required_models:
     - granite-3.2-8b-tools

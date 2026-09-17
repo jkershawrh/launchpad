@@ -17,7 +17,7 @@ catalog:
 sources:
   showroom:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "d140e734f49fcf58c546a4f484ab1dcdfbb345c8"
+    revision: "5292234017bf3f538767e6b6a3c627d146fca086"
     playbook: site-intel-llm-cpu-serving.yml
     start_path: content-intel-llm-cpu-serving
   workload:

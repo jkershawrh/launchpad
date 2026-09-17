@@ -17,7 +17,7 @@ catalog:
 sources:
   showroom:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "e21dfe221c1ad7d2683f3a67b63437abb8788a43"
+    revision: "5292234017bf3f538767e6b6a3c627d146fca086"
     playbook: site-intel-xeon6-agent-201.yml
     start_path: content-intel-xeon6-agent-201
   workload:

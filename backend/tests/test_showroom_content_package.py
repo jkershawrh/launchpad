@@ -19,7 +19,7 @@ INTEL_GUIDED_LABS = [
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
         # Immutable commit behind the Agent 201 pilot fix release.
-        "content_ref": "e21dfe221c1ad7d2683f3a67b63437abb8788a43",
+        "content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
         "max_workshop_seats": 30,
         "certification_stage": "thirty-seat-certified",
     },
@@ -31,7 +31,7 @@ INTEL_GUIDED_LABS = [
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
         "workspace_route": "rag",
-        "content_ref": "d140e734f49fcf58c546a4f484ab1dcdfbb345c8",
+        "content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
         "max_workshop_seats": 30,
         "certification_stage": "thirty-seat-certified",
     },
@@ -358,7 +358,7 @@ def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass()
 
     assert catalog["version"] == "1.0.7"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "e21dfe221c1ad7d2683f3a67b63437abb8788a43"
+        "5292234017bf3f538767e6b6a3c627d146fca086"
     )
     assert 'ADVISOR_API_URL="http://solution-agent:8082"' in exercises
     assert exercises.count("${ADVISOR_API_URL}/api/v1/advise") == 5
@@ -593,7 +593,7 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
 
     assert catalog["version"] == "1.0.11"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "d140e734f49fcf58c546a4f484ab1dcdfbb345c8"
+        "5292234017bf3f538767e6b6a3c627d146fca086"
     )
 
 

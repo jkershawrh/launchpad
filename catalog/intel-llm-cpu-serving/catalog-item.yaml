@@ -40,7 +40,7 @@ metadata:
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
-  showroom_content_ref: "d140e734f49fcf58c546a4f484ab1dcdfbb345c8"
+  showroom_content_ref: "5292234017bf3f538767e6b6a3c627d146fca086"
   showroom_content_playbook: "site-intel-llm-cpu-serving.yml"
   required_models:
     - granite-2b-cpu
