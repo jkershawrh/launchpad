@@ -42,7 +42,7 @@ jq -nc \
   --arg model "$model" \
   --arg api_key "$api_key" \
   --arg frame_ancestor "$frame_ancestor" \
-  --arg image "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/anythingllm-openshift@sha256:20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613" \
+  --arg image "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613" \
   '{
     apiVersion: "v1",
     kind: "List",

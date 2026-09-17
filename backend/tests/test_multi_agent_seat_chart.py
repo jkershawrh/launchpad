@@ -13,10 +13,17 @@ BUILD_CONFIG = ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml"
 SOURCE_REPOSITORY = "https://github.com/jkershawrh/multi-agent-quickstart.git"
 SOURCE_REVISION = "159113ab9f8df39e09e08926b51c7c32da0fc1af"
 IMAGE_REPOSITORY = (
-    "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/"
-    "multi-agent-quickstart"
+    "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart"
 )
 TEST_DIGEST = "sha256:" + ("a" * 64)
+
+
+def test_chart_defaults_to_a_portable_repository_and_requires_a_pinned_digest():
+    values = yaml.safe_load((CHART / "values.yaml").read_text())
+
+    assert values["image"]["repository"].startswith("quay.io/")
+    assert values["image"]["digest"] == ""
+    assert "image-registry.openshift-image-registry.svc" not in values["image"]["repository"]
 
 OWNERSHIP_LABELS = {
     "app.kubernetes.io/managed-by": "launchpad",

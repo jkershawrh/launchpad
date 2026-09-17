@@ -486,9 +486,10 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
 
     assert "anything-llm:latest" not in page
     assert (
-        "partner-ai-launchpad/anythingllm-openshift@sha256:"
+        "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:"
         "20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613" in page
     )
+    assert "image-registry.openshift-image-registry.svc" not in page
     assert "STORAGE_DIR" in page
     assert "DISABLE_TELEMETRY" in page
     assert "LLM_PROVIDER: generic-openai" in page
@@ -505,6 +506,23 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "chgrp -R 0 /app" in containerfile
     assert "rm -rf /app/server/node_modules/.prisma/client" in containerfile
     assert "name: anythingllm-openshift" in build_config
+
+
+def test_participant_content_never_uses_a_cluster_local_image_registry():
+    """Lab instructions must remain portable across every execution cluster."""
+    offenders = []
+    for content_dir in sorted(ROOT.glob("content-*")):
+        for path in content_dir.rglob("*"):
+            if not path.is_file():
+                continue
+            try:
+                content = path.read_text()
+            except UnicodeDecodeError:
+                continue
+            if "image-registry.openshift-image-registry.svc" in content:
+                offenders.append(str(path.relative_to(ROOT)))
+
+    assert offenders == []
 
 
 def test_cpu_serving_workbench_request_matches_the_certified_seat_envelope():

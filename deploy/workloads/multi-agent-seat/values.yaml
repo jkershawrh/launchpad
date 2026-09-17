@@ -9,7 +9,7 @@ runtime:
   existingSecret: ""
 
 image:
-  repository: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/multi-agent-quickstart
+  repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
   digest: ""
   pullPolicy: IfNotPresent
 
