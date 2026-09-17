@@ -16,8 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install focused test dependency
-        run: python -m pip install 'pytest>=8'
+      - name: Install Launchpad test dependencies
+        run: python -m pip install '.[dev]'
       - name: Verify Launchpad VEF adapter
         run: python -m pytest -q backend/tests/test_vef_pilot.py
       - name: Install pinned VEF inspector
