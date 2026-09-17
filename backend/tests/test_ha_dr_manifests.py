@@ -379,7 +379,7 @@ def test_dr_roadmap_defines_pilot_transition_and_production_destination() -> Non
     assert "no active/active writers" in roadmap
 
 
-def test_flightpath_is_registered_but_fail_closed_in_source_and_runtime() -> None:
+def test_flightpath_source_is_fail_closed_while_event_runtime_is_enabled() -> None:
     source = yaml.safe_load((ROOT / "config/clusters.yaml").read_text())
     source_target = next(
         item for item in source["clusters"] if item["cluster_id"] == "flightpath"
@@ -399,7 +399,9 @@ def test_flightpath_is_registered_but_fail_closed_in_source_and_runtime() -> Non
         for item in yaml.safe_load(runtime)["clusters"]
         if item["cluster_id"] == "flightpath"
     )
-    assert runtime_target["enabled"] is False
+    assert runtime_target["enabled"] is True
+    assert runtime_target["public_access_enabled"] is True
+    assert runtime_target["priority"] == 90
 
 
 def test_flightpath_has_a_distinct_remote_execution_identity() -> None:

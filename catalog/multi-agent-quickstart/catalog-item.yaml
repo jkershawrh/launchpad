@@ -43,9 +43,9 @@ metadata:
   activation_blockers: []
   certification_proof_contract: certification/catalog/multi-agent-quickstart.yaml
   production_blockers:
-  - Mirror the Arena-built, digest-pinned candidate image to a durable external registry
-    or durable control-plane mirror before production; Arena's internal registry is
-    sufficient only for certification.
+  - Transfer the digest-pinned pilot mirror from the maintainer Quay namespace to an
+    organization-owned registry before general availability. The current external
+    mirror is sufficient for the September pilot and cross-cluster certification.
   - Track 3 is currently an architecture and manifest exploration path; certify Kagenti
     and OpenTelemetry runtime integrations before presenting those optional blueprint
     components as deployed services.
@@ -110,7 +110,7 @@ metadata:
   workload_release_name: multi-agent
   workload_helm_values:
     image:
-      repository: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/multi-agent-quickstart
+      repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
       digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
   workload_ignore_differences: []
   workload_runtime_secret_name: multi-agent-runtime

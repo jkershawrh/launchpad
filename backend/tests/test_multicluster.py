@@ -413,8 +413,24 @@ def test_arena_overlay_enables_brutus_for_supervised_public_pilot():
     assert targets["oberon"]["enabled"] is False
     assert targets["brutus"]["enabled"] is True
     assert targets["brutus"]["public_access_enabled"] is True
-    assert targets["flightpath"]["enabled"] is False
-    assert targets["flightpath"]["public_access_enabled"] is False
+    assert targets["flightpath"]["enabled"] is True
+    assert targets["flightpath"]["public_access_enabled"] is True
+    assert targets["flightpath"]["public_ingress_domain"] == "labs.smg-helix.ai"
+    assert targets["flightpath"]["public_console_url"] == ""
+    assert targets["flightpath"]["image_references"] == {
+        "showroom_git_cloner": (
+            "quay.io/rh-ee-jkershaw/launchpad-showroom-git-cloner@sha256:"
+            "2dbcdc5955c5ece1b3bc88c26f85f18122eb317624e1cda160f9d347754d2cc5"
+        ),
+        "showroom_terminal": (
+            "quay.io/rh-ee-jkershaw/launchpad-showroom-terminal@sha256:"
+            "324dc5c4201f0da030a572dab389bc8cfdc2f66e800dff3fcee824b7e795daae"
+        ),
+    }
+    assert set(targets["flightpath"]["model_endpoints"]) == {
+        "granite-2b-cpu",
+        "granite-3.2-8b-tools",
+    }
     assert "dr-standby" in targets["flightpath"]["capabilities"]
     for cluster_id in ("oberon", "brutus", "flightpath"):
         assert targets[cluster_id]["local"] is False

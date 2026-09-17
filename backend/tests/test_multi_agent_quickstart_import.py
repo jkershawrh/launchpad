@@ -68,10 +68,7 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
     }
     assert metadata["workload_helm_values"] == {
         "image": {
-            "repository": (
-                "image-registry.openshift-image-registry.svc:5000/"
-                "partner-ai-launchpad/multi-agent-quickstart"
-            ),
+            "repository": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart",
             "digest": (
                 "sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661"
             ),

@@ -85,7 +85,7 @@ data:
         model_endpoints:
           granite-3.2-8b-tools: https://vllm-granite-3-2-8b-tools-fleet-llm-d.apps.arena.fm2aihpcsed.com/v1
       - cluster_id: flightpath
-        display_name: Flightpath DR Standby
+        display_name: Flightpath Execution Candidate
         api_url: https://api.flightpath.fm2aihpcsed.com:6443
         ingress_domain: apps.flightpath.fm2aihpcsed.com
         console_url: https://console-openshift-console.apps.flightpath.fm2aihpcsed.com
@@ -93,7 +93,22 @@ data:
         credential_secret: partner-ai-launchpad/launchpad-flightpath-kubeconfig
         local: false
         priority: 90
-        enabled: false
-        # Passive control-plane recovery target; never selected by pilot placement.
-        public_access_enabled: false
-        capabilities: [cpu, openshift, operators, showroom, dr-standby]
+        enabled: true
+        # Flightpath is enabled for explicitly targeted event overflow. Its
+        # lower placement priority keeps normal automatic placement on the
+        # primary execution clusters while the remaining certification matrix
+        # is completed.
+        public_access_enabled: true
+        public_ingress_domain: labs.smg-helix.ai
+        public_console_url: ""
+        public_oauth_url: ""
+        image_references:
+          showroom_git_cloner: quay.io/rh-ee-jkershaw/launchpad-showroom-git-cloner@sha256:2dbcdc5955c5ece1b3bc88c26f85f18122eb317624e1cda160f9d347754d2cc5
+          showroom_terminal: quay.io/rh-ee-jkershaw/launchpad-showroom-terminal@sha256:324dc5c4201f0da030a572dab389bc8cfdc2f66e800dff3fcee824b7e795daae
+        capabilities: [cpu, openshift, operators, showroom, model_endpoint, dr-standby]
+        # Flightpath consumes the centrally served pilot models over their
+        # externally routable endpoints. These are validated from Flightpath
+        # before any certification order is admitted.
+        model_endpoints:
+          granite-2b-cpu: https://ovms-granite-2b-fleet-llm-d.apps.arena.fm2aihpcsed.com/v1
+          granite-3.2-8b-tools: https://vllm-granite-3-2-8b-tools-fleet-llm-d.apps.arena.fm2aihpcsed.com/v1
