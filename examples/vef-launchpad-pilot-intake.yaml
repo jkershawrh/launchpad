@@ -22,6 +22,14 @@ value_hypothesis:
     multi_agent_quickstart: "UI and Showroom reachable; three agents ready; research, analyst, and executor each complete an MCP-backed step without error; participant UI succeeds; bounded policy change works and rolls back; guardrail and semantic-routing checks pass; authorization remains scoped"
     serve_llms: "participant route ready; authenticated workspace and document ingestion succeed; the answer contains the planted fact and cites the supplied document without an application error"
   common_success_gates: ["seat ready", "participant route admitted", "assigned track contract passed", "no unknown outcome", "no isolation failure"]
+  launchpad_platform_path:
+    request: "authorized requester submits the intended workshop/order and the catalog contract validates"
+    placement: "the order is assigned only to an approved cluster with capacity and the assignment is persisted"
+    provisioning: "the requested seat records reach ready state within the preregistered SLO without duplicate ownership"
+    participant_access: "each enrolled participant can claim only an assigned seat and reach the correct Showroom and lab"
+    operation: "health, journey outcomes, support interventions, and unknown states are recorded without sensitive payloads"
+    reclaim: "access is revoked and all owned lab resources are removed within the cleanup SLO with zero residue"
+    success: "every required stage passes; a ready lab alone is not an end-to-end Launchpad success"
   period_start: unknown
   period_end: unknown
   minimum_meaningful_improvement: unknown

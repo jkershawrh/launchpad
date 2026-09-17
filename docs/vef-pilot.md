@@ -48,6 +48,32 @@ cleanup residue, and completion of the manual requester/participant/admin
 browser walkthrough. Report each track separately before reporting an overall
 rate so one strong track cannot hide another track's failures.
 
+### Launchpad platform path
+
+Launchpad itself has a separate end-to-end outcome. A platform journey is
+successful only when all of these stages pass:
+
+1. **Request and approval:** an authorized requester submits the intended
+   workshop/order and its catalog and entitlement contracts validate.
+2. **Placement:** Launchpad selects only an approved cluster with capacity,
+   persists the assignment, and does not split a workshop unexpectedly.
+3. **Provisioning:** the expected seat records become ready within the
+   preregistered SLO, without duplicate lifecycle ownership or an unexplained
+   retry.
+4. **Participant access:** an enrolled participant can claim only their
+   assigned seat and reach the correct Showroom and lab while unauthorized
+   cross-seat and cluster access remains denied.
+5. **Operation and support:** health, successful/failed/unknown journeys,
+   latency, and human interventions are captured as aggregate evidence without
+   prompts, responses, identities, credentials, namespaces, or cluster details
+   in the VEF export.
+6. **Reclaim:** participant access is revoked and all Launchpad-owned lab
+   resources are removed within the cleanup SLO with zero residue.
+
+A ready lab alone is therefore not a successful Launchpad outcome. Report both
+`lab_journey_success` and `launchpad_lifecycle_success`; this distinguishes a
+working exercise from a platform that delivered and retired it reliably.
+
 ## What the combined data can support
 
 Operational data can state the number and rate of seats provisioned, enrolled
