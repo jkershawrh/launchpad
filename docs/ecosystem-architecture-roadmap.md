@@ -714,6 +714,8 @@ needs an OpenShift Console or lab endpoint.
 | Managed fleet | Policy-based cluster registration, reservations, predictive readiness, failure-domain placement, and capacity planning | Certified catalog/cluster pairs only |
 | AI platform | Private multi-hardware serving, semantic routing where justified, per-seat attribution, and model governance | Deterministic eligibility and data policy remain authoritative |
 | Business service | Intel-led opportunity qualification, tenant budgets, showback, rate cards, approved chargeback, catalog economics, and demand forecasts | Sales attribution and Finance-approved allocation rules |
+| Organizational service | Primary and secondary ownership, role training, hiring and succession, governed knowledge retrieval, and non-author continuity drills | No production-critical capability depends on one person |
+| OSS distribution | Sanitized public core, neutral reference environment, community governance, secure releases, and stable enterprise extensions | Legal, security, brand, reproducibility, and compatibility approval |
 | Governed autonomy | Evidence-driven recommendations followed by allow-listed automatic remediation and reclaim | One failure class earns autonomy at a time |
 
 Four machine-readable contracts now make the production boundary explicit:
@@ -727,6 +729,17 @@ controls; and [`gtm-value-attribution-v1.yaml`](../contracts/gtm-value-attributi
 defines the privacy-safe field funnel, attribution limits, solution packaging,
 and customer-success loop. These are required production-release inputs, not
 optional post-production enhancements.
+
+[`organizational-readiness-v1.yaml`](../contracts/organizational-readiness-v1.yaml)
+defines ownership redundancy, human qualification, hiring/staffing, knowledge
+freshness, and non-author operational proof. A grounded Knowledge Assistant can
+accelerate onboarding and support, but cited retrieval never replaces the
+authoritative source or grants mutation authority.
+[`oss-distribution-v1.yaml`](../contracts/oss-distribution-v1.yaml) defines the
+conditional OSS release profile: public/private separation, history-aware
+sanitation, legal and brand controls, community governance, reproducible build,
+security response, and OSS-to-enterprise compatibility. The current internal
+repository must not simply be made public.
 
 ## GitOps and Argo CD deployment decision
 

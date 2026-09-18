@@ -1,9 +1,9 @@
 {
-  "contract_count": 12,
+  "contract_count": 14,
   "convergence_stream": "convergence-release",
   "initial_active_count": 4,
   "promotion_gate_count": 6,
-  "scenario_count": 19,
-  "stream_count": 13,
+  "scenario_count": 23,
+  "stream_count": 14,
   "valid": true
 }

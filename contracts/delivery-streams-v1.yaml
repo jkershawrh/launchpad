@@ -12,7 +12,8 @@ delivery_policy:
   usability_continuity: required-at-every-stage
   participant_journey_regression: blocks-promotion
   current_usable_path_protection: mandatory
-  production_release_requires: [production-readiness-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1]
+  production_release_requires: [production-readiness-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1, organizational-readiness-v1]
+  oss_release_requires: [oss-distribution-v1, artifact-policy-v1, data-ai-governance-v1, production-readiness-v1]
   feature_stream_live_mutation: forbidden
   convergence_live_mutation: explicit-human-approval
   evidence_source_of_truth: certification/convergence-matrix-v1.yaml
@@ -105,6 +106,16 @@ contracts:
   owner: product-gtm-customer-success
   path: contracts/gtm-value-attribution-v1.yaml
   consumers: [event-orchestration, observability-finops, lab-content-ai, convergence-release]
+- id: organizational-readiness-v1
+  version: 1.0.0
+  owner: organizational-readiness
+  path: contracts/organizational-readiness-v1.yaml
+  consumers: [automated-lab-intake, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, product-gtm-customer-success, convergence-release]
+- id: oss-distribution-v1
+  version: 1.0.0
+  owner: artifact-supply-chain
+  path: contracts/oss-distribution-v1.yaml
+  consumers: [automated-lab-intake, security-identity, lab-content-ai, product-gtm-customer-success, organizational-readiness, convergence-release]
 streams:
 - id: automated-lab-intake
   title: Automated lab intake and certification
@@ -214,11 +225,20 @@ streams:
   entry_gate: Product audience, consented attribution boundary, solution owner, sales-enablement owner, customer-success owner, and value hypothesis are declared.
   exit_gate: Adoption, completion, repeat engagement, opportunity influence, cost, feedback, solution packaging, and roadmap outcomes are measured without unsupported revenue or identity claims.
   live_mutation_policy: forbidden
+- id: organizational-readiness
+  title: Organizational readiness, knowledge continuity, training, and workforce
+  kind: implementation
+  initially_active: false
+  depends_on: [security-identity, control-plane-portability, observability-finops]
+  owned_paths: [contracts/organizational-readiness-v1.yaml, docs/enablement/]
+  entry_gate: Critical capabilities, decision authorities, primary and secondary owners, source repositories, and training audiences are inventoried.
+  exit_gate: A qualified non-author independently deploys, operates, diagnoses, upgrades, restores, and reclaims the platform using current governed knowledge.
+  live_mutation_policy: forbidden
 - id: convergence-release
   title: Convergence, certification, and staged promotion
   kind: convergence
   initially_active: false
-  depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success]
+  depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, organizational-readiness]
   owned_paths: [contracts/production-readiness-v1.yaml, certification/convergence-matrix-v1.yaml, .github/workflows/]
   entry_gate: Candidate contracts are frozen and every participating stream supplies required local evidence.
   exit_gate: The unchanged candidate earns its declared promotion stage through usable production-shaped tests and retains tested rollback evidence.

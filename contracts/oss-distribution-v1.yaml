@@ -1,0 +1,51 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: OssDistributionContract
+metadata:
+  name: launchpad-oss-distribution
+  version: 1.0.0
+boundaries:
+  required:
+  - public-source-inventory
+  - private-and-proprietary-exclusion-inventory
+  - internal-configuration-separation
+  - brand-and-trademark-separation
+  - enterprise-extension-boundary
+sanitation:
+  required:
+  - working-tree-secret-scan
+  - history-aware-secret-scan
+  - confidential-data-review
+  - credential-and-hostname-removal
+  - generated-evidence-and-participant-data-exclusion
+legal_supply_chain:
+  required:
+  - project-license
+  - dependency-license-compatibility
+  - attribution-and-notices
+  - sbom-and-provenance
+  - source-and-artifact-signing
+  - content-model-and-dataset-rights
+community:
+  required:
+  - readme-and-architecture
+  - contribution-policy
+  - code-of-conduct
+  - security-policy
+  - vulnerability-reporting-and-response
+  - maintainer-and-governance-model
+  - issue-and-release-process
+distribution:
+  required:
+  - reproducible-clean-checkout-build
+  - neutral-local-reference-environment
+  - versioned-public-apis-and-extensions
+  - release-upgrade-and-deprecation-policy
+  - oss-to-enterprise-compatibility-suite
+  - community-support-boundary
+release_rules:
+  history_rewrite: explicit-security-and-legal-approval
+  unresolved_secret_or_confidential_data: blocks-publication
+  incompatible_or_unknown_license: blocks-publication
+  restricted_brand_asset: blocks-publication
+  nonreproducible_build: blocks-publication
+  enterprise_fork_without_compatibility: blocks-publication

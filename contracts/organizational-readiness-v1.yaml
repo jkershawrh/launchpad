@@ -1,0 +1,62 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: OrganizationalReadinessContract
+metadata:
+  name: launchpad-organizational-readiness
+  version: 1.0.0
+critical_capabilities:
+  required:
+  - product-ownership
+  - architecture
+  - application-development
+  - platform-sre
+  - security-and-governance
+  - catalog-and-content-authoring
+  - support-and-incident-command
+  - sales-enablement-and-customer-success
+ownership:
+  requirements:
+  - named-primary-and-secondary
+  - documented-decision-authority
+  - least-privilege-access
+  - tested-offboarding-and-transfer
+  - no-single-person-critical-operation
+qualification:
+  stages: [learn, shadow, supervised, independent, trainer]
+  required_proofs:
+  - clean-bootstrap
+  - catalog-onboarding
+  - event-operation
+  - incident-diagnosis-and-mitigation
+  - upgrade-and-rollback
+  - backup-restore-and-failover
+  - complete-reclaim-and-reconciliation
+knowledge_system:
+  authoritative_sources:
+  - versioned-documentation
+  - architecture-decision-records
+  - contracts-and-schemas
+  - runbooks
+  - incident-reviews
+  - certification-evidence
+  - approved-product-and-sales-playbooks
+  assistant_controls:
+  - source-citations
+  - freshness-and-version-disclosure
+  - role-based-access
+  - no-secrets-or-participant-data
+  - answer-quality-evaluation
+  - abstain-when-unsupported
+  - authoritative-source-wins
+workforce:
+  required:
+  - role-and-skills-matrix
+  - training-curricula
+  - hiring-profiles
+  - staffing-and-coverage-plan
+  - succession-plan
+  - documentation-freshness-slo
+release_rules:
+  single_person_critical_operation: blocks-production
+  missing_secondary_owner: blocks-production
+  failed_non_author_drill: blocks-production
+  stale_or_uncited_assistant_answer: cannot-authorize-action

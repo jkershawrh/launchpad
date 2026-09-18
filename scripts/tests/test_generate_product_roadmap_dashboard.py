@@ -21,9 +21,9 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     model = module.parse_roadmap(ROOT / "docs" / "product-delivery-roadmap.md")
 
     assert len(model["horizons"]) == 5
-    assert len(model["epics"]) == 26
-    assert len(model["stories"]) == 32
-    assert len(model["tasks"]) == 153
+    assert len(model["epics"]) == 28
+    assert len(model["stories"]) == 34
+    assert len(model["tasks"]) == 172
     assert "LP-T095" in model["tasks"]
     assert "lab.step.executed" in model["tasks"]["LP-T095"]["title"]
     assert model["tasks"]["LP-T084"]["epic_id"] == "LP-E002"
@@ -36,6 +36,8 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     assert model["tasks"]["LP-T135"]["epic_id"] == "LP-E024"
     assert model["tasks"]["LP-T143"]["epic_id"] == "LP-E025"
     assert model["tasks"]["LP-T153"]["epic_id"] == "LP-E026"
+    assert model["tasks"]["LP-T162"]["epic_id"] == "LP-E027"
+    assert model["tasks"]["LP-T172"]["epic_id"] == "LP-E028"
 
 
 def test_status_rollup_requires_all_five_proof_methods(tmp_path: Path):
@@ -106,6 +108,10 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "Capacity engineering, forecasting, and admission" in html
     assert "Control-plane portability and production-home promotion" in html
     assert "Parallel convergence and earned promotion" in html
+    assert "Organizational readiness and knowledge continuity" in html
+    assert "Governed open-source distribution" in html
+    assert "Launchpad Knowledge Assistant" in html
+    assert "OSS-to-enterprise" in html
     assert "<svg" in html
     assert "Red Hat" in html and "Intel" in html
     assert 'viewBox="0 0 192.30001 146"' in html
@@ -124,4 +130,6 @@ def test_release_rubric_is_complete_and_balanced():
         "sre-operations",
         "security-governance",
         "gtm-customer-success",
+        "organizational-readiness",
+        "oss-readiness",
     }

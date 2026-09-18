@@ -64,6 +64,10 @@ def validate(
         "product-gtm-customer-success" in streams,
         "Product production requires a GTM and customer-success stream",
     )
+    _require(
+        "organizational-readiness" in streams,
+        "Product production requires an organizational-readiness stream",
+    )
 
     max_active = int(
         delivery.get("delivery_policy", {}).get("max_parallel_implementation_streams", 0)
@@ -104,20 +108,33 @@ def validate(
     _require(all(contract_ids), "Every shared contract requires an id")
     _require(len(contract_ids) == len(set(contract_ids)), "Shared contract ids must be unique")
     contracts = {item["id"]: item for item in contract_items}
-    production_contracts = {
+    governed_contracts = {
         "production-readiness-v1",
         "sre-operating-model-v1",
         "data-ai-governance-v1",
         "gtm-value-attribution-v1",
+        "organizational-readiness-v1",
+        "oss-distribution-v1",
     }
     _require(
-        production_contracts <= set(contracts),
-        "Production delivery contracts are incomplete",
+        governed_contracts <= set(contracts),
+        "Production and OSS delivery contracts are incomplete",
     )
+    production_contracts = governed_contracts - {"oss-distribution-v1"}
     _require(
         set(delivery.get("delivery_policy", {}).get("production_release_requires", []))
         == production_contracts,
         "Production release policy must require every production contract",
+    )
+    oss_contracts = {
+        "oss-distribution-v1",
+        "artifact-policy-v1",
+        "data-ai-governance-v1",
+        "production-readiness-v1",
+    }
+    _require(
+        set(delivery.get("delivery_policy", {}).get("oss_release_requires", [])) == oss_contracts,
+        "OSS release policy must require every OSS distribution contract",
     )
     for item in contract_items:
         _require(item.get("owner") in streams, f"Contract {item['id']} has an unknown owner")
@@ -128,7 +145,7 @@ def validate(
             path and (root / path).exists(), f"Contract {item['id']} path does not exist: {path}"
         )
         _require(item.get("version"), f"Contract {item['id']} requires a version")
-        if item["id"] in production_contracts:
+        if item["id"] in governed_contracts:
             document = yaml.safe_load((root / path).read_text(encoding="utf-8"))
             _require(
                 document.get("schema_version") == "launchpad.redhat.com/v1alpha1",
@@ -170,11 +187,23 @@ def validate(
         "product_value",
         "commercial_readiness",
         "service_ownership",
+        "organizational_readiness",
         "legal_compliance",
     }
     _require(
         required_release_dimensions <= set(matrix.get("release_required_dimensions", [])),
         "Convergence matrix omits product release dimensions",
+    )
+    oss_dimensions = {
+        "public_private_boundary",
+        "legal_license",
+        "community_governance",
+        "enterprise_compatibility",
+    }
+    _require(
+        oss_dimensions
+        <= set(matrix.get("conditional_release_dimensions", {}).get("oss_distribution", [])),
+        "Convergence matrix omits OSS release dimensions",
     )
     for scenario in scenarios:
         scenario_id = scenario["id"]
@@ -213,6 +242,11 @@ def validate(
                     (root / evidence_path).exists(),
                     f"Scenario {scenario_id} evidence does not exist: {evidence_path}",
                 )
+        if scenario.get("conditional_profile") == "oss_distribution":
+            _require(
+                oss_dimensions <= set(scenario.get("conditional_dimensions", [])),
+                f"Scenario {scenario_id} lacks OSS release dimensions",
+            )
 
     end_to_end = next(
         (item for item in scenarios if item.get("id") == "end-to-end-staged-release"), None

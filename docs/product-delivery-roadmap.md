@@ -79,7 +79,7 @@ pivot policy.
 ## Parallel delivery governance
 
 The execution model is defined in
-[`parallel-agentic-delivery.md`](parallel-agentic-delivery.md). Thirteen bounded
+[`parallel-agentic-delivery.md`](parallel-agentic-delivery.md). Fourteen bounded
 vertical streams share versioned contracts, while no more than four
 implementation streams begin concurrently. Only the convergence stream may
 assemble a release candidate or request an explicitly approved live mutation.
@@ -126,6 +126,8 @@ gantt
     FinOps, service tiers, and portfolio growth  :h4a, 2026-11-16, 16w
     Production quality and SRE readiness         :h4b, 2026-11-16, 16w
     Data, AI governance and commercial GTM       :h4c, 2026-11-30, 20w
+    Knowledge continuity and workforce           :h4d, 2026-11-30, 16w
+    Governed OSS distribution                    :h4e, 2027-01-04, 16w
 ```
 
 ## Agentic estimation model
@@ -163,6 +165,8 @@ same files or clusters.
 | LP-E024 SRE operating model | 7–12 agent-days | service ownership, paging integration and incident game days | 5–10 weeks |
 | LP-E025 Data and AI governance | 7–12 agent-days | privacy, legal, security and responsible-AI acceptance | 6–12 weeks |
 | LP-E026 Product, GTM and customer success | 8–15 agent-days | sales/CRM ownership, consent, packaging and field validation | 8–16 weeks |
+| LP-E027 Organizational readiness | 7–12 agent-days | secondary owners, training time and non-author continuity drills | 6–12 weeks |
+| LP-E028 Governed OSS distribution | 8–15 agent-days | legal, brand, security, maintainer and public-release acceptance | 8–16 weeks |
 
 Agent-days are not added to produce the calendar because the roadmap deliberately
 overlaps independent epics. The critical path is usually the longest proof or
@@ -605,7 +609,9 @@ list with truthful health, maturity, coverage, and evidence.**
 **Outcome:** Launchpad runs from a funded, supported production home with a
 portable execution fleet, governed solution portfolio, production-quality and
 SRE evidence, privacy-safe GTM intelligence, customer-success ownership, and
-transparent cost and value.
+transparent cost and value. Production operation no longer depends on one
+person, and an independently governed OSS distribution can be released without
+exposing internal configuration, data, credentials, or restricted branding.
 
 ### LP-E012 — Dedicated production home and migration
 
@@ -799,6 +805,85 @@ influence, and a closed product-feedback loop.**
   follow-up, accepted opportunity influence, cost, field feedback, and roadmap
   action without exposing participant identity or claiming unsupported revenue.
 
+### LP-E027 — Organizational readiness and knowledge continuity
+
+**LP-S033 — As the service owner, I can prove Launchpad can be developed,
+operated, supported, recovered, and taught without depending on one person.**
+
+- `LP-T154` Inventory critical product, architecture, development, SRE,
+  security, content, support, incident-command, sales-enablement, and
+  customer-success capabilities with decision authority and access needs.
+- `LP-T155` Assign named primary and secondary owners for every critical
+  capability, repository, service, contract, runbook, dependency, and release
+  decision; identify and prioritize every remaining single-person dependency.
+- `LP-T156` Build role-specific learn → shadow → supervised → independent →
+  trainer curricula with practical qualification evidence rather than
+  attendance-only completion.
+- `LP-T157` Create a clean onboarding and offboarding path for development
+  environment, repository, cluster, identity, secrets, observability, support,
+  and release access without copying personal credentials.
+- `LP-T158` Make architecture decisions, operating rationale, contracts,
+  runbooks, incident reviews, certification evidence, product decisions, and
+  approved sales playbooks versioned, searchable, owned, and freshness-scored.
+- `LP-T159` Require qualified non-authors to perform clean bootstrap, catalog
+  onboarding, event operation, incident diagnosis, upgrade/rollback,
+  backup/restore/failover, and complete reclaim drills.
+- `LP-T160` Define hiring profiles, proficiency levels, staffing and on-call
+  coverage, succession, contractor/vendor boundaries, and the funded team
+  required for each service tier.
+- `LP-T161` Establish documentation and training SLIs for freshness, coverage,
+  failed searches, unresolved questions, qualification throughput, and
+  knowledge concentration.
+- `LP-T162` Build and evaluate a role-aware Launchpad Knowledge Assistant over
+  approved sources with citations, version/freshness disclosure, access
+  control, no secrets or participant data, abstention, and no mutation
+  authority.
+- **Gate:** every production-critical capability has a qualified secondary;
+  one non-author independently completes deployment, operation, incident,
+  upgrade, restore, and reclaim scenarios within service objectives, and the
+  Knowledge Assistant passes its grounded-answer/security evaluation.
+
+### LP-E028 — Governed open-source distribution
+
+**LP-S034 — As a maintainer, I can publish and sustain a useful OSS Launchpad
+distribution without exposing internal information, restricted assets, or
+creating an incompatible enterprise fork.**
+
+- `LP-T163` Define the public core, private/internal configuration, proprietary
+  integrations, enterprise extensions, content, evidence, and brand boundaries
+  before moving or deleting files.
+- `LP-T164` Perform working-tree and history-aware secret, credential,
+  hostname, participant-data, customer-data, confidential-document, and
+  generated-evidence review with an approved remediation plan.
+- `LP-T165` Replace or exclude restricted Red Hat, Intel, partner, customer,
+  event, and third-party assets while retaining neutral extension points and
+  clearly licensed example content.
+- `LP-T166` Select the project license; produce dependency/license
+  compatibility, attribution/notices, SBOM, provenance, signed source and
+  artifacts, and content/model/dataset rights evidence.
+- `LP-T167` Deliver a clean-checkout reproducible build and neutral local
+  reference environment with synthetic data, safe defaults, no internal
+  cluster assumptions, and an automated smoke journey.
+- `LP-T168` Publish architecture, installation, API/extension, catalog-author,
+  operator, contributor, and troubleshooting documentation for a person without
+  access to internal systems.
+- `LP-T169` Establish maintainer governance, contribution policy, DCO or CLA
+  decision, code of conduct, issue/decision process, roadmap boundary, and
+  community versus enterprise support expectations.
+- `LP-T170` Publish `SECURITY.md`, private vulnerability reporting, supported
+  versions, coordinated disclosure, dependency response, release signing, and
+  CVE/remediation policy.
+- `LP-T171` Version public APIs and extensions; test OSS-to-enterprise catalog,
+  contract, upgrade, migration, and rollback compatibility so the products do
+  not become unrelated forks.
+- `LP-T172` Produce an immutable OSS release review containing sanitation,
+  license, legal, security, brand, reproducibility, documentation, governance,
+  compatibility, and approver evidence.
+- **Gate:** a clean public clone builds, tests, runs the neutral reference
+  journey, contains no disallowed material, satisfies license/security/brand
+  review, and passes bidirectional OSS-to-enterprise compatibility and upgrade
+  tests.
+
 ### LP-E016 — Repository and team-scale delivery model
 
 **LP-S019 — As a maintainer, I can change one platform area without navigating
@@ -828,6 +913,8 @@ Every story must include, as applicable:
 - versioned SLIs, SLOs, error budgets, synthetics, paging, escalation, and service ownership;
 - data purpose, consent, retention, deletion, AI safety, licensing, legal, and brand review;
 - product-value, packaging, GTM attribution, customer-success, and feedback-loop evidence where commercially applicable;
+- primary/secondary ownership, training qualification, documentation freshness, and non-author continuity proof;
+- for OSS releases, public/private boundaries, history sanitation, licensing, community governance, reproducibility, and enterprise compatibility;
 - upgrade, rollback, restart, fault, and cleanup behavior;
 - documentation for requester, participant, content owner, operator, support,
   security, and product personas;

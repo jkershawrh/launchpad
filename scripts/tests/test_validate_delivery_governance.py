@@ -35,11 +35,11 @@ def test_repository_delivery_governance_is_valid():
     report = module.validate(streams, matrix, root=ROOT)
 
     assert report["valid"] is True
-    assert report["stream_count"] == 13
+    assert report["stream_count"] == 14
     assert report["initial_active_count"] == 4
     assert report["convergence_stream"] == "convergence-release"
-    assert report["contract_count"] == 12
-    assert report["scenario_count"] >= 19
+    assert report["contract_count"] == 14
+    assert report["scenario_count"] >= 23
 
 
 def test_unknown_dependency_and_overlapping_ownership_fail_closed():
@@ -86,7 +86,7 @@ def test_production_contracts_are_required():
         item for item in streams["contracts"] if item["id"] != "gtm-value-attribution-v1"
     ]
 
-    with pytest.raises(ValueError, match="Production delivery contracts"):
+    with pytest.raises(ValueError, match="Production and OSS delivery contracts"):
         module.validate(streams, matrix, root=ROOT)
 
 
@@ -96,6 +96,24 @@ def test_production_release_policy_requires_all_contracts():
     streams["delivery_policy"]["production_release_requires"].remove("sre-operating-model-v1")
 
     with pytest.raises(ValueError, match="Production release policy"):
+        module.validate(streams, matrix, root=ROOT)
+
+
+def test_oss_release_policy_requires_all_contracts():
+    module = load_module()
+    streams, matrix = load_contracts()
+    streams["delivery_policy"]["oss_release_requires"].remove("artifact-policy-v1")
+
+    with pytest.raises(ValueError, match="OSS release policy"):
+        module.validate(streams, matrix, root=ROOT)
+
+
+def test_oss_release_dimensions_are_required():
+    module = load_module()
+    streams, matrix = load_contracts()
+    matrix["conditional_release_dimensions"]["oss_distribution"].remove("enterprise_compatibility")
+
+    with pytest.raises(ValueError, match="OSS release dimensions"):
         module.validate(streams, matrix, root=ROOT)
 
 

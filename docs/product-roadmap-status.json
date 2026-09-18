@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-18T18:14:50Z",
+  "updated_at": "2026-09-18T18:36:48Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -231,7 +231,7 @@
         "evidence/runs/delivery-governance/red.xml",
         "evidence/runs/delivery-governance/green-local.xml"
       ],
-      "note": "Thirteen bounded streams, a four-stream initial WIP limit, entry/exit gates, unique ownership, and live-mutation prohibitions are executable and GREEN-local. Human owner assignment and integration use remain open."
+      "note": "Fourteen bounded streams, a four-stream initial WIP limit, entry/exit gates, unique ownership, and live-mutation prohibitions are executable and GREEN-local. Human owner assignment and integration use remain open."
     },
     "LP-T115": {
       "state": "green-local",
@@ -247,7 +247,7 @@
         "scripts/tests/test_validate_delivery_governance.py",
         "evidence/runs/delivery-governance/report.json"
       ],
-      "note": "Twelve shared contracts have one owner, registered consumers, versions, and repository authorities; live consumer compatibility remains open."
+      "note": "Fourteen shared contracts have one owner, registered consumers, versions, and repository authorities; live consumer compatibility remains open."
     },
     "LP-T116": {
       "state": "green-local",
@@ -263,7 +263,7 @@
         "scripts/validate_delivery_governance.py",
         "evidence/runs/delivery-governance/report.json"
       ],
-      "note": "Nineteen cross-stream scenarios join all five proof methods with usability, security, capacity, performance, operability, data governance, fault, cleanup, observability, and release dimensions. All scenarios correctly remain RED pending implementation evidence."
+      "note": "Twenty-three cross-stream scenarios join all five proof methods with usability, security, capacity, performance, operability, data governance, organizational readiness, OSS readiness, fault, cleanup, observability, and release dimensions. All scenarios correctly remain RED pending implementation evidence."
     },
     "LP-T117": {
       "state": "green-local",
@@ -333,13 +333,31 @@
         "certification/convergence-matrix-v1.yaml"
       ],
       "note": "The privacy-safe GTM entity, funnel, attribution, commercialization, and claim contract is versioned. CRM ownership, consent implementation, and field proof remain open."
+    },
+    "LP-T154": {
+      "state": "green-local",
+      "methods": {"cdd": "green-local"},
+      "evidence": [
+        "contracts/organizational-readiness-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The organizational ownership, qualification, knowledge continuity, workforce, and non-author proof contract is versioned. Named owners, curricula, staffing, drills, and live continuity evidence remain open."
+    },
+    "LP-T163": {
+      "state": "green-local",
+      "methods": {"cdd": "green-local"},
+      "evidence": [
+        "contracts/oss-distribution-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The public/private boundary, sanitation, legal, community, reproducibility, and enterprise-compatibility contract is versioned. Repository sanitation, legal review, public release assets, and executed compatibility proof remain open."
     }
   },
   "rubric": [
     {
       "id": "usability-lifecycle",
       "label": "Usability, lifecycle correctness, and cleanup",
-      "weight": 10,
+      "weight": 9,
       "earned": 0
     },
     {
@@ -351,31 +369,31 @@
     {
       "id": "ha-dr",
       "label": "Control-plane HA and disaster recovery",
-      "weight": 10,
+      "weight": 9,
       "earned": 0
     },
     {
       "id": "security-governance",
       "label": "Identity, security, data, and AI governance",
-      "weight": 15,
+      "weight": 14,
       "earned": 0
     },
     {
       "id": "placement-inference",
       "label": "Fleet placement and inference admission",
-      "weight": 10,
+      "weight": 9,
       "earned": 0
     },
     {
       "id": "production-quality",
       "label": "Production quality, performance, and resilience",
-      "weight": 15,
+      "weight": 14,
       "earned": 0
     },
     {
       "id": "sre-operations",
       "label": "SRE, observability, support, and incident readiness",
-      "weight": 10,
+      "weight": 9,
       "earned": 0
     },
     {
@@ -387,13 +405,25 @@
     {
       "id": "gtm-customer-success",
       "label": "Product value, GTM, sales enablement, and customer success",
-      "weight": 10,
+      "weight": 9,
       "earned": 0
     },
     {
       "id": "evidence",
       "label": "Evidence integrity and repeatability",
-      "weight": 7,
+      "weight": 6,
+      "earned": 0
+    },
+    {
+      "id": "organizational-readiness",
+      "label": "Ownership, training, staffing, and knowledge continuity",
+      "weight": 5,
+      "earned": 0
+    },
+    {
+      "id": "oss-readiness",
+      "label": "Governed OSS distribution and enterprise compatibility",
+      "weight": 3,
       "earned": 0
     }
   ]

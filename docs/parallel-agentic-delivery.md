@@ -50,7 +50,7 @@ candidate already being certified.
 
 ## Streams
 
-The delivery model defines thirteen streams:
+The delivery model defines fourteen streams:
 
 1. automated lab intake and certification;
 2. artifact supply chain and authoritative registry;
@@ -62,9 +62,10 @@ The delivery model defines thirteen streams:
 8. control-plane portability and earned promotion;
 9. SRE, observability, evidence, support, and FinOps;
 10. DeepField, StarGate, and GeoLux or GCL integrations;
-11. lab content, Showroom, and AI workload performance; and
-12. product, go-to-market, sales enablement, and customer success; and
-13. convergence, certification, and staged promotion.
+11. lab content, Showroom, and AI workload performance;
+12. product, go-to-market, sales enablement, and customer success;
+13. organizational readiness, knowledge continuity, training, and workforce; and
+14. convergence, certification, and staged promotion.
 
 The initial four active implementation streams are intake, artifact supply,
 event orchestration, and capacity admission. Security and portability contract
@@ -142,6 +143,24 @@ prompt injection, tool abuse, provider terms, dataset rights, OSS licensing,
 SBOM/provenance, trademarks, and acceptable use. Unknown purpose blocks data
 collection; an unapproved model, dataset, or material safety finding blocks
 promotion.
+
+Organizational readiness is independently gated. Runbooks and an AI assistant
+do not remove a key-person dependency unless another qualified human can use
+them to bootstrap, operate, diagnose, upgrade, restore, and reclaim the system.
+Every critical capability requires primary and secondary ownership, a staged
+qualification path, current access procedures, documentation freshness SLOs,
+and a non-author continuity drill. A grounded Launchpad Knowledge Assistant may
+retrieve governed repository material with citations, freshness disclosure,
+and role-based access, but it cannot become operational authority or expose
+secrets and participant data.
+
+The OSS distribution is a conditional release profile rather than another
+always-active stream. It shares the artifact, security, governance,
+production-readiness, and convergence machinery while adding explicit
+public/private boundaries, history-aware sanitation, license and brand review,
+community governance, a reproducible neutral reference environment, and
+OSS-to-enterprise compatibility. An OSS release cannot be declared by simply
+making the current internal repository public.
 
 ## Control-plane portability
 
