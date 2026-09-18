@@ -202,7 +202,7 @@ control-plane code.
 
 | Stage | Objective | Required proof | Status |
 |---|---|---|---|
-| Pilot baseline | Three staggered 25-seat orders; 75 environments active together | 75/75 journeys, isolation, soak, bulk reclaim, zero residue | GREEN-live automated; manual visual gate pending |
+| Pilot baseline | Three participant waves, each with three 30-seat workshops; 270 pre-provisioned seats with 90 used per wave | Participant journeys, isolation, model load, retained access, bulk reclaim, and zero residue | September 17 live pilot; dated 25-seat rehearsals remain historical evidence |
 | Repeatable event | Re-run exact topology on demand | Three consecutive current-version runs, readiness percentiles, support rehearsal | Next operational gate |
 | More catalogs | Add a quickstart repo without bespoke platform edits | Discovery, intake, source build, 1/5/25 proof contract | Scaffold introduced; adoption per catalog |
 | More clusters | Register another CPU execution cluster | Least privilege, images, ingress, model routes, 1/5/25 gates | Playbook path defined |
@@ -356,6 +356,42 @@ future split-workshop feature requires an explicit product decision because it
 changes participant support, failure handling, networking, evidence, and
 reclaim semantics.
 
+#### Deployment-class contract
+
+Cluster provisioning and lab provisioning are separate product lifecycles.
+Launchpad does not create a cluster for every ordinary order. Each catalog
+release declares one certified deployment class:
+
+| Deployment class | Selection rule | Lifecycle boundary |
+|---|---|---|
+| Shared-cluster namespace lab | Default for applications, agents, RAG, model-consumer, and operator-consumer labs | Select a warm eligible cluster; create one isolated namespace per seat |
+| Dedicated workshop cluster | Use for cluster-scoped changes, destructive administration, special hardware/network/storage, regulated isolation, or a workshop too large for safe coexistence | Allocate one cluster to the order; all seats stay on it; drain or return it after reclaim |
+| Dedicated seat cluster | Use only when the learning objective requires full-cluster control per participant | Explicit exception with separate cost, lead-time, security, and reclaim certification |
+
+The onboarding rubric must justify the class from the learning objective and
+technical behavior. It must not choose a dedicated cluster merely to avoid
+resource accounting or namespace isolation work.
+
+#### Warm-pool capacity lifecycle
+
+A fleet-capacity controller maintains execution capacity beneath Launchpad:
+
+1. forecast scheduled and probabilistic demand by catalog and capability;
+2. provision or allocate clusters early enough to absorb infrastructure lead
+   time;
+3. register cluster identity, ingress, storage, Operators, model routes,
+   registry trust, policy, and observability;
+4. certify each catalog/cluster/exposure pairing before making it eligible;
+5. keep a measured warm reserve and account for existing reservations;
+6. drain unhealthy or excess clusters without moving active sessions; and
+7. retire a cluster only after every ownership ledger and reservation is
+   closed and its evidence is retained.
+
+The placement scheduler consumes certified capacity; it does not improvise a
+new cluster during an interactive order unless that asynchronous lead time and
+failure behavior are an explicit product feature. Scheduled events should
+reserve warm capacity before participant codes are distributed.
+
 ### Durable image retrieval and registry architecture
 
 Execution-cluster-local registries must not remain the authoritative source for
@@ -389,6 +425,13 @@ The production golden path is:
    credential expiry, replication lag, storage consumption, pruning, and image
    age. Feed failures into capacity and readiness decisions rather than waiting
    for participant pods to expose them.
+
+The initial implementation may use an approved Quay organization as the
+authoritative registry. The product contract is vendor-neutral: independent
+durability, immutable digest promotion, scoped robot credentials, signed
+provenance, retention and restore, and verified reachability from every worker
+pool are mandatory. A future enterprise Quay deployment, cloud registry, or
+regional mirrors must satisfy the same contract.
 
 Private or disconnected clusters use an explicitly synchronized mirror with a
 documented allow-list and freshness SLA. Credentials come from the approved
@@ -646,7 +689,7 @@ persisted execution target.
 
 | Phase | Product outcome | Required exit evidence |
 |---|---|---|
-| 0. Supervised pilot | Preserve the current Arena control plane and certified Arena/Brutus pairings | Manual visual acceptance, current 3 x 25 evidence, support rehearsal |
+| 0. Supervised pilot | Preserve the current Arena control plane and certified event pairings | Manual visual acceptance, current 30-seat wave evidence, model-load proof, and support rehearsal |
 | 1. Portable foundation | Remove cluster-local assumptions from images, secrets, storage, ingress, model routes, and configuration; establish the authoritative HA registry and optional execution-cluster mirrors | Clean install, signed cold image pulls, registry/cache-loss recovery, and one-seat order on a temporary control-plane target |
 | 2. Production home | Install the dedicated control plane, enterprise identity, HA database, durable queue, GitOps, evidence store, observability, and secrets management | Restore, restart, fencing, audit, and one-seat lifecycle tests |
 | 3. Execution fleet | Register Arena, Brutus, and later clusters with dedicated provisioner and GitOps identities | Per catalog/cluster 1, 5, and 25 proof plus zero-residue reclaim |

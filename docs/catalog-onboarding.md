@@ -17,7 +17,14 @@ Each intake declares:
 - catalog ID, title, description, category, and version;
 - immutable Showroom repository SHA, playbook, and Antora start path;
 - immutable workload repository SHA, packaging type, and deployment path;
+- deployment class: `shared_namespace` (default),
+  `dedicated_workshop_cluster`, or exceptional `dedicated_seat_cluster`, with
+  a learning-objective and isolation justification for either dedicated class;
 - required cluster capabilities and models;
+- supported platform architectures and versions, required Operators, storage,
+  ingress, egress, and cluster-scoped mutations;
+- immutable platform, Showroom, terminal, and workload image digests from the
+  approved registry, plus signature/provenance policy and mirror requirements;
 - conservative steady per-seat CPU, memory, pod, and storage estimates;
 - optional per-seat transient CPU, memory, and pod costs, bounded by the
   declared workshop provisioning concurrency, plus optional workshop-shared
@@ -30,6 +37,34 @@ The corresponding `catalog/<catalog-id>/catalog-item.yaml` is generated from
 that contract. Intake-managed entries are always rendered as `draft`. Changing
 them to `active` is a separate, reviewed promotion after the blockers are
 cleared and the evidence has been accepted.
+
+## Deployment-class and artifact review
+
+The default onboarding outcome is a namespace-isolated seat on a warm
+execution cluster. Reviewers select a dedicated workshop cluster only when the
+lab requires cluster-scoped administration, destructive exercises, special
+hardware/network/storage, regulated isolation, or a capacity envelope that
+cannot safely coexist. A dedicated seat cluster requires the curriculum to
+teach full-cluster behavior and must publish separate lead-time, cost, security,
+and reclaim evidence.
+
+Onboarding never treats cluster creation as a workaround for missing resource
+estimates, RBAC, or cleanup. The certification matrix records the permitted
+deployment class for every catalog × cluster × exposure-policy pairing.
+
+Images follow one supply contract:
+
+1. build reproducibly from the reviewed immutable source revision;
+2. scan, produce an SBOM, sign, and attach provenance;
+3. publish to the approved HA registry under an immutable digest;
+4. promote the same digest without rebuilding;
+5. verify credentials, trust, architecture, and cold pull on each eligible
+   worker pool or synchronized mirror; and
+6. retain the digest through every active session and rollback window.
+
+Mutable tags may be human-friendly aliases but are never the deployed catalog
+contract. An execution cluster's internal registry may be a cache or mirror;
+it is not the authoritative or cross-cluster source.
 
 ## Local workflow
 

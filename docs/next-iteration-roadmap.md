@@ -10,7 +10,40 @@ AI-serving and semantic routing, lifecycle reclamation, governed automation,
 and showback/chargeback, is maintained in
 [`ecosystem-architecture-roadmap.md`](ecosystem-architecture-roadmap.md).
 
+The current defect, operational-risk, and feature backlog is maintained in
+[`pilot-issue-feature-register-20260917.md`](pilot-issue-feature-register-20260917.md).
+That register separates live-event mitigations from durable verified fixes and
+defines the proof required to close each item.
+
+The sequenced delivery plan—planning horizons, epics, user stories, tasks, and
+evidence gates—is maintained in
+[`product-delivery-roadmap.md`](product-delivery-roadmap.md).
+
 ## Immediate release gate
+
+> **Current status (September 17):** the live pilot expanded beyond the
+> original 25-seat candidate described below. Three participant waves were
+> prepared, each with 30 seats for Serve LLMs, 30 for Building an AI Agent, and
+> 30 for Multi-Agent. The original rehearsal narrative is retained below as
+> historical decision evidence. Current go/no-go status comes from the active
+> workshop records and day-of runbook, not from the superseded candidate
+> counts.
+
+The immediate post-event gate is controlled completion: retain participant
+access for the approved period, monitor model and seat health, reclaim by
+workshop, prove zero residue, reconcile entitlements and model credentials, and
+publish one evidence manifest for each wave. Do not infer a permanent 30-seat
+limit from one event; promote it per catalog × cluster × exposure policy only
+after repeatable certification.
+
+The next product increment separates the permanent planes described in
+[`ecosystem-architecture-roadmap.md`](ecosystem-architecture-roadmap.md): a
+dedicated control plane, a warm registered execution fleet, a shared AI-serving
+plane, a stable public edge, and a durable signed artifact registry. Cluster
+creation becomes a forecast-driven capacity workflow beneath Launchpad rather
+than the default lifecycle for a participant lab.
+
+### Historical pre-event candidate record
 
 The dated release gate is now the approved September 17 agentic event
 candidate: 25 Multi-Agent seats, 25 Serve LLMs seats, and 25 Building an AI
@@ -135,6 +168,29 @@ Measured baseline for 25 seats on 2026-08-26:
 - Certify 75 seats on Arena only after the 50-seat gate passes.
 - Continue toward the fleet goals in `docs/three-by-seventy-five-capacity-plan.md`.
 - Do not advertise a seat limit inferred only from allocatable cluster capacity.
+- Treat the September 17 30-seat waves as event evidence, then rerun the same
+  catalog/cluster/exposure pairings through the repeatability gate before
+  publishing 30 as a durable service limit.
+- Add warm-pool forecasting and scheduled-event reservations before adding
+  on-demand cluster creation. Ordinary labs remain namespace-isolated on warm
+  clusters; dedicated workshop or seat clusters require catalog justification.
+
+## Pathway 7: production planes and artifact supply
+
+- Select and fund the dedicated production control-plane home and its separate
+  recovery failure domain.
+- Define the execution-cluster registration, certification, warm-reserve,
+  drain, and retirement APIs.
+- Add deployment class to every catalog: shared namespace, dedicated workshop
+  cluster, or exceptional dedicated seat cluster.
+- Establish the approved HA registry, immutable digest promotion, scoped robot
+  credentials, SBOM, signing, provenance, retention, restore, and mirror
+  policy.
+- Make image reachability, trust, architecture, and cold-pull evidence
+  deterministic placement prerequisites.
+- Pre-pull event digests and observe pull latency, cache hits, throttling,
+  replication lag, and missing blobs alongside CPU, memory, pods, routes, and
+  model pressure.
 
 ## Pathway 5: production solution portfolio
 

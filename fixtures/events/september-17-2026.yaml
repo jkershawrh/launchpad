@@ -1,0 +1,50 @@
+api_version: launchpad.intel.com/v1
+kind: EventManifest
+metadata:
+  reconstruction: true
+  evidence_date: '2026-09-17'
+spec:
+  event_id: september-17-2026-pilot
+  name: September 17 Launchpad pilot
+  owner: event-owner
+  technical_approver: launchpad-technical-owner
+  exposure_policy: public_code
+  cohorts:
+    - cohort_id: session-1
+      participants: 30
+      lab_refs: [serve-llms, build-agent, multi-agent]
+    - cohort_id: session-2
+      participants: 30
+      lab_refs: [serve-llms, build-agent, multi-agent]
+    - cohort_id: session-3
+      participants: 30
+      lab_refs: [serve-llms, build-agent, multi-agent]
+  labs:
+    - lab_ref: serve-llms
+      catalog_id: intel-llm-cpu-serving
+      catalog_release: september-17-pilot
+    - lab_ref: build-agent
+      catalog_id: intel-xeon6-agent-201
+      catalog_release: september-17-pilot
+    - lab_ref: multi-agent
+      catalog_id: multi-agent-quickstart
+      catalog_release: september-17-pilot
+  retention:
+    hours: 168
+    starts_from: cohort_start
+  approval:
+    event_owner_approved: true
+    technical_approver_approved: true
+    approved_seat_environments: 270
+    approved_retention_hours: 168
+status:
+  originally_understood_seat_environments: 90
+  required_seat_environments: 270
+  additional_seat_environments: 180
+  flightpath_role_before_event: dr_candidate
+  flightpath_event_role: emergency_execution
+  production_certified_before_pivot: false
+  note: >-
+    This is a post-event reconstruction. The 270-seat requirement and
+    Flightpath execution role were established during the live event rather
+    than approved through this contract before initial provisioning.

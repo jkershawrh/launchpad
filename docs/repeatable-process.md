@@ -13,8 +13,8 @@ Every lab run must produce all six artifacts:
 | # | Artifact | What it is |
 |---|----------|------------|
 | 1 | **Request record** | LabRequest with tenant, catalog item, mode, TTL, hardware/quota profile |
-| 2 | **Provisioning plan** | Generated steps — namespace creation, quota, RBAC, deploy, gateway config |
-| 3 | **Session record** | LabSession with namespace, URLs, status, lifecycle events |
+| 2 | **Provisioning plan** | Deployment class, eligibility inputs, whole-order reservation, persisted cluster, namespace/quota/RBAC, immutable digests, deploy, and gateway config |
+| 3 | **Session record** | LabSession with namespace, `cluster_ref`, catalog/content versions, image digests, URLs, status, and lifecycle events |
 | 4 | **Validation results** | List of ValidationResult (pass/fail/warn/skipped) with evidence |
 | 5 | **Handoff package** | Lab URL, dashboard URL, MaaS key, access instructions, README, TTL |
 | 6 | **Showback record** | Tenant, duration, CPU/memory/storage, Gaudi usage, token count, cost estimate |
@@ -64,3 +64,9 @@ A score of 100 means all artifacts were generated. Any score below 100 identifie
 - Every session is reproducible from its request + catalog item + tenant.
 - Request and plan hashes enable drift detection between runs.
 - Every provisioning decision is recorded as an `OrchestrationDecision` in session resources — the placement rationale, workload classification, confidence, and signals used are auditable artifacts.
+- Every order records whether it used a shared namespace, dedicated workshop
+  cluster, or exceptional dedicated seat cluster. Cluster allocation is a
+  separate fleet-capacity lifecycle and is not hidden inside seat provisioning.
+- Every deployed image resolves to a signed immutable digest in the approved
+  registry or synchronized mirror; mutable tags and cluster-local-only images
+  cannot produce a production repeatability score.

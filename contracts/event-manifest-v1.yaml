@@ -1,0 +1,142 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Event Manifest Contract
+  version: 1.0.0
+  description: >-
+    Defines an event before capacity is reserved. Participant count, cohorts,
+    labs per participant, retention, exposure, certified capacity, and human
+    approval are explicit so that a participant count cannot be mistaken for
+    the number of seat-environments.
+paths:
+  /api/v1/events/capacity-preview:
+    post:
+      operationId: previewEventCapacity
+      summary: Calculate event capacity without creating workshops or seats.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventManifest'}
+      responses:
+        '200':
+          description: Calculated demand and certified-capacity decision.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EventCapacityPreview'}
+        '409':
+          description: No certified placement plan can satisfy the event.
+  /api/v1/events:
+    post:
+      operationId: createApprovedEvent
+      summary: Persist an approved manifest before capacity reservation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventManifest'}
+      responses:
+        '201': {description: Approved event manifest persisted.}
+        '400': {description: Manifest is incomplete or calculations disagree.}
+        '409': {description: Approval or certified capacity is insufficient.}
+components:
+  schemas:
+    EventManifest:
+      type: object
+      additionalProperties: false
+      required:
+        - event_id
+        - name
+        - owner
+        - technical_approver
+        - cohorts
+        - labs
+        - retention
+        - exposure_policy
+        - approval
+      properties:
+        event_id: {type: string, minLength: 1}
+        name: {type: string, minLength: 1}
+        owner: {type: string, minLength: 1}
+        technical_approver: {type: string, minLength: 1}
+        exposure_policy: {type: string, enum: [internal, public_code]}
+        cohorts:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/EventCohort'}
+        labs:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/EventLab'}
+        retention: {$ref: '#/components/schemas/EventRetention'}
+        approval: {$ref: '#/components/schemas/EventApproval'}
+    EventCohort:
+      type: object
+      additionalProperties: false
+      required: [cohort_id, participants, lab_refs]
+      properties:
+        cohort_id: {type: string, minLength: 1}
+        participants: {type: integer, minimum: 1}
+        starts_at: {type: string, format: date-time}
+        lab_refs:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {type: string, minLength: 1}
+    EventLab:
+      type: object
+      additionalProperties: false
+      required: [lab_ref, catalog_id, catalog_release]
+      properties:
+        lab_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        required_capabilities:
+          type: array
+          uniqueItems: true
+          items: {type: string}
+    EventRetention:
+      type: object
+      additionalProperties: false
+      required: [hours, starts_from]
+      properties:
+        hours: {type: integer, minimum: 1}
+        starts_from: {type: string, enum: [event_start, cohort_start, claim]}
+    EventApproval:
+      type: object
+      additionalProperties: false
+      required:
+        - event_owner_approved
+        - technical_approver_approved
+        - approved_seat_environments
+        - approved_retention_hours
+      properties:
+        event_owner_approved: {type: boolean}
+        technical_approver_approved: {type: boolean}
+        approved_seat_environments: {type: integer, minimum: 1}
+        approved_retention_hours: {type: integer, minimum: 1}
+        approved_at: {type: string, format: date-time}
+    EventCapacityPreview:
+      type: object
+      additionalProperties: false
+      required:
+        - participant_count
+        - seat_environments
+        - peak_concurrent_participants
+        - peak_retained_environments
+        - certified_capacity
+        - dr_reserved_capacity
+        - uncertified_capacity
+        - capacity_shortfall
+        - eligible
+        - explanation
+      properties:
+        participant_count: {type: integer, minimum: 1}
+        seat_environments: {type: integer, minimum: 1}
+        peak_concurrent_participants: {type: integer, minimum: 1}
+        peak_retained_environments: {type: integer, minimum: 1}
+        certified_capacity: {type: integer, minimum: 0}
+        dr_reserved_capacity: {type: integer, minimum: 0}
+        uncertified_capacity: {type: integer, minimum: 0}
+        capacity_shortfall: {type: integer, minimum: 0}
+        eligible: {type: boolean}
+        explanation: {type: string, minLength: 1}

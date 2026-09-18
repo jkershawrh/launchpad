@@ -3,3 +3,11 @@ repos:
     rev: v8.21.2
     hooks:
       - id: gitleaks
+  - repo: local
+    hooks:
+      - id: product-roadmap-dashboard
+        name: refresh product roadmap dashboard
+        entry: python3 scripts/generate_product_roadmap_dashboard.py
+        language: system
+        pass_filenames: false
+        files: ^(docs/product-delivery-roadmap\.md|docs/product-roadmap-status\.json|docs/september-17-pilot-postmortem\.json|scripts/generate_product_roadmap_dashboard\.py)$

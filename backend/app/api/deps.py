@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 from app.adapters.mock.branding import FileBrandingAdapter
 from app.adapters.mock.catalog import MockCatalogAdapter
+from app.domain.events import EventCapacitySupply
 from app.domain.models import Tenant
 from app.services.provisioning import ProvisioningService
 from app.services.public_access import PublicAccessService
@@ -313,6 +314,17 @@ def get_deepfield_adapter():
 
 def get_brain():
     return getattr(provisioning_service, "brain", None)
+
+
+def get_event_capacity_supply() -> EventCapacitySupply:
+    """Return server-owned certified event capacity.
+
+    The production provider is intentionally not inferred from theoretical
+    cluster resources. Until catalog-by-cluster certification and DR reserves
+    are joined here, event preview fails closed with zero certified capacity.
+    """
+
+    return EventCapacitySupply()
 
 
 _fleet_enrichment = None

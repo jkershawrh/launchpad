@@ -1,5 +1,11 @@
 # Repository retention and pruning policy
 
+Repository cleanup is deliberately post-event work. Do not remove, relocate,
+or rewrite live-pilot source while active workshops depend on the current
+commit, images, content, or operational scripts. Documentation authority and
+historical-evidence handling are defined in
+[`documentation-authority.md`](documentation-authority.md).
+
 Launchpad contains current runtime source, catalog and Showroom packages,
 certification evidence, and historical integration experiments. Similar names
 do not mean that files are interchangeable or safe to remove.
@@ -77,3 +83,10 @@ tests, image builds, and historical session rendering no longer depend on it.
 - **Phase 5 — repository boundaries:** move large content media,
   presentations, and raw certification output to versioned durable storage or
   focused repositories.
+
+Before Phase 1 begins, publish an ownership inventory for every top-level path,
+classify it as runtime source, catalog/content source, environment/GitOps,
+immutable evidence, generated output, local operator material, or historical
+provenance, and record its consumers. The target split is product, catalog and
+content, and sanitized environment configuration; extraction follows stable
+contracts and independent releases rather than preceding them.

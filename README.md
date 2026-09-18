@@ -1,6 +1,10 @@
 # Intel x Red Hat AI Partner Launchpad
 
-Launchpad is an internal self-service lab platform running on the **Arena OpenShift cluster**. It provisions individual environments and multi-seat workshops, validates them before handoff, exposes participant access, and reclaims generated resources at the end of a session.
+Launchpad is an internal self-service lab platform whose current pilot control
+plane runs on **Arena** and whose participant workloads run on certified
+execution clusters. It provisions individual environments and multi-seat
+workshops, validates them before handoff, exposes one participant entry point,
+and reclaims generated resources from the persisted target cluster.
 
 Its target operating model is self-service at both layers: users and CIs can
 request or contribute governed experiences, while the platform detects and
@@ -29,6 +33,11 @@ intake before entering the same review and 1/5/25 certification pipeline.
 Pilot presenters and operators should also use the
 [demo walkthrough](docs/presenter-demo-walkthrough.md),
 [ecosystem architecture and product roadmap](docs/ecosystem-architecture-roadmap.md),
+the [product delivery roadmap](docs/product-delivery-roadmap.md),
+the [clickable product roadmap dashboard](docs/product-roadmap-dashboard.html),
+the [pilot issue and feature register](docs/pilot-issue-feature-register-20260917.md),
+the [active-seat inventory and reclaim observation plan](docs/active-seat-inventory-20260917.md),
+the [StarGate product telemetry contract](docs/stargate-product-telemetry-contract.md),
 the [presentation source](docs/presentations/launchpad-ecosystem-demo.md),
 the [template-based PowerPoint deck](docs/presentations/launchpad-ecosystem-demo-gcl-template.pptx), and
 [support runbook](docs/support-runbook.md). The current TDD/EDD/CDD/BDD/CBT
@@ -38,6 +47,9 @@ The portable
 [ecosystem playbooks](deploy/ecosystem/README.md) wrap the approved deployment,
 remote registration, validation, and group-reclaim paths without changing the
 workstation's Kubernetes context.
+Documentation precedence and the boundary between current contracts and dated
+historical evidence are defined in the
+[documentation authority and drift policy](docs/documentation-authority.md).
 
 Quick paths:
 
@@ -88,7 +100,13 @@ Use **Request Environment → Individual Lab** to provision one catalog item for
 
 ### Multi-seat workshop
 
-Use **Request Environment → Multi-seat Workshop** to order one workshop containing 1–25 isolated participant seats. Launchpad performs a capacity preview before confirmation, provisions seats concurrently, requires collective endpoint stability before declaring the workshop ready, and supports failed-seat retry and group reclaim.
+Use **Request Environment → Multi-seat Workshop** to order one workshop of
+isolated participant seats. The permitted count is the measured limit for the
+selected catalog × cluster × exposure policy, not one platform-wide constant.
+Launchpad performs a capacity preview and aggregate reservation before
+confirmation, provisions seats in bounded waves, requires collective functional
+stability before declaring the workshop ready, and supports failed-seat retry
+and group reclaim.
 
 ### OpenShift Developer Sandbox
 
@@ -123,30 +141,31 @@ order flow until runtime and live certification gates pass:
 |---|---|---|
 | `agentops-observability` | AgentOps in Production: End-to-End Observability with Red Hat AI | Five internal seats are GREEN-live with isolated concurrent journeys and zero-residue normal/fault reclaim; 25-seat capacity, public access, and production Logging/TLS remain gated |
 
-`multi-agent-quickstart` is active for orders up to 25 seats. One lab contains
-local, hands-on OpenShift, and advanced blueprint tracks. Optional advanced
-integrations and durable image supply remain later hardening work; the current
-pilot boundary is maintained in the September readiness documents.
+`multi-agent-quickstart` has a certified baseline and may use a larger
+event-specific ceiling only where that exact execution target and public-access
+pairing has retained proof. One lab contains local, hands-on OpenShift, and
+advanced blueprint tracks. Optional advanced integrations and durable artifact
+supply remain later hardening work; dated September readiness documents remain
+historical evidence rather than the current product contract.
 
 ## Architecture
 
 ```text
-React portal
+stable participant/requester edge
     │
     ▼
-FastAPI provisioning service
-    ├── catalog and policy validation
-    ├── capacity/admission checks
-    ├── per-session MaaS key
-    └── persisted lifecycle state
+Launchpad control plane
+    ├── catalog, identity, policy and lifecycle state
+    ├── whole-workshop placement and capacity reservation
+    ├── durable provision/reclaim workers and evidence
+    └── GitOps, audit, usage and remediation coordination
     │
-    ▼
-Arena OpenShift adapters
-    ├── namespace and namespace-scoped RBAC
-    ├── workload/service/route deployment
-    ├── per-seat Showroom Argo CD Application
-    ├── readiness and route validation
-    └── deterministic retry and cleanup
+    ├──► certified execution-cluster fleet
+    │       namespaces, Showroom, lab workloads and Operators
+    ├──► shared AI-serving plane
+    │       private model gateway, model pools and usage attribution
+    └──► durable artifact supply
+            signed immutable digests in HA registry and mirrors
 ```
 
 Launchpad has adapters for mock, local, direct OpenShift, and RHDP modes.
@@ -158,28 +177,21 @@ AgentOps import analysis is in
 The native Multi-Agent Quickstart intake and promotion gates are in
 [docs/multi-agent-quickstart-import.md](docs/multi-agent-quickstart-import.md).
 
-The September 17 internal event target remains 25 Multi-Agent seats, 25 Serve
-LLMs seats, and 25 Building an AI Agent seats. Provisioning is staggered, every
-workshop stays wholly on its assigned cluster, and all 75 environments must
-remain available concurrently through one Launchpad entry point. The exact
-combined rehearsal and capacity gate are tracked in
+The September 17 live pilot uses three participant waves. Each wave contains
+30 Serve LLMs seats, 30 Building an AI Agent seats, and 30 Multi-Agent seats.
+Provisioning is staggered, every workshop stays wholly on its assigned cluster,
+and participants use one Launchpad entry point even when execution targets
+differ. The original 25-seat candidate and its failures remain recorded in
 [docs/september-17-agentic-three-workshop-readiness.md](docs/september-17-agentic-three-workshop-readiness.md).
 The durable lifecycle queue now enforces one active workshop-provision job
 fleet-wide. Organizers may submit later orders, but they remain queued until
 the preceding workshop finishes; reclaim and individual-session lifecycle jobs
 remain eligible.
-Historical September 8–9 rehearsals proved three provision/reclaim cycles and
-one 60-minute retained-topology soak. The current retained orders were tested
-again on September 9: all 75 overlapping participant journeys passed, followed
-by a 10-minute 10/10 steady-state soak. The current exact burst is nevertheless
-RED for resilience because `gnr2` carried 213 pods and 511 running containers,
-node-wide probe timeouts restarted one ingress router, and `rhgnr1` remained
-deliberately cordoned. Qualify the second worker and repeat the exact burst
-before treating this topology as the event candidate. Public DNS/TLS and OIDC
-configuration now use the permanent `labs.smg-helix.ai` named tunnel. One
-Serve LLMs participant completed the claim, resume, Showroom, terminal,
-AnythingLLM, inference, isolation, and logout journey; 25 simultaneous public
-claims and worker-level resilience remain separate gates. The current matrix,
+Historical September rehearsals remain evidence for the failure modes they
+captured; they do not override current live status. Public DNS/TLS and OIDC use
+the permanent `labs.smg-helix.ai` named tunnel. Current event readiness is
+decided by the active workshop records, live functional probes, model health,
+participant access, and the retained release evidence. The pilot matrix,
 rubric, and manual acceptance boundary are in
 [docs/september-17-pilot-status-20260908.md](docs/september-17-pilot-status-20260908.md).
 

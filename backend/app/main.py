@@ -12,6 +12,7 @@ from app.api.routers import (
     branding,
     callbacks,
     catalog,
+    events,
     intelligence,
     lab_requests,
     lab_sessions,
@@ -65,7 +66,7 @@ async def _ttl_enforcement_loop():
             reclaimed = provisioning_service.enforce_ttl()
             if reclaimed:
                 logger.info("TTL enforcement: reclaimed %d expired sessions", len(reclaimed))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - the maintenance loop must survive adapter failures
             logger.debug("TTL enforcement error (non-critical): %s", e)
 
 
@@ -77,7 +78,7 @@ async def _catalog_sync_loop():
             from app.api.deps import catalog_adapter
             if hasattr(catalog_adapter, "reload"):
                 catalog_adapter.reload()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - the maintenance loop must survive adapter failures
             logger.debug("Catalog sync error (non-critical): %s", e)
 
 
@@ -93,7 +94,7 @@ async def _model_health_loop():
 
             from app.api.deps import catalog_adapter
             _do_model_health_check(catalog_adapter, litellm_base)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - the maintenance loop must survive health-check failures
             logger.debug("Model health check error (non-critical): %s", e)
 
 
@@ -109,8 +110,8 @@ async def _recover_interrupted_workshops():
         )
         if recovered:
             logger.info("Recovered interrupted workshops: %s", recovered)
-    except Exception as exc:
-        logger.exception("Interrupted workshop recovery failed: %s", exc)
+    except Exception:
+        logger.exception("Interrupted workshop recovery failed")
 
 
 async def _enqueue_interrupted_workshops():
@@ -202,6 +203,7 @@ app.include_router(lab_sessions.router, prefix=API_PREFIX)
 app.include_router(branding.router, prefix=API_PREFIX)
 app.include_router(admin.router, prefix=API_PREFIX)
 app.include_router(workshops.router, prefix=API_PREFIX)
+app.include_router(events.router, prefix=API_PREFIX)
 app.include_router(callbacks.router, prefix=API_PREFIX)
 app.include_router(intelligence.router, prefix=API_PREFIX)
 app.include_router(public_access.router, prefix=API_PREFIX)

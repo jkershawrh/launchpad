@@ -1,207 +1,135 @@
-# Intel x Red Hat AI Platform Ecosystem
+# Intel x Red Hat AI platform ecosystem
 
-> Much of the detailed RHDP deployment material below is historical. StarGate,
-> DeepField, and GeoLux are now tracked as candidate production solution paths
-> for the internal Oberon/Arena platform. See
-> `docs/production-solution-pathways.md` for the current graduation model and
-> `README.md` for the deployed Launchpad scope.
+This is a product-integration overview, not the architecture authority. Use
+[`ecosystem-architecture-roadmap.md`](ecosystem-architecture-roadmap.md) for
+the target architecture and
+[`documentation-authority.md`](documentation-authority.md) when documents
+disagree.
 
-## Overview
-
-Launchpad, StarGate, DeepField, and GeoLux form complementary product paths.
-Launchpad is the self-service lifecycle control plane; StarGate provides
-validation and operations; DeepField provides fleet observability and inference
-intelligence; GeoLux provides governed agentic-inference workflows. They deploy
-independently and integrate through versioned APIs and events.
-
-```
-   +------------------+    +---------------------+    +------------------+
-   |    StarGate      |    |     Launchpad       |    |    DeepField     |
-   | Rubric evaluator |───>| Orchestration Brain |<───| Fleet health     |
-   | Evidence bundles |    | Smart Placement     |    | CPU/GPU signals  |
-   | Failure classes  |    | Workload Profiling  |    | Error rates      |
-   | Capacity scores  |    | Feedback Loops      |    | Anomaly detect   |
-   | HITL proposals   |    | Intelligence API    |    | Inference metrics|
-   +------------------+    +---------------------+    +------------------+
-                           | 25 demos + 7 QS     |
-                           | 3 frontend apps     |
-                           | Celery beat (6 tasks)|
-                           | 507 tests           |
-                           +---------------------+
-```
-
----
-
-## The Products
-
-### Launchpad — Portal + Demo Content
-
-Self-service AI demo platform. Partners and customers order demos from the RHDP catalog, get isolated environments with real inference on Intel Gaudi 3 and Xeon 6, and everything cleans up automatically.
-
-- **25 catalog items** — 10 custom Intel demos, 7 official quickstarts, 4 sandboxes, 4 originals
-- **RHDP native** — provisioning via Babylon, Poolboy, Anarchy, AgnosticD, ArgoCD
-- **Showroom content** — 12 AsciiDoc lab instruction pages
-- **Tenant Helm chart** — per-user namespace with demo frontend + gateway + postgres
-- **AgnosticV configs** — catalog item definitions for the RHDP pipeline
-- **Repo:** https://github.com/rhpds/launchpad
-
-### StarGate — Validation + Intelligence Plane
-
-Evidence-driven rubric evaluation and provisioning intelligence. Monitors the full RHDP pipeline — Babylon, Poolboy, Sandbox API, AAP, Labigator, Demolition — and surfaces insights that improve provisioning success.
-
-- **Runs → Stages → Evidence** pipeline for structured validation
-- **YAML rubrics** define what "correct" looks like per stage
-- **Failure classification** maps conditions to known failure classes
-- **Provisioning intelligence** — latency tracking, root cause analysis, pool forecasting
-- **HITL workflow** — AI proposes rubric changes, humans approve
-- **Gated remediation** — actions routed through RHDP APIs (Anarchy, Poolboy, Sandbox API)
-- **Repo:** https://github.com/rhpds/stargate
-
----
-
-## Integration Architecture
-
-### Event Flow
-
-Both products communicate via webhook push. Each can deploy independently. When co-deployed, they form a provision-validate-monitor loop.
-
-```
-LAUNCHPAD                          STARGATE
-=========                          ========
-
-Session lifecycle events ------>  POST /integration/external-evidence
-  (provisioned, ready,              |
-   active, failed,                   +-- evaluates rubrics
-   cleanup_failed, reclaimed)        +-- classifies failures
-                                     +-- tracks provisioning latency
-                                     |
-Pre-flight check -------------->  GET /integration/evaluate
-  (before provisioning)              |
-  response: allowed/blocked          +-- constraint evaluation
-
-                                  Cleanup result
-Cleanup callback <--------------  POST /callbacks/cleanup-result
-
-                                  Remediation action
-Remediation callback <----------  POST /callbacks/remediation
-  (session reset/reclaim)           (when failure escalates)
-```
-
-### Graceful Degradation
-
-Every integration fails open. Each product works fully standalone.
-
-| Condition | Behavior |
-|-----------|----------|
-| `STARGATE_API_URL` not set | Launchpad skips StarGate push, pre-flight returns `allowed=true` |
-| `LAUNCHPAD_API_URL` not set | StarGate skips callback push |
-| StarGate returns non-200 | Launchpad logs at debug, continues normally |
-| Network error to any target | Caught, logged at debug, no impact on source |
-
-### Shared Event Schema
-
-```json
-{
-  "source": "launchpad | stargate",
-  "event_type": "session.ready | evaluation_result",
-  "event_id": "uuid (for deduplication)",
-  "timestamp": "2026-05-26T12:00:00Z",
-  "payload": {
-    "session_id": "...",
-    "outcome": "pass | fail | info",
-    "...": "source-specific fields"
-  }
-}
-```
-
-### Security
-
-- **Authentication:** `INTEGRATION_API_KEY` env var on each product. When set, inbound requests must include matching `X-API-Key` header.
-- **Deduplication:** LRU cache of 10K event_ids. Duplicate events are rejected.
-- **TLS:** `INTEGRATION_SSL_VERIFY` defaults to `true`. Set to `false` only for self-signed certs in dev.
-- **CORS:** Configurable via `CORS_ORIGINS` env var. Explicit allowed methods and headers.
-
----
-
-## Tech Stack (Aligned Across Both)
-
-| Component | Version |
-|-----------|---------|
-| Python | >=3.11 |
-| FastAPI | >=0.115 |
-| Pydantic | >=2.10 |
-| psycopg2-binary | >=2.9 |
-| httpx | >=0.28 |
-| API prefix | `/api/v1/` (product routes), `/integration/` (cross-product) |
-| Base image | UBI9/python-311 |
-| Container tool | Podman |
-| Deployment | Kustomize + AgnosticV/AgnosticD |
-
----
-
-## Deployment
-
-### Current State
-
-| Product | GitHub | infra01 | RHDP Catalog |
-|---------|--------|---------|-------------|
-| Launchpad | https://github.com/rhpds/launchpad | Running | PR pending (`launchpad-demos` branch in `rhpds/agnosticv`) |
-| StarGate | https://github.com/rhpds/stargate | Running | N/A (operations tool) |
-
-### RHDP Deployment Pattern
-
-Launchpad follows the standard RHDP pattern:
-
-```
-demo.redhat.com (user orders)
-        |
-        v
-Babylon (orchestration)
-        |
-        v
-AgnosticV catalog entry (common.yaml + env overrides)
-        |
-        v
-AgnosticD playbook (workloads: keycloak, namespace, LiteLLM keys, GitOps, Showroom)
-        |
-        v
-ArgoCD deploys tenant/bootstrap/ Helm chart
-        |
-        v
-Per-user namespace with demo frontend + gateway + postgres
-```
-
----
-
-## Environment Variables Reference
+## Product boundaries
 
 ### Launchpad
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | No | PostgreSQL connection. Falls back to in-memory. |
-| `STARGATE_API_URL` | No | StarGate base URL for event push + pre-flight. |
-| `STARGATE_API_KEY` | No | API key for StarGate authentication. |
-| `DASHBOARD_AUDIT_URL` | No | Dashboard audit trail endpoint. |
-| `INTEGRATION_API_KEY` | No | Required on inbound callbacks when set. |
-| `CORS_ORIGINS` | No | Comma-separated allowed origins. |
-| `AUTH_ENABLED` | No | `true` to enable OAuth/API key auth. |
-| `API_KEYS` | No | Comma-separated valid API keys. |
-| `ADMIN_API_KEYS` | No | Comma-separated admin API keys. |
-| `SMART_PLACEMENT_ENABLED` | No | `true` (default) to enable StarGate-informed cluster selection. |
-| `WORKLOAD_PROFILING_ENABLED` | No | `true` to enable workload classification and hardware matching. |
-| `FEEDBACK_TRACKING_ENABLED` | No | `true` to enable provisioning outcome tracking and avoid-list. |
-| `ORCHESTRATION_BRAIN_ENABLED` | No | `true` to enable the unified decision engine. |
-| `DEEPFIELD_API_URL` | No | DeepField base URL for fleet health signals. |
-| `DEEPFIELD_API_KEY` | No | API key for DeepField authentication. |
+Launchpad is the lifecycle control plane. It owns catalog releases, requester
+and participant access, whole-workshop placement, capacity reservations,
+provision/validate/reclaim jobs, evidence, audit, and usage attribution.
 
 ### StarGate
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `STARGATE_DATABASE_URL` | No | PostgreSQL connection. |
-| `STARGATE_ADMIN_API_KEY` | No | Admin API key for authenticated endpoints. |
-| `STARGATE_CORS_ORIGINS` | No | Comma-separated allowed origins. |
-| `STARGATE_SSL_VERIFY` | No | `false` to skip TLS verification. Default: `true`. |
-| `STARGATE_LITELLM_URL` | No | LiteLLM endpoint for LLM-assisted classification. |
-| `STARGATE_LITELLM_API_KEY` | No | API key for LiteLLM. |
+StarGate is a candidate validation and operations service. It can evaluate
+versioned rubrics, classify known failures, and propose bounded remediation.
+Launchpad remains authoritative for orders and mutations.
+
+### DeepField
+
+DeepField is a candidate observability and inference-intelligence service. It
+can provide normalized fleet and model signals, anomaly detection, forecasting,
+and advisory input to placement. Deterministic eligibility remains in
+Launchpad.
+
+### GCL or GeoLux
+
+GCL/GeoLux represents the governed agentic-inference path: policy-constrained
+reasoning, evaluation, review gates, and replay. It is an independently owned
+solution integration, not a required dependency in every participant seat.
+
+## Production topology
+
+```text
+participants, instructors, requesters, operators
+                       |
+stable public/internal edge and enterprise identity
+                       |
+dedicated Launchpad control-plane cluster
+  API, portals, HA data, lifecycle workers, placement, policy,
+  GitOps coordination, audit, evidence, usage and remediation
+        |                    |                    |
+execution-cluster fleet   AI-serving plane    software supply plane
+warm namespace capacity   private gateway     build/scan/SBOM/sign
+dedicated clusters when   CPU/accelerators    HA registry + mirrors
+the catalog requires it   routing/governance  immutable digests
+```
+
+Arena is the pilot control-plane location. Arena, Brutus, Flightpath, and
+future clusters are evaluated as execution or recovery targets by explicit
+catalog/cluster certification. None is implicitly the permanent production
+home.
+
+## Integration contract
+
+All optional products integrate through authenticated, versioned APIs or
+events. An advisory integration may fail without blocking a deterministic
+fallback. A required eligibility or authorization fact fails closed.
+
+```text
+Launchpad lifecycle event -> external evidence/evaluation service
+External capacity/model signal -> Launchpad normalized signal contract
+External remediation proposal -> Launchpad policy and approval gate
+Launchpad cleanup result -> evidence and operations consumers
+```
+
+Required properties:
+
+- unique event ID and idempotent consumption;
+- bounded schema version and timestamp;
+- authenticated service identity and trusted TLS;
+- tenant/order/seat identifiers protected from metrics cardinality and public
+  disclosure;
+- no secret, prompt, response, or participant email in ordinary events;
+- audit link from every recommendation to the eventual human or automated
+  decision; and
+- circuit breakers and stale-signal handling.
+
+## Placement authority
+
+Launchpad first filters clusters using deterministic requirements: API and
+credential health, Operators, hardware, storage, ingress, network, model and
+image availability, policy, and whole-order capacity. StarGate, DeepField, or
+AI-assisted analysis may rank or explain only the eligible set. They cannot
+grant access, bypass capacity, change ownership, or redirect cleanup.
+
+The default delivery unit is a namespace-isolated seat on a warm execution
+cluster. A catalog may instead require a dedicated workshop cluster or, in an
+exceptional full-cluster curriculum, a dedicated seat cluster. The choice is a
+certified catalog property.
+
+## Artifact supply
+
+All platform, Showroom, terminal, and lab workload images follow one promotion
+path:
+
+```text
+immutable source -> reproducible CI build -> scan -> SBOM -> sign/attest
+-> approved HA registry -> optional synchronized mirrors -> digest deployment
+```
+
+Execution-cluster registries are caches or mirrors. They are never the only
+copy and never serve as a cross-cluster source of truth. Registry health,
+credential validity, digest presence, architecture compatibility, cold-pull
+latency, and replication freshness are placement and event-readiness signals.
+
+## Deployment and GitOps
+
+Kustomize and Argo CD reconcile versioned platform and shared-service desired
+state. Launchpad's database and durable workers remain authoritative for
+orders, reservations, assignments, entitlements, TTL, retries, and reclaim.
+Do not create a Git commit for every seat.
+
+RHDP, AgnosticV, and AgnosticD assets are retained as integration provenance
+and optional adapter inputs. They are not the runtime architecture for the
+current Intel pilot. Their presence does not make RHDP a production dependency.
+
+## Graduation sequence
+
+1. Contract and local component proof.
+2. One-seat functional and security journey.
+3. Five-seat concurrency and isolation.
+4. Published-limit functional load on one certified cluster.
+5. Public/internal exposure certification as separate gates.
+6. Fault, restart, model-pressure, registry, and zero-residue reclaim proof.
+7. Three consecutive releases before a pairing becomes generally eligible.
+
+See [`production-solution-pathways.md`](production-solution-pathways.md) for
+the solution-specific sequence and
+[`ecosystem-enablement-proof-matrix.md`](ecosystem-enablement-proof-matrix.md)
+for the evidence model.

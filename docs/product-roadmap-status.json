@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-09-17T23:00:00Z",
+  "release_target": "production-product",
+  "stages": [
+    "red",
+    "green-local",
+    "green-integration",
+    "green-live"
+  ],
+  "methods": [
+    "tdd",
+    "edd",
+    "cdd",
+    "bdd",
+    "cbt"
+  ],
+  "tasks": {
+    "LP-T001": {
+      "state": "green-local",
+      "methods": {
+        "edd": "green-local"
+      },
+      "evidence": [
+        "docs/active-seat-inventory-20260917.md"
+      ],
+      "note": "The retained-seat inventory is captured; immutable event closeout and approved reclaim remain open."
+    },
+    "LP-T005": {
+      "state": "green-local",
+      "methods": {
+        "edd": "green-local"
+      },
+      "evidence": [
+        "docs/pilot-issue-feature-register-20260917.md"
+      ],
+      "note": "Pilot observations have stable issue identifiers; owner and target-release assignment remain open."
+    },
+    "LP-T021": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "edd": "green-local"
+      },
+      "evidence": [
+        "contracts/event-manifest-v1.yaml",
+        "fixtures/events/september-17-2026.yaml",
+        "backend/app/domain/events.py",
+        "backend/tests/test_event_manifest_contract.py"
+      ],
+      "note": "The v1 contract, deterministic calculator, reconstructed pilot example, and read-only fail-closed preview API distinguish 90 participants from 270 retained seat-environments and exclude DR-reserved/uncertified capacity. The default supply is deliberately zero until a server-owned certified-fleet provider is wired; persistence, UI approval, and live proof remain open."
+    },
+    "LP-T069": {
+      "state": "green-local",
+      "methods": {
+        "edd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "docs/active-seat-inventory-20260917.md"
+      ],
+      "note": "Session records and namespaces were reconciled read-only across the active fleet."
+    },
+    "LP-T070": {
+      "state": "green-local",
+      "methods": {
+        "edd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "docs/active-seat-inventory-20260917.md"
+      ],
+      "note": "Claims, expiry, readiness, routes, restarts, models, and resource counts were captured."
+    },
+    "LP-T085": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "docs/product-delivery-roadmap.md"
+      ],
+      "note": "The initial Experience Wardrobe contract is specified; implementation and participant proof remain open."
+    }
+  },
+  "rubric": [
+    {
+      "id": "lifecycle",
+      "label": "Lifecycle correctness and cleanup",
+      "weight": 15,
+      "earned": 0
+    },
+    {
+      "id": "supply-chain",
+      "label": "Catalog and software supply chain",
+      "weight": 15,
+      "earned": 0
+    },
+    {
+      "id": "ha-dr",
+      "label": "Control-plane HA and disaster recovery",
+      "weight": 15,
+      "earned": 0
+    },
+    {
+      "id": "identity-security",
+      "label": "Public identity, edge, and security",
+      "weight": 15,
+      "earned": 0
+    },
+    {
+      "id": "placement-inference",
+      "label": "Fleet placement and inference admission",
+      "weight": 15,
+      "earned": 0
+    },
+    {
+      "id": "operations",
+      "label": "Observability and safe remediation",
+      "weight": 10,
+      "earned": 0
+    },
+    {
+      "id": "finops",
+      "label": "FinOps and service tiers",
+      "weight": 5,
+      "earned": 0
+    },
+    {
+      "id": "portfolio",
+      "label": "Portfolio and participant experience",
+      "weight": 5,
+      "earned": 0
+    },
+    {
+      "id": "evidence",
+      "label": "Evidence integrity and repeatability",
+      "weight": 5,
+      "earned": 0
+    }
+  ]
+}

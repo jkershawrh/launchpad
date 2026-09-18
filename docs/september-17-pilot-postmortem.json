@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "snapshot_at": "2026-09-17T21:56:00Z",
+  "event": "September 17, 2026 Launchpad pilot",
+  "scope": "Nine retained public workshops across three participant waves and three execution clusters.",
+  "summary": {
+    "waves": 3,
+    "workshops_ordered": 9,
+    "workshops_ready_retained": 9,
+    "workshops_reclaimed": 0,
+    "seats_provisioned": 270,
+    "seats_claimed": 191,
+    "seats_unclaimed": 79,
+    "claim_utilization_percent": 70.7,
+    "session_records_matched": 270,
+    "public_urls_checked": 9,
+    "public_urls_expected_redirect": 9,
+    "orphan_namespaces": 0
+  },
+  "event_intent_and_pivot": {
+    "original_understanding": "One 30-person cohort receiving three labs: 90 seat-environments.",
+    "actual_requirement": "Three 30-person cohorts, with every participant receiving all three labs and retaining access: 270 seat-environments.",
+    "capacity_delta": 180,
+    "primary_cause": "The event structure was communicated ambiguously; participant count, cohort count, labs per participant, and retention were not captured in one approved event manifest.",
+    "flightpath_before_event": "Disaster-recovery candidate only; not certified as a normal participant execution cluster.",
+    "response": "The operator recalculated demand, preserved the active wave, brought Flightpath into emergency execution service, provisioned the additional 180 seat-environments, and validated later waves under live-event time pressure.",
+    "interpretation": "The pivot demonstrates portability and AI-augmented SRE response, not prior production certification of Flightpath or fully automated elastic capacity.",
+    "prevention": "Require an approved versioned event manifest and capacity preview before reservation. Certified execution capacity, DR-reserved capacity, and uncertified theoretical capacity must be reported separately."
+  },
+  "completion": {
+    "measured": false,
+    "statement": "Participant completion was not consistently instrumented; a seat claim proves access, not successful completion of every lab checkpoint.",
+    "available_proof": "Representative synthetic, API, model, route, namespace-isolation, and manual participant checks exist, but they cannot be converted into 191 participant completion records.",
+    "required": "Emit versioned per-seat checkpoint, final outcome, duration, failure stage, catalog release, and anonymized cohort events."
+  },
+  "catalogs": [
+    {
+      "name": "Serve LLMs on Intel Xeon",
+      "ordered": 90,
+      "claimed": 75,
+      "unclaimed": 15,
+      "claim_percent": 83.3
+    },
+    {
+      "name": "Building an AI Agent",
+      "ordered": 90,
+      "claimed": 64,
+      "unclaimed": 26,
+      "claim_percent": 71.1
+    },
+    {
+      "name": "Build Multi-Agent AI Systems",
+      "ordered": 90,
+      "claimed": 52,
+      "unclaimed": 38,
+      "claim_percent": 57.8
+    }
+  ],
+  "waves": [
+    {
+      "wave": 1,
+      "ordered": 90,
+      "claimed": 84,
+      "unclaimed": 6,
+      "claim_percent": 93.3
+    },
+    {
+      "wave": 2,
+      "ordered": 90,
+      "claimed": 46,
+      "unclaimed": 44,
+      "claim_percent": 51.1
+    },
+    {
+      "wave": 3,
+      "ordered": 90,
+      "claimed": 61,
+      "unclaimed": 29,
+      "claim_percent": 67.8
+    }
+  ],
+  "workshops": [
+    {"wave": 1, "catalog": "Serve LLMs", "cluster": "Arena", "workshop": "d6071355", "claimed": 30, "ordered": 30, "state": "ready / retained", "expires": "2026-09-23T03:22:00Z"},
+    {"wave": 1, "catalog": "Building an AI Agent", "cluster": "Brutus", "workshop": "4876c3c0", "claimed": 30, "ordered": 30, "state": "ready / retained", "expires": "2026-09-23T03:28:00Z"},
+    {"wave": 1, "catalog": "Multi-Agent", "cluster": "Arena", "workshop": "7efa1c81", "claimed": 24, "ordered": 30, "state": "ready / retained", "expires": "2026-09-23T03:32:00Z"},
+    {"wave": 2, "catalog": "Serve LLMs", "cluster": "Flightpath", "workshop": "9d01773b", "claimed": 20, "ordered": 30, "state": "ready / retained", "expires": "2026-09-24T16:36:00Z"},
+    {"wave": 2, "catalog": "Building an AI Agent", "cluster": "Flightpath", "workshop": "7452eba7", "claimed": 13, "ordered": 30, "state": "ready / retained", "expires": "2026-09-24T16:36:00Z"},
+    {"wave": 2, "catalog": "Multi-Agent", "cluster": "Flightpath", "workshop": "fc3cab02", "claimed": 13, "ordered": 30, "state": "ready / retained", "expires": "2026-09-24T16:36:00Z"},
+    {"wave": 3, "catalog": "Serve LLMs", "cluster": "Flightpath", "workshop": "10e88065", "claimed": 25, "ordered": 30, "state": "ready / retained", "expires": "2026-09-24T16:36:00Z"},
+    {"wave": 3, "catalog": "Building an AI Agent", "cluster": "Flightpath", "workshop": "7e826ef7", "claimed": 21, "ordered": 30, "state": "ready / retained", "expires": "2026-09-24T16:36:00Z"},
+    {"wave": 3, "catalog": "Multi-Agent", "cluster": "Flightpath", "workshop": "984a4d3a", "claimed": 15, "ordered": 30, "state": "ready / retained", "expires": "2026-09-24T17:11:00Z"}
+  ],
+  "clusters": [
+    {"name": "Arena", "seats": 60, "claimed": 54, "pods_ready": 119, "pods_total": 119, "routes_admitted": 149, "routes_total": 149, "restarts": 142, "note": "Historical restarts across 23 pods, concentrated on gnr2."},
+    {"name": "Brutus", "seats": 30, "claimed": 30, "pods_ready": 90, "pods_total": 90, "routes_admitted": 120, "routes_total": 120, "restarts": 0, "note": "All active-seat pods ready at the snapshot."},
+    {"name": "Flightpath", "seats": 180, "claimed": 107, "pods_ready": 313, "pods_total": 313, "routes_admitted": 398, "routes_total": 398, "restarts": 0, "note": "All active-seat pods ready after the recorded image mitigation."}
+  ],
+  "models": [
+    {"name": "Granite 3.2 8B Tools", "ready": 5, "desired": 5},
+    {"name": "Granite 2B via OVMS", "ready": 2, "desired": 2},
+    {"name": "Nomic embedding via TEI", "ready": 1, "desired": 1}
+  ],
+  "issues": {
+    "defects_and_performance": 16,
+    "severity_s1": 11,
+    "severity_s2": 5,
+    "open": 11,
+    "mitigated": 5,
+    "verified": 0,
+    "features_planned": 9,
+    "statement": "Mitigated means the participant path was protected temporarily; it is not durable closure."
+  },
+  "telemetry": [
+    {"area": "Workshop/session lifecycle", "state": "available", "detail": "Order, session, cluster, namespace, state, creation, and expiration records."},
+    {"area": "Seat claims", "state": "available", "detail": "Claimed versus unclaimed counts by workshop; participant PII is excluded from the postmortem."},
+    {"area": "Kubernetes runtime", "state": "available", "detail": "Pod readiness, route admission, restarts, namespace reconciliation, and orphan checks."},
+    {"area": "Shared model readiness", "state": "partial", "detail": "Replica readiness is known; per-seat requests, tokens, queues, latency, and rate limits are incomplete."},
+    {"area": "Participant journey", "state": "partial", "detail": "Representative checks exist, but every participant checkpoint and final outcome were not emitted."},
+    {"area": "Lifecycle evidence delivery", "state": "partial", "detail": "Webhook/Kafka publication is best-effort without durable outbox, receipts, replay, or dead-letter handling."},
+    {"area": "Financial allocation", "state": "missing", "detail": "No approved node, CPU, memory, storage, model, network, license, or labor rates are joined to usage."}
+  ],
+  "financials": {
+    "state": "not yet dollar-calculable",
+    "ttl_hours": 168,
+    "reserved_seat_hours": 45360,
+    "unclaimed_reserved_seat_hours_if_unchanged": 13272,
+    "known": [
+      "270 provisioned seats across nine seven-day workshop reservations",
+      "191 claimed and 79 unclaimed seats at the snapshot",
+      "Catalog, wave, cluster, workshop, session, namespace, and expiration attribution",
+      "Provisioned resources continue consuming capacity whether a seat is claimed or not"
+    ],
+    "required": [
+      "Node-hour and cluster shared-service rates, including hardware amortization, power, facilities, subscriptions, and support",
+      "Per-seat requested and actual CPU-, memory-, PVC-, and network-hours",
+      "Per-seat model requests, input/output tokens, accelerator or CPU inference time, queue time, retries, and failures",
+      "Registry, object-storage, egress, public-edge, identity, and observability costs",
+      "Operator and instructor labor minutes plus incident/support effort",
+      "A verified participant completion event so cost per completed lab is meaningful"
+    ],
+    "formula": "Event cost = infrastructure + inference + storage/network + shared platform allocation + operator/instructor labor. Cost per claimed seat uses 191 as the denominator; cost per completed lab remains unavailable until completion telemetry exists.",
+    "estimate": {
+      "confidence": "low-to-moderate",
+      "status": "planning estimate, not measured spend or an invoice",
+      "resource_basis": {
+        "seat_cpu_requests": 205.2,
+        "seat_memory_gib_requests": 390.9,
+        "known_shared_model_cpu_requests": 394.0,
+        "known_shared_model_memory_gib_requests": 324.0,
+        "minimum_known_cpu_requests": 599.2,
+        "minimum_known_memory_gib_requests": 714.9,
+        "minimum_known_vcpu_hours": 100666,
+        "minimum_known_gib_hours": 120110,
+        "note": "This excludes unmeasured OpenShift, control-plane, OVMS, storage, ingress, observability, and cluster headroom. Kubernetes requests are reservations, not actual utilization."
+      },
+      "event_scenarios": [
+        {
+          "name": "Marginal infrastructure on already-owned hardware",
+          "range": "$0.5K–$2.5K",
+          "includes": "Electricity/cooling allowance, storage/network activity, and minor shared-service consumption; excludes labor, hardware amortization, and subscriptions."
+        },
+        {
+          "name": "Fully allocated seven-day infrastructure equivalent",
+          "range": "$6K–$15K",
+          "includes": "Known CPU/memory reservations plus a platform/headroom allowance, storage, ingress, observability, and an allocated infrastructure rate."
+        },
+        {
+          "name": "All-in pilot delivery",
+          "range": "$20K–$55K",
+          "includes": "Fully allocated infrastructure plus approximately 80–180 hours of preparation, facilitation, incident response, and post-event work at a blended loaded enterprise rate."
+        }
+      ],
+      "event_unit_costs": {
+        "per_provisioned_seat": "$74–$204",
+        "per_claimed_seat": "$105–$288",
+        "potential_unclaimed_infrastructure_share": "$1.8K–$4.4K",
+        "note": "The unclaimed share applies 79/270 to the infrastructure range and assumes claims did not rise after the snapshot. It is not automatically avoidable because event capacity was reserved in advance."
+      },
+      "development": [
+        {
+          "name": "Estimated fully loaded development to date",
+          "range": "$23K–$40K",
+          "basis": "Approximately 160 hours of direct AI-accelerated work. At the modeled $140–$220 loaded enterprise rate, labor is $22.4K–$35.2K; the upper allowance includes development tooling and test infrastructure. This is an opportunity-cost view, not proof that this amount was paid incrementally."
+        },
+        {
+          "name": "Conventional replacement cost",
+          "range": "$250K–$750K",
+          "basis": "A hypothetical non-agentic cross-functional team reproducing the current backend, frontend, OpenShift/GitOps, identity, multi-cluster lifecycle, content, quality/evidence, and operations capability. This is replacement cost, not historical spend."
+        },
+        {
+          "name": "Additional investment to production roadmap completion",
+          "range": "$350K–$900K",
+          "basis": "Two or three parallel agentic workstreams plus product/architecture ownership through the April 2027 target, including HA/DR, security assessment, registry/supply chain, telemetry, FinOps, and migration work. Hardware expansion is excluded."
+        }
+      ],
+      "assumptions": [
+        "The product owner reports approximately 160 hours of direct development effort to date.",
+        "Loaded enterprise engineering and specialist labor is modeled at $140–$220 per hour; actual internal transfer rates may differ.",
+        "At the BLS median software-developer wage, 160 hours is roughly $10.5K of salary-equivalent time before benefits and overhead.",
+        "The cloud-equivalent infrastructure range is a comparison lens, not a claim that the pilot ran on AWS.",
+        "Existing Intel hardware and Red Hat software/subscription acquisition costs were not provided and are not treated as cash spend.",
+        "No dollar value is assigned to participant outcomes, sales influence, avoided travel, or future reuse."
+      ],
+      "external_references": [
+        {"label": "BLS software developer compensation benchmark", "url": "https://www.bls.gov/ooh/Computer-and-Information-Technology/Software-developers.htm"},
+        {"label": "AWS EC2 on-demand and unused capacity-reservation treatment", "url": "https://aws.amazon.com/ec2/pricing/on-demand/"},
+        {"label": "EIA industrial electricity-price benchmark", "url": "https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_03"}
+      ]
+    }
+  },
+  "sources": [
+    "docs/active-seat-inventory-20260917.md",
+    "docs/pilot-issue-feature-register-20260917.md",
+    "docs/september-17-pilot-status-20260908.md",
+    "docs/stargate-product-telemetry-contract.md"
+  ]
+}

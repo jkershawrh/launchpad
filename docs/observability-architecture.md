@@ -38,6 +38,10 @@ storage, TLS, and backup—not an implicit part of a workshop deployment.
    transition.
 4. **Resolution by lab and seat** — failure state, validation failures,
    reset/reclaim duration, cleanup failure, and zero-residue follow-up.
+5. **Artifact and warm-capacity supply** — registered/eligible/draining
+   clusters, forecast and reserved capacity, time-to-warm, required digest
+   presence, signature/trust status, cold-pull latency, cache hit rate,
+   replication lag, registry errors, and image credential expiry.
 
 The Launchpad `/metrics` exporter rebuilds these signals from persisted
 sessions, workshops, seats, and lifecycle events. Backend restarts therefore
@@ -98,6 +102,33 @@ error counts. Response bodies and prompts are never metrics.
 These gaps must render as unavailable, never as zero, in the admin and Grafana
 views.
 
+## Production-plane observability
+
+The dedicated control plane aggregates workflow facts and read-only telemetry
+from every execution, AI-serving, edge, and registry failure domain. Execution
+clusters keep local platform monitoring for diagnosis and forward or federate
+only the bounded signals required centrally.
+
+Capacity planning distinguishes:
+
+- allocatable, currently consumed, and Launchpad-reserved resources;
+- steady seat, bounded-transient, and workshop-shared resources;
+- warm eligible, warming, disabled, draining, and retiring clusters;
+- certified catalog/cluster/exposure seat limits; and
+- forecast demand versus retained failure-domain headroom.
+
+Registry panels distinguish authoritative availability from cluster cache
+state. A warm cache is not proof that the source digest is durable. Alert on a
+missing active digest, failed signature/policy verification, replication lag,
+cold-pull regression, expiring robot credential, registry storage/retention
+pressure, and a cluster that can no longer retrieve its assigned release.
+
+AI-serving panels include desired/ready replicas, running/waiting requests,
+queue time, time to first token, completion latency, throughput, failure and
+rate-limit outcomes, selected model/version, fallback count, and capacity by
+hardware pool. Placement consumes a bounded health summary; it does not query
+high-cardinality participant telemetry synchronously.
+
 ## Metric label policy
 
 Allowed bounded labels are `cluster`, `catalog_item`, workflow `status`,
@@ -133,8 +164,8 @@ diagnostic correlation.
 4. Exercise one provision, one validation failure, one successful reclaim,
    and one cleanup failure in a controlled test; retain PromQL and alert
    evidence.
-5. Run the staggered 3x25 rehearsal and retain dashboard snapshots for the
-   whole interval.
+5. Retain the historical 3x25 rehearsal evidence, then capture the current
+   three-wave 30-seat event topology and model pressure for the whole interval.
 6. Add the approved Grafana datasource and import the versioned dashboard.
 7. Keep public browser access certification as a separate gate.
 

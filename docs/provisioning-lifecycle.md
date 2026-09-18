@@ -1,5 +1,31 @@
 # Provisioning Lifecycle
 
+This lifecycle applies after the control plane has selected a registered
+execution target. Cluster creation is a separate, slower fleet-capacity
+lifecycle; ordinary orders consume certified warm capacity rather than
+creating a new cluster per lab.
+
+## Order admission and placement
+
+Before the first session enters `provisioning`, Launchpad must:
+
+1. resolve the catalog's deployment class (`shared_namespace`,
+   `dedicated_workshop_cluster`, or exceptional `dedicated_seat_cluster`);
+2. filter registered targets by credentials, API/Operator health, hardware,
+   OpenShift version, storage, ingress, network policy, required model, and
+   immutable image/content availability;
+3. verify the published catalog × cluster × exposure-policy seat ceiling;
+4. reserve the whole workshop's steady, bounded-transient, shared-service,
+   model, route, and pod capacity;
+5. persist the selected `cluster_ref`, placement explanation, catalog version,
+   content version, image digests, and reservation; and
+6. revalidate immediately before resource creation.
+
+If one target cannot fit the complete workshop, admission fails. The first
+release never silently splits seats across clusters. Provisioning, validation,
+expiration, reclaim, and orphan cleanup always use the persisted target and
+never retry against a different cluster.
+
 ## Session States
 
 | State | Meaning |
@@ -62,6 +88,11 @@ Each provisioned session receives a unique MaaS API key (`sk-launchpad-{uuid}`).
 - Is included in the handoff package for the user
 - Is revoked when the session is reclaimed
 
+Model serving is normally a shared private service, not a model pod loaded in
+every participant namespace. Model availability, readiness, queue pressure,
+latency, and scoped-key issuance are functional readiness inputs. A lab that
+teaches model deployment may explicitly declare a different contract.
+
 ## Lifecycle Events
 
 Every state transition is recorded as a `LifecycleEvent` with:
@@ -84,3 +115,31 @@ The intelligence layer integrates at two points in the lifecycle:
 - `FeedbackTracker.record_outcome()` records success/failure, latency, cluster, hardware
 - Outcome is persisted to PostgreSQL (`provisioning_outcomes` table)
 - Future provisioning decisions use this history to avoid failing combinations
+
+## Fleet-capacity lifecycle
+
+The capacity manager operates independently of an interactive lab order:
+
+```text
+forecast demand -> allocate/provision cluster -> register identity
+-> install baseline -> verify ingress/storage/registry/models/observability
+-> certify catalog pairings -> mark placement eligible
+-> reserve and consume capacity -> drain -> verify no ownership
+-> return to warm pool or retire
+```
+
+Scheduled events reserve clusters and pre-pull signed release digests before
+participant access opens. A cluster may be disabled for new placement while
+its active sessions continue. Active sessions are not migrated; their reclaim
+continues against the recorded cluster.
+
+## Artifact readiness
+
+Each generated workload references a signed immutable digest from the approved
+HA registry or an explicitly synchronized mirror. Readiness requires the exact
+digest to be reachable and trusted from eligible worker pools. A mutable tag,
+an ImageStream that points to a missing manifest, or another execution
+cluster's internal registry cannot satisfy the production contract.
+
+Image pull success alone is not lab readiness. Launchpad still runs application,
+Showroom, terminal, authorization, model, and documented-workflow probes.

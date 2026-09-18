@@ -14,6 +14,13 @@ same pattern to a dedicated production control-plane cluster with a separate
 recovery failure domain. Arena, Brutus, and future clusters remain replaceable
 execution capacity.
 
+The recovery design also separates the shared AI-serving and artifact-supply
+planes. A control-plane promotion must recover model-routing policy, scoped-key
+authority, approved registry credentials, catalog digests, and mirror state,
+but it does not move active model pods or participant namespaces. Execution
+and AI clusters remain registered targets; the restored control plane resumes
+authority using persisted `cluster_ref` and immutable artifact references.
+
 The architecture permits no active/active writers. Exactly one control plane
 may accept orders, mutate lifecycle state, manage Launchpad Argo CD
 Applications, issue entitlements, or reclaim resources. Database roles and
