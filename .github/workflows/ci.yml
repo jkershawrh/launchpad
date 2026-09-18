@@ -34,6 +34,14 @@ jobs:
         with:
           python-version: "3.11"
 
+      # Manifest contract tests render the same OpenShift/Kustomize overlays
+      # used by the release process. Pin the client so CI does not depend on
+      # whichever tools happen to be present in the hosted-runner image.
+      - name: Install pinned OpenShift client
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.21.12"
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip setuptools wheel
