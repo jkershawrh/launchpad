@@ -125,6 +125,19 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "fetch(" not in html
 
 
+def test_admin_navigation_exposes_the_generated_roadmap():
+    layout = (ROOT / "admin" / "src" / "components" / "AdminLayout.tsx").read_text(
+        encoding="utf-8"
+    )
+    admin_roadmap = ROOT / "admin" / "public" / "roadmap" / "index.html"
+
+    assert "{ path: '/roadmap/', label: 'Roadmap', document: true }" in layout
+    assert admin_roadmap.exists()
+    assert admin_roadmap.read_text(encoding="utf-8") == (
+        ROOT / "docs" / "product-roadmap-dashboard.html"
+    ).read_text(encoding="utf-8")
+
+
 def test_release_rubric_is_complete_and_balanced():
     module = load_module()
     status = module.load_status(ROOT / "docs" / "product-roadmap-status.json")

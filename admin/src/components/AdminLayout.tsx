@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { path: '/reports', label: 'Reports' },
   { path: '/analytics', label: 'Analytics' },
   { path: '/observability', label: 'Observability' },
+  { path: '/roadmap/', label: 'Roadmap', document: true },
 ];
 
 export default function AdminLayout() {
@@ -31,19 +32,33 @@ export default function AdminLayout() {
               <span className="text-[11px] font-medium bg-white/15 px-2 py-1 rounded">ADMIN</span>
             </div>
             <nav className="flex max-w-[65vw] gap-1 overflow-x-auto">
-              {NAV_ITEMS.map((item) => (
-                <Link
+              {NAV_ITEMS.map((item) => {
+                const isActive = item.path === '/'
+                  ? location.pathname === '/'
+                  : location.pathname.startsWith(item.path);
+                const classes = `px-3 py-2 rounded text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-white/15 text-white'
+                    : 'text-[#6A6E73] hover:text-white hover:bg-white/10'
+                }`;
+                return item.document ? (
+                  <a
+                    key={item.path}
+                    href={item.path}
+                    className={classes}
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                    location.pathname === item.path
-                      ? 'bg-white/15 text-white'
-                      : 'text-[#6A6E73] hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
+                    className={classes}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
         </div>

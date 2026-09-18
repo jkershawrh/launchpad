@@ -23,6 +23,7 @@ ROADMAP = ROOT / "docs" / "product-delivery-roadmap.md"
 STATUS = ROOT / "docs" / "product-roadmap-status.json"
 PILOT_POSTMORTEM = ROOT / "docs" / "september-17-pilot-postmortem.json"
 OUTPUT = ROOT / "docs" / "product-roadmap-dashboard.html"
+ADMIN_OUTPUT = ROOT / "admin" / "public" / "roadmap" / "index.html"
 METHODS = ("tdd", "edd", "cdd", "bdd", "cbt")
 STAGES = ("red", "green-local", "green-integration", "green-live")
 STAGE_RANK = {stage: index for index, stage in enumerate(STAGES)}
@@ -294,16 +295,25 @@ def main() -> int:
     parser.add_argument("--roadmap", type=Path, default=ROADMAP)
     parser.add_argument("--status", type=Path, default=STATUS)
     parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument(
+        "--admin-output",
+        type=Path,
+        default=ADMIN_OUTPUT,
+        help="admin static-asset mirror used by the Arena /roadmap/ route",
+    )
     args = parser.parse_args()
     rendered = render_dashboard(parse_roadmap(args.roadmap), load_status(args.status), ROOT)
     if args.check:
-        if not args.output.exists() or args.output.read_text(encoding="utf-8") != rendered:
-            print(f"stale: {args.output.relative_to(ROOT)}", file=sys.stderr)
-            return 1
-        print(f"current: {args.output.relative_to(ROOT)}")
+        for output in (args.output, args.admin_output):
+            if not output.exists() or output.read_text(encoding="utf-8") != rendered:
+                print(f"stale: {output.relative_to(ROOT)}", file=sys.stderr)
+                return 1
+            print(f"current: {output.relative_to(ROOT)}")
         return 0
-    args.output.write_text(rendered, encoding="utf-8")
-    print(f"generated: {args.output.relative_to(ROOT)}")
+    for output in (args.output, args.admin_output):
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(rendered, encoding="utf-8")
+        print(f"generated: {output.relative_to(ROOT)}")
     return 0
 
 
