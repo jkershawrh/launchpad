@@ -1,4 +1,4 @@
-.PHONY: install test test-local lint catalog-artifacts clean dev-backend dev-frontend dev-admin demo-test
+.PHONY: install test test-local lint catalog-artifacts delivery-governance clean dev-backend dev-frontend dev-admin demo-test
 
 # Backend
 install:
@@ -22,6 +22,9 @@ lint:
 
 catalog-artifacts:
 	python3 scripts/validate_catalog_artifacts.py
+
+delivery-governance:
+	python3 scripts/validate_delivery_governance.py
 
 format:
 	ruff format backend/

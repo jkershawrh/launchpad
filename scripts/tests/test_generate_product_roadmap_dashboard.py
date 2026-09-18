@@ -21,13 +21,17 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     model = module.parse_roadmap(ROOT / "docs" / "product-delivery-roadmap.md")
 
     assert len(model["horizons"]) == 5
-    assert len(model["epics"]) == 18
-    assert len(model["stories"]) == 24
-    assert len(model["tasks"]) == 95
+    assert len(model["epics"]) == 22
+    assert len(model["stories"]) == 28
+    assert len(model["tasks"]) == 119
     assert "LP-T095" in model["tasks"]
     assert "lab.step.executed" in model["tasks"]["LP-T095"]["title"]
     assert model["tasks"]["LP-T084"]["epic_id"] == "LP-E002"
     assert model["tasks"]["LP-T094"]["story_id"] == "LP-S024"
+    assert model["tasks"]["LP-T101"]["epic_id"] == "LP-E019"
+    assert model["tasks"]["LP-T107"]["epic_id"] == "LP-E020"
+    assert model["tasks"]["LP-T113"]["epic_id"] == "LP-E021"
+    assert model["tasks"]["LP-T119"]["epic_id"] == "LP-E022"
 
 
 def test_status_rollup_requires_all_five_proof_methods(tmp_path: Path):
@@ -94,6 +98,10 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "lab.step.started" in html
     assert "lab.step.executed" in html
     assert "lab.checkpoint.completed" in html
+    assert "Automated lab intake and certification" in html
+    assert "Capacity engineering, forecasting, and admission" in html
+    assert "Control-plane portability and production-home promotion" in html
+    assert "Parallel convergence and earned promotion" in html
     assert "<svg" in html
     assert "Red Hat" in html and "Intel" in html
     assert 'viewBox="0 0 192.30001 146"' in html

@@ -1,0 +1,98 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: ConvergenceMatrix
+metadata:
+  name: launchpad-product-convergence
+  version: 1.0.0
+proof_methods: [tdd, edd, cdd, bdd, cbt]
+required_proof_dimensions: [security, capacity, fault_recovery, cleanup]
+promotion_gates:
+- stage: green-local
+  required_evidence: Unit, component, schema, policy, and rendered-manifest results.
+- stage: green-integration
+  required_evidence: Producer-consumer contracts and complete isolated control-plane journeys.
+- stage: green-canary
+  required_evidence: One real seat per catalog completes create, use, restart, and reclaim.
+- stage: green-staging
+  required_evidence: Production-shaped 1, 5, and 25 or 30 seat runs plus security, restore, and rollback.
+- stage: green-production-limited
+  required_evidence: Approved audience, public access, support ownership, SLOs, and prior-plane fallback.
+- stage: green-production
+  required_evidence: Three consecutive certifications, zero critical or high findings, migration, failover, rollback, and owner acceptance.
+scenario_defaults: &scenario_defaults
+  state: red
+  methods: {tdd: red, edd: red, cdd: red, bdd: red, cbt: red}
+  proof_dimensions: [functional, security, capacity, fault_recovery, cleanup, observability]
+  evidence: []
+scenarios:
+- <<: *scenario_defaults
+  id: intake-to-certified-draft
+  owner: automated-lab-intake
+  participating_streams: [automated-lab-intake, artifact-supply-chain, lab-content-ai]
+  contracts: [catalog-package-v1, artifact-policy-v1]
+  outcome: An immutable quickstart revision becomes a reviewed certified draft without a bespoke platform edit.
+- <<: *scenario_defaults
+  id: signed-artifact-cold-pull
+  owner: artifact-supply-chain
+  participating_streams: [artifact-supply-chain, capacity-admission, control-plane-portability]
+  contracts: [artifact-policy-v1, cluster-profile-v1]
+  outcome: Every required digest is trusted and cold-pulls after cache loss on each eligible worker pool.
+- <<: *scenario_defaults
+  id: event-demand-calculation
+  owner: event-orchestration
+  participating_streams: [event-orchestration, capacity-admission]
+  contracts: [event-manifest-v1, cluster-profile-v1]
+  outcome: Cohorts, labs per participant, retention, and waves produce the correct seat-environment demand.
+- <<: *scenario_defaults
+  id: deterministic-capacity-admission
+  owner: capacity-admission
+  participating_streams: [capacity-admission, event-orchestration, artifact-supply-chain]
+  contracts: [event-manifest-v1, cluster-profile-v1, artifact-policy-v1]
+  outcome: Insufficient cluster, model, route, storage, or artifact capacity rejects the order before seat creation.
+- <<: *scenario_defaults
+  id: participant-public-claim-and-resume
+  owner: participant-experience
+  participating_streams: [participant-experience, security-identity, event-orchestration]
+  contracts: [public-access-v2, event-manifest-v1]
+  outcome: A participant claims, opens, resumes, adds, and logs out without losing unrelated entitlements.
+- <<: *scenario_defaults
+  id: namespace-and-seat-isolation
+  owner: security-identity
+  participating_streams: [security-identity, participant-experience]
+  contracts: [public-access-v2]
+  outcome: A participant can edit only assigned namespaces and cannot cross seat, tenant, or control-plane boundaries.
+- <<: *scenario_defaults
+  id: control-plane-clean-install-and-restore
+  owner: control-plane-portability
+  participating_streams: [control-plane-portability, artifact-supply-chain, security-identity, ha-dr-fleet]
+  contracts: [control-plane-recovery-v1, artifact-policy-v1, public-access-v2, cluster-profile-v1]
+  outcome: An empty target restores authoritative state and reconnects execution clusters without manual reconstruction.
+- <<: *scenario_defaults
+  id: fenced-failover-and-failback
+  owner: ha-dr-fleet
+  participating_streams: [ha-dr-fleet, control-plane-portability, capacity-admission]
+  contracts: [control-plane-recovery-v1, cluster-profile-v1]
+  outcome: Timed failover and failback meet RPO and RTO without split brain or retargeted cleanup.
+- <<: *scenario_defaults
+  id: complete-operational-telemetry
+  owner: observability-finops
+  participating_streams: [observability-finops, event-orchestration, capacity-admission, governed-integrations]
+  contracts: [admin-observability-v1, lifecycle-evidence-v1, event-manifest-v1]
+  outcome: Seat, workshop, cluster, model, support, and cost views reconcile to durable source events.
+- <<: *scenario_defaults
+  id: evidence-consumer-outage
+  owner: governed-integrations
+  participating_streams: [governed-integrations, observability-finops]
+  contracts: [lifecycle-evidence-v1, admin-observability-v1]
+  outcome: StarGate or another consumer can fail and recover without blocking or losing accepted lifecycle evidence.
+- <<: *scenario_defaults
+  id: governed-recommendation-boundary
+  owner: governed-integrations
+  participating_streams: [governed-integrations, security-identity, capacity-admission]
+  contracts: [lifecycle-evidence-v1, admin-observability-v1, cluster-profile-v1]
+  outcome: DeepField signals and GeoLux or GCL recommendations cannot bypass Launchpad policy or approval authority.
+- <<: *scenario_defaults
+  id: end-to-end-staged-release
+  owner: convergence-release
+  participating_streams: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, convergence-release]
+  contracts: [catalog-package-v1, artifact-policy-v1, event-manifest-v1, cluster-profile-v1, public-access-v2, admin-observability-v1, lifecycle-evidence-v1, control-plane-recovery-v1]
+  outcome: One unchanged candidate advances only through earned gates and completes scale, failure, rollback, and zero-residue reclaim proof.

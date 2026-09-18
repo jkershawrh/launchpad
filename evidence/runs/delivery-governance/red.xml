@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="4" time="0.055" timestamp="2026-09-18T12:52:41.926507-05:00" hostname="jkershaw-mac"><testcase classname="scripts.tests.test_validate_delivery_governance" name="test_repository_delivery_governance_is_valid" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'">def test_repository_delivery_governance_is_valid():
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_delivery_governance.py:35:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_delivery_governance.py:18: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10b56a6f0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_delivery_governance" name="test_unknown_dependency_and_overlapping_ownership_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'">def test_unknown_dependency_and_overlapping_ownership_fail_closed():
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_delivery_governance.py:48:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_delivery_governance.py:18: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10b68ac90&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_delivery_governance" name="test_feature_stream_cannot_authorize_live_mutation" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'">def test_feature_stream_cannot_authorize_live_mutation():
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_delivery_governance.py:60:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_delivery_governance.py:18: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10b68b590&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_delivery_governance" name="test_green_scenario_requires_complete_method_evidence" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'">def test_green_scenario_requires_complete_method_evidence():
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_delivery_governance.py:69:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_delivery_governance.py:18: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10b68b890&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_delivery_governance.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase></testsuite></testsuites>

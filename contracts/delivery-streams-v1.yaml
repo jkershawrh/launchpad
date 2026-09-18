@@ -1,0 +1,192 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: ParallelDeliveryModel
+metadata:
+  name: launchpad-agentic-delivery
+  version: 1.0.0
+  effective_from: '2026-09-18'
+delivery_policy:
+  max_parallel_implementation_streams: 4
+  convergence_cadence: twice-weekly
+  contract_freeze_scope: one convergence candidate
+  immutable_promotion: true
+  feature_stream_live_mutation: forbidden
+  convergence_live_mutation: explicit-human-approval
+  evidence_source_of_truth: certification/convergence-matrix-v1.yaml
+pivot_policy:
+  required_record_fields:
+  - pivot_id
+  - occurred_at
+  - trigger
+  - decision_owner
+  - affected_streams
+  - affected_contracts
+  - capacity_impact
+  - security_impact
+  - retained_evidence
+  - invalidated_evidence
+  - delta_proof_plan
+  - rollback_or_abandonment_path
+  - convergence_target
+  classes:
+    stream-local:
+      approval: stream-owner
+      effect: Replan one stream without invalidating unrelated evidence.
+    contract:
+      approval: convergence-owner
+      effect: Version the contract and prove producer/consumer compatibility.
+    product-capacity:
+      approval: product-and-operations-owner
+      effect: Rebaseline demand, capacity, sequencing, and certification evidence.
+    emergency-live:
+      approval: incident-commander
+      effect: Freeze promotion, protect active work, restore known-good behavior, and add a regression test.
+contracts:
+- id: catalog-package-v1
+  version: 1.0.0
+  owner: automated-lab-intake
+  path: docs/catalog-onboarding.md
+  consumers: [artifact-supply-chain, event-orchestration, lab-content-ai, convergence-release]
+- id: artifact-policy-v1
+  version: 1.0.0
+  owner: artifact-supply-chain
+  path: config/catalog-artifact-policy.yaml
+  consumers: [automated-lab-intake, capacity-admission, control-plane-portability, convergence-release]
+- id: event-manifest-v1
+  version: 1.0.0
+  owner: event-orchestration
+  path: contracts/event-manifest-v1.yaml
+  consumers: [capacity-admission, participant-experience, observability-finops, convergence-release]
+- id: cluster-profile-v1
+  version: 1.0.0
+  owner: capacity-admission
+  path: config/clusters.yaml
+  consumers: [event-orchestration, ha-dr-fleet, control-plane-portability, observability-finops, convergence-release]
+- id: public-access-v2
+  version: 2.0.0
+  owner: security-identity
+  path: contracts/public-access-v2.yaml
+  consumers: [participant-experience, ha-dr-fleet, convergence-release]
+- id: admin-observability-v1
+  version: 1.0.0
+  owner: observability-finops
+  path: contracts/admin-observability-v1.yaml
+  consumers: [capacity-admission, governed-integrations, convergence-release]
+- id: lifecycle-evidence-v1
+  version: 1.0.0
+  owner: governed-integrations
+  path: docs/stargate-product-telemetry-contract.md
+  consumers: [observability-finops, event-orchestration, convergence-release]
+- id: control-plane-recovery-v1
+  version: 1.0.0
+  owner: control-plane-portability
+  path: docs/control-plane-dr-roadmap.md
+  consumers: [ha-dr-fleet, security-identity, convergence-release]
+streams:
+- id: automated-lab-intake
+  title: Automated lab intake and certification
+  kind: implementation
+  initially_active: true
+  depends_on: []
+  owned_paths: [catalog-onboarding/, scripts/catalog_onboarding.py, backend/app/services/catalog_onboarding.py, certification/catalog/]
+  entry_gate: Immutable repository revision and accountable content owner are declared.
+  exit_gate: A new quickstart reaches certified draft through generated intake without bespoke platform edits.
+  live_mutation_policy: forbidden
+- id: artifact-supply-chain
+  title: Artifact supply chain and authoritative registry
+  kind: implementation
+  initially_active: true
+  depends_on: []
+  owned_paths: [config/catalog-artifact-policy.yaml, scripts/validate_catalog_artifacts.py, backend/app/services/catalog_supply_chain.py]
+  entry_gate: Registry ownership and artifact policy are declared.
+  exit_gate: Signed immutable artifacts cold-pull on every certified target with rollback retained.
+  live_mutation_policy: forbidden
+- id: event-orchestration
+  title: Repeatable event orchestration
+  kind: implementation
+  initially_active: true
+  depends_on: []
+  owned_paths: [contracts/event-manifest-v1.yaml, backend/app/domain/events.py, backend/app/api/routers/events.py]
+  entry_gate: Versioned cohort, lab, retention, exposure, and wave demand is approved.
+  exit_gate: One event record drives order, readiness, handoff, evidence, and bulk reclaim.
+  live_mutation_policy: forbidden
+- id: capacity-admission
+  title: Capacity engineering, forecasting, and admission
+  kind: implementation
+  initially_active: true
+  depends_on: []
+  owned_paths: [backend/app/domain/placement.py, backend/app/services/placement.py, backend/app/services/model_inventory.py]
+  entry_gate: Catalog resource and model envelopes are versioned.
+  exit_gate: Deterministic reservations reject overcommit before seat creation and reconcile forecast to actual use.
+  live_mutation_policy: forbidden
+- id: participant-experience
+  title: Participant, instructor, requester, and admin experience
+  kind: implementation
+  initially_active: false
+  depends_on: [event-orchestration]
+  owned_paths: [frontend/]
+  entry_gate: Consumer API contracts and representative fixtures are frozen for the candidate.
+  exit_gate: Browser journeys pass internal and public access, resume, support, and logout behavior.
+  live_mutation_policy: forbidden
+- id: security-identity
+  title: Security, identity, isolation, and governance
+  kind: implementation
+  initially_active: false
+  depends_on: []
+  owned_paths: [contracts/public-access-v2.yaml, backend/app/services/public_access.py, backend/app/public_gateway.py]
+  entry_gate: Threat model, identity boundary, and data classification are reviewed.
+  exit_gate: Identity, namespace isolation, secrets, abuse, audit, and revocation gates have no critical or high findings.
+  live_mutation_policy: forbidden
+- id: ha-dr-fleet
+  title: High availability, disaster recovery, and fleet lifecycle
+  kind: implementation
+  initially_active: false
+  depends_on: [capacity-admission, security-identity]
+  owned_paths: [deploy/launchpad/overlays/arena/, deploy/launchpad/overlays/flightpath-dr/]
+  entry_gate: Failure domains, fencing authority, RPO, RTO, and recovery ownership are approved.
+  exit_gate: Failure injection and timed recovery preserve target identity and prevent split brain.
+  live_mutation_policy: forbidden
+- id: control-plane-portability
+  title: Control-plane portability and earned promotion
+  kind: implementation
+  initially_active: false
+  depends_on: [artifact-supply-chain, security-identity]
+  owned_paths: [deploy/launchpad/base/, docs/control-plane-dr-roadmap.md]
+  entry_gate: Portable infrastructure prerequisites and authoritative state are inventoried.
+  exit_gate: Clean install, restore, migration, rollback, and in-flight reconciliation pass on a candidate home.
+  live_mutation_policy: forbidden
+- id: observability-finops
+  title: Observability, evidence, support, and FinOps
+  kind: implementation
+  initially_active: false
+  depends_on: [event-orchestration, capacity-admission]
+  owned_paths: [contracts/admin-observability-v1.yaml, admin/]
+  entry_gate: Stable identifiers, event semantics, privacy boundaries, and cost dimensions are versioned.
+  exit_gate: Seat, lab, model, cluster, evidence, support, and cost views reconcile to source data.
+  live_mutation_policy: forbidden
+- id: governed-integrations
+  title: DeepField, StarGate, and GeoLux or GCL integrations
+  kind: implementation
+  initially_active: false
+  depends_on: [observability-finops]
+  owned_paths: [backend/app/integrations/, backend/app/adapters/rhdp/stargate_capacity.py, docs/stargate-product-telemetry-contract.md]
+  entry_gate: Signal, evidence, recommendation, and execution authorities are explicitly separated.
+  exit_gate: Integration outages never block lifecycle authority and recommendations cannot bypass policy or approval.
+  live_mutation_policy: forbidden
+- id: lab-content-ai
+  title: Lab content, Showroom, and AI workload performance
+  kind: implementation
+  initially_active: false
+  depends_on: [automated-lab-intake, artifact-supply-chain]
+  owned_paths: [catalog/, content/, content-intel-llm-cpu-serving/, content-intel-xeon6-agent-201/, content-multi-agent-quickstart/]
+  entry_gate: Learning objective, business outcome, model capability, and deterministic journey are declared.
+  exit_gate: The supported journey passes functional and exact-concurrency model load proof.
+  live_mutation_policy: forbidden
+- id: convergence-release
+  title: Convergence, certification, and staged promotion
+  kind: convergence
+  initially_active: false
+  depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission]
+  owned_paths: [certification/convergence-matrix-v1.yaml, .github/workflows/]
+  entry_gate: Candidate contracts are frozen and every participating stream supplies required local evidence.
+  exit_gate: The unchanged candidate earns its declared promotion stage and retains tested rollback evidence.
+  live_mutation_policy: approval-gated

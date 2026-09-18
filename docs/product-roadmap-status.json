@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-18T16:18:24Z",
+  "updated_at": "2026-09-18T17:56:00Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -215,6 +215,88 @@
         "scripts/validate_catalog_artifacts.py"
       ],
       "note": "The artifact subset of the promotion gate is GREEN-local: CI and make reject mutable, missing, unapproved, and execution-cluster-local image references and retain a JSON receipt. Secret, supported-model, signing, SBOM, cross-cluster cold-pull, rollback, and GREEN-live gates remain open; retained workshops were not changed."
+    },
+    "LP-T114": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/delivery-streams-v1.yaml",
+        "docs/parallel-agentic-delivery.md",
+        "evidence/runs/delivery-governance/red.xml",
+        "evidence/runs/delivery-governance/green-local.xml"
+      ],
+      "note": "Twelve bounded streams, a four-stream initial WIP limit, entry/exit gates, unique ownership, and live-mutation prohibitions are executable and GREEN-local. Human owner assignment and integration use remain open."
+    },
+    "LP-T115": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/delivery-streams-v1.yaml",
+        "scripts/tests/test_validate_delivery_governance.py",
+        "evidence/runs/delivery-governance/report.json"
+      ],
+      "note": "Eight shared contracts have one owner, registered consumers, versions, and repository authorities; live consumer compatibility remains open."
+    },
+    "LP-T116": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "certification/convergence-matrix-v1.yaml",
+        "scripts/validate_delivery_governance.py",
+        "evidence/runs/delivery-governance/report.json"
+      ],
+      "note": "Twelve cross-stream scenarios join all five proof methods with security, capacity, fault, cleanup, and observability dimensions. All scenarios correctly remain RED pending implementation evidence."
+    },
+    "LP-T117": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/delivery-streams-v1.yaml",
+        "docs/parallel-agentic-delivery.md",
+        "scripts/validate_delivery_governance.py"
+      ],
+      "note": "Stream-local, contract, product/capacity, and emergency/live pivots have stable required records and approval boundaries. A real pivot exercise remains open."
+    },
+    "LP-T118": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        ".github/workflows/ci.yml",
+        "Makefile",
+        "scripts/tests/test_validate_delivery_governance.py",
+        "evidence/runs/delivery-governance/green-local.xml"
+      ],
+      "note": "The local fail-closed governance gate and CI step are defined. Remote CI execution is required before GREEN-integration."
     }
   },
   "rubric": [

@@ -69,6 +69,21 @@ A story is not done when its pods are running. It is done when its contract,
 functional journey, authorization, failure behavior, observability, cleanup,
 documentation, and evidence have passed at the declared scale.
 
+## Parallel delivery governance
+
+The execution model is defined in
+[`parallel-agentic-delivery.md`](parallel-agentic-delivery.md). Twelve bounded
+vertical streams share versioned contracts, while no more than four
+implementation streams begin concurrently. Only the convergence stream may
+assemble a release candidate or request an explicitly approved live mutation.
+
+[`delivery-streams-v1.yaml`](../contracts/delivery-streams-v1.yaml) is the
+machine-readable ownership, dependency, pivot, and contract authority.
+[`convergence-matrix-v1.yaml`](../certification/convergence-matrix-v1.yaml) is
+the machine-readable integration and earned-promotion authority. Feature
+streams cannot activate catalogs, rotate shared credentials, reclaim retained
+sessions, migrate control-plane state, or promote themselves.
+
 ## Timeline at a glance
 
 ```mermaid
@@ -83,15 +98,19 @@ gantt
 
     section Repeat
     Release pipeline and onboarding            :h1, 2026-09-21, 4w
+    Automated lab intake                        :h1c, 2026-09-21, 4w
     Repeatable event operations                :h1a, 2026-09-28, 4w
     Experience Wardrobe pilot                  :h1b, 2026-10-05, 2w
+    Convergence and staged promotion            :h1d, 2026-09-21, 4w
 
     section Resilience
     Control-plane HA and Flightpath DR          :h2, 2026-09-28, 8w
+    Control-plane portability                   :h2b, 2026-09-28, 8w
     Public edge and identity hardening          :h2a, 2026-10-05, 7w
 
     section Scale
     Fleet placement and inference admission     :h3, 2026-10-12, 12w
+    Capacity engineering and forecasting        :h3c, 2026-09-21, 8w
     Observability, support, and remediation      :h3a, 2026-10-12, 12w
     StarGate product telemetry                  :h3b, 2026-10-12, 4w
 
@@ -112,12 +131,16 @@ same files or clusters.
 | LP-E001 Pilot closeout | 2–3 agent-days | retention window and event-owner review | 1 week |
 | LP-E002 Immediate catalog corrections | 3–5 agent-days | fresh orders and concurrent participant proof | 2–3 weeks |
 | LP-E003 Catalog supply pipeline | 5–10 agent-days | registry, signing, ownership and promotion approval | 3–4 weeks |
+| LP-E019 Automated lab intake | 5–8 agent-days | source-owner review and generated one-seat certification | 3–4 weeks |
 | LP-E004 Repeatable event operations | 4–7 agent-days | three rehearsals and reclaim observation | 3–4 weeks |
+| LP-E022 Convergence and earned promotion | 4–8 agent-days | shared-contract freeze, live canaries and human acceptance | continuous; first candidate 3–4 weeks |
 | LP-E005 Control-plane HA | 8–15 agent-days | HA infrastructure, failure injection and soak | 4–8 weeks |
 | LP-E006 Flightpath DR | 5–10 agent-days | hard fencing plus three timed drills | 3–6 weeks |
+| LP-E021 Control-plane portability | 7–12 agent-days | target infrastructure, restore, migration and rollback proof | 4–8 weeks |
 | LP-E007 Public identity/edge | 5–10 agent-days | DNS/TLS/security decisions and 25-user browser run | 3–7 weeks |
 | LP-E008 Fleet management | 7–12 agent-days | credentials and per-cluster certification | 4–8 weeks |
 | LP-E009 AI-serving/admission | 7–15 agent-days | model capacity, exact prompt load and hardware availability | 4–10 weeks |
+| LP-E020 Capacity engineering | 5–10 agent-days | measured cluster/model supply and forecast calibration | 3–8 weeks |
 | LP-E010 Operations/observability | 5–10 agent-days | datasource access and injected incident rehearsal | 3–6 weeks |
 | LP-E011 Safe remediation | 3–5 agent-days per failure class | authorization, fault and rollback proof per class | continuous |
 | LP-E017 StarGate telemetry | 5–10 agent-days | StarGate consumer, retention and security ownership | 3–4 weeks |
@@ -238,6 +261,48 @@ an order.**
 - **Gate:** cold-node and registry-restart tests succeed on every certified
   execution cluster.
 
+### LP-E019 — Automated lab intake and certification
+
+**LP-S025 — As a solution owner, I can submit one immutable quickstart
+repository and receive a safe, reviewable, certified catalog draft.**
+
+- `LP-T096` Add a self-service intake API and admin workflow for repository,
+  immutable revision, owner, audience, duration, lab type, and expected scale.
+- `LP-T097` Discover Antora content, manifests, Containerfiles, images, models,
+  Operators, ports, storage, secrets, resource envelopes, and cleanup behavior.
+- `LP-T098` Generate the catalog record, deployment package, functional
+  journey, certification contract, ownership record, and initial support plan.
+- `LP-T099` Default generated entries to draft, internal-only, and one-seat;
+  fail closed on ambiguous, privileged, mutable, or unsupported requirements.
+- `LP-T100` Run source, content, artifact, security, model, one-seat lifecycle,
+  restart, and zero-residue reclaim gates without editing a live catalog.
+- `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
+  release identity, approval history, and rollback metadata in the admin UI.
+- **Gate:** a new quickstart progresses from immutable repository revision to a
+  certified draft and approved promotion without a bespoke platform code edit.
+
+### LP-E022 — Parallel convergence and earned promotion
+
+**LP-S028 — As the product owner, independently developed streams converge on
+one compatible candidate that earns each release stage through evidence.**
+
+- `LP-T114` Version the parallel-stream ownership, dependency, entry/exit gate,
+  prohibited-mutation, and work-in-progress contract.
+- `LP-T115` Maintain one shared-contract registry with owner, consumers,
+  version, compatibility window, and repository authority.
+- `LP-T116` Maintain a machine-readable convergence matrix joining TDD, EDD,
+  CDD, BDD, CBT, security, capacity, fault, rollback, and cleanup evidence.
+- `LP-T117` Record stream-local, contract, product/capacity, and emergency/live
+  pivots without rewriting completed evidence or the active candidate.
+- `LP-T118` Fail CI on ownership conflicts, unknown or cyclic dependencies,
+  illegal live-mutation authority, missing evidence, or unsupported green
+  claims.
+- `LP-T119` Promote one unchanged signed candidate through local, integration,
+  canary, staging, limited-production, and production gates with human
+  acceptance and tested rollback.
+- **Gate:** a candidate cannot skip a stage or self-promote; every accepted
+  stage has compatible contracts and complete linked evidence.
+
 ### LP-E004 — Repeatable event orchestration
 
 **LP-S006 — As an instructor, I can schedule, launch, monitor, and reclaim an
@@ -334,6 +399,28 @@ without split brain or retargeting active cleanup.**
 - **Gate:** five-minute RPO and fifteen-minute RTO are demonstrated, all active
   `cluster_ref` values remain correct, and audit/evidence is complete.
 
+### LP-E021 — Control-plane portability and production-home promotion
+
+**LP-S027 — As the service owner, I can install, restore, migrate, and roll back
+Launchpad on a candidate home without rebuilding state manually.**
+
+- `LP-T108` Define portable prerequisites for compute, storage, database,
+  identity, registry, GitOps, secrets, edge, observability, and execution-cluster
+  connectivity without naming an implicit execution-cluster authority.
+- `LP-T109` Produce a declarative clean bootstrap from immutable releases and
+  approved out-of-band secrets.
+- `LP-T110` Version and test backup, restore, schema migration, identity realm,
+  catalog, policy, evidence, and cluster-registry recovery.
+- `LP-T111` Reconcile in-flight workshops, sessions, entitlements,
+  reservations, and persisted `cluster_ref` values after restore or migration.
+- `LP-T112` Automate edge cutover, prior-plane fencing, health validation,
+  rollback, and failback without split brain.
+- `LP-T113` Certify clean install, restore, migration, rollback, and complete
+  reclaim before a candidate home may be called staging or production.
+- **Gate:** an empty approved target can become the authoritative control plane,
+  continue or safely reconcile existing work, and return to the prior plane
+  within the declared RPO/RTO using unchanged signed artifacts.
+
 ### LP-E007 — Highly available public identity and edge
 
 **LP-S009 — As a participant, I can claim and resume my labs through one stable
@@ -399,6 +486,29 @@ capacity is available.**
   without exposing model endpoints publicly.
 - **Gate:** an intentionally saturated or incompatible model prevents admission
   before seat creation; a compatible order completes its functional load test.
+
+### LP-E020 — Capacity engineering, forecasting, and admission
+
+**LP-S026 — As an event and operations owner, I can forecast, reserve, admit,
+and reconcile complete event demand across cluster and model supply.**
+
+- `LP-T102` Join cohort demand, labs per participant, retention, provisioning
+  waves, catalog envelopes, and deployment class into a versioned forecast.
+- `LP-T103` Measure eligible CPU, memory, pods, storage, routes, image
+  availability, model replicas, concurrency, tokens, queues, and DR headroom.
+- `LP-T104` Reserve cluster and inference supply atomically for the whole
+  workshop and reject or queue demand before creating seats when any dimension
+  is insufficient.
+- `LP-T105` Keep deterministic eligibility and admission authoritative; permit
+  AI only to forecast or recommend among policy-eligible choices.
+- `LP-T106` Reconcile forecast, reservation, provisioned request, actual use,
+  reclaim release, latency, and failure data by event, workshop, catalog,
+  cluster, model, and seat.
+- `LP-T107` Prove concurrent-order protection, maintenance/quarantine behavior,
+  model saturation, cache loss, capacity drift, and reservation release.
+- **Gate:** three event forecasts remain within the accepted error budget,
+  concurrent orders never overbook or split a workshop, and all capacity is
+  released and reconciled after reclaim.
 
 ### LP-E010 — Operations, observability, and support
 

@@ -55,10 +55,15 @@ jobs:
           # set to the release-candidate supply-chain code introduced here.
           ruff check app/ tests/ --select E9,F63,F7,F82
           ruff check app/services/catalog_supply_chain.py tests/test_catalog_supply_chain.py
+          cd ..
+          ruff check scripts/validate_delivery_governance.py scripts/tests/test_validate_delivery_governance.py
 
       - name: Validate product roadmap dashboard
         run: |
           python -m pytest scripts/tests/test_generate_product_roadmap_dashboard.py -q
+          python -m pytest scripts/tests/test_validate_delivery_governance.py -q
+          python scripts/validate_delivery_governance.py \
+            --output "${{ runner.temp }}/delivery-governance.json"
           python scripts/generate_product_roadmap_dashboard.py --check
 
       - name: Unit tests
@@ -104,6 +109,13 @@ jobs:
         with:
           name: test-receipt
           path: ${{ runner.temp }}/launchpad-receipts/ci-latest.json
+
+      - name: Upload delivery governance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: delivery-governance-receipt
+          path: ${{ runner.temp }}/delivery-governance.json
 
   catalog-onboarding:
     name: Catalog Onboarding Contracts
