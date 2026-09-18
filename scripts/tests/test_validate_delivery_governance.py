@@ -35,11 +35,11 @@ def test_repository_delivery_governance_is_valid():
     report = module.validate(streams, matrix, root=ROOT)
 
     assert report["valid"] is True
-    assert report["stream_count"] == 14
+    assert report["stream_count"] == 15
     assert report["initial_active_count"] == 4
     assert report["convergence_stream"] == "convergence-release"
-    assert report["contract_count"] == 14
-    assert report["scenario_count"] >= 23
+    assert report["contract_count"] == 15
+    assert report["scenario_count"] >= 24
 
 
 def test_unknown_dependency_and_overlapping_ownership_fail_closed():

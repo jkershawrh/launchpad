@@ -66,6 +66,11 @@ contracts:
   owner: capacity-admission
   path: config/clusters.yaml
   consumers: [event-orchestration, ha-dr-fleet, control-plane-portability, observability-finops, convergence-release]
+- id: ai-control-plane-gateway-v1
+  version: 1.0.0
+  owner: ai-control-plane-gateway
+  path: contracts/ai-control-plane-gateway-v1.yaml
+  consumers: [capacity-admission, security-identity, observability-finops, lab-content-ai, convergence-release]
 - id: public-access-v2
   version: 2.0.0
   owner: security-identity
@@ -153,6 +158,15 @@ streams:
   entry_gate: Catalog resource and model envelopes are versioned.
   exit_gate: Deterministic reservations reject overcommit before seat creation and reconcile forecast to actual use.
   live_mutation_policy: forbidden
+- id: ai-control-plane-gateway
+  title: Governed AI control plane, gateway, and model-service access
+  kind: implementation
+  initially_active: false
+  depends_on: [capacity-admission, security-identity]
+  owned_paths: [contracts/ai-control-plane-gateway-v1.yaml, backend/app/services/ai_gateway/]
+  entry_gate: Lifecycle authority, gateway ownership, provider contracts, identity boundary, and model capability schema are approved.
+  exit_gate: Two replaceable providers pass gateway compatibility, security, exact-concurrency load, failure, recovery, attribution, and rollback proof.
+  live_mutation_policy: forbidden
 - id: participant-experience
   title: Participant, instructor, requester, and admin experience
   kind: implementation
@@ -238,7 +252,7 @@ streams:
   title: Convergence, certification, and staged promotion
   kind: convergence
   initially_active: false
-  depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, organizational-readiness]
+  depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, ai-control-plane-gateway, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, organizational-readiness]
   owned_paths: [contracts/production-readiness-v1.yaml, certification/convergence-matrix-v1.yaml, .github/workflows/]
   entry_gate: Candidate contracts are frozen and every participating stream supplies required local evidence.
   exit_gate: The unchanged candidate earns its declared promotion stage through usable production-shaped tests and retains tested rollback evidence.

@@ -52,6 +52,12 @@ scenarios:
   contracts: [event-manifest-v1, cluster-profile-v1, artifact-policy-v1]
   outcome: Insufficient cluster, model, route, storage, or artifact capacity rejects the order before seat creation.
 - <<: *scenario_defaults
+  id: governed-ai-gateway-and-provider-failover
+  owner: ai-control-plane-gateway
+  participating_streams: [ai-control-plane-gateway, capacity-admission, security-identity, observability-finops, lab-content-ai]
+  contracts: [ai-control-plane-gateway-v1, cluster-profile-v1, admin-observability-v1, data-ai-governance-v1]
+  outcome: Labs consume one attributed gateway contract while deterministic policy governs eligibility, quota, routing, fallback, provider loss, credential rotation, and cross-tenant denial across replaceable serving providers.
+- <<: *scenario_defaults
   id: participant-public-claim-and-resume
   owner: participant-experience
   participating_streams: [participant-experience, security-identity, event-orchestration]
@@ -169,7 +175,7 @@ scenarios:
 - <<: *scenario_defaults
   id: end-to-end-staged-release
   owner: convergence-release
-  participating_streams: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, organizational-readiness, convergence-release]
-  contracts: [catalog-package-v1, artifact-policy-v1, event-manifest-v1, cluster-profile-v1, public-access-v2, admin-observability-v1, lifecycle-evidence-v1, control-plane-recovery-v1, production-readiness-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1, organizational-readiness-v1]
+  participating_streams: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, ai-control-plane-gateway, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, organizational-readiness, convergence-release]
+  contracts: [catalog-package-v1, artifact-policy-v1, event-manifest-v1, cluster-profile-v1, ai-control-plane-gateway-v1, public-access-v2, admin-observability-v1, lifecycle-evidence-v1, control-plane-recovery-v1, production-readiness-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1, organizational-readiness-v1]
   release_dimensions: [product_value, commercial_readiness, service_ownership, organizational_readiness, legal_compliance]
   outcome: One unchanged candidate advances only through earned gates and completes usability, scale, performance, operations, governance, commercial, failure, rollback, and zero-residue reclaim proof.

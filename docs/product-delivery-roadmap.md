@@ -79,7 +79,7 @@ pivot policy.
 ## Parallel delivery governance
 
 The execution model is defined in
-[`parallel-agentic-delivery.md`](parallel-agentic-delivery.md). Fourteen bounded
+[`parallel-agentic-delivery.md`](parallel-agentic-delivery.md). Fifteen bounded
 vertical streams share versioned contracts, while no more than four
 implementation streams begin concurrently. Only the convergence stream may
 assemble a release candidate or request an explicitly approved live mutation.
@@ -111,12 +111,14 @@ gantt
     Convergence and staged promotion            :h1d, 2026-09-21, 4w
 
     section Resilience
+    Permanent-home readiness intake             :milestone, home, 2026-09-25, 0d
     Control-plane HA and Flightpath DR          :h2, 2026-09-28, 8w
     Control-plane portability                   :h2b, 2026-09-28, 8w
     Public edge and identity hardening          :h2a, 2026-10-05, 7w
 
     section Scale
     Fleet placement and inference admission     :h3, 2026-10-12, 12w
+    AI control plane and gateway                 :h3d, 2026-10-12, 12w
     Capacity engineering and forecasting        :h3c, 2026-09-21, 8w
     Observability, support, and remediation      :h3a, 2026-10-12, 12w
     StarGate product telemetry                  :h3b, 2026-10-12, 4w
@@ -151,6 +153,7 @@ same files or clusters.
 | LP-E007 Public identity/edge | 5–10 agent-days | DNS/TLS/security decisions and 25-user browser run | 3–7 weeks |
 | LP-E008 Fleet management | 7–12 agent-days | credentials and per-cluster certification | 4–8 weeks |
 | LP-E009 AI-serving/admission | 7–15 agent-days | model capacity, exact prompt load and hardware availability | 4–10 weeks |
+| LP-E029 AI control plane/gateway | 8–15 agent-days | gateway ownership, security architecture, model-provider contracts, HA and representative load | 6–12 weeks |
 | LP-E020 Capacity engineering | 5–10 agent-days | measured cluster/model supply and forecast calibration | 3–8 weeks |
 | LP-E010 Operations/observability | 5–10 agent-days | datasource access and injected incident rehearsal | 3–6 weeks |
 | LP-E011 Safe remediation | 3–5 agent-days per failure class | authorization, fault and rollback proof per class | continuous |
@@ -434,9 +437,18 @@ Launchpad on a candidate home without rebuilding state manually.**
   rollback, and failback without split brain.
 - `LP-T113` Certify clean install, restore, migration, rollback, and complete
   reclaim before a candidate home may be called staging or production.
+- `LP-T182` On receipt of the permanent-home environment, run a fail-closed
+  readiness intake covering hardware and failure domains, OpenShift version,
+  storage, registry, DNS/TLS, ingress/egress, identity, secrets, backup,
+  observability, ownership, support, and execution-cluster connectivity.
 - **Gate:** an empty approved target can become the authoritative control plane,
   continue or safely reconcile existing work, and return to the prior plane
   within the declared RPO/RTO using unchanged signed artifacts.
+
+**Planning dependency:** the permanent home is expected late next week,
+provisionally September 24–25, 2026. Delivery of infrastructure is not proof of
+readiness and does not authorize migration. `LP-T182` must publish the accepted
+gaps and evidence before bootstrap, restore, or cutover work begins.
 
 ### LP-E007 — Highly available public identity and edge
 
@@ -503,6 +515,49 @@ capacity is available.**
   without exposing model endpoints publicly.
 - **Gate:** an intentionally saturated or incompatible model prevents admission
   before seat creation; a compatible order completes its functional load test.
+
+### LP-E029 — Governed AI control plane and gateway
+
+This is intentionally separate from the **Launchpad lifecycle control plane**.
+Launchpad owns orders, placement, sessions, access, evidence, and reclaim. The
+AI control plane owns governed discovery and consumption of model, embedding,
+reranking, tool-calling, and semantic-routing services. Model runtimes remain
+replaceable data-plane providers behind the gateway.
+
+**LP-S035 — As a platform and AI-service owner, I can expose one governed AI
+gateway contract to every eligible lab without coupling labs to a model runtime
+or allowing routing intelligence to bypass policy.**
+
+- `LP-T173` Publish the authority boundary and threat model for the Launchpad
+  lifecycle plane, AI control plane, AI gateway, semantic router, model-serving
+  pools, tool/MCP services, and evidence consumers.
+- `LP-T174` Version the gateway contract for authentication, tenant/workshop/
+  seat attribution, OpenAI-compatible APIs, embeddings, reranking, tools,
+  streaming, timeouts, retry budgets, errors, idempotency, and audit fields.
+- `LP-T175` Build a model and capability registry with immutable provider/model
+  versions, health, context and tool support, safety posture, residency,
+  hardware class, cost class, and deprecation state.
+- `LP-T176` Issue, scope, rotate, and revoke short-lived gateway credentials;
+  prevent labs and public routes from receiving upstream provider credentials.
+- `LP-T177` Implement deterministic policy routing, quota, admission, fallback,
+  and circuit breaking. Semantic/AI decisions may rank already eligible targets
+  but cannot create eligibility or override security and capacity policy.
+- `LP-T178` Separate gateway, router, registry, and runtime failure domains;
+  define HA, degraded-mode, reconciliation, backup/restore, and provider
+  failover behavior without losing attribution or double-billing requests.
+- `LP-T179` Emit privacy-safe per-request metrics and traces for latency, queue,
+  tokens, model/provider, routing reason, retries, failure class, cost/showback,
+  workshop, lab, and pseudonymous seat correlation.
+- `LP-T180` Enforce prompt/tool/RAG security controls, egress policy, content and
+  data-handling policy, rate/abuse limits, immutable audit, and emergency model
+  or tool revocation.
+- `LP-T181` Certify gateway compatibility and behavior at 1, 5, 30, and
+  three-workshop concurrent load, including saturation, long prompts, streaming,
+  provider loss, router loss, credential rotation, rollback, and zero cross-
+  tenant attribution or authorization failures.
+- **Gate:** the unchanged gateway release passes contract, security, functional,
+  load, failure, recovery, cost-attribution, and rollback proof against at least
+  two replaceable serving providers; Launchpad admission remains authoritative.
 
 ### LP-E020 — Capacity engineering, forecasting, and admission
 

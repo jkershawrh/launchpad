@@ -21,9 +21,9 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     model = module.parse_roadmap(ROOT / "docs" / "product-delivery-roadmap.md")
 
     assert len(model["horizons"]) == 5
-    assert len(model["epics"]) == 28
-    assert len(model["stories"]) == 34
-    assert len(model["tasks"]) == 172
+    assert len(model["epics"]) == 29
+    assert len(model["stories"]) == 35
+    assert len(model["tasks"]) == 182
     assert "LP-T095" in model["tasks"]
     assert "lab.step.executed" in model["tasks"]["LP-T095"]["title"]
     assert model["tasks"]["LP-T084"]["epic_id"] == "LP-E002"
@@ -38,6 +38,8 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     assert model["tasks"]["LP-T153"]["epic_id"] == "LP-E026"
     assert model["tasks"]["LP-T162"]["epic_id"] == "LP-E027"
     assert model["tasks"]["LP-T172"]["epic_id"] == "LP-E028"
+    assert model["tasks"]["LP-T181"]["epic_id"] == "LP-E029"
+    assert model["tasks"]["LP-T182"]["epic_id"] == "LP-E021"
 
 
 def test_status_rollup_requires_all_five_proof_methods(tmp_path: Path):
@@ -110,8 +112,12 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "Parallel convergence and earned promotion" in html
     assert "Organizational readiness and knowledge continuity" in html
     assert "Governed open-source distribution" in html
+    assert "Governed AI control plane and gateway" in html
+    assert "On receipt of the permanent-home environment" in html
     assert "Launchpad Knowledge Assistant" in html
     assert "OSS-to-enterprise" in html
+    assert f"Filter the {len(model['tasks'])} tasks" in html
+    assert "Filter the 94 tasks" not in html
     assert "<svg" in html
     assert "Red Hat" in html and "Intel" in html
     assert 'viewBox="0 0 192.30001 146"' in html

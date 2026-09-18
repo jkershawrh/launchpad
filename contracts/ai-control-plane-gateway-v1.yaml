@@ -1,0 +1,31 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: AIControlPlaneGatewayContract
+metadata:
+  name: launchpad-ai-control-plane-gateway
+  version: 1.0.0
+authority:
+  lifecycle_control_plane:
+    owns: [orders, placement, sessions, entitlements, evidence, reclaim]
+  ai_control_plane:
+    owns: [model_registry, gateway_policy, credential_lifecycle, routing_policy]
+  ai_data_plane:
+    owns: [model_runtime, embedding_runtime, reranking_runtime, tool_runtime]
+  invariant: AI recommendations may rank policy-eligible targets but never create eligibility or bypass lifecycle admission.
+identity:
+  required_attribution: [tenant_id, workshop_id, session_id, seat_id, catalog_revision]
+  upstream_credentials_in_labs: forbidden
+  credentials: short-lived-scoped-rotatable-revocable
+gateway:
+  interfaces: [chat_completions, responses, embeddings, reranking, tools, streaming]
+  required_behavior: [timeouts, retry_budgets, idempotency, circuit_breaking, deterministic_errors, audit]
+registry:
+  required_fields: [provider, model, immutable_version, health, capabilities, context_limit, tool_support, safety_posture, residency, hardware_class, cost_class, deprecation_state]
+telemetry:
+  required_dimensions: [latency, queue, tokens, provider, model, routing_reason, retries, failure_class, cost, workshop, lab, pseudonymous_seat]
+  prompt_or_response_payload_capture: forbidden-by-default
+security:
+  required_controls: [tenant_isolation, prompt_and_tool_policy, egress_policy, abuse_limits, audit, emergency_revocation]
+certification:
+  concurrency: [1, 5, 30, three-workshop]
+  failures: [provider_loss, router_loss, gateway_replica_loss, credential_rotation, saturation, long_prompt, streaming_interruption]
+  release_requires: [contract, security, functional, load, recovery, attribution, rollback]

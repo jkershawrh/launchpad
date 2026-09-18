@@ -50,22 +50,23 @@ candidate already being certified.
 
 ## Streams
 
-The delivery model defines fourteen streams:
+The delivery model defines fifteen streams:
 
 1. automated lab intake and certification;
 2. artifact supply chain and authoritative registry;
 3. repeatable event orchestration;
 4. capacity engineering, forecasting, and admission;
-5. participant, instructor, requester, and admin experience;
-6. security, identity, isolation, and governance;
-7. high availability, disaster recovery, and fleet lifecycle;
-8. control-plane portability and earned promotion;
-9. SRE, observability, evidence, support, and FinOps;
-10. DeepField, StarGate, and GeoLux or GCL integrations;
-11. lab content, Showroom, and AI workload performance;
-12. product, go-to-market, sales enablement, and customer success;
-13. organizational readiness, knowledge continuity, training, and workforce; and
-14. convergence, certification, and staged promotion.
+5. governed AI control plane, gateway, and model-service access;
+6. participant, instructor, requester, and admin experience;
+7. security, identity, isolation, and governance;
+8. high availability, disaster recovery, and fleet lifecycle;
+9. control-plane portability and earned promotion;
+10. SRE, observability, evidence, support, and FinOps;
+11. DeepField, StarGate, and GeoLux or GCL integrations;
+12. lab content, Showroom, and AI workload performance;
+13. product, go-to-market, sales enablement, and customer success;
+14. organizational readiness, knowledge continuity, training, and workforce; and
+15. convergence, certification, and staged promotion.
 
 The initial four active implementation streams are intake, artifact supply,
 event orchestration, and capacity admission. Security and portability contract
