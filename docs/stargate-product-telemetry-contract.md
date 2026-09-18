@@ -114,7 +114,18 @@ data or unbounded Prometheus labels.
 - `access.claimed`, `access.recovered`, `access.denied`, `access.rotated`,
   `access.expired`, `access.revoked`;
 - `journey.started`, `journey.checkpoint`, `journey.completed`,
-  `journey.failed` with allow-listed journey/stage identifiers.
+  `journey.failed` with allow-listed journey/stage identifiers;
+- `lab.step.started`, `lab.step.executed`, `lab.step.succeeded`,
+  `lab.step.failed`, and `lab.checkpoint.completed` with stable catalog-release,
+  module, step, curated-command, workshop, seat, and anonymized-participant
+  identifiers plus execution source, outcome, duration, and timestamp.
+
+An Execute-button click is not proof that a command ran. `lab.step.executed`
+is emitted only after the terminal or workload execution boundary accepts the
+curated action; success and failure require an observed terminal/workload
+result. Curated steps carry a stable command ID or approved content digest.
+Free-form terminal command text, prompts, responses, documents, credentials,
+and participant email addresses are never captured by this event family.
 
 ### Runtime, artifact, and inference dependency
 

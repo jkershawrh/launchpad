@@ -184,7 +184,10 @@ the complete reclaim lifecycle without deleting active work prematurely.**
 model, trust, content, and persistent state.**
 
 - `LP-T008` Replace all execution-cluster registry references with approved
-  immutable Quay/HA-registry digests.
+  immutable Quay/HA-registry digests. **GREEN-local:** the three pilot catalogs
+  now have a fail-closed artifact policy and machine-readable report covering
+  immutable Showroom commits and five pinned images; signature, SBOM,
+  organization-owned registry, cold-pull, and fresh-seat proof remain open.
 - `LP-T009` mount the trusted model CA and remove global TLS verification
   bypasses.
 - `LP-T010` Persist AnythingLLM state and make initialization idempotent.
@@ -218,7 +221,10 @@ editing the live environment.**
 - `LP-T016` Show the exact release identity in requester, participant, and admin
   views.
 - `LP-T017` Block promotion when a cross-cluster image, mutable tag, secret, or
-  unsupported model is detected.
+  unsupported model is detected. **GREEN-local (artifact subset):** CI and the
+  local `catalog-artifacts` gate reject mutable, unapproved, missing, and
+  execution-cluster-local image references and retain a JSON receipt. Secret,
+  model-compatibility, signature, SBOM, and deployed pullability gates remain.
 - **Gate:** one quickstart repository enters through the pipeline and reaches a
   production catalog without a bespoke platform edit.
 
@@ -443,11 +449,15 @@ of truth.**
   coverage, sequence-gap, and failure-class telemetry.
 - `LP-T078` Prove StarGate downtime never blocks Launchpad and no accepted
   lifecycle event is lost through restart/network fault tests.
-- `LP-T095` Emit privacy-safe post-event participant activity with separate
-  `claimed`, `authenticated`, `opened`, `active`, and `completed` states,
-  anonymized participant/seat correlation, event cutoff, activity timestamp,
-  and source. Exclude raw prompts, documents, codes, secrets, and email from
-  analytical evidence; never infer completion from a claim or route request.
+- `LP-T095` Emit privacy-safe `lab.step.started`, `lab.step.executed`, `lab.step.succeeded`, `lab.step.failed`, and `lab.checkpoint.completed` events.
+  Correlate stable catalog release, module, step, curated command, workshop,
+  seat, and anonymized participant identifiers with outcome, duration,
+  timestamp, and execution source. Preserve separate `claimed`,
+  `authenticated`, `opened`, `active`, and `completed` journey states. Record
+  a stable command ID or content digest for curated Showroom actions, never raw
+  terminal commands. Exclude raw prompts, responses, documents, codes,
+  secrets, and email from analytical evidence; never infer execution or
+  completion from a button click, claim, route request, or authorization check.
 - **Gate:** 1-seat, 5-seat, and certified-scale runs have complete ordered
   receipts and reclaim evidence with zero secrets/PII in logs or metrics.
 

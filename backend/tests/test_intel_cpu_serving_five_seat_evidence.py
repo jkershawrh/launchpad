@@ -76,7 +76,10 @@ def test_cpu_serving_certification_driver_uses_the_participant_boundary():
     assert "@base64d" in script
     assert "Showroom did not render the required model connection values" not in script
     assert "sed -n 's/.*export MAAS_API_KEY" not in script
-    assert "anythingllm-openshift@sha256:" in script
+    assert (
+        "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:"
+        "20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613"
+    ) in script
     assert 'name: "rag"' in script
     assert 'path: "/api/ping"' in script
     assert "tcpSocket" not in script

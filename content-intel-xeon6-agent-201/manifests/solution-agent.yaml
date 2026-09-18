@@ -60,7 +60,7 @@ spec:
             - name: MCP_SERVER_URL
               value: http://solution-tools:8095
             - name: ADVISOR_MODEL
-              value: granite-2b-cpu
+              value: granite-3.2-8b-tools
             - name: SSL_CERT_FILE
               value: /etc/launchpad-ca/ca-bundle.crt
             - name: REQUESTS_CA_BUNDLE

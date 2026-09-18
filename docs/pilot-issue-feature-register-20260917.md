@@ -22,6 +22,43 @@ Owners and target releases should be assigned during backlog triage. Severity
 uses `S0` for event-stopping, `S1` for participant-critical, `S2` for degraded
 operation, and `S3` for improvement work.
 
+## Pilot-track triage index
+
+The accountable owner below is a role until a named human accepts it. A role
+assignment routes the work; it does not satisfy the human-ownership gate. All
+implementation remains repository/CI-only while retained pilot workshops are
+active. No item in this table authorizes a rollout, credential change, scale
+operation, cluster maintenance action, or reclaim.
+
+| Item | Accountable role | Target | Roadmap/proof lane |
+|---|---|---|---|
+| `PILOT-OPS-001` | Event product owner | H1 | `LP-E004`, immutable event manifest and capacity rejection |
+| `PILOT-BUG-001` | Artifact/supply-chain owner | H0 → H1 | `LP-T008`, `LP-E003`, cold pull on every target |
+| `PILOT-BUG-002` | Platform security owner | H0 | `LP-T009`, trusted/invalid certificate tests |
+| `PILOT-BUG-003` | AI platform owner | H0 | `LP-T011`, exact tool-capability admission test |
+| `PILOT-BUG-004` | Serve-LLMs application owner | H0 | `LP-T010`, restart/reschedule state-retention test |
+| `PILOT-BUG-005` | Catalog release owner | H1 | `LP-T016`, release identity and drift proof |
+| `PILOT-BUG-006` | Fleet/SRE owner | H3 | `LP-E008`, node/network soak and disruption proof |
+| `PILOT-BUG-007` | Edge/identity owner | H2 | `LP-E007`, connector and worker fault injection |
+| `PILOT-BUG-008` | Artifact/supply-chain owner | H1 | `LP-E003`, cold-pull and registry-restart proof |
+| `PILOT-BUG-009` | Platform/application owners | H0 → H1 | `LP-E002`/`LP-E003`, state-preserving configuration proof |
+| `PILOT-BUG-010` | Remediation owner | H3 | `LP-E011`, drift/restart/idempotency proof |
+| `PILOT-BUG-011` | Telemetry owner | H3 | `LP-T076`, producer/consumer outcome contract |
+| `PILOT-BUG-012` | Telemetry owner | H3 | `LP-T074`/`LP-T078`, outbox, receipt, replay and fault proof |
+| `PILOT-BUG-013` | Multi-Agent application owner | H0 | `LP-T084`, authenticated client and participant journey |
+| `PILOT-PERF-001` | AI workload owner | H0 | `LP-T012`, exact-concurrency stage-latency proof |
+| `PILOT-PERF-002` | AI serving owner | H3 | `LP-E009`, 30-user inference SLO proof |
+| `PILOT-PERF-003` | Placement/AI serving owners | H3 | `LP-E009`, saturated-model admission and release proof |
+| `PILOT-FEAT-001` | Artifact/supply-chain owner | H1 | `LP-E003`, signed immutable promotion pipeline |
+| `PILOT-FEAT-002` | Release engineering owner | H1 | `LP-E003`, test-to-approval-to-production evidence |
+| `PILOT-FEAT-003` | Observability/AI serving owners | H3 | `LP-E009`/`LP-E010`, seat/model attribution and admission |
+| `PILOT-FEAT-004` | Edge/identity owner | H2 | `LP-E007`, public journey during connector failure |
+| `PILOT-FEAT-005` | Lifecycle/remediation owner | H3 | `LP-E011`, safe retry, reclaim, and zero residue |
+| `PILOT-FEAT-006` | Fleet qualification owner | H3 | `LP-E008`/`LP-E009`, versioned measured qualification matrix |
+| `PILOT-FEAT-007` | Operations product owner | H3 | `LP-E010`, incident-to-evidence workflow |
+| `PILOT-FEAT-008` | StarGate telemetry owner | H3 | `LP-E017`, durable evidence and truthful product summary |
+| `PILOT-FEAT-009` | Experience/content owner | H1 | `LP-E018`, curated profile and evaluation proof |
+
 ## Event planning and operating-model findings
 
 ### PILOT-OPS-001 — Participant count was mistaken for total seat-environments
@@ -61,9 +98,17 @@ operation, and `S3` for improvement work.
 - **Durable fix:** prohibit cluster-local registry references in promoted
   catalogs; publish signed immutable images to the approved HA registry and
   validate pullability from every eligible destination before placement.
+- **GREEN-local correction:** a repository-native artifact policy now records
+  the three pilot catalogs, their immutable Showroom revisions, and five
+  digest-pinned runtime images. The promotion validator fails closed on mutable
+  tags, unapproved repositories, missing artifacts, or execution-cluster-local
+  registries. Current evidence covers the future release contract only; it did
+  not rebuild, roll, or otherwise modify any retained workshop.
 - **Proof to close:** contract test rejects internal registry references, cold
   pulls succeed on every target cluster, and a newly provisioned workshop uses
-  only recorded immutable digests without a live guard.
+  only recorded immutable digests without a live guard. Signing, SBOMs,
+  organization-owned registry transfer, and cross-cluster cold-pull proof stay
+  open for the integration/live gates.
 
 ### PILOT-BUG-002 — Model endpoint trust is not portable across clusters
 
@@ -74,6 +119,12 @@ operation, and `S3` for improvement work.
   `NODE_TLS_REJECT_UNAUTHORIZED=0`.
 - **Durable fix:** distribute and mount the approved model-serving CA bundle,
   configure Node/OpenAI clients to use it, and remove the global TLS bypass.
+- **GREEN-local correction:** future Serve LLMs content and its certification
+  driver mount the provisioned `launchpad-model-ca-bundle` read-only and set
+  `NODE_EXTRA_CA_CERTS` for AnythingLLM. They prohibit
+  `NODE_TLS_REJECT_UNAUTHORIZED`; retained workloads were not rolled. Remaining
+  participant CLI `curl -k` examples, certificate rotation, invalid-certificate
+  rejection, and fresh-seat evidence keep this item open.
 - **Proof to close:** HTTPS verification succeeds from a newly provisioned seat
   with the bypass absent, invalid certificates are rejected, and certificate
   rotation passes a recovery test.
@@ -87,6 +138,11 @@ operation, and `S3` for improvement work.
   `granite-3.2-8b-tools`.
 - **Durable fix:** declare required model capabilities in the catalog and filter
   placement/model selection using a versioned capability contract.
+- **GREEN-local correction:** future Serve LLMs catalog revision `1.0.12`
+  declares `chat`, `streaming`, and `tool_calling`, requires both the 8B tools
+  and 2B learning-path models, and selects the 8B tools model first for the
+  complete participant journey. This changes no retained workshop. Capability
+  inventory enforcement and live functional certification remain open.
 - **Proof to close:** certification executes the exact tool-calling stream, not
   a generic chat probe, and fails placement when no compatible model exists.
 
@@ -99,6 +155,11 @@ operation, and `S3` for improvement work.
   embedded lab documents were recreated for active seats.
 - **Durable fix:** persist participant workspace state in a PVC or approved
   external service and make initialization idempotent.
+- **GREEN-local correction:** future Serve LLMs content now creates an
+  idempotent, seat-scoped 2 GiB `ReadWriteOnce` PVC, mounts it at AnythingLLM's
+  storage directory, declares the storage in catalog capacity, and exercises
+  the same manifest shape in the certification driver. No retained pod or PVC
+  was changed. Restart/reschedule and complete reclaim proof remain open.
 - **Proof to close:** restart and reschedule the workload during certification;
   the same API key, workspace, document metadata, and embeddings remain usable.
 
@@ -210,6 +271,12 @@ operation, and `S3` for improvement work.
 - **Durable fix:** use one authenticated orchestrator client for every protected
   UI call, including agent discovery, and render discovery failure separately
   from workflow execution state.
+- **GREEN-local correction:** the Launchpad future-image BuildConfig now
+  transforms the pinned participant UI so `GET /api/v1/agents` uses the same
+  `_headers()` bearer-token helper as protected workflow calls. The build also
+  fails if that authenticated discovery expression is absent. This does not
+  alter retained workshops and is not a substitute for correcting and
+  releasing the upstream quickstart source.
 - **Proof to close:** component tests assert the bearer header on every protected
   endpoint; a fresh seat displays discovered agents and completes the streamed
   workflow; missing/invalid tokens still receive 401; the certified concurrent
@@ -226,6 +293,12 @@ operation, and `S3` for improvement work.
   LLM synthesis, not MCP discovery.
 - **Near-term work:** shorten the system/custom prompt, reduce requirements and
   brief token budgets, cache static MCP results, and show stage-level progress.
+- **GREEN-local correction:** the future content now uses
+  `granite-3.2-8b-tools`, retains bounded `192`/`512` requirement/brief token
+  budgets, reduces the required response structure, and caps the brief at 350
+  words instead of 800. The retained workshops and their pinned content were
+  not changed. A new immutable content revision, fresh seat, and measured
+  concurrent journey are still required.
 - **Proof to close:** the exact participant prompt succeeds at the certified
   concurrency with recorded stage timings and acceptable p95 latency.
 
@@ -262,6 +335,11 @@ operation, and `S3` for improvement work.
 - Publish images and Showroom content once to an approved HA registry/content
   source, scan/sign them, promote immutable digests from test to production,
   pre-pull event artifacts, and retain rollback metadata.
+- **GREEN-local artifact gate:** the release policy is executable through both
+  `make catalog-artifacts` and CI. CI retains its machine-readable validation
+  report with the onboarding receipts and fails before promotion if a pilot
+  artifact becomes mutable, missing, unapproved, or cluster-local. Secret,
+  supported-model, signing, SBOM, pre-pull, and live rollback checks remain.
 
 ### PILOT-FEAT-002 — Release-aware catalog CI/CD
 

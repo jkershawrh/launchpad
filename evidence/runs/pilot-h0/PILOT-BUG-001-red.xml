@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.077" timestamp="2026-09-18T11:15:25.627425-05:00" hostname="jkershaw-mac"><testcase classname="" name="backend.tests.test_catalog_supply_chain" time="0.000"><error message="collection failure">ImportError while importing test module '/Users/jkershaw/Documents/launchpad/backend/tests/test_catalog_supply_chain.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../.local/share/uv/python/cpython-3.14.6-macos-aarch64-none/lib/python3.14/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+backend/tests/test_catalog_supply_chain.py:5: in &lt;module&gt;
+    from app.services.catalog_supply_chain import (
+E   ModuleNotFoundError: No module named 'app.services.catalog_supply_chain'</error></testcase></testsuite></testsuites>

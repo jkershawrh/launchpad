@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.101" timestamp="2026-09-18T10:54:51.027646-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_showroom_content_package" name="test_cpu_serving_catalog_admits_the_models_and_capabilities_used_by_the_full_journey" time="0.003"><failure message="AssertionError: assert ['granite-2b-cpu'] == ['granite-3.2...anite-2b-cpu']&#10;  &#10;  At index 0 diff: 'granite-2b-cpu' != 'granite-3.2-8b-tools'&#10;  Right contains one more item: 'granite-2b-cpu'&#10;  Use -v to get more diff">def test_cpu_serving_catalog_admits_the_models_and_capabilities_used_by_the_full_journey():
+        catalog = yaml.safe_load(
+            (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
+        )
+        metadata = catalog["metadata"]
+
+&gt;       assert metadata["required_models"] == [
+            "granite-3.2-8b-tools",
+            "granite-2b-cpu",
+        ]
+E       AssertionError: assert ['granite-2b-cpu'] == ['granite-3.2...anite-2b-cpu']
+E
+E         At index 0 diff: 'granite-2b-cpu' != 'granite-3.2-8b-tools'
+E         Right contains one more item: 'granite-2b-cpu'
+E         Use -v to get more diff
+
+backend/tests/test_showroom_content_package.py:484: AssertionError</failure></testcase></testsuite></testsuites>

@@ -30,6 +30,7 @@ INTEL_GUIDED_LABS = [
         "content_path": "content-intel-llm-cpu-serving",
         "title": "Serve LLMs on Intel Xeon CPUs",
         "model": "granite-2b-cpu",
+        "models": ["granite-3.2-8b-tools", "granite-2b-cpu"],
         "workspace_route": "rag",
         "content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
         "max_workshop_seats": 30,
@@ -177,7 +178,7 @@ def test_intel_guided_lab_is_native_launchpad_content(lab):
     assert metadata["content_only"] is True
     assert metadata["max_workshop_seats"] == lab["max_workshop_seats"]
     assert metadata["certification_stage"] == lab["certification_stage"]
-    assert metadata["required_models"] == [lab["model"]]
+    assert metadata["required_models"] == lab.get("models", [lab["model"]])
     assert metadata["showroom_content_repo_url"] == ("https://github.com/rhpds/launchpad.git")
     assert metadata["showroom_content_ref"] == lab["content_ref"]
     assert metadata["showroom_content_playbook"] == lab["playbook"]
@@ -327,6 +328,10 @@ def test_agent_201_runtime_bounds_cpu_generation_for_workshop_scale():
     containerfile = (ROOT / "workshop-images/solution-agent/Containerfile").read_text()
     build_config = (ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml").read_text()
     manifest = (ROOT / "content-intel-xeon6-agent-201/manifests/solution-agent.yaml").read_text()
+    prompt = (
+        ROOT
+        / "content-intel-xeon6-agent-201/manifests/advisor-prompt-configmap.yaml"
+    ).read_text()
 
     assert "triforce-solution-agent@sha256:" in containerfile
     assert "REQUIREMENTS_MAX_TOKENS" in containerfile
@@ -344,6 +349,9 @@ def test_agent_201_runtime_bounds_cpu_generation_for_workshop_scale():
     assert "cp -R /app/. /workdir/" in manifest
     assert "triforce-solution-agent@sha256:60897d" in manifest
     assert "image-registry.openshift-image-registry.svc" not in manifest
+    assert "value: granite-3.2-8b-tools" in manifest
+    assert "under 350 words" in prompt
+    assert "under 800 words" not in prompt
 
 
 def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass():
@@ -475,6 +483,23 @@ def test_cpu_serving_content_uses_route_name_that_fits_launchpad_namespace():
     assert 'curl -ks "${MAAS_ENDPOINT}' in content
 
 
+def test_cpu_serving_catalog_admits_the_models_and_capabilities_used_by_the_full_journey():
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
+    )
+    metadata = catalog["metadata"]
+
+    assert metadata["required_models"] == [
+        "granite-3.2-8b-tools",
+        "granite-2b-cpu",
+    ]
+    assert metadata["required_model_capabilities"] == [
+        "chat",
+        "streaming",
+        "tool_calling",
+    ]
+
+
 def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     page = (
         ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
@@ -483,6 +508,10 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
         ROOT / "workshop-images/anythingllm-openshift/Containerfile"
     ).read_text()
     build_config = (ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml").read_text()
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
+    )
+    certifier = (ROOT / "scripts/certify-cpu-serving-seat.sh").read_text()
 
     assert "anything-llm:latest" not in page
     assert (
@@ -491,6 +520,23 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     )
     assert "image-registry.openshift-image-registry.svc" not in page
     assert "STORAGE_DIR" in page
+    assert "kind: PersistentVolumeClaim" in page
+    assert "name: anythingllm-storage" in page
+    assert "claimName: anythingllm-storage" in page
+    assert "mountPath: /tmp/anythingllm-storage" in page
+    assert "emptyDir:" not in page
+    assert "NODE_EXTRA_CA_CERTS" in page
+    assert "mountPath: /etc/launchpad-ca" in page
+    assert "name: launchpad-model-ca-bundle" in page
+    assert "NODE_TLS_REJECT_UNAUTHORIZED" not in page
+    assert catalog["metadata"]["seat_storage_gib"] == 2
+    assert 'kind: "PersistentVolumeClaim"' in certifier
+    assert 'claimName: "anythingllm-storage"' in certifier
+    assert 'mountPath: "/tmp/anythingllm-storage"' in certifier
+    assert 'name: "NODE_EXTRA_CA_CERTS"' in certifier
+    assert 'mountPath: "/etc/launchpad-ca"' in certifier
+    assert 'name: "launchpad-model-ca-bundle"' in certifier
+    assert "NODE_TLS_REJECT_UNAUTHORIZED" not in certifier
     assert "DISABLE_TELEMETRY" in page
     assert "LLM_PROVIDER: generic-openai" in page
     assert "LLM_PROVIDER: genericOpenAi" not in page
@@ -591,7 +637,7 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
 
-    assert catalog["version"] == "1.0.11"
+    assert catalog["version"] == "1.0.12"
     assert catalog["metadata"]["showroom_content_ref"] == (
         "5292234017bf3f538767e6b6a3c627d146fca086"
     )

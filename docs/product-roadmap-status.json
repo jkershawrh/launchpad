@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-17T23:00:00Z",
+  "updated_at": "2026-09-18T16:18:24Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -34,7 +34,81 @@
       "evidence": [
         "docs/pilot-issue-feature-register-20260917.md"
       ],
-      "note": "Pilot observations have stable issue identifiers; owner and target-release assignment remain open."
+      "note": "Pilot observations have stable issue identifiers and role-based routing; named human acceptance and release commitment remain open."
+    },
+    "LP-T006": {
+      "state": "red",
+      "methods": {
+        "edd": "green-local"
+      },
+      "evidence": [
+        "docs/pilot-issue-feature-register-20260917.md"
+      ],
+      "note": "All 26 pilot items now have an accountable role, target horizon, and proof lane. Named human acceptance and explicit dependency confirmation remain open."
+    },
+    "LP-T009": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/pilot-h0/PILOT-BUG-002-red.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-002-green-local.xml",
+        "backend/tests/test_showroom_content_package.py",
+        "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc",
+        "scripts/certify-cpu-serving-seat.sh"
+      ],
+      "note": "Future AnythingLLM content mounts the model CA and uses NODE_EXTRA_CA_CERTS without the global Node TLS bypass. Participant CLI examples, invalid-certificate rejection, rotation recovery, fresh-seat BDD, and GREEN-live proof remain open; retained workshops were not changed."
+    },
+    "LP-T010": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/pilot-h0/PILOT-BUG-004-red.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-004-green-local.xml",
+        "backend/tests/test_showroom_content_package.py",
+        "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc",
+        "scripts/certify-cpu-serving-seat.sh",
+        "catalog/intel-llm-cpu-serving/catalog-item.yaml"
+      ],
+      "note": "Future content and certification use an idempotent seat-scoped 2 GiB PVC and catalog capacity accounts for it. Fresh-seat initialization, restart/reschedule retention, reclaim, and GREEN-live proof remain open; retained workshops were not changed."
+    },
+    "LP-T011": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/pilot-h0/PILOT-BUG-003-red.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-003-green-local.xml",
+        "backend/tests/test_showroom_content_package.py",
+        "catalog/intel-llm-cpu-serving/catalog-item.yaml"
+      ],
+      "note": "Catalog revision 1.0.12 declares the exact model capability contract and orders the 8B tools model before the 2B learning model. Placement capability enforcement, fresh-seat BDD, load proof, and GREEN-live certification remain open; retained workshops were not changed."
+    },
+    "LP-T012": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/pilot-h0/PILOT-PERF-001-red.xml",
+        "evidence/runs/pilot-h0/PILOT-PERF-001-green-local.xml",
+        "backend/tests/test_showroom_content_package.py",
+        "content-intel-xeon6-agent-201/manifests/solution-agent.yaml",
+        "content-intel-xeon6-agent-201/manifests/advisor-prompt-configmap.yaml"
+      ],
+      "note": "Future content selects the 8B tools model, bounds generation to 192/512 tokens, and aligns the requested brief to 350 words. Immutable content promotion, fresh-seat BDD, exact-concurrency performance evidence, and GREEN-live certification remain open; retained workshops were not changed."
     },
     "LP-T021": {
       "state": "green-local",
@@ -73,6 +147,21 @@
       ],
       "note": "Claims, expiry, readiness, routes, restarts, models, and resource counts were captured."
     },
+    "LP-T084": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/pilot-h0/PILOT-BUG-013-red.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-013-green-local.xml",
+        "backend/tests/test_multi_agent_seat_chart.py",
+        "deploy/launchpad/overlays/arena/buildconfig.yaml"
+      ],
+      "note": "The future-image build now authenticates agent discovery and fails closed when the patch is absent. Upstream source correction, image promotion, fresh-seat BDD, concurrent proof, and GREEN-live certification remain open; retained workshops were not changed."
+    },
     "LP-T085": {
       "state": "green-local",
       "methods": {
@@ -82,6 +171,50 @@
         "docs/product-delivery-roadmap.md"
       ],
       "note": "The initial Experience Wardrobe contract is specified; implementation and participant proof remain open."
+    },
+    "LP-T095": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "docs/product-delivery-roadmap.md",
+        "docs/stargate-product-telemetry-contract.md"
+      ],
+      "note": "The privacy-safe guided-step event family, correlation fields, execution semantics, and prohibited payloads are specified. Producer, durable delivery, consumer, journey, and live-scale proof remain open."
+    },
+    "LP-T008": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/tests/test_catalog_supply_chain.py",
+        "config/catalog-artifact-policy.yaml",
+        "evidence/runs/pilot-h0/PILOT-BUG-001-green-local.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-001-red.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json",
+        "scripts/validate_catalog_artifacts.py"
+      ],
+      "note": "A fail-closed policy now covers the three pilot catalogs, immutable Showroom commits, and five digest-pinned images. Mutable tags, unapproved repositories, missing artifacts, and execution-cluster-local registries are rejected. Signing, SBOMs, organization-owned registry transfer, cross-cluster cold pulls, fresh-seat BDD, and GREEN-live proof remain open; retained workshops were not changed."
+    },
+    "LP-T017": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "edd": "green-local"
+      },
+      "evidence": [
+        ".github/workflows/ci.yml",
+        "Makefile",
+        "evidence/runs/pilot-h1/PILOT-FEAT-001-green-local.xml",
+        "evidence/runs/pilot-h1/PILOT-FEAT-001-red.xml",
+        "scripts/validate_catalog_artifacts.py"
+      ],
+      "note": "The artifact subset of the promotion gate is GREEN-local: CI and make reject mutable, missing, unapproved, and execution-cluster-local image references and retain a JSON receipt. Secret, supported-model, signing, SBOM, cross-cluster cold-pull, rollback, and GREEN-live gates remain open; retained workshops were not changed."
     }
   },
   "rubric": [

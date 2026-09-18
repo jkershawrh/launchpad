@@ -314,6 +314,7 @@ def test_multi_agent_arena_build_is_pinned_and_adds_model_bearer_support():
     assert "UI_WORKFLOW_TIMEOUT" in dockerfile
     assert "AGENT_MAX_TOKENS_OVERRIDE" in dockerfile
     assert "Bearer {AGENT_AUTH_TOKEN}" in dockerfile
+    assert 'api/v1/agents", headers=_headers()' in dockerfile
     assert "/api/v1/workflow/stream" in dockerfile
     assert "HISTORY_LIMIT = 20" in dockerfile
     assert "ui.py" in dockerfile

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.058" timestamp="2026-09-18T10:53:06.499755-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_multi_agent_seat_chart" name="test_multi_agent_arena_build_is_pinned_and_adds_model_bearer_support" time="0.009"><failure message="assert 'api/v1/agents&quot;, headers=_headers()' in 'FROM registry.access.redhat.com/ubi9/python-311@sha256:7b6cb58d3ff034df7b300800bd89a469d9bd2f739d43250d76b9c9e805307a...XPOSE 8000 8001 8002 8003 8004 8005 7860\nCMD [&quot;uvicorn&quot;, &quot;orchestrator:app&quot;, &quot;--host&quot;, &quot;0.0.0.0&quot;, &quot;--port&quot;, &quot;8000&quot;]\n'">def test_multi_agent_arena_build_is_pinned_and_adds_model_bearer_support():
+        documents = [item for item in yaml.safe_load_all(BUILD_CONFIG.read_text()) if item]
+        image_stream = next(
+            item
+            for item in documents
+            if item["kind"] == "ImageStream"
+            and item["metadata"]["name"] == "multi-agent-quickstart"
+        )
+        assert image_stream
+
+        build = next(
+            item
+            for item in documents
+            if item["kind"] == "BuildConfig"
+            and item["metadata"]["name"] == "multi-agent-quickstart"
+        )
+        assert build["spec"]["source"]["git"] == {
+            "uri": SOURCE_REPOSITORY,
+            "ref": SOURCE_REVISION,
+        }
+        assert build["spec"]["source"]["contextDir"] == "src"
+        dockerfile = build["spec"]["source"]["dockerfile"]
+        assert "python-311@sha256:" in dockerfile
+        assert "MODEL_API_KEY" in dockerfile
+        assert "Authorization" in dockerfile
+        assert "AGENT_AUTH_TOKEN" in dockerfile
+        assert "UI_WORKFLOW_TIMEOUT" in dockerfile
+        assert "AGENT_MAX_TOKENS_OVERRIDE" in dockerfile
+        assert "Bearer {AGENT_AUTH_TOKEN}" in dockerfile
+&gt;       assert 'api/v1/agents", headers=_headers()' in dockerfile
+E       assert 'api/v1/agents", headers=_headers()' in 'FROM registry.access.redhat.com/ubi9/python-311@sha256:7b6cb58d3ff034df7b300800bd89a469d9bd2f739d43250d76b9c9e805307a...XPOSE 8000 8001 8002 8003 8004 8005 7860\nCMD ["uvicorn", "orchestrator:app", "--host", "0.0.0.0", "--port", "8000"]\n'
+
+backend/tests/test_multi_agent_seat_chart.py:317: AssertionError</failure></testcase></testsuite></testsuites>

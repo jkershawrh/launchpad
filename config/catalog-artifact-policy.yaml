@@ -1,0 +1,18 @@
+api_version: launchpad.redhat.com/v1alpha1
+scope: september-17-pilot-successor-orders
+approved_repository_prefixes:
+  - quay.io/redhat-gpte/
+  - quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@
+catalogs:
+  intel-llm-cpu-serving:
+    catalog_path: catalog/intel-llm-cpu-serving/catalog-item.yaml
+    artifact_paths:
+      - content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc
+  intel-xeon6-agent-201:
+    catalog_path: catalog/intel-xeon6-agent-201/catalog-item.yaml
+    artifact_paths:
+      - content-intel-xeon6-agent-201/manifests/solution-agent.yaml
+      - content-intel-xeon6-agent-201/manifests/solution-ui.yaml
+  multi-agent-quickstart:
+    catalog_path: catalog/multi-agent-quickstart/catalog-item.yaml
+    artifact_paths: []

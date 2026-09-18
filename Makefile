@@ -1,4 +1,4 @@
-.PHONY: install test test-local lint clean dev-backend dev-frontend dev-admin demo-test
+.PHONY: install test test-local lint catalog-artifacts clean dev-backend dev-frontend dev-admin demo-test
 
 # Backend
 install:
@@ -19,6 +19,9 @@ test-cov:
 lint:
 	ruff check backend/
 	ruff format --check backend/
+
+catalog-artifacts:
+	python3 scripts/validate_catalog_artifacts.py
 
 format:
 	ruff format backend/

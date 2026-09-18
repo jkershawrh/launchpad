@@ -25,6 +25,7 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     assert len(model["stories"]) == 24
     assert len(model["tasks"]) == 95
     assert "LP-T095" in model["tasks"]
+    assert "lab.step.executed" in model["tasks"]["LP-T095"]["title"]
     assert model["tasks"]["LP-T084"]["epic_id"] == "LP-E002"
     assert model["tasks"]["LP-T094"]["story_id"] == "LP-S024"
 
@@ -88,6 +89,11 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "BDD" in html and "CBT" in html
     assert "Release rubric" in html
     assert "LP-T094" in html
+    assert "LP-T008" in html
+    assert "five digest-pinned images" in html
+    assert "lab.step.started" in html
+    assert "lab.step.executed" in html
+    assert "lab.checkpoint.completed" in html
     assert "<svg" in html
     assert "Red Hat" in html and "Intel" in html
     assert 'viewBox="0 0 192.30001 146"' in html

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.104" timestamp="2026-09-18T10:59:40.703130-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_showroom_content_package" name="test_cpu_serving_uses_pinned_openshift_compatible_workbench_image" time="0.003"><failure message="AssertionError: assert 'NODE_EXTRA_CA_CERTS' in '= Wire a RAG Frontend\n:navtitle: 4. Wire a RAG Frontend\n\n_Estimated time: 15 minutes_\n\nIn this module you will:\...rollout to complete and retry.\n|===\n\n[.next-nav]\nxref:05-load-documents.adoc[Next: Load and Chunk Documents --&gt;]\n'">def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
+        page = (
+            ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+        ).read_text()
+        containerfile = (
+            ROOT / "workshop-images/anythingllm-openshift/Containerfile"
+        ).read_text()
+        build_config = (ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml").read_text()
+        catalog = yaml.safe_load(
+            (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
+        )
+        certifier = (ROOT / "scripts/certify-cpu-serving-seat.sh").read_text()
+
+        assert "anything-llm:latest" not in page
+        assert (
+            "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:"
+            "20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613" in page
+        )
+        assert "image-registry.openshift-image-registry.svc" not in page
+        assert "STORAGE_DIR" in page
+        assert "kind: PersistentVolumeClaim" in page
+        assert "name: anythingllm-storage" in page
+        assert "claimName: anythingllm-storage" in page
+        assert "mountPath: /tmp/anythingllm-storage" in page
+        assert "emptyDir:" not in page
+&gt;       assert "NODE_EXTRA_CA_CERTS" in page
+E       AssertionError: assert 'NODE_EXTRA_CA_CERTS' in '= Wire a RAG Frontend\n:navtitle: 4. Wire a RAG Frontend\n\n_Estimated time: 15 minutes_\n\nIn this module you will:\...rollout to complete and retry.\n|===\n\n[.next-nav]\nxref:05-load-documents.adoc[Next: Load and Chunk Documents --&gt;]\n'
+
+backend/tests/test_showroom_content_package.py:528: AssertionError</failure></testcase></testsuite></testsuites>

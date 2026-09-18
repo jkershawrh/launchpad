@@ -196,12 +196,14 @@ spec:
           opentelemetry-exporter-otlp-proto-grpc==1.41.1
       RUN sed -i '/^MODEL_NAME = /a MODEL_API_KEY = os.environ.get("MODEL_API_KEY", "")' agent.py orchestrator.py && \
           sed -i 's|OPEN_PATHS = {"/health", |OPEN_PATHS = {"/health", "/ready", |' auth.py && \
+          sed -i 's|httpx.get(f"{ORCHESTRATOR_URL}/api/v1/agents", timeout=10.0)|httpx.get(f"{ORCHESTRATOR_URL}/api/v1/agents", headers=_headers(), timeout=10.0)|' ui.py && \
           sed -i '/f"{use_endpoint}\/chat\/completions",/a\                headers={"Authorization": f"Bearer {MODEL_API_KEY}"} if MODEL_API_KEY else {},' agent.py && \
           sed -i '/f"{classify_endpoint}\/chat\/completions",/a\                    headers={"Authorization": f"Bearer {MODEL_API_KEY}"} if MODEL_API_KEY else {},' orchestrator.py && \
           sed -i 's|AGENT_MAX_TOKENS = int(os.environ.get("AGENT_MAX_TOKENS", "64"))|AGENT_MAX_TOKENS = int(os.environ.get("AGENT_MAX_TOKENS_OVERRIDE", os.environ.get("AGENT_MAX_TOKENS", "64")))|' agent.py && \
           grep -q 'Bearer {MODEL_API_KEY}' agent.py && \
           grep -q 'Bearer {MODEL_API_KEY}' orchestrator.py && \
           grep -q 'Bearer {AGENT_AUTH_TOKEN}' ui.py && \
+          grep -q 'api/v1/agents", headers=_headers()' ui.py && \
           grep -q 'timeout=UI_WORKFLOW_TIMEOUT' ui.py && \
           grep -q '/api/v1/workflow/stream' ui.py && \
           grep -q 'HISTORY_LIMIT = 20' ui.py && \

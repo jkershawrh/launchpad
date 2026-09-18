@@ -141,6 +141,13 @@ jobs:
               "$contract" \
               --intake "catalog-onboarding/$catalog_id.yaml" \
               > "$RECEIPT_DIR/catalog-certification-$catalog_id.json"
+
+      - name: Enforce immutable pilot catalog artifacts
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/launchpad-receipts
+        run: |
+          python scripts/validate_catalog_artifacts.py \
+            --output "$RECEIPT_DIR/catalog-artifact-policy.json"
           done
 
       - name: Upload onboarding evidence
@@ -151,6 +158,7 @@ jobs:
           path: |
             ${{ runner.temp }}/launchpad-receipts/catalog-onboarding-*.json
             ${{ runner.temp }}/launchpad-receipts/catalog-certification-*.json
+            ${{ runner.temp }}/launchpad-receipts/catalog-artifact-policy.json
 
   frontend-check:
     name: Frontend TypeScript

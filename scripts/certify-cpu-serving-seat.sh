@@ -63,6 +63,15 @@ jq -nc \
         }
       },
       {
+        apiVersion: "v1",
+        kind: "PersistentVolumeClaim",
+        metadata: {name: "anythingllm-storage"},
+        spec: {
+          accessModes: ["ReadWriteOnce"],
+          resources: {requests: {storage: "2Gi"}}
+        }
+      },
+      {
         apiVersion: "apps/v1",
         kind: "Deployment",
         metadata: {name: "anythingllm"},
@@ -81,6 +90,7 @@ jq -nc \
                   envFrom: [{secretRef: {name: "anythingllm-config"}}],
                   env: [
                     {name: "STORAGE_DIR", value: "/tmp/anythingllm-storage"},
+                    {name: "NODE_EXTRA_CA_CERTS", value: "/etc/launchpad-ca/ca-bundle.crt"},
                     {name: "DISABLE_TELEMETRY", value: "true"},
                     {name: "LAUNCHPAD_FRAME_ANCESTOR", value: $frame_ancestor}
                   ],
@@ -103,7 +113,21 @@ jq -nc \
                   resources: {
                     requests: {cpu: "500m", memory: "1Gi"},
                     limits: {cpu: "2", memory: "2Gi"}
-                  }
+                  },
+                  volumeMounts: [
+                    {name: "anythingllm-storage", mountPath: "/tmp/anythingllm-storage"},
+                    {name: "model-ca-bundle", mountPath: "/etc/launchpad-ca", readOnly: true}
+                  ]
+                }
+              ],
+              volumes: [
+                {
+                  name: "anythingllm-storage",
+                  persistentVolumeClaim: {claimName: "anythingllm-storage"}
+                },
+                {
+                  name: "model-ca-bundle",
+                  configMap: {name: "launchpad-model-ca-bundle"}
                 }
               ]
             }

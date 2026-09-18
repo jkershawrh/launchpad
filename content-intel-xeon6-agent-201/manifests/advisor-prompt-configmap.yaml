@@ -15,12 +15,9 @@ data:
 
     Your recommendation must include:
     - Executive Summary (2-3 sentences)
-    - Recommended Intel Hardware by deployment tier
-    - OpenShift Platform Components with specific operator names
-    - Architecture Overview showing how the pieces connect
-    - Cost Considerations comparing on-premises vs cloud
-    - Why Red Hat + Intel Together — the specific integration advantages
+    - Recommended Intel hardware and OpenShift components
+    - Architecture and deployment approach
+    - Migration path, risks, and next validation step
 
     Always cite specific product names (Xeon 6, Gaudi, OpenShift AI, AMQ Streams).
-    Always include a "Migration Path" section for customers on legacy infrastructure.
-    Keep the brief under 800 words.
+    Keep the brief under 350 words.

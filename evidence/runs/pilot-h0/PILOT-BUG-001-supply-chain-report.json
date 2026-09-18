@@ -1,0 +1,38 @@
+{
+  "catalog_count": 3,
+  "catalogs": {
+    "intel-llm-cpu-serving": {
+      "catalog_path": "catalog/intel-llm-cpu-serving/catalog-item.yaml",
+      "images": [
+        "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613"
+      ],
+      "showroom_content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
+      "showroom_content_ref_is_immutable": true,
+      "violations": []
+    },
+    "intel-xeon6-agent-201": {
+      "catalog_path": "catalog/intel-xeon6-agent-201/catalog-item.yaml",
+      "images": [
+        "quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03",
+        "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850",
+        "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
+      ],
+      "showroom_content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
+      "showroom_content_ref_is_immutable": true,
+      "violations": []
+    },
+    "multi-agent-quickstart": {
+      "catalog_path": "catalog/multi-agent-quickstart/catalog-item.yaml",
+      "images": [
+        "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661"
+      ],
+      "showroom_content_ref": "86c7f1a0e51164fa3c854b0a7a8236fd090014f9",
+      "showroom_content_ref_is_immutable": true,
+      "violations": []
+    }
+  },
+  "image_count": 5,
+  "policy": "config/catalog-artifact-policy.yaml",
+  "status": "GREEN-local",
+  "violations": []
+}

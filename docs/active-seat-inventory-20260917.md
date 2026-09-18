@@ -33,6 +33,27 @@ separate approval is given.
 Provisioned seats consume resources whether claimed or not. The 79 unclaimed
 seats are retained event capacity, not immediately available fleet headroom.
 
+## Post-snapshot participant-access observation
+
+A privacy-safe, read-only correlation at `2026-09-18T13:49:44Z` found **195
+active seat entitlements** across **67 pseudonymous participant identities**.
+This observation appends to, and does not rewrite, the immutable `191`-claim
+event snapshot above.
+
+- Serve LLMs: **75** claims;
+- Building an AI Agent: **64** claims;
+- Build Multi-Agent AI Systems: **56** claims;
+- **47** identities accessed all three catalog types, **10** accessed two, and
+  **10** accessed one;
+- **12** identities used the same-workshop claim/recovery flow more than once;
+- no event activity was recorded after midnight Chicago time; the latest
+  recorded activity was `2026-09-17T22:15:27Z`.
+
+Claims and authorization checks prove access, not meaningful work or lab
+completion. No email addresses were exported. The complete interpretation and
+privacy boundary are retained in
+[`september-17-pilot-postmortem.json`](september-17-pilot-postmortem.json).
+
 ## Workshop timeline
 
 | Wave | Catalog | Cluster | Workshop | Created/start (UTC) | Public claims | Expiration (UTC) |

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.099" timestamp="2026-09-18T10:56:42.422662-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_showroom_content_package" name="test_agent_201_runtime_bounds_cpu_generation_for_workshop_scale" time="0.001"><failure message="AssertionError: assert 'value: granite-3.2-8b-tools' in 'apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: solution-agent\n  labels:\n    app: solution-agent\nspec:\n...ion-agent\n  port:\n    targetPort: 8082\n  tls:\n    termination: edge\n    insecureEdgeTerminationPolicy: Redirect\n'">def test_agent_201_runtime_bounds_cpu_generation_for_workshop_scale():
+        containerfile = (ROOT / "workshop-images/solution-agent/Containerfile").read_text()
+        build_config = (ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml").read_text()
+        manifest = (ROOT / "content-intel-xeon6-agent-201/manifests/solution-agent.yaml").read_text()
+        prompt = (
+            ROOT
+            / "content-intel-xeon6-agent-201/manifests/advisor-prompt-configmap.yaml"
+        ).read_text()
+
+        assert "triforce-solution-agent@sha256:" in containerfile
+        assert "REQUIREMENTS_MAX_TOKENS" in containerfile
+        assert "BRIEF_MAX_TOKENS" in containerfile
+        assert '"192"' in containerfile
+        assert '"512"' in containerfile
+        assert "name: solution-agent-workshop" in build_config
+        assert "contextDir: workshop-images/solution-agent" in build_config
+        assert "REQUIREMENTS_MAX_TOKENS" in manifest
+        assert "BRIEF_MAX_TOKENS" in manifest
+        assert "REQUESTS_CA_BUNDLE" in manifest
+        assert "SSL_CERT_FILE" in manifest
+        assert "launchpad-model-ca-bundle" in manifest
+        assert "prepare-solution-agent" in manifest
+        assert "cp -R /app/. /workdir/" in manifest
+        assert "triforce-solution-agent@sha256:60897d" in manifest
+        assert "image-registry.openshift-image-registry.svc" not in manifest
+&gt;       assert "value: granite-3.2-8b-tools" in manifest
+E       AssertionError: assert 'value: granite-3.2-8b-tools' in 'apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: solution-agent\n  labels:\n    app: solution-agent\nspec:\n...ion-agent\n  port:\n    targetPort: 8082\n  tls:\n    termination: edge\n    insecureEdgeTerminationPolicy: Redirect\n'
+
+backend/tests/test_showroom_content_package.py:352: AssertionError</failure></testcase></testsuite></testsuites>

@@ -84,13 +84,26 @@ stringData:
 EOF
 ----
 
-== Deploy AnythingLLM
+== Deploy AnythingLLM with Persistent State
 
-Create the Deployment that runs the AnythingLLM workbench:
+Create a seat-scoped persistent volume and the Deployment that runs the
+AnythingLLM workbench. Reapplying this manifest is idempotent, and a pod restart
+does not remove the participant's API key, workspace, documents, or embeddings:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
 cat <<'EOF' | oc apply -n {project_name} -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: anythingllm-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -119,6 +132,8 @@ spec:
           env:
             - name: STORAGE_DIR
               value: /tmp/anythingllm-storage
+            - name: NODE_EXTRA_CA_CERTS
+              value: /etc/launchpad-ca/ca-bundle.crt
             - name: DISABLE_TELEMETRY
               value: "true"
             - name: LAUNCHPAD_FRAME_ANCESTOR
@@ -151,6 +166,19 @@ spec:
             limits:
               cpu: "2"
               memory: 2Gi
+          volumeMounts:
+            - name: anythingllm-storage
+              mountPath: /tmp/anythingllm-storage
+            - name: model-ca-bundle
+              mountPath: /etc/launchpad-ca
+              readOnly: true
+      volumes:
+        - name: anythingllm-storage
+          persistentVolumeClaim:
+            claimName: anythingllm-storage
+        - name: model-ca-bundle
+          configMap:
+            name: launchpad-model-ca-bundle
 EOF
 ----
 
