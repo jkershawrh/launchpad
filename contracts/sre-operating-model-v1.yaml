@@ -1,0 +1,58 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: SreOperatingModel
+metadata:
+  name: launchpad-sre-operating-model
+  version: 1.0.0
+service_levels:
+  required_slis:
+  - order_acceptance
+  - seat_ready_latency
+  - claim_success
+  - participant_journey_success
+  - model_request_success
+  - reclaim_completion
+  - recovery_time
+  required_controls:
+  - versioned-slos
+  - error-budgets
+  - release-health-policy
+  - capacity-burn-policy
+  - dependency-health-policy
+synthetics:
+  journeys:
+  - internal-order-to-reclaim
+  - public-claim-to-resume
+  - showroom-workspace-and-model
+  - admin-diagnosis-to-runbook
+  requirement: participant-facing-functionality-not-pod-readiness
+incident_management:
+  required:
+  - severity-model
+  - paging-and-escalation
+  - incident-commander
+  - stakeholder-and-status-communications
+  - mitigation-and-rollback
+  - post-incident-review
+  measurements: [mttd, mtta, mttr, recurrence, participant-impact]
+telemetry:
+  required: [metrics, logs, traces, audit, synthetics, evidence-receipts]
+  controls:
+  - schema-and-label-governance
+  - completeness-and-freshness
+  - retention-and-access
+  - cardinality-and-cost-budget
+  - privacy-and-redaction
+operations:
+  required:
+  - named-service-owner
+  - on-call-and-backup-coverage
+  - runbook-and-escalation-owner
+  - maintenance-window-policy
+  - dependency-owner
+  - support-boundary
+  - capacity-procurement-path
+release_rules:
+  exhausted_error_budget: blocks-normal-promotion
+  missing_actionable-alert: blocks-production
+  missing_owner_or_runbook: blocks-production
+  unverified_external_dependency: blocks-production

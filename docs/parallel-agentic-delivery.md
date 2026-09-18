@@ -50,7 +50,7 @@ candidate already being certified.
 
 ## Streams
 
-The delivery model defines twelve streams:
+The delivery model defines thirteen streams:
 
 1. automated lab intake and certification;
 2. artifact supply chain and authoritative registry;
@@ -60,10 +60,11 @@ The delivery model defines twelve streams:
 6. security, identity, isolation, and governance;
 7. high availability, disaster recovery, and fleet lifecycle;
 8. control-plane portability and earned promotion;
-9. observability, evidence, support, and FinOps;
+9. SRE, observability, evidence, support, and FinOps;
 10. DeepField, StarGate, and GeoLux or GCL integrations;
 11. lab content, Showroom, and AI workload performance; and
-12. convergence, certification, and staged promotion.
+12. product, go-to-market, sales enablement, and customer success; and
+13. convergence, certification, and staged promotion.
 
 The initial four active implementation streams are intake, artifact supply,
 event orchestration, and capacity admission. Security and portability contract
@@ -115,6 +116,32 @@ rollback identity tested at the prior gate, plus a usable end-to-end journey
 at that gate's declared scale. Production additionally requires three
 consecutive certifications, migration and failback proof, zero critical or
 high security findings, and accountable user and human-owner acceptance.
+
+Production readiness is broader than a successful maximum-seat test. The
+candidate must pass baseline, load, spike, stress, endurance, and soak profiles;
+failure and recovery while under load; active-session upgrade, schema migration,
+rollback, and API compatibility; supported browser and accessibility journeys;
+and post-recovery data and cleanup reconciliation. Thresholds come from a
+versioned service profile rather than an informal test expectation.
+
+The SRE operating contract adds SLIs, SLOs, error budgets, participant-facing
+synthetics, paging, escalation, incident communications, post-incident review,
+telemetry quality and cost controls, and named service/support ownership. Pod
+readiness alone is never a production availability signal.
+
+The product release also has business gates. Privacy-safe field activity may be
+linked to a commercial opportunity only with a declared purpose, consent, and
+opportunity-owner acceptance. Activity, completion, influence, and revenue are
+separate states. The GTM stream packages validated solution plays, enablement,
+service tiers, customer-success follow-up, and the feedback loop into product
+and architecture decisions without inferring unsupported revenue.
+
+Data and AI governance cover collection purpose, consent, retention, deletion,
+pseudonymization, geographic/export review, model and prompt quality, drift,
+prompt injection, tool abuse, provider terms, dataset rights, OSS licensing,
+SBOM/provenance, trademarks, and acceptable use. Unknown purpose blocks data
+collection; an unapproved model, dataset, or material safety finding blocks
+promotion.
 
 ## Control-plane portability
 

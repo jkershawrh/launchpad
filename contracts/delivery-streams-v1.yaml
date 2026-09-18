@@ -12,6 +12,7 @@ delivery_policy:
   usability_continuity: required-at-every-stage
   participant_journey_regression: blocks-promotion
   current_usable_path_protection: mandatory
+  production_release_requires: [production-readiness-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1]
   feature_stream_live_mutation: forbidden
   convergence_live_mutation: explicit-human-approval
   evidence_source_of_truth: certification/convergence-matrix-v1.yaml
@@ -84,6 +85,26 @@ contracts:
   owner: control-plane-portability
   path: docs/control-plane-dr-roadmap.md
   consumers: [ha-dr-fleet, security-identity, convergence-release]
+- id: production-readiness-v1
+  version: 1.0.0
+  owner: convergence-release
+  path: contracts/production-readiness-v1.yaml
+  consumers: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success]
+- id: sre-operating-model-v1
+  version: 1.0.0
+  owner: observability-finops
+  path: contracts/sre-operating-model-v1.yaml
+  consumers: [event-orchestration, capacity-admission, participant-experience, ha-dr-fleet, control-plane-portability, governed-integrations, convergence-release]
+- id: data-ai-governance-v1
+  version: 1.0.0
+  owner: security-identity
+  path: contracts/data-ai-governance-v1.yaml
+  consumers: [participant-experience, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, convergence-release]
+- id: gtm-value-attribution-v1
+  version: 1.0.0
+  owner: product-gtm-customer-success
+  path: contracts/gtm-value-attribution-v1.yaml
+  consumers: [event-orchestration, observability-finops, lab-content-ai, convergence-release]
 streams:
 - id: automated-lab-intake
   title: Automated lab intake and certification
@@ -131,13 +152,13 @@ streams:
   exit_gate: Browser journeys pass internal and public access, resume, support, and logout behavior.
   live_mutation_policy: forbidden
 - id: security-identity
-  title: Security, identity, isolation, and governance
+  title: Security, identity, isolation, data, and AI governance
   kind: implementation
   initially_active: false
   depends_on: []
-  owned_paths: [contracts/public-access-v2.yaml, backend/app/services/public_access.py, backend/app/public_gateway.py]
-  entry_gate: Threat model, identity boundary, and data classification are reviewed.
-  exit_gate: Identity, namespace isolation, secrets, abuse, audit, and revocation gates have no critical or high findings.
+  owned_paths: [contracts/public-access-v2.yaml, contracts/data-ai-governance-v1.yaml, backend/app/services/public_access.py, backend/app/public_gateway.py]
+  entry_gate: Threat model, identity boundary, data purposes, consent, retention, model inventory, and legal classification are reviewed.
+  exit_gate: Identity, namespace isolation, data lifecycle, AI safety, licensing, secrets, abuse, audit, and revocation gates have no critical or high findings.
   live_mutation_policy: forbidden
 - id: ha-dr-fleet
   title: High availability, disaster recovery, and fleet lifecycle
@@ -158,13 +179,13 @@ streams:
   exit_gate: Clean install, restore, migration, rollback, and in-flight reconciliation pass on a candidate home.
   live_mutation_policy: forbidden
 - id: observability-finops
-  title: Observability, evidence, support, and FinOps
+  title: SRE, observability, evidence, support, and FinOps
   kind: implementation
   initially_active: false
   depends_on: [event-orchestration, capacity-admission]
-  owned_paths: [contracts/admin-observability-v1.yaml, admin/]
-  entry_gate: Stable identifiers, event semantics, privacy boundaries, and cost dimensions are versioned.
-  exit_gate: Seat, lab, model, cluster, evidence, support, and cost views reconcile to source data.
+  owned_paths: [contracts/admin-observability-v1.yaml, contracts/sre-operating-model-v1.yaml, admin/]
+  entry_gate: Stable identifiers, event semantics, privacy boundaries, SLIs, SLOs, error budgets, support ownership, and cost dimensions are versioned.
+  exit_gate: Seat, lab, model, cluster, evidence, support, incident, SLO, and cost views reconcile to source data and synthetic journeys reach the correct alert and runbook.
   live_mutation_policy: forbidden
 - id: governed-integrations
   title: DeepField, StarGate, and GeoLux or GCL integrations
@@ -184,12 +205,21 @@ streams:
   entry_gate: Learning objective, business outcome, model capability, and deterministic journey are declared.
   exit_gate: The supported journey passes functional and exact-concurrency model load proof.
   live_mutation_policy: forbidden
+- id: product-gtm-customer-success
+  title: Product, go-to-market, sales enablement, and customer success
+  kind: implementation
+  initially_active: false
+  depends_on: [event-orchestration, observability-finops, security-identity]
+  owned_paths: [contracts/gtm-value-attribution-v1.yaml, docs/gtm/]
+  entry_gate: Product audience, consented attribution boundary, solution owner, sales-enablement owner, customer-success owner, and value hypothesis are declared.
+  exit_gate: Adoption, completion, repeat engagement, opportunity influence, cost, feedback, solution packaging, and roadmap outcomes are measured without unsupported revenue or identity claims.
+  live_mutation_policy: forbidden
 - id: convergence-release
   title: Convergence, certification, and staged promotion
   kind: convergence
   initially_active: false
-  depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission]
-  owned_paths: [certification/convergence-matrix-v1.yaml, .github/workflows/]
+  depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success]
+  owned_paths: [contracts/production-readiness-v1.yaml, certification/convergence-matrix-v1.yaml, .github/workflows/]
   entry_gate: Candidate contracts are frozen and every participating stream supplies required local evidence.
-  exit_gate: The unchanged candidate earns its declared promotion stage and retains tested rollback evidence.
+  exit_gate: The unchanged candidate earns its declared promotion stage through usable production-shaped tests and retains tested rollback evidence.
   live_mutation_policy: approval-gated

@@ -1,0 +1,65 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: GtmValueAttributionContract
+metadata:
+  name: launchpad-gtm-value-attribution
+  version: 1.0.0
+entities:
+  required:
+  - campaign_id
+  - event_id
+  - workshop_id
+  - catalog_release
+  - pseudonymous_participant_id
+  optional:
+  - consented_contact_ref
+  - account_ref
+  - opportunity_ref
+  - solution_play_id
+funnel:
+  states:
+  - invited
+  - registered
+  - claimed
+  - opened
+  - active
+  - checkpoint_completed
+  - lab_completed
+  - follow_up_accepted
+  - poc_started
+  - opportunity_influenced
+  - outcome_recorded
+attribution:
+  rules:
+  - distinguish-observed-activity-from-completion
+  - distinguish-correlation-from-influence
+  - require-opportunity-owner-acceptance-for-influence
+  - preserve-source-and-timestamp
+  - support-multi-touch-attribution
+  - never-infer-revenue-from-lab-use
+privacy:
+  identity_join: consented-and-purpose-bound
+  default_reporting: aggregated-or-pseudonymous
+  raw_email_in_analytics: forbidden
+  retention_source: data-ai-governance-v1
+outputs:
+  required:
+  - adoption-and-completion-funnel
+  - repeat-engagement
+  - solution-demand-patterns
+  - infrastructure-fit-patterns
+  - seller-friction-and-objections
+  - validated-reference-architecture-candidates
+  - cost-and-value-by-solution-play
+commercialization:
+  required:
+  - named-product-owner
+  - named-sales-enablement-owner
+  - named-customer-success-owner
+  - packaged-solution-play
+  - validated-talk-track
+  - pricing-or-service-tier
+  - feedback-and-roadmap-loop
+release_rules:
+  missing_consent_or_purpose: blocks-identity-join
+  unsupported_claim: blocks-publication
+  missing_owner: blocks-commercial-promotion

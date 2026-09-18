@@ -1,0 +1,50 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: DataAiGovernanceContract
+metadata:
+  name: launchpad-data-ai-governance
+  version: 1.0.0
+data_governance:
+  classification_required: true
+  purposes:
+  - service-delivery
+  - security-and-support
+  - product-analytics
+  - consented-sales-attribution
+  controls:
+  - purpose-limitation
+  - data-minimization
+  - consent-and-notice
+  - retention-and-deletion
+  - anonymization-or-pseudonymization
+  - subject-access-and-correction
+  - geographic-and-export-review
+  - least-privilege-access
+  prohibited_analytics:
+  - raw-secrets
+  - instructor-codes
+  - raw-prompts-or-responses-without-explicit-approved-purpose
+  - uploaded-documents-without-explicit-approved-purpose
+  - unverified-revenue-claims
+ai_governance:
+  required:
+  - approved-model-and-version
+  - capability-and-limit-record
+  - quality-and-safety-evaluation
+  - prompt-injection-and-tool-abuse-testing
+  - model-and-prompt-drift-monitoring
+  - human-approval-for-material-recommendations
+  - deprecation-and-rollback-plan
+  - provider-terms-and-data-use-review
+legal_and_supply:
+  required:
+  - oss-license-inventory
+  - sbom-and-provenance
+  - trademark-and-brand-approval
+  - content-and-dataset-rights
+  - acceptable-use-policy
+  - terms-and-privacy-notice
+release_rules:
+  unknown_data_purpose: blocks-collection
+  missing_consent_for_sales_use: blocks-sales-attribution
+  critical_or_high_ai_safety_finding: blocks-promotion
+  unapproved_model_or_dataset: blocks-promotion

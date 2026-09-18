@@ -35,10 +35,11 @@ def test_repository_delivery_governance_is_valid():
     report = module.validate(streams, matrix, root=ROOT)
 
     assert report["valid"] is True
-    assert report["stream_count"] == 12
+    assert report["stream_count"] == 13
     assert report["initial_active_count"] == 4
     assert report["convergence_stream"] == "convergence-release"
-    assert report["scenario_count"] >= 12
+    assert report["contract_count"] == 12
+    assert report["scenario_count"] >= 19
 
 
 def test_unknown_dependency_and_overlapping_ownership_fail_closed():
@@ -66,6 +67,35 @@ def test_every_scenario_requires_usability_proof():
     matrix["scenarios"][0]["proof_dimensions"].remove("usability")
 
     with pytest.raises(ValueError, match="required proof dimensions"):
+        module.validate(streams, matrix, root=ROOT)
+
+
+def test_product_release_dimensions_are_required():
+    module = load_module()
+    streams, matrix = load_contracts()
+    matrix["release_required_dimensions"].remove("commercial_readiness")
+
+    with pytest.raises(ValueError, match="product release dimensions"):
+        module.validate(streams, matrix, root=ROOT)
+
+
+def test_production_contracts_are_required():
+    module = load_module()
+    streams, matrix = load_contracts()
+    streams["contracts"] = [
+        item for item in streams["contracts"] if item["id"] != "gtm-value-attribution-v1"
+    ]
+
+    with pytest.raises(ValueError, match="Production delivery contracts"):
+        module.validate(streams, matrix, root=ROOT)
+
+
+def test_production_release_policy_requires_all_contracts():
+    module = load_module()
+    streams, matrix = load_contracts()
+    streams["delivery_policy"]["production_release_requires"].remove("sre-operating-model-v1")
+
+    with pytest.raises(ValueError, match="Production release policy"):
         module.validate(streams, matrix, root=ROOT)
 
 

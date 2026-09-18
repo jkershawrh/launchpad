@@ -4,7 +4,8 @@ metadata:
   name: launchpad-product-convergence
   version: 1.0.0
 proof_methods: [tdd, edd, cdd, bdd, cbt]
-required_proof_dimensions: [usability, security, capacity, fault_recovery, cleanup]
+required_proof_dimensions: [usability, security, capacity, performance, operability, data_governance, fault_recovery, cleanup]
+release_required_dimensions: [product_value, commercial_readiness, service_ownership, legal_compliance]
 promotion_gates:
 - stage: green-local
   required_evidence: Unit, component, schema, policy, rendered-manifest, and usable-journey fixture results.
@@ -13,15 +14,15 @@ promotion_gates:
 - stage: green-canary
   required_evidence: One real seat per catalog completes discover, order, claim, learn, execute, resume, restart, and reclaim.
 - stage: green-staging
-  required_evidence: Production-shaped 1, 5, and 25 or 30 seat usable journeys plus security, restore, and rollback.
+  required_evidence: Production-shaped 1, 5, and 25 or 30 seat usable journeys plus load, spike, stress, soak, security, recovery-under-load, upgrade, restore, and rollback.
 - stage: green-production-limited
-  required_evidence: Approved audience, usability acceptance, public access, support ownership, SLOs, and prior-plane fallback.
+  required_evidence: Approved audience, usability acceptance, public access, support ownership, SLOs and error budgets, data and AI governance, limited GTM packaging, and prior-plane fallback.
 - stage: green-production
-  required_evidence: Three consecutive full-journey certifications, zero critical or high findings, migration, failover, rollback, and user and owner acceptance.
+  required_evidence: Three consecutive full-journey certifications, zero critical or high findings, migration, failover, rollback, SRE acceptance, governance acceptance, commercial readiness, customer-success ownership, and user and owner acceptance.
 scenario_defaults: &scenario_defaults
   state: red
   methods: {tdd: red, edd: red, cdd: red, bdd: red, cbt: red}
-  proof_dimensions: [functional, usability, security, capacity, fault_recovery, cleanup, observability]
+  proof_dimensions: [functional, usability, security, capacity, performance, operability, data_governance, fault_recovery, cleanup, observability]
   evidence: []
 scenarios:
 - <<: *scenario_defaults
@@ -91,8 +92,52 @@ scenarios:
   contracts: [lifecycle-evidence-v1, admin-observability-v1, cluster-profile-v1]
   outcome: DeepField signals and GeoLux or GCL recommendations cannot bypass Launchpad policy or approval authority.
 - <<: *scenario_defaults
+  id: production-load-spike-and-soak
+  owner: convergence-release
+  participating_streams: [convergence-release, event-orchestration, capacity-admission, participant-experience, observability-finops, lab-content-ai]
+  contracts: [production-readiness-v1, event-manifest-v1, cluster-profile-v1, sre-operating-model-v1]
+  outcome: Baseline, load, spike, stress, endurance, and soak profiles meet versioned user-journey, model, capacity, latency, error, and cleanup thresholds.
+- <<: *scenario_defaults
+  id: recovery-under-active-load
+  owner: ha-dr-fleet
+  participating_streams: [ha-dr-fleet, control-plane-portability, capacity-admission, observability-finops, convergence-release]
+  contracts: [production-readiness-v1, control-plane-recovery-v1, cluster-profile-v1, sre-operating-model-v1]
+  outcome: Worker, replica, network, dependency, and control-plane failures recover within SLO while active sessions retain target identity and accepted lifecycle work.
+- <<: *scenario_defaults
+  id: in-flight-upgrade-migration-and-rollback
+  owner: control-plane-portability
+  participating_streams: [control-plane-portability, security-identity, ha-dr-fleet, participant-experience, convergence-release]
+  contracts: [production-readiness-v1, control-plane-recovery-v1, public-access-v2, data-ai-governance-v1]
+  outcome: Rolling release and schema migration preserve active journeys and data integrity, with backward compatibility and tested rollback.
+- <<: *scenario_defaults
+  id: synthetic-to-incident-resolution
+  owner: observability-finops
+  participating_streams: [observability-finops, participant-experience, ha-dr-fleet, governed-integrations]
+  contracts: [sre-operating-model-v1, admin-observability-v1, lifecycle-evidence-v1]
+  outcome: A participant-facing synthetic failure produces the correct SLI impact, alert, owner, runbook, communication, recovery, and incident evidence.
+- <<: *scenario_defaults
+  id: privacy-retention-and-deletion
+  owner: security-identity
+  participating_streams: [security-identity, observability-finops, product-gtm-customer-success]
+  contracts: [data-ai-governance-v1, public-access-v2, admin-observability-v1, gtm-value-attribution-v1]
+  outcome: Purpose, consent, access, retention, deletion, and pseudonymization controls are proven without losing required operational evidence.
+- <<: *scenario_defaults
+  id: model-quality-safety-and-drift
+  owner: security-identity
+  participating_streams: [security-identity, lab-content-ai, governed-integrations, observability-finops]
+  contracts: [data-ai-governance-v1, lifecycle-evidence-v1, admin-observability-v1]
+  outcome: Approved model and prompt releases pass quality, safety, prompt-injection, tool-abuse, drift, deprecation, and rollback gates.
+- <<: *scenario_defaults
+  id: consented-gtm-value-attribution
+  owner: product-gtm-customer-success
+  participating_streams: [product-gtm-customer-success, event-orchestration, observability-finops, security-identity, lab-content-ai]
+  contracts: [gtm-value-attribution-v1, data-ai-governance-v1, event-manifest-v1, lifecycle-evidence-v1]
+  release_dimensions: [product_value, commercial_readiness, service_ownership, legal_compliance]
+  outcome: Privacy-safe activity, completion, repeat engagement, solution demand, follow-up, and accepted opportunity influence reconcile without inferring unsupported revenue.
+- <<: *scenario_defaults
   id: end-to-end-staged-release
   owner: convergence-release
-  participating_streams: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, convergence-release]
-  contracts: [catalog-package-v1, artifact-policy-v1, event-manifest-v1, cluster-profile-v1, public-access-v2, admin-observability-v1, lifecycle-evidence-v1, control-plane-recovery-v1]
-  outcome: One unchanged candidate advances only through earned gates and completes scale, failure, rollback, and zero-residue reclaim proof.
+  participating_streams: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, convergence-release]
+  contracts: [catalog-package-v1, artifact-policy-v1, event-manifest-v1, cluster-profile-v1, public-access-v2, admin-observability-v1, lifecycle-evidence-v1, control-plane-recovery-v1, production-readiness-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1]
+  release_dimensions: [product_value, commercial_readiness, service_ownership, legal_compliance]
+  outcome: One unchanged candidate advances only through earned gates and completes usability, scale, performance, operations, governance, commercial, failure, rollback, and zero-residue reclaim proof.

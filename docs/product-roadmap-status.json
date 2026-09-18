@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-18T17:56:00Z",
+  "updated_at": "2026-09-18T18:14:50Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -231,7 +231,7 @@
         "evidence/runs/delivery-governance/red.xml",
         "evidence/runs/delivery-governance/green-local.xml"
       ],
-      "note": "Twelve bounded streams, a four-stream initial WIP limit, entry/exit gates, unique ownership, and live-mutation prohibitions are executable and GREEN-local. Human owner assignment and integration use remain open."
+      "note": "Thirteen bounded streams, a four-stream initial WIP limit, entry/exit gates, unique ownership, and live-mutation prohibitions are executable and GREEN-local. Human owner assignment and integration use remain open."
     },
     "LP-T115": {
       "state": "green-local",
@@ -247,7 +247,7 @@
         "scripts/tests/test_validate_delivery_governance.py",
         "evidence/runs/delivery-governance/report.json"
       ],
-      "note": "Eight shared contracts have one owner, registered consumers, versions, and repository authorities; live consumer compatibility remains open."
+      "note": "Twelve shared contracts have one owner, registered consumers, versions, and repository authorities; live consumer compatibility remains open."
     },
     "LP-T116": {
       "state": "green-local",
@@ -263,7 +263,7 @@
         "scripts/validate_delivery_governance.py",
         "evidence/runs/delivery-governance/report.json"
       ],
-      "note": "Twelve cross-stream scenarios join all five proof methods with security, capacity, fault, cleanup, and observability dimensions. All scenarios correctly remain RED pending implementation evidence."
+      "note": "Nineteen cross-stream scenarios join all five proof methods with usability, security, capacity, performance, operability, data governance, fault, cleanup, observability, and release dimensions. All scenarios correctly remain RED pending implementation evidence."
     },
     "LP-T117": {
       "state": "green-local",
@@ -297,42 +297,84 @@
         "evidence/runs/delivery-governance/green-local.xml"
       ],
       "note": "The local fail-closed governance gate and CI step are defined. Remote CI execution is required before GREEN-integration."
+    },
+    "LP-T120": {
+      "state": "green-local",
+      "methods": {"cdd": "green-local"},
+      "evidence": [
+        "contracts/production-readiness-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The production test profile and fail-closed release rules are versioned. Service-specific thresholds, harnesses, and executed evidence remain open."
+    },
+    "LP-T128": {
+      "state": "green-local",
+      "methods": {"cdd": "green-local"},
+      "evidence": [
+        "contracts/sre-operating-model-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The SLI, SLO, error-budget, synthetic, incident, telemetry, and ownership contract is versioned. Implemented service levels and game-day evidence remain open."
+    },
+    "LP-T136": {
+      "state": "green-local",
+      "methods": {"cdd": "green-local"},
+      "evidence": [
+        "contracts/data-ai-governance-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The data, AI, legal, licensing, privacy, and responsible-use control contract is versioned. Inventory, owner acceptance, and executed controls remain open."
+    },
+    "LP-T144": {
+      "state": "green-local",
+      "methods": {"cdd": "green-local"},
+      "evidence": [
+        "contracts/gtm-value-attribution-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The privacy-safe GTM entity, funnel, attribution, commercialization, and claim contract is versioned. CRM ownership, consent implementation, and field proof remain open."
     }
   },
   "rubric": [
     {
-      "id": "lifecycle",
-      "label": "Lifecycle correctness and cleanup",
-      "weight": 15,
+      "id": "usability-lifecycle",
+      "label": "Usability, lifecycle correctness, and cleanup",
+      "weight": 10,
       "earned": 0
     },
     {
       "id": "supply-chain",
       "label": "Catalog and software supply chain",
-      "weight": 15,
+      "weight": 8,
       "earned": 0
     },
     {
       "id": "ha-dr",
       "label": "Control-plane HA and disaster recovery",
-      "weight": 15,
+      "weight": 10,
       "earned": 0
     },
     {
-      "id": "identity-security",
-      "label": "Public identity, edge, and security",
+      "id": "security-governance",
+      "label": "Identity, security, data, and AI governance",
       "weight": 15,
       "earned": 0
     },
     {
       "id": "placement-inference",
       "label": "Fleet placement and inference admission",
+      "weight": 10,
+      "earned": 0
+    },
+    {
+      "id": "production-quality",
+      "label": "Production quality, performance, and resilience",
       "weight": 15,
       "earned": 0
     },
     {
-      "id": "operations",
-      "label": "Observability and safe remediation",
+      "id": "sre-operations",
+      "label": "SRE, observability, support, and incident readiness",
       "weight": 10,
       "earned": 0
     },
@@ -343,15 +385,15 @@
       "earned": 0
     },
     {
-      "id": "portfolio",
-      "label": "Portfolio and participant experience",
-      "weight": 5,
+      "id": "gtm-customer-success",
+      "label": "Product value, GTM, sales enablement, and customer success",
+      "weight": 10,
       "earned": 0
     },
     {
       "id": "evidence",
       "label": "Evidence integrity and repeatability",
-      "weight": 5,
+      "weight": 7,
       "earned": 0
     }
   ]

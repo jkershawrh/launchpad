@@ -1,0 +1,63 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: ProductionReadinessContract
+metadata:
+  name: launchpad-production-readiness
+  version: 1.0.0
+purpose: >-
+  Prove that an unchanged Launchpad release remains usable, secure, observable,
+  recoverable, and supportable under production-shaped load and change.
+profiles:
+  functional:
+    required: [participant, instructor, requester, administrator, operator, support]
+  performance:
+    required: [baseline, load, spike, stress, endurance, soak]
+    thresholds_source: versioned-service-profile
+  concurrency:
+    required: [provisioning, claims, active-use, model-use, reclaim]
+  resilience:
+    required:
+    - dependency-degradation
+    - network-partition
+    - worker-loss
+    - replica-loss
+    - control-plane-failover
+    - recovery-under-load
+  change:
+    required:
+    - rolling-upgrade-with-active-sessions
+    - schema-migration
+    - backward-api-compatibility
+    - rollback
+    - failback
+  compatibility:
+    required: [supported-browser, supported-device, accessibility, ingress, identity]
+  integrity:
+    required: [reservation-reconciliation, lifecycle-reconciliation, zero-residue-cleanup]
+release_rules:
+  immutable_candidate: true
+  production_data_in_nonproduction: forbidden
+  unresolved_critical_or_high: blocks-promotion
+  failed_required_journey: blocks-promotion
+  missing_threshold_or_evidence: blocks-promotion
+  prior_stage_rollback_identity: required
+evidence_fields:
+- release_identity
+- commit_sha
+- image_digests
+- catalog_releases
+- environment_profile
+- workload_profile
+- cluster_refs
+- order_and_session_refs
+- started_at
+- completed_at
+- thresholds
+- measurements
+- test_results
+- fault_timeline
+- recovery_timeline
+- data_reconciliation
+- usability_acceptance
+- security_findings
+- cleanup_result
+- evidence_hashes

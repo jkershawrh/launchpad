@@ -716,6 +716,18 @@ needs an OpenShift Console or lab endpoint.
 | Business service | Intel-led opportunity qualification, tenant budgets, showback, rate cards, approved chargeback, catalog economics, and demand forecasts | Sales attribution and Finance-approved allocation rules |
 | Governed autonomy | Evidence-driven recommendations followed by allow-listed automatic remediation and reclaim | One failure class earns autonomy at a time |
 
+Four machine-readable contracts now make the production boundary explicit:
+[`production-readiness-v1.yaml`](../contracts/production-readiness-v1.yaml)
+defines production-shaped functional, load, endurance, change, recovery, and
+integrity proof; [`sre-operating-model-v1.yaml`](../contracts/sre-operating-model-v1.yaml)
+defines service levels, synthetics, incidents, telemetry, and operational
+ownership; [`data-ai-governance-v1.yaml`](../contracts/data-ai-governance-v1.yaml)
+defines privacy, data lifecycle, responsible-AI, licensing, legal, and content
+controls; and [`gtm-value-attribution-v1.yaml`](../contracts/gtm-value-attribution-v1.yaml)
+defines the privacy-safe field funnel, attribution limits, solution packaging,
+and customer-success loop. These are required production-release inputs, not
+optional post-production enhancements.
+
 ## GitOps and Argo CD deployment decision
 
 Argo CD remains the recommended deployment reconciler, while Launchpad remains

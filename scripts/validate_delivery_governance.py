@@ -60,6 +60,10 @@ def validate(
     convergence = [item for item in stream_items if item.get("kind") == "convergence"]
     _require(len(convergence) == 1, "Exactly one convergence stream is required")
     convergence_id = convergence[0]["id"]
+    _require(
+        "product-gtm-customer-success" in streams,
+        "Product production requires a GTM and customer-success stream",
+    )
 
     max_active = int(
         delivery.get("delivery_policy", {}).get("max_parallel_implementation_streams", 0)
@@ -100,6 +104,21 @@ def validate(
     _require(all(contract_ids), "Every shared contract requires an id")
     _require(len(contract_ids) == len(set(contract_ids)), "Shared contract ids must be unique")
     contracts = {item["id"]: item for item in contract_items}
+    production_contracts = {
+        "production-readiness-v1",
+        "sre-operating-model-v1",
+        "data-ai-governance-v1",
+        "gtm-value-attribution-v1",
+    }
+    _require(
+        production_contracts <= set(contracts),
+        "Production delivery contracts are incomplete",
+    )
+    _require(
+        set(delivery.get("delivery_policy", {}).get("production_release_requires", []))
+        == production_contracts,
+        "Production release policy must require every production contract",
+    )
     for item in contract_items:
         _require(item.get("owner") in streams, f"Contract {item['id']} has an unknown owner")
         for consumer in item.get("consumers", []):
@@ -109,6 +128,17 @@ def validate(
             path and (root / path).exists(), f"Contract {item['id']} path does not exist: {path}"
         )
         _require(item.get("version"), f"Contract {item['id']} requires a version")
+        if item["id"] in production_contracts:
+            document = yaml.safe_load((root / path).read_text(encoding="utf-8"))
+            _require(
+                document.get("schema_version") == "launchpad.redhat.com/v1alpha1",
+                f"Production contract {item['id']} has an unsupported schema",
+            )
+            _require(document.get("kind"), f"Production contract {item['id']} requires a kind")
+            _require(
+                document.get("metadata", {}).get("version") == item["version"],
+                f"Production contract {item['id']} version does not match registry",
+            )
 
     pivot = delivery.get("pivot_policy") or {}
     _require(
@@ -122,7 +152,30 @@ def validate(
     scenario_ids = [item.get("id") for item in scenarios]
     _require(all(scenario_ids), "Every convergence scenario requires an id")
     _require(len(scenario_ids) == len(set(scenario_ids)), "Convergence scenario ids must be unique")
-    required_dimensions = {"usability", "security", "capacity", "fault_recovery", "cleanup"}
+    required_dimensions = {
+        "usability",
+        "security",
+        "capacity",
+        "performance",
+        "operability",
+        "data_governance",
+        "fault_recovery",
+        "cleanup",
+    }
+    _require(
+        required_dimensions <= set(matrix.get("required_proof_dimensions", [])),
+        "Convergence matrix omits production proof dimensions",
+    )
+    required_release_dimensions = {
+        "product_value",
+        "commercial_readiness",
+        "service_ownership",
+        "legal_compliance",
+    }
+    _require(
+        required_release_dimensions <= set(matrix.get("release_required_dimensions", [])),
+        "Convergence matrix omits product release dimensions",
+    )
     for scenario in scenarios:
         scenario_id = scenario["id"]
         _require(scenario.get("owner") in streams, f"Scenario {scenario_id} has unknown owner")
@@ -160,6 +213,15 @@ def validate(
                     (root / evidence_path).exists(),
                     f"Scenario {scenario_id} evidence does not exist: {evidence_path}",
                 )
+
+    end_to_end = next(
+        (item for item in scenarios if item.get("id") == "end-to-end-staged-release"), None
+    )
+    _require(end_to_end is not None, "End-to-end staged release scenario is required")
+    _require(
+        required_release_dimensions <= set(end_to_end.get("release_dimensions", [])),
+        "End-to-end staged release lacks product release dimensions",
+    )
 
     promotion = matrix.get("promotion_gates") or []
     expected = [

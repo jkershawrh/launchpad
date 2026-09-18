@@ -79,7 +79,7 @@ pivot policy.
 ## Parallel delivery governance
 
 The execution model is defined in
-[`parallel-agentic-delivery.md`](parallel-agentic-delivery.md). Twelve bounded
+[`parallel-agentic-delivery.md`](parallel-agentic-delivery.md). Thirteen bounded
 vertical streams share versioned contracts, while no more than four
 implementation streams begin concurrently. Only the convergence stream may
 assemble a release candidate or request an explicitly approved live mutation.
@@ -124,6 +124,8 @@ gantt
     section Productize
     Dedicated production home and migration     :h4, 2026-11-16, 20w
     FinOps, service tiers, and portfolio growth  :h4a, 2026-11-16, 16w
+    Production quality and SRE readiness         :h4b, 2026-11-16, 16w
+    Data, AI governance and commercial GTM       :h4c, 2026-11-30, 20w
 ```
 
 ## Agentic estimation model
@@ -157,6 +159,10 @@ same files or clusters.
 | LP-E014 FinOps/service tiers | 5–10 agent-days | finance ownership and telemetry reconciliation | 3–6 weeks |
 | LP-E015 Solution portfolio | 3–7 agent-days per solution | solution-owner, data, security and scale review | 2–6 weeks per solution |
 | LP-E016 Repository delivery model | 7–15 agent-days, staged | ownership decisions and compatibility soak | 4–8 weeks |
+| LP-E023 Production-quality validation | 8–15 agent-days | production-shaped environments, endurance windows and accepted thresholds | 6–12 weeks |
+| LP-E024 SRE operating model | 7–12 agent-days | service ownership, paging integration and incident game days | 5–10 weeks |
+| LP-E025 Data and AI governance | 7–12 agent-days | privacy, legal, security and responsible-AI acceptance | 6–12 weeks |
+| LP-E026 Product, GTM and customer success | 8–15 agent-days | sales/CRM ownership, consent, packaging and field validation | 8–16 weeks |
 
 Agent-days are not added to produce the calendar because the roadmap deliberately
 overlaps independent epics. The critical path is usually the longest proof or
@@ -597,7 +603,9 @@ list with truthful health, maturity, coverage, and evidence.**
 
 **Target:** November 16, 2026–April 30, 2027
 **Outcome:** Launchpad runs from a funded, supported production home with a
-portable execution fleet, governed solution portfolio, and transparent cost.
+portable execution fleet, governed solution portfolio, production-quality and
+SRE evidence, privacy-safe GTM intelligence, customer-success ownership, and
+transparent cost and value.
 
 ### LP-E012 — Dedicated production home and migration
 
@@ -656,6 +664,141 @@ and future experiences through the same contracts.**
 - **Gate:** each solution passes the same deployment-class, security,
   participant-journey, load, reclaim, and support gates as existing catalogs.
 
+### LP-E023 — Production-quality validation
+
+**LP-S029 — As the release owner, I can prove an unchanged candidate remains
+usable, secure, observable, recoverable, and correct under production-shaped
+load, failure, and change.**
+
+- `LP-T120` Version service profiles containing supported scale, workload mix,
+  latency, throughput, error, saturation, recovery, cleanup, and usability
+  thresholds for each service tier.
+- `LP-T121` Build reproducible baseline, load, spike, stress, endurance, and
+  soak suites for participant, instructor, requester, administrator, operator,
+  model, and lifecycle journeys.
+- `LP-T122` Exercise simultaneous provisioning, claiming, active lab/model use,
+  expiration, and reclaim without overbooking, cross-seat access, or lost work.
+- `LP-T123` Inject worker, replica, route, storage, model, registry, identity,
+  dependency, network, and control-plane faults while the supported workload is
+  active; measure degradation and recovery against SLOs.
+- `LP-T124` Prove rolling upgrade, API compatibility, database migration,
+  active-session continuity, rollback, and failback using the same candidate
+  identity and reconciled authoritative state.
+- `LP-T125` Certify supported browsers, devices, viewport sizes, keyboard and
+  screen-reader accessibility, redirects, downloads, terminals, Showroom tools,
+  and OpenShift access.
+- `LP-T126` Reconcile orders, reservations, seats, entitlements, namespaces,
+  artifacts, model keys, lifecycle events, costs, and cleanup before and after
+  every failure or change test.
+- `LP-T127` Publish immutable production-readiness evidence with thresholds,
+  measurements, faults, recovery, usability acceptance, findings, residue, and
+  the exact tested rollback identity.
+- **Gate:** three consecutive production-shaped certifications meet every
+  declared threshold with zero critical/high findings, zero duplicate or
+  cross-tenant access, reconciled data, successful rollback, and zero residue.
+
+### LP-E024 — SRE operating model and service management
+
+**LP-S030 — As the service owner, I can operate Launchpad through measurable
+service levels, actionable telemetry, owned incidents, and sustainable support.**
+
+- `LP-T128` Define versioned SLIs, SLOs, error budgets, burn-rate policy, and
+  release-health rules for order acceptance, seat readiness, claim, participant
+  journey, model request, reclaim, and recovery.
+- `LP-T129` Run continuous participant-facing synthetic journeys for internal
+  order/reclaim, public claim/resume, Showroom/workspace/model use, and admin
+  diagnosis; never substitute pod readiness for user availability.
+- `LP-T130` Deliver dashboards and actionable alerts joining service level,
+  seat, lab, model, cluster, edge, dependency, release, and business-impact
+  signals with bounded cardinality.
+- `LP-T131` Establish severity, paging, escalation, incident-command, backup
+  coverage, retry/circuit-breaker, and emergency-change policies.
+- `LP-T132` Add stakeholder/status communication, participant-impact timeline,
+  mitigation, recovery, evidence capture, post-incident review, and recurrence
+  tracking.
+- `LP-T133` Govern telemetry schemas, labels, completeness, freshness,
+  retention, access, privacy, redaction, sampling, and observability cost.
+- `LP-T134` Assign the service owner, on-call roster, support boundary,
+  runbook/escalation owners, external dependency owners, maintenance windows,
+  and capacity-procurement path.
+- `LP-T135` Run operational game days covering event pressure, dependency
+  degradation, exhausted error budget, failover, rollback, communication, and
+  support handoff.
+- **Gate:** synthetic failures produce the correct SLI impact, alert, owner,
+  runbook, communication, recovery, audit, and post-incident action within the
+  declared service levels; exhausted error budgets block normal promotion.
+
+### LP-E025 — Data, AI, legal, and responsible-use governance
+
+**LP-S031 — As the security and governance owner, I can prove every collected
+datum, analytical use, model, tool, artifact, and published claim is permitted,
+bounded, reviewable, and removable.**
+
+- `LP-T136` Inventory and classify participant, identity, operational, model,
+  prompt, document, sales, support, and financial data with a declared owner,
+  purpose, system of record, and permitted consumers.
+- `LP-T137` Implement purpose-bound consent and notice for product analytics,
+  repeat engagement, and sales attribution while keeping service delivery
+  independent of optional commercial consent.
+- `LP-T138` Enforce retention, deletion, correction, export, anonymization or
+  pseudonymization, backup expiry, legal hold, and geographic handling rules.
+- `LP-T139` Prevent secrets, codes, raw email, prompts, responses, and uploaded
+  documents from entering telemetry or analytics without an explicit approved
+  purpose and access boundary.
+- `LP-T140` Version model, prompt, tool, and evaluation records; test quality,
+  safety, bias where applicable, drift, provider behavior, deprecation, and
+  rollback against catalog learning and business outcomes.
+- `LP-T141` Test prompt injection, data exfiltration, unsafe tool use, poisoned
+  retrieval, cross-seat context, excessive agency, and material recommendation
+  approval boundaries.
+- `LP-T142` Review OSS licenses, SBOM/provenance, trademarks, brand use,
+  datasets/content rights, provider terms, acceptable use, export controls, and
+  privacy/terms notices.
+- `LP-T143` Publish a signed governance decision with accepted risks,
+  remediations, expiration, approvers, and evidence for each production release.
+- **Gate:** unknown purpose blocks collection; missing consent blocks identity
+  joins; unapproved models, datasets, claims, or critical/high findings block
+  promotion, and an end-to-end deletion test leaves only required audit proof.
+
+### LP-E026 — Product, go-to-market, sales enablement, and customer success
+
+**LP-S032 — As a product and field leader, I can turn privacy-safe Launchpad
+evidence into validated solution plays, measurable adoption, responsible sales
+influence, and a closed product-feedback loop.**
+
+- `LP-T144` Version campaign, event, workshop, catalog release, pseudonymous
+  participant, solution play, account, and opportunity identifiers with named
+  systems of record and owners.
+- `LP-T145` Instrument invited, registered, claimed, opened, active, checkpoint,
+  completed, follow-up, POC, accepted influence, and final outcome as distinct
+  states; never infer completion from access or execution from a click.
+- `LP-T146` Define a consented, purpose-bound CRM/account/opportunity connector
+  that keeps raw email out of analytical events and cannot alter lifecycle or
+  authorization state.
+- `LP-T147` Implement transparent multi-touch attribution that separates
+  observed correlation, accepted influence, sourced opportunity, and revenue;
+  require opportunity-owner acceptance for commercial influence.
+- `LP-T148` Report adoption, completion, repeat engagement, workload demand,
+  seller friction, customer objections, model/hardware fit, cost, support, and
+  candidate solution patterns by approved aggregation level.
+- `LP-T149` Convert repeatedly successful patterns into governed reference
+  architectures, solution recipes, validated sales plays, demos, sizing
+  guidance, evidence, talk tracks, and objection handling.
+- `LP-T150` Define audience, packaging, pricing or internal service tier,
+  entitlement, support boundary, success criteria, and lifecycle policy for
+  each promoted solution play.
+- `LP-T151` Establish customer-success follow-up, lab resume, POC handoff,
+  adoption review, feedback capture, and outcome closure with accountable owners.
+- `LP-T152` Feed aggregated demand, failures, overrides, objections, and outcomes
+  into product discovery, catalog prioritization, architecture decisions,
+  enablement content, and roadmap pivots.
+- `LP-T153` Require sales, product, finance, privacy, legal, brand, and solution
+  owner approval before publishing claims; retain the supporting evidence and
+  expiry date.
+- **Gate:** one solution play traces consented activity through completion,
+  follow-up, accepted opportunity influence, cost, field feedback, and roadmap
+  action without exposing participant identity or claiming unsupported revenue.
+
 ### LP-E016 — Repository and team-scale delivery model
 
 **LP-S019 — As a maintainer, I can change one platform area without navigating
@@ -681,6 +824,10 @@ Every story must include, as applicable:
 - RED → GREEN-local → GREEN-integration → GREEN-live evidence;
 - security, privacy, accessibility, and tenant-isolation review;
 - metrics, logs, traces, audit, dashboards, alerts, and runbook;
+- production baseline, load, spike, stress, endurance, soak, and recovery-under-load evidence;
+- versioned SLIs, SLOs, error budgets, synthetics, paging, escalation, and service ownership;
+- data purpose, consent, retention, deletion, AI safety, licensing, legal, and brand review;
+- product-value, packaging, GTM attribution, customer-success, and feedback-loop evidence where commercially applicable;
 - upgrade, rollback, restart, fault, and cleanup behavior;
 - documentation for requester, participant, content owner, operator, support,
   security, and product personas;

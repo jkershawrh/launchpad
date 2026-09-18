@@ -21,9 +21,9 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     model = module.parse_roadmap(ROOT / "docs" / "product-delivery-roadmap.md")
 
     assert len(model["horizons"]) == 5
-    assert len(model["epics"]) == 22
-    assert len(model["stories"]) == 28
-    assert len(model["tasks"]) == 119
+    assert len(model["epics"]) == 26
+    assert len(model["stories"]) == 32
+    assert len(model["tasks"]) == 153
     assert "LP-T095" in model["tasks"]
     assert "lab.step.executed" in model["tasks"]["LP-T095"]["title"]
     assert model["tasks"]["LP-T084"]["epic_id"] == "LP-E002"
@@ -32,6 +32,10 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     assert model["tasks"]["LP-T107"]["epic_id"] == "LP-E020"
     assert model["tasks"]["LP-T113"]["epic_id"] == "LP-E021"
     assert model["tasks"]["LP-T119"]["epic_id"] == "LP-E022"
+    assert model["tasks"]["LP-T127"]["epic_id"] == "LP-E023"
+    assert model["tasks"]["LP-T135"]["epic_id"] == "LP-E024"
+    assert model["tasks"]["LP-T143"]["epic_id"] == "LP-E025"
+    assert model["tasks"]["LP-T153"]["epic_id"] == "LP-E026"
 
 
 def test_status_rollup_requires_all_five_proof_methods(tmp_path: Path):
@@ -72,9 +76,9 @@ def test_render_is_self_contained_and_exposes_required_views():
     status = module.load_status(ROOT / "docs" / "product-roadmap-status.json")
     html = module.render_dashboard(model, status, ROOT)
 
-    assert "data-view=\"gantt\"" in html
-    assert "data-view=\"matrix\"" in html
-    assert "data-view=\"pilot\"" in html
+    assert 'data-view="gantt"' in html
+    assert 'data-view="matrix"' in html
+    assert 'data-view="pilot"' in html
     assert "September 17 Pilot" in html
     assert "191" in html and "79" in html and "270" in html
     assert "Participant completion was not consistently instrumented" in html
@@ -105,5 +109,19 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "<svg" in html
     assert "Red Hat" in html and "Intel" in html
     assert 'viewBox="0 0 192.30001 146"' in html
-    assert "font-size=\"72\"" not in html
+    assert 'font-size="72"' not in html
     assert "fetch(" not in html
+
+
+def test_release_rubric_is_complete_and_balanced():
+    module = load_module()
+    status = module.load_status(ROOT / "docs" / "product-roadmap-status.json")
+    rubric = status["rubric"]
+
+    assert sum(item["weight"] for item in rubric) == 100
+    assert {item["id"] for item in rubric} >= {
+        "production-quality",
+        "sre-operations",
+        "security-governance",
+        "gtm-customer-success",
+    }
