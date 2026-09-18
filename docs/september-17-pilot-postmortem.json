@@ -33,6 +33,47 @@
     "available_proof": "Representative synthetic, API, model, route, namespace-isolation, and manual participant checks exist, but they cannot be converted into 191 participant completion records.",
     "required": "Emit versioned per-seat checkpoint, final outcome, duration, failure stage, catalog release, and anonymized cohort events."
   },
+  "post_snapshot_observations": [
+    {
+      "observed_at": "2026-09-18T13:49:44Z",
+      "source": "Read-only correlation of the nine event access policies, participant entitlements, access audit events, and pseudonymous participant identities in the Launchpad operational database.",
+      "privacy_boundary": "No participant email addresses were exported. Counts use opaque participant identifiers derived from self-asserted, unverified email labels; a unique identity is not independently verified as a unique human attendee.",
+      "summary": {
+        "seat_entitlements": 195,
+        "additional_claims_since_snapshot": 4,
+        "unique_participant_identities": 67,
+        "all_three_catalogs": 47,
+        "two_catalogs": 10,
+        "one_catalog": 10,
+        "participants_in_multiple_waves": 19,
+        "participants_reentering_same_workshop": 12,
+        "additional_successful_claim_actions": 16,
+        "successful_authorization_checks": 22582,
+        "activity_after_event_day": 0,
+        "latest_event_activity_at": "2026-09-17T22:15:27Z"
+      },
+      "catalog_paths": [
+        {"path": "Serve LLMs + Building an AI Agent + Multi-Agent", "identities": 47},
+        {"path": "Serve LLMs + Building an AI Agent", "identities": 8},
+        {"path": "Serve LLMs + Multi-Agent", "identities": 2},
+        {"path": "Serve LLMs only", "identities": 9},
+        {"path": "Multi-Agent only", "identities": 1}
+      ],
+      "waves": [
+        {"wave": 1, "unique_identities": 38, "all_three_labs": 21, "two_labs": 4, "one_lab": 13},
+        {"wave": 2, "unique_identities": 24, "all_three_labs": 7, "two_labs": 9, "one_lab": 8},
+        {"wave": 3, "unique_identities": 25, "all_three_labs": 18, "two_labs": 3, "one_lab": 4}
+      ],
+      "cross_wave": {
+        "one_wave": 48,
+        "two_waves": 18,
+        "three_waves": 1,
+        "more_than_three_seat_entitlements": 14
+      },
+      "interpretation": "The strongest defensible result is that 67 pseudonymous identities claimed 195 event seats and 47 identities, about 70 percent, accessed all three catalog types. Twelve identities demonstrably returned through the same workshop claim/recovery flow.",
+      "limitations": "A repeated successful claim demonstrates re-entry or entitlement recovery, not meaningful continued work. Authorization checks are protected resource requests, not login or completion counts. Accurate retention requires separate claimed, authenticated, opened, active, and completed events."
+    }
+  ],
   "catalogs": [
     {
       "name": "Serve LLMs on Intel Xeon",

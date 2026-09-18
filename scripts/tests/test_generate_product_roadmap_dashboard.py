@@ -73,6 +73,11 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "September 17 Pilot" in html
     assert "191" in html and "79" in html and "270" in html
     assert "Participant completion was not consistently instrumented" in html
+    assert "Participant journey correlation" in html
+    assert '"unique_participant_identities": 67' in html
+    assert '"all_three_catalogs": 47' in html
+    assert '"participants_reentering_same_workshop": 12' in html
+    assert "PII excluded" in html
     assert "Financial readiness" in html
     assert "$20K–$55K" in html
     assert "$23K–$40K" in html
