@@ -9,6 +9,9 @@ delivery_policy:
   convergence_cadence: twice-weekly
   contract_freeze_scope: one convergence candidate
   immutable_promotion: true
+  usability_continuity: required-at-every-stage
+  participant_journey_regression: blocks-promotion
+  current_usable_path_protection: mandatory
   feature_stream_live_mutation: forbidden
   convergence_live_mutation: explicit-human-approval
   evidence_source_of_truth: certification/convergence-matrix-v1.yaml

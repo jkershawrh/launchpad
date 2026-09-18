@@ -60,6 +60,15 @@ def test_feature_stream_cannot_authorize_live_mutation():
         module.validate(streams, matrix, root=ROOT)
 
 
+def test_every_scenario_requires_usability_proof():
+    module = load_module()
+    streams, matrix = load_contracts()
+    matrix["scenarios"][0]["proof_dimensions"].remove("usability")
+
+    with pytest.raises(ValueError, match="required proof dimensions"):
+        module.validate(streams, matrix, root=ROOT)
+
+
 def test_green_scenario_requires_complete_method_evidence():
     module = load_module()
     streams, matrix = load_contracts()

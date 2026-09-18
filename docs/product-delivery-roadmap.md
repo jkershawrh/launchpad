@@ -69,6 +69,13 @@ A story is not done when its pods are running. It is done when its contract,
 functional journey, authorization, failure behavior, observability, cleanup,
 documentation, and evidence have passed at the declared scale.
 
+Usability is continuous from pilot through staging and production. Each
+parallel stream must preserve the current usable path and supply evidence for
+the participant, trainer, requester, administrator, and operator journeys it
+affects. A technically healthy component cannot promote while any required
+journey is unusable; usability regressions block convergence and trigger the
+pivot policy.
+
 ## Parallel delivery governance
 
 The execution model is defined in

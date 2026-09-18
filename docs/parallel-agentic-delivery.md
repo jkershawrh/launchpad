@@ -8,6 +8,13 @@ single convergence path. A feature stream cannot activate a catalog, mutate a
 live environment, rotate a shared credential, reclaim a retained session, or
 promote itself.
 
+This model covers the whole product path from pilot through staging and
+production. Usability is a release invariant throughout that path, not a late
+UI phase and not solely the participant-experience stream's responsibility.
+Every stream must preserve the current usable path and prove its effect on the
+participant, instructor, requester, administrator, and operator journeys at
+each promotion gate.
+
 The machine-readable authority for stream ownership, dependencies, shared
 contracts, work-in-progress limits, and pivots is
 [`delivery-streams-v1.yaml`](../contracts/delivery-streams-v1.yaml). The
@@ -20,6 +27,11 @@ At most four implementation streams are active initially. A stream owns a
 vertical outcome, not merely a UI or backend component. It works against a
 frozen contract version for one convergence candidate and produces local
 TDD/EDD/CDD/BDD/CBT evidence without touching live participant resources.
+
+Parallel work may improve production readiness without interrupting usable
+pilot capabilities. A regression in discovery, ordering, access, instructions,
+workspace execution, observability, support, resume, or reclaim blocks
+convergence even when its component-level tests are green.
 
 The convergence stream alone may assemble shared changes and request an
 explicitly approved live operation. Its sequence is:
@@ -99,9 +111,10 @@ Environment names do not confer maturity. The same immutable release earns:
 
 The convergence matrix defines the evidence required at each gate. Promotion
 requires the unchanged image digests, catalog releases, schemas, policies, and
-rollback identity tested at the prior gate. Production additionally requires
-three consecutive certifications, migration and failback proof, zero critical
-or high security findings, and accountable human acceptance.
+rollback identity tested at the prior gate, plus a usable end-to-end journey
+at that gate's declared scale. Production additionally requires three
+consecutive certifications, migration and failback proof, zero critical or
+high security findings, and accountable user and human-owner acceptance.
 
 ## Control-plane portability
 

@@ -122,7 +122,7 @@ def validate(
     scenario_ids = [item.get("id") for item in scenarios]
     _require(all(scenario_ids), "Every convergence scenario requires an id")
     _require(len(scenario_ids) == len(set(scenario_ids)), "Convergence scenario ids must be unique")
-    required_dimensions = {"security", "capacity", "fault_recovery", "cleanup"}
+    required_dimensions = {"usability", "security", "capacity", "fault_recovery", "cleanup"}
     for scenario in scenarios:
         scenario_id = scenario["id"]
         _require(scenario.get("owner") in streams, f"Scenario {scenario_id} has unknown owner")

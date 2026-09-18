@@ -4,24 +4,24 @@ metadata:
   name: launchpad-product-convergence
   version: 1.0.0
 proof_methods: [tdd, edd, cdd, bdd, cbt]
-required_proof_dimensions: [security, capacity, fault_recovery, cleanup]
+required_proof_dimensions: [usability, security, capacity, fault_recovery, cleanup]
 promotion_gates:
 - stage: green-local
-  required_evidence: Unit, component, schema, policy, and rendered-manifest results.
+  required_evidence: Unit, component, schema, policy, rendered-manifest, and usable-journey fixture results.
 - stage: green-integration
-  required_evidence: Producer-consumer contracts and complete isolated control-plane journeys.
+  required_evidence: Producer-consumer contracts and complete isolated participant, instructor, requester, and operator journeys.
 - stage: green-canary
-  required_evidence: One real seat per catalog completes create, use, restart, and reclaim.
+  required_evidence: One real seat per catalog completes discover, order, claim, learn, execute, resume, restart, and reclaim.
 - stage: green-staging
-  required_evidence: Production-shaped 1, 5, and 25 or 30 seat runs plus security, restore, and rollback.
+  required_evidence: Production-shaped 1, 5, and 25 or 30 seat usable journeys plus security, restore, and rollback.
 - stage: green-production-limited
-  required_evidence: Approved audience, public access, support ownership, SLOs, and prior-plane fallback.
+  required_evidence: Approved audience, usability acceptance, public access, support ownership, SLOs, and prior-plane fallback.
 - stage: green-production
-  required_evidence: Three consecutive certifications, zero critical or high findings, migration, failover, rollback, and owner acceptance.
+  required_evidence: Three consecutive full-journey certifications, zero critical or high findings, migration, failover, rollback, and user and owner acceptance.
 scenario_defaults: &scenario_defaults
   state: red
   methods: {tdd: red, edd: red, cdd: red, bdd: red, cbt: red}
-  proof_dimensions: [functional, security, capacity, fault_recovery, cleanup, observability]
+  proof_dimensions: [functional, usability, security, capacity, fault_recovery, cleanup, observability]
   evidence: []
 scenarios:
 - <<: *scenario_defaults
