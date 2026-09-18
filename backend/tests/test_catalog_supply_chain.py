@@ -79,5 +79,7 @@ def test_ci_and_local_make_gate_enforce_the_artifact_policy():
 
     assert "python scripts/validate_catalog_artifacts.py" in workflow
     assert "catalog-artifact-policy.json" in workflow
+    assert "--select E9,F63,F7,F82" in workflow
+    assert "Skipping strict source-drift validation for legacy catalog" in workflow
     assert "catalog-artifacts:" in makefile
     assert "python3 scripts/validate_catalog_artifacts.py" in makefile

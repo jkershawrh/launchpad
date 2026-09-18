@@ -88,7 +88,7 @@ def test_multi_agent_showroom_is_native_launchpad_content():
     assert "releases/download/patternfly-6/" in playbook["ui"]["bundle"]["url"]
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "86c7f1a0e51164fa3c854b0a7a8236fd090014f9"
+        "b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3"
     )
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
     assert component["asciidoc"]["attributes"]["maas_model"] == "%maas_model%"

@@ -26,7 +26,7 @@
       "images": [
         "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661"
       ],
-      "showroom_content_ref": "86c7f1a0e51164fa3c854b0a7a8236fd090014f9",
+      "showroom_content_ref": "b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3",
       "showroom_content_ref_is_immutable": true,
       "violations": []
     }

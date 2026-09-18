@@ -20,7 +20,7 @@ catalog:
 sources:
   showroom:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "86c7f1a0e51164fa3c854b0a7a8236fd090014f9"
+    revision: "b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3"
     playbook: site-multi-agent-quickstart.yml
     start_path: content-multi-agent-quickstart
   workload:
