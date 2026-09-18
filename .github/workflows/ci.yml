@@ -150,6 +150,7 @@ jobs:
               "$contract" \
               --intake "catalog-onboarding/$catalog_id.yaml" \
               > "$RECEIPT_DIR/catalog-certification-$catalog_id.json"
+          done
 
       - name: Enforce immutable pilot catalog artifacts
         env:
@@ -157,7 +158,6 @@ jobs:
         run: |
           python scripts/validate_catalog_artifacts.py \
             --output "$RECEIPT_DIR/catalog-artifact-policy.json"
-          done
 
       - name: Upload onboarding evidence
         if: always()
