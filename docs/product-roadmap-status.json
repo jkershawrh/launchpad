@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-19T04:06:18Z",
+  "updated_at": "2026-09-19T04:11:10Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -373,6 +373,24 @@
         "certification/convergence-matrix-v1.yaml"
       ],
       "note": "The public/private boundary, sanitation, legal, community, reproducibility, and enterprise-compatibility contract is versioned. Repository sanitation, legal review, public release assets, and executed compatibility proof remain open."
+    },
+    "LP-T036": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/tests/test_acm_placement_adapter.py",
+        "contracts/acm-placement-v1.yaml",
+        "docs/acm-launchpad-architecture-decision.md",
+        "evidence/runs/acm-placement-adapter/green-local.xml",
+        "evidence/runs/acm-placement-adapter/red-local.xml"
+      ],
+      "note": "The local ACM v1 adapter contract establishes Red Hat Advanced Cluster Management as the fleet candidate and governance boundary without replacing Launchpad admission. It reads v1beta1 PlacementDecisions and v1 ManagedClusters, requires both availability and hub acceptance, deduplicates shards, records labels/claims/rejections, hashes the exact observed decision inputs, and excludes credentials and certified seat capacity. ACM candidates must still be intersected with the approved Launchpad capacity matrix and reservations. Local RED/GREEN evidence exists; hub installation, managed-cluster import, policy deployment, GitOps integration, stale-snapshot policy, integration proof, and live proof remain open."
     }
   },
   "rubric": [

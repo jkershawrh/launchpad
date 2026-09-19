@@ -1,0 +1,58 @@
+openapi: 3.1.0
+info:
+  title: Launchpad ACM Placement Adapter Contract
+  version: 1.0.0
+  description: >-
+    Defines the fail-closed boundary between Red Hat Advanced Cluster
+    Management placement and Launchpad event admission. ACM supplies cluster
+    membership, selection, health, labels, and claims. It does not supply
+    Launchpad catalog certification, seat capacity, credentials, or final
+    workshop placement.
+paths: {}
+components:
+  schemas:
+    AcmPlacementSnapshot:
+      type: object
+      additionalProperties: false
+      required: [namespace, placement_name, snapshot_id, observed_at, clusters]
+      properties:
+        namespace: {type: string, minLength: 1}
+        placement_name: {type: string, minLength: 1}
+        snapshot_id:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
+        observed_at: {type: string, format: date-time}
+        clusters:
+          type: array
+          items: {$ref: '#/components/schemas/AcmClusterObservation'}
+    AcmClusterObservation:
+      type: object
+      additionalProperties: false
+      required:
+        - cluster_id
+        - resource_version
+        - available
+        - hub_accepted
+        - acm_eligible
+        - reasons
+        - decision_reasons
+        - labels
+        - claims
+      properties:
+        cluster_id: {type: string, minLength: 1}
+        resource_version: {type: string}
+        available: {type: boolean}
+        hub_accepted: {type: boolean}
+        acm_eligible: {type: boolean}
+        reasons:
+          type: array
+          items: {type: string}
+        decision_reasons:
+          type: array
+          items: {type: string}
+        labels:
+          type: object
+          additionalProperties: {type: string}
+        claims:
+          type: object
+          additionalProperties: {type: string}

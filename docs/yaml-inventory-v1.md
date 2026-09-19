@@ -18,7 +18,7 @@ CLI, documentation, and human consumers must be checked before disposition.
 - Owner assignment still required: **383**
 - Preserved pending owner review: **383**
 - No repository reference detected: **173**
-- Base source commit: `929a963708c270ef1b9ac82045ef7e2175535d4b`
+- Base source commit: `dbc47df1db3bc300100579d84197afb8cc4dc376`
 - Source state: **working-tree**; tracked changes present:
   **true**
 
