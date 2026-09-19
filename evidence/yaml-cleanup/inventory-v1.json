@@ -899,7 +899,7 @@
         "docs/product-roadmap-status.json"
       ],
       "risk_flags": [],
-      "sha256": "f9b7c700020583ced0279b3db0e67daf3665bcef9e338bf1c06e7266b1951c58"
+      "sha256": "0d87411d45d72e1c68f7b6ba33af7ac9faee0deffdf01b0c7d10df4f6b957243"
     },
     {
       "area": "contracts",
@@ -6252,7 +6252,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "47620d531360161b9d82deac70420334860e0290de618ee2ee802cd5c704cb87"
+      "sha256": "93d456b943e88a315cb9ccbd421ded0cb08d51cb75401398ca783f057ed00a00"
     },
     {
       "area": "fixtures",
@@ -6755,7 +6755,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "7d5e14c1991892a0a7ee07a09f053549d6657ad5",
+  "source_commit": "ba47dae33ca22199456d05924dc9a1388600c75b",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

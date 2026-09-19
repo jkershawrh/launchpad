@@ -5,6 +5,8 @@ import yaml
 from app.api import deps
 from app.domain.events import (
     EventCapacitySupply,
+    EventCatalogCapacity,
+    EventClusterCapacity,
     EventManifest,
     calculate_event_capacity,
 )
@@ -23,7 +25,7 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
     contract = yaml.safe_load(CONTRACT.read_text())
     schema = contract["components"]["schemas"]["EventManifest"]
 
-    assert contract["info"]["version"] == "1.0.0"
+    assert contract["info"]["version"] == "1.1.0"
     assert {
         "event_id",
         "name",
@@ -33,6 +35,7 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
         "labs",
         "retention",
         "exposure_policy",
+        "placement_policy",
     } <= set(schema["required"])
 
     preview = contract["components"]["schemas"]["EventCapacityPreview"]
@@ -44,6 +47,8 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
         "certified_capacity",
         "dr_reserved_capacity",
         "uncertified_capacity",
+        "allocations",
+        "lab_capacity",
     } <= set(preview["required"])
     created = contract["paths"]["/api/v1/events"]["post"]["responses"]["201"]
     assert created["content"]["application/json"]["schema"] == {
@@ -93,10 +98,41 @@ def _pilot_manifest() -> EventManifest:
     return EventManifest.model_validate(yaml.safe_load(PILOT.read_text())["spec"])
 
 
+def _pilot_supply(
+    *,
+    certified_capacity: int = 270,
+    dr_reserved_capacity: int = 0,
+    uncertified_capacity: int = 0,
+    enabled: bool = True,
+) -> EventCapacitySupply:
+    manifest = _pilot_manifest()
+    return EventCapacitySupply(
+        clusters=[
+            EventClusterCapacity(
+                cluster_id="certified-event-pool",
+                enabled=enabled,
+                exposure_policies=["internal", "public_code"],
+                capabilities=[],
+                certified_seats=certified_capacity,
+                dr_reserved_seats=dr_reserved_capacity,
+                uncertified_seats=uncertified_capacity,
+                catalogs=[
+                    EventCatalogCapacity(
+                        catalog_id=lab.catalog_id,
+                        catalog_release=lab.catalog_release,
+                        certified_seats=certified_capacity,
+                    )
+                    for lab in manifest.labs
+                ],
+            )
+        ]
+    )
+
+
 def test_event_capacity_calculation_distinguishes_people_from_environments():
     preview = calculate_event_capacity(
         _pilot_manifest(),
-        EventCapacitySupply(certified_capacity=270),
+        _pilot_supply(),
     )
 
     assert preview.participant_count == 90
@@ -109,7 +145,7 @@ def test_event_capacity_calculation_distinguishes_people_from_environments():
 def test_dr_reserved_and_uncertified_capacity_never_make_event_eligible():
     preview = calculate_event_capacity(
         _pilot_manifest(),
-        EventCapacitySupply(
+        _pilot_supply(
             certified_capacity=90,
             dr_reserved_capacity=90,
             uncertified_capacity=90,
@@ -129,7 +165,7 @@ def test_event_capacity_rejects_approval_for_the_wrong_number_of_environments():
     with pytest.raises(ValueError, match="approved 90 seat-environments but requires 270"):
         calculate_event_capacity(
             manifest,
-            EventCapacitySupply(certified_capacity=270),
+            _pilot_supply(),
         )
 
 
@@ -146,7 +182,7 @@ def test_event_capacity_preview_fails_closed_without_server_owned_supply():
 
 
 def test_event_capacity_preview_uses_server_owned_certified_supply():
-    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
+    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: _pilot_supply(
         certified_capacity=270,
         dr_reserved_capacity=180,
         uncertified_capacity=90,
@@ -181,9 +217,7 @@ def test_event_capacity_preview_returns_bad_request_for_approval_mismatch():
 
 def test_create_event_persists_approved_manifest_without_lifecycle_mutation():
     store = EventManifestStore()
-    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
-        certified_capacity=270
-    )
+    app.dependency_overrides[deps.get_event_capacity_supply] = _pilot_supply
     app.dependency_overrides[deps.get_event_manifest_store] = lambda: store
     try:
         response = TestClient(app).post(
@@ -197,12 +231,17 @@ def test_create_event_persists_approved_manifest_without_lifecycle_mutation():
     assert response.status_code == 201
     assert response.json()["manifest"]["event_id"] == "september-17-2026-pilot"
     assert response.json()["capacity_preview"]["seat_environments"] == 270
+    assert len(response.json()["capacity_preview"]["allocations"]) == 9
+    assert all(
+        allocation["seats"] == 30
+        for allocation in response.json()["capacity_preview"]["allocations"]
+    )
     assert store.get("september-17-2026-pilot") is not None
 
 
 def test_create_event_rejects_uncertified_capacity_before_persistence():
     store = EventManifestStore()
-    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
+    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: _pilot_supply(
         certified_capacity=90,
         dr_reserved_capacity=180,
     )
@@ -222,9 +261,7 @@ def test_create_event_rejects_uncertified_capacity_before_persistence():
 
 def test_event_id_is_immutable_and_duplicate_create_conflicts():
     store = EventManifestStore()
-    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
-        certified_capacity=270
-    )
+    app.dependency_overrides[deps.get_event_capacity_supply] = _pilot_supply
     app.dependency_overrides[deps.get_event_manifest_store] = lambda: store
     try:
         first = TestClient(app).post(
@@ -249,9 +286,7 @@ def test_create_event_fails_closed_when_durable_storage_is_unavailable():
         def create(self, _record):
             raise PersistenceUnavailableError("database unavailable")
 
-    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
-        certified_capacity=270
-    )
+    app.dependency_overrides[deps.get_event_capacity_supply] = _pilot_supply
     app.dependency_overrides[deps.get_event_manifest_store] = UnavailableStore
     try:
         response = TestClient(app).post(

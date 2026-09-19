@@ -9,6 +9,7 @@ spec:
   owner: event-owner
   technical_approver: launchpad-technical-owner
   exposure_policy: public_code
+  placement_policy: single_cluster_per_workshop
   cohorts:
     - cohort_id: session-1
       participants: 30

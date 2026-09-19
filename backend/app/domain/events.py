@@ -5,6 +5,9 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
+MAX_EVENT_WORKSHOPS = 100
+MAX_ALLOCATION_STATES = 100_000
+
 
 class EventCohort(BaseModel):
     cohort_id: str = Field(min_length=1)
@@ -45,6 +48,7 @@ class EventManifest(BaseModel):
     owner: str = Field(min_length=1)
     technical_approver: str = Field(min_length=1)
     exposure_policy: Literal["internal", "public_code"]
+    placement_policy: Literal["single_cluster_per_workshop"]
     cohorts: list[EventCohort] = Field(min_length=1)
     labs: list[EventLab] = Field(min_length=1)
     retention: EventRetention
@@ -73,17 +77,73 @@ class EventManifest(BaseModel):
         return self
 
 
-class EventCapacitySupply(BaseModel):
-    """Server-owned capacity categories.
+class EventCatalogCapacity(BaseModel):
+    """Certified simultaneous seat limit for one immutable catalog release."""
 
-    Only ``certified_capacity`` can satisfy normal event demand. DR-reserved and
-    uncertified capacity are reported so an operator can see theoretical
-    headroom without accidentally making it placeable.
+    catalog_id: str = Field(min_length=1)
+    catalog_release: str = Field(min_length=1)
+    certified_seats: int = Field(ge=0)
+
+
+class EventClusterCapacity(BaseModel):
+    """Server-owned event capacity envelope for one execution cluster."""
+
+    cluster_id: str = Field(min_length=1)
+    enabled: bool = False
+    priority: int = Field(default=100, ge=0)
+    exposure_policies: list[Literal["internal", "public_code"]] = Field(
+        default_factory=list
+    )
+    capabilities: list[str] = Field(default_factory=list)
+    certified_seats: int = Field(default=0, ge=0)
+    dr_reserved_seats: int = Field(default=0, ge=0)
+    uncertified_seats: int = Field(default=0, ge=0)
+    catalogs: list[EventCatalogCapacity] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def unique_catalog_releases(self) -> EventClusterCapacity:
+        keys = [(item.catalog_id, item.catalog_release) for item in self.catalogs]
+        if len(keys) != len(set(keys)):
+            raise ValueError(
+                f"Cluster {self.cluster_id} contains duplicate catalog release capacity"
+            )
+        return self
+
+
+class EventCapacitySupply(BaseModel):
+    """Server-owned catalog-by-cluster certification matrix.
+
+    Only enabled cluster envelopes with an exact catalog release, compatible
+    exposure policy, and all required capabilities can satisfy event demand.
+    DR-reserved and uncertified capacity remain visible but never placeable.
     """
 
-    certified_capacity: int = Field(default=0, ge=0)
-    dr_reserved_capacity: int = Field(default=0, ge=0)
-    uncertified_capacity: int = Field(default=0, ge=0)
+    clusters: list[EventClusterCapacity] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def unique_clusters(self) -> EventCapacitySupply:
+        cluster_ids = [item.cluster_id for item in self.clusters]
+        if len(cluster_ids) != len(set(cluster_ids)):
+            raise ValueError("Event capacity cluster IDs must be unique")
+        return self
+
+
+class EventCapacityAllocation(BaseModel):
+    cohort_id: str
+    lab_ref: str
+    catalog_id: str
+    catalog_release: str
+    cluster_id: str
+    seats: int = Field(ge=1)
+
+
+class EventLabCapacityDecision(BaseModel):
+    lab_ref: str
+    catalog_id: str
+    catalog_release: str
+    required_seats: int = Field(ge=1)
+    allocated_seats: int = Field(ge=0)
+    shortfall: int = Field(ge=0)
 
 
 class EventCapacityPreview(BaseModel):
@@ -97,6 +157,8 @@ class EventCapacityPreview(BaseModel):
     capacity_shortfall: int
     eligible: bool
     explanation: str
+    allocations: list[EventCapacityAllocation] = Field(default_factory=list)
+    lab_capacity: list[EventLabCapacityDecision] = Field(default_factory=list)
 
 
 class EventRecord(BaseModel):
@@ -141,21 +203,38 @@ def calculate_event_capacity(
             "Approved retention does not match the event retention policy"
         )
 
-    capacity_shortfall = max(
-        0, peak_retained_environments - supply.certified_capacity
+    allocations, lab_capacity = _allocate_certified_capacity(manifest, supply)
+    certified_capacity = sum(
+        cluster.certified_seats
+        for cluster in supply.clusters
+        if cluster.enabled
+        and manifest.exposure_policy in cluster.exposure_policies
     )
+    dr_reserved_capacity = sum(
+        cluster.dr_reserved_seats for cluster in supply.clusters
+    )
+    uncertified_capacity = sum(
+        cluster.uncertified_seats for cluster in supply.clusters
+    )
+    capacity_shortfall = sum(item.shortfall for item in lab_capacity)
     eligible = capacity_shortfall == 0
     if eligible:
         explanation = (
-            f"Certified execution capacity covers all {seat_environments} "
-            "retained seat-environments."
+            "The catalog-by-cluster certification matrix covers all "
+            f"{seat_environments} retained seat-environments."
         )
     else:
+        gaps = ", ".join(
+            f"{item.lab_ref}: {item.shortfall}"
+            for item in lab_capacity
+            if item.shortfall
+        )
         explanation = (
-            f"Certified execution capacity is short by {capacity_shortfall} "
-            f"seat-environments. DR-reserved capacity ({supply.dr_reserved_capacity}) "
-            f"and uncertified capacity ({supply.uncertified_capacity}) are visible but "
-            "excluded from placement eligibility."
+            f"Certified catalog-by-cluster capacity is short by {capacity_shortfall} "
+            f"seat-environments ({gaps}). DR-reserved capacity "
+            f"({dr_reserved_capacity}) and uncertified capacity "
+            f"({uncertified_capacity}) are visible but excluded from placement "
+            "eligibility."
         )
 
     return EventCapacityPreview(
@@ -163,10 +242,150 @@ def calculate_event_capacity(
         seat_environments=seat_environments,
         peak_concurrent_participants=peak_concurrent_participants,
         peak_retained_environments=peak_retained_environments,
-        certified_capacity=supply.certified_capacity,
-        dr_reserved_capacity=supply.dr_reserved_capacity,
-        uncertified_capacity=supply.uncertified_capacity,
+        certified_capacity=certified_capacity,
+        dr_reserved_capacity=dr_reserved_capacity,
+        uncertified_capacity=uncertified_capacity,
         capacity_shortfall=capacity_shortfall,
         eligible=eligible,
         explanation=explanation,
+        allocations=allocations,
+        lab_capacity=lab_capacity,
     )
+
+
+def _allocate_certified_capacity(
+    manifest: EventManifest,
+    supply: EventCapacitySupply,
+) -> tuple[list[EventCapacityAllocation], list[EventLabCapacityDecision]]:
+    """Place each cohort/lab workshop atomically within certified limits."""
+
+    labs_by_ref = {lab.lab_ref: lab for lab in manifest.labs}
+    workshops = [
+        (cohort.cohort_id, labs_by_ref[lab_ref], cohort.participants)
+        for cohort in manifest.cohorts
+        for lab_ref in cohort.lab_refs
+    ]
+    if len(workshops) > MAX_EVENT_WORKSHOPS:
+        raise ValueError(
+            f"Event contains {len(workshops)} atomic workshops; maximum is "
+            f"{MAX_EVENT_WORKSHOPS}"
+        )
+    clusters = [
+        cluster
+        for cluster in sorted(
+            supply.clusters, key=lambda item: (item.priority, item.cluster_id)
+        )
+        if cluster.enabled
+        and manifest.exposure_policy in cluster.exposure_policies
+    ]
+    catalog_limits = {
+        (cluster.cluster_id, item.catalog_id, item.catalog_release): item.certified_seats
+        for cluster in clusters
+        for item in cluster.catalogs
+    }
+
+    def candidates(lab: EventLab) -> list[str]:
+        return [
+            cluster.cluster_id
+            for cluster in clusters
+            if set(lab.required_capabilities).issubset(cluster.capabilities)
+            and (
+                cluster.cluster_id,
+                lab.catalog_id,
+                lab.catalog_release,
+            )
+            in catalog_limits
+        ]
+
+    workshops.sort(
+        key=lambda item: (
+            len(candidates(item[1])),
+            -item[2],
+            item[0],
+            item[1].lab_ref,
+        )
+    )
+    cluster_remaining = {
+        cluster.cluster_id: cluster.certified_seats for cluster in clusters
+    }
+    catalog_remaining = dict(catalog_limits)
+    best: list[tuple[str, EventLab, int, str]] = []
+    current: list[tuple[str, EventLab, int, str]] = []
+    states = 0
+
+    def search(index: int, allocated_seats: int) -> bool:
+        nonlocal best, states
+        states += 1
+        if states > MAX_ALLOCATION_STATES:
+            raise ValueError(
+                "Event capacity allocation exceeded its bounded search budget"
+            )
+        if allocated_seats > sum(item[2] for item in best):
+            best = list(current)
+        if index == len(workshops):
+            return len(current) == len(workshops)
+        remaining_seats = sum(item[2] for item in workshops[index:])
+        if allocated_seats + remaining_seats <= sum(item[2] for item in best):
+            return False
+
+        cohort_id, lab, seats = workshops[index]
+        key_suffix = (lab.catalog_id, lab.catalog_release)
+        for cluster_id in candidates(lab):
+            cell = (cluster_id, *key_suffix)
+            if cluster_remaining[cluster_id] < seats:
+                continue
+            if catalog_remaining[cell] < seats:
+                continue
+            cluster_remaining[cluster_id] -= seats
+            catalog_remaining[cell] -= seats
+            current.append((cohort_id, lab, seats, cluster_id))
+            if search(index + 1, allocated_seats + seats):
+                return True
+            current.pop()
+            catalog_remaining[cell] += seats
+            cluster_remaining[cluster_id] += seats
+        search(index + 1, allocated_seats)
+        return False
+
+    search(0, 0)
+    allocations = [
+        EventCapacityAllocation(
+            cohort_id=cohort_id,
+            lab_ref=lab.lab_ref,
+            catalog_id=lab.catalog_id,
+            catalog_release=lab.catalog_release,
+            cluster_id=cluster_id,
+            seats=seats,
+        )
+        for cohort_id, lab, seats, cluster_id in best
+    ]
+    allocations.sort(
+        key=lambda item: (item.cohort_id, item.lab_ref, item.cluster_id)
+    )
+    lab_demand = {
+        lab.lab_ref: sum(
+            cohort.participants
+            for cohort in manifest.cohorts
+            if lab.lab_ref in cohort.lab_refs
+        )
+        for lab in manifest.labs
+    }
+    labs = sorted(
+        (lab for lab in manifest.labs if lab_demand[lab.lab_ref] > 0),
+        key=lambda item: item.lab_ref,
+    )
+    allocated_by_lab = {lab.lab_ref: 0 for lab in labs}
+    for allocation in allocations:
+        allocated_by_lab[allocation.lab_ref] += allocation.seats
+    lab_capacity = [
+        EventLabCapacityDecision(
+            lab_ref=lab.lab_ref,
+            catalog_id=lab.catalog_id,
+            catalog_release=lab.catalog_release,
+            required_seats=lab_demand[lab.lab_ref],
+            allocated_seats=allocated_by_lab[lab.lab_ref],
+            shortfall=lab_demand[lab.lab_ref] - allocated_by_lab[lab.lab_ref],
+        )
+        for lab in labs
+    ]
+    return allocations, lab_capacity

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Manifest Contract
-  version: 1.0.0
+  version: 1.1.0
   description: >-
     Defines an event before capacity is reserved. Participant count, cohorts,
     labs per participant, retention, exposure, certified capacity, and human
@@ -56,6 +56,7 @@ components:
         - labs
         - retention
         - exposure_policy
+        - placement_policy
         - approval
       properties:
         event_id: {type: string, minLength: 1}
@@ -63,6 +64,9 @@ components:
         owner: {type: string, minLength: 1}
         technical_approver: {type: string, minLength: 1}
         exposure_policy: {type: string, enum: [internal, public_code]}
+        placement_policy:
+          type: string
+          enum: [single_cluster_per_workshop]
         cohorts:
           type: array
           minItems: 1
@@ -133,6 +137,8 @@ components:
         - capacity_shortfall
         - eligible
         - explanation
+        - allocations
+        - lab_capacity
       properties:
         participant_count: {type: integer, minimum: 1}
         seat_environments: {type: integer, minimum: 1}
@@ -144,6 +150,87 @@ components:
         capacity_shortfall: {type: integer, minimum: 0}
         eligible: {type: boolean}
         explanation: {type: string, minLength: 1}
+        allocations:
+          type: array
+          items: {$ref: '#/components/schemas/EventCapacityAllocation'}
+        lab_capacity:
+          type: array
+          items: {$ref: '#/components/schemas/EventLabCapacityDecision'}
+    EventCatalogCapacity:
+      type: object
+      additionalProperties: false
+      required: [catalog_id, catalog_release, certified_seats]
+      properties:
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        certified_seats: {type: integer, minimum: 0}
+    EventClusterCapacity:
+      type: object
+      additionalProperties: false
+      required:
+        - cluster_id
+        - enabled
+        - priority
+        - exposure_policies
+        - capabilities
+        - certified_seats
+        - dr_reserved_seats
+        - uncertified_seats
+        - catalogs
+      properties:
+        cluster_id: {type: string, minLength: 1}
+        enabled: {type: boolean}
+        priority: {type: integer, minimum: 0}
+        exposure_policies:
+          type: array
+          uniqueItems: true
+          items: {type: string, enum: [internal, public_code]}
+        capabilities:
+          type: array
+          uniqueItems: true
+          items: {type: string}
+        certified_seats: {type: integer, minimum: 0}
+        dr_reserved_seats: {type: integer, minimum: 0}
+        uncertified_seats: {type: integer, minimum: 0}
+        catalogs:
+          type: array
+          items: {$ref: '#/components/schemas/EventCatalogCapacity'}
+    EventCapacitySupply:
+      type: object
+      additionalProperties: false
+      required: [clusters]
+      properties:
+        clusters:
+          type: array
+          items: {$ref: '#/components/schemas/EventClusterCapacity'}
+    EventCapacityAllocation:
+      type: object
+      additionalProperties: false
+      required: [cohort_id, lab_ref, catalog_id, catalog_release, cluster_id, seats]
+      properties:
+        cohort_id: {type: string, minLength: 1}
+        lab_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        cluster_id: {type: string, minLength: 1}
+        seats: {type: integer, minimum: 1}
+    EventLabCapacityDecision:
+      type: object
+      additionalProperties: false
+      required:
+        - lab_ref
+        - catalog_id
+        - catalog_release
+        - required_seats
+        - allocated_seats
+        - shortfall
+      properties:
+        lab_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        required_seats: {type: integer, minimum: 1}
+        allocated_seats: {type: integer, minimum: 0}
+        shortfall: {type: integer, minimum: 0}
     EventRecord:
       type: object
       additionalProperties: false

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-19T03:40:17Z",
+  "updated_at": "2026-09-19T03:54:09Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -121,12 +121,16 @@
       },
       "evidence": [
         "backend/app/domain/events.py",
+        "backend/tests/test_event_capacity_matrix.py",
         "backend/tests/test_event_manifest_contract.py",
         "contracts/event-manifest-v1.yaml",
+        "docs/event-capacity-matrix.md",
+        "evidence/runs/event-capacity-matrix/green-local.xml",
+        "evidence/runs/event-capacity-matrix/red-local.xml",
         "evidence/runs/event-manifest-approved-record/green-local.xml",
         "fixtures/events/september-17-2026.yaml"
       ],
-      "note": "The v1 contract and deterministic calculator now include immutable event-manifest persistence through an in-memory component boundary and a fail-closed PostgreSQL store. The create API records the approved event and capacity decision only after approval and certified-capacity checks; it does not reserve capacity or provision workshops. Local unit, contract, component, and behavior tests cover success, duplicate IDs, insufficient capacity, and persistence failure. Server-owned fleet aggregation, reservation orchestration, UI approval, integration proof, and live proof remain open."
+      "note": "The v1.1 event contract now uses a server-owned catalog-by-cluster certification matrix rather than an unsafe fleet-wide seat scalar. The manifest explicitly versions the current single_cluster_per_workshop policy so future placement modes cannot silently alter old events. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact catalog releases, required capabilities, exposure policy, catalog-cell ceilings, and aggregate cluster ceilings; it can reroute flexible workshops but never split one workshop across clusters. Disabled, DR-reserved, and uncertified capacity remain visible but never placeable. Immutable event persistence remains side-effect free. Local RED/GREEN unit, contract, component, and behavior evidence exists. A production matrix provider, transactional reservations, UI approval, integration proof, and live proof remain open."
     },
     "LP-T069": {
       "state": "green-local",
