@@ -24,6 +24,10 @@ MARKDOWN_OUTPUT = ROOT / "docs" / "yaml-inventory-v1.md"
 YAML_SUFFIXES = (".yaml", ".yml")
 ENVIRONMENT_MARKERS = ("arena", "brutus", "flightpath", "oberon", "infra01")
 RUNTIME_FIELDS = ("resourceVersion", "uid", "creationTimestamp", "managedFields")
+GENERATED_REFERENCE_OUTPUTS = {
+    "docs/yaml-inventory-v1.md",
+    "evidence/yaml-cleanup/inventory-v1.json",
+}
 
 
 def _git(*args: str) -> str:
@@ -60,7 +64,7 @@ def classify(path: str) -> str:
         return "demo-source"
     if path.startswith("config/"):
         return "configuration"
-    if path.startswith("content") or path.startswith("site"):
+    if path.startswith(("content", "site")):
         return "content-source"
     return "repository-configuration"
 
@@ -110,8 +114,8 @@ def _consumer_map(yaml_paths: list[str], texts: dict[str, str]) -> dict[str, lis
                     resolved = posixpath.join(directory, name)
                     if resolved in yaml_set and resolved != source:
                         consumers[resolved].append(source)
-    for target in consumers:
-        consumers[target] = sorted(set(consumers[target]))
+    for target, sources in consumers.items():
+        consumers[target] = sorted(set(sources))
     return consumers
 
 
@@ -139,7 +143,13 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
     del root  # The repository root is fixed deliberately for safe reproducibility.
     all_tracked = tracked_files()
     yaml_paths = [path for path in all_tracked if path.endswith(YAML_SUFFIXES)]
-    texts = _text_files(all_tracked)
+    # Generated inventory outputs enumerate YAML paths by design. Treating
+    # those outputs as consumers would make every tracked YAML file appear to
+    # have a repository reference after the first committed generation.
+    reference_sources = [
+        path for path in all_tracked if path not in GENERATED_REFERENCE_OUTPUTS
+    ]
+    texts = _text_files(reference_sources)
     consumers = _consumer_map(yaml_paths, texts)
     records: list[dict[str, Any]] = []
     for path in yaml_paths:

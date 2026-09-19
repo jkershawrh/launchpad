@@ -35,7 +35,11 @@ paths:
           application/json:
             schema: {$ref: '#/components/schemas/EventManifest'}
       responses:
-        '201': {description: Approved event manifest persisted.}
+        '201':
+          description: Approved event manifest and certified-capacity decision persisted.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EventRecord'}
         '400': {description: Manifest is incomplete or calculations disagree.}
         '409': {description: Approval or certified capacity is insufficient.}
 components:
@@ -140,3 +144,11 @@ components:
         capacity_shortfall: {type: integer, minimum: 0}
         eligible: {type: boolean}
         explanation: {type: string, minLength: 1}
+    EventRecord:
+      type: object
+      additionalProperties: false
+      required: [manifest, capacity_preview, created_at]
+      properties:
+        manifest: {$ref: '#/components/schemas/EventManifest'}
+        capacity_preview: {$ref: '#/components/schemas/EventCapacityPreview'}
+        created_at: {type: string, format: date-time}

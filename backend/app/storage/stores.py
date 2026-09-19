@@ -17,6 +17,7 @@ from app.domain.access import (
     ParticipantEntitlement,
     ParticipantIdentity,
 )
+from app.domain.events import EventManifestConflictError, EventRecord
 from app.domain.feedback import ProvisioningOutcome
 from app.domain.models import (
     CatalogItem,
@@ -183,6 +184,83 @@ class PostgresAccessStore:
                     (event.get("order_id"), event["event_type"], event.get("participant_hash"), event["outcome"], json.dumps(event)),
                 )
             conn.commit()
+        finally:
+            conn.close()
+
+
+class PostgresEventStore:
+    def create(self, record: EventRecord) -> None:
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event-manifest persistence is unavailable"
+            )
+        event_id = record.manifest.event_id
+        data = json.dumps(record.model_dump(mode="json"))
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO event_manifests (event_id, data) VALUES (%s, %s::jsonb)",
+                    (event_id, data),
+                )
+            conn.commit()
+        except Exception as exc:
+            conn.rollback()
+            if getattr(exc, "pgcode", None) == "23505":
+                raise EventManifestConflictError(
+                    f"Event manifest {event_id} already exists"
+                ) from exc
+            logger.warning("DB create event manifest error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to persist approved event manifest"
+            ) from exc
+        finally:
+            conn.close()
+
+    def get(self, event_id: str) -> EventRecord | None:
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event-manifest persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT data FROM event_manifests WHERE event_id = %s",
+                    (event_id,),
+                )
+                row = cur.fetchone()
+                return EventRecord.model_validate(_decode_json(row[0])) if row else None
+        except PersistenceUnavailableError:
+            raise
+        except Exception as exc:
+            logger.warning("DB get event manifest error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to read approved event manifest"
+            ) from exc
+        finally:
+            conn.close()
+
+    def list_all(self) -> list[EventRecord]:
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event-manifest persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SELECT data FROM event_manifests ORDER BY created_at")
+                return [
+                    EventRecord.model_validate(_decode_json(row[0]))
+                    for row in cur.fetchall()
+                ]
+        except PersistenceUnavailableError:
+            raise
+        except Exception as exc:
+            logger.warning("DB list event manifests error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to list approved event manifests"
+            ) from exc
         finally:
             conn.close()
 

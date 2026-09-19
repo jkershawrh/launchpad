@@ -46,6 +46,7 @@ def _create_db_stores():
     from app.storage.stores import (
         PostgresAccessStore,
         PostgresCatalogStore,
+        PostgresEventStore,
         PostgresPlanStore,
         PostgresRequestStore,
         PostgresSessionStore,
@@ -63,6 +64,7 @@ def _create_db_stores():
         catalog=PostgresCatalogStore(),
         workshops=PostgresWorkshopStore(),
         access=PostgresAccessStore(),
+        events=PostgresEventStore(),
         lifecycle_jobs=PostgresLifecycleJobStore(),
     )
 
@@ -288,6 +290,12 @@ branding_adapter = FileBrandingAdapter()
 public_access_service = PublicAccessService(store=db_stores.access if db_stores else None)
 provisioning_service.public_access_service = public_access_service
 
+from app.services.events import EventManifestStore
+
+event_manifest_store = EventManifestStore(
+    db_store=db_stores.events if db_stores else None
+)
+
 from app.services.lifecycle_worker import LifecycleQueueService
 from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
 
@@ -325,6 +333,10 @@ def get_event_capacity_supply() -> EventCapacitySupply:
     """
 
     return EventCapacitySupply()
+
+
+def get_event_manifest_store() -> EventManifestStore:
+    return event_manifest_store
 
 
 _fleet_enrichment = None

@@ -3,7 +3,6 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "inventory_yaml_sources.py"
 
@@ -36,6 +35,10 @@ def test_inventory_is_complete_and_fail_closed():
         for record in records
     )
     assert "No record authorizes deletion" in inventory["safety_boundary"]
+    assert all(
+        not module.GENERATED_REFERENCE_OUTPUTS.intersection(record["referenced_by"])
+        for record in records
+    )
 
 
 def test_classification_keeps_evidence_and_source_distinct():

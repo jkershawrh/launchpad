@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-18T18:36:48Z",
+  "updated_at": "2026-09-19T03:40:17Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -115,15 +115,18 @@
       "methods": {
         "tdd": "green-local",
         "cdd": "green-local",
-        "edd": "green-local"
+        "edd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
       },
       "evidence": [
-        "contracts/event-manifest-v1.yaml",
-        "fixtures/events/september-17-2026.yaml",
         "backend/app/domain/events.py",
-        "backend/tests/test_event_manifest_contract.py"
+        "backend/tests/test_event_manifest_contract.py",
+        "contracts/event-manifest-v1.yaml",
+        "evidence/runs/event-manifest-approved-record/green-local.xml",
+        "fixtures/events/september-17-2026.yaml"
       ],
-      "note": "The v1 contract, deterministic calculator, reconstructed pilot example, and read-only fail-closed preview API distinguish 90 participants from 270 retained seat-environments and exclude DR-reserved/uncertified capacity. The default supply is deliberately zero until a server-owned certified-fleet provider is wired; persistence, UI approval, and live proof remain open."
+      "note": "The v1 contract and deterministic calculator now include immutable event-manifest persistence through an in-memory component boundary and a fail-closed PostgreSQL store. The create API records the approved event and capacity decision only after approval and certified-capacity checks; it does not reserve capacity or provision workshops. Local unit, contract, component, and behavior tests cover success, duplicate IDs, insufficient capacity, and persistence failure. Server-owned fleet aggregation, reservation orchestration, UI approval, integration proof, and live proof remain open."
     },
     "LP-T069": {
       "state": "green-local",
@@ -300,7 +303,9 @@
     },
     "LP-T120": {
       "state": "green-local",
-      "methods": {"cdd": "green-local"},
+      "methods": {
+        "cdd": "green-local"
+      },
       "evidence": [
         "contracts/production-readiness-v1.yaml",
         "certification/convergence-matrix-v1.yaml"
@@ -309,7 +314,9 @@
     },
     "LP-T128": {
       "state": "green-local",
-      "methods": {"cdd": "green-local"},
+      "methods": {
+        "cdd": "green-local"
+      },
       "evidence": [
         "contracts/sre-operating-model-v1.yaml",
         "certification/convergence-matrix-v1.yaml"
@@ -318,7 +325,9 @@
     },
     "LP-T136": {
       "state": "green-local",
-      "methods": {"cdd": "green-local"},
+      "methods": {
+        "cdd": "green-local"
+      },
       "evidence": [
         "contracts/data-ai-governance-v1.yaml",
         "certification/convergence-matrix-v1.yaml"
@@ -327,7 +336,9 @@
     },
     "LP-T144": {
       "state": "green-local",
-      "methods": {"cdd": "green-local"},
+      "methods": {
+        "cdd": "green-local"
+      },
       "evidence": [
         "contracts/gtm-value-attribution-v1.yaml",
         "certification/convergence-matrix-v1.yaml"
@@ -336,7 +347,9 @@
     },
     "LP-T154": {
       "state": "green-local",
-      "methods": {"cdd": "green-local"},
+      "methods": {
+        "cdd": "green-local"
+      },
       "evidence": [
         "contracts/organizational-readiness-v1.yaml",
         "certification/convergence-matrix-v1.yaml"
@@ -345,7 +358,9 @@
     },
     "LP-T163": {
       "state": "green-local",
-      "methods": {"cdd": "green-local"},
+      "methods": {
+        "cdd": "green-local"
+      },
       "evidence": [
         "contracts/oss-distribution-v1.yaml",
         "certification/convergence-matrix-v1.yaml"

@@ -9,11 +9,14 @@ from app.domain.events import (
     calculate_event_capacity,
 )
 from app.main import app
+from app.services.events import EventManifestStore
+from app.storage.stores import PersistenceUnavailableError
 from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).parents[2]
 CONTRACT = ROOT / "contracts" / "event-manifest-v1.yaml"
 PILOT = ROOT / "fixtures" / "events" / "september-17-2026.yaml"
+MIGRATION = ROOT / "backend" / "migrations" / "007_event_manifests.sql"
 
 
 def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
@@ -42,6 +45,18 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
         "dr_reserved_capacity",
         "uncertified_capacity",
     } <= set(preview["required"])
+    created = contract["paths"]["/api/v1/events"]["post"]["responses"]["201"]
+    assert created["content"]["application/json"]["schema"] == {
+        "$ref": "#/components/schemas/EventRecord"
+    }
+
+
+def test_event_migration_keeps_approved_manifest_immutable():
+    migration = MIGRATION.read_text()
+
+    assert "CREATE TABLE IF NOT EXISTS event_manifests" in migration
+    assert "event_id   TEXT PRIMARY KEY" in migration
+    assert "ON CONFLICT" not in migration
 
 
 def test_september_pilot_example_exposes_the_scope_change_and_flightpath_pivot():
@@ -162,3 +177,90 @@ def test_event_capacity_preview_returns_bad_request_for_approval_mismatch():
 
     assert response.status_code == 400
     assert "approved 90 seat-environments but requires 270" in response.json()["detail"]
+
+
+def test_create_event_persists_approved_manifest_without_lifecycle_mutation():
+    store = EventManifestStore()
+    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
+        certified_capacity=270
+    )
+    app.dependency_overrides[deps.get_event_manifest_store] = lambda: store
+    try:
+        response = TestClient(app).post(
+            "/api/v1/events",
+            json=_pilot_manifest().model_dump(mode="json"),
+        )
+    finally:
+        app.dependency_overrides.pop(deps.get_event_capacity_supply, None)
+        app.dependency_overrides.pop(deps.get_event_manifest_store, None)
+
+    assert response.status_code == 201
+    assert response.json()["manifest"]["event_id"] == "september-17-2026-pilot"
+    assert response.json()["capacity_preview"]["seat_environments"] == 270
+    assert store.get("september-17-2026-pilot") is not None
+
+
+def test_create_event_rejects_uncertified_capacity_before_persistence():
+    store = EventManifestStore()
+    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
+        certified_capacity=90,
+        dr_reserved_capacity=180,
+    )
+    app.dependency_overrides[deps.get_event_manifest_store] = lambda: store
+    try:
+        response = TestClient(app).post(
+            "/api/v1/events",
+            json=_pilot_manifest().model_dump(mode="json"),
+        )
+    finally:
+        app.dependency_overrides.pop(deps.get_event_capacity_supply, None)
+        app.dependency_overrides.pop(deps.get_event_manifest_store, None)
+
+    assert response.status_code == 409
+    assert store.get("september-17-2026-pilot") is None
+
+
+def test_event_id_is_immutable_and_duplicate_create_conflicts():
+    store = EventManifestStore()
+    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
+        certified_capacity=270
+    )
+    app.dependency_overrides[deps.get_event_manifest_store] = lambda: store
+    try:
+        first = TestClient(app).post(
+            "/api/v1/events",
+            json=_pilot_manifest().model_dump(mode="json"),
+        )
+        duplicate = TestClient(app).post(
+            "/api/v1/events",
+            json=_pilot_manifest().model_dump(mode="json"),
+        )
+    finally:
+        app.dependency_overrides.pop(deps.get_event_capacity_supply, None)
+        app.dependency_overrides.pop(deps.get_event_manifest_store, None)
+
+    assert first.status_code == 201
+    assert duplicate.status_code == 409
+    assert "already exists" in duplicate.json()["detail"]
+
+
+def test_create_event_fails_closed_when_durable_storage_is_unavailable():
+    class UnavailableStore:
+        def create(self, _record):
+            raise PersistenceUnavailableError("database unavailable")
+
+    app.dependency_overrides[deps.get_event_capacity_supply] = lambda: EventCapacitySupply(
+        certified_capacity=270
+    )
+    app.dependency_overrides[deps.get_event_manifest_store] = UnavailableStore
+    try:
+        response = TestClient(app).post(
+            "/api/v1/events",
+            json=_pilot_manifest().model_dump(mode="json"),
+        )
+    finally:
+        app.dependency_overrides.pop(deps.get_event_capacity_supply, None)
+        app.dependency_overrides.pop(deps.get_event_manifest_store, None)
+
+    assert response.status_code == 503
+    assert response.json()["detail"] == "Approved event persistence is unavailable"
