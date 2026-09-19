@@ -37,6 +37,20 @@ greedy choice, but it never splits one workshop across clusters.
   and current reservations into this matrix and fail closed when either is
   unavailable.
 
+## Provider contract
+
+Set `EVENT_CAPACITY_MATRIX_FILE` to a server-controlled YAML document matching
+`EventCapacityMatrixDocument` in `contracts/event-manifest-v1.yaml`. The
+document requires a schema version, immutable matrix ID, two distinct
+approvers, a timezone-aware approval timestamp, evidence references, and the
+cluster envelopes. Launchpad computes the SHA-256 digest of the exact source
+bytes and persists that digest with the preview and event decision.
+
+When the setting is absent, previews report matrix `unconfigured` and zero
+placeable capacity. When the setting is present but the document is missing or
+invalid, the API returns `503` and does not persist an event. Matrix contents
+are never accepted from the participant or requester payload.
+
 ## Next boundary
 
 The next orchestration increment may reserve the approved allocations, but it

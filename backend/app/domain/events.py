@@ -118,6 +118,8 @@ class EventCapacitySupply(BaseModel):
     DR-reserved and uncertified capacity remain visible but never placeable.
     """
 
+    matrix_id: str = Field(default="unconfigured", min_length=1)
+    matrix_digest: str = Field(default="unconfigured", min_length=1)
     clusters: list[EventClusterCapacity] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -126,6 +128,38 @@ class EventCapacitySupply(BaseModel):
         if len(cluster_ids) != len(set(cluster_ids)):
             raise ValueError("Event capacity cluster IDs must be unique")
         return self
+
+
+class EventCapacityMatrixDocument(BaseModel):
+    """Versioned certification evidence consumed by the server-side provider."""
+
+    schema_version: Literal["launchpad.intel.com/event-capacity/v1"]
+    matrix_id: str = Field(min_length=1)
+    approved_by: list[str] = Field(min_length=2)
+    approved_at: datetime
+    evidence_refs: list[str] = Field(min_length=1)
+    clusters: list[EventClusterCapacity] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def approvals_are_distinct(self) -> EventCapacityMatrixDocument:
+        if any(not item.strip() for item in self.approved_by):
+            raise ValueError("capacity matrix approvers must be non-empty")
+        if len(set(self.approved_by)) < 2:
+            raise ValueError("capacity matrix requires two distinct approvers")
+        if any(not item.strip() for item in self.evidence_refs):
+            raise ValueError("capacity matrix evidence references must be non-empty")
+        if len(self.evidence_refs) != len(set(self.evidence_refs)):
+            raise ValueError("capacity matrix evidence references must be unique")
+        if self.approved_at.tzinfo is None:
+            raise ValueError("capacity matrix approval timestamp must include a timezone")
+        return self
+
+    def to_supply(self, matrix_digest: str) -> EventCapacitySupply:
+        return EventCapacitySupply(
+            matrix_id=self.matrix_id,
+            matrix_digest=matrix_digest,
+            clusters=self.clusters,
+        )
 
 
 class EventCapacityAllocation(BaseModel):
@@ -147,6 +181,8 @@ class EventLabCapacityDecision(BaseModel):
 
 
 class EventCapacityPreview(BaseModel):
+    matrix_id: str
+    matrix_digest: str
     participant_count: int
     seat_environments: int
     peak_concurrent_participants: int
@@ -238,6 +274,8 @@ def calculate_event_capacity(
         )
 
     return EventCapacityPreview(
+        matrix_id=supply.matrix_id,
+        matrix_digest=supply.matrix_digest,
         participant_count=participant_count,
         seat_environments=seat_environments,
         peak_concurrent_participants=peak_concurrent_participants,

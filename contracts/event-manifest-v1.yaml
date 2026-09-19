@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Manifest Contract
-  version: 1.1.0
+  version: 1.2.0
   description: >-
     Defines an event before capacity is reserved. Participant count, cohorts,
     labs per participant, retention, exposure, certified capacity, and human
@@ -127,6 +127,8 @@ components:
       type: object
       additionalProperties: false
       required:
+        - matrix_id
+        - matrix_digest
         - participant_count
         - seat_environments
         - peak_concurrent_participants
@@ -140,6 +142,8 @@ components:
         - allocations
         - lab_capacity
       properties:
+        matrix_id: {type: string, minLength: 1}
+        matrix_digest: {type: string, minLength: 1}
         participant_count: {type: integer, minimum: 1}
         seat_environments: {type: integer, minimum: 1}
         peak_concurrent_participants: {type: integer, minimum: 1}
@@ -198,8 +202,39 @@ components:
     EventCapacitySupply:
       type: object
       additionalProperties: false
-      required: [clusters]
+      required: [matrix_id, matrix_digest, clusters]
       properties:
+        matrix_id: {type: string, minLength: 1}
+        matrix_digest: {type: string, minLength: 1}
+        clusters:
+          type: array
+          items: {$ref: '#/components/schemas/EventClusterCapacity'}
+    EventCapacityMatrixDocument:
+      type: object
+      additionalProperties: false
+      required:
+        - schema_version
+        - matrix_id
+        - approved_by
+        - approved_at
+        - evidence_refs
+        - clusters
+      properties:
+        schema_version:
+          type: string
+          enum: [launchpad.intel.com/event-capacity/v1]
+        matrix_id: {type: string, minLength: 1}
+        approved_by:
+          type: array
+          minItems: 2
+          uniqueItems: true
+          items: {type: string, minLength: 1}
+        approved_at: {type: string, format: date-time}
+        evidence_refs:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {type: string, minLength: 1}
         clusters:
           type: array
           items: {$ref: '#/components/schemas/EventClusterCapacity'}

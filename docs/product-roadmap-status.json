@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-19T03:54:09Z",
+  "updated_at": "2026-09-19T04:06:18Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -121,16 +121,19 @@
       },
       "evidence": [
         "backend/app/domain/events.py",
+        "backend/app/services/event_capacity.py",
         "backend/tests/test_event_capacity_matrix.py",
         "backend/tests/test_event_manifest_contract.py",
         "contracts/event-manifest-v1.yaml",
         "docs/event-capacity-matrix.md",
         "evidence/runs/event-capacity-matrix/green-local.xml",
         "evidence/runs/event-capacity-matrix/red-local.xml",
+        "evidence/runs/event-capacity-provider/green-local.xml",
+        "evidence/runs/event-capacity-provider/red-local.xml",
         "evidence/runs/event-manifest-approved-record/green-local.xml",
         "fixtures/events/september-17-2026.yaml"
       ],
-      "note": "The v1.1 event contract now uses a server-owned catalog-by-cluster certification matrix rather than an unsafe fleet-wide seat scalar. The manifest explicitly versions the current single_cluster_per_workshop policy so future placement modes cannot silently alter old events. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact catalog releases, required capabilities, exposure policy, catalog-cell ceilings, and aggregate cluster ceilings; it can reroute flexible workshops but never split one workshop across clusters. Disabled, DR-reserved, and uncertified capacity remain visible but never placeable. Immutable event persistence remains side-effect free. Local RED/GREEN unit, contract, component, and behavior evidence exists. A production matrix provider, transactional reservations, UI approval, integration proof, and live proof remain open."
+      "note": "The v1.2 event contract uses a server-owned catalog-by-cluster certification matrix and records both its immutable ID and SHA-256 source digest in every preview and persisted decision. The file provider accepts only versioned evidence with two distinct approvers, a timezone-aware approval timestamp, and unique evidence references; absent configuration yields unconfigured zero capacity, while an explicitly configured missing or invalid document returns 503. The manifest explicitly versions the current single_cluster_per_workshop policy. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact releases, capabilities, exposure, catalog-cell ceilings, and cluster ceilings. Disabled, DR-reserved, and uncertified capacity remain non-placeable. Local RED/GREEN evidence exists. Transactional reservations, UI approval, integration proof, and live proof remain open."
     },
     "LP-T069": {
       "state": "green-local",

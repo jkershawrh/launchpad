@@ -891,15 +891,16 @@
       "owner": "unassigned",
       "path": "contracts/event-manifest-v1.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 4,
+      "reference_count": 5,
       "referenced_by": [
         "admin/public/roadmap/index.html",
         "contracts/delivery-streams-v1.yaml",
+        "docs/event-capacity-matrix.md",
         "docs/product-roadmap-dashboard.html",
         "docs/product-roadmap-status.json"
       ],
       "risk_flags": [],
-      "sha256": "0d87411d45d72e1c68f7b6ba33af7ac9faee0deffdf01b0c7d10df4f6b957243"
+      "sha256": "6e25df775c31fbdd2a62f7522ac1fde37dc0e95d0f8470d220232a96ef597ba3"
     },
     {
       "area": "contracts",
@@ -6755,7 +6756,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "ba47dae33ca22199456d05924dc9a1388600c75b",
+  "source_commit": "929a963708c270ef1b9ac82045ef7e2175535d4b",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

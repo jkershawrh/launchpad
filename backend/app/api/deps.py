@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from types import SimpleNamespace
 
+from fastapi import HTTPException
+
 from app.adapters.mock.branding import FileBrandingAdapter
 from app.adapters.mock.catalog import MockCatalogAdapter
 from app.domain.events import EventCapacitySupply
@@ -332,7 +334,20 @@ def get_event_capacity_supply() -> EventCapacitySupply:
     are joined here, event preview fails closed with zero certified capacity.
     """
 
-    return EventCapacitySupply()
+    matrix_path = os.environ.get("EVENT_CAPACITY_MATRIX_FILE", "").strip()
+    if not matrix_path:
+        return EventCapacitySupply()
+    from app.services.event_capacity import (
+        EventCapacityMatrixUnavailableError,
+        FileEventCapacityProvider,
+    )
+
+    try:
+        return FileEventCapacityProvider(matrix_path).load()
+    except EventCapacityMatrixUnavailableError as exc:
+        raise HTTPException(
+            503, "Certified event capacity is unavailable"
+        ) from exc
 
 
 def get_event_manifest_store() -> EventManifestStore:

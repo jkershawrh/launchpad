@@ -25,7 +25,7 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
     contract = yaml.safe_load(CONTRACT.read_text())
     schema = contract["components"]["schemas"]["EventManifest"]
 
-    assert contract["info"]["version"] == "1.1.0"
+    assert contract["info"]["version"] == "1.2.0"
     assert {
         "event_id",
         "name",
@@ -40,6 +40,8 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
 
     preview = contract["components"]["schemas"]["EventCapacityPreview"]
     assert {
+        "matrix_id",
+        "matrix_digest",
         "participant_count",
         "seat_environments",
         "peak_concurrent_participants",
@@ -107,6 +109,8 @@ def _pilot_supply(
 ) -> EventCapacitySupply:
     manifest = _pilot_manifest()
     return EventCapacitySupply(
+        matrix_id="pilot-test-matrix",
+        matrix_digest="sha256:" + "a" * 64,
         clusters=[
             EventClusterCapacity(
                 cluster_id="certified-event-pool",
@@ -231,6 +235,8 @@ def test_create_event_persists_approved_manifest_without_lifecycle_mutation():
     assert response.status_code == 201
     assert response.json()["manifest"]["event_id"] == "september-17-2026-pilot"
     assert response.json()["capacity_preview"]["seat_environments"] == 270
+    assert response.json()["capacity_preview"]["matrix_id"] == "pilot-test-matrix"
+    assert response.json()["capacity_preview"]["matrix_digest"] == "sha256:" + "a" * 64
     assert len(response.json()["capacity_preview"]["allocations"]) == 9
     assert all(
         allocation["seats"] == 30
