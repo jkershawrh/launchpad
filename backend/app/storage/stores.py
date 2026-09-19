@@ -17,7 +17,13 @@ from app.domain.access import (
     ParticipantEntitlement,
     ParticipantIdentity,
 )
-from app.domain.events import EventManifestConflictError, EventRecord
+from app.domain.events import (
+    EventCapacityReservation,
+    EventCapacitySupply,
+    EventManifestConflictError,
+    EventRecord,
+    EventReservationPlan,
+)
 from app.domain.feedback import ProvisioningOutcome
 from app.domain.models import (
     CatalogItem,
@@ -260,6 +266,190 @@ class PostgresEventStore:
             logger.warning("DB list event manifests error: %s", exc)
             raise PersistenceUnavailableError(
                 "failed to list approved event manifests"
+            ) from exc
+        finally:
+            conn.close()
+
+
+class PostgresEventReservationStore:
+    """Serializable, per-cluster-locked aggregate capacity ledger."""
+
+    def reserve(
+        self,
+        plan: EventReservationPlan,
+        supply: EventCapacitySupply,
+        *,
+        now,
+    ) -> list[EventCapacityReservation]:
+        from app.services.event_reservations import (
+            EventReservationConflictError,
+            EventReservationUnavailableError,
+            _assert_capacity_available,
+            _reservation_payload,
+        )
+
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event reservation persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")
+                cluster_refs = sorted(
+                    {item.cluster_ref for item in plan.reservations}
+                )
+                for cluster_ref in cluster_refs:
+                    cur.execute(
+                        "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                        (cluster_ref,),
+                    )
+                cur.execute(
+                    """UPDATE event_capacity_reservations
+                       SET status = 'expired', data = jsonb_set(data, '{status}', '"expired"')
+                       WHERE status = 'held' AND expires_at <= %s
+                         AND cluster_ref = ANY(%s)""",
+                    (now, cluster_refs),
+                )
+                cur.execute(
+                    """SELECT data FROM event_capacity_reservations
+                       WHERE event_id = %s ORDER BY reservation_id FOR UPDATE""",
+                    (plan.event_id,),
+                )
+                existing = [
+                    EventCapacityReservation.model_validate(_decode_json(row[0]))
+                    for row in cur.fetchall()
+                ]
+                if existing:
+                    if all(item.status == "held" for item in existing) and (
+                        _reservation_payload(existing)
+                        == _reservation_payload(plan.reservations)
+                    ):
+                        conn.commit()
+                        return existing
+                    raise EventReservationConflictError(
+                        "Event already has a different reservation plan"
+                    )
+
+                cur.execute(
+                    """SELECT data FROM event_capacity_reservations
+                       WHERE status = 'held' AND expires_at > %s
+                         AND cluster_ref = ANY(%s)
+                       ORDER BY cluster_ref, reservation_id FOR UPDATE""",
+                    (now, cluster_refs),
+                )
+                active = [
+                    EventCapacityReservation.model_validate(_decode_json(row[0]))
+                    for row in cur.fetchall()
+                ]
+                _assert_capacity_available(plan.reservations, active, supply)
+
+                for item in plan.reservations:
+                    resources = item.resources
+                    cur.execute(
+                        """INSERT INTO event_capacity_reservations
+                           (reservation_id, event_id, cohort_id, lab_ref,
+                            catalog_id, catalog_release, cluster_ref, matrix_id,
+                            matrix_digest, fleet_snapshot_id, seats,
+                            cpu_millicores, memory_mib, pods, storage_gib,
+                            routes, model_slots, status, expires_at, created_at, data)
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                   %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,
+                                   %s::jsonb)""",
+                        (
+                            item.reservation_id,
+                            item.event_id,
+                            item.cohort_id,
+                            item.lab_ref,
+                            item.catalog_id,
+                            item.catalog_release,
+                            item.cluster_ref,
+                            item.matrix_id,
+                            item.matrix_digest,
+                            item.fleet_snapshot_id,
+                            resources.seats,
+                            resources.cpu_millicores,
+                            resources.memory_mib,
+                            resources.pods,
+                            resources.storage_gib,
+                            resources.routes,
+                            resources.model_slots,
+                            item.status,
+                            item.expires_at,
+                            item.created_at,
+                            json.dumps(item.model_dump(mode="json")),
+                        ),
+                    )
+            conn.commit()
+            return [item.model_copy(deep=True) for item in plan.reservations]
+        except (EventReservationConflictError, EventReservationUnavailableError):
+            conn.rollback()
+            raise
+        except Exception as exc:
+            conn.rollback()
+            if getattr(exc, "pgcode", None) in {"23505", "40001"}:
+                raise EventReservationConflictError(
+                    "Concurrent reservation changed available capacity"
+                ) from exc
+            logger.warning("DB reserve event capacity error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to persist event capacity reservation"
+            ) from exc
+        finally:
+            conn.close()
+
+    def list_active(self, *, now) -> list[EventCapacityReservation]:
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event reservation persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """SELECT data FROM event_capacity_reservations
+                       WHERE status = 'held' AND expires_at > %s
+                       ORDER BY cluster_ref, reservation_id""",
+                    (now,),
+                )
+                return [
+                    EventCapacityReservation.model_validate(_decode_json(row[0]))
+                    for row in cur.fetchall()
+                ]
+        except Exception as exc:
+            logger.warning("DB list event capacity reservations error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to read event capacity reservations"
+            ) from exc
+        finally:
+            conn.close()
+
+    def release(self, event_id: str, *, now) -> int:
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event reservation persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """UPDATE event_capacity_reservations
+                       SET status = 'released', released_at = %s,
+                           data = jsonb_set(
+                             jsonb_set(data, '{status}', '"released"'),
+                             '{released_at}', to_jsonb(%s::text)
+                           )
+                       WHERE event_id = %s AND status = 'held'""",
+                    (now, now.isoformat(), event_id),
+                )
+                released = cur.rowcount
+            conn.commit()
+            return released
+        except Exception as exc:
+            conn.rollback()
+            logger.warning("DB release event capacity error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to release event capacity reservations"
             ) from exc
         finally:
             conn.close()

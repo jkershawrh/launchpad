@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-19T05:07:37Z",
+  "updated_at": "2026-09-19T05:14:48Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -408,6 +408,24 @@
         "evidence/runs/acm-capacity-intersection/red-local.xml"
       ],
       "note": "The local admission join now intersects a versioned Launchpad capacity matrix with an immutable ACM placement snapshot. ACM candidates can only disable matrix entries, never create certified capacity. The join records the ACM snapshot digest/time, preserves non-placeable DR visibility, and fails closed when evidence is older than 120 seconds, future-dated beyond 30 seconds, or timezone-ambiguous. Local RED/GREEN evidence exists. Cluster ranking/scoring, reservation-state joins, API wiring, persisted final cluster_ref, ACM hub integration, and live proof remain open."
+    },
+    "LP-T037": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/app/services/event_reservations.py",
+        "contracts/event-reservation-v1.yaml",
+        "docs/event-capacity-matrix.md",
+        "evidence/runs/event-reservation-ledger/green-local.xml",
+        "evidence/runs/event-reservation-ledger/red-local.xml"
+      ],
+      "note": "The Git-local event reservation ledger converts every approved cohort/lab allocation into one aggregate hold on its persisted cluster_ref. Server-owned catalog footprints cover seats, CPU millicores, memory MiB, pod slots, storage GiB, routes, and model slots. Reservation revalidates matrix and ACM snapshot identity/freshness, rejects missing footprints and concurrent overcommit, and supports idempotent retry, expiration, and release. The PostgreSQL adapter uses SERIALIZABLE transactions plus sorted per-cluster advisory locks. Local RED/GREEN and component evidence exists. API approval wiring, real PostgreSQL concurrency proof, lifecycle consumption, reconciliation, and GREEN-live proof remain open; no live workshops were changed."
     }
   },
   "rubric": [

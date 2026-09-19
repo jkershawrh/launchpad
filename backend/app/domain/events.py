@@ -9,6 +9,36 @@ MAX_EVENT_WORKSHOPS = 100
 MAX_ALLOCATION_STATES = 100_000
 
 
+class EventResourceVector(BaseModel):
+    """Capacity dimensions reserved before any lifecycle resource is created."""
+
+    seats: int = Field(default=0, ge=0)
+    cpu_millicores: int = Field(default=0, ge=0)
+    memory_mib: int = Field(default=0, ge=0)
+    pods: int = Field(default=0, ge=0)
+    storage_gib: int = Field(default=0, ge=0)
+    routes: int = Field(default=0, ge=0)
+    model_slots: int = Field(default=0, ge=0)
+
+    def scaled(self, count: int) -> EventResourceVector:
+        if count < 0:
+            raise ValueError("resource multiplier must be non-negative")
+        values = self.model_dump()
+        return EventResourceVector(**{key: value * count for key, value in values.items()})
+
+    def plus(self, other: EventResourceVector) -> EventResourceVector:
+        left = self.model_dump()
+        right = other.model_dump()
+        return EventResourceVector(
+            **{key: left[key] + right[key] for key in left}
+        )
+
+    def exceeds(self, capacity: EventResourceVector) -> list[str]:
+        demand = self.model_dump()
+        available = capacity.model_dump()
+        return [key for key in demand if demand[key] > available[key]]
+
+
 class EventCohort(BaseModel):
     cohort_id: str = Field(min_length=1)
     participants: int = Field(ge=1)
@@ -83,6 +113,9 @@ class EventCatalogCapacity(BaseModel):
     catalog_id: str = Field(min_length=1)
     catalog_release: str = Field(min_length=1)
     certified_seats: int = Field(ge=0)
+    resources_per_seat: EventResourceVector = Field(
+        default_factory=EventResourceVector
+    )
 
 
 class EventClusterCapacity(BaseModel):
@@ -98,6 +131,9 @@ class EventClusterCapacity(BaseModel):
     certified_seats: int = Field(default=0, ge=0)
     dr_reserved_seats: int = Field(default=0, ge=0)
     uncertified_seats: int = Field(default=0, ge=0)
+    resource_capacity: EventResourceVector = Field(
+        default_factory=EventResourceVector
+    )
     catalogs: list[EventCatalogCapacity] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -154,6 +190,39 @@ class EventCapacityMatrixDocument(BaseModel):
             raise ValueError("capacity matrix evidence references must be unique")
         if self.approved_at.tzinfo is None:
             raise ValueError("capacity matrix approval timestamp must include a timezone")
+        for cluster in self.clusters:
+            if (
+                cluster.enabled
+                and cluster.certified_seats > 0
+                and not any(cluster.resource_capacity.model_dump().values())
+            ):
+                raise ValueError(
+                    f"Cluster {cluster.cluster_id} requires a certified resource capacity"
+                )
+            if (
+                cluster.enabled
+                and cluster.certified_seats > 0
+                and cluster.resource_capacity.seats != cluster.certified_seats
+            ):
+                raise ValueError(
+                    f"Cluster {cluster.cluster_id} resource seats must equal certified seats"
+                )
+            for catalog in cluster.catalogs:
+                if catalog.certified_seats > 0 and not any(
+                    catalog.resources_per_seat.model_dump().values()
+                ):
+                    raise ValueError(
+                        f"Catalog {catalog.catalog_id}@{catalog.catalog_release} "
+                        "requires a certified per-seat resource footprint"
+                    )
+                if (
+                    catalog.certified_seats > 0
+                    and catalog.resources_per_seat.seats != 1
+                ):
+                    raise ValueError(
+                        f"Catalog {catalog.catalog_id}@{catalog.catalog_release} "
+                        "resource seats must equal one"
+                    )
         return self
 
     def to_supply(self, matrix_digest: str) -> EventCapacitySupply:
@@ -205,6 +274,63 @@ class EventRecord(BaseModel):
     manifest: EventManifest
     capacity_preview: EventCapacityPreview
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class EventCapacityReservation(BaseModel):
+    """One atomic cohort/lab hold on one persisted execution cluster."""
+
+    reservation_id: str = Field(min_length=1)
+    event_id: str = Field(min_length=1)
+    cohort_id: str = Field(min_length=1)
+    lab_ref: str = Field(min_length=1)
+    catalog_id: str = Field(min_length=1)
+    catalog_release: str = Field(min_length=1)
+    cluster_ref: str = Field(min_length=1)
+    matrix_id: str = Field(min_length=1)
+    matrix_digest: str = Field(min_length=1)
+    fleet_snapshot_id: str = Field(min_length=1)
+    resources: EventResourceVector
+    status: Literal["held", "released", "expired"] = "held"
+    expires_at: datetime
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    released_at: datetime | None = None
+
+    @model_validator(mode="after")
+    def timestamps_are_unambiguous(self) -> EventCapacityReservation:
+        if self.expires_at.tzinfo is None or self.created_at.tzinfo is None:
+            raise ValueError("reservation timestamps must include a timezone")
+        if self.released_at is not None and self.released_at.tzinfo is None:
+            raise ValueError("reservation release timestamp must include a timezone")
+        if self.resources.seats < 1:
+            raise ValueError("reservation must hold at least one seat")
+        return self
+
+
+class EventReservationPlan(BaseModel):
+    event_id: str = Field(min_length=1)
+    matrix_id: str = Field(min_length=1)
+    matrix_digest: str = Field(min_length=1)
+    fleet_snapshot_id: str = Field(min_length=1)
+    expires_at: datetime
+    reservations: list[EventCapacityReservation] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def reservations_match_plan(self) -> EventReservationPlan:
+        keys: list[tuple[str, str]] = []
+        for item in self.reservations:
+            if item.event_id != self.event_id:
+                raise ValueError("reservation event does not match plan")
+            if (
+                item.matrix_id != self.matrix_id
+                or item.matrix_digest != self.matrix_digest
+                or item.fleet_snapshot_id != self.fleet_snapshot_id
+                or item.expires_at != self.expires_at
+            ):
+                raise ValueError("reservation evidence does not match plan")
+            keys.append((item.cohort_id, item.lab_ref))
+        if len(keys) != len(set(keys)):
+            raise ValueError("reservation plan contains duplicate cohort/lab holds")
+        return self
 
 
 class EventManifestConflictError(RuntimeError):

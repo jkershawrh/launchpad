@@ -9,6 +9,8 @@ from app.adapters.mock.branding import FileBrandingAdapter
 from app.adapters.mock.catalog import MockCatalogAdapter
 from app.domain.events import EventCapacitySupply
 from app.domain.models import Tenant
+from app.services.event_reservations import EventReservationLedger
+from app.services.events import EventManifestStore
 from app.services.provisioning import ProvisioningService
 from app.services.public_access import PublicAccessService
 from app.storage.database import get_database_url
@@ -48,6 +50,7 @@ def _create_db_stores():
     from app.storage.stores import (
         PostgresAccessStore,
         PostgresCatalogStore,
+        PostgresEventReservationStore,
         PostgresEventStore,
         PostgresPlanStore,
         PostgresRequestStore,
@@ -67,6 +70,7 @@ def _create_db_stores():
         workshops=PostgresWorkshopStore(),
         access=PostgresAccessStore(),
         events=PostgresEventStore(),
+        event_reservations=PostgresEventReservationStore(),
         lifecycle_jobs=PostgresLifecycleJobStore(),
     )
 
@@ -292,10 +296,11 @@ branding_adapter = FileBrandingAdapter()
 public_access_service = PublicAccessService(store=db_stores.access if db_stores else None)
 provisioning_service.public_access_service = public_access_service
 
-from app.services.events import EventManifestStore
-
 event_manifest_store = EventManifestStore(
     db_store=db_stores.events if db_stores else None
+)
+event_reservation_ledger = EventReservationLedger(
+    db_store=db_stores.event_reservations if db_stores else None
 )
 
 from app.services.lifecycle_worker import LifecycleQueueService
@@ -352,6 +357,10 @@ def get_event_capacity_supply() -> EventCapacitySupply:
 
 def get_event_manifest_store() -> EventManifestStore:
     return event_manifest_store
+
+
+def get_event_reservation_ledger() -> EventReservationLedger:
+    return event_reservation_ledger
 
 
 _fleet_enrichment = None

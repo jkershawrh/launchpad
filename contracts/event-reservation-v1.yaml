@@ -1,0 +1,78 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Event Capacity Reservation Contract
+  version: 1.0.0
+  description: >-
+    Defines the durable aggregate capacity hold created after event approval
+    and before any workshop, seat, namespace, route, or model key is created.
+components:
+  schemas:
+    EventResourceVector:
+      type: object
+      additionalProperties: false
+      required: [seats, cpu_millicores, memory_mib, pods, storage_gib, routes, model_slots]
+      properties:
+        seats: {type: integer, minimum: 0}
+        cpu_millicores: {type: integer, minimum: 0}
+        memory_mib: {type: integer, minimum: 0}
+        pods: {type: integer, minimum: 0}
+        storage_gib: {type: integer, minimum: 0}
+        routes: {type: integer, minimum: 0}
+        model_slots: {type: integer, minimum: 0}
+    EventCapacityReservation:
+      type: object
+      additionalProperties: false
+      required:
+        - reservation_id
+        - event_id
+        - cohort_id
+        - lab_ref
+        - catalog_id
+        - catalog_release
+        - cluster_ref
+        - matrix_id
+        - matrix_digest
+        - fleet_snapshot_id
+        - resources
+        - status
+        - expires_at
+        - created_at
+      properties:
+        reservation_id: {type: string, minLength: 1}
+        event_id: {type: string, minLength: 1}
+        cohort_id: {type: string, minLength: 1}
+        lab_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        cluster_ref: {type: string, minLength: 1}
+        matrix_id: {type: string, minLength: 1}
+        matrix_digest: {type: string, minLength: 1}
+        fleet_snapshot_id: {type: string, minLength: 1}
+        resources: {$ref: '#/components/schemas/EventResourceVector'}
+        status: {type: string, enum: [held, released, expired]}
+        expires_at: {type: string, format: date-time}
+        created_at: {type: string, format: date-time}
+        released_at:
+          oneOf:
+            - {type: string, format: date-time}
+            - {type: 'null'}
+    EventReservationPlan:
+      type: object
+      additionalProperties: false
+      required:
+        - event_id
+        - matrix_id
+        - matrix_digest
+        - fleet_snapshot_id
+        - expires_at
+        - reservations
+      properties:
+        event_id: {type: string, minLength: 1}
+        matrix_id: {type: string, minLength: 1}
+        matrix_digest: {type: string, minLength: 1}
+        fleet_snapshot_id: {type: string, minLength: 1}
+        expires_at: {type: string, format: date-time}
+        reservations:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/EventCapacityReservation'}

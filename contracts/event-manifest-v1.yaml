@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Manifest Contract
-  version: 1.3.0
+  version: 1.4.0
   description: >-
     Defines an event before capacity is reserved. Participant count, cohorts,
     labs per participant, retention, exposure, certified capacity, and human
@@ -170,11 +170,12 @@ components:
     EventCatalogCapacity:
       type: object
       additionalProperties: false
-      required: [catalog_id, catalog_release, certified_seats]
+      required: [catalog_id, catalog_release, certified_seats, resources_per_seat]
       properties:
         catalog_id: {type: string, minLength: 1}
         catalog_release: {type: string, minLength: 1}
         certified_seats: {type: integer, minimum: 0}
+        resources_per_seat: {$ref: '#/components/schemas/EventResourceVector'}
     EventClusterCapacity:
       type: object
       additionalProperties: false
@@ -187,6 +188,7 @@ components:
         - certified_seats
         - dr_reserved_seats
         - uncertified_seats
+        - resource_capacity
         - catalogs
       properties:
         cluster_id: {type: string, minLength: 1}
@@ -203,6 +205,7 @@ components:
         certified_seats: {type: integer, minimum: 0}
         dr_reserved_seats: {type: integer, minimum: 0}
         uncertified_seats: {type: integer, minimum: 0}
+        resource_capacity: {$ref: '#/components/schemas/EventResourceVector'}
         catalogs:
           type: array
           items: {$ref: '#/components/schemas/EventCatalogCapacity'}
@@ -226,6 +229,18 @@ components:
         clusters:
           type: array
           items: {$ref: '#/components/schemas/EventClusterCapacity'}
+    EventResourceVector:
+      type: object
+      additionalProperties: false
+      required: [seats, cpu_millicores, memory_mib, pods, storage_gib, routes, model_slots]
+      properties:
+        seats: {type: integer, minimum: 0}
+        cpu_millicores: {type: integer, minimum: 0}
+        memory_mib: {type: integer, minimum: 0}
+        pods: {type: integer, minimum: 0}
+        storage_gib: {type: integer, minimum: 0}
+        routes: {type: integer, minimum: 0}
+        model_slots: {type: integer, minimum: 0}
     EventCapacityMatrixDocument:
       type: object
       additionalProperties: false

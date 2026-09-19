@@ -31,11 +31,29 @@ def _matrix() -> dict:
                 "certified_seats": 30,
                 "dr_reserved_seats": 0,
                 "uncertified_seats": 0,
+                "resource_capacity": {
+                    "seats": 30,
+                    "cpu_millicores": 30000,
+                    "memory_mib": 60000,
+                    "pods": 90,
+                    "storage_gib": 300,
+                    "routes": 90,
+                    "model_slots": 30,
+                },
                 "catalogs": [
                     {
                         "catalog_id": "intel-llm-cpu-serving",
                         "catalog_release": "v1",
                         "certified_seats": 30,
+                        "resources_per_seat": {
+                            "seats": 1,
+                            "cpu_millicores": 1000,
+                            "memory_mib": 2000,
+                            "pods": 3,
+                            "storage_gib": 10,
+                            "routes": 3,
+                            "model_slots": 1,
+                        },
                     }
                 ],
             }
@@ -85,6 +103,18 @@ def test_provider_rejects_unapproved_or_unversioned_matrix(
 def test_provider_rejects_missing_configured_file(tmp_path):
     with pytest.raises(EventCapacityMatrixUnavailableError, match="does not exist"):
         FileEventCapacityProvider(tmp_path / "missing.yaml").load()
+
+
+def test_provider_rejects_matrix_without_resource_evidence(tmp_path):
+    payload = _matrix()
+    payload["clusters"][0].pop("resource_capacity")
+    path = _write(tmp_path / "matrix.yaml", payload)
+
+    with pytest.raises(
+        EventCapacityMatrixUnavailableError,
+        match="requires a certified resource capacity",
+    ):
+        FileEventCapacityProvider(path).load()
 
 
 def test_unconfigured_dependency_remains_zero_capacity(monkeypatch):

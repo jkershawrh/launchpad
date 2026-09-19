@@ -278,10 +278,13 @@ def test_matrix_contract_declares_cluster_catalog_and_allocation_shapes():
     )
     schemas = contract["components"]["schemas"]
 
-    assert contract["info"]["version"] == "1.3.0"
+    assert contract["info"]["version"] == "1.4.0"
     assert "EventClusterCapacity" in schemas
     assert "EventCatalogCapacity" in schemas
+    assert "EventResourceVector" in schemas
     assert "EventCapacityAllocation" in schemas
     assert "EventLabCapacityDecision" in schemas
     preview = schemas["EventCapacityPreview"]
     assert {"allocations", "lab_capacity"} <= set(preview["required"])
+    assert "resources_per_seat" in schemas["EventCatalogCapacity"]["required"]
+    assert "resource_capacity" in schemas["EventClusterCapacity"]["required"]

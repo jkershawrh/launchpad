@@ -917,7 +917,7 @@
         "docs/product-roadmap-status.json"
       ],
       "risk_flags": [],
-      "sha256": "a9abf29c48b5879a58957ee5eb206ba0b6d4ba3add7930cd7f7e6c87df42a1a0"
+      "sha256": "3208dbfd88267ad9c14ebff69eab09461b6028cdf4a00c8575d7559d5a789a8c"
     },
     {
       "area": "contracts",
@@ -6773,7 +6773,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "f3ca50bf8ac41260ca06cf706a975fec33d1e324",
+  "source_commit": "6902f9dc22cf9c0a93d0f79d7d72beb92146a76b",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

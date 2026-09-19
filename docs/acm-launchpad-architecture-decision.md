@@ -69,6 +69,8 @@ catalog certification. Matrix clusters absent from the candidate set are
 disabled for normal placement while their DR-reserved and uncertified values
 remain visible. The ACM snapshot digest and observation time travel with the
 capacity decision so later reservations can prove which fleet view they used.
+The reservation ledger rechecks that identity and the same 120-second freshness
+boundary immediately before it creates an aggregate hold.
 
 ## Deployment shape
 
