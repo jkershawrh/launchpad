@@ -56,8 +56,19 @@ The control flow is:
 - ACM data never carries cluster credentials into Launchpad domain records.
 - DR-reserved and uncertified capacity remain non-placeable.
 - Active workshops are never retargeted when ACM changes a later decision.
-- A future ACM outage policy must use a bounded, signed snapshot with an
-  explicit maximum age; stale data is not silently accepted.
+- The local admission contract defaults to a 120-second maximum ACM snapshot
+  age and 30 seconds of future clock skew. Stale or future-dated evidence is
+  rejected rather than silently accepted. Production values remain an SLO and
+  integration decision.
+
+## Local admission join
+
+`apply_acm_eligibility` intersects the approved Launchpad capacity matrix with
+the fresh `acm_eligible` candidate set. It never adds capacity or changes
+catalog certification. Matrix clusters absent from the candidate set are
+disabled for normal placement while their DR-reserved and uncertified values
+remain visible. The ACM snapshot digest and observation time travel with the
+capacity decision so later reservations can prove which fleet view they used.
 
 ## Deployment shape
 

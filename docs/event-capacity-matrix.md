@@ -51,6 +51,11 @@ placeable capacity. When the setting is present but the document is missing or
 invalid, the API returns `503` and does not persist an event. Matrix contents
 are never accepted from the participant or requester payload.
 
+Before reservation, the matrix must be intersected with a fresh ACM placement
+snapshot. The resulting decision records both the matrix ID/digest and ACM
+snapshot ID/time. ACM can only disable matrix entries; it cannot create
+certified capacity.
+
 ## Next boundary
 
 The next orchestration increment may reserve the approved allocations, but it

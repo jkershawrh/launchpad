@@ -278,7 +278,7 @@ def test_matrix_contract_declares_cluster_catalog_and_allocation_shapes():
     )
     schemas = contract["components"]["schemas"]
 
-    assert contract["info"]["version"] == "1.2.0"
+    assert contract["info"]["version"] == "1.3.0"
     assert "EventClusterCapacity" in schemas
     assert "EventCatalogCapacity" in schemas
     assert "EventCapacityAllocation" in schemas

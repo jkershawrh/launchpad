@@ -120,6 +120,8 @@ class EventCapacitySupply(BaseModel):
 
     matrix_id: str = Field(default="unconfigured", min_length=1)
     matrix_digest: str = Field(default="unconfigured", min_length=1)
+    fleet_snapshot_id: str = Field(default="not-evaluated", min_length=1)
+    fleet_observed_at: datetime | None = None
     clusters: list[EventClusterCapacity] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -183,6 +185,8 @@ class EventLabCapacityDecision(BaseModel):
 class EventCapacityPreview(BaseModel):
     matrix_id: str
     matrix_digest: str
+    fleet_snapshot_id: str
+    fleet_observed_at: datetime | None = None
     participant_count: int
     seat_environments: int
     peak_concurrent_participants: int
@@ -276,6 +280,8 @@ def calculate_event_capacity(
     return EventCapacityPreview(
         matrix_id=supply.matrix_id,
         matrix_digest=supply.matrix_digest,
+        fleet_snapshot_id=supply.fleet_snapshot_id,
+        fleet_observed_at=supply.fleet_observed_at,
         participant_count=participant_count,
         seat_environments=seat_environments,
         peak_concurrent_participants=peak_concurrent_participants,

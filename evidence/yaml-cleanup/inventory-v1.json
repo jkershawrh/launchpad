@@ -807,6 +807,23 @@
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
+      "path": "contracts/acm-placement-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [],
+      "sha256": "d21e450e9607b5cb0b06615d5cfb3e5731b302b0fde47e8e21dfb4d86a1b6428"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
       "path": "contracts/admin-observability-v1.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
       "reference_count": 2,
@@ -900,7 +917,7 @@
         "docs/product-roadmap-status.json"
       ],
       "risk_flags": [],
-      "sha256": "6e25df775c31fbdd2a62f7522ac1fde37dc0e95d0f8470d220232a96ef597ba3"
+      "sha256": "a9abf29c48b5879a58957ee5eb206ba0b6d4ba3add7930cd7f7e6c87df42a1a0"
     },
     {
       "area": "contracts",
@@ -6756,7 +6773,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "dbc47df1db3bc300100579d84197afb8cc4dc376",
+  "source_commit": "f3ca50bf8ac41260ca06cf706a975fec33d1e324",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -6764,7 +6781,7 @@
       "ci": 2,
       "configuration": 3,
       "content-source": 18,
-      "contract": 12,
+      "contract": 13,
       "demo-source": 110,
       "deployment-source": 154,
       "deployment-template": 11,
@@ -6775,7 +6792,7 @@
       "tenant-source": 10
     },
     "files_without_detected_repository_reference": 173,
-    "preserved_pending_review": 383,
+    "preserved_pending_review": 384,
     "risk_flag_counts": {
       "environment-specific": 110,
       "mutable-latest-image": 19,
@@ -6783,8 +6800,8 @@
       "secret-object-review-required": 6,
       "status-field-review-required": 36
     },
-    "tracked_yaml_files": 383,
-    "unassigned_owners": 383
+    "tracked_yaml_files": 384,
+    "unassigned_owners": 384
   },
   "tracked_changes_present": true
 }

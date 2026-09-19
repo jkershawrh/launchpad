@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-19T04:11:10Z",
+  "updated_at": "2026-09-19T05:07:37Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -391,6 +391,23 @@
         "evidence/runs/acm-placement-adapter/red-local.xml"
       ],
       "note": "The local ACM v1 adapter contract establishes Red Hat Advanced Cluster Management as the fleet candidate and governance boundary without replacing Launchpad admission. It reads v1beta1 PlacementDecisions and v1 ManagedClusters, requires both availability and hub acceptance, deduplicates shards, records labels/claims/rejections, hashes the exact observed decision inputs, and excludes credentials and certified seat capacity. ACM candidates must still be intersected with the approved Launchpad capacity matrix and reservations. Local RED/GREEN evidence exists; hub installation, managed-cluster import, policy deployment, GitOps integration, stale-snapshot policy, integration proof, and live proof remain open."
+    },
+    "LP-T038": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/app/services/event_admission.py",
+        "docs/acm-launchpad-architecture-decision.md",
+        "evidence/runs/acm-capacity-intersection/green-local.xml",
+        "evidence/runs/acm-capacity-intersection/red-local.xml"
+      ],
+      "note": "The local admission join now intersects a versioned Launchpad capacity matrix with an immutable ACM placement snapshot. ACM candidates can only disable matrix entries, never create certified capacity. The join records the ACM snapshot digest/time, preserves non-placeable DR visibility, and fails closed when evidence is older than 120 seconds, future-dated beyond 30 seconds, or timezone-ambiguous. Local RED/GREEN evidence exists. Cluster ranking/scoring, reservation-state joins, API wiring, persisted final cluster_ref, ACM hub integration, and live proof remain open."
     }
   },
   "rubric": [

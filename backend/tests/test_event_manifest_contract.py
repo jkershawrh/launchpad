@@ -25,7 +25,7 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
     contract = yaml.safe_load(CONTRACT.read_text())
     schema = contract["components"]["schemas"]["EventManifest"]
 
-    assert contract["info"]["version"] == "1.2.0"
+    assert contract["info"]["version"] == "1.3.0"
     assert {
         "event_id",
         "name",
@@ -42,6 +42,8 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
     assert {
         "matrix_id",
         "matrix_digest",
+        "fleet_snapshot_id",
+        "fleet_observed_at",
         "participant_count",
         "seat_environments",
         "peak_concurrent_participants",
