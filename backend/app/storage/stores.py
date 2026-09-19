@@ -22,6 +22,7 @@ from app.domain.events import (
     EventCapacitySupply,
     EventManifestConflictError,
     EventRecord,
+    EventReservationConsumption,
     EventReservationPlan,
 )
 from app.domain.feedback import ProvisioningOutcome
@@ -296,6 +297,10 @@ class PostgresEventReservationStore:
         try:
             with conn.cursor() as cur:
                 cur.execute("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE")
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"event-reservation-event:{plan.event_id}",),
+                )
                 cluster_refs = sorted(
                     {item.cluster_ref for item in plan.reservations}
                 )
@@ -333,7 +338,7 @@ class PostgresEventReservationStore:
 
                 cur.execute(
                     """SELECT data FROM event_capacity_reservations
-                       WHERE status IN ('held', 'expired')
+                       WHERE status IN ('held', 'consumed', 'expired')
                          AND cluster_ref = ANY(%s)
                        ORDER BY cluster_ref, reservation_id FOR UPDATE""",
                     (cluster_refs,),
@@ -408,7 +413,7 @@ class PostgresEventReservationStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """SELECT data FROM event_capacity_reservations
-                       WHERE status IN ('held', 'expired')
+                       WHERE status IN ('held', 'consumed', 'expired')
                        ORDER BY cluster_ref, reservation_id""",
                 )
                 return [
@@ -419,6 +424,144 @@ class PostgresEventReservationStore:
             logger.warning("DB list event capacity reservations error: %s", exc)
             raise PersistenceUnavailableError(
                 "failed to read event capacity reservations"
+            ) from exc
+        finally:
+            conn.close()
+
+    def consume(
+        self,
+        binding: EventReservationConsumption,
+        *,
+        now,
+    ) -> EventCapacityReservation:
+        from app.services.event_reservations import (
+            EventReservationConflictError,
+            _assert_consumption_matches,
+        )
+
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event reservation persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"event-reservation-event:{binding.event_id}",),
+                )
+                cur.execute(
+                    """SELECT data FROM event_capacity_reservations
+                       WHERE reservation_id = %s FOR UPDATE""",
+                    (binding.reservation_id,),
+                )
+                row = cur.fetchone()
+                if row is None:
+                    raise EventReservationConflictError("Reservation was not found")
+                reservation = EventCapacityReservation.model_validate(
+                    _decode_json(row[0])
+                )
+                _assert_consumption_matches(reservation, binding)
+                if reservation.status == "consumed":
+                    if reservation.workshop_id != binding.workshop_id:
+                        raise EventReservationConflictError(
+                            "Reservation is bound to a different workshop"
+                        )
+                    conn.commit()
+                    return reservation
+                if reservation.status == "released":
+                    raise EventReservationConflictError(
+                        "Released reservation cannot be consumed"
+                    )
+                if reservation.status == "expired" or reservation.expires_at <= now:
+                    if reservation.status == "held":
+                        cur.execute(
+                            """UPDATE event_capacity_reservations
+                               SET status = 'expired',
+                                   data = jsonb_set(data, '{status}', '"expired"')
+                               WHERE reservation_id = %s AND status = 'held'""",
+                            (binding.reservation_id,),
+                        )
+                        conn.commit()
+                    raise EventReservationConflictError(
+                        "Reservation expired before workshop consumption"
+                    )
+                consumed = reservation.model_copy(
+                    update={
+                        "status": "consumed",
+                        "consumed_at": now,
+                        "workshop_id": binding.workshop_id,
+                    }
+                )
+                cur.execute(
+                    """UPDATE event_capacity_reservations
+                       SET status = 'consumed', consumed_at = %s, workshop_id = %s,
+                           data = %s::jsonb
+                       WHERE reservation_id = %s AND status = 'held'""",
+                    (
+                        now,
+                        binding.workshop_id,
+                        json.dumps(consumed.model_dump(mode="json")),
+                        binding.reservation_id,
+                    ),
+                )
+                if cur.rowcount != 1:
+                    raise EventReservationConflictError(
+                        "Reservation changed during workshop consumption"
+                    )
+            conn.commit()
+            return consumed
+        except EventReservationConflictError:
+            conn.rollback()
+            raise
+        except Exception as exc:
+            conn.rollback()
+            if getattr(exc, "pgcode", None) == "23505":
+                raise EventReservationConflictError(
+                    "Workshop is bound to a different reservation"
+                ) from exc
+            logger.warning("DB consume event capacity error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to consume event capacity reservation"
+            ) from exc
+        finally:
+            conn.close()
+
+    def get(self, reservation_id: str, *, now) -> EventCapacityReservation | None:
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event reservation persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"event-reservation-consume:{reservation_id}",),
+                )
+                cur.execute(
+                    """UPDATE event_capacity_reservations
+                       SET status = 'expired',
+                           data = jsonb_set(data, '{status}', '"expired"')
+                       WHERE reservation_id = %s AND status = 'held'
+                         AND expires_at <= %s""",
+                    (reservation_id, now),
+                )
+                cur.execute(
+                    """SELECT data FROM event_capacity_reservations
+                       WHERE reservation_id = %s""",
+                    (reservation_id,),
+                )
+                row = cur.fetchone()
+            conn.commit()
+            if row is None:
+                return None
+            return EventCapacityReservation.model_validate(_decode_json(row[0]))
+        except Exception as exc:
+            conn.rollback()
+            logger.warning("DB get event capacity reservation error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to read event capacity reservation"
             ) from exc
         finally:
             conn.close()
@@ -437,7 +580,7 @@ class PostgresEventReservationStore:
             with conn.cursor() as cur:
                 cur.execute(
                     "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
-                    (f"event-reservation-release:{event_id}",),
+                    (f"event-reservation-event:{event_id}",),
                 )
                 cur.execute(
                     """SELECT cleanup_evidence_id
@@ -462,7 +605,8 @@ class PostgresEventReservationStore:
                              ),
                              '{cleanup_evidence_id}', to_jsonb(%s::text)
                            )
-                       WHERE event_id = %s AND status IN ('held', 'expired')""",
+                       WHERE event_id = %s
+                         AND status IN ('held', 'consumed', 'expired')""",
                     (
                         now,
                         cleanup_evidence_id,

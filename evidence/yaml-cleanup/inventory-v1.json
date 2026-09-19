@@ -936,7 +936,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "d0135796a13f2998d1a141acab44b62df23cf46cb1eeb2bef7e5c6c89cf6a5dc"
+      "sha256": "1a15d7eaeda6d7a3d84d953884e9589febd5ab3f6834b7984db7ac64edbdb225"
     },
     {
       "area": "contracts",
@@ -6792,7 +6792,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "2729b2dc6c70cd1964edf9100ce6a377d980c033",
+  "source_commit": "f3d8cd930f1f341c94e07fd006ca6d11ca25b2d0",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

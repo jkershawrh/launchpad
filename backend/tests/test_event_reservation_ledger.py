@@ -11,6 +11,7 @@ from app.domain.events import (
     EventCatalogCapacity,
     EventClusterCapacity,
     EventRecord,
+    EventReservationConsumption,
     EventResourceVector,
     calculate_event_capacity,
 )
@@ -240,6 +241,121 @@ def test_release_rejects_conflicting_cleanup_evidence():
         )
 
 
+def _consumption(plan, *, workshop_id: str = "workshop-a"):
+    reservation = plan.reservations[0]
+    return EventReservationConsumption(
+        reservation_id=reservation.reservation_id,
+        event_id=reservation.event_id,
+        workshop_id=workshop_id,
+        cluster_ref=reservation.cluster_ref,
+        catalog_id=reservation.catalog_id,
+        catalog_release=reservation.catalog_release,
+        seats=reservation.resources.seats,
+    )
+
+
+def test_consumption_binds_exact_workshop_and_is_idempotent():
+    supply = _supply()
+    ledger = EventReservationLedger()
+    plan = _plan("event-a", supply)
+    ledger.reserve(plan, supply, now=NOW)
+    consumption = _consumption(plan)
+
+    first = ledger.consume(consumption, now=NOW + timedelta(minutes=1))
+    repeated = ledger.consume(consumption, now=NOW + timedelta(minutes=2))
+
+    assert repeated == first
+    assert first.status == "consumed"
+    assert first.workshop_id == "workshop-a"
+    with pytest.raises(EventReservationConflictError, match="different workshop"):
+        ledger.consume(
+            consumption.model_copy(update={"workshop_id": "workshop-b"}),
+            now=NOW + timedelta(minutes=3),
+        )
+
+
+def test_one_workshop_cannot_consume_two_reservations():
+    supply = _supply()
+    ledger = EventReservationLedger()
+    plan = _plan("event-a", supply)
+    ledger.reserve(plan, supply, now=NOW)
+    first, second = plan.reservations
+    ledger.consume(
+        EventReservationConsumption(
+            reservation_id=first.reservation_id,
+            event_id=first.event_id,
+            workshop_id="workshop-shared",
+            cluster_ref=first.cluster_ref,
+            catalog_id=first.catalog_id,
+            catalog_release=first.catalog_release,
+            seats=first.resources.seats,
+        ),
+        now=NOW + timedelta(minutes=1),
+    )
+
+    with pytest.raises(EventReservationConflictError, match="different reservation"):
+        ledger.consume(
+            EventReservationConsumption(
+                reservation_id=second.reservation_id,
+                event_id=second.event_id,
+                workshop_id="workshop-shared",
+                cluster_ref=second.cluster_ref,
+                catalog_id=second.catalog_id,
+                catalog_release=second.catalog_release,
+                seats=second.resources.seats,
+            ),
+            now=NOW + timedelta(minutes=2),
+        )
+
+
+def test_consumption_rejects_tampered_or_expired_binding():
+    supply = _supply()
+    ledger = EventReservationLedger()
+    plan = _plan("event-a", supply)
+    ledger.reserve(plan, supply, now=NOW)
+    consumption = _consumption(plan)
+
+    with pytest.raises(EventReservationConflictError, match="does not match"):
+        ledger.consume(
+            consumption.model_copy(update={"cluster_ref": "brutus"}),
+            now=NOW + timedelta(minutes=1),
+        )
+
+    with pytest.raises(EventReservationConflictError, match="expired"):
+        ledger.consume(consumption, now=plan.expires_at + timedelta(seconds=1))
+
+
+def test_consumed_hold_blocks_capacity_until_cleanup_release():
+    supply = _supply()
+    ledger = EventReservationLedger()
+    plan = _plan("event-a", supply)
+    ledger.reserve(plan, supply, now=NOW)
+    for reservation in plan.reservations:
+        ledger.consume(
+            EventReservationConsumption(
+                reservation_id=reservation.reservation_id,
+                event_id=reservation.event_id,
+                workshop_id=f"workshop:{reservation.reservation_id}",
+                cluster_ref=reservation.cluster_ref,
+                catalog_id=reservation.catalog_id,
+                catalog_release=reservation.catalog_release,
+                seats=reservation.resources.seats,
+            ),
+            now=NOW + timedelta(minutes=1),
+        )
+
+    with pytest.raises(EventReservationUnavailableError):
+        ledger.reserve(_plan("event-b", supply), supply, now=NOW + timedelta(minutes=2))
+    assert ledger.release(
+        "event-a",
+        cleanup_evidence_id="evidence:cleanup:event-a",
+        now=NOW + timedelta(minutes=3),
+    ) == 2
+    assert ledger.reserve(
+        _plan("event-b", supply), supply, now=NOW + timedelta(minutes=4)
+    )
+
+
 def test_expired_holds_remain_capacity_consuming_until_cleanup_release():
     supply = _supply()
     ledger = EventReservationLedger()
@@ -275,12 +391,22 @@ def test_reservation_contract_and_migration_are_fail_closed():
     schemas = contract["components"]["schemas"]
     migration = MIGRATION.read_text()
 
-    assert contract["info"]["version"] == "1.0.0"
-    assert {"EventReservationPlan", "EventCapacityReservation", "EventResourceVector"} <= set(schemas)
+    assert contract["info"]["version"] == "1.1.0"
+    assert {
+        "EventReservationPlan",
+        "EventCapacityReservation",
+        "EventReservationConsumption",
+        "EventResourceVector",
+    } <= set(schemas)
     assert "/api/v1/events/{event_id}/reservations" in contract["paths"]
     assert "/api/v1/events/{event_id}/reservations/release" in contract["paths"]
     assert "UNIQUE (event_id, cohort_id, lab_ref)" in migration
-    assert "CHECK (status IN ('held', 'released', 'expired'))" in migration
+    assert "UNIQUE (workshop_id)" in migration
+    assert (
+        "CHECK (status IN ('held', 'consumed', 'released', 'expired'))"
+        in migration
+    )
+    assert "consumed_at" in migration and "workshop_id" in migration
     assert "cleanup_evidence_id TEXT" in migration
     assert "expires_at" in migration and "TIMESTAMPTZ NOT NULL" in migration
 
@@ -418,6 +544,79 @@ def test_postgres_release_locks_event_and_persists_cleanup_evidence(monkeypatch)
     assert "cleanup_evidence_id" in statements[update_index][0]
     assert "evidence:cleanup:event-a" in statements[update_index][1]
     assert released == 2
+    assert connection.commits == 1
+    assert connection.rollbacks == 0
+    assert connection.closed is True
+
+
+def test_postgres_consumption_locks_and_persists_exact_workshop_binding(monkeypatch):
+    supply = _supply()
+    plan = _plan("event-a", supply)
+    reservation = plan.reservations[0]
+
+    class FakeCursor:
+        rowcount = 0
+
+        def __init__(self):
+            self.statements = []
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def execute(self, statement, params=None):
+            sql = " ".join(statement.split())
+            self.statements.append((sql, params))
+            if "SET status = 'consumed'" in sql:
+                self.rowcount = 1
+
+        def fetchone(self):
+            return (reservation.model_dump(mode="json"),)
+
+    class FakeConnection:
+        def __init__(self):
+            self.cursor_value = FakeCursor()
+            self.commits = 0
+            self.rollbacks = 0
+            self.closed = False
+
+        def cursor(self):
+            return self.cursor_value
+
+        def commit(self):
+            self.commits += 1
+
+        def rollback(self):
+            self.rollbacks += 1
+
+        def close(self):
+            self.closed = True
+
+    connection = FakeConnection()
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+    binding = _consumption(plan)
+
+    consumed = PostgresEventReservationStore().consume(
+        binding,
+        now=NOW + timedelta(minutes=1),
+    )
+
+    statements = connection.cursor_value.statements
+    lock_index = next(
+        index
+        for index, (sql, _params) in enumerate(statements)
+        if "pg_advisory_xact_lock" in sql
+    )
+    update_index = next(
+        index
+        for index, (sql, _params) in enumerate(statements)
+        if "SET status = 'consumed'" in sql
+    )
+    assert lock_index < update_index
+    assert consumed.status == "consumed"
+    assert consumed.workshop_id == "workshop-a"
     assert connection.commits == 1
     assert connection.rollbacks == 0
     assert connection.closed is True

@@ -290,9 +290,11 @@ class EventCapacityReservation(BaseModel):
     matrix_digest: str = Field(min_length=1)
     fleet_snapshot_id: str = Field(min_length=1)
     resources: EventResourceVector
-    status: Literal["held", "released", "expired"] = "held"
+    status: Literal["held", "consumed", "released", "expired"] = "held"
     expires_at: datetime
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    consumed_at: datetime | None = None
+    workshop_id: str | None = None
     released_at: datetime | None = None
     cleanup_evidence_id: str | None = None
 
@@ -302,11 +304,24 @@ class EventCapacityReservation(BaseModel):
             raise ValueError("reservation timestamps must include a timezone")
         if self.released_at is not None and self.released_at.tzinfo is None:
             raise ValueError("reservation release timestamp must include a timezone")
+        if self.consumed_at is not None and self.consumed_at.tzinfo is None:
+            raise ValueError("reservation consumption timestamp must include a timezone")
+        if self.status == "consumed":
+            if self.consumed_at is None or not self.workshop_id:
+                raise ValueError(
+                    "consumed reservation requires a timestamped workshop binding"
+                )
+        elif self.status in {"held", "expired"} and (
+            self.consumed_at is not None or self.workshop_id is not None
+        ):
+            raise ValueError("unconsumed reservation cannot carry a workshop binding")
         if self.status == "released":
             if self.released_at is None or not self.cleanup_evidence_id:
                 raise ValueError(
                     "released reservation requires timestamped cleanup evidence"
                 )
+            if (self.consumed_at is None) != (self.workshop_id is None):
+                raise ValueError("released workshop binding must be complete")
         elif self.released_at is not None or self.cleanup_evidence_id is not None:
             raise ValueError("only released reservations may carry cleanup evidence")
         if self.resources.seats < 1:
@@ -322,6 +337,16 @@ class EventReservationCreate(BaseModel):
         if self.expires_at.tzinfo is None:
             raise ValueError("reservation expiration must include a timezone")
         return self
+
+
+class EventReservationConsumption(BaseModel):
+    reservation_id: str = Field(min_length=1)
+    event_id: str = Field(min_length=1)
+    workshop_id: str = Field(min_length=1)
+    cluster_ref: str = Field(min_length=1)
+    catalog_id: str = Field(min_length=1)
+    catalog_release: str = Field(min_length=1)
+    seats: int = Field(ge=1)
 
 
 class EventReservationReleaseRequest(BaseModel):

@@ -1,10 +1,12 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Capacity Reservation Contract
-  version: 1.0.0
+  version: 1.1.0
   description: >-
     Defines the durable aggregate capacity hold created after event approval
     and before any workshop, seat, namespace, route, or model key is created.
+    A held reservation is consumed by exactly one deterministic workshop and
+    remains capacity-consuming until cleanup-evidenced release.
 paths:
   /api/v1/events/{event_id}/reservations:
     post:
@@ -71,6 +73,25 @@ components:
         event_id: {type: string, minLength: 1}
         released_reservations: {type: integer, minimum: 0}
         cleanup_evidence_id: {type: string, minLength: 1}
+    EventReservationConsumption:
+      type: object
+      additionalProperties: false
+      required:
+        - reservation_id
+        - event_id
+        - workshop_id
+        - cluster_ref
+        - catalog_id
+        - catalog_release
+        - seats
+      properties:
+        reservation_id: {type: string, minLength: 1}
+        event_id: {type: string, minLength: 1}
+        workshop_id: {type: string, minLength: 1}
+        cluster_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        seats: {type: integer, minimum: 1}
     EventResourceVector:
       type: object
       additionalProperties: false
@@ -113,9 +134,17 @@ components:
         matrix_digest: {type: string, minLength: 1}
         fleet_snapshot_id: {type: string, minLength: 1}
         resources: {$ref: '#/components/schemas/EventResourceVector'}
-        status: {type: string, enum: [held, released, expired]}
+        status: {type: string, enum: [held, consumed, released, expired]}
         expires_at: {type: string, format: date-time}
         created_at: {type: string, format: date-time}
+        consumed_at:
+          oneOf:
+            - {type: string, format: date-time}
+            - {type: 'null'}
+        workshop_id:
+          oneOf:
+            - {type: string, minLength: 1}
+            - {type: 'null'}
         released_at:
           oneOf:
             - {type: string, format: date-time}

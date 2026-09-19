@@ -21,18 +21,21 @@ CREATE TABLE IF NOT EXISTS event_capacity_reservations (
     routes            INTEGER NOT NULL CHECK (routes >= 0),
     model_slots       INTEGER NOT NULL CHECK (model_slots >= 0),
     status            TEXT NOT NULL DEFAULT 'held'
-                      CHECK (status IN ('held', 'released', 'expired')),
+                      CHECK (status IN ('held', 'consumed', 'released', 'expired')),
     expires_at        TIMESTAMPTZ NOT NULL,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    consumed_at       TIMESTAMPTZ,
+    workshop_id       TEXT,
     released_at       TIMESTAMPTZ,
     cleanup_evidence_id TEXT,
     data              JSONB NOT NULL,
-    UNIQUE (event_id, cohort_id, lab_ref)
+    UNIQUE (event_id, cohort_id, lab_ref),
+    UNIQUE (workshop_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_event_capacity_reservations_active_cluster
     ON event_capacity_reservations (cluster_ref, expires_at)
-    WHERE status IN ('held', 'expired');
+    WHERE status IN ('held', 'consumed', 'expired');
 
 CREATE INDEX IF NOT EXISTS idx_event_capacity_reservations_event
     ON event_capacity_reservations (event_id);

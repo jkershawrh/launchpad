@@ -30,6 +30,10 @@ from app.domain.enums import (
     WorkshopSeatStatus,
     WorkshopStatus,
 )
+from app.domain.events import (
+    EventCapacityReservation,
+    EventReservationConsumption,
+)
 from app.domain.lifecycle import transition
 from app.domain.models import (
     LabRequest,
@@ -87,6 +91,7 @@ class ProvisioningService:
         maas_key_broker=None,
         cluster_registry=None,
         cluster_client_factory=None,
+        event_reservation_ledger=None,
     ):
         self.catalog = catalog or MockCatalogAdapter()
         self.pool = pool or MockPoolAdapter()
@@ -106,6 +111,7 @@ class ProvisioningService:
         self.maas_key_broker = maas_key_broker
         self.cluster_registry = cluster_registry
         self.cluster_client_factory = cluster_client_factory
+        self.event_reservation_ledger = event_reservation_ledger
 
         mode = os.environ.get("LAUNCHPAD_MODE", "mock")
         if mode != "mock":
@@ -1888,6 +1894,112 @@ class ProvisioningService:
         self._save_workshop(order)
         return order
 
+    def create_reserved_workshop_order(
+        self,
+        reservation: EventCapacityReservation,
+        *,
+        tenant_id: str,
+        exposure_policy: ExposurePolicy,
+        ttl: str,
+    ) -> Workshop:
+        """Bind one aggregate hold to one deterministic workshop order.
+
+        Consumption happens before the order is persisted. A process failure
+        can therefore leave a fail-closed consumed hold, but can never create
+        an unreserved workshop or move it to another cluster. Retrying derives
+        the same workshop ID and idempotency key.
+        """
+
+        if self.event_reservation_ledger is None:
+            raise ValueError("Event reservation persistence is unavailable")
+        catalog_item = self.catalog.get_item(reservation.catalog_id)
+        if catalog_item is None:
+            raise ValueError(
+                f"Reserved catalog item {reservation.catalog_id} was not found"
+            )
+        if str(catalog_item.version) != reservation.catalog_release:
+            raise ValueError(
+                "Reserved catalog release does not match the current immutable release"
+            )
+        workshop_id = str(
+            _uuid.uuid5(
+                _uuid.NAMESPACE_URL,
+                f"launchpad:event-reservation:{reservation.reservation_id}",
+            )
+        )
+        workshop = Workshop(
+            workshop_id=workshop_id,
+            tenant_id=tenant_id,
+            catalog_item_id=reservation.catalog_id,
+            num_users=reservation.resources.seats,
+            ttl=ttl,
+            purpose="event",
+            exposure_policy=exposure_policy,
+            cluster_ref=reservation.cluster_ref,
+            target_cluster=reservation.cluster_ref,
+            metadata={
+                "event_id": reservation.event_id,
+                "event_reservation_id": reservation.reservation_id,
+                "event_cohort_id": reservation.cohort_id,
+                "event_lab_ref": reservation.lab_ref,
+                "catalog_release": reservation.catalog_release,
+                "reserved_cluster_ref": reservation.cluster_ref,
+                "reserved_seats": reservation.resources.seats,
+            },
+        )
+        preview = self.preview_workshop_capacity(workshop)
+        if not preview["can_provision"]:
+            raise ValueError(preview["reason"])
+        if preview.get("selected_cluster") not in {
+            None,
+            reservation.cluster_ref,
+        }:
+            raise ValueError("Reserved workshop placement changed before consumption")
+        binding = EventReservationConsumption(
+            reservation_id=reservation.reservation_id,
+            event_id=reservation.event_id,
+            workshop_id=workshop_id,
+            cluster_ref=reservation.cluster_ref,
+            catalog_id=reservation.catalog_id,
+            catalog_release=reservation.catalog_release,
+            seats=reservation.resources.seats,
+        )
+        self.event_reservation_ledger.consume(binding)
+        return self.create_workshop_order(
+            workshop,
+            idempotency_key=f"event-reservation:{reservation.reservation_id}",
+        )
+
+    def _validate_reserved_workshop_binding(self, workshop: Workshop) -> None:
+        reservation_id = workshop.metadata.get("event_reservation_id")
+        if not reservation_id:
+            return
+        if self.event_reservation_ledger is None:
+            raise ValueError("Event reservation persistence is unavailable")
+        reservation = self.event_reservation_ledger.get(reservation_id)
+        if reservation is None or reservation.status != "consumed":
+            raise ValueError("Workshop does not have a consumed event reservation")
+        expected_workshop_id = str(
+            _uuid.uuid5(
+                _uuid.NAMESPACE_URL,
+                f"launchpad:event-reservation:{reservation_id}",
+            )
+        )
+        catalog_item = self.catalog.get_item(workshop.catalog_item_id)
+        if (
+            workshop.workshop_id != expected_workshop_id
+            or reservation.workshop_id != workshop.workshop_id
+            or workshop.cluster_ref != reservation.cluster_ref
+            or workshop.target_cluster != reservation.cluster_ref
+            or workshop.catalog_item_id != reservation.catalog_id
+            or workshop.num_users != reservation.resources.seats
+            or catalog_item is None
+            or str(catalog_item.version) != reservation.catalog_release
+        ):
+            raise ValueError(
+                "Workshop no longer matches its consumed event reservation"
+            )
+
     def confirm_workshop(self, workshop_id: str) -> Workshop:
         workshop = self._workshops.get(workshop_id)
         if not workshop:
@@ -2217,6 +2329,7 @@ class ProvisioningService:
     ) -> Workshop:
         self._require_lifecycle_ownership(lifecycle_guard)
         workshop = self._with_default_workshop_name(workshop)
+        self._validate_reserved_workshop_binding(workshop)
         provision_event = self._workshop_provision_events.setdefault(
             workshop.workshop_id, threading.Event()
         )

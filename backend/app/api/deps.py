@@ -302,6 +302,7 @@ event_manifest_store = EventManifestStore(
 event_reservation_ledger = EventReservationLedger(
     db_store=db_stores.event_reservations if db_stores else None
 )
+provisioning_service.event_reservation_ledger = event_reservation_ledger
 
 from app.services.lifecycle_worker import LifecycleQueueService
 from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore

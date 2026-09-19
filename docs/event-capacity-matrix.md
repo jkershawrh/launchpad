@@ -87,14 +87,32 @@ selected `cluster_ref` before any lifecycle work is allowed. Its paired release
 API accepts only `cleanup_completed: true` plus cleanup evidence. No reservation
 method provisions a workshop, creates a namespace, or changes a live cluster.
 
+Lifecycle consumption is a separate one-to-one transition. It binds a held
+reservation to a deterministic workshop ID only when event, catalog ID,
+immutable catalog release, seat count, and `cluster_ref` exactly match. The
+transition is serialized per reservation and identical retries are idempotent;
+a different workshop, an expired/released hold, or any changed input fails
+closed. Consumed reservations remain capacity-consuming until cleanup-evidenced
+release.
+
+Reserved workshop creation records the reservation, event, cohort, lab,
+release, seat count, and cluster on the order. Immediately before provisioning,
+the lifecycle service re-reads the reservation and rejects catalog drift,
+cluster movement, seat-count changes, or a missing/incorrect workshop binding.
+Local lifecycle proof provisions all 30 synthetic seats on the persisted target
+without recalculating placement.
+
 Local proof covers deterministic footprint multiplication, concurrent
 overcommit rejection, evidence drift, retry behavior, admin authorization,
 persisted cluster assignment, cleanup-evidenced release, and fail-closed
-expiration. A real PostgreSQL integration run, lifecycle consumption,
-reconciliation, and live proof remain separate gates.
+expiration. It also covers deterministic workshop consumption, tamper rejection,
+and a 30-seat synthetic lifecycle run on the persisted cluster. A real
+PostgreSQL integration run, event-wide orchestration, reconciliation, and live
+proof remain separate gates.
 
 ## Next boundary
 
-The next orchestration increment may let lifecycle workers consume held
-allocations. It must prove real database-backed concurrency, reconciliation,
-and zero-residue cleanup before release or live use.
+The next orchestration increment may create every event workshop from the full
+reservation plan and queue bounded, fenced lifecycle jobs. It must prove real
+database-backed concurrency, event-wide recovery, reconciliation, and
+zero-residue cleanup before release or live use.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-19T23:21:28Z",
+  "updated_at": "2026-09-19T23:40:03Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -404,12 +404,14 @@
       "evidence": [
         "backend/app/services/event_admission.py",
         "backend/tests/test_event_reservation_api.py",
+        "backend/tests/test_event_reservation_workshop_bridge.py",
         "docs/acm-launchpad-architecture-decision.md",
         "evidence/runs/acm-capacity-intersection/green-local.xml",
         "evidence/runs/acm-capacity-intersection/red-local.xml",
-        "evidence/runs/event-reservation-api/green-local.xml"
+        "evidence/runs/event-reservation-api/green-local.xml",
+        "evidence/runs/event-reservation-consumption/green-local.xml"
       ],
-      "note": "The local admission join intersects certified capacity with a fresh immutable ACM placement snapshot, and the admin reservation API now persists the final cluster_ref for every cohort/lab hold before lifecycle work. ACM can disable but never create certified capacity. Ranking/scoring policy, reservation-to-lifecycle consumption, ACM hub integration, and live proof remain open; no active workshop was changed."
+      "note": "The local admission join persists final cluster_ref and the lifecycle bridge now refuses to recalculate or change that target. Reserved workshop creation and pre-provision validation bind the deterministic workshop ID, catalog release, seat count, and selected cluster; a 30-seat synthetic run placed every session on the persisted target. Ranking/scoring policy, event-wide queue integration, ACM hub integration, and GREEN-live proof remain open; no active workshop was changed."
     },
     "LP-T037": {
       "state": "green-local",
@@ -423,14 +425,17 @@
       "evidence": [
         "backend/app/services/event_reservations.py",
         "backend/tests/test_event_reservation_api.py",
+        "backend/tests/test_event_reservation_workshop_bridge.py",
         "contracts/event-reservation-v1.yaml",
         "docs/event-capacity-matrix.md",
         "evidence/runs/event-reservation-api/green-local.xml",
         "evidence/runs/event-reservation-api/red-local.xml",
+        "evidence/runs/event-reservation-consumption/green-local.xml",
+        "evidence/runs/event-reservation-consumption/red-local.xml",
         "evidence/runs/event-reservation-ledger/green-local.xml",
         "evidence/runs/event-reservation-ledger/red-local.xml"
       ],
-      "note": "The Git-local admin API now converts an immutable approved event into an atomic aggregate hold with every selected cluster_ref persisted before lifecycle work. Server-owned footprints cover seats, CPU, memory, pods, storage, routes, and model slots; matrix and fresh ACM evidence are revalidated. Expired holds continue consuming capacity until cleanup-evidenced release, conflicting evidence fails closed, and retries are idempotent. Local RED/GREEN API, ledger, contract, authorization, and component evidence exists. Real PostgreSQL concurrency proof, lifecycle consumption, reconciliation, and GREEN-live proof remain open; no live workshops were changed."
+      "note": "The Git-local reservation boundary now covers approval, aggregate holds, one-to-one lifecycle consumption, and cleanup-evidenced release. A held allocation binds idempotently to one deterministic workshop only when event, immutable catalog release, seats, and cluster_ref match. Expired, released, cross-cluster, changed-seat, changed-release, or differently bound consumption fails closed. Consumed holds remain capacity-consuming until cleanup proof. Local RED/GREEN, PostgreSQL adapter component, tamper, and 30-seat synthetic lifecycle evidence exists. Real PostgreSQL concurrency, event-wide orchestration/recovery, reconciliation, and GREEN-live proof remain open; no live workshops were changed."
     }
   },
   "rubric": [

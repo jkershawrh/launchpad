@@ -9,6 +9,7 @@ from app.domain.events import (
     EventCapacityReservation,
     EventCapacitySupply,
     EventRecord,
+    EventReservationConsumption,
     EventReservationPlan,
     EventResourceVector,
 )
@@ -172,7 +173,7 @@ class EventReservationLedger:
             active = [
                 item
                 for item in self._records.values()
-                if item.status in {"held", "expired"}
+                if item.status in {"held", "consumed", "expired"}
             ]
             _assert_capacity_available(plan.reservations, active, supply)
             for item in plan.reservations:
@@ -190,8 +191,69 @@ class EventReservationLedger:
             return [
                 item.model_copy(deep=True)
                 for item in self._records.values()
-                if item.status in {"held", "expired"}
+                if item.status in {"held", "consumed", "expired"}
             ]
+
+    def get(
+        self,
+        reservation_id: str,
+        *,
+        now: datetime | None = None,
+    ) -> EventCapacityReservation | None:
+        current = now or datetime.now(UTC)
+        if self._db:
+            return self._db.get(reservation_id, now=current)
+        with self._lock:
+            self._expire_locked(current)
+            reservation = self._records.get(reservation_id)
+            return reservation.model_copy(deep=True) if reservation else None
+
+    def consume(
+        self,
+        binding: EventReservationConsumption,
+        *,
+        now: datetime | None = None,
+    ) -> EventCapacityReservation:
+        current = now or datetime.now(UTC)
+        if self._db:
+            return self._db.consume(binding, now=current)
+        with self._lock:
+            self._expire_locked(current)
+            reservation = self._records.get(binding.reservation_id)
+            if reservation is None:
+                raise EventReservationConflictError("Reservation was not found")
+            if any(
+                item.reservation_id != binding.reservation_id
+                and item.workshop_id == binding.workshop_id
+                for item in self._records.values()
+            ):
+                raise EventReservationConflictError(
+                    "Workshop is bound to a different reservation"
+                )
+            _assert_consumption_matches(reservation, binding)
+            if reservation.status == "consumed":
+                if reservation.workshop_id != binding.workshop_id:
+                    raise EventReservationConflictError(
+                        "Reservation is bound to a different workshop"
+                    )
+                return reservation.model_copy(deep=True)
+            if reservation.status == "expired":
+                raise EventReservationConflictError(
+                    "Reservation expired before workshop consumption"
+                )
+            if reservation.status == "released":
+                raise EventReservationConflictError(
+                    "Released reservation cannot be consumed"
+                )
+            consumed = reservation.model_copy(
+                update={
+                    "status": "consumed",
+                    "consumed_at": current,
+                    "workshop_id": binding.workshop_id,
+                }
+            )
+            self._records[reservation.reservation_id] = consumed
+            return consumed.model_copy(deep=True)
 
     def release(
         self,
@@ -220,7 +282,11 @@ class EventReservationLedger:
                     raise EventReservationConflictError(
                         "Event was released with different cleanup evidence"
                     )
-                if item.event_id == event_id and item.status in {"held", "expired"}:
+                if item.event_id == event_id and item.status in {
+                    "held",
+                    "consumed",
+                    "expired",
+                }:
                     self._records[key] = item.model_copy(
                         update={
                             "status": "released",
@@ -247,6 +313,25 @@ def _require_supply_identity(
     ):
         raise EventReservationConflictError(
             "Reservation plan does not match current capacity evidence"
+        )
+
+
+def _assert_consumption_matches(
+    reservation: EventCapacityReservation,
+    binding: EventReservationConsumption,
+) -> None:
+    expected = {
+        "reservation_id": reservation.reservation_id,
+        "event_id": reservation.event_id,
+        "cluster_ref": reservation.cluster_ref,
+        "catalog_id": reservation.catalog_id,
+        "catalog_release": reservation.catalog_release,
+        "seats": reservation.resources.seats,
+    }
+    supplied = binding.model_dump(exclude={"workshop_id"})
+    if supplied != expected:
+        raise EventReservationConflictError(
+            "Workshop consumption does not match the reserved event allocation"
         )
 
 
