@@ -61,3 +61,24 @@ def test_generated_report_contains_no_yaml_values():
     assert "Priority review queues" in report
     assert "deploy/launchpad/base/secrets-template.yaml" in report
     assert "preserve-pending-owner-review" not in report
+
+
+def test_freshness_check_preserves_recorded_generation_provenance():
+    module = load_module()
+    current = {
+        "source_commit": "current-head",
+        "source_state": "working-tree",
+        "tracked_changes_present": False,
+        "records": [{"path": "contracts/example.yaml"}],
+    }
+    recorded = {
+        "source_commit": "generation-base",
+        "source_state": "working-tree",
+        "tracked_changes_present": True,
+    }
+
+    result = module._preserve_recorded_provenance(current, recorded)
+
+    assert result["source_commit"] == "generation-base"
+    assert result["tracked_changes_present"] is True
+    assert result["records"] == [{"path": "contracts/example.yaml"}]

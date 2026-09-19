@@ -298,11 +298,30 @@ def _write_or_check(path: Path, content: str, check: bool) -> bool:
     return True
 
 
+def _preserve_recorded_provenance(
+    inventory: dict[str, Any], recorded: dict[str, Any]
+) -> dict[str, Any]:
+    """Keep generation provenance stable during freshness checks.
+
+    A generated file cannot contain the hash of the commit that first contains
+    that file. Freshness therefore compares repository-derived inventory data
+    while retaining the commit and working-tree state recorded at generation.
+    """
+
+    for field in ("source_commit", "source_state", "tracked_changes_present"):
+        if field in recorded:
+            inventory[field] = recorded[field]
+    return inventory
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="fail if generated inventory is stale")
     args = parser.parse_args()
     inventory = build_inventory()
+    if args.check and JSON_OUTPUT.exists():
+        recorded = json.loads(JSON_OUTPUT.read_text(encoding="utf-8"))
+        inventory = _preserve_recorded_provenance(inventory, recorded)
     json_content = json.dumps(inventory, indent=2, sort_keys=True) + "\n"
     markdown_content = render_markdown(inventory)
     results = {
