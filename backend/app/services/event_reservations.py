@@ -172,7 +172,7 @@ class EventReservationLedger:
             active = [
                 item
                 for item in self._records.values()
-                if item.status == "held" and item.expires_at > current
+                if item.status in {"held", "expired"}
             ]
             _assert_capacity_available(plan.reservations, active, supply)
             for item in plan.reservations:
@@ -190,19 +190,43 @@ class EventReservationLedger:
             return [
                 item.model_copy(deep=True)
                 for item in self._records.values()
-                if item.status == "held" and item.expires_at > current
+                if item.status in {"held", "expired"}
             ]
 
-    def release(self, event_id: str, *, now: datetime | None = None) -> int:
+    def release(
+        self,
+        event_id: str,
+        *,
+        cleanup_evidence_id: str,
+        now: datetime | None = None,
+    ) -> int:
+        if not cleanup_evidence_id.strip():
+            raise EventReservationConflictError("Cleanup evidence is required")
         current = now or datetime.now(UTC)
         if self._db:
-            return self._db.release(event_id, now=current)
+            return self._db.release(
+                event_id,
+                cleanup_evidence_id=cleanup_evidence_id,
+                now=current,
+            )
         with self._lock:
             released = 0
             for key, item in list(self._records.items()):
-                if item.event_id == event_id and item.status == "held":
+                if (
+                    item.event_id == event_id
+                    and item.status == "released"
+                    and item.cleanup_evidence_id != cleanup_evidence_id
+                ):
+                    raise EventReservationConflictError(
+                        "Event was released with different cleanup evidence"
+                    )
+                if item.event_id == event_id and item.status in {"held", "expired"}:
                     self._records[key] = item.model_copy(
-                        update={"status": "released", "released_at": current}
+                        update={
+                            "status": "released",
+                            "released_at": current,
+                            "cleanup_evidence_id": cleanup_evidence_id,
+                        }
                     )
                     released += 1
             return released

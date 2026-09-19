@@ -25,13 +25,14 @@ CREATE TABLE IF NOT EXISTS event_capacity_reservations (
     expires_at        TIMESTAMPTZ NOT NULL,
     created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     released_at       TIMESTAMPTZ,
+    cleanup_evidence_id TEXT,
     data              JSONB NOT NULL,
     UNIQUE (event_id, cohort_id, lab_ref)
 );
 
 CREATE INDEX IF NOT EXISTS idx_event_capacity_reservations_active_cluster
     ON event_capacity_reservations (cluster_ref, expires_at)
-    WHERE status = 'held';
+    WHERE status IN ('held', 'expired');
 
 CREATE INDEX IF NOT EXISTS idx_event_capacity_reservations_event
     ON event_capacity_reservations (event_id);

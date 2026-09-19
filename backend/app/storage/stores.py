@@ -333,10 +333,10 @@ class PostgresEventReservationStore:
 
                 cur.execute(
                     """SELECT data FROM event_capacity_reservations
-                       WHERE status = 'held' AND expires_at > %s
+                       WHERE status IN ('held', 'expired')
                          AND cluster_ref = ANY(%s)
                        ORDER BY cluster_ref, reservation_id FOR UPDATE""",
-                    (now, cluster_refs),
+                    (cluster_refs,),
                 )
                 active = [
                     EventCapacityReservation.model_validate(_decode_json(row[0]))
@@ -408,9 +408,8 @@ class PostgresEventReservationStore:
             with conn.cursor() as cur:
                 cur.execute(
                     """SELECT data FROM event_capacity_reservations
-                       WHERE status = 'held' AND expires_at > %s
+                       WHERE status IN ('held', 'expired')
                        ORDER BY cluster_ref, reservation_id""",
-                    (now,),
                 )
                 return [
                     EventCapacityReservation.model_validate(_decode_json(row[0]))
@@ -424,7 +423,11 @@ class PostgresEventReservationStore:
         finally:
             conn.close()
 
-    def release(self, event_id: str, *, now) -> int:
+    def release(self, event_id: str, *, cleanup_evidence_id: str, now) -> int:
+        from app.services.event_reservations import EventReservationConflictError
+
+        if not cleanup_evidence_id.strip():
+            raise EventReservationConflictError("Cleanup evidence is required")
         conn = _get_sync_conn()
         if not conn:
             raise PersistenceUnavailableError(
@@ -433,18 +436,47 @@ class PostgresEventReservationStore:
         try:
             with conn.cursor() as cur:
                 cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"event-reservation-release:{event_id}",),
+                )
+                cur.execute(
+                    """SELECT cleanup_evidence_id
+                       FROM event_capacity_reservations
+                       WHERE event_id = %s AND status = 'released'
+                       FOR UPDATE""",
+                    (event_id,),
+                )
+                prior_evidence = {row[0] for row in cur.fetchall()}
+                if prior_evidence and prior_evidence != {cleanup_evidence_id}:
+                    raise EventReservationConflictError(
+                        "Event was released with different cleanup evidence"
+                    )
+                cur.execute(
                     """UPDATE event_capacity_reservations
                        SET status = 'released', released_at = %s,
+                           cleanup_evidence_id = %s,
                            data = jsonb_set(
-                             jsonb_set(data, '{status}', '"released"'),
-                             '{released_at}', to_jsonb(%s::text)
+                             jsonb_set(
+                               jsonb_set(data, '{status}', '"released"'),
+                               '{released_at}', to_jsonb(%s::text)
+                             ),
+                             '{cleanup_evidence_id}', to_jsonb(%s::text)
                            )
-                       WHERE event_id = %s AND status = 'held'""",
-                    (now, now.isoformat(), event_id),
+                       WHERE event_id = %s AND status IN ('held', 'expired')""",
+                    (
+                        now,
+                        cleanup_evidence_id,
+                        now.isoformat(),
+                        cleanup_evidence_id,
+                        event_id,
+                    ),
                 )
                 released = cur.rowcount
             conn.commit()
             return released
+        except EventReservationConflictError:
+            conn.rollback()
+            raise
         except Exception as exc:
             conn.rollback()
             logger.warning("DB release event capacity error: %s", exc)

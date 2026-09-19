@@ -206,12 +206,41 @@ def test_release_is_idempotent_and_frees_capacity():
     ledger = EventReservationLedger()
     ledger.reserve(_plan("event-a", supply), supply, now=NOW)
 
-    assert ledger.release("event-a", now=NOW + timedelta(minutes=5)) == 2
-    assert ledger.release("event-a", now=NOW + timedelta(minutes=6)) == 0
+    assert ledger.release(
+        "event-a",
+        cleanup_evidence_id="evidence:cleanup:event-a",
+        now=NOW + timedelta(minutes=5),
+    ) == 2
+    assert ledger.release(
+        "event-a",
+        cleanup_evidence_id="evidence:cleanup:event-a",
+        now=NOW + timedelta(minutes=6),
+    ) == 0
     assert ledger.reserve(_plan("event-b", supply), supply, now=NOW)
 
 
-def test_expired_holds_do_not_block_new_reservations():
+def test_release_rejects_conflicting_cleanup_evidence():
+    supply = _supply()
+    ledger = EventReservationLedger()
+    ledger.reserve(_plan("event-a", supply), supply, now=NOW)
+    ledger.release(
+        "event-a",
+        cleanup_evidence_id="evidence:cleanup:event-a",
+        now=NOW + timedelta(minutes=5),
+    )
+
+    with pytest.raises(
+        EventReservationConflictError,
+        match="different cleanup evidence",
+    ):
+        ledger.release(
+            "event-a",
+            cleanup_evidence_id="evidence:cleanup:other",
+            now=NOW + timedelta(minutes=6),
+        )
+
+
+def test_expired_holds_remain_capacity_consuming_until_cleanup_release():
     supply = _supply()
     ledger = EventReservationLedger()
     first = build_event_reservation_plan(
@@ -229,8 +258,16 @@ def test_expired_holds_do_not_block_new_reservations():
         expires_at=later + timedelta(hours=8),
         now=later,
     )
+    with pytest.raises(EventReservationUnavailableError):
+        ledger.reserve(second, supply, now=later)
+    assert {item.event_id for item in ledger.list_active(now=later)} == {"event-a"}
+
+    assert ledger.release(
+        "event-a",
+        cleanup_evidence_id="evidence:cleanup:event-a",
+        now=later,
+    ) == 2
     assert ledger.reserve(second, supply, now=later)
-    assert {item.event_id for item in ledger.list_active(now=later)} == {"event-b"}
 
 
 def test_reservation_contract_and_migration_are_fail_closed():
@@ -240,8 +277,11 @@ def test_reservation_contract_and_migration_are_fail_closed():
 
     assert contract["info"]["version"] == "1.0.0"
     assert {"EventReservationPlan", "EventCapacityReservation", "EventResourceVector"} <= set(schemas)
+    assert "/api/v1/events/{event_id}/reservations" in contract["paths"]
+    assert "/api/v1/events/{event_id}/reservations/release" in contract["paths"]
     assert "UNIQUE (event_id, cohort_id, lab_ref)" in migration
     assert "CHECK (status IN ('held', 'released', 'expired'))" in migration
+    assert "cleanup_evidence_id TEXT" in migration
     assert "expires_at" in migration and "TIMESTAMPTZ NOT NULL" in migration
 
 
@@ -311,6 +351,76 @@ def test_postgres_store_locks_cluster_before_reading_and_writing(monkeypatch):
     assert connection.rollbacks == 0
     assert connection.closed is True
     assert len(result) == 2
+
+
+def test_postgres_release_locks_event_and_persists_cleanup_evidence(monkeypatch):
+    class FakeCursor:
+        rowcount = 0
+
+        def __init__(self):
+            self.statements = []
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def execute(self, statement, params=None):
+            sql = " ".join(statement.split())
+            self.statements.append((sql, params))
+            if sql.startswith("UPDATE event_capacity_reservations"):
+                self.rowcount = 2
+
+        def fetchall(self):
+            return []
+
+    class FakeConnection:
+        def __init__(self):
+            self.cursor_value = FakeCursor()
+            self.commits = 0
+            self.rollbacks = 0
+            self.closed = False
+
+        def cursor(self):
+            return self.cursor_value
+
+        def commit(self):
+            self.commits += 1
+
+        def rollback(self):
+            self.rollbacks += 1
+
+        def close(self):
+            self.closed = True
+
+    connection = FakeConnection()
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    released = PostgresEventReservationStore().release(
+        "event-a",
+        cleanup_evidence_id="evidence:cleanup:event-a",
+        now=NOW,
+    )
+
+    statements = connection.cursor_value.statements
+    lock_index = next(
+        index
+        for index, (sql, _params) in enumerate(statements)
+        if "pg_advisory_xact_lock" in sql
+    )
+    update_index = next(
+        index
+        for index, (sql, _params) in enumerate(statements)
+        if sql.startswith("UPDATE event_capacity_reservations")
+    )
+    assert lock_index < update_index
+    assert "cleanup_evidence_id" in statements[update_index][0]
+    assert "evidence:cleanup:event-a" in statements[update_index][1]
+    assert released == 2
+    assert connection.commits == 1
+    assert connection.rollbacks == 0
+    assert connection.closed is True
 
 
 def _reserve_outcome(ledger, plan, supply) -> str:

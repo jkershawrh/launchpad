@@ -294,6 +294,7 @@ class EventCapacityReservation(BaseModel):
     expires_at: datetime
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     released_at: datetime | None = None
+    cleanup_evidence_id: str | None = None
 
     @model_validator(mode="after")
     def timestamps_are_unambiguous(self) -> EventCapacityReservation:
@@ -301,9 +302,37 @@ class EventCapacityReservation(BaseModel):
             raise ValueError("reservation timestamps must include a timezone")
         if self.released_at is not None and self.released_at.tzinfo is None:
             raise ValueError("reservation release timestamp must include a timezone")
+        if self.status == "released":
+            if self.released_at is None or not self.cleanup_evidence_id:
+                raise ValueError(
+                    "released reservation requires timestamped cleanup evidence"
+                )
+        elif self.released_at is not None or self.cleanup_evidence_id is not None:
+            raise ValueError("only released reservations may carry cleanup evidence")
         if self.resources.seats < 1:
             raise ValueError("reservation must hold at least one seat")
         return self
+
+
+class EventReservationCreate(BaseModel):
+    expires_at: datetime
+
+    @model_validator(mode="after")
+    def expiration_is_unambiguous(self) -> EventReservationCreate:
+        if self.expires_at.tzinfo is None:
+            raise ValueError("reservation expiration must include a timezone")
+        return self
+
+
+class EventReservationReleaseRequest(BaseModel):
+    cleanup_completed: Literal[True]
+    cleanup_evidence_id: str = Field(min_length=1)
+
+
+class EventReservationReleaseResult(BaseModel):
+    event_id: str
+    released_reservations: int = Field(ge=0)
+    cleanup_evidence_id: str
 
 
 class EventReservationPlan(BaseModel):

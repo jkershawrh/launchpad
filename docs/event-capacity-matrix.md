@@ -73,18 +73,28 @@ resource footprints, or any aggregate or catalog-release overcommit.
 The PostgreSQL store runs at `SERIALIZABLE` isolation and takes sorted
 per-cluster advisory transaction locks before reading active holds and writing
 the whole plan. The natural event/cohort/lab key makes identical retries
-idempotent and conflicting retries fail closed. Release and expiration are
-idempotent states. No reservation method provisions a workshop, creates a
-namespace, or changes a live cluster.
+idempotent and conflicting retries fail closed. Expiration marks a hold stale
+but does **not** return its capacity to the pool: both `held` and `expired`
+records remain capacity-consuming until cleanup has produced a non-empty
+evidence identifier. Cleanup-evidenced release is idempotent, while a later
+release carrying different evidence fails closed. This prevents an expired
+database timer from authorizing overcommit while namespaces, routes, model
+keys, or other resources may still exist.
+
+The admin-only reservation API re-reads the immutable approved event, rebuilds
+the plan against the current matrix and fresh ACM snapshot, and persists every
+selected `cluster_ref` before any lifecycle work is allowed. Its paired release
+API accepts only `cleanup_completed: true` plus cleanup evidence. No reservation
+method provisions a workshop, creates a namespace, or changes a live cluster.
 
 Local proof covers deterministic footprint multiplication, concurrent
-overcommit rejection, evidence drift, retry behavior, release, and expiration.
-A PostgreSQL integration run, API approval action, lifecycle consumption,
+overcommit rejection, evidence drift, retry behavior, admin authorization,
+persisted cluster assignment, cleanup-evidenced release, and fail-closed
+expiration. A real PostgreSQL integration run, lifecycle consumption,
 reconciliation, and live proof remain separate gates.
 
 ## Next boundary
 
-The next orchestration increment may expose the ledger through an explicit
-approval action and let lifecycle workers consume held allocations. It must
-persist every selected cluster before provisioning and prove database-backed
-reconciliation and zero-residue release before live use.
+The next orchestration increment may let lifecycle workers consume held
+allocations. It must prove real database-backed concurrency, reconciliation,
+and zero-residue cleanup before release or live use.

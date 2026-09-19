@@ -5,8 +5,72 @@ info:
   description: >-
     Defines the durable aggregate capacity hold created after event approval
     and before any workshop, seat, namespace, route, or model key is created.
+paths:
+  /api/v1/events/{event_id}/reservations:
+    post:
+      summary: Reserve approved event capacity
+      parameters:
+        - in: path
+          name: event_id
+          required: true
+          schema: {type: string, minLength: 1}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventReservationCreate'}
+      responses:
+        '201':
+          description: Atomic reservation plan
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EventReservationPlan'}
+        '409': {description: Capacity or evidence conflict}
+        '503': {description: Durable persistence unavailable}
+  /api/v1/events/{event_id}/reservations/release:
+    post:
+      summary: Release capacity after verified cleanup
+      parameters:
+        - in: path
+          name: event_id
+          required: true
+          schema: {type: string, minLength: 1}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventReservationReleaseRequest'}
+      responses:
+        '200':
+          description: Idempotent cleanup-evidenced release
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EventReservationReleaseResult'}
+        '409': {description: Conflicting cleanup evidence}
+        '503': {description: Durable persistence unavailable}
 components:
   schemas:
+    EventReservationCreate:
+      type: object
+      additionalProperties: false
+      required: [expires_at]
+      properties:
+        expires_at: {type: string, format: date-time}
+    EventReservationReleaseRequest:
+      type: object
+      additionalProperties: false
+      required: [cleanup_completed, cleanup_evidence_id]
+      properties:
+        cleanup_completed: {type: boolean, const: true}
+        cleanup_evidence_id: {type: string, minLength: 1}
+    EventReservationReleaseResult:
+      type: object
+      additionalProperties: false
+      required: [event_id, released_reservations, cleanup_evidence_id]
+      properties:
+        event_id: {type: string, minLength: 1}
+        released_reservations: {type: integer, minimum: 0}
+        cleanup_evidence_id: {type: string, minLength: 1}
     EventResourceVector:
       type: object
       additionalProperties: false
@@ -55,6 +119,10 @@ components:
         released_at:
           oneOf:
             - {type: string, format: date-time}
+            - {type: 'null'}
+        cleanup_evidence_id:
+          oneOf:
+            - {type: string, minLength: 1}
             - {type: 'null'}
     EventReservationPlan:
       type: object

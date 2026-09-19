@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="13" time="0.387" timestamp="2026-09-19T18:18:00.408759-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_event_reservation_api" name="test_admin_approves_and_reserves_persisted_cluster_assignments" time="0.024"><failure message="assert 404 == 201&#10; +  where 404 = &lt;Response [404 Not Found]&gt;.status_code">def test_admin_approves_and_reserves_persisted_cluster_assignments():
+        _supply_value, _event_store, ledger = _overrides()
+        try:
+            response = TestClient(app).post(
+                "/api/v1/events/event-a/reservations",
+                json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+            )
+        finally:
+            _clear_overrides()
+    
+&gt;       assert response.status_code == 201
+E       assert 404 == 201
+E        +  where 404 = &lt;Response [404 Not Found]&gt;.status_code
+
+backend/tests/test_event_reservation_api.py:49: AssertionError</failure></testcase><testcase classname="backend.tests.test_event_reservation_api" name="test_reservation_requires_admin_and_existing_approved_event" time="0.002"><failure message="assert 404 == 403&#10; +  where 404 = &lt;Response [404 Not Found]&gt;.status_code">def test_reservation_requires_admin_and_existing_approved_event():
+        _overrides(admin=False)
+        try:
+            forbidden = TestClient(app).post(
+                "/api/v1/events/event-a/reservations",
+                json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+            )
+        finally:
+            _clear_overrides()
+&gt;       assert forbidden.status_code == 403
+E       assert 404 == 403
+E        +  where 404 = &lt;Response [404 Not Found]&gt;.status_code
+
+backend/tests/test_event_reservation_api.py:67: AssertionError</failure></testcase><testcase classname="backend.tests.test_event_reservation_api" name="test_release_requires_positive_cleanup_evidence_and_is_idempotent" time="0.003"><failure message="app.services.event_reservations.EventReservationUnavailableError: Cluster arena lacks certified remaining seats, cpu_millicores, memory_mib, pods, storage_gib, routes, model_slots capacity">def test_release_requires_positive_cleanup_evidence_and_is_idempotent():
+        supply, event_store, ledger = _overrides()
+        event_store.create(_record("event-b", supply))
+        ledger.reserve(_plan("event-a", supply), supply, now=NOW)
+        try:
+            unsafe = TestClient(app).post(
+                "/api/v1/events/event-a/reservations/release",
+                json={"cleanup_completed": False, "cleanup_evidence_id": "proof-a"},
+            )
+            released = TestClient(app).post(
+                "/api/v1/events/event-a/reservations/release",
+                json={
+                    "cleanup_completed": True,
+                    "cleanup_evidence_id": "evidence:cleanup:event-a",
+                },
+            )
+            repeated = TestClient(app).post(
+                "/api/v1/events/event-a/reservations/release",
+                json={
+                    "cleanup_completed": True,
+                    "cleanup_evidence_id": "evidence:cleanup:event-a",
+                },
+            )
+&gt;           second = ledger.reserve(_plan("event-b", supply), supply, now=NOW)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+backend/tests/test_event_reservation_api.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+backend/app/services/event_reservations.py:177: in reserve
+    _assert_capacity_available(plan.reservations, active, supply)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+requested = [EventCapacityReservation(reservation_id='event-b:wave-1:agent', event_id='event-b', cohort_id='wave-1', lab_ref='agen...etime.timezone.utc), created_at=datetime.datetime(2026, 9, 19, 18, 0, tzinfo=datetime.timezone.utc), released_at=None)]
+active = [EventCapacityReservation(reservation_id='event-a:wave-1:agent', event_id='event-a', cohort_id='wave-1', lab_ref='agen...etime.timezone.utc), created_at=datetime.datetime(2026, 9, 19, 18, 0, tzinfo=datetime.timezone.utc), released_at=None)]
+supply = EventCapacitySupply(matrix_id='matrix-v3', matrix_digest='sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...ventResourceVector(seats=0, cpu_millicores=1000, memory_mib=2000, pods=3, storage_gib=10, routes=3, model_slots=1))])])
+
+    def _assert_capacity_available(
+        requested: list[EventCapacityReservation],
+        active: list[EventCapacityReservation],
+        supply: EventCapacitySupply,
+    ) -&gt; None:
+        clusters = {item.cluster_id: item for item in supply.clusters}
+        for item in requested:
+            cluster = clusters.get(item.cluster_ref)
+            if cluster is None or not cluster.enabled:
+                raise EventReservationUnavailableError(
+                    f"Cluster {item.cluster_ref} is not eligible for reservation"
+                )
+            catalog = next(
+                (
+                    entry
+                    for entry in cluster.catalogs
+                    if entry.catalog_id == item.catalog_id
+                    and entry.catalog_release == item.catalog_release
+                ),
+                None,
+            )
+            if catalog is None:
+                raise EventReservationConflictError(
+                    "Reservation catalog release is not certified on its target cluster"
+                )
+            expected = catalog.resources_per_seat.scaled(item.resources.seats)
+            expected.seats = item.resources.seats
+            if expected != item.resources:
+                raise EventReservationConflictError(
+                    "Reservation resources do not match the certified catalog footprint"
+                )
+    
+        all_holds = active + requested
+        for cluster_ref in sorted({item.cluster_ref for item in requested}):
+            cluster = clusters.get(cluster_ref)
+            if cluster is None or not cluster.enabled:
+                raise EventReservationUnavailableError(
+                    f"Cluster {cluster_ref} is not eligible for reservation"
+                )
+            cluster_holds = [item for item in all_holds if item.cluster_ref == cluster_ref]
+            demand = EventResourceVector()
+            for item in cluster_holds:
+                demand = demand.plus(item.resources)
+            capacity = cluster.resource_capacity.model_copy(
+                update={"seats": cluster.certified_seats}
+            )
+            exceeded = demand.exceeds(capacity)
+            if exceeded:
+&gt;               raise EventReservationUnavailableError(
+                    f"Cluster {cluster_ref} lacks certified remaining "
+                    f"{', '.join(exceeded)} capacity"
+                )
+E               app.services.event_reservations.EventReservationUnavailableError: Cluster arena lacks certified remaining seats, cpu_millicores, memory_mib, pods, storage_gib, routes, model_slots capacity
+
+backend/app/services/event_reservations.py:298: EventReservationUnavailableError</failure></testcase><testcase classname="backend.tests.test_event_reservation_ledger" name="test_plan_multiplies_server_owned_per_seat_resources" time="0.000" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_plan_rejects_capacity_evidence_drift" time="0.000" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_plan_rejects_missing_resource_footprint_and_stale_fleet_evidence" time="0.000" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_concurrent_events_cannot_overbook_one_cluster" time="0.001" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_same_event_reservation_is_idempotent_but_changed_plan_conflicts" time="0.001" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_ledger_rejects_tampered_resource_claim_before_hold" time="0.000" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_release_is_idempotent_and_frees_capacity" time="0.001" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_expired_holds_remain_capacity_consuming_until_cleanup_release" time="0.000"><failure message="Failed: DID NOT RAISE EventReservationUnavailableError">def test_expired_holds_remain_capacity_consuming_until_cleanup_release():
+        supply = _supply()
+        ledger = EventReservationLedger()
+        first = build_event_reservation_plan(
+            _record("event-a", supply),
+            supply,
+            expires_at=NOW + timedelta(minutes=1),
+            now=NOW,
+        )
+        ledger.reserve(first, supply, now=NOW)
+    
+        later = NOW + timedelta(minutes=2)
+        second = build_event_reservation_plan(
+            _record("event-b", supply),
+            supply,
+            expires_at=later + timedelta(hours=8),
+            now=later,
+        )
+&gt;       with pytest.raises(EventReservationUnavailableError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE EventReservationUnavailableError
+
+backend/tests/test_event_reservation_ledger.py:232: Failed</failure></testcase><testcase classname="backend.tests.test_event_reservation_ledger" name="test_reservation_contract_and_migration_are_fail_closed" time="0.003" /><testcase classname="backend.tests.test_event_reservation_ledger" name="test_postgres_store_locks_cluster_before_reading_and_writing" time="0.001" /></testsuite></testsuites>

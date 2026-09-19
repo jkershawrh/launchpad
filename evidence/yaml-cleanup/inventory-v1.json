@@ -923,6 +923,25 @@
       "area": "contracts",
       "classification": "contract",
       "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-reservation-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "d0135796a13f2998d1a141acab44b62df23cf46cb1eeb2bef7e5c6c89cf6a5dc"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "environment_markers": [],
       "kinds": [
         "GtmValueAttributionContract"
       ],
@@ -6773,7 +6792,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "6902f9dc22cf9c0a93d0f79d7d72beb92146a76b",
+  "source_commit": "2729b2dc6c70cd1964edf9100ce6a377d980c033",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -6781,7 +6800,7 @@
       "ci": 2,
       "configuration": 3,
       "content-source": 18,
-      "contract": 13,
+      "contract": 14,
       "demo-source": 110,
       "deployment-source": 154,
       "deployment-template": 11,
@@ -6792,16 +6811,16 @@
       "tenant-source": 10
     },
     "files_without_detected_repository_reference": 173,
-    "preserved_pending_review": 384,
+    "preserved_pending_review": 385,
     "risk_flag_counts": {
       "environment-specific": 110,
       "mutable-latest-image": 19,
       "possible-cluster-export-metadata": 1,
       "secret-object-review-required": 6,
-      "status-field-review-required": 36
+      "status-field-review-required": 37
     },
-    "tracked_yaml_files": 384,
-    "unassigned_owners": 384
+    "tracked_yaml_files": 385,
+    "unassigned_owners": 385
   },
   "tracked_changes_present": true
 }

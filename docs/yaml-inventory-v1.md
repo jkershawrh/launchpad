@@ -14,11 +14,11 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **384**
-- Owner assignment still required: **384**
-- Preserved pending owner review: **384**
+- Tracked YAML/YML files: **385**
+- Owner assignment still required: **385**
+- Preserved pending owner review: **385**
 - No repository reference detected: **173**
-- Base source commit: `6902f9dc22cf9c0a93d0f79d7d72beb92146a76b`
+- Base source commit: `2729b2dc6c70cd1964edf9100ce6a377d980c033`
 - Source state: **working-tree**; tracked changes present:
   **true**
 
@@ -30,7 +30,7 @@ CLI, documentation, and human consumers must be checked before disposition.
 | `ci` | 2 |
 | `configuration` | 3 |
 | `content-source` | 18 |
-| `contract` | 13 |
+| `contract` | 14 |
 | `demo-source` | 110 |
 | `deployment-source` | 154 |
 | `deployment-template` | 11 |
@@ -51,7 +51,7 @@ example, a domain contract may legitimately contain a `status` field.
 | `mutable-latest-image` | 19 |
 | `possible-cluster-export-metadata` | 1 |
 | `secret-object-review-required` | 6 |
-| `status-field-review-required` | 36 |
+| `status-field-review-required` | 37 |
 
 ## Priority review queues
 
