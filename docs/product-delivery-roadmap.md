@@ -8,6 +8,9 @@ It is the delivery view of
 [`ecosystem-architecture-roadmap.md`](ecosystem-architecture-roadmap.md), not a
 replacement for that architecture. Active defects and features are tracked in
 [`pilot-issue-feature-register-20260917.md`](pilot-issue-feature-register-20260917.md).
+The bounded Intel handoff and repository-manifest cleanup sequence is defined in
+[`yaml-cleanup-plan.md`](yaml-cleanup-plan.md); that plan does not authorize
+changes to active labs or live GitOps sources.
 
 Dates below are planning targets beginning after the September 17, 2026 pilot.
 They assume agentic software delivery: multiple bounded implementation,
@@ -100,42 +103,74 @@ gantt
     axisFormat  %b %Y
 
     section Stabilize
-    Pilot closeout and backlog baseline       :h0, 2026-09-18, 1w
+    Pilot closeout and backlog baseline       :h0, 2026-09-18, 2w
     Durable artifact and catalog corrections  :h0a, 2026-09-18, 3w
 
     section Repeat
     Release pipeline and onboarding            :h1, 2026-09-21, 4w
     Automated lab intake                        :h1c, 2026-09-21, 4w
-    Repeatable event operations                :h1a, 2026-09-28, 4w
+    Repeatable event operations                :h1a, 2026-09-28, 3w
     Experience Wardrobe pilot                  :h1b, 2026-10-05, 2w
-    Convergence and staged promotion            :h1d, 2026-09-21, 4w
+    Convergence and staged promotion            :h1d, 2026-09-21, 18w
 
     section Resilience
     Permanent-home readiness intake             :milestone, home, 2026-09-25, 0d
-    Control-plane HA and Flightpath DR          :h2, 2026-09-28, 8w
-    Control-plane portability                   :h2b, 2026-09-28, 8w
-    Public edge and identity hardening          :h2a, 2026-10-05, 7w
+    Security architecture and threat model      :h2s, 2026-09-21, 4w
+    Control-plane HA and Flightpath DR          :h2, 2026-09-28, 6w
+    Control-plane portability                   :h2b, 2026-09-28, 6w
+    Public edge and identity hardening          :h2a, 2026-10-05, 5w
 
     section Scale
-    Fleet placement and inference admission     :h3, 2026-10-12, 12w
-    AI control plane and gateway                 :h3d, 2026-10-12, 12w
-    Capacity engineering and forecasting        :h3c, 2026-09-21, 8w
-    Observability, support, and remediation      :h3a, 2026-10-12, 12w
+    Fleet placement and inference admission     :h3, 2026-10-05, 8w
+    AI control plane and gateway                 :h3d, 2026-10-05, 10w
+    Capacity engineering and forecasting        :h3c, 2026-09-21, 6w
+    Observability, support, and remediation      :h3a, 2026-10-05, 8w
     StarGate product telemetry                  :h3b, 2026-10-12, 4w
 
     section Productize
-    Dedicated production home and migration     :h4, 2026-11-16, 20w
-    FinOps, service tiers, and portfolio growth  :h4a, 2026-11-16, 16w
-    Production quality and SRE readiness         :h4b, 2026-11-16, 16w
-    Data, AI governance and commercial GTM       :h4c, 2026-11-30, 20w
-    Knowledge continuity and workforce           :h4d, 2026-11-30, 16w
+    Dedicated production home and migration     :h4, 2026-10-19, 14w
+    FinOps, service tiers, and portfolio growth  :h4a, 2026-10-19, 10w
+    Production quality and SRE readiness         :h4b, 2026-10-26, 12w
+    Data, AI governance and commercial GTM       :h4c, 2026-10-05, 12w
+    Knowledge continuity and workforce           :h4d, 2026-10-19, 10w
+    Staging candidate                            :milestone, stage, 2026-12-04, 0d
+    Limited production                           :milestone, limited, 2026-12-18, 0d
+    Full production readiness                    :milestone, production, 2027-01-29, 0d
+
+    section Post-production
     Governed OSS distribution                    :h4e, 2027-01-04, 16w
 ```
 
+## Promotion milestones
+
+- **Staging candidate milestone:** December 4, 2026 — an immutable candidate
+  passes integration, migration, rollback, security, and representative-load
+  gates in the permanent-home environment.
+- **Limited production milestone:** December 18, 2026 — bounded users and
+  catalogs operate under declared SLOs, support ownership, rollback, and DR.
+- **Full production readiness milestone:** January 29, 2027 — three consecutive
+  production-shaped certifications, independent acceptance, qualified backup
+  ownership, and the 100/100 release rubric are complete.
+
+These are accelerated planning targets, not calendar-only commitments. A
+missed permanent-home intake, unresolved critical/high security finding,
+insufficient service ownership, failed soak or recovery run, or material
+contract pivot moves the affected milestone; it never lowers the evidence gate.
+Governed OSS distribution remains a parallel post-production deliverable and
+does not block the internal production-service milestone.
+
+The accelerated path assumes four bounded implementation streams, a dedicated
+product/architecture decision owner, named infrastructure, security, SRE, and
+service owners, permanent-home access by September 25, and decisions on blocked
+contracts within two business days. It reuses the proven pilot architecture;
+a control-plane rewrite, delayed environment, or unstaffed acceptance function
+requires an explicit rebaseline.
+
 ## Agentic estimation model
 
-These estimates assume two or three coordinated agentic workstreams plus one
-human product/architecture owner and access to the required environments.
+These estimates assume three or four coordinated agentic workstreams plus a
+dedicated human product/architecture owner, named acceptance owners, and access
+to the required environments.
 Workstreams share contracts and evidence rather than independently mutating the
 same files or clusters.
 
@@ -246,7 +281,7 @@ model, trust, content, and persistent state.**
 
 ## Horizon 1 — Make events repeatable
 
-**Target:** September 21–October 30, 2026
+**Target:** September 21–October 23, 2026
 **Outcome:** a content owner can promote a catalog release and an operator can
 run the same event again without manual image copying or seat mutation.
 
@@ -387,7 +422,7 @@ instructions.**
 
 ## Horizon 2 — Resilient control plane and public access
 
-**Target:** September 28–November 27, 2026
+**Target:** September 21–November 13, 2026
 **Outcome:** a worker, connector, API pod, or active-site failure does not create
 ambiguous lifecycle state or strand participants.
 
@@ -468,7 +503,7 @@ entry point during a connector or worker failure.**
 
 ## Horizon 3 — Intelligent fleet scale and operations
 
-**Target:** October 12, 2026–January 15, 2027
+**Target:** September 21–December 18, 2026
 **Outcome:** Launchpad places complete workshops using measured cluster,
 artifact, and inference capacity and operates them with actionable evidence.
 
@@ -660,13 +695,12 @@ list with truthful health, maturity, coverage, and evidence.**
 
 ## Horizon 4 — Production service and portfolio
 
-**Target:** November 16, 2026–April 30, 2027
+**Target:** October 5, 2026–January 29, 2027
 **Outcome:** Launchpad runs from a funded, supported production home with a
 portable execution fleet, governed solution portfolio, production-quality and
 SRE evidence, privacy-safe GTM intelligence, customer-success ownership, and
 transparent cost and value. Production operation no longer depends on one
-person, and an independently governed OSS distribution can be released without
-exposing internal configuration, data, credentials, or restricted branding.
+person.
 
 ### LP-E012 — Dedicated production home and migration
 
@@ -897,6 +931,14 @@ operated, supported, recovered, and taught without depending on one person.**
   one non-author independently completes deployment, operation, incident,
   upgrade, restore, and reclaim scenarios within service objectives, and the
   Knowledge Assistant passes its grounded-answer/security evaluation.
+
+## Horizon 5 — Governed distribution and repository evolution
+
+**Target:** January 4–April 30, 2027
+**Outcome:** the proven internal service can be distributed and evolved without
+exposing restricted assets, splitting into incompatible products, or coupling
+component releases unnecessarily. This horizon does not block internal
+production readiness.
 
 ### LP-E028 — Governed open-source distribution
 

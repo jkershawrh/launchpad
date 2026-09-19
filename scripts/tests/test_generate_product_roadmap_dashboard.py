@@ -20,7 +20,12 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     module = load_module()
     model = module.parse_roadmap(ROOT / "docs" / "product-delivery-roadmap.md")
 
-    assert len(model["horizons"]) == 5
+    assert len(model["horizons"]) == 6
+    assert [item["date"] for item in model["milestones"]] == [
+        "2026-12-04",
+        "2026-12-18",
+        "2027-01-29",
+    ]
     assert len(model["epics"]) == 29
     assert len(model["stories"]) == 35
     assert len(model["tasks"]) == 182
@@ -113,6 +118,8 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "Organizational readiness and knowledge continuity" in html
     assert "Governed open-source distribution" in html
     assert "Governed AI control plane and gateway" in html
+    assert "Full production readiness milestone" in html
+    assert "January 29, 2027" in html
     assert "On receipt of the permanent-home environment" in html
     assert "Launchpad Knowledge Assistant" in html
     assert "OSS-to-enterprise" in html
