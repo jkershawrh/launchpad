@@ -341,9 +341,12 @@ repository and receive a safe, reviewable, certified catalog draft.**
   Repository discovery execution and promotion remain disabled and open.
 - `LP-T097` Discover Antora content, manifests, Containerfiles, images, models,
   Operators, ports, storage, secrets, resource envelopes, and cleanup behavior.
-  **GREEN-local:** immutable repository discovery produces a secret-safe,
-  review-only inventory and blocks ambiguous, mutable, privileged, or
-  cluster-scoped findings; deployed certification and promotion remain open.
+  **GREEN-local (isolated worker slice):** immutable repository discovery now
+  has a credential-free executable worker, complete-source secret scanning,
+  sanitized receipts, deterministic draft output, and mandatory cleanup. A
+  generated OpenShift Job/NetworkPolicy is non-root, read-only, tokenless,
+  bounded, ephemeral, and restricted to DNS plus an allowlisting egress proxy.
+  The image, proxy, dispatcher/collector, and live fault proof remain open.
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
   **GREEN-local (catalog-draft slice):** a versioned immutable discovery
@@ -363,7 +366,10 @@ repository and receive a safe, reviewable, certified catalog draft.**
   non-root/read-only execution, bounded resources, three-stage secret scanning,
   sanitized evidence, cleanup receipts, idempotency, and an explicit ban on
   live mutations. A deployed isolated worker and all runtime/lifecycle proofs
-  remain open, so release eligibility stays false.
+  remain open, so release eligibility stays false. **GREEN-local executable
+  slice:** payload/source/output scanning, stable idempotency, sanitized failure
+  codes, cleanup receipts, and the restricted Job contract now have component
+  proof; this does not enable the admin action or satisfy live security gates.
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
   release identity, approval history, and rollback metadata in the admin UI.
   **GREEN-integration (draft visibility):** draft responses and the admin Intake

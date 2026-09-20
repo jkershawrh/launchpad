@@ -1,0 +1,110 @@
+schema_version: launchpad.redhat.com/catalog-intake-discovery-worker/v1
+kind: LaunchpadCatalogIntakeDiscoveryWorker
+metadata:
+  version: 1.0.0
+  owner: catalog-onboarding-owner
+  security_owner: launchpad-security-owner
+  status: GREEN-local
+
+source:
+  standard: quickstart-repository
+  canonical: true
+  repository_scheme: https
+  repository_host: github.com
+  revision: full-40-character-git-commit-sha
+  approval_required_before_dispatch: true
+  redirects_allowed: false
+  submodules_allowed: false
+  approval:
+    object: CatalogIntakeSourceApproval
+    issuer: trusted-intake-controller
+    self_approval_allowed: false
+    exact_match_fields: [approval_id, repository_url, revision]
+    time_bounded: true
+
+request:
+  schema: backend/app/domain/catalog_intake_discovery.py
+  unknown_fields: reject
+  credentials_allowed: false
+  source_approval_embedded_by_requester: false
+  maximum_bytes: 65536
+  idempotency_fields:
+    - repository_url
+    - revision
+    - policy_version
+    - normalized_payload_hash
+
+runtime:
+  implementation:
+    - backend/app/catalog_intake_worker_main.py
+    - backend/app/services/catalog_intake_discovery.py
+    - backend/app/services/catalog_intake_discovery_job.py
+  containerfile: backend/Containerfile.catalog-intake-worker
+  service_account_token: false
+  run_as_non_root: true
+  read_only_root_filesystem: true
+  privileged: false
+  allow_privilege_escalation: false
+  capabilities_dropped: [ALL]
+  seccomp_profile: RuntimeDefault
+  active_deadline_seconds: 300
+  retry_count: 0
+  workspace:
+    type: emptyDir
+    size_limit_mib: 512
+    unique_per_attempt: true
+    cleanup_receipt_required: true
+  limits:
+    cpu: "1"
+    memory: 1Gi
+    ephemeral_storage: 1Gi
+
+network:
+  default: deny
+  ingress: deny
+  allowed_egress:
+    - openshift-dns:53/udp
+    - openshift-dns:53/tcp
+    - catalog-intake-egress-proxy:8080/tcp
+  direct_github_egress: false
+  control_plane_egress: false
+  database_egress: false
+  registry_publish_egress: false
+
+output:
+  transport: bounded-sanitized-stdout-receipt
+  schema: launchpad.redhat.com/catalog-intake-discovery-run/v1
+  maximum_bytes: 1048576
+  raw_source_content: false
+  exception_text: false
+  environment_values: false
+  includes:
+    - immutable source identity
+    - approval identity
+    - scan counts
+    - fail-closed draft intake
+    - output hash
+    - cleanup receipt
+
+authority:
+  mode: analysis-only
+  may_publish_catalog: false
+  may_provision: false
+  may_access_cluster_api: false
+  may_access_catalog_database: false
+  may_access_registry_publisher: false
+  may_use_live_credentials: false
+
+evidence:
+  tests:
+    - backend/tests/test_catalog_intake_discovery_worker.py
+    - backend/tests/test_catalog_intake_discovery_job.py
+  release_eligible: false
+  live_proofs_required:
+    - built signed worker image and SBOM
+    - deployed allowlisting egress proxy
+    - trusted dispatcher and sanitized receipt collector
+    - enforced NetworkPolicy probe
+    - scanner failure and timeout fault injection
+    - cleanup and retry recovery
+    - immutable Quickstart end-to-end discovery

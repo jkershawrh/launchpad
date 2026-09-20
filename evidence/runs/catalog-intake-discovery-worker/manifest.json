@@ -1,0 +1,46 @@
+{
+  "schema_version": "launchpad.intel.com/evidence-manifest/v1",
+  "evidence_id": "catalog-intake-discovery-worker-green-local-20260920",
+  "base_commit": "2f0cbf3f8d481dd5318f99c69d0b63a4bdf3bf0a",
+  "recorded_at": "2026-09-20T11:30:00-05:00",
+  "scope": "credential-free Quickstart discovery worker and generated OpenShift isolation bundle",
+  "red": {
+    "result": "2 collection errors",
+    "artifact": "evidence/runs/catalog-intake-discovery-worker/red-local.xml",
+    "sha256": "e816a89bb098e4036cf3a24de9db559b03a843893cad9e0a51bed96327fa335d"
+  },
+  "green": {
+    "result": "16 passed",
+    "artifact": "evidence/runs/catalog-intake-discovery-worker/green-local.xml",
+    "sha256": "a4f66afc3b1813fe52d21694e760e14749f93bf09bd012ab9dff1febde25b465"
+  },
+  "contract": {
+    "artifact": "contracts/catalog-intake-discovery-worker-v1.yaml",
+    "sha256": "018c1d431840bc8bfa04388c1dd8863aa5d0c4c335e4e5599f6383202eb87024"
+  },
+  "containerfile": {
+    "artifact": "backend/Containerfile.catalog-intake-worker",
+    "sha256": "b694bec783f2c38282a82836df3c88543837db7e248c9f917f47d520f11075d0"
+  },
+  "claims": [
+    "Only HTTPS GitHub Quickstart repositories at full commit SHAs with a separate, active controller-issued approval are accepted.",
+    "Payload, complete source files, and bounded output are scanned before a receipt is emitted.",
+    "The worker produces a fail-closed internal one-seat draft and cleanup receipt without live credentials.",
+    "The generated Job is non-root, read-only, tokenless, bounded, ephemeral, and default-deny.",
+    "The generated NetworkPolicy permits only OpenShift DNS and an in-cluster egress proxy."
+  ],
+  "non_claims": [
+    "The worker image has not been built, signed, scanned, or published.",
+    "The egress proxy, dispatcher, and receipt collector have not been deployed.",
+    "No NetworkPolicy behavior, timeout, scanner failure, or cleanup fault has live evidence.",
+    "The admin Run discovery action remains disabled."
+  ],
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false
+  },
+  "release_eligible": false
+}

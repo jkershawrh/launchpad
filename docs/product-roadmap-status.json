@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T15:59:48Z",
+  "updated_at": "2026-09-20T16:12:57Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -594,9 +594,10 @@
         "cbt": "green-local"
       },
       "evidence": [
+        "evidence/runs/catalog-intake-discovery-worker/manifest.json",
         "evidence/runs/catalog-intake/static-inventory-green-local-20260920.json"
       ],
-      "note": "Immutable quickstart discovery now emits a deterministic, review-only inventory of Containerfiles, images, Kubernetes resources, Operators, routes, ports, model references, resource envelopes, storage, Secret references, cluster-scoped resources, privilege findings, and cleanup candidates. Secret payloads are never copied, and risky or ambiguous findings add activation blockers. This is GREEN-local discovery evidence only; intake API, draft generation, deployed certification, promotion, and admin workflow remain open."
+      "note": "The canonical Quickstart discovery path now has a credential-free executable worker with full-source scanning, sanitized receipts, deterministic fail-closed draft output, cleanup proof, and a generated tokenless/default-deny OpenShift Job contract. Image publication, egress proxy, dispatcher/collector, and live fault evidence remain open."
     },
     "LP-T102": {
       "state": "green-local",
@@ -763,12 +764,14 @@
     "LP-T100": {
       "state": "green-local",
       "methods": {
-        "cdd": "green-local"
+        "cdd": "green-local",
+        "cbt": "green-local"
       },
       "evidence": [
+        "evidence/runs/catalog-intake-discovery-worker/manifest.json",
         "evidence/runs/catalog-intake-worker-safety/evidence.json"
       ],
-      "note": "A fail-closed worker safety contract covers immutable approved sources, default-deny egress, credential denial, non-root read-only execution, bounded resources, secret scanning, sanitized evidence, cleanup, and idempotency. Release eligibility remains false until deployed worker isolation, egress, scanner-failure, lifecycle, and zero-residue proofs pass."
+      "note": "Worker safety now has executable component proof for strict payload validation, approved immutable source enforcement, complete-source and output scanning, stable idempotency, sanitized failures, cleanup receipts, and a bounded tokenless OpenShift Job/NetworkPolicy. Release remains blocked pending built/signed image, proxy, dispatcher/collector, and live isolation/fault/lifecycle proof."
     }
   },
   "rubric": [
