@@ -127,13 +127,25 @@ repeat activation fails closed and directs the operator to the existing code
 rotation workflow. Activating one workshop at a time prevents a later failure
 from discarding codes already created for other workshops.
 
-A real PostgreSQL integration run, event-wide reconciliation, public-access
-claim/SSO validation, zero-residue cleanup, and live proof remain separate
-gates.
+The admin-only event status API is the read-only reconciliation boundary for
+operations. It joins the immutable allocation plan to every reservation,
+deterministic workshop, lifecycle job, seat state, persisted cluster, and
+public-access policy. It reports whether the reservation plan is complete and
+derives an event state of reserved, progressing, awaiting public access, ready,
+cleanup-evidence pending, released, or attention required. The response may
+include an already-issued public URL, but its schema cannot include or
+redisplay the one-time instructor code. Missing reservations, failed jobs,
+failed workshops, and failed seats surface as attention required without
+mutating any lifecycle resource.
+
+A real PostgreSQL integration run, public-access claim/SSO validation,
+zero-residue cleanup, and live proof remain separate gates.
 
 ## Next boundary
 
-The next orchestration increment must reconcile event-wide worker and public
-access outcomes and drive bulk reclaim. It must prove real database-backed
-concurrency, event-wide recovery, participant claim/SSO, reconciliation, and
-zero-residue cleanup before release or live use.
+The next orchestration increment must use this reconciled status to drive a
+bounded, idempotent event-wide reclaim. Reclaim must deny public access before
+cleanup begins, target only each persisted cluster, retain cleanup evidence,
+and release capacity only after zero-residue proof. It must prove real
+database-backed concurrency, event-wide recovery, participant claim/SSO, and
+live cleanup before release or live use.

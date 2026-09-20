@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="11" time="0.220" timestamp="2026-09-19T20:19:26.002177-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_event_orchestration" name="test_event_orchestration_contract_keeps_public_access_pending" time="0.004"><failure message="AssertionError: assert '1.1.0' == '1.2.0'&#10;  &#10;  - 1.2.0&#10;  ?   ^&#10;  + 1.1.0&#10;  ?   ^">def test_event_orchestration_contract_keeps_public_access_pending():
+        contract = yaml.safe_load(CONTRACT.read_text())
+        operation = contract["paths"][
+            "/api/v1/events/{event_id}/workshops/launch"
+        ]["post"]
+        result = contract["components"]["schemas"]["EventWorkshopLaunchResult"]
+
+&gt;       assert contract["info"]["version"] == "1.2.0"
+E       AssertionError: assert '1.1.0' == '1.2.0'
+E
+E         - 1.2.0
+E         ?   ^
+E         + 1.1.0
+E         ?   ^
+
+backend/tests/test_event_orchestration.py:41: AssertionError</failure></testcase><testcase classname="backend.tests.test_event_orchestration" name="test_launch_queues_every_reserved_workshop_on_its_persisted_cluster" time="0.003" /><testcase classname="backend.tests.test_event_orchestration" name="test_launch_is_idempotent_and_does_not_duplicate_lifecycle_jobs" time="0.001" /><testcase classname="backend.tests.test_event_orchestration" name="test_partial_queue_failure_can_be_retried_without_duplicate_workshops" time="0.002" /><testcase classname="backend.tests.test_event_orchestration" name="test_launch_fails_closed_when_event_reservations_are_incomplete" time="0.001" /><testcase classname="backend.tests.test_event_orchestration" name="test_public_access_activation_waits_for_complete_workshop_readiness" time="0.001" /><testcase classname="backend.tests.test_event_orchestration" name="test_public_access_activation_returns_code_once_after_readiness" time="0.026" /><testcase classname="backend.tests.test_event_orchestration" name="test_public_access_activation_rejects_released_capacity_binding" time="0.002" /><testcase classname="backend.tests.test_event_orchestration" name="test_event_status_reconciles_reservations_jobs_seats_and_public_access" time="0.000"><failure message="AttributeError: 'EventOrchestrationService' object has no attribute 'status'">def test_event_status_reconciles_reservations_jobs_seats_and_public_access():
+        record, _ledger, provisioning, _jobs, orchestration = _services()
+
+&gt;       reserved = orchestration.status(record)
+                   ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'EventOrchestrationService' object has no attribute 'status'
+
+backend/tests/test_event_orchestration.py:316: AttributeError</failure></testcase><testcase classname="backend.tests.test_event_orchestration" name="test_event_status_surfaces_incomplete_reservation_plan_without_mutation" time="0.000"><failure message="AttributeError: 'EventOrchestrationService' object has no attribute 'status'">def test_event_status_surfaces_incomplete_reservation_plan_without_mutation():
+        record, ledger, _provisioning, _jobs, orchestration = _services()
+        reservation = ledger.list_for_event("event-a", now=NOW)[0]
+        ledger._records.pop(reservation.reservation_id)
+
+&gt;       status = orchestration.status(record)
+                 ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'EventOrchestrationService' object has no attribute 'status'
+
+backend/tests/test_event_orchestration.py:358: AttributeError</failure></testcase><testcase classname="backend.tests.test_event_orchestration" name="test_event_status_surfaces_expired_capacity_as_attention_required" time="0.000"><failure message="AttributeError: 'EventOrchestrationService' object has no attribute 'status'">def test_event_status_surfaces_expired_capacity_as_attention_required():
+        record, ledger, _provisioning, _jobs, orchestration = _services()
+        reservation = ledger.list_for_event("event-a", now=NOW)[0]
+        ledger._records[reservation.reservation_id] = reservation.model_copy(
+            update={"expires_at": datetime.now(UTC) - timedelta(seconds=1)}
+        )
+
+&gt;       status = orchestration.status(record)
+                 ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'EventOrchestrationService' object has no attribute 'status'
+
+backend/tests/test_event_orchestration.py:372: AttributeError</failure></testcase></testsuite></testsuites>

@@ -89,6 +89,7 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
             activated = TestClient(app).post(
                 f"/api/v1/events/event-a/workshops/{workshop_id}/public-access"
             )
+            status = TestClient(app).get("/api/v1/events/event-a/status")
     finally:
         _clear_overrides()
 
@@ -103,6 +104,11 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
         "https://labs.example.io/labs/"
     )
     assert activated.json()["one_time_access_code"]
+    assert status.status_code == 200
+    assert status.json()["state"] == "progressing"
+    assert status.json()["summary"]["workshops"] == 2
+    assert status.json()["summary"]["public_workshops_active"] == 1
+    assert "one_time_access_code" not in status.text
 
 
 def test_admin_approves_and_reserves_persisted_cluster_assignments():
@@ -131,9 +137,11 @@ def test_reservation_requires_admin_and_existing_approved_event():
             "/api/v1/events/event-a/reservations",
             json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
         )
+        status_forbidden = TestClient(app).get("/api/v1/events/event-a/status")
     finally:
         _clear_overrides()
     assert forbidden.status_code == 403
+    assert status_forbidden.status_code == 403
 
     _overrides()
     try:

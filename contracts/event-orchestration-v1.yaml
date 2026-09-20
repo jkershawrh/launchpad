@@ -1,13 +1,29 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Workshop Orchestration Contract
-  version: 1.1.0
+  version: 1.2.0
   description: >-
     Consumes every approved event reservation into one deterministic workshop
     and queues one idempotent, cluster-bound lifecycle job per workshop. The
     API never provisions inside the request. Public access remains pending
     until a separate post-readiness activation returns instructor codes.
 paths:
+  /api/v1/events/{event_id}/status:
+    get:
+      summary: Reconcile event reservations, lifecycle jobs, seats, and access
+      parameters:
+        - in: path
+          name: event_id
+          required: true
+          schema: {type: string, minLength: 1}
+      responses:
+        '200':
+          description: Read-only event lifecycle status without instructor codes
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EventStatusResult'}
+        '404': {description: Approved event was not found}
+        '503': {description: Durable persistence is unavailable}
   /api/v1/events/{event_id}/workshops/launch:
     post:
       summary: Queue every workshop in an approved reserved event
@@ -54,6 +70,94 @@ paths:
         '503': {description: Public access persistence or configuration is unavailable}
 components:
   schemas:
+    EventWorkshopStatusItem:
+      type: object
+      additionalProperties: false
+      required:
+        - reservation_id
+        - cohort_id
+        - lab_ref
+        - catalog_id
+        - catalog_release
+        - cluster_ref
+        - seats
+        - reservation_status
+        - ready_seats
+        - failed_seats
+        - reclaimed_seats
+        - public_access_state
+      properties:
+        reservation_id: {type: string, minLength: 1}
+        cohort_id: {type: string, minLength: 1}
+        lab_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        cluster_ref: {type: string, minLength: 1}
+        seats: {type: integer, minimum: 1}
+        reservation_status:
+          type: string
+          enum: [held, consumed, released, expired]
+        workshop_id: {type: [string, 'null']}
+        workshop_status: {type: [string, 'null']}
+        lifecycle_job_id: {type: [string, 'null']}
+        lifecycle_job_status: {type: [string, 'null']}
+        ready_seats: {type: integer, minimum: 0}
+        failed_seats: {type: integer, minimum: 0}
+        reclaimed_seats: {type: integer, minimum: 0}
+        public_access_state:
+          type: string
+          enum: [not_required, pending_activation, active, disabled]
+        public_url: {type: [string, 'null'], format: uri}
+    EventStatusSummary:
+      type: object
+      additionalProperties: false
+      required:
+        - reservations
+        - workshops
+        - lifecycle_jobs
+        - seats
+        - ready_seats
+        - failed_seats
+        - reclaimed_seats
+        - public_workshops_active
+      properties:
+        reservations: {type: integer, minimum: 0}
+        workshops: {type: integer, minimum: 0}
+        lifecycle_jobs: {type: integer, minimum: 0}
+        seats: {type: integer, minimum: 0}
+        ready_seats: {type: integer, minimum: 0}
+        failed_seats: {type: integer, minimum: 0}
+        reclaimed_seats: {type: integer, minimum: 0}
+        public_workshops_active: {type: integer, minimum: 0}
+    EventStatusResult:
+      type: object
+      additionalProperties: false
+      required:
+        - event_id
+        - state
+        - reservation_complete
+        - summary
+        - workshops
+        - observed_at
+      properties:
+        event_id: {type: string, minLength: 1}
+        state:
+          type: string
+          enum:
+            - approved
+            - reserved
+            - progressing
+            - awaiting_public_access
+            - ready
+            - cleanup_evidence_pending
+            - released
+            - attention_required
+        reservation_complete: {type: boolean}
+        summary: {$ref: '#/components/schemas/EventStatusSummary'}
+        workshops:
+          type: array
+          items: {$ref: '#/components/schemas/EventWorkshopStatusItem'}
+        observed_at: {type: string, format: date-time}
     EventWorkshopLaunchRequest:
       type: object
       additionalProperties: false

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T01:11:22Z",
+  "updated_at": "2026-09-20T01:18:16Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -465,11 +465,15 @@
       },
       "evidence": [
         "backend/tests/test_event_orchestration.py",
+        "backend/tests/test_event_reservation_api.py",
         "contracts/event-orchestration-v1.yaml",
+        "docs/event-capacity-matrix.md",
         "evidence/runs/event-public-activation/green-local.xml",
-        "evidence/runs/event-public-activation/red-local.xml"
+        "evidence/runs/event-public-activation/red-local.xml",
+        "evidence/runs/event-status-reconciliation/green-local.xml",
+        "evidence/runs/event-status-reconciliation/red-local.xml"
       ],
-      "note": "Local slice activates public access one ready workshop at a time, verifies every reserved seat/session and persisted cluster, derives policy expiry from the earliest seat expiry, returns the instructor code once, stores only its Argon2id hash, and fails closed on repeat activation. Instructor readiness estimates, event-wide status/support view, participant claim/SSO integration, PostgreSQL integration, and GREEN-live proof remain open."
+      "note": "Read-only event status reconciliation joins reservations, lifecycle jobs, seat readiness, and public-access state without redisplaying instructor codes; PostgreSQL, claims/SSO, cleanup, and live proof remain."
     }
   },
   "rubric": [

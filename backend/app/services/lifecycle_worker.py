@@ -112,6 +112,11 @@ class LifecycleQueueService:
     def __init__(self, store: LifecycleJobStore) -> None:
         self.store = store
 
+    def list_all(self) -> list[LifecycleJob]:
+        """Expose a read-only lifecycle snapshot to reconciliation services."""
+
+        return self.store.list_all()
+
     def enqueue_workshop_provision(self, workshop: Workshop) -> LifecycleJob:
         if not workshop.cluster_ref:
             raise ValueError("Workshop cluster_ref must be persisted before enqueue")

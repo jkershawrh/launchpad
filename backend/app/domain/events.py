@@ -421,6 +421,57 @@ class EventWorkshopPublicAccessResult(BaseModel):
     expires_at: datetime
 
 
+class EventWorkshopStatusItem(BaseModel):
+    reservation_id: str
+    cohort_id: str
+    lab_ref: str
+    catalog_id: str
+    catalog_release: str
+    cluster_ref: str
+    seats: int = Field(ge=1)
+    reservation_status: Literal["held", "consumed", "released", "expired"]
+    workshop_id: str | None = None
+    workshop_status: str | None = None
+    lifecycle_job_id: str | None = None
+    lifecycle_job_status: str | None = None
+    ready_seats: int = Field(default=0, ge=0)
+    failed_seats: int = Field(default=0, ge=0)
+    reclaimed_seats: int = Field(default=0, ge=0)
+    public_access_state: Literal[
+        "not_required", "pending_activation", "active", "disabled"
+    ]
+    public_url: str | None = None
+
+
+class EventStatusSummary(BaseModel):
+    reservations: int = Field(ge=0)
+    workshops: int = Field(ge=0)
+    lifecycle_jobs: int = Field(ge=0)
+    seats: int = Field(ge=0)
+    ready_seats: int = Field(ge=0)
+    failed_seats: int = Field(ge=0)
+    reclaimed_seats: int = Field(ge=0)
+    public_workshops_active: int = Field(ge=0)
+
+
+class EventStatusResult(BaseModel):
+    event_id: str
+    state: Literal[
+        "approved",
+        "reserved",
+        "progressing",
+        "awaiting_public_access",
+        "ready",
+        "cleanup_evidence_pending",
+        "released",
+        "attention_required",
+    ]
+    reservation_complete: bool
+    summary: EventStatusSummary
+    workshops: list[EventWorkshopStatusItem]
+    observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
 class EventManifestConflictError(RuntimeError):
     """Raised when an immutable event ID has already been persisted."""
 

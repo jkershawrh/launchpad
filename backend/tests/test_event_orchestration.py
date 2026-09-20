@@ -38,7 +38,7 @@ def test_event_orchestration_contract_keeps_public_access_pending():
     ]["post"]
     result = contract["components"]["schemas"]["EventWorkshopLaunchResult"]
 
-    assert contract["info"]["version"] == "1.1.0"
+    assert contract["info"]["version"] == "1.2.0"
     assert operation["responses"]["202"]["content"]["application/json"][
         "schema"
     ] == {"$ref": "#/components/schemas/EventWorkshopLaunchResult"}
@@ -52,6 +52,13 @@ def test_event_orchestration_contract_keeps_public_access_pending():
         ]["post"]["responses"]["201"]["content"]["application/json"]["schema"]
         == {"$ref": "#/components/schemas/EventWorkshopPublicAccessResult"}
     )
+    assert (
+        contract["paths"]["/api/v1/events/{event_id}/status"]["get"]
+        ["responses"]["200"]["content"]["application/json"]["schema"]
+        == {"$ref": "#/components/schemas/EventStatusResult"}
+    )
+    status = contract["components"]["schemas"]["EventStatusResult"]
+    assert "one_time_access_code" not in str(status)
 
 
 def _catalog():
@@ -301,3 +308,69 @@ def test_public_access_activation_rejects_released_capacity_binding():
         match="consumed event reservation",
     ):
         orchestration.activate_public_access(record, workshop_id)
+
+
+def test_event_status_reconciles_reservations_jobs_seats_and_public_access():
+    record, _ledger, provisioning, _jobs, orchestration = _services()
+
+    reserved = orchestration.status(record)
+    assert reserved.state == "reserved"
+    assert reserved.summary.reservations == 2
+    assert reserved.summary.workshops == 0
+    assert reserved.reservation_complete is True
+
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    progressing = orchestration.status(record)
+    assert progressing.state == "progressing"
+    assert progressing.summary.lifecycle_jobs == 2
+    assert progressing.summary.ready_seats == 0
+
+    for item in launched.workshops:
+        _make_ready(provisioning, item.workshop_id)
+    waiting = orchestration.status(record)
+    assert waiting.state == "awaiting_public_access"
+    assert waiting.summary.ready_seats == 60
+
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    for item in launched.workshops:
+        orchestration.activate_public_access(record, item.workshop_id)
+    ready = orchestration.status(record)
+    assert ready.state == "ready"
+    assert ready.summary.public_workshops_active == 2
+    assert all(item.public_access_state == "active" for item in ready.workshops)
+    assert "one_time_access_code" not in ready.model_dump_json()
+
+
+def test_event_status_surfaces_incomplete_reservation_plan_without_mutation():
+    record, ledger, _provisioning, _jobs, orchestration = _services()
+    reservation = ledger.list_for_event("event-a", now=NOW)[0]
+    ledger._records.pop(reservation.reservation_id)
+
+    status = orchestration.status(record)
+
+    assert status.state == "attention_required"
+    assert status.reservation_complete is False
+    assert status.summary.reservations == 1
+
+
+def test_event_status_surfaces_expired_capacity_as_attention_required():
+    record, ledger, _provisioning, _jobs, orchestration = _services()
+    reservation = ledger.list_for_event("event-a", now=NOW)[0]
+    ledger._records[reservation.reservation_id] = reservation.model_copy(
+        update={"expires_at": datetime.now(UTC) - timedelta(seconds=1)}
+    )
+
+    status = orchestration.status(record)
+
+    assert status.state == "attention_required"
+    assert status.reservation_complete is True
+    assert status.workshops[0].reservation_status == "expired"

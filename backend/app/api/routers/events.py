@@ -21,6 +21,7 @@ from app.domain.events import (
     EventReservationPlan,
     EventReservationReleaseRequest,
     EventReservationReleaseResult,
+    EventStatusResult,
     EventWorkshopLaunchRequest,
     EventWorkshopLaunchResult,
     EventWorkshopPublicAccessResult,
@@ -44,6 +45,29 @@ router = APIRouter(
     tags=["events"],
     dependencies=[Depends(get_current_user)],
 )
+
+
+@router.get(
+    "/{event_id}/status",
+    response_model=EventStatusResult,
+    dependencies=[Depends(require_admin)],
+)
+def get_event_status(
+    event_id: str,
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+    orchestration: Annotated[
+        EventOrchestrationService, Depends(get_event_orchestration_service)
+    ],
+) -> EventStatusResult:
+    """Reconcile reservations, jobs, seats, and public access read-only."""
+
+    record = store.get(event_id)
+    if record is None:
+        raise HTTPException(404, f"Approved event {event_id} was not found")
+    try:
+        return orchestration.status(record)
+    except PersistenceUnavailableError as exc:
+        raise HTTPException(503, "Event status persistence is unavailable") from exc
 
 
 @router.post("/capacity-preview", response_model=EventCapacityPreview)
