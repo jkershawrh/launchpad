@@ -84,12 +84,14 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
                 "/api/v1/events/event-a/workshops/launch",
                 json={"tenant_id": "event-tenant"},
             )
+            jobs_after_launch = len(job_store.list_all())
             workshop_id = launched.json()["workshops"][0]["workshop_id"]
             _make_ready(provisioning, workshop_id)
             activated = TestClient(app).post(
                 f"/api/v1/events/event-a/workshops/{workshop_id}/public-access"
             )
             status = TestClient(app).get("/api/v1/events/event-a/status")
+            reclaimed = TestClient(app).post("/api/v1/events/event-a/reclaim")
     finally:
         _clear_overrides()
 
@@ -98,7 +100,7 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
     assert launched.json() == repeated.json()
     assert launched.json()["public_access_state"] == "pending_activation"
     assert len(launched.json()["workshops"]) == 2
-    assert len(job_store.list_all()) == 2
+    assert jobs_after_launch == 2
     assert activated.status_code == 201
     assert activated.json()["public_url"].startswith(
         "https://labs.example.io/labs/"
@@ -109,6 +111,16 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
     assert status.json()["summary"]["workshops"] == 2
     assert status.json()["summary"]["public_workshops_active"] == 1
     assert "one_time_access_code" not in status.text
+    assert reclaimed.status_code == 202
+    assert reclaimed.json()["status"] == "queued"
+    assert len(reclaimed.json()["workshops"]) == 2
+    assert {item["cluster_ref"] for item in reclaimed.json()["workshops"]} == {
+        "arena"
+    }
+    assert {
+        item["public_access_state"] for item in reclaimed.json()["workshops"]
+    } == {"disabled"}
+    assert len(job_store.list_all()) == 4
 
 
 def test_admin_approves_and_reserves_persisted_cluster_assignments():
@@ -138,10 +150,12 @@ def test_reservation_requires_admin_and_existing_approved_event():
             json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
         )
         status_forbidden = TestClient(app).get("/api/v1/events/event-a/status")
+        reclaim_forbidden = TestClient(app).post("/api/v1/events/event-a/reclaim")
     finally:
         _clear_overrides()
     assert forbidden.status_code == 403
     assert status_forbidden.status_code == 403
+    assert reclaim_forbidden.status_code == 403
 
     _overrides()
     try:

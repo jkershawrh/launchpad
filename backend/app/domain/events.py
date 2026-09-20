@@ -472,6 +472,20 @@ class EventStatusResult(BaseModel):
     observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
+class EventWorkshopReclaimItem(BaseModel):
+    reservation_id: str
+    workshop_id: str
+    lifecycle_job_id: str
+    cluster_ref: str
+    public_access_state: Literal["not_required", "disabled"]
+
+
+class EventWorkshopReclaimResult(BaseModel):
+    event_id: str
+    status: Literal["queued"] = "queued"
+    workshops: list[EventWorkshopReclaimItem] = Field(min_length=1)
+
+
 class EventManifestConflictError(RuntimeError):
     """Raised when an immutable event ID has already been persisted."""
 

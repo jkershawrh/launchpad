@@ -25,6 +25,7 @@ from app.domain.events import (
     EventWorkshopLaunchRequest,
     EventWorkshopLaunchResult,
     EventWorkshopPublicAccessResult,
+    EventWorkshopReclaimResult,
     calculate_event_capacity,
 )
 from app.services.event_orchestration import (
@@ -68,6 +69,34 @@ def get_event_status(
         return orchestration.status(record)
     except PersistenceUnavailableError as exc:
         raise HTTPException(503, "Event status persistence is unavailable") from exc
+
+
+@router.post(
+    "/{event_id}/reclaim",
+    response_model=EventWorkshopReclaimResult,
+    status_code=202,
+    dependencies=[Depends(require_admin)],
+)
+def reclaim_event_workshops(
+    event_id: str,
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+    orchestration: Annotated[
+        EventOrchestrationService, Depends(get_event_orchestration_service)
+    ],
+) -> EventWorkshopReclaimResult:
+    """Disable public access and queue bounded event cleanup."""
+
+    record = store.get(event_id)
+    if record is None:
+        raise HTTPException(404, f"Approved event {event_id} was not found")
+    try:
+        return orchestration.reclaim(record)
+    except (EventOrchestrationConflictError, EventReservationConflictError) as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except PersistenceUnavailableError as exc:
+        raise HTTPException(503, "Event reclaim persistence is unavailable") from exc
+    except ValueError as exc:
+        raise HTTPException(503, str(exc)) from exc
 
 
 @router.post("/capacity-preview", response_model=EventCapacityPreview)

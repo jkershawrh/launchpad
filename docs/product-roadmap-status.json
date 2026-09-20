@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T01:18:16Z",
+  "updated_at": "2026-09-20T01:22:21Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -448,11 +448,15 @@
       },
       "evidence": [
         "backend/tests/test_event_orchestration.py",
+        "backend/tests/test_event_reservation_api.py",
         "contracts/event-orchestration-v1.yaml",
+        "docs/event-capacity-matrix.md",
+        "evidence/runs/event-bulk-reclaim/green-local.xml",
+        "evidence/runs/event-bulk-reclaim/red-local.xml",
         "evidence/runs/event-orchestration/green-local.xml",
         "evidence/runs/event-orchestration/red-local.xml"
       ],
-      "note": "Local slice queues one deterministic lifecycle job per complete cohort/lab reservation, persists the target cluster, exposes an admin-only 202 API, and recovers idempotently after an injected partial queue failure. Public access remains pending until post-readiness code activation; PostgreSQL integration, event reconciliation, bounded seat waves, bulk reclaim, cleanup, and live proof remain open."
+      "note": "Local event-wide reclaim preflights every consumed reservation binding, disables all public access before cleanup, queues stable cluster-bound reclaim jobs, and is idempotent. PostgreSQL integration, bounded seat waves, cleanup-evidence reconciliation, zero-residue release, and live proof remain."
     },
     "LP-T023": {
       "state": "green-local",

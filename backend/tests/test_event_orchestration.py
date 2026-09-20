@@ -15,6 +15,7 @@ from app.domain.enums import (
     WorkshopStatus,
 )
 from app.domain.events import EventWorkshopLaunchRequest
+from app.domain.lifecycle_jobs import LifecycleJobOperation
 from app.domain.models import CatalogItem, LabSession
 from app.services.event_orchestration import (
     EventOrchestrationConflictError,
@@ -38,7 +39,7 @@ def test_event_orchestration_contract_keeps_public_access_pending():
     ]["post"]
     result = contract["components"]["schemas"]["EventWorkshopLaunchResult"]
 
-    assert contract["info"]["version"] == "1.2.0"
+    assert contract["info"]["version"] == "1.3.0"
     assert operation["responses"]["202"]["content"]["application/json"][
         "schema"
     ] == {"$ref": "#/components/schemas/EventWorkshopLaunchResult"}
@@ -59,6 +60,11 @@ def test_event_orchestration_contract_keeps_public_access_pending():
     )
     status = contract["components"]["schemas"]["EventStatusResult"]
     assert "one_time_access_code" not in str(status)
+    assert (
+        contract["paths"]["/api/v1/events/{event_id}/reclaim"]["post"]
+        ["responses"]["202"]["content"]["application/json"]["schema"]
+        == {"$ref": "#/components/schemas/EventWorkshopReclaimResult"}
+    )
 
 
 def _catalog():
@@ -374,3 +380,121 @@ def test_event_status_surfaces_expired_capacity_as_attention_required():
     assert status.state == "attention_required"
     assert status.reservation_complete is True
     assert status.workshops[0].reservation_status == "expired"
+
+
+def test_event_reclaim_disables_access_before_cluster_bound_cleanup():
+    record, _ledger, provisioning, jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    for item in launched.workshops:
+        _make_ready(provisioning, item.workshop_id)
+        orchestration.activate_public_access(record, item.workshop_id)
+
+    reclaimed = orchestration.reclaim(record)
+    repeated = orchestration.reclaim(record)
+
+    assert reclaimed == repeated
+    assert reclaimed.status == "queued"
+    assert len(reclaimed.workshops) == 2
+    assert {item.cluster_ref for item in reclaimed.workshops} == {"arena"}
+    assert {item.public_access_state for item in reclaimed.workshops} == {"disabled"}
+    assert all(
+        not orchestration.public_access.get_policy(item.workshop_id).enabled
+        for item in reclaimed.workshops
+    )
+    assert {
+        provisioning.get_workshop(item.workshop_id).status
+        for item in reclaimed.workshops
+    } == {WorkshopStatus.RECLAIMING}
+    reclaim_jobs = [
+        job
+        for job in jobs.list_all()
+        if job.operation == LifecycleJobOperation.RECLAIM_WORKSHOP
+    ]
+    assert len(reclaim_jobs) == 2
+    assert {job.cluster_ref for job in reclaim_jobs} == {"arena"}
+
+
+def test_event_reclaim_fails_before_disabling_access_for_incomplete_plan():
+    record, ledger, provisioning, _jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    first = launched.workshops[0]
+    _make_ready(provisioning, first.workshop_id)
+    orchestration.activate_public_access(record, first.workshop_id)
+    missing = ledger.list_for_event(record.manifest.event_id, now=NOW)[1]
+    ledger._records.pop(missing.reservation_id)
+
+    with pytest.raises(EventOrchestrationConflictError, match="complete reservation"):
+        orchestration.reclaim(record)
+
+    assert orchestration.public_access.get_policy(first.workshop_id).enabled is True
+
+
+def test_partial_event_reclaim_queue_failure_recovers_without_duplicate_jobs():
+    record, _ledger, provisioning, jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    for item in launched.workshops:
+        _make_ready(provisioning, item.workshop_id)
+        orchestration.activate_public_access(record, item.workshop_id)
+
+    original_enqueue = orchestration.lifecycle_queue.enqueue_workshop_reclaim
+    attempts = 0
+
+    def fail_second_once(workshop):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 2:
+            raise RuntimeError("queue unavailable")
+        return original_enqueue(workshop)
+
+    with (
+        patch.object(
+            orchestration.lifecycle_queue,
+            "enqueue_workshop_reclaim",
+            side_effect=fail_second_once,
+        ),
+        pytest.raises(RuntimeError, match="queue unavailable"),
+    ):
+        orchestration.reclaim(record)
+
+    assert all(
+        not orchestration.public_access.get_policy(item.workshop_id).enabled
+        for item in launched.workshops
+    )
+    recovered = orchestration.reclaim(record)
+    reclaim_jobs = [
+        job
+        for job in jobs.list_all()
+        if job.operation == LifecycleJobOperation.RECLAIM_WORKSHOP
+    ]
+    assert len(recovered.workshops) == 2
+    assert len(reclaim_jobs) == 2

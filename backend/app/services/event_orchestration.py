@@ -15,6 +15,8 @@ from app.domain.events import (
     EventWorkshopLaunchRequest,
     EventWorkshopLaunchResult,
     EventWorkshopPublicAccessResult,
+    EventWorkshopReclaimItem,
+    EventWorkshopReclaimResult,
     EventWorkshopStatusItem,
 )
 from app.services.event_reservations import EventReservationLedger
@@ -375,6 +377,69 @@ class EventOrchestrationService:
                 public_workshops_active=public_active,
             ),
             workshops=rows,
+        )
+
+    def reclaim(self, record: EventRecord) -> EventWorkshopReclaimResult:
+        """Disable event access, then queue cleanup on persisted clusters."""
+
+        reservations = self.reservation_ledger.list_for_event(
+            record.manifest.event_id
+        )
+        self._validate_complete_plan(record, reservations)
+        public_event = (
+            record.manifest.exposure_policy == ExposurePolicy.PUBLIC_CODE.value
+        )
+        if public_event and self.public_access is None:
+            raise ValueError("Public access service is unavailable")
+
+        bound = []
+        for reservation in reservations:
+            if reservation.status != "consumed" or not reservation.workshop_id:
+                raise EventOrchestrationConflictError(
+                    "Every event reservation must be consumed before reclaim"
+                )
+            workshop = self.provisioning.get_workshop(reservation.workshop_id)
+            if workshop is None or workshop.metadata.get("event_id") != record.manifest.event_id:
+                raise EventOrchestrationConflictError(
+                    "Event workshop binding is incomplete"
+                )
+            try:
+                self.provisioning._validate_reserved_workshop_binding(workshop)
+            except ValueError as exc:
+                raise EventOrchestrationConflictError(str(exc)) from exc
+            bound.append((reservation, workshop))
+
+        # Access denial is event-wide and precedes the first cleanup mutation.
+        if self.public_access:
+            for _reservation, workshop in bound:
+                self.public_access.expire_order(workshop.workshop_id)
+
+        items = []
+        for reservation, workshop in bound:
+            queued = self.provisioning.queue_workshop_reclaim(workshop.workshop_id)
+            job = self.lifecycle_queue.enqueue_workshop_reclaim(queued)
+            public_state = "disabled" if public_event else "not_required"
+            metadata = {
+                **queued.metadata,
+                "lifecycle_job_id": job.job_id,
+                "public_access_state": public_state,
+            }
+            if queued.metadata != metadata:
+                queued = queued.model_copy(update={"metadata": metadata})
+                self.provisioning._save_workshop(queued)
+            items.append(
+                EventWorkshopReclaimItem(
+                    reservation_id=reservation.reservation_id,
+                    workshop_id=workshop.workshop_id,
+                    lifecycle_job_id=job.job_id,
+                    cluster_ref=reservation.cluster_ref,
+                    public_access_state=public_state,
+                )
+            )
+
+        return EventWorkshopReclaimResult(
+            event_id=record.manifest.event_id,
+            workshops=items,
         )
 
     @staticmethod

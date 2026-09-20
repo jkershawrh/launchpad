@@ -138,14 +138,21 @@ redisplay the one-time instructor code. Missing reservations, failed jobs,
 failed workshops, and failed seats surface as attention required without
 mutating any lifecycle resource.
 
+The admin-only event reclaim action requires the complete immutable reservation
+plan and verifies every consumed reservation-to-workshop binding before making
+any change. For public events it disables all workshop access policies first,
+then queues one stable, bounded reclaim job per workshop on the reservation's
+persisted cluster. Identical retries reuse the same jobs, and a missing
+reservation fails before access is changed. The action does not release held
+capacity; release remains a separate cleanup-evidenced transition.
+
 A real PostgreSQL integration run, public-access claim/SSO validation,
 zero-residue cleanup, and live proof remain separate gates.
 
 ## Next boundary
 
-The next orchestration increment must use this reconciled status to drive a
-bounded, idempotent event-wide reclaim. Reclaim must deny public access before
-cleanup begins, target only each persisted cluster, retain cleanup evidence,
-and release capacity only after zero-residue proof. It must prove real
-database-backed concurrency, event-wide recovery, participant claim/SSO, and
-live cleanup before release or live use.
+The next orchestration increment must reconcile completed reclaim jobs with
+namespace, route, RoleBinding, Argo CD, model-key, entitlement, and identity
+cleanup evidence before releasing capacity. It must prove real database-backed
+concurrency, event-wide recovery, participant claim/SSO, and live zero-residue
+cleanup before release or live use.
