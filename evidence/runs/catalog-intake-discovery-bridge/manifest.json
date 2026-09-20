@@ -1,0 +1,45 @@
+{
+  "schema_version": "launchpad.intel.com/evidence-manifest/v1",
+  "evidence_id": "catalog-intake-discovery-bridge-green-local-20260920",
+  "base_commit": "9fcbde737ecf6307d672f641ea58e462b91d41e3",
+  "recorded_at": "2026-09-20T12:30:00-05:00",
+  "scope": "durable source approval, discovery dispatch state, sanitized collection, and admin controls",
+  "red": {
+    "result": "1 collection error",
+    "artifact": "evidence/runs/catalog-intake-discovery-bridge/red-local.xml",
+    "sha256": "419848a60ccb0bc0314c9217b7a3b70d0af65cd38051c0998fea2b5744043485"
+  },
+  "green_backend": {
+    "result": "37 passed",
+    "artifact": "evidence/runs/catalog-intake-discovery-bridge/green-local.xml",
+    "sha256": "009488694dda9f16e1337c07f1f033c9df8698dd909142723bffae268e11414d"
+  },
+  "green_frontend": {
+    "result": "5 passed",
+    "artifact": "evidence/runs/catalog-intake-discovery-bridge/frontend-green.json",
+    "sha256": "a2d6d10101cc047e2a230f9c593f89f7b1dcdba38d2d2a280b21b3f9bb6c9bda"
+  },
+  "contract": {
+    "artifact": "contracts/catalog-intake-discovery-bridge-v1.yaml",
+    "sha256": "7561478130bf91bd216edd0941607da78aa7190995a0d0e862b9808133cf5b80"
+  },
+  "claims": [
+    "Discovery can be requested only with durable storage, a separate active source approval, and an available immutable worker configuration.",
+    "Queued, running, failed, and completed outcomes remain attached to the intake.",
+    "Dispatcher failures persist only bounded error codes and never exception detail.",
+    "A matching sanitized receipt advances the existing catalog review journey."
+  ],
+  "non_claims": [
+    "The default runtime does not have an enabled dispatcher.",
+    "No worker, proxy, or collector has been deployed to a cluster.",
+    "Certification, approval, publication, and provisioning remain disabled."
+  ],
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false
+  },
+  "release_eligible": false
+}

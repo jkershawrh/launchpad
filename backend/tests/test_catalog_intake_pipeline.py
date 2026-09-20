@@ -32,6 +32,7 @@ def test_pipeline_is_visible_but_all_mutating_actions_fail_closed() -> None:
     assert view.stages[0].status == "current"
     assert all(stage.status == "locked" for stage in view.stages[1:])
     assert view.actions.model_dump() == {
+        "approve_source": False,
         "run_discovery": False,
         "generate_draft": False,
         "run_one_seat_certification": False,

@@ -3,15 +3,21 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import uuid
+from datetime import UTC, datetime, timedelta
 
 from app.domain.catalog_intake import (
+    CatalogIntakeDiscoveryExecution,
     CatalogIntakeDiscoverySummary,
     CatalogIntakeDraft,
     CatalogIntakeEvidence,
     CatalogIntakeReleaseIdentity,
     CatalogIntakeSubmission,
 )
-from app.domain.catalog_intake_discovery import CatalogIntakeDiscoveryReceipt
+from app.domain.catalog_intake_discovery import (
+    CatalogIntakeDiscoveryReceipt,
+    CatalogIntakeSourceApproval,
+)
 from app.services.catalog_onboarding import (
     DISCOVERY_RECEIPT_VERSION,
     build_catalog_draft_from_receipt,
@@ -98,6 +104,94 @@ class CatalogIntakeSubmissionService:
     def list_all(self) -> list[CatalogIntakeDraft]:
         return self.store.list_all()
 
+    def approve_source(
+        self,
+        intake_id: str,
+        *,
+        approved_by: str,
+        now: datetime | None = None,
+    ) -> CatalogIntakeDraft:
+        draft = self.store.get(intake_id)
+        if draft is None:
+            raise KeyError(intake_id)
+        if not self.store.durable:
+            raise ValueError("source approval requires durable intake storage")
+        now = now or datetime.now(UTC)
+        if (
+            draft.source_approval is not None
+            and draft.source_approval.approved_by == approved_by
+            and draft.source_approval.approved_at <= now < draft.source_approval.expires_at
+        ):
+            return draft
+        identity = f"{intake_id}:{draft.release_identity.revision}:{approved_by}"
+        approval = CatalogIntakeSourceApproval(
+            approval_id="approval-" + hashlib.sha256(identity.encode()).hexdigest()[:16],
+            repository_url=draft.release_identity.repository_url,
+            revision=draft.release_identity.revision,
+            requested_by=draft.requested.owner,
+            approved_by=approved_by,
+            approved_at=now,
+            expires_at=now + timedelta(hours=24),
+            purpose="Quickstart repository discovery",
+        )
+        updated = CatalogIntakeDraft.model_validate(
+            draft.model_copy(update={"source_approval": approval}).model_dump()
+        )
+        return self.store.replace(draft, updated)
+
+    def start_discovery(
+        self,
+        intake_id: str,
+        *,
+        requested_by: str,
+        now: datetime | None = None,
+    ) -> CatalogIntakeDraft:
+        draft = self.store.get(intake_id)
+        if draft is None:
+            raise KeyError(intake_id)
+        if not self.store.durable:
+            raise ValueError("discovery requires durable intake storage")
+        now = now or datetime.now(UTC)
+        approval = draft.source_approval
+        if approval is None or not (approval.approved_at <= now < approval.expires_at):
+            raise ValueError("discovery requires an active source approval")
+        if draft.discovery is not None or draft.discovery_execution is not None:
+            raise ValueError("discovery has already been requested")
+        execution = CatalogIntakeDiscoveryExecution(
+            attempt_id="attempt-" + uuid.uuid4().hex[:16],
+            state="queued",
+            requested_by=requested_by,
+            requested_at=now,
+        )
+        updated = CatalogIntakeDraft.model_validate(
+            draft.model_copy(update={"discovery_execution": execution}).model_dump()
+        )
+        return self.store.replace(draft, updated)
+
+    def mark_discovery_running(self, intake_id: str) -> CatalogIntakeDraft:
+        draft = self.store.get(intake_id)
+        if draft is None or draft.discovery_execution is None:
+            raise KeyError(intake_id)
+        execution = draft.discovery_execution.model_copy(update={"state": "running"})
+        updated = CatalogIntakeDraft.model_validate(
+            draft.model_copy(update={"discovery_execution": execution}).model_dump()
+        )
+        return self.store.replace(draft, updated)
+
+    def mark_discovery_failed(
+        self, intake_id: str, error_codes: list[str]
+    ) -> CatalogIntakeDraft:
+        draft = self.store.get(intake_id)
+        if draft is None or draft.discovery_execution is None:
+            raise KeyError(intake_id)
+        execution = draft.discovery_execution.model_copy(
+            update={"state": "failed", "error_codes": error_codes}
+        )
+        updated = CatalogIntakeDraft.model_validate(
+            draft.model_copy(update={"discovery_execution": execution}).model_dump()
+        )
+        return self.store.replace(draft, updated)
+
     def record_discovery(
         self,
         intake_id: str,
@@ -111,6 +205,11 @@ class CatalogIntakeSubmissionService:
         if receipt.intake_id != intake_id:
             raise ValueError("discovery receipt intake identity does not match")
         if (
+            draft.discovery_execution is not None
+            and draft.discovery_execution.attempt_id != receipt.attempt_id
+        ):
+            raise ValueError("discovery receipt attempt identity does not match")
+        if (
             receipt.repository_url != draft.release_identity.repository_url
             or receipt.revision != draft.release_identity.revision
         ):
@@ -120,6 +219,7 @@ class CatalogIntakeSubmissionService:
             or receipt.error_codes
             or receipt.draft_intake is None
             or receipt.output_hash is None
+            or receipt.cleanup.attempt_id != receipt.attempt_id
             or receipt.cleanup.result != "pass"
             or not receipt.cleanup.workspace_removed
         ):
@@ -183,6 +283,7 @@ class CatalogIntakeSubmissionService:
                     cleanup_verified=True,
                 ),
                 "catalog_preview": preview,
+                "discovery_execution": None,
                 "evidence": draft.evidence.model_copy(
                     update={
                         "status": "partial",

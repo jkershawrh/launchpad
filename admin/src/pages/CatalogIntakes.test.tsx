@@ -80,7 +80,7 @@ const pipeline = {
   gates: [
     { gate_id: 'source', label: 'Source discovery', status: 'not-run' as const, required_evidence: ['manifest'], blockers: ['discovery-not-run'] },
   ],
-  actions: { run_discovery: false, generate_draft: false, run_one_seat_certification: false, request_review: false, promote: false },
+  actions: { approve_source: false, run_discovery: false, generate_draft: false, run_one_seat_certification: false, request_review: false, promote: false },
 };
 
 afterEach(() => {

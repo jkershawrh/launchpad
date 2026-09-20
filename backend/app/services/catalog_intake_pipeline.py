@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from app.domain.catalog_intake import CatalogIntakeDraft
 from app.domain.catalog_intake_pipeline import (
     CatalogIntakePipelineGate,
@@ -30,10 +32,16 @@ def build_catalog_intake_pipeline_view(
     draft: CatalogIntakeDraft,
     *,
     isolated_worker_available: bool = False,
+    now: datetime | None = None,
 ) -> CatalogIntakePipelineView:
     """Return a truthful, read-only view of an intake's gated future work."""
 
     durable = draft.storage_scope != "process-local-draft"
+    now = now or datetime.now(UTC)
+    approval = draft.source_approval
+    approval_active = bool(
+        approval and approval.approved_at <= now < approval.expires_at
+    )
     first_blockers = list(draft.blockers)
     if not durable:
         first_blockers.append("Durable intake persistence is not active.")
@@ -99,7 +107,7 @@ def build_catalog_intake_pipeline_view(
             gate_ids=["catalog-publication"],
         ),
     ]
-    return CatalogIntakePipelineView(
+    view = CatalogIntakePipelineView(
         intake_id=draft.intake_id,
         current_stage="draft-generated" if draft_generated else "submitted",
         durable_storage=durable,
@@ -107,3 +115,12 @@ def build_catalog_intake_pipeline_view(
         stages=stages,
         gates=gates,
     )
+    view.actions.approve_source = durable and not approval_active
+    view.actions.run_discovery = bool(
+        durable
+        and isolated_worker_available
+        and approval_active
+        and draft.discovery is None
+        and draft.discovery_execution is None
+    )
+    return view

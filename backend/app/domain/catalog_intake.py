@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import Any, Literal
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from app.domain.catalog_intake_discovery import CatalogIntakeSourceApproval
 
 IMMUTABLE_GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
 CATALOG_ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -104,6 +107,14 @@ class CatalogIntakeDiscoverySummary(BaseModel):
     cleanup_verified: Literal[True] = True
 
 
+class CatalogIntakeDiscoveryExecution(BaseModel):
+    attempt_id: str
+    state: Literal["queued", "running", "failed"]
+    requested_by: str
+    requested_at: datetime
+    error_codes: list[str] = Field(default_factory=list)
+
+
 class CatalogIntakeDraft(BaseModel):
     intake_id: str
     state: Literal["draft"] = "draft"
@@ -123,3 +134,5 @@ class CatalogIntakeDraft(BaseModel):
     rollback: CatalogIntakeRollback = Field(default_factory=CatalogIntakeRollback)
     discovery: CatalogIntakeDiscoverySummary | None = None
     catalog_preview: dict[str, Any] | None = None
+    source_approval: CatalogIntakeSourceApproval | None = None
+    discovery_execution: CatalogIntakeDiscoveryExecution | None = None

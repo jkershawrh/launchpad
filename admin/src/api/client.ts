@@ -118,6 +118,10 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  approveCatalogIntakeSource: (id: string) =>
+    request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/source-approval`, { method: 'POST' }),
+  runCatalogIntakeDiscovery: (id: string) =>
+    request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/discovery`, { method: 'POST' }),
 
   // Intelligence / Feedback
   getFeedbackSummary: () =>

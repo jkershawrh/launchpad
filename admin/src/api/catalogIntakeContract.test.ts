@@ -28,10 +28,16 @@ describe('catalog intake API contract', () => {
     await api.listCatalogIntakes();
     await api.getCatalogIntake('intake/one');
     await api.getCatalogIntakePipeline('intake/one');
+    await api.approveCatalogIntakeSource('intake/one');
+    await api.runCatalogIntakeDiscovery('intake/one');
 
     expect(fetchMock.mock.calls[0]?.[0]).toBe('/api/v1/admin/catalog-intakes');
     expect(fetchMock.mock.calls[1]?.[0]).toBe('/api/v1/admin/catalog-intakes/intake%2Fone');
     expect(fetchMock.mock.calls[2]?.[0]).toBe('/api/v1/admin/catalog-intakes/intake%2Fone/pipeline');
+    expect(fetchMock.mock.calls[3]?.[0]).toBe('/api/v1/admin/catalog-intakes/intake%2Fone/source-approval');
+    expect(fetchMock.mock.calls[4]?.[0]).toBe('/api/v1/admin/catalog-intakes/intake%2Fone/discovery');
+    expect(fetchMock.mock.calls[3]?.[1]).toMatchObject({ method: 'POST' });
+    expect(fetchMock.mock.calls[4]?.[1]).toMatchObject({ method: 'POST' });
   });
 
   it('posts the immutable release submission without inventing approval fields', async () => {

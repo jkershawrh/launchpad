@@ -319,6 +319,23 @@ export interface CatalogIntakeDraft {
     optional_capabilities: string[];
     metadata: Record<string, unknown>;
   } | null;
+  source_approval?: {
+    approval_id: string;
+    repository_url: string;
+    revision: string;
+    requested_by: string;
+    approved_by: string;
+    approved_at: string;
+    expires_at: string;
+    purpose: string;
+  } | null;
+  discovery_execution?: {
+    attempt_id: string;
+    state: 'queued' | 'running' | 'failed';
+    requested_by: string;
+    requested_at: string;
+    error_codes: string[];
+  } | null;
 }
 
 export interface CatalogIntakePipelineView {
@@ -345,6 +362,7 @@ export interface CatalogIntakePipelineView {
     blockers: string[];
   }>;
   actions: {
+    approve_source: boolean;
     run_discovery: boolean;
     generate_draft: boolean;
     run_one_seat_certification: boolean;

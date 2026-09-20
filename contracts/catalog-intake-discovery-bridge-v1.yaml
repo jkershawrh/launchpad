@@ -1,0 +1,46 @@
+schema_version: launchpad.redhat.com/catalog-intake-discovery-bridge/v1
+kind: LaunchpadCatalogIntakeDiscoveryBridge
+metadata:
+  version: 1.0.0
+  status: GREEN-local
+
+preconditions:
+  durable_storage: required
+  separate_source_approval: required
+  active_approval_window: required
+  configured_worker: required
+  immutable_worker_digest: required
+
+states:
+  - queued
+  - running
+  - passed
+  - failed
+
+dispatch:
+  input: CatalogIntakeDiscoveryRequest
+  source_approval: CatalogIntakeSourceApproval
+  duplicate_active_attempts: reject
+  default_runtime: disabled
+  exception_text_persisted: false
+
+collection:
+  input: CatalogIntakeDiscoveryReceipt
+  matching_attempt_required: true
+  matching_source_identity_required: true
+  cleanup_receipt_required: true
+  output_hash_required: true
+  persistence: compare-and-swap
+
+admin_actions:
+  approve_source: conditional
+  run_discovery: conditional
+  run_certification: disabled
+  request_review: disabled
+  promote: disabled
+
+authority:
+  may_publish_catalog: false
+  may_provision: false
+  may_mutate_live_catalog: false
+  may_mutate_cluster: false

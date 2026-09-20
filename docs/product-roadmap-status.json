@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T16:24:00Z",
+  "updated_at": "2026-09-20T17:25:50Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -594,10 +594,11 @@
         "cbt": "green-local"
       },
       "evidence": [
+        "evidence/runs/catalog-intake-discovery-bridge/manifest.json",
         "evidence/runs/catalog-intake-discovery-worker/manifest.json",
         "evidence/runs/catalog-intake/static-inventory-green-local-20260920.json"
       ],
-      "note": "The canonical Quickstart discovery path now has a credential-free executable worker with full-source scanning, sanitized receipts, deterministic fail-closed draft output, cleanup proof, and a generated tokenless/default-deny OpenShift Job contract. Image publication, egress proxy, dispatcher/collector, and live fault evidence remain open."
+      "note": "The canonical Quickstart path now has a durable fail-closed bridge contract for separate source approval, queued/running/failed execution state, sanitized dispatch failure, matching receipt collection, and catalog-preview persistence. The default dispatcher stays disabled pending an actual deployed worker, proxy, collector, and live fault proof."
     },
     "LP-T102": {
       "state": "green-local",
@@ -756,12 +757,13 @@
       },
       "evidence": [
         "evidence/runs/admin-catalog-intake-ui/manifest.json",
+        "evidence/runs/catalog-intake-discovery-bridge/manifest.json",
         "evidence/runs/catalog-intake-durability/green-integration.json",
         "evidence/runs/catalog-intake-pipeline/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json",
         "evidence/runs/catalog-intake-submission/green-local.json"
       ],
-      "note": "Admin Intake now renders the completed discovery result and generated catalog preview, advances the read-only pipeline to catalog-draft review, and keeps certification, approval, promotion, provisioning, and all live mutations disabled."
+      "note": "Admin Intake now conditionally exposes source approval and discovery actions only when durable storage and worker prerequisites pass, renders execution state, and keeps certification, publication, provisioning, and live mutation disabled."
     },
     "LP-T100": {
       "state": "green-local",

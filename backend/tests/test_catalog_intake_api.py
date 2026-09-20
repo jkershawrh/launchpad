@@ -108,9 +108,19 @@ def test_catalog_intake_pipeline_is_read_only_and_fail_closed(client):
     assert payload["orderable"] is False
     assert payload["promotion_eligible"] is False
     assert payload["actions"] == {
+        "approve_source": False,
         "run_discovery": False,
         "generate_draft": False,
         "run_one_seat_certification": False,
         "request_review": False,
         "promote": False,
     }
+
+    approval = client.post(
+        f"/api/v1/admin/catalog-intakes/{intake_id}/source-approval"
+    )
+    discovery = client.post(f"/api/v1/admin/catalog-intakes/{intake_id}/discovery")
+    assert approval.status_code == 409
+    assert "durable intake storage" in approval.text
+    assert discovery.status_code == 409
+    assert "not available" in discovery.text

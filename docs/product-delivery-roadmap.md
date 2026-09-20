@@ -346,7 +346,10 @@ repository and receive a safe, reviewable, certified catalog draft.**
   sanitized receipts, deterministic draft output, and mandatory cleanup. A
   generated OpenShift Job/NetworkPolicy is non-root, read-only, tokenless,
   bounded, ephemeral, and restricted to DNS plus an allowlisting egress proxy.
-  The image, proxy, dispatcher/collector, and live fault proof remain open.
+  A durable, fail-closed dispatcher/collector contract now tracks queued,
+  running, failed, and completed discovery attempts behind separate source
+  approval. The default dispatcher remains disabled; image publication, proxy,
+  deployed collection, and live fault proof remain open.
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
   **GREEN-local (catalog-draft slice):** a versioned immutable discovery
@@ -377,7 +380,8 @@ repository and receive a safe, reviewable, certified catalog draft.**
   **GREEN-integration (draft visibility):** draft responses and the admin Intake
   screens expose these fields, the durable storage scope, and the full gated
   pipeline. A completed discovery advances the view to catalog-draft review
-  while certification, approval, and promotion remain visibly locked.
+  while source approval and discovery controls appear only when their durable
+  preconditions pass. Certification, approval, and promotion remain locked.
 - **Gate:** a new quickstart progresses from immutable repository revision to a
   certified draft and approved promotion without a bespoke platform code edit.
 

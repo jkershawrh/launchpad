@@ -21,6 +21,7 @@ class CatalogIntakePipelineStage(BaseModel):
 
 
 class CatalogIntakePipelineActions(BaseModel):
+    approve_source: bool = False
     run_discovery: bool = False
     generate_draft: bool = False
     run_one_seat_certification: bool = False

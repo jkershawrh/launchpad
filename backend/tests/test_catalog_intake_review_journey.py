@@ -12,13 +12,40 @@ from app.domain.catalog_intake_discovery import (
     CatalogIntakeCleanupReceipt,
     CatalogIntakeDiscoveryReceipt,
 )
+from app.services.catalog_intake_discovery_coordinator import (
+    CatalogIntakeDiscoveryCoordinator,
+    DisabledCatalogIntakeDiscoveryDispatcher,
+)
 from app.services.catalog_intake_pipeline import build_catalog_intake_pipeline_view
 from app.services.catalog_intake_submissions import CatalogIntakeSubmissionService
 from app.services.catalog_onboarding import discover_quickstart_repo
-from app.storage.catalog_intakes import CatalogIntakeDraftConflictError
+from app.storage.catalog_intakes import (
+    CatalogIntakeDraftConflictError,
+    InMemoryCatalogIntakeDraftStore,
+)
 
 REPOSITORY = "https://github.com/example/quickstart.git"
 REVISION = "a" * 40
+
+
+class _DurableMemoryStore(InMemoryCatalogIntakeDraftStore):
+    durable = True
+
+
+class _FakeDispatcher:
+    available = True
+    worker_image_digest = "sha256:" + "b" * 64
+
+    def __init__(self) -> None:
+        self.dispatched = []
+
+    def dispatch(self, request, approval) -> None:
+        self.dispatched.append((request, approval))
+
+
+class _FailingDispatcher(_FakeDispatcher):
+    def dispatch(self, request, approval) -> None:
+        raise RuntimeError("credential-like-sensitive-dispatch-detail")
 
 
 def _source(root: Path) -> Path:
@@ -131,6 +158,7 @@ def test_successful_discovery_becomes_a_persisted_reviewable_catalog_draft(
     assert pipeline.gates[0].status == "passed"
     assert pipeline.gates[1].status == "passed"
     assert pipeline.actions.model_dump() == {
+        "approve_source": False,
         "run_discovery": False,
         "generate_draft": False,
         "run_one_seat_certification": False,
@@ -204,3 +232,125 @@ def test_review_persistence_rejects_a_stale_concurrent_transition() -> None:
 
     with pytest.raises(CatalogIntakeDraftConflictError, match="changed"):
         service.store.replace(submitted, stale_update)
+
+
+def test_approved_intake_dispatches_and_collects_a_reviewable_result(
+    tmp_path: Path,
+) -> None:
+    service = CatalogIntakeSubmissionService(store=_DurableMemoryStore())
+    dispatcher = _FakeDispatcher()
+    coordinator = CatalogIntakeDiscoveryCoordinator(service, dispatcher)
+    submitted = service.submit(_submission())
+
+    before = build_catalog_intake_pipeline_view(
+        submitted, isolated_worker_available=True
+    )
+    assert before.actions.approve_source is True
+    assert before.actions.run_discovery is False
+
+    approved = service.approve_source(
+        submitted.intake_id, approved_by="catalog-reviewer"
+    )
+    ready = build_catalog_intake_pipeline_view(
+        approved, isolated_worker_available=True
+    )
+    assert ready.actions.approve_source is False
+    assert ready.actions.run_discovery is True
+
+    running = coordinator.start(submitted.intake_id, requested_by="catalog-reviewer")
+    assert running.discovery_execution is not None
+    assert running.discovery_execution.state == "running"
+    assert len(dispatcher.dispatched) == 1
+    request, approval = dispatcher.dispatched[0]
+    assert request.source_approval_id == approval.approval_id
+
+    receipt = _receipt(tmp_path, submitted.intake_id)
+    receipt = receipt.model_copy(
+        update={
+            "attempt_id": request.attempt_id,
+            "cleanup": receipt.cleanup.model_copy(
+                update={"attempt_id": request.attempt_id}
+            ),
+        }
+    )
+    completed = coordinator.collect(receipt)
+    assert completed.discovery_execution is None
+    assert completed.catalog_preview is not None
+
+
+def test_disabled_dispatcher_fails_before_queueing_work() -> None:
+    service = CatalogIntakeSubmissionService(store=_DurableMemoryStore())
+    submitted = service.submit(_submission())
+    service.approve_source(submitted.intake_id, approved_by="catalog-reviewer")
+    coordinator = CatalogIntakeDiscoveryCoordinator(
+        service, DisabledCatalogIntakeDiscoveryDispatcher()
+    )
+
+    with pytest.raises(ValueError, match="not available"):
+        coordinator.start(submitted.intake_id, requested_by="catalog-reviewer")
+
+    unchanged = service.get(submitted.intake_id)
+    assert unchanged is not None
+    assert unchanged.discovery_execution is None
+
+
+def test_dispatch_failure_is_sanitized_and_persisted() -> None:
+    service = CatalogIntakeSubmissionService(store=_DurableMemoryStore())
+    submitted = service.submit(_submission())
+    service.approve_source(submitted.intake_id, approved_by="catalog-reviewer")
+    coordinator = CatalogIntakeDiscoveryCoordinator(service, _FailingDispatcher())
+
+    with pytest.raises(ValueError, match="discovery dispatch failed") as failure:
+        coordinator.start(submitted.intake_id, requested_by="catalog-reviewer")
+
+    assert "sensitive" not in str(failure.value)
+    failed = service.get(submitted.intake_id)
+    assert failed is not None and failed.discovery_execution is not None
+    assert failed.discovery_execution.state == "failed"
+    assert failed.discovery_execution.error_codes == ["dispatch-failed"]
+
+
+def test_collector_rejects_a_receipt_for_another_attempt() -> None:
+    service = CatalogIntakeSubmissionService(store=_DurableMemoryStore())
+    dispatcher = _FakeDispatcher()
+    coordinator = CatalogIntakeDiscoveryCoordinator(service, dispatcher)
+    submitted = service.submit(_submission())
+    service.approve_source(submitted.intake_id, approved_by="catalog-reviewer")
+    coordinator.start(submitted.intake_id, requested_by="catalog-reviewer")
+    now = datetime.now(UTC)
+    wrong = CatalogIntakeDiscoveryReceipt(
+        intake_id=submitted.intake_id,
+        attempt_id="attempt-wrong",
+        idempotency_key="sha256:" + "c" * 64,
+        repository_url=REPOSITORY,
+        revision=REVISION,
+        policy_version="1.0.0",
+        source_approval_id="approval-wrong",
+        worker_image_digest="sha256:" + "b" * 64,
+        started_at=now,
+        finished_at=now,
+        status="failed",
+        error_codes=["worker-failed"],
+        scan_summary={"files_scanned": 0, "bytes_scanned": 0},
+        cleanup=CatalogIntakeCleanupReceipt(
+            receipt_id="sha256:" + "d" * 64,
+            attempt_id="attempt-wrong",
+            workspace_removed=True,
+            result="pass",
+        ),
+    )
+
+    with pytest.raises(ValueError, match="attempt identity"):
+        coordinator.collect(wrong)
+
+
+def test_discovery_bridge_contract_keeps_live_authority_disabled() -> None:
+    root = Path(__file__).resolve().parents[2]
+    contract = yaml.safe_load(
+        (root / "contracts/catalog-intake-discovery-bridge-v1.yaml").read_text()
+    )
+
+    assert contract["dispatch"]["default_runtime"] == "disabled"
+    assert contract["collection"]["matching_attempt_required"] is True
+    assert contract["admin_actions"]["run_discovery"] == "conditional"
+    assert all(value is False for value in contract["authority"].values())
