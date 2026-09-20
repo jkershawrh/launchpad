@@ -320,6 +320,63 @@ class InMemoryWorkshopStore:
         return self.items.get(workshop_id)
 
 
+class AtomicWorkshopStore(InMemoryWorkshopStore):
+    def __init__(self):
+        super().__init__()
+        self._lock = threading.Lock()
+
+    def create_idempotent(self, workshop):
+        with self._lock:
+            existing = next(
+                (
+                    item
+                    for item in self.items.values()
+                    if item.tenant_id == workshop.tenant_id
+                    and item.idempotency_key == workshop.idempotency_key
+                ),
+                None,
+            )
+            if existing:
+                if existing.order_fingerprint != workshop.order_fingerprint:
+                    raise ValueError(
+                        "Idempotency key was already used for a different workshop order"
+                    )
+                return existing
+            self.save(workshop)
+            return workshop
+
+
+def test_concurrent_api_services_create_one_durable_workshop_order():
+    store = AtomicWorkshopStore()
+    db = SimpleNamespace(workshops=store)
+    barrier = threading.Barrier(2)
+    results = []
+
+    def create_order():
+        service = ProvisioningService(db_stores=db)
+        barrier.wait()
+        results.append(
+            service.create_workshop_order(
+                Workshop(
+                    tenant_id="replica-safe-tenant",
+                    catalog_item_id="inference-overdrive-quickstart",
+                    num_users=2,
+                ),
+                idempotency_key="replica-safe-key",
+            )
+        )
+
+    threads = [threading.Thread(target=create_order) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert len(results) == 2
+    assert results[0].workshop_id == results[1].workshop_id
+    assert len(store.items) == 1
+
+
 def test_idempotency_survives_service_restart():
     store = InMemoryWorkshopStore()
     db = SimpleNamespace(workshops=store)

@@ -5,8 +5,8 @@ import sys
 from types import SimpleNamespace
 
 import pytest
-from app.domain.enums import SessionStatus
-from app.domain.models import LabSession
+from app.domain.enums import SessionStatus, WorkshopStatus
+from app.domain.models import LabSession, Workshop
 from app.storage import database, stores
 from app.storage.stores import _decode_json
 
@@ -108,6 +108,100 @@ def test_session_write_failure_is_not_downgraded_to_memory_only(monkeypatch):
 
     with pytest.raises(stores.PersistenceUnavailableError):
         stores.PostgresSessionStore().save(session)
+
+
+class _WorkshopCursor:
+    def __init__(self, existing=None):
+        self.existing = existing
+        self.statements = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def execute(self, sql, params=None):
+        self.statements.append((" ".join(sql.split()), params))
+
+    def fetchone(self):
+        return (self.existing.model_dump(mode="json"),) if self.existing else None
+
+
+class _WorkshopConnection:
+    def __init__(self, existing=None):
+        self.cursor_value = _WorkshopCursor(existing)
+        self.commits = 0
+        self.rollbacks = 0
+        self.closed = False
+
+    def cursor(self):
+        return self.cursor_value
+
+    def commit(self):
+        self.commits += 1
+
+    def rollback(self):
+        self.rollbacks += 1
+
+    def close(self):
+        self.closed = True
+
+
+def _keyed_workshop(*, seats=2, workshop_id="workshop-1"):
+    return Workshop(
+        workshop_id=workshop_id,
+        tenant_id="tenant-1",
+        catalog_item_id="catalog-1",
+        num_users=seats,
+        status=WorkshopStatus.AWAITING_CONFIRMATION,
+        idempotency_key="event-order-1",
+        order_fingerprint=f"fingerprint-{seats}",
+    )
+
+
+def test_workshop_create_idempotent_takes_transaction_lock_before_insert(monkeypatch):
+    connection = _WorkshopConnection()
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+    workshop = _keyed_workshop()
+
+    persisted = stores.PostgresWorkshopStore().create_idempotent(workshop)
+
+    assert persisted == workshop
+    statements = [statement for statement, _params in connection.cursor_value.statements]
+    assert "pg_advisory_xact_lock" in statements[0]
+    assert "FOR UPDATE" in statements[1]
+    assert statements[2].startswith("INSERT INTO workshops")
+    assert connection.commits == 1
+    assert connection.rollbacks == 0
+    assert connection.closed
+
+
+def test_workshop_create_idempotent_recovers_existing_matching_order(monkeypatch):
+    existing = _keyed_workshop(workshop_id="accepted-by-other-replica")
+    connection = _WorkshopConnection(existing)
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    persisted = stores.PostgresWorkshopStore().create_idempotent(_keyed_workshop())
+
+    assert persisted.workshop_id == "accepted-by-other-replica"
+    assert len(connection.cursor_value.statements) == 2
+    assert connection.commits == 1
+
+
+def test_workshop_create_idempotent_rejects_conflicting_order(monkeypatch):
+    existing = _keyed_workshop(seats=3, workshop_id="accepted-by-other-replica")
+    connection = _WorkshopConnection(existing)
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    with pytest.raises(
+        stores.WorkshopIdempotencyConflictError,
+        match="different workshop order",
+    ):
+        stores.PostgresWorkshopStore().create_idempotent(_keyed_workshop(seats=2))
+
+    assert connection.commits == 0
+    assert connection.rollbacks == 1
 
 
 @pytest.mark.parametrize(

@@ -21,6 +21,7 @@ from app.domain.events import (
     EventWorkshopLaunchRequest,
     calculate_event_capacity,
 )
+from app.domain.models import Workshop
 from app.services.event_orchestration import EventOrchestrationService
 from app.services.event_reservations import (
     EventReservationLedger,
@@ -39,6 +40,7 @@ from app.storage.stores import (
     PostgresEventStore,
     PostgresSessionStore,
     PostgresWorkshopStore,
+    WorkshopIdempotencyConflictError,
 )
 
 from backend.tests.test_event_orchestration import _catalog, _make_ready
@@ -189,6 +191,53 @@ def _services():
         public_access=access,
     )
     return ledger, provisioning, access, jobs, orchestration
+
+
+def test_concurrent_postgres_workshop_creation_is_idempotent_across_replicas() -> None:
+    barrier = threading.Barrier(3)
+    results = []
+    errors = []
+
+    def create(workshop_id: str) -> None:
+        try:
+            order = Workshop(
+                workshop_id=workshop_id,
+                tenant_id="ha-tenant",
+                catalog_item_id="build-agent",
+                num_users=2,
+                status=WorkshopStatus.AWAITING_CONFIRMATION,
+                idempotency_key="ha-order-1",
+                order_fingerprint="sha256:matching-order",
+            )
+            barrier.wait()
+            results.append(PostgresWorkshopStore().create_idempotent(order))
+        except Exception as exc:  # noqa: BLE001 - preserve thread failures
+            errors.append(exc)
+
+    first = threading.Thread(target=create, args=("replica-a-order",))
+    second = threading.Thread(target=create, args=("replica-b-order",))
+    first.start()
+    second.start()
+    barrier.wait()
+    first.join(timeout=10)
+    second.join(timeout=10)
+
+    assert errors == []
+    assert len(results) == 2
+    assert len({item.workshop_id for item in results}) == 1
+    assert len(PostgresWorkshopStore().list_all()) == 1
+
+    conflicting = Workshop(
+        workshop_id="conflicting-order",
+        tenant_id="ha-tenant",
+        catalog_item_id="build-agent",
+        num_users=3,
+        status=WorkshopStatus.AWAITING_CONFIRMATION,
+        idempotency_key="ha-order-1",
+        order_fingerprint="sha256:different-order",
+    )
+    with pytest.raises(WorkshopIdempotencyConflictError):
+        PostgresWorkshopStore().create_idempotent(conflicting)
 
 
 def _prepare_reclaimed_event() -> EventRecord:

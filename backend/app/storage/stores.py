@@ -46,6 +46,10 @@ class PersistenceUnavailableError(RuntimeError):
     """Raised when configured durable storage cannot be reached."""
 
 
+class WorkshopIdempotencyConflictError(ValueError):
+    """A tenant reused one workshop idempotency key for another order."""
+
+
 class PostgresAccessStore:
     _models = {
         "access_policies": ("order_id", AccessPolicy),
@@ -970,6 +974,66 @@ class PostgresSessionStore:
 
 
 class PostgresWorkshopStore:
+    def create_idempotent(self, workshop: Workshop) -> Workshop:
+        """Atomically create or recover a keyed workshop across API replicas."""
+        if not workshop.idempotency_key or not workshop.order_fingerprint:
+            raise ValueError("An idempotency key and order fingerprint are required")
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "Authoritative workshop persistence is unavailable"
+            )
+        try:
+            data = json.dumps(workshop.model_dump(mode="json"))
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"workshop:{workshop.tenant_id}:{workshop.idempotency_key}",),
+                )
+                cur.execute(
+                    """SELECT data FROM workshops
+                       WHERE tenant_id = %s AND idempotency_key = %s
+                       FOR UPDATE""",
+                    (workshop.tenant_id, workshop.idempotency_key),
+                )
+                row = cur.fetchone()
+                if row:
+                    existing = Workshop.model_validate(_decode_json(row[0]))
+                    if existing.order_fingerprint != workshop.order_fingerprint:
+                        raise WorkshopIdempotencyConflictError(
+                            "Idempotency key was already used for a different workshop order"
+                        )
+                    conn.commit()
+                    return existing
+                cur.execute(
+                    """INSERT INTO workshops
+                       (workshop_id, tenant_id, catalog_item_id, status,
+                        idempotency_key, order_fingerprint, data)
+                       VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb)""",
+                    (
+                        workshop.workshop_id,
+                        workshop.tenant_id,
+                        workshop.catalog_item_id,
+                        workshop.status.value,
+                        workshop.idempotency_key,
+                        workshop.order_fingerprint,
+                        data,
+                    ),
+                )
+            conn.commit()
+            return workshop
+        except WorkshopIdempotencyConflictError:
+            conn.rollback()
+            raise
+        except Exception as exc:
+            logger.warning("DB create idempotent workshop error: %s", exc)
+            conn.rollback()
+            raise PersistenceUnavailableError(
+                "failed to atomically persist workshop order"
+            ) from exc
+        finally:
+            conn.close()
+
     def save(self, workshop: Workshop) -> None:
         conn = _get_sync_conn()
         if not conn:

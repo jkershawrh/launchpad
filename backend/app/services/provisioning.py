@@ -1974,7 +1974,11 @@ class ProvisioningService:
         workshop = self._with_default_workshop_name(workshop)
         self._validate_workshop_seat_limit(workshop)
         fingerprint = self._workshop_order_fingerprint(workshop)
+        lookup_key = None
         if idempotency_key:
+            # Another stateless API replica may have accepted this order since
+            # this process last refreshed its cache.
+            self.refresh_persisted_state()
             lookup_key = (workshop.tenant_id, idempotency_key)
             existing = self._workshop_idempotency.get(lookup_key)
             if existing:
@@ -1984,10 +1988,6 @@ class ProvisioningService:
                         "Idempotency key was already used for a different workshop order"
                     )
                 return self._workshops[workshop_id]
-            self._workshop_idempotency[lookup_key] = (
-                fingerprint,
-                workshop.workshop_id,
-            )
 
         preview = self.preview_workshop_capacity(workshop)
         status = (
@@ -2003,6 +2003,20 @@ class ProvisioningService:
             "cluster_ref": preview.get("selected_cluster"),
             "metadata": {**workshop.metadata, "capacity_preview": preview},
         })
+        workshop_store = getattr(self.db, "workshops", None) if self.db else None
+        if idempotency_key and hasattr(workshop_store, "create_idempotent"):
+            order = workshop_store.create_idempotent(order)
+            self._workshops[order.workshop_id] = order
+            self._workshop_idempotency[lookup_key] = (
+                order.order_fingerprint,
+                order.workshop_id,
+            )
+            return order
+        if idempotency_key:
+            self._workshop_idempotency[lookup_key] = (
+                fingerprint,
+                order.workshop_id,
+            )
         self._save_workshop(order)
         return order
 

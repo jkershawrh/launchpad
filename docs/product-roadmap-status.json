@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T03:34:31Z",
+  "updated_at": "2026-09-20T03:41:39Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -532,10 +532,16 @@
       },
       "evidence": [
         "backend/app/services/health.py",
+        "backend/app/services/provisioning.py",
+        "backend/app/storage/stores.py",
+        "backend/tests/test_event_cleanup_postgres.py",
         "backend/tests/test_health_detailed.py",
-        "evidence/runs/control-plane-durable-bindings/green-local.xml"
+        "backend/tests/test_storage_sync.py",
+        "backend/tests/test_workshop_order_contract.py",
+        "evidence/runs/control-plane-durable-bindings/green-local.xml",
+        "evidence/runs/control-plane-workshop-idempotency/green-local.xml"
       ],
-      "note": "HA readiness now proves tenant, request, session, plan, showback, workshop, public-access, event, reservation, and lifecycle-queue state are bound to PostgreSQL-backed stores. A reachable database with any process-local fallback returns 503 and names the unsafe binding. Focused HA/readiness evidence is green locally; multi-replica fault injection and live failure-domain certification remain open, so LP-T025 is not integration- or live-green."
+      "note": "HA readiness rejects process-local state, and keyed workshop creation now uses a PostgreSQL transaction-scoped advisory lock plus the existing tenant/key uniqueness constraint. Concurrent API service instances converge on one workshop ID; conflicting payloads return an idempotency conflict. Focused local contracts are green and a PostgreSQL concurrency test is present but awaits EVENT_TEST_DATABASE_URL execution. Live multi-replica fault injection and failure-domain certification remain open."
     }
   },
   "rubric": [
