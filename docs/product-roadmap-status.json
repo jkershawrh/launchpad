@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:35:33Z",
+  "updated_at": "2026-09-20T02:41:51Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -470,23 +470,27 @@
     "LP-T023": {
       "state": "green-local",
       "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
+        "tdd": "green-integration",
+        "edd": "green-integration",
         "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
+        "bdd": "green-integration",
+        "cbt": "green-integration"
       },
       "evidence": [
+        "backend/tests/test_event_cleanup_postgres.py",
         "backend/tests/test_event_orchestration.py",
         "backend/tests/test_event_reservation_api.py",
         "contracts/event-orchestration-v1.yaml",
+        "contracts/public-access-v1.yaml",
         "docs/event-capacity-matrix.md",
         "evidence/runs/event-public-activation/green-local.xml",
         "evidence/runs/event-public-activation/red-local.xml",
+        "evidence/runs/event-public-claim-postgres/green-integration.xml",
+        "evidence/runs/event-public-claim-postgres/red-local.xml",
         "evidence/runs/event-status-reconciliation/green-local.xml",
         "evidence/runs/event-status-reconciliation/red-local.xml"
       ],
-      "note": "Read-only event status reconciliation joins reservations, lifecycle jobs, seat readiness, and public-access state without redisplaying instructor codes; PostgreSQL, claims/SSO, cleanup, and live proof remain."
+      "note": "Disposable PostgreSQL 16 integration now proves two independent API replicas atomically claim distinct seats, a reconstructed service validates both hashed sessions, and persistence failures fail closed instead of returning phantom claims. The existing public-access API contract remains compatible. Overall state remains green-local because the external Keycloak/OIDC browser journey, namespace RBAC, and live 1-, 5-, and certified-seat claim bursts remain open."
     }
   },
   "rubric": [

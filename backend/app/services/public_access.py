@@ -293,50 +293,71 @@ class PublicAccessService:
                 raise ValueError(GENERIC_DENIAL)
 
             identity = self._identities.get(normalized)
-            if identity is None:
-                participant_id = secrets.token_hex(16)
-                identity = ParticipantIdentity(
-                    participant_id=participant_id,
+            atomic_claim = getattr(self.store, "claim_entitlement", None)
+            if callable(atomic_claim):
+                claimed_pair = atomic_claim(
+                    order_id=order_id,
                     normalized_email=normalized,
-                    keycloak_username=f"lp-{participant_id}",
+                    proposed_participant_id=(
+                        identity.participant_id
+                        if identity is not None
+                        else secrets.token_hex(16)
+                    ),
+                    seat_refs=policy.seat_refs,
+                    code_version=policy.code_version,
+                    expires_at=policy.expires_at,
+                    now=now,
                 )
-                self._identities[normalized] = identity
-                if self.store:
-                    self.store.save_identity(identity)
-            elif identity.disabled_at is not None:
-                identity = identity.model_copy(update={"disabled_at": None})
-                self._identities[normalized] = identity
-                if self.store:
-                    self.store.save_identity(identity)
-
-            key = (order_id, identity.participant_id)
-            entitlement = self._entitlements.get(key)
-            if entitlement:
-                entitlement = entitlement.model_copy(update={
-                    "status": EntitlementStatus.ACTIVE,
-                    "code_version": policy.code_version,
-                    "updated_at": now,
-                })
-            else:
-                claimed = {
-                    existing.seat_ref for existing in self._entitlements.values()
-                    if existing.order_id == order_id and existing.status != EntitlementStatus.REVOKED
-                }
-                seat_ref = next((seat for seat in policy.seat_refs if seat not in claimed), None)
-                if seat_ref is None:
+                if claimed_pair is None:
                     self._record_failure(order_id, normalized, ip_address)
                     self._audit("claim", order_id, "denied")
                     raise ValueError(GENERIC_DENIAL)
-                entitlement = ParticipantEntitlement(
-                    participant_id=identity.participant_id,
-                    order_id=order_id,
-                    seat_ref=seat_ref,
-                    code_version=policy.code_version,
-                    expires_at=policy.expires_at,
-                )
+                identity, entitlement = claimed_pair
+            else:
+                if identity is None:
+                    participant_id = secrets.token_hex(16)
+                    identity = ParticipantIdentity(
+                        participant_id=participant_id,
+                        normalized_email=normalized,
+                        keycloak_username=f"lp-{participant_id}",
+                    )
+                    if self.store:
+                        self.store.save_identity(identity)
+                elif identity.disabled_at is not None:
+                    identity = identity.model_copy(update={"disabled_at": None})
+                    if self.store:
+                        self.store.save_identity(identity)
+
+                key = (order_id, identity.participant_id)
+                entitlement = self._entitlements.get(key)
+                if entitlement:
+                    entitlement = entitlement.model_copy(update={
+                        "status": EntitlementStatus.ACTIVE,
+                        "code_version": policy.code_version,
+                        "updated_at": now,
+                    })
+                else:
+                    claimed = {
+                        existing.seat_ref for existing in self._entitlements.values()
+                        if existing.order_id == order_id and existing.status != EntitlementStatus.REVOKED
+                    }
+                    seat_ref = next((seat for seat in policy.seat_refs if seat not in claimed), None)
+                    if seat_ref is None:
+                        self._record_failure(order_id, normalized, ip_address)
+                        self._audit("claim", order_id, "denied")
+                        raise ValueError(GENERIC_DENIAL)
+                    entitlement = ParticipantEntitlement(
+                        participant_id=identity.participant_id,
+                        order_id=order_id,
+                        seat_ref=seat_ref,
+                        code_version=policy.code_version,
+                        expires_at=policy.expires_at,
+                    )
+                if self.store:
+                    self.store.save_entitlement(entitlement)
+            self._identities[normalized] = identity
+            key = (order_id, identity.participant_id)
             self._entitlements[key] = entitlement
-            if self.store:
-                self.store.save_entitlement(entitlement)
             self._audit("claim", order_id, "granted", identity.participant_id)
 
             token = secrets.token_urlsafe(32)

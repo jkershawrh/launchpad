@@ -127,6 +127,16 @@ repeat activation fails closed and directs the operator to the existing code
 rotation workflow. Activating one workshop at a time prevents a later failure
 from discarding codes already created for other workshops.
 
+Participant seat assignment is durable and atomic across backend replicas.
+PostgreSQL takes ordered transaction-scoped locks for the normalized email and
+workshop order, then recovers the participant identity/entitlement or assigns
+the next unclaimed seat in the same transaction. Persistence errors propagate
+instead of being logged and ignored, so a participant is never told a seat was
+claimed when the authoritative write failed. A disposable PostgreSQL 16 run
+starts two independent access-service replicas simultaneously, proves they
+receive distinct seats, reconstructs a third service, and validates both
+hashed browser sessions after restart.
+
 The admin-only event status API is the read-only reconciliation boundary for
 operations. It joins the immutable allocation plan to every reservation,
 deterministic workshop, lifecycle job, seat state, persisted cluster, and
@@ -191,12 +201,14 @@ ID, and succeeds on an unchanged retry after recovery. Local component proof
 now covers provider-confirmed HTTP key-revocation receipts, idempotent receipt
 replay, fail-closed missing-receipt behavior, and recovery by a persisted
 non-secret key alias after the raw credential has been scrubbed. This does not
-represent a live OpenShift cleanup, external OIDC browser journey, or live
-LiteLLM revocation.
+represent a live OpenShift cleanup, external OIDC/Keycloak browser journey, or
+live LiteLLM revocation. The PostgreSQL claim proof exercises Launchpad's
+identity, entitlement, seat, and hashed-session boundary; it does not certify
+the external gateway or OpenShift Console SSO path.
 
 ## Next boundary
 
-The next orchestration increment must exercise participant claim/SSO, live
-LiteLLM revocation, and live zero-residue cleanup at the staged 1-, 5-, and
-certified-seat gates. A release remains short of live acceptance until those
-external and staged proofs exist.
+The next orchestration increment must exercise the external participant
+claim/Keycloak SSO journey, live LiteLLM revocation, and live zero-residue
+cleanup at the staged 1-, 5-, and certified-seat gates. A release remains short
+of live acceptance until those external and staged proofs exist.

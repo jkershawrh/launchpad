@@ -9,11 +9,13 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime
 from typing import Any, List, Optional
 
 from app.domain.access import (
     AccessPolicy,
     AccessSession,
+    EntitlementStatus,
     ParticipantEntitlement,
     ParticipantIdentity,
 )
@@ -69,6 +71,134 @@ class PostgresAccessStore:
         except Exception as exc:
             logger.warning("DB save public access record error: %s", exc)
             conn.rollback()
+            raise PersistenceUnavailableError(
+                "Authoritative public access state could not be persisted"
+            ) from exc
+        finally:
+            conn.close()
+
+    def claim_entitlement(
+        self,
+        *,
+        order_id: str,
+        normalized_email: str,
+        proposed_participant_id: str,
+        seat_refs: list[str],
+        code_version: int,
+        expires_at: datetime,
+        now: datetime,
+    ) -> tuple[ParticipantIdentity, ParticipantEntitlement] | None:
+        """Atomically recover or assign one seat across API replicas."""
+
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "Authoritative public access state is unavailable"
+            )
+        try:
+            # Advisory locks serialize the affected email and order. READ
+            # COMMITTED then refreshes the statement snapshot after a waiter
+            # acquires those locks, avoiding stale SERIALIZABLE snapshots.
+            conn.set_session(isolation_level="READ COMMITTED")
+            with conn.cursor() as cur:
+                for lock_key in sorted(
+                    (
+                        f"access-email:{normalized_email}",
+                        f"access-order:{order_id}",
+                    )
+                ):
+                    cur.execute(
+                        "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                        (lock_key,),
+                    )
+                cur.execute(
+                    """SELECT data FROM participant_identities
+                       WHERE lower(data->>'normalized_email') = lower(%s)
+                       FOR UPDATE""",
+                    (normalized_email,),
+                )
+                row = cur.fetchone()
+                if row:
+                    identity = ParticipantIdentity.model_validate(
+                        _decode_json(row[0])
+                    )
+                    if identity.disabled_at is not None:
+                        identity = identity.model_copy(update={"disabled_at": None})
+                else:
+                    identity = ParticipantIdentity(
+                        participant_id=proposed_participant_id,
+                        normalized_email=normalized_email,
+                        keycloak_username=f"lp-{proposed_participant_id}",
+                    )
+
+                cur.execute(
+                    """SELECT data FROM participant_entitlements
+                       WHERE data->>'order_id' = %s
+                         AND data->>'participant_id' = %s
+                       FOR UPDATE""",
+                    (order_id, identity.participant_id),
+                )
+                row = cur.fetchone()
+                if row:
+                    entitlement = ParticipantEntitlement.model_validate(
+                        _decode_json(row[0])
+                    ).model_copy(
+                        update={
+                            "status": EntitlementStatus.ACTIVE,
+                            "code_version": code_version,
+                            "updated_at": now,
+                        }
+                    )
+                else:
+                    cur.execute(
+                        """SELECT data->>'seat_ref'
+                           FROM participant_entitlements
+                           WHERE data->>'order_id' = %s
+                             AND data->>'status' <> 'revoked'""",
+                        (order_id,),
+                    )
+                    claimed = {item[0] for item in cur.fetchall()}
+                    seat_ref = next(
+                        (seat for seat in seat_refs if seat not in claimed),
+                        None,
+                    )
+                    if seat_ref is None:
+                        conn.rollback()
+                        return None
+                    entitlement = ParticipantEntitlement(
+                        participant_id=identity.participant_id,
+                        order_id=order_id,
+                        seat_ref=seat_ref,
+                        code_version=code_version,
+                        expires_at=expires_at,
+                    )
+
+                identity_data = json.dumps(identity.model_dump(mode="json"))
+                entitlement_data = json.dumps(
+                    entitlement.model_dump(mode="json")
+                )
+                cur.execute(
+                    """INSERT INTO participant_identities (participant_id, data)
+                       VALUES (%s, %s::jsonb)
+                       ON CONFLICT (participant_id) DO UPDATE
+                       SET data=EXCLUDED.data, updated_at=NOW()""",
+                    (identity.participant_id, identity_data),
+                )
+                cur.execute(
+                    """INSERT INTO participant_entitlements (entitlement_id, data)
+                       VALUES (%s, %s::jsonb)
+                       ON CONFLICT (entitlement_id) DO UPDATE
+                       SET data=EXCLUDED.data, updated_at=NOW()""",
+                    (entitlement.entitlement_id, entitlement_data),
+                )
+            conn.commit()
+            return identity, entitlement
+        except Exception as exc:
+            conn.rollback()
+            logger.warning("DB atomic public access claim error: %s", exc)
+            raise PersistenceUnavailableError(
+                "Authoritative public access claim could not be persisted"
+            ) from exc
         finally:
             conn.close()
 

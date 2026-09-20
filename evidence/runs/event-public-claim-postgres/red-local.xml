@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.068" timestamp="2026-09-19T21:40:56.556969-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_public_claim_replica_red" name="test_postgres_store_owns_atomic_seat_assignment" time="0.000"><failure message="AssertionError: assert False&#10; +  where False = callable(None)&#10; +    where None = getattr(PostgresAccessStore, 'claim_entitlement', None)">def test_postgres_store_owns_atomic_seat_assignment():
+&gt;       assert callable(getattr(PostgresAccessStore, "claim_entitlement", None))
+E       AssertionError: assert False
+E        +  where False = callable(None)
+E        +    where None = getattr(PostgresAccessStore, 'claim_entitlement', None)
+
+backend/tests/test_public_claim_replica_red.py:6: AssertionError</failure></testcase><testcase classname="backend.tests.test_public_claim_replica_red" name="test_public_access_delegates_claims_to_durable_store" time="0.000"><failure message="AssertionError: assert 'claim_entitlement' in {'ACTIVE', 'AccessSession', 'ClaimResult', 'EntitlementStatus', 'GENERIC_DENIAL', 'ParticipantEntitlement', ...}">def test_public_access_delegates_claims_to_durable_store():
+        names = set(PublicAccessService.claim.__code__.co_names)
+    
+&gt;       assert "claim_entitlement" in names
+E       AssertionError: assert 'claim_entitlement' in {'ACTIVE', 'AccessSession', 'ClaimResult', 'EntitlementStatus', 'GENERIC_DENIAL', 'ParticipantEntitlement', ...}
+
+backend/tests/test_public_claim_replica_red.py:12: AssertionError</failure></testcase></testsuite></testsuites>

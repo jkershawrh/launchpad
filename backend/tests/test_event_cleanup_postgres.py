@@ -235,6 +235,77 @@ def _prepare_reclaimed_event() -> EventRecord:
     return record
 
 
+def test_parallel_api_replicas_claim_unique_seats_and_survive_restart() -> None:
+    owner = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+        store=PostgresAccessStore(),
+    )
+    _, code = owner.create_policy(
+        order_id="parallel-replica-order",
+        order_type="workshop",
+        catalog_slug="build-agent",
+        seat_refs=["seat-1", "seat-2"],
+        expires_at=datetime.utcnow() + timedelta(hours=2),
+    )
+    replicas = [
+        PublicAccessService(
+            enabled=True,
+            shared_origin="https://labs.example.io",
+            shared_path_mode=True,
+            store=PostgresAccessStore(),
+        )
+        for _ in range(2)
+    ]
+    barrier = threading.Barrier(3)
+    claims = []
+    errors = []
+
+    def claim(replica: PublicAccessService, participant: int) -> None:
+        try:
+            barrier.wait()
+            claims.append(
+                replica.claim(
+                    order_id="parallel-replica-order",
+                    email=f"participant-{participant}@example.test",
+                    code=code,
+                    ip_address=f"192.0.2.{participant}",
+                )
+            )
+        except Exception as exc:  # noqa: BLE001 - preserve thread failures
+            errors.append(exc)
+
+    threads = [
+        threading.Thread(target=claim, args=(replica, index))
+        for index, replica in enumerate(replicas, start=1)
+    ]
+    for thread in threads:
+        thread.start()
+    barrier.wait()
+    for thread in threads:
+        thread.join(timeout=10)
+
+    assert errors == []
+    assert len(claims) == 2
+    assert {item.entitlement.seat_ref for item in claims} == {
+        "seat-1",
+        "seat-2",
+    }
+    restarted = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+        store=PostgresAccessStore(),
+    )
+    for item in claims:
+        restored = restarted.validate_session(
+            item.session_token,
+            "parallel-replica-order",
+        )
+        assert restored.participant_id == item.identity.participant_id
+
+
 def test_cleanup_finalization_survives_two_process_restarts() -> None:
     record = _prepare_reclaimed_event()
 
