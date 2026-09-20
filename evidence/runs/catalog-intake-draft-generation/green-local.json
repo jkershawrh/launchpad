@@ -1,0 +1,42 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-draft-evidence/v1",
+  "run_id": "catalog-intake-draft-green-local-20260920",
+  "recorded_at": "2026-09-20T00:00:00-05:00",
+  "result": "GREEN-local",
+  "requirements": [
+    "LP-T098",
+    "LP-T099"
+  ],
+  "red": {
+    "observed": true,
+    "expected_failure": "build_catalog_draft_from_receipt was absent",
+    "result": "test collection failed before implementation"
+  },
+  "green": {
+    "tests": 29,
+    "command": "PYTHONPATH=.:backend ./.venv/bin/pytest -q backend/tests/test_catalog_onboarding.py backend/tests/test_catalog_onboarding_cli.py",
+    "result": "pass"
+  },
+  "contracts": {
+    "receipt_schema": "launchpad.redhat.com/catalog-discovery-receipt/v1",
+    "catalog_status": "draft",
+    "exposure_policy": [
+      "internal"
+    ],
+    "maximum_seats": 1,
+    "activation_blockers_required": true,
+    "deterministic_output": true,
+    "secret_payloads_copied": false
+  },
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false
+  },
+  "release": {
+    "eligible": false,
+    "boundary": "Local draft generation only; security, artifact, model, lifecycle, restart, cleanup, scale, approval, and live promotion evidence remain required."
+  }
+}

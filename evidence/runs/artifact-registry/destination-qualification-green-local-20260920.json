@@ -1,0 +1,36 @@
+{
+  "evidence_id": "artifact-destination-qualification-green-local-20260920",
+  "generated_at": "2026-09-20T06:00:00Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T019"],
+  "related_open_task_ids": ["LP-T018", "LP-T020"],
+  "red": {
+    "result": "destination receipts had no executable evidence evaluator"
+  },
+  "green": {
+    "tests_passed": 9,
+    "tests_failed": 0,
+    "live_destinations_qualified": 0
+  },
+  "proof": {
+    "required_checks": [
+      "credential",
+      "certificate",
+      "architecture",
+      "signature",
+      "exact_digest",
+      "cold_pull",
+      "cache_loss"
+    ],
+    "immutable_digest_required": true,
+    "authoritative_origin_required": true,
+    "inline_credentials_prohibited": true,
+    "whole_receipt_fail_closed": true
+  },
+  "boundary": [
+    "No destination cluster was contacted or qualified",
+    "No registry credential, image, or repository was changed",
+    "GREEN-integration is emitted only for a complete synthetic receipt; production eligibility still requires authentic GREEN-live evidence",
+    "All configured destinations remain RED"
+  ]
+}

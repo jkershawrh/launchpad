@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="8" time="0.047" timestamp="2026-09-20T01:59:07.105792-05:00" hostname="jkershaw-mac"><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_repository_threat_model_is_complete_and_release_blocking" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">def test_repository_threat_model_is_complete_and_release_blocking() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:29:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x106fd2f30&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_missing_required_surface_fails_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">def test_missing_required_surface_fails_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:41:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x106fd2ed0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_dangling_boundary_asset_and_control_references_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">def test_dangling_boundary_asset_and_control_references_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:52:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x106fd3bf0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_every_threat_requires_mitigation_and_verification[mitigations]" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">field = 'mitigations'
+
+    @pytest.mark.parametrize("field", ["mitigations", "verification"])
+    def test_every_threat_requires_mitigation_and_verification(field: str) -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:65:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x106fd3c50&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_every_threat_requires_mitigation_and_verification[verification]" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">field = 'verification'
+
+    @pytest.mark.parametrize("field", ["mitigations", "verification"])
+    def test_every_threat_requires_mitigation_and_verification(field: str) -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:65:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x106fd2ed0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_missing_evidence_path_fails_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">def test_missing_evidence_path_fails_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:74:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x107028a10&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_unresolved_risk_requires_owner_gate_and_verification_plan" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">def test_unresolved_risk_requires_owner_gate_and_verification_plan() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:85:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x107028470&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_security_threat_model" name="test_duplicate_ids_and_unsupported_schema_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'">def test_duplicate_ids_and_unsupported_schema_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_security_threat_model.py:96:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_security_threat_model.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1070292b0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_security_threat_model.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase></testsuite></testsuites>

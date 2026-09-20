@@ -315,7 +315,9 @@ an order.**
   fail-closed contract gate. Organization ownership, repository grants,
   signing, restore, and destination cold-pull evidence remain open.
 - `LP-T019` Add destination pull, certificate, architecture, signature, and
-  cold-cache checks to eligibility.
+  cold-cache checks to eligibility. **GREEN-local:** a versioned, fail-closed
+  destination receipt contract and evaluator now require evidence for every
+  check; authentic per-cluster integration and live receipts remain open.
 - `LP-T020` Pre-pull scheduled-event releases and report cache/mirror status.
 - **Gate:** cold-node and registry-restart tests succeed on every certified
   execution cluster.
@@ -334,8 +336,16 @@ repository and receive a safe, reviewable, certified catalog draft.**
   cluster-scoped findings; deployed certification and promotion remain open.
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
+  **GREEN-local (catalog-draft slice):** a versioned immutable discovery
+  receipt deterministically generates the reviewable catalog draft. Deployment
+  package, journey, ownership, support, and complete certification generation
+  remain open.
 - `LP-T099` Default generated entries to draft, internal-only, and one-seat;
   fail closed on ambiguous, privileged, mutable, or unsupported requirements.
+  **GREEN-local:** draft generation enforces draft status, internal-only
+  exposure, a one-seat ceiling, immutable matching sources, unchanged
+  inventory, and unresolved blockers; broader unsupported-requirement policy
+  remains open.
 - `LP-T100` Run source, content, artifact, security, model, one-seat lifecycle,
   restart, and zero-residue reclaim gates without editing a live catalog.
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
@@ -616,12 +626,18 @@ and reconcile complete event demand across cluster and model supply.**
   availability, model replicas, concurrency, tokens, queues, and DR headroom.
 - `LP-T104` Reserve cluster and inference supply atomically for the whole
   workshop and reject or queue demand before creating seats when any dimension
-  is insufficient.
+  is insufficient. **GREEN-local:** a pure aggregate admission ledger proves
+  whole-workshop accept/reject, infrastructure and model envelopes,
+  idempotency, and thread-level overbook protection. Durable multi-process
+  serialization and live authoritative supply remain open.
 - `LP-T105` Keep deterministic eligibility and admission authoritative; permit
   AI only to forecast or recommend among policy-eligible choices.
 - `LP-T106` Reconcile forecast, reservation, provisioned request, actual use,
   reclaim release, latency, and failure data by event, workshop, catalog,
-  cluster, model, and seat.
+  cluster, model, and seat. **GREEN-local (reservation slice):** accepted and
+  rejected decisions retain event/workshop/catalog/cluster/model dimensions,
+  while evidence-gated release and capacity-drift reconciliation are proven
+  offline. Provisioned, actual-use, latency, and failure joins remain open.
 - `LP-T107` Prove concurrent-order protection, maintenance/quarantine behavior,
   model saturation, cache loss, capacity drift, and reservation release.
 - **Gate:** three event forecasts remain within the accepted error budget,
@@ -734,7 +750,11 @@ participant execution clusters.**
 software provenance, secret hygiene, and accountable mutation.**
 
 - `LP-T057` Threat-model public access, control plane, execution fleet, model
-  plane, artifact supply, data flow, and support access.
+  plane, artifact supply, data flow, and support access. **GREEN-local:** the
+  versioned repository-owned model validates seven surfaces, trust boundaries,
+  assets, controls, threats, verification evidence, ownership, and unresolved
+  risk gates. Six high risks and five planned verifications correctly block
+  release.
 - `LP-T058` Enforce least privilege, credential rotation, secret scanning,
   policy-as-code, signing/verification, audit retention, and incident response.
   **GREEN-local (session-response slice):** session APIs now use a dedicated

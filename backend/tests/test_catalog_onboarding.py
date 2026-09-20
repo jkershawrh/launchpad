@@ -7,6 +7,7 @@ import yaml
 from app.adapters.file.catalog import FileCatalogAdapter
 from app.domain.enums import CatalogStatus
 from app.services.catalog_onboarding import (
+    build_catalog_draft_from_receipt,
     build_catalog_item,
     discover_quickstart_repo,
     load_intake,
@@ -652,3 +653,123 @@ spec:
     blockers = "\n".join(intake["certification"]["activation_blockers"])
     assert "privileged workload behavior" in blockers
     assert "Secret manifest" in blockers
+
+
+def test_discovery_receipt_deterministically_generates_a_fail_closed_draft(
+    tmp_path: Path,
+):
+    content = tmp_path / "showroom"
+    pages = content / "modules/ROOT/pages"
+    pages.mkdir(parents=True)
+    (tmp_path / "site.yml").write_text(
+        "content:\n  sources:\n    - url: .\n      start_path: showroom\n"
+    )
+    (content / "antora.yml").write_text("name: example\ntitle: Example\nversion: ~\n")
+    (pages / "index.adoc").write_text("= Start\n")
+    chart = tmp_path / "deploy/chart"
+    chart.mkdir(parents=True)
+    (chart / "Chart.yaml").write_text(
+        "apiVersion: v2\nname: example\nversion: 0.1.0\n"
+    )
+    (chart / "values.yaml").write_text("{}\n")
+
+    intake, receipt = discover_quickstart_repo(
+        tmp_path,
+        repo_url="https://github.com/example/quickstart.git",
+        revision="d" * 40,
+        catalog_id="receipt-quickstart",
+        display_name="Receipt Quickstart",
+    )
+
+    first = build_catalog_draft_from_receipt(receipt)
+    second = build_catalog_draft_from_receipt(receipt)
+
+    assert first == second == build_catalog_item(intake)
+    assert receipt["schema"] == "launchpad.redhat.com/catalog-discovery-receipt/v1"
+    assert first["status"] == "draft"
+    assert first["metadata"]["allowed_exposure_policies"] == ["internal"]
+    assert first["metadata"]["max_workshop_seats"] == 1
+    assert first["metadata"]["activation_blockers"]
+    assert first["metadata"]["showroom_content_ref"] == "d" * 40
+    assert first["metadata"]["workload_revision"] == "d" * 40
+
+
+@pytest.mark.parametrize(
+    ("mutation", "message"),
+    [
+        (
+            lambda receipt: receipt.update({"discovery_status": "fail"}),
+            "successful repository discovery",
+        ),
+        (
+            lambda receipt: receipt["draft_intake"]["catalog"].update(
+                {"status": "active"}
+            ),
+            "catalog status draft",
+        ),
+        (
+            lambda receipt: receipt["draft_intake"]["runtime"].update(
+                {"allowed_exposure_policies": ["public_code"]}
+            ),
+            "internal-only exposure",
+        ),
+        (
+            lambda receipt: receipt["draft_intake"]["certification"].update(
+                {"max_workshop_seats": 5}
+            ),
+            "one-seat ceiling",
+        ),
+        (
+            lambda receipt: receipt["draft_intake"]["certification"].update(
+                {"activation_blockers": []}
+            ),
+            "unresolved activation blocker",
+        ),
+        (
+            lambda receipt: receipt["draft_intake"]["sources"]["showroom"].update(
+                {"revision": "main"}
+            ),
+            "immutable 40-character Git SHA",
+        ),
+        (
+            lambda receipt: receipt["draft_intake"]["catalog"].update(
+                {"catalog_item_id": "different-id"}
+            ),
+            "catalog identity",
+        ),
+        (
+            lambda receipt: receipt["draft_intake"]["discovery"].update(
+                {"inventory": {}}
+            ),
+            "inventory differs",
+        ),
+    ],
+)
+def test_discovery_receipt_rejects_unsafe_or_inconsistent_draft_generation(
+    tmp_path: Path,
+    mutation,
+    message: str,
+):
+    content = tmp_path / "showroom"
+    content.mkdir()
+    (tmp_path / "site.yml").write_text(
+        "content:\n  sources:\n    - url: .\n      start_path: showroom\n"
+    )
+    (content / "antora.yml").write_text("name: example\ntitle: Example\nversion: ~\n")
+    chart = tmp_path / "deploy/chart"
+    chart.mkdir(parents=True)
+    (chart / "Chart.yaml").write_text(
+        "apiVersion: v2\nname: example\nversion: 0.1.0\n"
+    )
+    (chart / "values.yaml").write_text("{}\n")
+    _, receipt = discover_quickstart_repo(
+        tmp_path,
+        repo_url="https://github.com/example/quickstart.git",
+        revision="e" * 40,
+        catalog_id="unsafe-quickstart",
+        display_name="Unsafe Quickstart",
+    )
+    mutation(receipt)
+
+    with pytest.raises(ValueError, match=message):
+        build_catalog_draft_from_receipt(receipt)

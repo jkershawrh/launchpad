@@ -1,0 +1,77 @@
+{
+  "schema_version": "launchpad.intel.com/test-evidence/v1",
+  "run_id": "capacity-admission-20260920T070218Z",
+  "observed_at": "2026-09-20T07:02:18Z",
+  "source_commit": "32c966aa3f1e13b9d8261d04c4b6b01f7e571daa",
+  "result": "passed",
+  "scope": "Pure offline whole-workshop infrastructure and inference capacity admission",
+  "tests": {
+    "count": 12,
+    "passed": 12,
+    "failed": 0,
+    "database_connections": 0,
+    "live_cluster_calls": 0,
+    "live_cluster_mutations": 0
+  },
+  "proof": {
+    "whole_workshop_accept_or_reject": true,
+    "partial_seat_reservations": 0,
+    "concurrent_overbook_prevented": true,
+    "accepted_and_rejected_retries_idempotent": true,
+    "changed_idempotency_payload_rejected": true,
+    "exact_catalog_and_model_release_required": true,
+    "stale_or_ineligible_supply_rejected": true,
+    "infrastructure_dimensions_reserved": [
+      "seats",
+      "cpu_millicores",
+      "memory_mib",
+      "pods",
+      "storage_gib",
+      "routes",
+      "model_slots"
+    ],
+    "inference_dimensions_reserved": [
+      "concurrent_requests",
+      "input_tokens_per_minute",
+      "output_tokens_per_minute"
+    ],
+    "cleanup_evidence_required_before_release": true,
+    "capacity_drift_reported": true,
+    "reconciliation_dimensions": [
+      "forecast",
+      "event",
+      "workshop",
+      "catalog",
+      "cluster",
+      "model",
+      "decision",
+      "reservation"
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "evidence/runs/capacity-admission/red-local.xml",
+      "sha256": "a4319ef742cb11dce5bdb2da896364d36b34de532264152304fe768e55a5ae20"
+    },
+    {
+      "path": "evidence/runs/capacity-admission/red-release-local.xml",
+      "sha256": "7a9e20d21ad7f52819975905e36ab727e1e647b20be0f197ac3f75440c7680a8"
+    },
+    {
+      "path": "evidence/runs/capacity-admission/red-contract-local.xml",
+      "sha256": "c269132ed04d63bb0c52da599a6560b7ce509ada2d5aeb4e10171e301e11691d"
+    },
+    {
+      "path": "evidence/runs/capacity-admission/green-local.xml",
+      "sha256": "9bc2b63e4973d0f565350b754bcf74054471a3a3548ab5f49a52841a895cb429"
+    }
+  ],
+  "boundaries": [
+    "The ledger is process-local and intentionally has no database or cluster adapter.",
+    "Supply snapshots are test inputs; this proof does not establish a live authoritative collector.",
+    "Concurrency proof is thread-level, not multi-process or PostgreSQL serialization proof.",
+    "Model demand covers declared concurrency and token-rate envelopes, not measured runtime queue behavior.",
+    "Release proves evidence-gated accounting only; it does not inspect or delete external resources.",
+    "This is GREEN-local contract evidence and does not authorize live admission."
+  ]
+}

@@ -41,7 +41,7 @@
     },
     {
       "path": "evidence/runs/event-capacity-reconciliation/red-approval-local.xml",
-      "sha256": "b86d64a7ad27ffdfa7f91ab3566337a1c306c646bce36911f9036a21d9bf9e88"
+      "sha256": "50683e22fdf76257165da333448d2ea7972e3cf874023160f1b30b2cc1f4302e"
     },
     {
       "path": "evidence/runs/event-capacity-reconciliation/green-local.xml",

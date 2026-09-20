@@ -72,7 +72,7 @@ destination_qualification:
     - cold_pull
     - cache_loss
   clusters:
-    arena: {status: RED, evidence: []}
-    brutus: {status: RED, evidence: []}
-    flightpath: {status: RED, evidence: []}
-    oberon: {status: RED, evidence: []}
+    arena: {status: RED, architectures: [amd64], evidence: []}
+    brutus: {status: RED, architectures: [amd64], evidence: []}
+    flightpath: {status: RED, architectures: [amd64], evidence: []}
+    oberon: {status: RED, architectures: [amd64], evidence: []}

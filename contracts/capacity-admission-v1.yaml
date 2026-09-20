@@ -1,0 +1,169 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Aggregate Workshop Capacity Admission
+  version: 1.0.0
+  description: >-
+    Pure whole-workshop admission contract. A request is accepted completely
+    on its selected cluster and model release or rejected without a partial
+    reservation.
+paths: {}
+components:
+  schemas:
+    EventResourceVector:
+      type: object
+      required: [seats, cpu_millicores, memory_mib, pods, storage_gib, routes, model_slots]
+      properties:
+        seats: {type: integer, minimum: 0}
+        cpu_millicores: {type: integer, minimum: 0}
+        memory_mib: {type: integer, minimum: 0}
+        pods: {type: integer, minimum: 0}
+        storage_gib: {type: integer, minimum: 0}
+        routes: {type: integer, minimum: 0}
+        model_slots: {type: integer, minimum: 0}
+    InferenceCapacity:
+      type: object
+      required: [model_id, model_release, concurrent_requests, input_tokens_per_minute, output_tokens_per_minute]
+      properties:
+        model_id: {type: string, minLength: 1}
+        model_release: {type: string, minLength: 1}
+        concurrent_requests: {type: integer, minimum: 0}
+        input_tokens_per_minute: {type: integer, minimum: 0}
+        output_tokens_per_minute: {type: integer, minimum: 0}
+    CapacityEnvelope:
+      type: object
+      required: [infrastructure, inference]
+      properties:
+        infrastructure: {$ref: '#/components/schemas/EventResourceVector'}
+        inference: {$ref: '#/components/schemas/InferenceCapacity'}
+    CapacitySupplySnapshot:
+      type: object
+      required: [snapshot_id, policy_id, cluster_ref, catalog_id, catalog_release, eligible, infrastructure, inference, observed_at, valid_until]
+      properties:
+        snapshot_id: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        policy_id: {type: string, minLength: 1}
+        cluster_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        eligible: {type: boolean}
+        infrastructure: {$ref: '#/components/schemas/EventResourceVector'}
+        inference: {$ref: '#/components/schemas/InferenceCapacity'}
+        observed_at: {type: string, format: date-time}
+        valid_until: {type: string, format: date-time}
+    WorkshopCapacityRequest:
+      type: object
+      required: [request_id, idempotency_key, forecast_ref, event_id, workshop_id, catalog_id, catalog_release, cluster_ref, placement_policy, seats, infrastructure_per_seat, inference_per_seat, requested_at]
+      properties:
+        request_id: {type: string, minLength: 1}
+        idempotency_key: {type: string, minLength: 1}
+        forecast_ref: {type: string, minLength: 1}
+        event_id: {type: string, minLength: 1}
+        workshop_id: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        cluster_ref: {type: string, minLength: 1}
+        placement_policy: {const: single_cluster_per_workshop}
+        seats: {type: integer, minimum: 1}
+        infrastructure_per_seat: {$ref: '#/components/schemas/EventResourceVector'}
+        inference_per_seat: {$ref: '#/components/schemas/InferenceCapacity'}
+        requested_at: {type: string, format: date-time}
+    CapacityAdmissionDecision:
+      type: object
+      required: [decision_id, request_id, idempotency_key, request_fingerprint, forecast_ref, event_id, workshop_id, catalog_id, catalog_release, cluster_ref, model_id, model_release, supply_snapshot_id, policy_id, status, reason_codes, limiting_dimensions, requested_seats, reserved_seats, demand, remaining_before, remaining_after, reservation_id, decided_at]
+      properties:
+        decision_id: {type: string}
+        request_id: {type: string}
+        idempotency_key: {type: string}
+        request_fingerprint: {type: string}
+        forecast_ref: {type: string}
+        event_id: {type: string}
+        workshop_id: {type: string}
+        catalog_id: {type: string}
+        catalog_release: {type: string}
+        cluster_ref: {type: string}
+        model_id: {type: string}
+        model_release: {type: string}
+        supply_snapshot_id: {type: string}
+        policy_id: {type: string}
+        status: {type: string, enum: [accepted, rejected]}
+        reason_codes: {type: array, items: {type: string}}
+        limiting_dimensions: {type: array, items: {type: string}}
+        requested_seats: {type: integer, minimum: 1}
+        reserved_seats: {type: integer, minimum: 0}
+        demand: {$ref: '#/components/schemas/CapacityEnvelope'}
+        remaining_before: {$ref: '#/components/schemas/CapacityEnvelope'}
+        remaining_after: {$ref: '#/components/schemas/CapacityEnvelope'}
+        reservation_id: {type: [string, 'null']}
+        decided_at: {type: string, format: date-time}
+    AggregateCapacityReservation:
+      type: object
+      required: [reservation_id, decision_id, idempotency_key, request_fingerprint, forecast_ref, event_id, workshop_id, catalog_id, catalog_release, cluster_ref, model_id, model_release, supply_snapshot_id, policy_id, resources, status, created_at, released_at, cleanup_evidence_id]
+      properties:
+        reservation_id: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        decision_id: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        idempotency_key: {type: string, minLength: 1}
+        request_fingerprint: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        forecast_ref: {type: string, minLength: 1}
+        event_id: {type: string, minLength: 1}
+        workshop_id: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        cluster_ref: {type: string, minLength: 1}
+        model_id: {type: string, minLength: 1}
+        model_release: {type: string, minLength: 1}
+        supply_snapshot_id: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        policy_id: {type: string, minLength: 1}
+        resources: {$ref: '#/components/schemas/CapacityEnvelope'}
+        status: {type: string, enum: [held, released]}
+        created_at: {type: string, format: date-time}
+        released_at: {type: [string, 'null'], format: date-time}
+        cleanup_evidence_id:
+          type: [string, 'null']
+          pattern: '^sha256:[0-9a-f]{64}$'
+    CapacityAdmissionRecord:
+      type: object
+      required: [decision_id, reservation_id, forecast_ref, event_id, workshop_id, catalog_id, catalog_release, cluster_ref, model_id, model_release, supply_snapshot_id, policy_id, decision_status, reservation_status, requested_seats, reserved_seats, reason_codes, limiting_dimensions, requested_resources, cleanup_evidence_id, decided_at, released_at]
+      properties:
+        decision_id: {type: string}
+        reservation_id: {type: [string, 'null']}
+        forecast_ref: {type: string}
+        event_id: {type: string}
+        workshop_id: {type: string}
+        catalog_id: {type: string}
+        catalog_release: {type: string}
+        cluster_ref: {type: string}
+        model_id: {type: string}
+        model_release: {type: string}
+        supply_snapshot_id: {type: string}
+        policy_id: {type: string}
+        decision_status: {type: string, enum: [accepted, rejected]}
+        reservation_status: {type: [string, 'null'], enum: [held, released, null]}
+        requested_seats: {type: integer, minimum: 1}
+        reserved_seats: {type: integer, minimum: 0}
+        reason_codes: {type: array, items: {type: string}}
+        limiting_dimensions: {type: array, items: {type: string}}
+        requested_resources: {$ref: '#/components/schemas/CapacityEnvelope'}
+        cleanup_evidence_id:
+          type: [string, 'null']
+          pattern: '^sha256:[0-9a-f]{64}$'
+        decided_at: {type: string, format: date-time}
+        released_at: {type: [string, 'null'], format: date-time}
+    CapacityReconciliationSnapshot:
+      type: object
+      required: [schema_version, supply_snapshot_id, policy_id, cluster_ref, model_id, model_release, status, active_reservations, active_seats, active_infrastructure, active_inference, exceeded_dimensions, records, observed_at]
+      properties:
+        schema_version: {const: launchpad.intel.com/capacity-admission-reconciliation/v1}
+        supply_snapshot_id: {type: string}
+        policy_id: {type: string}
+        cluster_ref: {type: string}
+        model_id: {type: string}
+        model_release: {type: string}
+        status: {type: string, enum: [balanced, overcommitted]}
+        active_reservations: {type: integer, minimum: 0}
+        active_seats: {type: integer, minimum: 0}
+        active_infrastructure: {$ref: '#/components/schemas/EventResourceVector'}
+        active_inference: {$ref: '#/components/schemas/InferenceCapacity'}
+        exceeded_dimensions: {type: array, items: {type: string}}
+        records:
+          type: array
+          items: {$ref: '#/components/schemas/CapacityAdmissionRecord'}
+        observed_at: {type: string, format: date-time}

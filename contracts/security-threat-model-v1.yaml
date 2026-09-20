@@ -1,0 +1,399 @@
+schema_version: launchpad.redhat.com/security-threat-model/v1
+kind: LaunchpadSecurityThreatModel
+metadata:
+  id: launchpad-security-threat-model
+  version: 1.0.0
+  owner: launchpad-security-owner
+  scope: control-plane, participant-access, execution, model, artifact, data, and support paths
+  review_policy: review on boundary, identity, data-classification, or release-stage change
+
+trust_boundaries:
+  - id: public-edge-to-identity
+    source: public participant browser
+    destination: Cloudflare edge and Keycloak
+    authentication: instructor code followed by OIDC session
+    authorization: order entitlement
+    transport: trusted HTTPS required
+  - id: identity-to-control-api
+    source: Keycloak authenticator and public gateway
+    destination: Launchpad private access API
+    authentication: broker secret and OIDC claims
+    authorization: order, participant, and entitlement checks
+    transport: cluster-private TLS
+  - id: control-api-to-state
+    source: Launchpad backend and lifecycle workers
+    destination: PostgreSQL authoritative state
+    authentication: namespace-scoped database credential
+    authorization: application database role
+    transport: cluster-private service network
+  - id: control-plane-to-execution
+    source: Launchpad lifecycle workers
+    destination: registered OpenShift execution clusters
+    authentication: per-cluster service-account kubeconfig
+    authorization: least-privilege provisioner RBAC
+    transport: verified Kubernetes API TLS
+  - id: seat-to-model-plane
+    source: participant seat workload
+    destination: governed model gateway
+    authentication: seat-scoped virtual model key
+    authorization: catalog and model policy
+    transport: TLS with cluster trust bundle
+  - id: source-to-registry
+    source: CI release identity
+    destination: authoritative artifact registry
+    authentication: scoped publisher identity
+    authorization: repository-specific push grant
+    transport: trusted registry TLS
+  - id: runtime-to-evidence
+    source: lifecycle, access, model, and cluster producers
+    destination: operational database and evidence store
+    authentication: service identity
+    authorization: append/read roles separated by purpose
+    transport: authenticated private transport
+  - id: support-to-administration
+    source: authorized operator
+    destination: Launchpad admin API and registered clusters
+    authentication: named federated identity with step-up for mutation
+    authorization: role and incident-bound approval
+    transport: trusted HTTPS or Kubernetes API TLS
+
+assets:
+  - id: participant-identity
+    owner: identity-service-owner
+    classification: participant-confidential
+    security_properties: [confidentiality, integrity, expiry]
+  - id: order-entitlement
+    owner: launchpad-product-owner
+    classification: authorization-critical
+    security_properties: [integrity, uniqueness, expiry]
+  - id: lifecycle-state
+    owner: launchpad-sre-owner
+    classification: operational-critical
+    security_properties: [integrity, availability, recoverability]
+  - id: cluster-credential
+    owner: execution-fleet-owner
+    classification: restricted-secret
+    security_properties: [confidentiality, least-privilege, rotation]
+  - id: model-credential
+    owner: ai-service-owner
+    classification: restricted-secret
+    security_properties: [confidentiality, scope, revocation]
+  - id: catalog-release
+    owner: catalog-release-owner
+    classification: software-supply-critical
+    security_properties: [integrity, provenance, availability]
+  - id: participant-workload-data
+    owner: data-governance-owner
+    classification: tenant-confidential
+    security_properties: [confidentiality, purpose-limitation, deletion]
+  - id: audit-evidence
+    owner: security-operations-owner
+    classification: audit-critical
+    security_properties: [integrity, retention, traceability]
+  - id: administrative-authority
+    owner: launchpad-security-owner
+    classification: privileged
+    security_properties: [accountability, least-privilege, revocation]
+
+controls:
+  - id: CTRL-IDENTITY-ATOMIC-CLAIM
+    owner: identity-service-owner
+    type: preventive
+    implementation: Atomic code activation, claim, recovery, rotation, and expiry transactions.
+    evidence:
+      - backend/tests/test_public_access.py
+      - backend/tests/test_event_cleanup_postgres.py
+  - id: CTRL-RBAC-SEAT-ISOLATION
+    owner: execution-fleet-owner
+    type: preventive
+    implementation: Stable participant identity receives edit only in its claimed namespace.
+    evidence:
+      - backend/tests/test_public_rbac.py
+      - backend/tests/test_tenant_authorization.py
+      - evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json
+  - id: CTRL-EDGE-FAIL-CLOSED
+    owner: identity-service-owner
+    type: preventive
+    implementation: Public gateway placement, issuer, TLS, and route selection fail closed.
+    evidence:
+      - backend/tests/test_public_access_network_policy.py
+      - backend/tests/test_public_tunnel_contract.py
+  - id: CTRL-LIFECYCLE-FENCING
+    owner: launchpad-sre-owner
+    type: preventive
+    implementation: Persisted cluster targeting, idempotency, leases, and fencing prevent split mutation.
+    evidence:
+      - backend/tests/test_lifecycle_job_queue.py
+      - backend/tests/test_multicluster_reconciliation.py
+      - evidence/runs/flightpath-stage/keycloak-ha.json
+  - id: CTRL-CLUSTER-LEAST-PRIVILEGE
+    owner: execution-fleet-owner
+    type: preventive
+    implementation: Provisioner binding and remote credentials are limited to declared resources and roles.
+    evidence:
+      - backend/tests/test_launchpad_rbac_manifest.py
+      - backend/tests/test_kubeconfig_security.py
+      - backend/tests/test_ha_dr_manifests.py
+  - id: CTRL-MODEL-KEY-LIFECYCLE
+    owner: ai-service-owner
+    type: preventive
+    implementation: Seat model keys are brokered, tracked by non-secret ID, and revoked during cleanup.
+    evidence:
+      - backend/tests/test_maas_key_broker.py
+      - backend/tests/test_workload_gitops.py
+  - id: CTRL-ARTIFACT-IMMUTABILITY
+    owner: catalog-release-owner
+    type: preventive
+    implementation: Catalog content and workload images are allowlisted and pinned to immutable revisions.
+    evidence:
+      - backend/tests/test_catalog_supply_chain.py
+      - evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json
+  - id: CTRL-DEPENDENCY-SCAN
+    owner: catalog-release-owner
+    type: detective
+    implementation: Commit history secret scanning and pinned dependency checks block known unsafe candidates.
+    evidence:
+      - .github/workflows/ci.yml
+      - backend/tests/test_dependency_security_checkpoint.py
+      - evidence/runs/dependency-security-checkpoint-20260909.json
+  - id: CTRL-RUNTIME-SECRET-BOUNDARY
+    owner: launchpad-security-owner
+    type: preventive
+    implementation: Runtime secrets stay outside GitOps Applications and API session responses.
+    evidence:
+      - backend/tests/test_workload_gitops.py
+      - backend/tests/test_session_response_security.py
+  - id: CTRL-AUDIT-EVENTS
+    owner: security-operations-owner
+    type: detective
+    implementation: Access decisions and lifecycle mutations emit actor- and order-correlated audit events.
+    evidence:
+      - backend/tests/test_public_access.py
+      - backend/tests/test_e2e_integration.py
+  - id: CTRL-DATA-MINIMIZATION
+    owner: data-governance-owner
+    type: preventive
+    implementation: Evidence uses opaque identity correlation and excludes secret values and raw prompts.
+    evidence:
+      - backend/tests/test_launchpad_observability.py
+      - backend/app/integrations/llm_audit.py
+  - id: CTRL-SUPPORT-AUTHORIZATION
+    owner: launchpad-security-owner
+    type: preventive
+    implementation: Administrative endpoints require the admin role and diagnostic responses exclude lifecycle payload secrets.
+    evidence:
+      - backend/tests/test_admin.py
+      - backend/app/api/routers/admin.py
+
+surfaces:
+  - id: public-access
+    owner: identity-service-owner
+    trust_boundaries: [public-edge-to-identity, identity-to-control-api]
+    assets: [participant-identity, order-entitlement]
+    threats:
+      - id: THR-PUBLIC-001
+        category: spoofing
+        statement: A stolen shared instructor code is used with an unverified email label to claim a seat.
+        severity: high
+        mitigations: [CTRL-IDENTITY-ATOMIC-CLAIM, CTRL-EDGE-FAIL-CLOSED]
+        verification: [TEST-PUBLIC-CLAIM-ABUSE, TEST-PUBLIC-RATE-LIMIT]
+      - id: THR-PUBLIC-002
+        category: elevation-of-privilege
+        statement: A participant replays or forges an entitlement to enter another order or namespace.
+        severity: critical
+        mitigations: [CTRL-IDENTITY-ATOMIC-CLAIM, CTRL-RBAC-SEAT-ISOLATION]
+        verification: [TEST-CROSS-SEAT, TEST-EXPIRED-ENTITLEMENT]
+  - id: control-plane
+    owner: launchpad-sre-owner
+    trust_boundaries: [identity-to-control-api, control-api-to-state]
+    assets: [lifecycle-state, administrative-authority, audit-evidence]
+    threats:
+      - id: THR-CONTROL-001
+        category: tampering
+        statement: Concurrent or stale workers duplicate provisioning, retarget cleanup, or overwrite newer lifecycle state.
+        severity: critical
+        mitigations: [CTRL-LIFECYCLE-FENCING, CTRL-AUDIT-EVENTS]
+        verification: [TEST-LIFECYCLE-FENCE, TEST-RECOVERY-ABUSE]
+      - id: THR-CONTROL-002
+        category: information-disclosure
+        statement: Session or diagnostic APIs serialize model keys, service-account tokens, or passwords.
+        severity: high
+        mitigations: [CTRL-RUNTIME-SECRET-BOUNDARY, CTRL-SUPPORT-AUTHORIZATION]
+        verification: [TEST-SESSION-REDACTION]
+  - id: execution-fleet
+    owner: execution-fleet-owner
+    trust_boundaries: [control-plane-to-execution]
+    assets: [cluster-credential, lifecycle-state, participant-workload-data]
+    threats:
+      - id: THR-FLEET-001
+        category: elevation-of-privilege
+        statement: A compromised cluster credential grants cluster-wide or cross-cluster authority.
+        severity: critical
+        mitigations: [CTRL-CLUSTER-LEAST-PRIVILEGE, CTRL-LIFECYCLE-FENCING]
+        verification: [TEST-CROSS-CLUSTER-TARGET, TEST-RBAC-BIND]
+      - id: THR-FLEET-002
+        category: information-disclosure
+        statement: A seat identity reads another seat or tenant namespace.
+        severity: critical
+        mitigations: [CTRL-RBAC-SEAT-ISOLATION]
+        verification: [TEST-CROSS-SEAT, TEST-CROSS-TENANT]
+  - id: model-plane
+    owner: ai-service-owner
+    trust_boundaries: [seat-to-model-plane]
+    assets: [model-credential, participant-workload-data, audit-evidence]
+    threats:
+      - id: THR-MODEL-001
+        category: information-disclosure
+        statement: A seat key or prompt context crosses tenant, order, or retention boundaries.
+        severity: high
+        mitigations: [CTRL-MODEL-KEY-LIFECYCLE, CTRL-DATA-MINIMIZATION]
+        verification: [TEST-MODEL-KEY-REVOCATION, TEST-MODEL-AUDIT-MINIMIZATION]
+      - id: THR-MODEL-002
+        category: tampering
+        statement: Prompt injection or unsafe tool input causes unapproved model, MCP, or egress behavior.
+        severity: high
+        mitigations: [CTRL-MODEL-KEY-LIFECYCLE, CTRL-AUDIT-EVENTS]
+        verification: [TEST-MODEL-ABUSE-PENDING]
+  - id: artifact-supply
+    owner: catalog-release-owner
+    trust_boundaries: [source-to-registry, control-plane-to-execution]
+    assets: [catalog-release, cluster-credential]
+    threats:
+      - id: THR-ARTIFACT-001
+        category: tampering
+        statement: A mutable, unsigned, vulnerable, or substituted artifact is promoted or pulled.
+        severity: critical
+        mitigations: [CTRL-ARTIFACT-IMMUTABILITY, CTRL-DEPENDENCY-SCAN]
+        verification: [TEST-ARTIFACT-POLICY, TEST-SUPPLY-TAMPER]
+      - id: THR-ARTIFACT-002
+        category: denial-of-service
+        statement: A registry, credential, certificate, or missing architecture prevents cold pulls during an event.
+        severity: high
+        mitigations: [CTRL-ARTIFACT-IMMUTABILITY, CTRL-CLUSTER-LEAST-PRIVILEGE]
+        verification: [TEST-COLD-PULL-PENDING]
+  - id: data-flows
+    owner: data-governance-owner
+    trust_boundaries: [control-api-to-state, runtime-to-evidence]
+    assets: [participant-identity, participant-workload-data, audit-evidence]
+    threats:
+      - id: THR-DATA-001
+        category: information-disclosure
+        statement: Email labels, prompts, outputs, credentials, or customer data are retained or exported without purpose and consent.
+        severity: high
+        mitigations: [CTRL-DATA-MINIMIZATION, CTRL-RUNTIME-SECRET-BOUNDARY]
+        verification: [TEST-EVIDENCE-MINIMIZATION, TEST-RETENTION-PENDING]
+      - id: THR-DATA-002
+        category: repudiation
+        statement: Mutable or incomplete audit records cannot attribute an access or lifecycle decision.
+        severity: high
+        mitigations: [CTRL-AUDIT-EVENTS, CTRL-DATA-MINIMIZATION]
+        verification: [TEST-AUDIT-INTEGRITY-PENDING]
+  - id: support-access
+    owner: launchpad-security-owner
+    trust_boundaries: [support-to-administration, control-plane-to-execution]
+    assets: [administrative-authority, cluster-credential, participant-workload-data, audit-evidence]
+    threats:
+      - id: THR-SUPPORT-001
+        category: elevation-of-privilege
+        statement: Shared, standing, or unapproved support access mutates a live order or execution cluster.
+        severity: critical
+        mitigations: [CTRL-SUPPORT-AUTHORIZATION, CTRL-CLUSTER-LEAST-PRIVILEGE, CTRL-AUDIT-EVENTS]
+        verification: [TEST-ADMIN-AUTHORIZATION, TEST-BREAKGLASS-PENDING]
+      - id: THR-SUPPORT-002
+        category: information-disclosure
+        statement: Diagnostics, logs, or support exports expose secrets or participant data.
+        severity: high
+        mitigations: [CTRL-SUPPORT-AUTHORIZATION, CTRL-DATA-MINIMIZATION, CTRL-RUNTIME-SECRET-BOUNDARY]
+        verification: [TEST-SESSION-REDACTION, TEST-EVIDENCE-MINIMIZATION]
+
+verification_catalog:
+  - id: TEST-PUBLIC-CLAIM-ABUSE
+    evidence: [backend/tests/test_public_access.py]
+  - id: TEST-PUBLIC-RATE-LIMIT
+    evidence: [backend/tests/test_public_access.py]
+  - id: TEST-CROSS-SEAT
+    evidence: [backend/tests/test_public_rbac.py, evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json]
+  - id: TEST-EXPIRED-ENTITLEMENT
+    evidence: [backend/tests/test_public_access.py]
+  - id: TEST-LIFECYCLE-FENCE
+    evidence: [backend/tests/test_lifecycle_job_queue.py]
+  - id: TEST-RECOVERY-ABUSE
+    evidence: [backend/tests/test_multicluster_reconciliation.py]
+  - id: TEST-SESSION-REDACTION
+    evidence: [backend/tests/test_session_response_security.py]
+  - id: TEST-CROSS-CLUSTER-TARGET
+    evidence: [backend/tests/test_multicluster_reconciliation.py]
+  - id: TEST-RBAC-BIND
+    evidence: [backend/tests/test_launchpad_rbac_manifest.py]
+  - id: TEST-CROSS-TENANT
+    evidence: [backend/tests/test_tenant_authorization.py]
+  - id: TEST-MODEL-KEY-REVOCATION
+    evidence: [backend/tests/test_maas_key_broker.py]
+  - id: TEST-MODEL-AUDIT-MINIMIZATION
+    evidence: [backend/app/integrations/llm_audit.py]
+  - id: TEST-ARTIFACT-POLICY
+    evidence: [backend/tests/test_catalog_supply_chain.py]
+  - id: TEST-SUPPLY-TAMPER
+    evidence: [backend/tests/test_catalog_supply_chain.py]
+  - id: TEST-EVIDENCE-MINIMIZATION
+    evidence: [backend/tests/test_launchpad_observability.py]
+  - id: TEST-ADMIN-AUTHORIZATION
+    evidence: [backend/tests/test_admin.py]
+  - id: TEST-MODEL-ABUSE-PENDING
+    status: planned
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: TEST-COLD-PULL-PENDING
+    status: planned
+    evidence: [config/artifact-registry-policy.yaml]
+  - id: TEST-RETENTION-PENDING
+    status: planned
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: TEST-AUDIT-INTEGRITY-PENDING
+    status: planned
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: TEST-BREAKGLASS-PENDING
+    status: planned
+    evidence: [docs/product-delivery-roadmap.md]
+
+unresolved_risks:
+  - id: RISK-PUBLIC-BROWSER
+    severity: high
+    owner: identity-service-owner
+    statement: Dedicated staging tunnel and full external browser abuse certification are not complete.
+    decision_gate: public edge GREEN-live certification
+    verification_plan: Run claim, rotation, expiry, resume, and connector-failure abuse journeys through a dedicated staging tunnel.
+  - id: RISK-CLUSTER-CREDENTIAL-ROTATION
+    severity: high
+    owner: execution-fleet-owner
+    statement: Per-cluster credential rotation and revocation have not been certified across the fleet.
+    decision_gate: execution fleet production readiness
+    verification_plan: Rotate each staging credential, prove old-token denial, and prove unaffected in-flight lifecycle recovery.
+  - id: RISK-ARTIFACT-SIGNING
+    severity: high
+    owner: catalog-release-owner
+    statement: Signing identity, SBOM, provenance verification, and destination cold-pull qualification remain open.
+    decision_gate: catalog promotion beyond integration
+    verification_plan: Promote one signed candidate with SBOM and provenance, then verify exact digest on cold nodes in every target cluster.
+  - id: RISK-MODEL-TOOL-ABUSE
+    severity: high
+    owner: ai-service-owner
+    statement: Prompt, RAG, MCP-tool, model-routing, and egress abuse tests are incomplete.
+    decision_gate: governed model plane production readiness
+    verification_plan: Execute adversarial prompt/tool suites with tenant isolation, policy denial, and audit evidence.
+  - id: RISK-AUDIT-RETENTION
+    severity: high
+    owner: security-operations-owner
+    statement: Audit retention, immutability, export, deletion, and incident evidence procedures are not certified.
+    decision_gate: security and compliance production review
+    verification_plan: Define retention and deletion policy, inject tamper/replay failures, and prove durable evidence recovery.
+  - id: RISK-SUPPORT-BREAKGLASS
+    severity: high
+    owner: launchpad-security-owner
+    statement: Named support roles, step-up, time-bounded break-glass access, and revocation evidence are not implemented.
+    decision_gate: supported production service
+    verification_plan: Implement approval-bound access and certify grant, use, audit, expiry, and emergency revocation.
+
+release_policy:
+  block_on_unresolved_severity: [critical, high]
+  structural_validation_stage: GREEN-local
+  production_requires_independent_review: true

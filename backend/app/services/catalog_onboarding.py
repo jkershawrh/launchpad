@@ -9,6 +9,7 @@ from typing import Any
 import yaml
 
 IMMUTABLE_GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
+DISCOVERY_RECEIPT_VERSION = "launchpad.redhat.com/catalog-discovery-receipt/v1"
 CATALOG_ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 IMAGE_REF = re.compile(r"image::([^\[]+)\[")
 XREF = re.compile(r"xref:([^\[#]+)(?:#[^\[]+)?\[")
@@ -555,6 +556,7 @@ def discover_quickstart_repo(
         },
     }
     report = {
+        "schema": DISCOVERY_RECEIPT_VERSION,
         "discovery_status": "pass" if not errors else "fail",
         "catalog_item_id": catalog_id,
         "repo_url": repo_url,
@@ -562,10 +564,78 @@ def discover_quickstart_repo(
         "showroom": showroom,
         "workload": workload,
         "inventory": inventory,
+        "draft_intake": copy.deepcopy(intake),
         "warnings": warnings,
         "errors": errors,
     }
     return intake, report
+
+
+def build_catalog_draft_from_receipt(receipt: dict[str, Any]) -> dict[str, Any]:
+    """Render a non-orderable catalog draft from one discovery receipt.
+
+    The receipt is self-contained so the same reviewed discovery result always
+    produces the same catalog YAML. This boundary never promotes, activates,
+    or relaxes repository-discovery blockers.
+    """
+    if not isinstance(receipt, dict):
+        raise TypeError("catalog discovery receipt must be a mapping")
+    if receipt.get("schema") != DISCOVERY_RECEIPT_VERSION:
+        raise ValueError(
+            f"catalog discovery receipt schema must be {DISCOVERY_RECEIPT_VERSION}"
+        )
+    if receipt.get("discovery_status") != "pass" or receipt.get("errors"):
+        raise ValueError("catalog draft generation requires successful repository discovery")
+
+    intake = receipt.get("draft_intake")
+    if not isinstance(intake, dict):
+        raise TypeError("catalog discovery receipt must contain a draft_intake mapping")
+    catalog = intake.get("catalog") or {}
+    runtime = intake.get("runtime") or {}
+    certification = intake.get("certification") or {}
+    sources = intake.get("sources") or {}
+
+    receipt_catalog_id = str(receipt.get("catalog_item_id", ""))
+    if str(catalog.get("catalog_item_id", "")) != receipt_catalog_id:
+        raise ValueError("catalog identity differs from the repository discovery receipt")
+    if catalog.get("status") != "draft":
+        raise ValueError("repository discovery may generate only catalog status draft")
+    if runtime.get("allowed_exposure_policies") != ["internal"]:
+        raise ValueError("repository discovery draft requires internal-only exposure")
+    if certification.get("max_workshop_seats") != 1:
+        raise ValueError("repository discovery draft requires a one-seat ceiling")
+    blockers = certification.get("activation_blockers")
+    if not isinstance(blockers, list) or not blockers:
+        raise ValueError(
+            "repository discovery draft requires at least one unresolved activation blocker"
+        )
+    if (intake.get("discovery") or {}).get("inventory") != receipt.get("inventory"):
+        raise ValueError("draft intake inventory differs from the repository discovery receipt")
+
+    expected_repo = str(receipt.get("repo_url", ""))
+    expected_revision = str(receipt.get("revision", ""))
+    if not IMMUTABLE_GIT_SHA.fullmatch(expected_revision):
+        raise ValueError("receipt revision must be an immutable 40-character Git SHA")
+    for source_name in ("showroom", "workload"):
+        source = sources.get(source_name) or {}
+        if source.get("repo_url") != expected_repo:
+            raise ValueError(
+                f"{source_name} repository differs from the repository discovery receipt"
+            )
+        source_revision = str(source.get("revision", ""))
+        if not IMMUTABLE_GIT_SHA.fullmatch(source_revision):
+            raise ValueError(
+                f"{source_name} revision must be an immutable 40-character Git SHA"
+            )
+        if source_revision != expected_revision:
+            raise ValueError(
+                f"{source_name} revision differs from the repository discovery receipt"
+            )
+
+    validation = validate_intake(intake)
+    if validation["validation_status"] != "pass":
+        raise ValueError("; ".join(validation["errors"]))
+    return build_catalog_item(intake)
 
 
 def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:

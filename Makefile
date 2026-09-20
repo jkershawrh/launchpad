@@ -1,4 +1,4 @@
-.PHONY: install test test-local lint catalog-artifacts artifact-registry delivery-governance clean dev-backend dev-frontend dev-admin demo-test
+.PHONY: install test test-local lint catalog-artifacts artifact-registry security-threat-model delivery-governance clean dev-backend dev-frontend dev-admin demo-test
 
 # Backend
 install:
@@ -25,6 +25,9 @@ catalog-artifacts:
 
 artifact-registry:
 	python3 scripts/validate_artifact_registry.py
+
+security-threat-model:
+	python3 scripts/validate_security_threat_model.py
 
 delivery-governance:
 	python3 scripts/validate_delivery_governance.py

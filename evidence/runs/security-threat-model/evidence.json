@@ -1,0 +1,43 @@
+{
+  "schema": "launchpad.redhat.com/security-threat-model-evidence/v1",
+  "evidence_id": "LP-T057-threat-model-green-local-20260920",
+  "task_id": "LP-T057",
+  "repository_base": "32c966a",
+  "result": "GREEN-local",
+  "release_eligible": false,
+  "tdd": {
+    "red": {
+      "result": "8 failed",
+      "artifact": "evidence/runs/security-threat-model/red.xml",
+      "reason": "The repository had no versioned threat-model contract or validator."
+    },
+    "green": {
+      "result": "8 passed",
+      "artifact": "evidence/runs/security-threat-model/green-local.xml"
+    }
+  },
+  "contract": {
+    "path": "contracts/security-threat-model-v1.yaml",
+    "report": "evidence/runs/security-threat-model/report.json",
+    "surfaces": 7,
+    "trust_boundaries": 8,
+    "assets": 9,
+    "controls": 12,
+    "threats": 14,
+    "verifications": 21,
+    "evidence_links_checked": 50
+  },
+  "open_boundary": {
+    "high_risks": 6,
+    "planned_verifications": 5,
+    "independent_security_review_complete": false,
+    "production_security_certified": false
+  },
+  "safety": {
+    "live_system_accessed": false,
+    "workshop_mutated": false,
+    "cluster_manifest_changed": false,
+    "roadmap_status_changed": false,
+    "credentials_included": false
+  }
+}

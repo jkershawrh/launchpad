@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T05:54:53Z",
+  "updated_at": "2026-09-20T07:05:38Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -625,6 +625,90 @@
         "evidence/runs/security/session-response-redaction-green-local-20260920.json"
       ],
       "note": "A dedicated secret-free LabSessionResponse contract now covers list, detail, provisioning, lifecycle mutation, admin reclaim, and public service representations. MaaS keys are absent from OpenAPI and JSON responses, nested credential-like resource fields are recursively removed, and required public routing metadata remains. This is GREEN-local API evidence; rotation, policy-as-code, signing, live abuse tests, and the broader production security gate remain open."
+    },
+    "LP-T019": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/artifact-registry/destination-qualification-green-local-20260920.json"
+      ],
+      "note": "A versioned offline destination-qualification contract now rejects missing or failed credential, certificate, architecture, signature, exact-digest, cold-pull, and cache-loss proof. It also rejects mutable or wrong-origin images, unsupported architectures, and receipts containing credential values. This is GREEN-local contract evidence only: Arena, Brutus, Flightpath, and Oberon remain RED until authentic integration and GREEN-live receipts are captured."
+    },
+    "LP-T098": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/catalog-intake-draft-generation/green-local.json"
+      ],
+      "note": "A versioned immutable discovery receipt now deterministically generates a fail-closed catalog draft and refuses mismatched identity, source, revision, or inventory. This is GREEN-local for the catalog-draft slice only; deployment package, functional journey, certification, ownership, and support-plan generation remain open."
+    },
+    "LP-T099": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/catalog-intake-draft-generation/green-local.json"
+      ],
+      "note": "Generated repository-discovery entries are enforced as draft, internal-only, one-seat, immutable-source, unchanged-inventory, and blocked from activation until unresolved findings are reviewed. This is GREEN-local; broader privileged and unsupported-requirement policy plus deployed promotion proof remain open."
+    },
+    "LP-T104": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/capacity-admission/manifest.json"
+      ],
+      "note": "The offline aggregate admission contract proves whole-workshop accept/reject, infrastructure and exact model-release envelopes, stable idempotency, thread-level concurrent overbook protection, evidence-gated capacity release, and dimensioned reconciliation. This is GREEN-local only: the ledger is process-local, supply is test input, and durable database serialization, live collectors, provisioning joins, actual usage, and runtime model queues remain open."
+    },
+    "LP-T106": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/capacity-admission/manifest.json"
+      ],
+      "note": "The offline aggregate admission contract proves whole-workshop accept/reject, infrastructure and exact model-release envelopes, stable idempotency, thread-level concurrent overbook protection, evidence-gated capacity release, and dimensioned reconciliation. This is GREEN-local only: the ledger is process-local, supply is test input, and durable database serialization, live collectors, provisioning joins, actual usage, and runtime model queues remain open."
+    },
+    "LP-T057": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/security-threat-model/evidence.json"
+      ],
+      "note": "The repository-owned threat model now validates all seven required surfaces, eight trust boundaries, nine assets, twelve controls, fourteen threats, twenty-one verification cases, fifty evidence links, ownership, and unresolved-risk gates. Six high risks and five planned verifications correctly keep release ineligible; independent review and live security certification remain open."
     }
   },
   "rubric": [

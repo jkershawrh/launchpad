@@ -82,6 +82,15 @@ must additionally use `scripts/validate_artifact_registry.py
 --require-release-ready`, which remains red until every integration and live
 qualification is complete.
 
+The destination qualification contract is versioned in
+`contracts/artifact-destination-qualification-v1.yaml`. A destination receipt
+must identify one immutable image from the authoritative origin and prove the
+pull credential, registry certificate, architecture, signature, exact digest,
+cold pull, and cache-loss paths. Each check requires its own evidence reference;
+missing, failed, credential-bearing, mutable, wrong-origin, or unsupported-
+architecture receipts are rejected as a whole. The evaluator is offline and
+does not treat a synthetic receipt as live cluster qualification.
+
 ## Local workflow
 
 ### Start from an existing quickstart repository
@@ -115,6 +124,30 @@ Inspect a protected, clean local checkout whose `HEAD` equals the supplied SHA:
   --output catalog-onboarding/<catalog-id>.yaml \
   --report test-receipts/<catalog-id>-discovery.json
 ```
+
+The discovery report uses the versioned
+`launchpad.redhat.com/catalog-discovery-receipt/v1` contract and contains the
+complete fail-closed draft input. Render the deterministic catalog draft from
+that receipt:
+
+```bash
+.venv/bin/python scripts/catalog_onboarding.py draft \
+  test-receipts/<catalog-id>-discovery.json \
+  --output catalog/<catalog-id>/catalog-item.yaml
+```
+
+Draft generation validates that the receipt passed repository discovery, both
+source revisions match the receipt's immutable Git SHA, the catalog identity
+has not changed, the static inventory is unchanged, exposure remains
+internal-only, the seat ceiling remains one, and at least one activation
+blocker remains unresolved. A mismatch exits nonzero before writing the output.
+Running the command repeatedly with the same receipt produces the same catalog
+YAML.
+
+This command creates a review artifact; it does not edit the live catalog,
+approve a blocker, run a one-seat lifecycle, promote an image, or call an
+execution cluster. Promotion remains a separate human-reviewed and
+evidence-gated operation.
 
 Omit `--source-dir` to fetch and verify the exact immutable revision in a
 temporary checkout. The generated intake is `draft`, internal-only, limited to

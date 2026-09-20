@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.063" timestamp="2026-09-20T02:01:50.225513-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_offline_capacity_admission" name="test_release_rejects_non_digest_or_conflicting_cleanup_evidence" time="0.002"><failure message="Failed: DID NOT RAISE AdmissionReleaseConflict">def test_release_rejects_non_digest_or_conflicting_cleanup_evidence():
+        ledger = OfflineCapacityAdmissionLedger()
+        accepted = ledger.admit(_request("workshop-a"), _supply(), now=NOW)
+
+&gt;       with pytest.raises(AdmissionReleaseConflict, match="SHA-256"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AdmissionReleaseConflict
+
+backend/tests/test_offline_capacity_admission.py:214: Failed</failure></testcase></testsuite></testsuites>

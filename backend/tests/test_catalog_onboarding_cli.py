@@ -128,6 +128,65 @@ spec:
         }
     ]
 
+    first_catalog = tmp_path / "catalog-first.yaml"
+    second_catalog = tmp_path / "catalog-second.yaml"
+    for output in (first_catalog, second_catalog):
+        draft_result = subprocess.run(
+            [
+                sys.executable,
+                "scripts/catalog_onboarding.py",
+                "draft",
+                str(report_path),
+                "--output",
+                str(output),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        assert draft_result.returncode == 0, draft_result.stderr
+    assert first_catalog.read_bytes() == second_catalog.read_bytes()
+    catalog = yaml.safe_load(first_catalog.read_text())
+    assert catalog["status"] == "draft"
+    assert catalog["metadata"]["allowed_exposure_policies"] == ["internal"]
+    assert catalog["metadata"]["max_workshop_seats"] == 1
+    assert catalog["metadata"]["activation_blockers"]
+
+
+def test_draft_cli_fails_closed_without_writing_unsafe_receipt(tmp_path: Path):
+    receipt_path = tmp_path / "unsafe-receipt.json"
+    output_path = tmp_path / "catalog.yaml"
+    receipt_path.write_text(
+        json.dumps(
+            {
+                "schema": "launchpad.redhat.com/catalog-discovery-receipt/v1",
+                "discovery_status": "fail",
+                "errors": ["source discovery failed"],
+                "draft_intake": {},
+            }
+        )
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/catalog_onboarding.py",
+            "draft",
+            str(receipt_path),
+            "--output",
+            str(output_path),
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "successful repository discovery" in result.stderr
+    assert not output_path.exists()
+
 
 def test_scaffold_cli_rejects_local_checkout_at_another_revision(tmp_path: Path):
     source = tmp_path / "source"

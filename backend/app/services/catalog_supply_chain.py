@@ -46,6 +46,10 @@ REQUIRED_DESTINATION_CHECKS = {
     "cold_pull",
     "cache_loss",
 }
+DESTINATION_QUALIFICATION_VERSION = (
+    "launchpad.redhat.com/artifact-destination-qualification/v1"
+)
+_INLINE_CREDENTIAL_KEYS = {"auth", "password", "private_key", "secret", "token"}
 
 
 def validate_image_reference(
@@ -192,6 +196,96 @@ def build_registry_policy_report(policy_path: Path | str) -> dict[str, Any]:
         "contract_violations": violations,
         "release_gaps": gaps,
         "destination_clusters": sorted(clusters),
+    }
+
+
+def evaluate_destination_qualification(
+    policy_path: Path | str,
+    receipt_path: Path | str,
+) -> dict[str, Any]:
+    """Evaluate one recorded destination receipt without contacting a cluster.
+
+    The receipt is evidence input, not proof merely because it exists. Every
+    required check must be explicitly passed, carry a non-empty evidence
+    reference, and agree with the authoritative registry and destination
+    contract. Credential values are prohibited from the receipt.
+    """
+
+    policy = yaml.safe_load(Path(policy_path).read_text())
+    receipt = yaml.safe_load(Path(receipt_path).read_text())
+    if not isinstance(policy, dict) or not isinstance(receipt, dict):
+        raise TypeError("registry policy and destination receipt must be mappings")
+
+    failures: list[str] = []
+    if receipt.get("schema_version") != DESTINATION_QUALIFICATION_VERSION:
+        failures.append(f"schema_version must be {DESTINATION_QUALIFICATION_VERSION}")
+
+    destination = policy.get("destination_qualification") or {}
+    clusters = destination.get("clusters") or {}
+    cluster_id = str(receipt.get("cluster_id", "")).strip()
+    cluster_contract = clusters.get(cluster_id)
+    if not cluster_id or not isinstance(cluster_contract, dict):
+        failures.append("receipt cluster is not declared by registry policy")
+
+    image = str(receipt.get("image", "")).strip()
+    origin = str((policy.get("authority") or {}).get("origin", "")).rstrip("/")
+    if not IMMUTABLE_IMAGE.fullmatch(image):
+        failures.append("receipt image must use an immutable sha256 digest")
+    elif not image.startswith(f"{origin}/"):
+        failures.append("receipt image is outside the authoritative registry origin")
+
+    architectures = set((cluster_contract or {}).get("architectures") or [])
+    architecture = str(receipt.get("architecture", "")).strip()
+    if not architectures:
+        failures.append("destination policy does not declare supported architectures")
+    elif architecture not in architectures:
+        failures.append(
+            f"receipt architecture {architecture or '<missing>'} is not supported by {cluster_id}"
+        )
+
+    if not str(receipt.get("observed_at", "")).strip():
+        failures.append("receipt observed_at is required")
+
+    def _find_inline_credentials(value: Any, path: str = "receipt") -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                normalized = str(key).lower().replace("-", "_")
+                if normalized in _INLINE_CREDENTIAL_KEYS or normalized.endswith(
+                    ("_password", "_private_key", "_secret", "_token")
+                ):
+                    failures.append(f"inline credential field is prohibited: {path}.{key}")
+                _find_inline_credentials(child, f"{path}.{key}")
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                _find_inline_credentials(child, f"{path}[{index}]")
+
+    _find_inline_credentials(receipt)
+
+    required = set(destination.get("required_checks") or [])
+    checks = receipt.get("checks") or {}
+    for name in sorted(required):
+        check = checks.get(name)
+        if not isinstance(check, dict):
+            failures.append(f"required destination check is missing: {name}")
+            continue
+        if check.get("status") != "passed":
+            failures.append(f"destination check did not pass: {name}")
+        evidence = check.get("evidence") or []
+        if not isinstance(evidence, list) or not all(
+            isinstance(item, str) and item.strip() for item in evidence
+        ) or not evidence:
+            failures.append(f"destination check has no evidence: {name}")
+
+    unexpected = sorted(set(checks) - required)
+    return {
+        "schema_version": DESTINATION_QUALIFICATION_VERSION,
+        "cluster_id": cluster_id,
+        "image": image,
+        "architecture": architecture,
+        "status": "GREEN-integration" if not failures else "RED",
+        "eligible": not failures,
+        "failures": failures,
+        "unexpected_checks": unexpected,
     }
 
 

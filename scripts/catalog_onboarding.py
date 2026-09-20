@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "backend"))
 
 from app.services.catalog_onboarding import (
+    build_catalog_draft_from_receipt,
     build_catalog_item,
     discover_quickstart_repo,
     load_intake,
@@ -68,6 +69,18 @@ def _verify_local_source_revision(source: Path, revision: str) -> None:
 def _render(args: argparse.Namespace) -> int:
     intake = load_intake(args.intake)
     rendered = yaml.safe_dump(build_catalog_item(intake), sort_keys=False)
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(rendered)
+    else:
+        print(rendered, end="")
+    return 0
+
+
+def _draft(args: argparse.Namespace) -> int:
+    receipt = json.loads(Path(args.receipt).read_text())
+    catalog = build_catalog_draft_from_receipt(receipt)
+    rendered = yaml.safe_dump(catalog, sort_keys=False)
     if args.output:
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)
         Path(args.output).write_text(rendered)
@@ -202,6 +215,14 @@ def _parser() -> argparse.ArgumentParser:
     render.add_argument("intake", type=Path)
     render.add_argument("--output", type=Path)
     render.set_defaults(handler=_render)
+
+    draft = subparsers.add_parser(
+        "draft",
+        help="render a fail-closed catalog draft from a repository discovery receipt",
+    )
+    draft.add_argument("receipt", type=Path)
+    draft.add_argument("--output", type=Path)
+    draft.set_defaults(handler=_draft)
 
     validate = subparsers.add_parser(
         "validate", help="validate intake, source repositories, build, and catalog drift"

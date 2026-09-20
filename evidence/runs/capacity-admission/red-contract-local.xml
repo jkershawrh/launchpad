@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.047" timestamp="2026-09-20T02:03:13.594184-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_capacity_admission_contract" name="test_reservation_contract_requires_cleanup_evidence_before_release" time="0.007"><failure message="KeyError: 'AggregateCapacityReservation'">def test_reservation_contract_requires_cleanup_evidence_before_release():
+        schemas = yaml.safe_load(CONTRACT.read_text())["components"]["schemas"]
+&gt;       reservation = schemas["AggregateCapacityReservation"]
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'AggregateCapacityReservation'
+
+backend/tests/test_capacity_admission_contract.py:69: KeyError</failure></testcase></testsuite></testsuites>
