@@ -1,22 +1,24 @@
 {
   "schema_version": "launchpad.intel.com/test-evidence/v1",
-  "run_id": "event-participant-journey-20260920T025147Z",
-  "observed_at": "2026-09-20T02:51:47Z",
-  "source_commit": "5244bed95e3b8c28d74558878a669150cd4c4086",
+  "run_id": "event-participant-journey-20260920T025314Z",
+  "observed_at": "2026-09-20T02:53:14Z",
+  "source_commit": "59257dabb5ce41ee798ae0ee9a4d30cbfacc045b",
   "test": "backend/tests/test_event_participant_journey.py",
   "result": "passed",
   "proof": {
     "seat_gates": [
       1,
-      5
+      5,
+      25,
+      30
     ],
-    "workshops_launched": 2,
-    "seats_provisioned": 6,
-    "simultaneous_claims_at_largest_gate": 5,
-    "distinct_seats_assigned": 6,
-    "session_authorizations_validated": 6,
-    "sessions_denied_after_reclaim": 6,
-    "capacity_reservations_released_after_zero_residue": 2,
+    "workshops_launched": 4,
+    "seats_provisioned": 61,
+    "simultaneous_claims_at_largest_gate": 30,
+    "distinct_seats_assigned": 61,
+    "session_authorizations_validated": 61,
+    "sessions_denied_after_reclaim": 61,
+    "capacity_reservations_released_after_zero_residue": 4,
     "live_cluster_mutations": 0
   },
   "journey": [
@@ -37,13 +39,13 @@
     },
     {
       "path": "evidence/runs/event-participant-journey/green-local.xml",
-      "sha256": "1bf502c65c09d5e9fe449a09149c957dd99e08e21dbd0661a96b09cf08ab444b"
+      "sha256": "397d2670aecc654d86d957710deb81e9b715cd62bb036fb699a86f7304d9775b"
     }
   ],
   "limitations": [
     "The lifecycle store and capacity ledger are local in-memory components in this proof.",
     "The external resource inspector is fixed to an explicit zero-residue response; no OpenShift, Argo CD, LiteLLM, or identity provider is mutated.",
     "Keycloak/OIDC, OpenShift Console SSO, and participant browser rendering are not exercised.",
-    "The 25-seat and 30-seat staged gates remain open."
+    "The 25-seat and 30-seat integration and live gates remain open."
   ]
 }

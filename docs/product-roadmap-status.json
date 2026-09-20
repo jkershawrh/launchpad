@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:52:10Z",
+  "updated_at": "2026-09-20T02:53:45Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -509,7 +509,7 @@
         "evidence/runs/event-participant-journey/manifest.json",
         "evidence/runs/event-participant-journey/red-local.xml"
       ],
-      "note": "Exact one-seat and five-seat local journeys are green from approved event and reservation through provisioning, simultaneous claims, authorization, reclaim, denial, cleanup finalization, and capacity release. External browser/OIDC, live OpenShift/LiteLLM/Argo CD cleanup, and staged 25/30-seat gates remain open."
+      "note": "Exact 1-, 5-, 25-, and 30-seat local journeys are green from approved event and reservation through provisioning, simultaneous claims, authorization, reclaim, denial, cleanup finalization, and capacity release. External browser/OIDC and live OpenShift/LiteLLM/Argo CD integration and acceptance gates remain open."
     }
   },
   "rubric": [

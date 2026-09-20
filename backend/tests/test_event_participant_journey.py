@@ -130,7 +130,7 @@ def _journey_services(seats: int):
     return record, ledger, provisioning, access, jobs, orchestration
 
 
-@pytest.mark.parametrize("seats", [1, 5])
+@pytest.mark.parametrize("seats", [1, 5, 25, 30])
 def test_event_participant_journey_claims_uses_and_reclaims_every_seat(seats):
     record, ledger, provisioning, access, jobs, orchestration = (
         _journey_services(seats)
