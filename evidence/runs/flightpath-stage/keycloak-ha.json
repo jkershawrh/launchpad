@@ -1,0 +1,23 @@
+{
+  "evidence_id": "flightpath-stage-keycloak-ha-20260920",
+  "generated_at": "2026-09-20T05:37:27Z",
+  "stage": "GREEN-integration",
+  "cluster": "flightpath",
+  "namespace": "launchpad-stage",
+  "public_routes": 0,
+  "image": "quay.io/redhat-gpte/launchpad-backend@sha256:34b82be667f576d16e7c95394c6d6b30fba30d3d2ea970d0b346b4a179c0b5ba",
+  "replicas_ready_after_fault": 2,
+  "fault": {
+    "deleted_pod": "keycloak-59cb45b77f-dbjp9",
+    "surviving_pod": "keycloak-59cb45b77f-b4hcc",
+    "checks": 40,
+    "failures": 0
+  },
+  "custom_authenticator_factories": 1,
+  "boundary": [
+    "No public Route or DNS was created",
+    "No production tunnel token was used",
+    "No participant or retained workshop state was accessed",
+    "Realm, client, browser journey, and connector failover remain unproved"
+  ]
+}

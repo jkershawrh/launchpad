@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T05:06:27Z",
+  "updated_at": "2026-09-20T05:37:57Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -563,11 +563,12 @@
         "backend/tests/test_storage_sync.py",
         "backend/tests/test_workshop_order_contract.py",
         "evidence/runs/flightpath-stage/deployment.json",
+        "evidence/runs/flightpath-stage/keycloak-ha.json",
         "evidence/runs/flightpath-stage/postgres-ha.xml",
         "evidence/runs/public-access-atomic-activation/green-local.xml",
         "evidence/runs/public-access-atomic-rotation/green-local.xml"
       ],
-      "note": "Flightpath isolated stage proved two API replicas on separate nodes sharing PostgreSQL, with 11/11 replica-safety and lifecycle tests passing, including 25- and 30-seat concurrent journeys. No Route, lifecycle worker, execution-cluster credential, or live workshop mutation was present. This is GREEN-integration only; production edge/Keycloak HA, external RBAC effects, database HA, live failover, and soak remain open."
+      "note": "Flightpath isolated stage now proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. No public Route, production tunnel token, execution-cluster credential, lifecycle worker, or live workshop was touched. This remains GREEN-integration: realm/client/browser and namespace-RBAC journeys, a dedicated staging connector, PostgreSQL HA, external load, live failover, and soak remain open."
     }
   },
   "rubric": [

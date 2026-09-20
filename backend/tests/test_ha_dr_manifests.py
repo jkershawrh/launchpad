@@ -574,9 +574,13 @@ def test_flightpath_stage_is_isolated_internal_and_fail_closed() -> None:
     namespace = resource(items, "Namespace", "launchpad-stage")
     config = resource(items, "ConfigMap", "launchpad-config")
     backend = resource(items, "Deployment", "backend")
+    keycloak = resource(items, "Deployment", "keycloak")
+    keycloak_pdb = resource(items, "PodDisruptionBudget", "keycloak")
     service_account = resource(items, "ServiceAccount", "launchpad-backend")
     migration = resource(items, "Job", "database-migrate-4a6f4df")
     backend_network = resource(items, "NetworkPolicy", "backend-deny-ingress")
+    keycloak_network = resource(items, "NetworkPolicy", "keycloak-deny-ingress")
+    keycloak_schema = resource(items, "Job", "keycloak-schema-20260920")
 
     assert namespace["metadata"]["labels"]["launchpad.redhat.com/environment"] == "stage"
     assert config["data"]["LAUNCHPAD_CONTROL_PLANE_ID"] == "flightpath-stage"
@@ -593,7 +597,32 @@ def test_flightpath_stage_is_isolated_internal_and_fail_closed() -> None:
     migration_image = migration["spec"]["template"]["spec"]["containers"][0]["image"]
     assert migration_image == backend_image
     assert backend_network["spec"]["policyTypes"] == ["Ingress"]
-    assert backend_network["spec"]["ingress"] == []
+    backend_ingress_labels = backend_network["spec"]["ingress"][0]["from"][0][
+        "podSelector"
+    ]["matchLabels"]
+    assert backend_ingress_labels["app.kubernetes.io/name"] == "keycloak"
+    assert backend_ingress_labels["launchpad.redhat.com/environment"] == "stage"
+    assert keycloak_network["spec"]["policyTypes"] == ["Ingress"]
+    keycloak_peer = keycloak_network["spec"]["ingress"][0]
+    assert keycloak_peer["from"][0]["podSelector"]["matchLabels"][
+        "app.kubernetes.io/name"
+    ] == "keycloak"
+    assert {port["port"] for port in keycloak_peer["ports"]} == {7800, 57800}
+    assert keycloak_schema["spec"]["template"]["spec"][
+        "automountServiceAccountToken"
+    ] is False
+    assert keycloak["spec"]["replicas"] == 0
+    keycloak_container = keycloak["spec"]["template"]["spec"]["containers"][0]
+    assert keycloak_container["image"].startswith(
+        "quay.io/redhat-gpte/launchpad-backend@sha256:"
+    )
+    assert keycloak["spec"]["template"]["spec"][
+        "automountServiceAccountToken"
+    ] is False
+    assert keycloak["spec"]["template"]["spec"][
+        "topologySpreadConstraints"
+    ][0]["whenUnsatisfiable"] == "DoNotSchedule"
+    assert keycloak_pdb["spec"]["minAvailable"] == 1
     assert not [item for item in items if item["kind"] == "Route"]
     assert not [item for item in items if item["kind"] == "Secret"]
     assert not [
@@ -611,7 +640,14 @@ def test_flightpath_stage_bootstrap_requires_explicit_target_and_safe_order() ->
     assert "openssl rand -hex 32" in script
     assert "launchpad-registry-pull" in script
     assert "job/database-migrate-4a6f4df" in script
+    assert "job/keycloak-schema-20260920" in script
     assert script.index("job/database-migrate-4a6f4df") < script.index("--replicas=1")
+    assert script.index("job/keycloak-schema-20260920") < script.index(
+        "deployment/keycloak --replicas=1"
+    )
+    assert script.index("deployment/keycloak --replicas=1") < script.index(
+        "deployment/keycloak --replicas=2"
+    )
     assert script.index("--replicas=1") < script.index("--replicas=2")
     assert "deployment/backend --timeout=10m" in script
     assert "oc delete" not in script

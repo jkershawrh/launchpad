@@ -44,15 +44,36 @@ if ! KUBECONFIG="$kubeconfig" oc -n "$namespace" get secret \
   unset password database_url
 fi
 
+if ! KUBECONFIG="$kubeconfig" oc -n "$namespace" get secret \
+  keycloak-stage-bootstrap >/dev/null 2>&1; then
+  keycloak_password="$(openssl rand -hex 32)"
+  broker_key="$(openssl rand -hex 32)"
+  KUBECONFIG="$kubeconfig" oc -n "$namespace" create secret generic \
+    keycloak-stage-bootstrap \
+    --from-literal=username=stage-admin \
+    --from-literal=password="$keycloak_password" \
+    --from-literal=broker-key="$broker_key"
+  unset keycloak_password broker_key
+fi
+
 KUBECONFIG="$kubeconfig" oc apply -k "$overlay"
 KUBECONFIG="$kubeconfig" oc -n "$namespace" rollout status \
   deployment/postgres --timeout=5m
 KUBECONFIG="$kubeconfig" oc -n "$namespace" wait \
   --for=condition=complete job/database-migrate-4a6f4df --timeout=10m
+KUBECONFIG="$kubeconfig" oc -n "$namespace" wait \
+  --for=condition=complete job/keycloak-schema-20260920 --timeout=10m
 
 KUBECONFIG="$kubeconfig" oc -n "$namespace" scale deployment/backend --replicas=1
 KUBECONFIG="$kubeconfig" oc -n "$namespace" rollout status \
   deployment/backend --timeout=10m
+
+KUBECONFIG="$kubeconfig" oc -n "$namespace" scale deployment/keycloak --replicas=1
+KUBECONFIG="$kubeconfig" oc -n "$namespace" rollout status \
+  deployment/keycloak --timeout=10m
+KUBECONFIG="$kubeconfig" oc -n "$namespace" scale deployment/keycloak --replicas=2
+KUBECONFIG="$kubeconfig" oc -n "$namespace" rollout status \
+  deployment/keycloak --timeout=10m
 KUBECONFIG="$kubeconfig" oc -n "$namespace" scale deployment/backend --replicas=2
 KUBECONFIG="$kubeconfig" oc -n "$namespace" rollout status \
   deployment/backend --timeout=10m
@@ -61,4 +82,9 @@ available="$(KUBECONFIG="$kubeconfig" oc -n "$namespace" get deployment backend 
   -o jsonpath='{.status.availableReplicas}')"
 [[ "$available" == "2" ]] || fail "backend has ${available:-0}/2 available replicas"
 
-echo "Flightpath stage is ready with two backend replicas and no public Route."
+keycloak_available="$(KUBECONFIG="$kubeconfig" oc -n "$namespace" \
+  get deployment keycloak -o jsonpath='{.status.availableReplicas}')"
+[[ "$keycloak_available" == "2" ]] \
+  || fail "keycloak has ${keycloak_available:-0}/2 available replicas"
+
+echo "Flightpath stage is ready with two backend and two Keycloak replicas and no public Route."

@@ -8,7 +8,9 @@ resources:
   - configmap.yaml
   - postgres.yaml
   - migration-job.yaml
+  - keycloak-schema-job.yaml
   - backend.yaml
+  - keycloak.yaml
   - network-policy.yaml
 
 labels:
