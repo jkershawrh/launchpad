@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: launchpad-stage
+  labels:
+    app.kubernetes.io/name: launchpad-stage
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    launchpad.redhat.com/environment: stage

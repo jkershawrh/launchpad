@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-migrate-4a6f4df
+spec:
+  backoffLimit: 12
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: database-migrate
+        app.kubernetes.io/component: database-migration
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: launchpad-backend
+      containers:
+        - name: migrate
+          image: quay.io/redhat-gpte/launchpad-backend@sha256:b59ad32efdb5a7ade6875cab1b93f79f04b9bdbc74fcc5c794468aaaf3ff979b
+          imagePullPolicy: IfNotPresent
+          command: [python, -c]
+          args:
+            - >-
+              import os, psycopg2;
+              from app.storage.database import _initialize_database;
+              _initialize_database(psycopg2, os.environ['DATABASE_URL'])
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: {name: launchpad-db-secret, key: DATABASE_URL}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}

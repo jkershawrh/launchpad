@@ -1,0 +1,72 @@
+{
+  "evidence_id": "flightpath-stage-ha-integration-20260920",
+  "generated_at": "2026-09-20T05:05:46Z",
+  "stage": "GREEN-integration",
+  "scope": "Isolated control-plane persistence and replica-safety certification",
+  "source_commit": "4a6f4df01d9b4ca381610b8588ce954cd65b0c1e",
+  "cluster": {
+    "cluster_id": "flightpath",
+    "namespace": "launchpad-stage",
+    "public_routes": 0,
+    "scheduled_lifecycle_workers": 0
+  },
+  "deployment": {
+    "backend": {
+      "desired_replicas": 2,
+      "ready_replicas": 2,
+      "available_replicas": 2,
+      "nodes": [
+        "fp2.fm2aihpcsed.com",
+        "fp3.fm2aihpcsed.com"
+      ],
+      "image": "quay.io/redhat-gpte/launchpad-backend@sha256:b59ad32efdb5a7ade6875cab1b93f79f04b9bdbc74fcc5c794468aaaf3ff979b"
+    },
+    "postgres": {
+      "desired_replicas": 1,
+      "ready_replicas": 1,
+      "available_replicas": 1,
+      "image": "docker.io/library/postgres@sha256:075f7ba66bc9b3ce7d6b8b635208ff61cd7cf1a67d71ec530eec5d7ae0cbe571"
+    },
+    "migration": {
+      "job": "database-migrate-4a6f4df",
+      "succeeded": 1,
+      "failed": 0
+    }
+  },
+  "tests": {
+    "suite": "backend/tests/test_event_cleanup_postgres.py",
+    "tests": 11,
+    "passed": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "duration_seconds": 2183.674,
+    "junit": "evidence/runs/flightpath-stage/postgres-ha.xml",
+    "junit_sha256": "5fefa3e2d72dc98573a60b3418f331f295bc2c7e824dd4ae9c9796d8c9c60338"
+  },
+  "proved": [
+    "Two API replicas share one PostgreSQL state boundary",
+    "Workshop creation converges across concurrent replicas",
+    "Only one replica discloses an initial instructor code",
+    "Only one replica discloses a rotated instructor code",
+    "Participant identity and entitlements survive process reconstruction",
+    "One, five, twenty-five, and thirty concurrent seat claims remain unique",
+    "Cleanup finalization survives process restarts and concurrent finalizers",
+    "A failed release transaction rolls back and succeeds on retry"
+  ],
+  "not_proved": [
+    "Production public edge and Keycloak high availability",
+    "External OpenShift RBAC side effects",
+    "Live production failover or failback",
+    "Production database high availability",
+    "Long-duration soak or destructive fault injection"
+  ],
+  "safety": {
+    "public_ingress": false,
+    "backend_ingress": "deny-all",
+    "execution_cluster_credentials": false,
+    "automatic_recovery": false,
+    "orphan_cleanup": false,
+    "live_workshops_mutated": false
+  }
+}

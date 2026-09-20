@@ -567,3 +567,51 @@ def test_flightpath_passive_dr_receipt_preserves_the_certification_boundary() ->
     assert evidence["result"]["passive_preflight"] == "GREEN-live"
     assert evidence["result"]["full_failover"] == "RED-not-run"
     assert evidence["result"]["failback"] == "RED-not-run"
+
+
+def test_flightpath_stage_is_isolated_internal_and_fail_closed() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-stage")
+    namespace = resource(items, "Namespace", "launchpad-stage")
+    config = resource(items, "ConfigMap", "launchpad-config")
+    backend = resource(items, "Deployment", "backend")
+    service_account = resource(items, "ServiceAccount", "launchpad-backend")
+    migration = resource(items, "Job", "database-migrate-4a6f4df")
+    backend_network = resource(items, "NetworkPolicy", "backend-deny-ingress")
+
+    assert namespace["metadata"]["labels"]["launchpad.redhat.com/environment"] == "stage"
+    assert config["data"]["LAUNCHPAD_CONTROL_PLANE_ID"] == "flightpath-stage"
+    assert config["data"]["LIFECYCLE_HA_ENABLED"] == "true"
+    assert config["data"]["WORKSHOP_AUTO_RECOVERY"] == "false"
+    assert config["data"]["ORPHAN_CLEANUP_ENABLED"] == "false"
+    assert backend["spec"]["replicas"] == 0
+    backend_image = backend["spec"]["template"]["spec"]["containers"][0]["image"]
+    assert backend_image.startswith("quay.io/redhat-gpte/launchpad-backend@sha256:")
+    assert service_account["imagePullSecrets"] == [
+        {"name": "launchpad-registry-pull"}
+    ]
+    assert migration["spec"]["template"]["spec"]["restartPolicy"] == "OnFailure"
+    migration_image = migration["spec"]["template"]["spec"]["containers"][0]["image"]
+    assert migration_image == backend_image
+    assert backend_network["spec"]["policyTypes"] == ["Ingress"]
+    assert backend_network["spec"]["ingress"] == []
+    assert not [item for item in items if item["kind"] == "Route"]
+    assert not [item for item in items if item["kind"] == "Secret"]
+    assert not [
+        item
+        for item in items
+        if item["kind"] in {"ClusterRole", "ClusterRoleBinding", "CronJob"}
+    ]
+
+
+def test_flightpath_stage_bootstrap_requires_explicit_target_and_safe_order() -> None:
+    script = (ROOT / "scripts/deploy-flightpath-stage.sh").read_text()
+
+    assert "api.flightpath.fm2aihpcsed.com" in script
+    assert "KUBECONFIG=\"$kubeconfig\"" in script
+    assert "openssl rand -hex 32" in script
+    assert "launchpad-registry-pull" in script
+    assert "job/database-migrate-4a6f4df" in script
+    assert script.index("job/database-migrate-4a6f4df") < script.index("--replicas=1")
+    assert script.index("--replicas=1") < script.index("--replicas=2")
+    assert "deployment/backend --timeout=10m" in script
+    assert "oc delete" not in script
