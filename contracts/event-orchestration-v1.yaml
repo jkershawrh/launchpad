@@ -1,0 +1,79 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Event Workshop Orchestration Contract
+  version: 1.0.0
+  description: >-
+    Consumes every approved event reservation into one deterministic workshop
+    and queues one idempotent, cluster-bound lifecycle job per workshop. The
+    API never provisions inside the request. Public access remains pending
+    until a separate post-readiness activation returns instructor codes.
+paths:
+  /api/v1/events/{event_id}/workshops/launch:
+    post:
+      summary: Queue every workshop in an approved reserved event
+      parameters:
+        - in: path
+          name: event_id
+          required: true
+          schema: {type: string, minLength: 1}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/EventWorkshopLaunchRequest'}
+      responses:
+        '202':
+          description: All deterministic workshop lifecycle jobs are queued
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EventWorkshopLaunchResult'}
+        '400': {description: Catalog or workshop input is invalid}
+        '404': {description: Approved event was not found}
+        '409': {description: Reservation plan is incomplete, expired, released, or conflicting}
+        '503': {description: Durable persistence is unavailable}
+components:
+  schemas:
+    EventWorkshopLaunchRequest:
+      type: object
+      additionalProperties: false
+      required: [tenant_id]
+      properties:
+        tenant_id: {type: string, minLength: 1}
+    EventWorkshopLaunchItem:
+      type: object
+      additionalProperties: false
+      required:
+        - reservation_id
+        - cohort_id
+        - lab_ref
+        - workshop_id
+        - lifecycle_job_id
+        - cluster_ref
+        - catalog_id
+        - catalog_release
+        - seats
+      properties:
+        reservation_id: {type: string, minLength: 1}
+        cohort_id: {type: string, minLength: 1}
+        lab_ref: {type: string, minLength: 1}
+        workshop_id: {type: string, minLength: 1}
+        lifecycle_job_id: {type: string, minLength: 1}
+        cluster_ref: {type: string, minLength: 1}
+        catalog_id: {type: string, minLength: 1}
+        catalog_release: {type: string, minLength: 1}
+        seats: {type: integer, minimum: 1}
+    EventWorkshopLaunchResult:
+      type: object
+      additionalProperties: false
+      required: [event_id, tenant_id, status, public_access_state, workshops]
+      properties:
+        event_id: {type: string, minLength: 1}
+        tenant_id: {type: string, minLength: 1}
+        status: {type: string, const: queued}
+        public_access_state:
+          type: string
+          enum: [not_required, pending_activation]
+        workshops:
+          type: array
+          minItems: 1
+          items: {$ref: '#/components/schemas/EventWorkshopLaunchItem'}

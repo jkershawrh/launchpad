@@ -387,6 +387,32 @@ class EventReservationPlan(BaseModel):
         return self
 
 
+class EventWorkshopLaunchRequest(BaseModel):
+    """Administrative command that binds an approved event to one tenant."""
+
+    tenant_id: str = Field(min_length=1)
+
+
+class EventWorkshopLaunchItem(BaseModel):
+    reservation_id: str
+    cohort_id: str
+    lab_ref: str
+    workshop_id: str
+    lifecycle_job_id: str
+    cluster_ref: str
+    catalog_id: str
+    catalog_release: str
+    seats: int = Field(ge=1)
+
+
+class EventWorkshopLaunchResult(BaseModel):
+    event_id: str
+    tenant_id: str
+    status: Literal["queued"] = "queued"
+    public_access_state: Literal["not_required", "pending_activation"]
+    workshops: list[EventWorkshopLaunchItem] = Field(min_length=1)
+
+
 class EventManifestConflictError(RuntimeError):
     """Raised when an immutable event ID has already been persisted."""
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-19T23:40:03Z",
+  "updated_at": "2026-09-20T01:05:40Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -436,6 +436,23 @@
         "evidence/runs/event-reservation-ledger/red-local.xml"
       ],
       "note": "The Git-local reservation boundary now covers approval, aggregate holds, one-to-one lifecycle consumption, and cleanup-evidenced release. A held allocation binds idempotently to one deterministic workshop only when event, immutable catalog release, seats, and cluster_ref match. Expired, released, cross-cluster, changed-seat, changed-release, or differently bound consumption fails closed. Consumed holds remain capacity-consuming until cleanup proof. Local RED/GREEN, PostgreSQL adapter component, tamper, and 30-seat synthetic lifecycle evidence exists. Real PostgreSQL concurrency, event-wide orchestration/recovery, reconciliation, and GREEN-live proof remain open; no live workshops were changed."
+    },
+    "LP-T022": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/tests/test_event_orchestration.py",
+        "contracts/event-orchestration-v1.yaml",
+        "evidence/runs/event-orchestration/green-local.xml",
+        "evidence/runs/event-orchestration/red-local.xml"
+      ],
+      "note": "Local slice queues one deterministic lifecycle job per complete cohort/lab reservation, persists the target cluster, exposes an admin-only 202 API, and recovers idempotently after an injected partial queue failure. Public access remains pending until post-readiness code activation; PostgreSQL integration, event reconciliation, bounded seat waves, bulk reclaim, cleanup, and live proof remain open."
     }
   },
   "rubric": [

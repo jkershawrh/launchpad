@@ -313,6 +313,16 @@ lifecycle_job_store = (
 lifecycle_queue_service = LifecycleQueueService(lifecycle_job_store)
 
 
+def get_event_orchestration_service():
+    from app.services.event_orchestration import EventOrchestrationService
+
+    return EventOrchestrationService(
+        reservation_ledger=event_reservation_ledger,
+        provisioning=provisioning_service,
+        lifecycle_queue=lifecycle_queue_service,
+    )
+
+
 def get_placement_service():
     return getattr(provisioning_service, "placement", None)
 

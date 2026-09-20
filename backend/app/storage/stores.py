@@ -428,6 +428,47 @@ class PostgresEventReservationStore:
         finally:
             conn.close()
 
+    def list_for_event(self, event_id: str, *, now) -> list[EventCapacityReservation]:
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "durable event reservation persistence is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"event-reservation-event:{event_id}",),
+                )
+                cur.execute(
+                    """UPDATE event_capacity_reservations
+                       SET status = 'expired',
+                           data = jsonb_set(data, '{status}', '"expired"')
+                       WHERE event_id = %s AND status = 'held'
+                         AND expires_at <= %s""",
+                    (event_id, now),
+                )
+                cur.execute(
+                    """SELECT data FROM event_capacity_reservations
+                       WHERE event_id = %s
+                       ORDER BY cohort_id, lab_ref, reservation_id""",
+                    (event_id,),
+                )
+                rows = cur.fetchall()
+            conn.commit()
+            return [
+                EventCapacityReservation.model_validate(_decode_json(row[0]))
+                for row in rows
+            ]
+        except Exception as exc:
+            conn.rollback()
+            logger.warning("DB list event reservations error: %s", exc)
+            raise PersistenceUnavailableError(
+                "failed to read event capacity reservations"
+            ) from exc
+        finally:
+            conn.close()
+
     def consume(
         self,
         binding: EventReservationConsumption,

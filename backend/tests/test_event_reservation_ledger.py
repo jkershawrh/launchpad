@@ -622,6 +622,59 @@ def test_postgres_consumption_locks_and_persists_exact_workshop_binding(monkeypa
     assert connection.closed is True
 
 
+def test_postgres_event_read_locks_before_expiration_and_selection(monkeypatch):
+    reservation = _plan("event-a", _supply()).reservations[0]
+
+    class FakeCursor:
+        def __init__(self):
+            self.statements = []
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return False
+
+        def execute(self, statement, params=None):
+            self.statements.append((" ".join(statement.split()), params))
+
+        def fetchall(self):
+            return [(reservation.model_dump(mode="json"),)]
+
+    class FakeConnection:
+        def __init__(self):
+            self.cursor_value = FakeCursor()
+            self.commits = 0
+            self.rollbacks = 0
+            self.closed = False
+
+        def cursor(self):
+            return self.cursor_value
+
+        def commit(self):
+            self.commits += 1
+
+        def rollback(self):
+            self.rollbacks += 1
+
+        def close(self):
+            self.closed = True
+
+    connection = FakeConnection()
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    result = PostgresEventReservationStore().list_for_event("event-a", now=NOW)
+
+    statements = [item[0] for item in connection.cursor_value.statements]
+    assert "pg_advisory_xact_lock" in statements[0]
+    assert statements[1].startswith("UPDATE event_capacity_reservations")
+    assert statements[2].startswith("SELECT data FROM event_capacity_reservations")
+    assert result == [reservation]
+    assert connection.commits == 1
+    assert connection.rollbacks == 0
+    assert connection.closed is True
+
+
 def _reserve_outcome(ledger, plan, supply) -> str:
     try:
         ledger.reserve(plan, supply, now=NOW)

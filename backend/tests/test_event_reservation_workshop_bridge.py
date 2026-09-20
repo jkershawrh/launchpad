@@ -75,6 +75,41 @@ def test_reserved_workshop_order_uses_exact_cluster_release_and_seats():
     assert consumed.workshop_id == order.workshop_id
 
 
+def test_reserved_workshop_retry_does_not_recheck_already_owned_capacity():
+    supply = _supply()
+    plan = _plan("event-a", supply)
+    reservation = plan.reservations[0]
+    ledger = EventReservationLedger()
+    ledger.reserve(plan, supply, now=NOW)
+    service = ProvisioningService(
+        catalog=_catalog(version=reservation.catalog_release),
+        event_reservation_ledger=ledger,
+    )
+
+    with patch.object(
+        service,
+        "check_workshop_capacity",
+        return_value=(True, "reserved capacity"),
+    ) as capacity:
+        order = service.create_reserved_workshop_order(
+            reservation,
+            tenant_id="event-tenant",
+            exposure_policy=ExposurePolicy.INTERNAL,
+            ttl="8h",
+        )
+        capacity.reset_mock()
+        capacity.return_value = (False, "no free headroom")
+        repeated = service.create_reserved_workshop_order(
+            reservation,
+            tenant_id="event-tenant",
+            exposure_policy=ExposurePolicy.INTERNAL,
+            ttl="8h",
+        )
+
+    assert repeated == order
+    assert capacity.call_count == 0
+
+
 def test_catalog_drift_fails_before_reservation_consumption():
     supply = _supply()
     plan = _plan("event-a", supply)

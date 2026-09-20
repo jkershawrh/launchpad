@@ -33,9 +33,60 @@ def _clear_overrides():
         deps.get_event_capacity_supply,
         deps.get_event_manifest_store,
         deps.get_event_reservation_ledger,
+        deps.get_event_orchestration_service,
         get_current_user,
     ):
         app.dependency_overrides.pop(dependency, None)
+
+
+def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
+    from unittest.mock import patch
+
+    from app.services.event_orchestration import EventOrchestrationService
+    from app.services.lifecycle_worker import LifecycleQueueService
+    from app.services.provisioning import ProvisioningService
+    from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
+
+    from backend.tests.test_event_orchestration import _catalog
+
+    _supply_value, _event_store, ledger = _overrides()
+    reserve = TestClient(app).post(
+        "/api/v1/events/event-a/reservations",
+        json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+    )
+    provisioning = ProvisioningService(
+        catalog=_catalog(), event_reservation_ledger=ledger
+    )
+    job_store = InMemoryLifecycleJobStore()
+    orchestration = EventOrchestrationService(
+        reservation_ledger=ledger,
+        provisioning=provisioning,
+        lifecycle_queue=LifecycleQueueService(job_store),
+    )
+    app.dependency_overrides[deps.get_event_orchestration_service] = (
+        lambda: orchestration
+    )
+    try:
+        with patch.object(
+            provisioning, "check_workshop_capacity", return_value=(True, "ok")
+        ):
+            launched = TestClient(app).post(
+                "/api/v1/events/event-a/workshops/launch",
+                json={"tenant_id": "event-tenant"},
+            )
+            repeated = TestClient(app).post(
+                "/api/v1/events/event-a/workshops/launch",
+                json={"tenant_id": "event-tenant"},
+            )
+    finally:
+        _clear_overrides()
+
+    assert reserve.status_code == 201
+    assert launched.status_code == 202
+    assert launched.json() == repeated.json()
+    assert launched.json()["public_access_state"] == "pending_activation"
+    assert len(launched.json()["workshops"]) == 2
+    assert len(job_store.list_all()) == 2
 
 
 def test_admin_approves_and_reserves_persisted_cluster_assignments():

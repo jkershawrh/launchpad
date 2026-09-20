@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.api.deps import (
     get_event_capacity_supply,
     get_event_manifest_store,
+    get_event_orchestration_service,
     get_event_reservation_ledger,
 )
 from app.auth.oauth import get_current_user, require_admin
@@ -20,7 +21,13 @@ from app.domain.events import (
     EventReservationPlan,
     EventReservationReleaseRequest,
     EventReservationReleaseResult,
+    EventWorkshopLaunchRequest,
+    EventWorkshopLaunchResult,
     calculate_event_capacity,
+)
+from app.services.event_orchestration import (
+    EventOrchestrationConflictError,
+    EventOrchestrationService,
 )
 from app.services.event_reservations import (
     EventReservationConflictError,
@@ -144,3 +151,36 @@ def release_event_reservation(
         released_reservations=released,
         cleanup_evidence_id=request.cleanup_evidence_id,
     )
+
+
+@router.post(
+    "/{event_id}/workshops/launch",
+    response_model=EventWorkshopLaunchResult,
+    status_code=202,
+    dependencies=[Depends(require_admin)],
+)
+def launch_event_workshops(
+    event_id: str,
+    request: EventWorkshopLaunchRequest,
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+    orchestration: Annotated[
+        EventOrchestrationService, Depends(get_event_orchestration_service)
+    ],
+) -> EventWorkshopLaunchResult:
+    """Consume all approved holds and queue deterministic workshop jobs.
+
+    The request does not provision inside the API process. Public instructor
+    codes remain pending until a separate post-readiness activation action.
+    """
+
+    record = store.get(event_id)
+    if record is None:
+        raise HTTPException(404, f"Approved event {event_id} was not found")
+    try:
+        return orchestration.launch(record, request)
+    except (EventOrchestrationConflictError, EventReservationConflictError) as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except PersistenceUnavailableError as exc:
+        raise HTTPException(503, "Event orchestration persistence is unavailable") from exc
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from exc

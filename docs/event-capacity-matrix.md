@@ -106,13 +106,25 @@ Local proof covers deterministic footprint multiplication, concurrent
 overcommit rejection, evidence drift, retry behavior, admin authorization,
 persisted cluster assignment, cleanup-evidenced release, and fail-closed
 expiration. It also covers deterministic workshop consumption, tamper rejection,
-and a 30-seat synthetic lifecycle run on the persisted cluster. A real
-PostgreSQL integration run, event-wide orchestration, reconciliation, and live
-proof remain separate gates.
+and a 30-seat synthetic lifecycle run on the persisted cluster.
+
+The event launch API now reads the complete event reservation set, compares it
+to every immutable cohort/lab allocation, creates deterministic workshop orders,
+and queues one stable lifecycle job for each order. It never provisions inside
+the API request. An identical retry returns the same workshops and jobs. A
+locally injected failure after the first job proves that a subsequent retry
+finishes the event without duplicating either workshops or lifecycle jobs.
+Public workshops remain explicitly `pending_activation`; instructor codes are
+issued only after readiness so a failed event request cannot lose a one-time
+secret.
+
+A real PostgreSQL integration run, event-wide reconciliation, public-access
+activation, zero-residue cleanup, and live proof remain separate gates.
 
 ## Next boundary
 
-The next orchestration increment may create every event workshop from the full
-reservation plan and queue bounded, fenced lifecycle jobs. It must prove real
-database-backed concurrency, event-wide recovery, reconciliation, and
-zero-residue cleanup before release or live use.
+The next orchestration increment must activate public access after readiness,
+return one-time instructor codes safely, reconcile event-wide worker outcomes,
+and drive bulk reclaim. It must prove real database-backed concurrency,
+event-wide recovery, reconciliation, and zero-residue cleanup before release or
+live use.

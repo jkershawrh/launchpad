@@ -1927,6 +1927,22 @@ class ProvisioningService:
                 f"launchpad:event-reservation:{reservation.reservation_id}",
             )
         )
+        authoritative = self.event_reservation_ledger.get(
+            reservation.reservation_id
+        )
+        existing = self.get_workshop(workshop_id)
+        if authoritative is not None and authoritative.status == "consumed" and existing:
+            if (
+                authoritative.workshop_id != workshop_id
+                or existing.tenant_id != tenant_id
+                or existing.exposure_policy != exposure_policy
+                or existing.ttl != ttl
+            ):
+                raise ValueError(
+                    "Existing workshop does not match the consumed event reservation"
+                )
+            self._validate_reserved_workshop_binding(existing)
+            return existing
         workshop = Workshop(
             workshop_id=workshop_id,
             tenant_id=tenant_id,

@@ -194,6 +194,26 @@ class EventReservationLedger:
                 if item.status in {"held", "consumed", "expired"}
             ]
 
+    def list_for_event(
+        self,
+        event_id: str,
+        *,
+        now: datetime | None = None,
+    ) -> list[EventCapacityReservation]:
+        current = now or datetime.now(UTC)
+        if self._db:
+            return self._db.list_for_event(event_id, now=current)
+        with self._lock:
+            self._expire_locked(current)
+            return sorted(
+                [
+                    item.model_copy(deep=True)
+                    for item in self._records.values()
+                    if item.event_id == event_id
+                ],
+                key=lambda item: (item.cohort_id, item.lab_ref, item.reservation_id),
+            )
+
     def get(
         self,
         reservation_id: str,
