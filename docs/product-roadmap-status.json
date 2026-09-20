@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:41:51Z",
+  "updated_at": "2026-09-20T02:42:59Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -486,6 +486,7 @@
         "evidence/runs/event-public-activation/green-local.xml",
         "evidence/runs/event-public-activation/red-local.xml",
         "evidence/runs/event-public-claim-postgres/green-integration.xml",
+        "evidence/runs/event-public-claim-postgres/manifest.json",
         "evidence/runs/event-public-claim-postgres/red-local.xml",
         "evidence/runs/event-status-reconciliation/green-local.xml",
         "evidence/runs/event-status-reconciliation/red-local.xml"

@@ -1,0 +1,40 @@
+{
+  "schema_version": "launchpad.intel.com/test-evidence/v1",
+  "run_id": "event-public-claim-postgres-20260920T024239Z",
+  "observed_at": "2026-09-20T02:42:39Z",
+  "source_commit": "d4b4535d8fe9571324e1d455662330e69942aa90",
+  "test": "backend/tests/test_event_cleanup_postgres.py",
+  "result": "passed",
+  "database": {
+    "engine": "PostgreSQL",
+    "version": "16",
+    "container_image": "docker.io/library/postgres:16-alpine",
+    "container_digest": "sha256:738d1359df5aa0b6d50a9071e989c49fdd39152a2a805c6ff131bf5e2243e0b3",
+    "scope": "disposable local integration database"
+  },
+  "proof": {
+    "simultaneous_claims": 2,
+    "independent_api_replicas": 2,
+    "distinct_seats_assigned": 2,
+    "reconstructed_access_services": 1,
+    "sessions_valid_after_restart": 2,
+    "plaintext_codes_persisted": 0,
+    "plaintext_session_tokens_persisted": 0,
+    "live_cluster_mutations": 0
+  },
+  "artifacts": [
+    {
+      "path": "evidence/runs/event-public-claim-postgres/red-local.xml",
+      "sha256": "39e789d43fd2825f1afde20d9aec522d00ed8755b18a372eac4d236e27593786"
+    },
+    {
+      "path": "evidence/runs/event-public-claim-postgres/green-integration.xml",
+      "sha256": "63b27a70ceb7ef1e36dcfd01112f62d1b291fd50108076b7713f4eba9e1e3ca0"
+    }
+  ],
+  "limitations": [
+    "The external Keycloak/OIDC browser journey is not exercised.",
+    "OpenShift namespace RoleBinding and Console SSO are not exercised.",
+    "The staged 5-seat and certified-seat claim bursts are not exercised."
+  ]
+}
