@@ -1,0 +1,29 @@
+{
+  "evidence_id": "event-artifact-prepull-green-local-20260920",
+  "generated_at": "2026-09-20T07:20:00Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T020"],
+  "red": {
+    "result": "scheduled event artifacts had no immutable pre-pull plan or cache receipt evaluator"
+  },
+  "green": {
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "live_prepulls_executed": 0
+  },
+  "proof": {
+    "exact_digest_images": true,
+    "cluster_image_deduplication": true,
+    "immutable_plan_id": true,
+    "full_node_coverage_required": true,
+    "digest_and_signature_verification_required": true,
+    "mirror_source_attribution_required": true,
+    "missing_or_mismatched_receipts_fail_closed": true
+  },
+  "boundary": [
+    "This slice produces and evaluates records only; it does not pull an image",
+    "No registry or execution cluster was contacted",
+    "No active workshop, node cache, mirror, or credential was changed",
+    "Authentic pre-pull execution and GREEN-live cache-loss proof remain open"
+  ]
+}

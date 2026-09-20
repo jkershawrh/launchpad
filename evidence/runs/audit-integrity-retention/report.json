@@ -1,0 +1,67 @@
+{
+  "append_only": true,
+  "contract_id": "launchpad-audit-integrity-retention",
+  "contract_status": "GREEN-local",
+  "contract_version": "1.0.0",
+  "event_fields": [
+    "action",
+    "actor",
+    "correlation",
+    "event_id",
+    "event_type",
+    "occurred_at",
+    "outcome",
+    "payload",
+    "payload_hash",
+    "previous_hash",
+    "retention_class",
+    "schema_version",
+    "sequence",
+    "source",
+    "target"
+  ],
+  "evidence_links_checked": 10,
+  "pending_verifications": [
+    "AUDIT-APPEND-ONLY-DURABLE",
+    "AUDIT-EXPORT-AUTHORIZATION",
+    "AUDIT-HASH-CHAIN-DURABLE",
+    "AUDIT-LEGAL-HOLD",
+    "AUDIT-RESTORE-AND-VERIFY",
+    "AUDIT-RETENTION-EXPIRY"
+  ],
+  "release_blockers": [
+    "AUDIT-APPEND-ONLY-DURABLE",
+    "AUDIT-EXPORT-AUTHORIZATION",
+    "AUDIT-HASH-CHAIN-DURABLE",
+    "AUDIT-LEGAL-HOLD",
+    "AUDIT-RESTORE-AND-VERIFY",
+    "AUDIT-RETENTION-EXPIRY",
+    "AUDIT-RISK-EXPORT",
+    "AUDIT-RISK-INPLACE-DATABASE",
+    "AUDIT-RISK-PRODUCER-COVERAGE",
+    "AUDIT-RISK-RETENTION-JOBS"
+  ],
+  "release_eligible": false,
+  "retention_classes": [
+    "evidence-export",
+    "lifecycle-mutation",
+    "model-inference",
+    "security-access"
+  ],
+  "role_count": 4,
+  "schema_version": "launchpad.redhat.com/audit-integrity-retention/v1",
+  "unique_evidence_paths": [
+    "backend/app/integrations/llm_audit.py",
+    "backend/app/services/public_access.py",
+    "backend/app/storage/stores.py",
+    "backend/tests/test_session_response_security.py",
+    "docs/product-delivery-roadmap.md"
+  ],
+  "unresolved_risks": {
+    "critical": 0,
+    "high": 4,
+    "low": 0,
+    "moderate": 0
+  },
+  "verification_count": 8
+}

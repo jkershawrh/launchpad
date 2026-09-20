@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="9" time="0.056" timestamp="2026-09-20T10:30:20.851933-05:00" hostname="jkershaw-mac"><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_repository_audit_contract_is_complete_and_release_blocking" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_repository_audit_contract_is_complete_and_release_blocking() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:29:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x107953d10&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_missing_accountability_field_fails_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_missing_accountability_field_fails_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:42:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x107952330&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_integrity_requires_append_only_hash_chain_and_canonicalization" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_integrity_requires_append_only_hash_chain_and_canonicalization() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:51:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1079dbad0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_redaction_must_cover_secrets_pii_and_raw_model_content" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_redaction_must_cover_secrets_pii_and_raw_model_content() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:62:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1079dbc50&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_retention_classes_require_owner_duration_disposition_and_hold" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_retention_classes_require_owner_duration_disposition_and_hold() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:71:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1079dbdd0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_export_and_access_require_named_ownership_and_separation" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_export_and_access_require_named_ownership_and_separation() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:84:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1079dbe30&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_deletion_and_legal_hold_are_explicit_and_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_deletion_and_legal_hold_are_explicit_and_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:94:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x107a780b0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_missing_evidence_and_dangling_verification_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_missing_evidence_and_dangling_verification_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:104:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1079db950&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_audit_integrity_retention" name="test_duplicate_ids_and_unsupported_schema_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'">def test_duplicate_ids_and_unsupported_schema_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_audit_integrity_retention.py:120:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_audit_integrity_retention.py:20: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x107a78b90&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_audit_integrity_retention.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase></testsuite></testsuites>

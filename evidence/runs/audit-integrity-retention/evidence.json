@@ -1,0 +1,45 @@
+{
+  "schema": "launchpad.redhat.com/audit-integrity-retention-evidence/v1",
+  "evidence_id": "LP-T058-audit-integrity-retention-green-local-20260920",
+  "task_id": "LP-T058",
+  "repository_base": "a937ace",
+  "result": "GREEN-local",
+  "release_eligible": false,
+  "tdd": {
+    "red": {
+      "result": "9 failed",
+      "artifact": "evidence/runs/audit-integrity-retention/red.xml",
+      "reason": "The repository had no versioned audit integrity and retention contract or validator."
+    },
+    "green": {
+      "result": "9 passed",
+      "artifact": "evidence/runs/audit-integrity-retention/green-local.xml"
+    }
+  },
+  "contract": {
+    "path": "contracts/audit-integrity-retention-v1.yaml",
+    "report": "evidence/runs/audit-integrity-retention/report.json",
+    "event_fields": 15,
+    "retention_classes": 4,
+    "access_roles": 4,
+    "verifications": 8,
+    "evidence_links_checked": 10
+  },
+  "open_boundary": {
+    "high_risks": 4,
+    "planned_verifications": 6,
+    "durable_append_only_store_proven": false,
+    "hash_chain_and_external_anchor_proven": false,
+    "retention_and_legal_hold_proven": false,
+    "authorized_export_proven": false,
+    "restore_and_chain_verification_proven": false,
+    "production_security_certified": false
+  },
+  "safety": {
+    "live_system_accessed": false,
+    "workshop_mutated": false,
+    "cluster_manifest_changed": false,
+    "roadmap_status_changed": false,
+    "credentials_included": false
+  }
+}

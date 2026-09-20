@@ -1,0 +1,45 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-submission-evidence/v1",
+  "run_id": "catalog-intake-submission-green-local-20260920",
+  "recorded_at": "2026-09-20T00:00:00-05:00",
+  "result": "GREEN-local",
+  "requirements": [
+    "LP-T096",
+    "LP-T101"
+  ],
+  "red": {
+    "observed": true,
+    "expected_failure": "catalog intake domain and submission service were absent",
+    "result": "two test modules failed during collection"
+  },
+  "green": {
+    "tests": 16,
+    "command": "PYTHONPATH=.:backend ./.venv/bin/pytest -q backend/tests/test_catalog_intake_submission.py backend/tests/test_catalog_intake_api.py",
+    "result": "pass"
+  },
+  "contract": {
+    "immutable_repository_revision_required": true,
+    "owner_audience_duration_lab_type_scale_required": true,
+    "state": "draft",
+    "orderable": false,
+    "promotion_eligible": false,
+    "exposure_policies": [
+      "internal"
+    ],
+    "maximum_seats": 1,
+    "supported_targets": [],
+    "evidence_status": "not-run",
+    "storage_scope": "process-local-draft"
+  },
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false
+  },
+  "release": {
+    "eligible": false,
+    "boundary": "Draft contract only; durable persistence, repository discovery, generated package review, evidence execution, target qualification, approval, rollback, and promotion remain open."
+  }
+}

@@ -12,6 +12,7 @@ from app.api.routers import (
     branding,
     callbacks,
     catalog,
+    catalog_intakes,
     events,
     intelligence,
     lab_requests,
@@ -202,6 +203,7 @@ app.include_router(lab_requests.router, prefix=API_PREFIX)
 app.include_router(lab_sessions.router, prefix=API_PREFIX)
 app.include_router(branding.router, prefix=API_PREFIX)
 app.include_router(admin.router, prefix=API_PREFIX)
+app.include_router(catalog_intakes.router, prefix=API_PREFIX)
 app.include_router(workshops.router, prefix=API_PREFIX)
 app.include_router(events.router, prefix=API_PREFIX)
 app.include_router(callbacks.router, prefix=API_PREFIX)

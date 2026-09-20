@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T07:05:38Z",
+  "updated_at": "2026-09-20T15:36:01Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -622,9 +622,10 @@
         "cbt": "green-local"
       },
       "evidence": [
+        "evidence/runs/audit-integrity-retention/evidence.json",
         "evidence/runs/security/session-response-redaction-green-local-20260920.json"
       ],
-      "note": "A dedicated secret-free LabSessionResponse contract now covers list, detail, provisioning, lifecycle mutation, admin reclaim, and public service representations. MaaS keys are absent from OpenAPI and JSON responses, nested credential-like resource fields are recursively removed, and required public routing metadata remains. This is GREEN-local API evidence; rotation, policy-as-code, signing, live abuse tests, and the broader production security gate remain open."
+      "note": "Local security contracts now prevent session credential serialization and define accountable audit events, recursive redaction, separated producer/investigator/export/retention roles, retention classes, tamper-evident hash chaining and external anchors, governed exports, disposition receipts, and legal holds. This remains GREEN-local: credential rotation, deployed append-only storage, anchors, retention/legal-hold execution, export/restore proof, signing, live policy enforcement, and abuse tests remain release-blocking."
     },
     "LP-T019": {
       "state": "green-local",
@@ -678,9 +679,10 @@
         "cbt": "green-local"
       },
       "evidence": [
+        "evidence/runs/capacity-admission-postgres/manifest.json",
         "evidence/runs/capacity-admission/manifest.json"
       ],
-      "note": "The offline aggregate admission contract proves whole-workshop accept/reject, infrastructure and exact model-release envelopes, stable idempotency, thread-level concurrent overbook protection, evidence-gated capacity release, and dimensioned reconciliation. This is GREEN-local only: the ledger is process-local, supply is test input, and durable database serialization, live collectors, provisioning joins, actual usage, and runtime model queues remain open."
+      "note": "Whole-workshop admission is proven locally for infrastructure and exact model-release envelopes, stable idempotency, atomic rejection, and evidence-gated release. PostgreSQL serializable transactions and advisory locks additionally prove cross-process competing orders, durable accepted/rejected decisions, idempotent retries, and capacity reuse against a disposable database. Production migration, API/lifecycle wiring, live supply, failover, provisioning, and reclaim certification remain open."
     },
     "LP-T106": {
       "state": "green-local",
@@ -709,6 +711,48 @@
         "evidence/runs/security-threat-model/evidence.json"
       ],
       "note": "The repository-owned threat model now validates all seven required surfaces, eight trust boundaries, nine assets, twelve controls, fourteen threats, twenty-one verification cases, fifty evidence links, ownership, and unresolved-risk gates. Six high risks and five planned verifications correctly keep release ineligible; independent review and live security certification remain open."
+    },
+    "LP-T020": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/artifact-registry/prepull-contract-green-local-20260920.json"
+      ],
+      "note": "A versioned offline scheduled-event pre-pull contract now creates an immutable, deduplicated exact-digest plan by assigned cluster. Readiness fails closed unless every cluster/image pair proves full-node cache coverage, digest and signature verification, mirror/source attribution, and matching evidence. This is GREEN-local only: no pull ran and authentic integration/live cache-loss recovery remain open."
+    },
+    "LP-T096": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/catalog-intake-submission/green-local.json"
+      ],
+      "note": "An authenticated, strict draft-only intake API now accepts immutable repository/revision, owner, audience, duration, lab type, and expected scale and returns a content-addressed response with no catalog, provisioning, workshop, lifecycle, or cluster dependency. This is GREEN-local and process-local; durable persistence, repository execution, admin UI, and promotion remain open."
+    },
+    "LP-T101": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/catalog-intake-submission/green-local.json"
+      ],
+      "note": "The intake API response now presents blockers, required evidence, supported targets, scale ceiling, immutable release identity, approval history, rollback state, orderability, and promotion eligibility. It truthfully reports no target, no approval, undefined rollback, and unrun evidence. This is GREEN-local API evidence; the admin frontend and durable history remain open."
     }
   },
   "rubric": [

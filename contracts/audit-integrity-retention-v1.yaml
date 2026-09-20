@@ -1,0 +1,234 @@
+schema_version: launchpad.redhat.com/audit-integrity-retention/v1
+kind: LaunchpadAuditIntegrityRetentionPolicy
+metadata:
+  id: launchpad-audit-integrity-retention
+  version: 1.0.0
+  owner: security-operations-owner
+  data_governance_owner: data-governance-owner
+  review_policy: review on event-schema, identity, storage, retention, export, or legal requirement change
+
+event_schema:
+  version: launchpad.audit.event/v1
+  append_semantics: immutable event; corrections append a superseding event
+  fields:
+    schema_version: {type: string, required: true, classification: public-metadata}
+    event_id: {type: uuid, required: true, classification: operational-metadata}
+    event_type: {type: string, required: true, classification: operational-metadata}
+    occurred_at: {type: rfc3339-utc, required: true, classification: operational-metadata}
+    actor: {type: object, required: true, classification: pseudonymous-identity}
+    action: {type: string, required: true, classification: operational-metadata}
+    target: {type: object, required: true, classification: operational-metadata}
+    outcome: {type: enum, required: true, classification: operational-metadata}
+    correlation: {type: object, required: true, classification: operational-metadata}
+    source: {type: object, required: true, classification: operational-metadata}
+    sequence: {type: integer, required: true, classification: integrity-metadata}
+    previous_hash: {type: sha256, required: true, classification: integrity-metadata}
+    payload_hash: {type: sha256, required: true, classification: integrity-metadata}
+    retention_class: {type: string, required: true, classification: governance-metadata}
+    payload: {type: object, required: true, classification: minimized-event-data}
+  actor_contract:
+    required: [actor_type, actor_id_hash, authentication_context]
+    raw_email_allowed: false
+    shared_identity_allowed: false
+  target_contract:
+    required: [target_type, target_id]
+    correlation_candidates: [tenant_id, cluster_id, workshop_id, session_id, seat_id, order_id]
+  outcome_values: [granted, denied, succeeded, failed, queued, expired, revoked]
+  correlation_contract:
+    required: [trace_id]
+    optional: [request_id, order_id, workshop_id, session_id, seat_id, cluster_id]
+
+redaction:
+  owner: data-governance-owner
+  default: deny-unclassified-fields
+  forbidden_data_classes:
+    - credential-secret
+    - direct-email
+    - private-key
+    - raw-model-output
+    - raw-prompt
+    - session-token
+  permitted_transformations: [drop, keyed-hash, pseudonymize, bounded-length]
+  recursive_key_patterns:
+    - '*password*'
+    - '*secret*'
+    - '*token*'
+    - '*api_key*'
+    - '*private_key*'
+  failure_behavior: reject event and emit a secret-free producer error metric
+
+retention_classes:
+  - id: security-access
+    owner: security-operations-owner
+    minimum_days: 365
+    maximum_days: 730
+    disposition: cryptographic-erase-and-tombstone
+    legal_hold_eligible: true
+  - id: lifecycle-mutation
+    owner: launchpad-sre-owner
+    minimum_days: 365
+    maximum_days: 730
+    disposition: cryptographic-erase-and-tombstone
+    legal_hold_eligible: true
+  - id: model-inference
+    owner: data-governance-owner
+    minimum_days: 90
+    maximum_days: 365
+    disposition: cryptographic-erase-and-tombstone
+    legal_hold_eligible: true
+  - id: evidence-export
+    owner: security-operations-owner
+    minimum_days: 365
+    maximum_days: 2555
+    disposition: approved-archive-or-cryptographic-erase
+    legal_hold_eligible: true
+
+integrity:
+  owner: security-operations-owner
+  append_only: true
+  mutation_policy: updates and in-place deletes forbidden
+  algorithm: sha256
+  canonicalization: RFC8785 JSON Canonicalization Scheme
+  sequence_field: sequence
+  previous_hash_field: previous_hash
+  payload_hash_field: payload_hash
+  chain_scope: producer plus UTC day partition
+  segment_anchor: signed daily root stored outside the event database
+  correction_policy: append superseding event referencing prior event_id
+  verification_frequency: continuous ingest plus daily full-chain verification
+
+access:
+  owner: launchpad-security-owner
+  default: deny
+  roles:
+    - id: audit-producer
+      owner: service-owner
+      permissions: [append]
+    - id: security-investigator
+      owner: security-operations-owner
+      permissions: [read, verify, request-export]
+    - id: audit-export-approver
+      owner: data-governance-owner
+      permissions: [approve-export]
+    - id: retention-manager
+      owner: records-management-owner
+      permissions: [read-retention-metadata, place-hold, release-hold, expire]
+  separation_of_duties:
+    producer_cannot_read_export_or_delete: true
+    investigator_cannot_mutate_hold_or_retention: true
+    export_requires_distinct_approver: true
+
+export:
+  owner: data-governance-owner
+  request_owner: security-operations-owner
+  approval_required: true
+  minimum_approvers: 1
+  allowed_formats: [jsonl]
+  encryption_required: true
+  manifest_required: true
+  manifest_fields:
+    - export_id
+    - requested_by
+    - approved_by
+    - purpose
+    - query_hash
+    - produced_at
+    - event_count
+    - first_sequence
+    - last_sequence
+    - content_hash
+    - retention_class
+  access_logged: true
+  raw_forbidden_data_rechecked: true
+
+deletion:
+  owner: records-management-owner
+  allow_early_delete: false
+  requires_retention_expiry: true
+  requires_no_active_legal_hold: true
+  disposition_receipt_required: true
+  tombstone_fields: [retention_class, sequence_range, deleted_at, approver, disposition_hash]
+  direct_row_delete_allowed: false
+
+legal_hold:
+  owner: legal-and-data-governance-owner
+  overrides_deletion: true
+  scoped_by: [tenant_id, participant_id_hash, order_id, time_range, event_type]
+  reason_required: true
+  approver_required: true
+  release_requires_distinct_approver: true
+  action_audited: true
+
+verification_catalog:
+  - id: AUDIT-SHAPE-LOCAL
+    status: implemented
+    owner: launchpad-security-owner
+    evidence: [backend/app/services/public_access.py, backend/app/storage/stores.py]
+  - id: AUDIT-REDACTION-LOCAL
+    status: implemented
+    owner: data-governance-owner
+    evidence: [backend/tests/test_session_response_security.py, backend/app/integrations/llm_audit.py]
+  - id: AUDIT-APPEND-ONLY-DURABLE
+    status: planned
+    owner: security-operations-owner
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: AUDIT-HASH-CHAIN-DURABLE
+    status: planned
+    owner: security-operations-owner
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: AUDIT-RETENTION-EXPIRY
+    status: planned
+    owner: records-management-owner
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: AUDIT-EXPORT-AUTHORIZATION
+    status: planned
+    owner: data-governance-owner
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: AUDIT-LEGAL-HOLD
+    status: planned
+    owner: legal-and-data-governance-owner
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: AUDIT-RESTORE-AND-VERIFY
+    status: planned
+    owner: launchpad-sre-owner
+    evidence: [docs/product-delivery-roadmap.md]
+
+unresolved_risks:
+  - id: AUDIT-RISK-INPLACE-DATABASE
+    severity: high
+    owner: security-operations-owner
+    statement: Current access audit rows are ordinary database records without enforced append-only or hash-chain integrity.
+    decision_gate: production security review
+    verification_plan: Deploy isolated durable storage, attempt update/delete tampering, and verify denial or independently anchored detection.
+  - id: AUDIT-RISK-RETENTION-JOBS
+    severity: high
+    owner: records-management-owner
+    statement: Retention expiry, disposition receipts, and legal-hold overrides are not implemented or certified.
+    decision_gate: production data-governance review
+    verification_plan: Exercise expiry with and without a hold and verify content deletion, tombstone creation, and immutable receipts.
+  - id: AUDIT-RISK-EXPORT
+    severity: high
+    owner: data-governance-owner
+    statement: Approved, encrypted, manifest-backed export and access logging are not implemented.
+    decision_gate: production support and compliance review
+    verification_plan: Attempt unauthorized and authorized exports and verify approval, minimization, encryption, hashes, and access audit.
+  - id: AUDIT-RISK-PRODUCER-COVERAGE
+    severity: high
+    owner: launchpad-security-owner
+    statement: Not every access, lifecycle, model, artifact, support, and automated-remediation mutation emits the versioned event schema.
+    decision_gate: production observability and security review
+    verification_plan: Build producer coverage matrix and inject one event of every required type through durable ingestion.
+
+release_policy:
+  block_on_unresolved_severity: [critical, high]
+  required_verifications:
+    - AUDIT-SHAPE-LOCAL
+    - AUDIT-REDACTION-LOCAL
+    - AUDIT-APPEND-ONLY-DURABLE
+    - AUDIT-HASH-CHAIN-DURABLE
+    - AUDIT-RETENTION-EXPIRY
+    - AUDIT-EXPORT-AUTHORIZATION
+    - AUDIT-LEGAL-HOLD
+    - AUDIT-RESTORE-AND-VERIFY
+  production_requires_independent_review: true
+  structural_validation_stage: GREEN-local

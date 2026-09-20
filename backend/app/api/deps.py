@@ -9,11 +9,14 @@ from app.adapters.mock.branding import FileBrandingAdapter
 from app.adapters.mock.catalog import MockCatalogAdapter
 from app.domain.events import EventCapacitySupply
 from app.domain.models import Tenant
+from app.services.catalog_intake_submissions import CatalogIntakeSubmissionService
 from app.services.event_reservations import EventReservationLedger
 from app.services.events import EventManifestStore
 from app.services.provisioning import ProvisioningService
 from app.services.public_access import PublicAccessService
 from app.storage.database import get_database_url
+
+catalog_intake_submission_service = CatalogIntakeSubmissionService()
 
 
 class TenantStore:

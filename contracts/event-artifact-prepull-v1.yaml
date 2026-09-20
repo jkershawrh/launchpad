@@ -1,0 +1,67 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Scheduled Event Artifact Pre-pull
+  version: 1.0.0
+  description: >-
+    Immutable plan and evidence receipts for warming exact catalog images on
+    assigned execution clusters before a scheduled event.
+paths: {}
+components:
+  schemas:
+    PrepullItem:
+      type: object
+      required: [cluster_ref, image, catalog_ids, workshop_ids]
+      properties:
+        cluster_ref: {type: string, minLength: 1}
+        image: {type: string, pattern: '^[^[:space:]@]+@sha256:[0-9a-f]{64}$'}
+        catalog_ids: {type: array, minItems: 1, items: {type: string}}
+        workshop_ids: {type: array, minItems: 1, items: {type: string}}
+    PrepullPlan:
+      type: object
+      required:
+        - plan_id
+        - schema_version
+        - event_id
+        - event_starts_at
+        - not_before
+        - complete_by
+        - artifact_policy
+        - items
+      properties:
+        plan_id: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        schema_version: {const: launchpad.redhat.com/event-artifact-prepull/v1}
+        event_id: {type: string, minLength: 1}
+        event_starts_at: {type: string, format: date-time}
+        not_before: {type: string, format: date-time}
+        complete_by: {type: string, format: date-time}
+        artifact_policy: {type: string, minLength: 1}
+        items: {type: array, minItems: 1, items: {$ref: '#/components/schemas/PrepullItem'}}
+    PrepullReceipt:
+      type: object
+      required:
+        - schema_version
+        - plan_id
+        - cluster_ref
+        - image
+        - status
+        - cache_state
+        - digest_verified
+        - signature_verified
+        - mirror_source
+        - nodes_expected
+        - nodes_ready
+        - evidence
+      properties:
+        schema_version:
+          const: launchpad.redhat.com/event-artifact-prepull-receipt/v1
+        plan_id: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+        cluster_ref: {type: string, minLength: 1}
+        image: {type: string, pattern: '^[^[:space:]@]+@sha256:[0-9a-f]{64}$'}
+        status: {type: string, enum: [passed, failed]}
+        cache_state: {type: string, enum: [present, absent, stale]}
+        digest_verified: {type: boolean}
+        signature_verified: {type: boolean}
+        mirror_source: {type: string, minLength: 1}
+        nodes_expected: {type: integer, minimum: 1}
+        nodes_ready: {type: integer, minimum: 0}
+        evidence: {type: array, minItems: 1, items: {type: string, minLength: 1}}

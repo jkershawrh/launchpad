@@ -38,6 +38,38 @@ that contract. Intake-managed entries are always rendered as `draft`. Changing
 them to `active` is a separate, reviewed promotion after the blockers are
 cleared and the evidence has been accepted.
 
+## Draft submission API
+
+The admin API exposes a bounded first step for solution owners:
+
+```text
+POST /api/v1/admin/catalog-intakes
+GET  /api/v1/admin/catalog-intakes
+GET  /api/v1/admin/catalog-intakes/{intake-id}
+```
+
+Submission requires a catalog ID and display name plus an HTTPS GitHub
+repository, immutable 40-character Git SHA, owner, audience, requested duration,
+lab type, and expected scale. The response is an admin-facing review contract,
+not a catalog item. It always reports:
+
+- `state: draft`, `orderable: false`, and `promotion_eligible: false`;
+- internal-only exposure and a one-seat certification ceiling;
+- every unmet discovery, content, artifact, security, model, lifecycle,
+  restart, cleanup, target-qualification, and approval gate;
+- no supported execution targets until target evidence exists;
+- the immutable release identity, empty evidence and approval history, and
+  undefined rollback metadata; and
+- `storage_scope: process-local-draft`, which remains an explicit blocker until
+  durable multi-replica intake storage is implemented.
+
+Unknown fields are rejected, including attempts to submit `active`,
+`public_code`, or pre-approved target values. The draft service has no catalog,
+provisioning, lifecycle, workshop, or cluster dependency. Exact resubmissions
+are idempotent within the local process and return the same content-addressed
+intake ID. This API is therefore suitable for contract and admin integration
+work, but not yet for production intake retention.
+
 ## Deployment-class and artifact review
 
 The default onboarding outcome is a namespace-isolated seat on a warm
@@ -90,6 +122,15 @@ cold pull, and cache-loss paths. Each check requires its own evidence reference;
 missing, failed, credential-bearing, mutable, wrong-origin, or unsupported-
 architecture receipts are rejected as a whole. The evaluator is offline and
 does not treat a synthetic receipt as live cluster qualification.
+
+Scheduled-event cache preparation uses the versioned
+`contracts/event-artifact-prepull-v1.yaml` contract. The plan deduplicates exact
+digest images per assigned cluster and binds them to an immutable plan ID,
+event window, catalogs, and workshops. Its status evaluator requires complete
+node coverage, digest and signature verification, mirror/source attribution,
+and evidence for every planned cluster/image pair. This local contract neither
+pulls images nor changes node caches; real pre-pull execution remains an
+integration and live certification gate.
 
 ## Local workflow
 

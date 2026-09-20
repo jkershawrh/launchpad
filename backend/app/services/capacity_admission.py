@@ -104,6 +104,89 @@ def _inference_limits(demand: InferenceCapacity, available: InferenceCapacity) -
     ]
 
 
+def _active_usage_for(
+    supply: CapacitySupplySnapshot,
+    reservations: list[AggregateCapacityReservation],
+) -> CapacityEnvelope:
+    infrastructure = EventResourceVector()
+    inference = _zero_inference(supply.inference.model_id, supply.inference.model_release)
+    for reservation in reservations:
+        if reservation.status != "held" or reservation.cluster_ref != supply.cluster_ref:
+            continue
+        infrastructure = _plus_infrastructure(infrastructure, reservation.resources.infrastructure)
+        if (reservation.model_id, reservation.model_release) == (
+            supply.inference.model_id,
+            supply.inference.model_release,
+        ):
+            inference = _plus_inference(inference, reservation.resources.inference)
+    return CapacityEnvelope(infrastructure=infrastructure, inference=inference)
+
+
+def build_capacity_admission_decision(
+    request: WorkshopCapacityRequest,
+    supply: CapacitySupplySnapshot,
+    active_reservations: list[AggregateCapacityReservation],
+    *,
+    now: datetime,
+) -> CapacityAdmissionDecision:
+    """Evaluate one all-or-nothing request against an authoritative active set."""
+    fingerprint = _fingerprint(request)
+    used = _active_usage_for(supply, active_reservations)
+    remaining_before = CapacityEnvelope(
+        infrastructure=_remaining_infrastructure(supply.infrastructure, used.infrastructure),
+        inference=_remaining_inference(supply.inference, used.inference),
+    )
+    reasons = OfflineCapacityAdmissionLedger._eligibility_reasons(request, supply, now)
+    limits: list[str] = []
+    if not reasons:
+        limits = _infrastructure_limits(
+            request.demand.infrastructure, remaining_before.infrastructure
+        ) + _inference_limits(request.demand.inference, remaining_before.inference)
+        if limits:
+            reasons = ["insufficient_aggregate_capacity"]
+
+    accepted = not reasons
+    decision_seed = f"{request.idempotency_key}:{fingerprint}:{supply.snapshot_id}"
+    decision_id = _sha("decision:" + decision_seed)
+    reservation_id = _sha("reservation:" + decision_seed) if accepted else None
+    remaining_after = (
+        CapacityEnvelope(
+            infrastructure=_remaining_infrastructure(
+                remaining_before.infrastructure, request.demand.infrastructure
+            ),
+            inference=_remaining_inference(remaining_before.inference, request.demand.inference),
+        )
+        if accepted
+        else remaining_before
+    )
+    return CapacityAdmissionDecision(
+        decision_id=decision_id,
+        request_id=request.request_id,
+        idempotency_key=request.idempotency_key,
+        request_fingerprint=fingerprint,
+        forecast_ref=request.forecast_ref,
+        event_id=request.event_id,
+        workshop_id=request.workshop_id,
+        catalog_id=request.catalog_id,
+        catalog_release=request.catalog_release,
+        cluster_ref=request.cluster_ref,
+        model_id=request.inference_per_seat.model_id,
+        model_release=request.inference_per_seat.model_release,
+        supply_snapshot_id=supply.snapshot_id,
+        policy_id=supply.policy_id,
+        status="accepted" if accepted else "rejected",
+        reason_codes=reasons,
+        limiting_dimensions=limits,
+        requested_seats=request.seats,
+        reserved_seats=request.seats if accepted else 0,
+        demand=request.demand,
+        remaining_before=remaining_before,
+        remaining_after=remaining_after,
+        reservation_id=reservation_id,
+        decided_at=now,
+    )
+
+
 class OfflineCapacityAdmissionLedger:
     """Atomic local admission ledger used for contract and fault proofs only."""
 
@@ -162,61 +245,11 @@ class OfflineCapacityAdmissionLedger:
         fingerprint: str,
         current: datetime,
     ) -> CapacityAdmissionDecision:
-        used = self._active_usage(supply)
-        remaining_before = CapacityEnvelope(
-            infrastructure=_remaining_infrastructure(supply.infrastructure, used.infrastructure),
-            inference=_remaining_inference(supply.inference, used.inference),
-        )
-        reasons = self._eligibility_reasons(request, supply, current)
-        limits: list[str] = []
-        if not reasons:
-            limits = _infrastructure_limits(
-                request.demand.infrastructure, remaining_before.infrastructure
-            ) + _inference_limits(request.demand.inference, remaining_before.inference)
-            if limits:
-                reasons = ["insufficient_aggregate_capacity"]
-
-        accepted = not reasons
-        decision_seed = f"{request.idempotency_key}:{fingerprint}:{supply.snapshot_id}"
-        decision_id = _sha("decision:" + decision_seed)
-        reservation_id = _sha("reservation:" + decision_seed) if accepted else None
-        remaining_after = (
-            CapacityEnvelope(
-                infrastructure=_remaining_infrastructure(
-                    remaining_before.infrastructure, request.demand.infrastructure
-                ),
-                inference=_remaining_inference(
-                    remaining_before.inference, request.demand.inference
-                ),
-            )
-            if accepted
-            else remaining_before
-        )
-        return CapacityAdmissionDecision(
-            decision_id=decision_id,
-            request_id=request.request_id,
-            idempotency_key=request.idempotency_key,
-            request_fingerprint=fingerprint,
-            forecast_ref=request.forecast_ref,
-            event_id=request.event_id,
-            workshop_id=request.workshop_id,
-            catalog_id=request.catalog_id,
-            catalog_release=request.catalog_release,
-            cluster_ref=request.cluster_ref,
-            model_id=request.inference_per_seat.model_id,
-            model_release=request.inference_per_seat.model_release,
-            supply_snapshot_id=supply.snapshot_id,
-            policy_id=supply.policy_id,
-            status="accepted" if accepted else "rejected",
-            reason_codes=reasons,
-            limiting_dimensions=limits,
-            requested_seats=request.seats,
-            reserved_seats=request.seats if accepted else 0,
-            demand=request.demand,
-            remaining_before=remaining_before,
-            remaining_after=remaining_after,
-            reservation_id=reservation_id,
-            decided_at=current,
+        return build_capacity_admission_decision(
+            request,
+            supply,
+            list(self._reservations.values()),
+            now=current,
         )
 
     @staticmethod
@@ -246,20 +279,7 @@ class OfflineCapacityAdmissionLedger:
         return reasons
 
     def _active_usage(self, supply: CapacitySupplySnapshot) -> CapacityEnvelope:
-        infrastructure = EventResourceVector()
-        inference = _zero_inference(supply.inference.model_id, supply.inference.model_release)
-        for reservation in self._reservations.values():
-            if reservation.status != "held" or reservation.cluster_ref != supply.cluster_ref:
-                continue
-            infrastructure = _plus_infrastructure(
-                infrastructure, reservation.resources.infrastructure
-            )
-            if (
-                reservation.model_id,
-                reservation.model_release,
-            ) == (supply.inference.model_id, supply.inference.model_release):
-                inference = _plus_inference(inference, reservation.resources.inference)
-        return CapacityEnvelope(infrastructure=infrastructure, inference=inference)
+        return _active_usage_for(supply, list(self._reservations.values()))
 
     def list_active_reservations(self) -> list[AggregateCapacityReservation]:
         with self._lock:

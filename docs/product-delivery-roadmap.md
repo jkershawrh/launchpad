@@ -319,6 +319,10 @@ an order.**
   destination receipt contract and evaluator now require evidence for every
   check; authentic per-cluster integration and live receipts remain open.
 - `LP-T020` Pre-pull scheduled-event releases and report cache/mirror status.
+  **GREEN-local:** a versioned immutable plan deduplicates exact images per
+  assigned cluster, and cache receipts fail closed unless every image proves
+  full-node coverage, digest/signature verification, and source attribution.
+  Actual pulls and live cache-loss recovery remain open.
 - **Gate:** cold-node and registry-restart tests succeed on every certified
   execution cluster.
 
@@ -329,6 +333,10 @@ repository and receive a safe, reviewable, certified catalog draft.**
 
 - `LP-T096` Add a self-service intake API and admin workflow for repository,
   immutable revision, owner, audience, duration, lab type, and expected scale.
+  **GREEN-local (API slice):** the authenticated admin contract accepts every
+  required field and returns a content-addressed, process-local draft that has
+  no live-catalog, provisioning, workshop, or cluster dependency. Durable
+  storage and the admin frontend remain open.
 - `LP-T097` Discover Antora content, manifests, Containerfiles, images, models,
   Operators, ports, storage, secrets, resource envelopes, and cleanup behavior.
   **GREEN-local:** immutable repository discovery produces a secret-safe,
@@ -350,6 +358,9 @@ repository and receive a safe, reviewable, certified catalog draft.**
   restart, and zero-residue reclaim gates without editing a live catalog.
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
   release identity, approval history, and rollback metadata in the admin UI.
+  **GREEN-local (API contract):** draft responses expose these fields and
+  explicitly report no supported target, no approval, undefined rollback, and
+  unrun evidence. The visual admin workflow and durable history remain open.
 - **Gate:** a new quickstart progresses from immutable repository revision to a
   certified draft and approved promotion without a bespoke platform code edit.
 
@@ -628,8 +639,11 @@ and reconcile complete event demand across cluster and model supply.**
   workshop and reject or queue demand before creating seats when any dimension
   is insufficient. **GREEN-local:** a pure aggregate admission ledger proves
   whole-workshop accept/reject, infrastructure and model envelopes,
-  idempotency, and thread-level overbook protection. Durable multi-process
-  serialization and live authoritative supply remain open.
+  idempotency, and thread-level overbook protection. PostgreSQL serializable
+  transactions and advisory locks additionally prove cross-process
+  whole-workshop admission, durable rejection, idempotency, and evidence-gated
+  release against a disposable database. Production migration, lifecycle
+  wiring, and live authoritative supply remain open.
 - `LP-T105` Keep deterministic eligibility and admission authoritative; permit
   AI only to forecast or recommend among policy-eligible choices.
 - `LP-T106` Reconcile forecast, reservation, provisioned request, actual use,
@@ -760,7 +774,11 @@ software provenance, secret hygiene, and accountable mutation.**
   **GREEN-local (session-response slice):** session APIs now use a dedicated
   secret-free response contract across requester, participant, lifecycle, and
   admin paths. Rotation, signing, live policy enforcement, and abuse testing
-  remain open.
+  remain open. **GREEN-local (audit slice):** a versioned audit-integrity and
+  retention contract now defines accountable events, recursive redaction,
+  separated roles, retention classes, tamper-evident chaining/anchors, governed
+  exports, disposition receipts, and legal holds. Durable enforcement remains
+  release-blocking.
 - `LP-T059` Run cross-seat, cross-tenant, cross-cluster, expired-entitlement,
   supply-chain, and recovery abuse tests.
 - **Gate:** zero critical/high findings and complete corrective evidence for the

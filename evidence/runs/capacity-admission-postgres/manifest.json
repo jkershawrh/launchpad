@@ -1,0 +1,43 @@
+{
+  "schema_version": "launchpad.intel.com/evidence-manifest/v1",
+  "evidence_id": "LP-T104-capacity-admission-postgres-20260920",
+  "requirement_ids": [
+    "LP-T104",
+    "CAP-ADMISSION-ATOMIC-WORKSHOP",
+    "CAP-ADMISSION-CROSS-PROCESS-IDEMPOTENCY",
+    "CAP-ADMISSION-EVIDENCED-RELEASE"
+  ],
+  "base_commit": "a937ace2fb747ac3fa491be43316c59e97e95671",
+  "recorded_at": "2026-09-20T15:33:52Z",
+  "scope": "offline disposable PostgreSQL only; no cluster, live database, or active workshop access",
+  "red": {
+    "result": "expected failure",
+    "reason": "PostgresCapacityAdmissionStore did not exist",
+    "artifact": "red-local.xml",
+    "sha256": "84c49acce1708cfe0a6a363b996f1a99871878bc3aaa257fba7cbbb2ae842bf7"
+  },
+  "green_local": {
+    "result": "13 passed, 5 skipped",
+    "reason": "database integration is conditional without EVENT_TEST_DATABASE_URL",
+    "artifact": "green-local.xml",
+    "sha256": "f370086f5429a158c6a5df8c7da1f9eeab58af4681bed4d64844a9f5976d7232"
+  },
+  "green_postgres": {
+    "result": "18 passed",
+    "database": "temporary local PostgreSQL 16 container removed after the run",
+    "artifact": "green-postgres.xml",
+    "sha256": "b98af8ca7e466841f63eb7cc574bc97ff02e6694ad97132fad9c9dc4437389df"
+  },
+  "claims": [
+    "Competing requests from independent store instances cannot overbook one supply envelope.",
+    "Concurrent and sequential identical retries converge on one durable decision and hold.",
+    "Rejected decisions survive process restart and never create partial reservations.",
+    "Release requires a SHA-256 cleanup evidence identifier and conflicting replay is rejected.",
+    "A released hold becomes available to a later whole-workshop request."
+  ],
+  "non_claims": [
+    "No production database migration was applied.",
+    "No live capacity source, scheduler, API route, or workshop lifecycle was connected.",
+    "No cluster failover, provisioning, or reclaim behavior is certified by this evidence."
+  ]
+}
