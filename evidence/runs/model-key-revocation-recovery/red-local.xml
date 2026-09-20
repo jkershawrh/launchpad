@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.135" timestamp="2026-09-19T21:35:16.419445-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_model_key_recovery_red" name="test_failed_revocation_holds_capacity_and_recovers_by_alias" time="0.002"><failure message="AssertionError: Expected 'release' to not have been called. Called 1 times.&#10;Calls: [call('171cbb9c-9a6e-48a6-962c-ddf649f77a63')].">def test_failed_revocation_holds_capacity_and_recovers_by_alias():
+        broker = MagicMock()
+        broker.create_key.return_value.key = "sk-gateway-issued"
+        broker.create_key.return_value.key_id = "token-seat-1"
+        broker.revoke_key.return_value = None
+        broker.revoke_key_by_alias.return_value = MaaSKeyRevocationReceipt(
+            provider="litellm",
+            key_id="token-seat-1",
+            confirmed_at=datetime.now(UTC),
+            confirmation_id="request-alias-recovery",
+        )
+        pool = MagicMock()
+        pool.check_capacity.return_value = True
+        pool.reserve.return_value = {}
+        service = ProvisioningService(maas_key_broker=broker, pool=pool)
+        request = service.submit_request(
+            LabRequest(
+                tenant_id="tenant-a",
+                requester_id="user-a",
+                catalog_item_id="inference-overdrive-quickstart",
+                requested_mode=CatalogCategory.QUICK_START,
+                ttl="4h",
+            )
+        )
+        session = service.provision(request.request_id)
+    
+        failed = service.force_reclaim_session(
+            session.session_id,
+            require_cleanup_success=True,
+        )
+        assert failed.status.value == "cleanup_failed"
+&gt;       pool.release.assert_not_called()
+
+backend/tests/test_model_key_recovery_red.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;MagicMock name='mock.release' id='4423897104'&gt;
+
+    def assert_not_called(self):
+        """assert that the mock was never called.
+        """
+        if self.call_count != 0:
+            msg = ("Expected '%s' to not have been called. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+&gt;           raise AssertionError(msg)
+E           AssertionError: Expected 'release' to not have been called. Called 1 times.
+E           Calls: [call('171cbb9c-9a6e-48a6-962c-ddf649f77a63')].
+
+/Users/jkershaw/.local/share/uv/python/cpython-3.14.6-macos-aarch64-none/lib/python3.14/unittest/mock.py:947: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1193,9 +1193,11 @@ class ProvisioningService:
     def _revoke_maas_key(self, session: LabSession) -> LabSession:
         """Revoke a scoped key and persist only its secret-free receipt."""
 
-        if not self.maas_key_broker or not session.maas_api_key:
+        if not self.maas_key_broker:
             return session
         key_id = str(session.metadata.get("maas_key_id", "")).strip()
+        if not session.maas_api_key and not key_id:
+            return session
         if not key_id:
             raise ValueError("MaaS key revocation requires its persisted key ID")
         existing = session.metadata.get("maas_key_revocation")
@@ -1204,10 +1206,21 @@ class ProvisioningService:
             if receipt.key_id != key_id:
                 raise ValueError("MaaS key revocation receipt does not match key ID")
             return session
-        receipt = self.maas_key_broker.revoke_key(
-            session.maas_api_key,
-            key_id=key_id,
-        )
+        if session.maas_api_key:
+            receipt = self.maas_key_broker.revoke_key(
+                session.maas_api_key,
+                key_id=key_id,
+            )
+        else:
+            key_alias = str(session.metadata.get("maas_key_alias", "")).strip()
+            if not key_alias:
+                raise ValueError(
+                    "MaaS key recovery requires its persisted key alias"
+                )
+            receipt = self.maas_key_broker.revoke_key_by_alias(
+                key_alias,
+                key_id=key_id,
+            )
         if receipt is None:
             raise ValueError("MaaS key broker returned no revocation receipt")
         receipt = MaaSKeyRevocationReceipt.model_validate(receipt)
@@ -1243,11 +1256,15 @@ class ProvisioningService:
         if session.status not in (SessionStatus.RESETTING, SessionStatus.CLEANUP_FAILED):
             session = transition(session, SessionStatus.RESETTING, reason="cleanup started")
             self._save_session(session)
-        self._require_lifecycle_ownership(lifecycle_guard)
-        self.pool.release(session.request_id)
 
         cleanup_errors = []
-        if self.maas_key_broker and session.maas_api_key:
+        if self.maas_key_broker and (
+            session.maas_api_key
+            or (
+                session.metadata.get("maas_key_id")
+                and not session.metadata.get("maas_key_revocation")
+            )
+        ):
             self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 session = self._revoke_maas_key(session)
@@ -1302,6 +1319,8 @@ class ProvisioningService:
                 error_summary="; ".join(cleanup_errors),
             )
         else:
+            self._require_lifecycle_ownership(lifecycle_guard)
+            self.pool.release(session.request_id)
             session = transition(session, SessionStatus.RECLAIMED, reason="resources reclaimed — credentials scrubbed")
             self._save_session(session)
             access = getattr(self, "public_access_service", None)
@@ -1330,14 +1349,18 @@ class ProvisioningService:
         if not session:
             raise ValueError(f"Session {session_id} not found")
         key_revocation_error = None
-        if self.maas_key_broker and session.maas_api_key:
+        if self.maas_key_broker and (
+            session.maas_api_key
+            or (
+                session.metadata.get("maas_key_id")
+                and not session.metadata.get("maas_key_revocation")
+            )
+        ):
             self._require_lifecycle_ownership(lifecycle_guard)
             try:
                 session = self._revoke_maas_key(session)
             except Exception as exc:
                 key_revocation_error = str(exc)
-        self._require_lifecycle_ownership(lifecycle_guard)
-        self.pool.release(session.request_id)
         cleanup_adapter = self._get_cleanup(session.cluster_ref)
         if cleanup_adapter and session.resources.get("compose_file"):
             self._require_lifecycle_ownership(lifecycle_guard)
@@ -1374,7 +1397,7 @@ class ProvisioningService:
                     session = self._scrub_credentials(session)
                     self._save_session(session)
                     return session
-        if key_revocation_error and require_cleanup_success:
+        if key_revocation_error:
             self._require_lifecycle_ownership(lifecycle_guard)
             event = LifecycleEvent(
                 from_status=session.status,
@@ -1388,6 +1411,8 @@ class ProvisioningService:
             session = self._scrub_credentials(session)
             self._save_session(session)
             return session
+        self._require_lifecycle_ownership(lifecycle_guard)
+        self.pool.release(session.request_id)
         event = LifecycleEvent(
             from_status=session.status,
             to_status=SessionStatus.RECLAIMED,

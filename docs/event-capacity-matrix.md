@@ -164,11 +164,11 @@ raw key. Missing, malformed, or mismatched receipts keep
 `model_key_revocation` nonzero. A retry after a persisted matching receipt does
 not call the provider again. If the provider rejects revocation or returns no
 receipt, Launchpad scrubs the raw credential and marks cleanup failed. Because
-the secret is deliberately not retained, that failure currently requires an
-operator to confirm or remediate revocation by the stable key ID. The supported
-workflow for attaching that manual confirmation is not implemented yet, so the
-session and reservation remain failed closed rather than being released on an
-unverifiable assertion.
+the secret is deliberately not retained, a later cleanup retry uses the unique
+persisted `launchpad-<session-id>` key alias to ask LiteLLM to delete the key.
+The session and reservation remain failed closed until that alias request
+returns a receipt for the original stable key ID; no operator assertion can
+bypass the provider confirmation.
 
 The exact sorted evidence payload is hashed with SHA-256. That evidence ID is
 persisted on every released reservation, making retries idempotent and causing
@@ -189,8 +189,10 @@ finalization. A PostgreSQL trigger fault also proves that a rejected release
 transaction rolls back fully, keeps reservations consumed without an evidence
 ID, and succeeds on an unchanged retry after recovery. Local component proof
 now covers provider-confirmed HTTP key-revocation receipts, idempotent receipt
-replay, and fail-closed missing-receipt behavior. This does not represent a live
-OpenShift cleanup, external OIDC browser journey, or live LiteLLM revocation.
+replay, fail-closed missing-receipt behavior, and recovery by a persisted
+non-secret key alias after the raw credential has been scrubbed. This does not
+represent a live OpenShift cleanup, external OIDC browser journey, or live
+LiteLLM revocation.
 
 ## Next boundary
 

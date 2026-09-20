@@ -70,6 +70,28 @@ class LiteLLMVirtualKeyBroker:
             timeout=self.timeout,
         )
         response.raise_for_status()
+        return self._revocation_receipt(response, key_id=key_id)
+
+    def revoke_key_by_alias(
+        self, key_alias: str, *, key_id: str
+    ) -> MaaSKeyRevocationReceipt | None:
+        """Revoke a key without retaining or recovering its secret value."""
+
+        if not key_alias:
+            return None
+        response = httpx.post(
+            f"{self.api_base}/key/delete",
+            headers=self._headers,
+            json={"key_aliases": [key_alias]},
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        return self._revocation_receipt(response, key_id=key_id)
+
+    @staticmethod
+    def _revocation_receipt(
+        response: httpx.Response, *, key_id: str
+    ) -> MaaSKeyRevocationReceipt:
         confirmation_id = response.headers.get("x-request-id", "").strip()
         return MaaSKeyRevocationReceipt(
             provider="litellm",

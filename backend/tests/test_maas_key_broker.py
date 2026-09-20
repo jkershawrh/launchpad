@@ -56,6 +56,26 @@ def test_virtual_key_is_revoked_at_gateway():
     assert "sk-real" not in receipt.model_dump_json()
 
 
+def test_virtual_key_can_be_revoked_by_non_secret_alias():
+    response = MagicMock()
+    response.headers = {"x-request-id": "request-alias-123"}
+    with patch("httpx.post", return_value=response) as post:
+        broker = LiteLLMVirtualKeyBroker("http://litellm:4000", "master")
+        receipt = broker.revoke_key_by_alias(
+            "launchpad-session-1",
+            key_id="token-1",
+        )
+
+    assert post.call_args.args[0] == "http://litellm:4000/key/delete"
+    assert post.call_args.kwargs["json"] == {
+        "key_aliases": ["launchpad-session-1"]
+    }
+    response.raise_for_status.assert_called_once()
+    assert receipt is not None
+    assert receipt.key_id == "token-1"
+    assert receipt.confirmation_id == "request-alias-123"
+
+
 def _request():
     return LabRequest(
         tenant_id="tenant-a", requester_id="user-a",
@@ -182,6 +202,42 @@ def test_reclaim_fails_closed_when_broker_returns_no_revocation_receipt():
     assert service.inspect_session_cleanup(reclaimed.session_id)[
         "model_key_revocation"
     ] == 1
+
+
+def test_failed_secret_revocation_recovers_by_persisted_alias():
+    broker = MagicMock()
+    broker.create_key.return_value.key = "sk-gateway-issued"
+    broker.create_key.return_value.key_id = "token-seat-1"
+    broker.revoke_key.return_value = None
+    broker.revoke_key_by_alias.return_value = MaaSKeyRevocationReceipt(
+        provider="litellm",
+        key_id="token-seat-1",
+        confirmed_at=datetime.now(UTC),
+        confirmation_id="request-alias-recovery",
+    )
+    pool = MagicMock()
+    pool.check_capacity.return_value = True
+    pool.reserve.return_value = {}
+    service = ProvisioningService(maas_key_broker=broker, pool=pool)
+    request = service.submit_request(_request())
+    session = service.provision(request.request_id)
+
+    failed = service.force_reclaim_session(session.session_id)
+    assert failed.status.value == "cleanup_failed"
+    assert failed.maas_api_key is None
+    pool.release.assert_not_called()
+
+    recovered = service.force_reclaim_session(session.session_id)
+
+    assert recovered.status.value == "reclaimed"
+    pool.release.assert_called_once_with(session.request_id)
+    broker.revoke_key_by_alias.assert_called_once_with(
+        f"launchpad-{session.session_id}",
+        key_id="token-seat-1",
+    )
+    assert recovered.metadata["maas_key_revocation"]["confirmation_id"] == (
+        "request-alias-recovery"
+    )
 
 
 def test_existing_matching_receipt_makes_key_revocation_retry_idempotent():
