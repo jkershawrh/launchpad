@@ -31,6 +31,7 @@ from app.services.events import EventManifestStore
 from app.services.lifecycle_worker import LifecycleQueueService, LifecycleWorker
 from app.services.provisioning import ProvisioningService
 from app.services.public_access import (
+    PublicAccessCodeRotationConflictError,
     PublicAccessPolicyAlreadyExistsError,
     PublicAccessService,
 )
@@ -290,6 +291,77 @@ def test_concurrent_postgres_public_activation_discloses_one_code() -> None:
         shared_origin="https://labs.example.io",
         shared_path_mode=True,
     )._hasher.verify(persisted[0].code_hash, plaintext)
+
+
+def test_concurrent_postgres_public_rotation_discloses_one_code() -> None:
+    owner = PublicAccessService(
+        store=PostgresAccessStore(),
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    _, original_code = owner.create_policy(
+        order_id="ha-rotation-order",
+        order_type="workshop",
+        catalog_slug="build-agent",
+        seat_refs=["seat-1"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+    claim = owner.claim(
+        "ha-rotation-order",
+        "participant@example.test",
+        original_code,
+        "192.0.2.10",
+    )
+    replicas = [
+        PublicAccessService(
+            store=PostgresAccessStore(),
+            enabled=True,
+            shared_origin="https://labs.example.io",
+            shared_path_mode=True,
+        )
+        for _ in range(2)
+    ]
+    barrier = threading.Barrier(3)
+    successes = []
+    errors = []
+
+    def rotate(access: PublicAccessService) -> None:
+        try:
+            barrier.wait()
+            successes.append(access.rotate_code("ha-rotation-order"))
+        except Exception as exc:  # noqa: BLE001 - preserve thread failures
+            errors.append(exc)
+
+    threads = [threading.Thread(target=rotate, args=(item,)) for item in replicas]
+    for thread in threads:
+        thread.start()
+    barrier.wait()
+    for thread in threads:
+        thread.join(timeout=10)
+
+    assert len(successes) == 1
+    assert len(errors) == 1
+    assert isinstance(errors[0], PublicAccessCodeRotationConflictError)
+    reader = PublicAccessService(
+        store=PostgresAccessStore(),
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    policy = reader.get_policy("ha-rotation-order")
+    assert policy is not None
+    assert policy.code_version == 2
+    reader._hasher.verify(policy.code_hash, successes[0])
+    with pytest.raises(ValueError, match="Access denied"):
+        reader.validate_session(claim.session_token, "ha-rotation-order")
+    restored = reader.claim(
+        "ha-rotation-order",
+        "participant@example.test",
+        successes[0],
+        "192.0.2.10",
+    )
+    assert restored.entitlement.seat_ref == "seat-1"
 
 
 def _prepare_reclaimed_event() -> EventRecord:

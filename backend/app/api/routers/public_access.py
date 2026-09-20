@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 from app.api.deps import provisioning_service, public_access_service
 from app.auth.oauth import User, require_admin
+from app.services.public_access import PublicAccessCodeRotationConflictError
 
 router = APIRouter(prefix="/public-access", tags=["public-access"])
 logger = logging.getLogger("launchpad.public_access")
@@ -261,6 +262,8 @@ def rotate(order_id: str, _user: User = Depends(require_admin)):
             "one_time_access_code": public_access_service.rotate_code(order_id),
             **_owner_summary(order_id),
         }
+    except PublicAccessCodeRotationConflictError as exc:
+        raise HTTPException(409, str(exc))
     except ValueError as exc:
         raise HTTPException(404, str(exc))
 

@@ -21,12 +21,17 @@ from app.domain.access import (
     ParticipantEntitlement,
     ParticipantIdentity,
 )
+from app.storage.stores import PublicAccessPolicyConflictError
 
 GENERIC_DENIAL = "Access request cannot be completed"
 
 
 class PublicAccessPolicyAlreadyExistsError(ValueError):
     """Only the request that creates a policy may receive its plaintext code."""
+
+
+class PublicAccessCodeRotationConflictError(ValueError):
+    """Another replica replaced the code before this request committed."""
 
 
 class PublicAccessService:
@@ -419,8 +424,29 @@ class PublicAccessService:
             if not policy:
                 raise ValueError("Access policy not found")
             plaintext = self._new_code()
+            replacement_hash = self._hasher.hash(plaintext)
+            if self.store and hasattr(self.store, "rotate_policy_once"):
+                try:
+                    policy, entitlements = self.store.rotate_policy_once(
+                        order_id=order_id,
+                        expected_version=policy.code_version,
+                        replacement_hash=replacement_hash,
+                        now=datetime.now(UTC),
+                    )
+                except PublicAccessPolicyConflictError as exc:
+                    self._replace_from_store()
+                    raise PublicAccessCodeRotationConflictError(
+                        "Access code changed concurrently; retry rotation"
+                    ) from exc
+                self._policies[order_id] = policy
+                for entitlement in entitlements:
+                    self._entitlements[
+                        (entitlement.order_id, entitlement.participant_id)
+                    ] = entitlement
+                self._audit("rotate", order_id, "completed")
+                return plaintext
             policy = policy.model_copy(update={
-                "code_hash": self._hasher.hash(plaintext),
+                "code_hash": replacement_hash,
                 "code_version": policy.code_version + 1,
             })
             self._policies[order_id] = policy

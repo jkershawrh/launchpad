@@ -9,9 +9,11 @@ from app.domain.access import EntitlementStatus, ExposurePolicy
 from app.domain.clusters import ClusterTarget
 from app.services.cluster_registry import ClusterRegistry
 from app.services.public_access import (
+    PublicAccessCodeRotationConflictError,
     PublicAccessPolicyAlreadyExistsError,
     PublicAccessService,
 )
+from app.storage.stores import PublicAccessPolicyConflictError
 from fastapi import HTTPException
 
 
@@ -339,6 +341,105 @@ def test_rotation_requires_reauthentication_and_new_code_restores_seat():
     restored = access.claim("rotate", "person@example.com", new_code, "192.0.2.1")
     assert restored.entitlement.seat_ref == "seat-1"
     assert restored.entitlement.status == EntitlementStatus.ACTIVE
+
+
+def test_concurrent_rotation_discloses_only_one_authoritative_code():
+    import threading
+
+    owner = service()
+    policy, _ = owner.create_policy(
+        order_id="rotate-once",
+        order_type="workshop",
+        catalog_slug="lab",
+        seat_refs=["seat-1"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+
+    class AtomicRotationStore:
+        def __init__(self):
+            self.policy = policy
+            self.lock = threading.Lock()
+
+        def load_all(self):
+            return {
+                "policies": [self.policy],
+                "identities": [],
+                "entitlements": [],
+                "sessions": [],
+            }
+
+        def rotate_policy_once(
+            self, *, order_id, expected_version, replacement_hash, now
+        ):
+            del now
+            with self.lock:
+                assert order_id == self.policy.order_id
+                if self.policy.code_version != expected_version:
+                    raise PublicAccessPolicyConflictError(
+                        "Access code changed concurrently"
+                    )
+                self.policy = self.policy.model_copy(
+                    update={
+                        "code_hash": replacement_hash,
+                        "code_version": expected_version + 1,
+                    }
+                )
+                return self.policy, []
+
+        def save_audit_event(self, _event):
+            return None
+
+    store = AtomicRotationStore()
+    services = [
+        PublicAccessService(
+            public_domain="labs.example.io", enabled=True, store=store
+        )
+        for _ in range(2)
+    ]
+    barrier = threading.Barrier(3)
+    successes = []
+    errors = []
+
+    def rotate(access):
+        try:
+            barrier.wait()
+            successes.append(access.rotate_code("rotate-once"))
+        except Exception as exc:  # noqa: BLE001 - preserve thread failures
+            errors.append(exc)
+
+    threads = [threading.Thread(target=rotate, args=(item,)) for item in services]
+    for thread in threads:
+        thread.start()
+    barrier.wait()
+    for thread in threads:
+        thread.join(timeout=10)
+
+    assert len(successes) == 1
+    assert len(errors) == 1
+    assert isinstance(errors[0], PublicAccessCodeRotationConflictError)
+    owner._hasher.verify(store.policy.code_hash, successes[0])
+
+
+def test_concurrent_rotation_api_returns_conflict(monkeypatch):
+    monkeypatch.setattr(
+        public_access_router.public_access_service,
+        "_entitlements",
+        {},
+    )
+    monkeypatch.setattr(
+        public_access_router.public_access_service,
+        "rotate_code",
+        lambda _order_id: (_ for _ in ()).throw(
+            PublicAccessCodeRotationConflictError(
+                "Access code changed concurrently; retry rotation"
+            )
+        ),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        public_access_router.rotate("rotate-once", SimpleNamespace())
+
+    assert exc.value.status_code == 409
 
 
 def test_expired_policy_denies_claim_and_session():

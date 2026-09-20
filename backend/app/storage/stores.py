@@ -182,6 +182,22 @@ class PostgresAccessStore:
                         (lock_key,),
                     )
                 cur.execute(
+                    "SELECT data FROM access_policies WHERE order_id = %s FOR UPDATE",
+                    (order_id,),
+                )
+                policy_row = cur.fetchone()
+                if not policy_row:
+                    conn.rollback()
+                    return None
+                policy = AccessPolicy.model_validate(_decode_json(policy_row[0]))
+                if (
+                    not policy.enabled
+                    or policy.expires_at <= now
+                    or policy.code_version != code_version
+                ):
+                    conn.rollback()
+                    return None
+                cur.execute(
                     """SELECT data FROM participant_identities
                        WHERE lower(data->>'normalized_email') = lower(%s)
                        FOR UPDATE""",
@@ -268,6 +284,93 @@ class PostgresAccessStore:
             logger.warning("DB atomic public access claim error: %s", exc)
             raise PersistenceUnavailableError(
                 "Authoritative public access claim could not be persisted"
+            ) from exc
+        finally:
+            conn.close()
+
+    def rotate_policy_once(
+        self,
+        *,
+        order_id: str,
+        expected_version: int,
+        replacement_hash: str,
+        now: datetime,
+    ) -> tuple[AccessPolicy, list[ParticipantEntitlement]]:
+        """Rotate a code and fence active entitlements in one transaction."""
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "Authoritative public access state is unavailable"
+            )
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"access-order:{order_id}",),
+                )
+                cur.execute(
+                    "SELECT data FROM access_policies WHERE order_id = %s FOR UPDATE",
+                    (order_id,),
+                )
+                row = cur.fetchone()
+                if not row:
+                    raise PublicAccessPolicyConflictError(
+                        "Access policy not found"
+                    )
+                policy = AccessPolicy.model_validate(_decode_json(row[0]))
+                if policy.code_version != expected_version:
+                    raise PublicAccessPolicyConflictError(
+                        "Access code changed concurrently"
+                    )
+                policy = policy.model_copy(
+                    update={
+                        "code_hash": replacement_hash,
+                        "code_version": policy.code_version + 1,
+                    }
+                )
+                cur.execute(
+                    """SELECT data FROM participant_entitlements
+                       WHERE data->>'order_id' = %s FOR UPDATE""",
+                    (order_id,),
+                )
+                entitlements = []
+                for entitlement_row in cur.fetchall():
+                    entitlement = ParticipantEntitlement.model_validate(
+                        _decode_json(entitlement_row[0])
+                    )
+                    if entitlement.status == EntitlementStatus.ACTIVE:
+                        entitlement = entitlement.model_copy(
+                            update={
+                                "status": EntitlementStatus.REAUTH_REQUIRED,
+                                "updated_at": now,
+                            }
+                        )
+                        entitlements.append(entitlement)
+                cur.execute(
+                    """UPDATE access_policies SET data = %s::jsonb,
+                       updated_at = NOW() WHERE order_id = %s""",
+                    (json.dumps(policy.model_dump(mode="json")), order_id),
+                )
+                for entitlement in entitlements:
+                    cur.execute(
+                        """UPDATE participant_entitlements
+                           SET data = %s::jsonb, updated_at = NOW()
+                           WHERE entitlement_id = %s""",
+                        (
+                            json.dumps(entitlement.model_dump(mode="json")),
+                            entitlement.entitlement_id,
+                        ),
+                    )
+            conn.commit()
+            return policy, entitlements
+        except PublicAccessPolicyConflictError:
+            conn.rollback()
+            raise
+        except Exception as exc:
+            conn.rollback()
+            logger.warning("DB rotate public access policy error: %s", exc)
+            raise PersistenceUnavailableError(
+                "Authoritative public access policy could not be rotated"
             ) from exc
         finally:
             conn.close()

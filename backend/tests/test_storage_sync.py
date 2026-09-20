@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
-from app.domain.access import AccessPolicy
+from app.domain.access import AccessPolicy, EntitlementStatus, ParticipantEntitlement
 from app.domain.enums import SessionStatus, WorkshopStatus
 from app.domain.models import LabSession, Workshop
 from app.storage import database, stores
@@ -208,8 +208,9 @@ def test_workshop_create_idempotent_rejects_conflicting_order(monkeypatch):
 
 
 class _PolicyCursor:
-    def __init__(self, rows):
+    def __init__(self, rows, entitlements=None):
         self.rows = deque(rows)
+        self.entitlements = entitlements or []
         self.statements = []
 
     def __enter__(self):
@@ -225,16 +226,25 @@ class _PolicyCursor:
         value = self.rows.popleft()
         return (value.model_dump(mode="json"),) if value else None
 
+    def fetchall(self):
+        return [
+            (entitlement.model_dump(mode="json"),)
+            for entitlement in self.entitlements
+        ]
+
 
 class _PolicyConnection:
-    def __init__(self, rows):
-        self.cursor_value = _PolicyCursor(rows)
+    def __init__(self, rows, entitlements=None):
+        self.cursor_value = _PolicyCursor(rows, entitlements)
         self.commits = 0
         self.rollbacks = 0
         self.closed = False
 
     def cursor(self):
         return self.cursor_value
+
+    def set_session(self, **_kwargs):
+        return None
 
     def commit(self):
         self.commits += 1
@@ -303,6 +313,79 @@ def test_public_policy_rejects_another_active_order_on_same_origin(monkeypatch):
             _access_policy(), now=datetime.utcnow()
         )
 
+    assert connection.commits == 0
+    assert connection.rollbacks == 1
+
+
+def test_public_policy_rotation_fences_entitlements_in_same_transaction(monkeypatch):
+    policy = _access_policy()
+    entitlement = ParticipantEntitlement(
+        participant_id="participant-1",
+        order_id=policy.order_id,
+        seat_ref="seat-1",
+        code_version=policy.code_version,
+        expires_at=policy.expires_at,
+    )
+    connection = _PolicyConnection([policy], [entitlement])
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    rotated, entitlements = stores.PostgresAccessStore().rotate_policy_once(
+        order_id=policy.order_id,
+        expected_version=policy.code_version,
+        replacement_hash="$argon2id$replacement-hash",
+        now=datetime.utcnow(),
+    )
+
+    assert rotated.code_version == policy.code_version + 1
+    assert entitlements[0].status == EntitlementStatus.REAUTH_REQUIRED
+    statements = [statement for statement, _params in connection.cursor_value.statements]
+    assert "pg_advisory_xact_lock" in statements[0]
+    assert statements[1].endswith("FOR UPDATE")
+    assert statements[2].endswith("FOR UPDATE")
+    assert statements[3].startswith("UPDATE access_policies")
+    assert statements[4].startswith("UPDATE participant_entitlements")
+    assert connection.commits == 1
+
+
+def test_public_policy_rotation_rejects_stale_replica(monkeypatch):
+    policy = _access_policy().model_copy(update={"code_version": 2})
+    connection = _PolicyConnection([policy])
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    with pytest.raises(
+        stores.PublicAccessPolicyConflictError,
+        match="changed concurrently",
+    ):
+        stores.PostgresAccessStore().rotate_policy_once(
+            order_id=policy.order_id,
+            expected_version=1,
+            replacement_hash="$argon2id$losing-hash",
+            now=datetime.utcnow(),
+        )
+
+    assert connection.commits == 0
+    assert connection.rollbacks == 1
+
+
+def test_public_claim_rejects_code_version_changed_while_waiting(monkeypatch):
+    policy = _access_policy().model_copy(update={"code_version": 2})
+    connection = _PolicyConnection([policy])
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    result = stores.PostgresAccessStore().claim_entitlement(
+        order_id=policy.order_id,
+        normalized_email="participant@example.test",
+        proposed_participant_id="participant-1",
+        seat_refs=policy.seat_refs,
+        code_version=1,
+        expires_at=policy.expires_at,
+        now=datetime.utcnow(),
+    )
+
+    assert result is None
+    statements = [statement for statement, _params in connection.cursor_value.statements]
+    assert sum("pg_advisory_xact_lock" in statement for statement in statements) == 2
+    assert statements[-1].endswith("FOR UPDATE")
     assert connection.commits == 0
     assert connection.rollbacks == 1
 

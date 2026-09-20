@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T04:04:46Z",
+  "updated_at": "2026-09-20T04:09:17Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -553,6 +553,7 @@
         "cbt": "green-local"
       },
       "evidence": [
+        "backend/app/api/routers/public_access.py",
         "backend/app/api/routers/workshops.py",
         "backend/app/services/event_orchestration.py",
         "backend/app/services/public_access.py",
@@ -561,9 +562,10 @@
         "backend/tests/test_public_access.py",
         "backend/tests/test_storage_sync.py",
         "backend/tests/test_workshop_order_contract.py",
-        "evidence/runs/public-access-atomic-activation/green-local.xml"
+        "evidence/runs/public-access-atomic-activation/green-local.xml",
+        "evidence/runs/public-access-atomic-rotation/green-local.xml"
       ],
-      "note": "Initial public-code activation is transactionally fenced by order and public origin. Concurrent replicas produce one authoritative Argon2id hash; only the winner receives plaintext, while the loser receives HTTP 409 and cannot overwrite or disclose a second code. Focused local contracts are green and a PostgreSQL concurrency test is present but awaits EVENT_TEST_DATABASE_URL execution. Live multi-replica Keycloak, rotation, revocation, rate-limit, and connector-failure certification remain open."
+      "note": "Initial activation and code rotation are transactionally fenced across replicas. Exactly one plaintext code can become authoritative; competing activation or rotation requests receive HTTP 409. Rotation changes the policy version and active entitlements to reauth-required in one PostgreSQL transaction, and a claim revalidates that version under the same order lock. Focused local contracts are green and PostgreSQL concurrency tests are present but await EVENT_TEST_DATABASE_URL execution. Live multi-replica Keycloak, external RoleBinding removal, session revocation, rate-limit, and connector-failure certification remain open."
     }
   },
   "rubric": [
