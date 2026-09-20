@@ -28,7 +28,10 @@ from app.domain.lifecycle_jobs import LifecycleJobOperation, LifecycleJobStatus
 from app.services.event_reservations import EventReservationLedger
 from app.services.lifecycle_worker import LifecycleQueueService
 from app.services.provisioning import ProvisioningService
-from app.services.public_access import PublicAccessService
+from app.services.public_access import (
+    PublicAccessPolicyAlreadyExistsError,
+    PublicAccessService,
+)
 
 
 class EventOrchestrationConflictError(RuntimeError):
@@ -194,13 +197,18 @@ class EventOrchestrationService:
             raise EventOrchestrationConflictError(
                 "Workshop public access expiration has already passed"
             )
-        policy, plaintext = self.public_access.create_policy(
-            order_id=workshop.workshop_id,
-            order_type="workshop",
-            catalog_slug=workshop.catalog_item_id,
-            seat_refs=[seat.seat_id for seat in workshop.seats],
-            expires_at=expires_at,
-        )
+        try:
+            policy, plaintext = self.public_access.create_policy(
+                order_id=workshop.workshop_id,
+                order_type="workshop",
+                catalog_slug=workshop.catalog_item_id,
+                seat_refs=[seat.seat_id for seat in workshop.seats],
+                expires_at=expires_at,
+            )
+        except PublicAccessPolicyAlreadyExistsError as exc:
+            raise EventOrchestrationConflictError(
+                "Public access is already activated; rotate the code if it was lost"
+            ) from exc
         updated = workshop.model_copy(
             update={
                 "public_url": policy.public_url,

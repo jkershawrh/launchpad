@@ -17,6 +17,7 @@ from app.auth.oauth import (
 from app.domain.access import ExposurePolicy
 from app.domain.enums import WorkshopStatus
 from app.domain.models import Workshop
+from app.services.public_access import PublicAccessPolicyAlreadyExistsError
 
 router = APIRouter(
     prefix="/workshops",
@@ -201,6 +202,8 @@ def create_workshop_order(
             if plaintext:
                 result["one_time_access_code"] = plaintext
         return result
+    except PublicAccessPolicyAlreadyExistsError as e:
+        raise HTTPException(409, str(e))
     except ValueError as e:
         if "Idempotency key" in str(e):
             raise HTTPException(409, str(e))

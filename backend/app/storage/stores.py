@@ -50,6 +50,10 @@ class WorkshopIdempotencyConflictError(ValueError):
     """A tenant reused one workshop idempotency key for another order."""
 
 
+class PublicAccessPolicyConflictError(ValueError):
+    """A durable public policy already owns the requested order or origin."""
+
+
 class PostgresAccessStore:
     _models = {
         "access_policies": ("order_id", AccessPolicy),
@@ -77,6 +81,68 @@ class PostgresAccessStore:
             conn.rollback()
             raise PersistenceUnavailableError(
                 "Authoritative public access state could not be persisted"
+            ) from exc
+        finally:
+            conn.close()
+
+    def create_policy_once(
+        self, value: AccessPolicy, *, now: datetime
+    ) -> tuple[AccessPolicy, bool]:
+        """Create one authoritative code hash without replica overwrite."""
+        conn = _get_sync_conn()
+        if not conn:
+            raise PersistenceUnavailableError(
+                "Authoritative public access state is unavailable"
+            )
+        try:
+            data = json.dumps(value.model_dump(mode="json"))
+            with conn.cursor() as cur:
+                for lock_key in sorted(
+                    (
+                        f"public-access-order:{value.order_id}",
+                        f"public-access-origin:{value.public_url}",
+                    )
+                ):
+                    cur.execute(
+                        "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                        (lock_key,),
+                    )
+                cur.execute(
+                    "SELECT data FROM access_policies WHERE order_id = %s FOR UPDATE",
+                    (value.order_id,),
+                )
+                row = cur.fetchone()
+                if row:
+                    conn.commit()
+                    return AccessPolicy.model_validate(_decode_json(row[0])), False
+                cur.execute(
+                    """SELECT data FROM access_policies
+                       WHERE order_id <> %s
+                         AND data->>'public_url' = %s
+                         AND (data->>'enabled')::boolean IS TRUE
+                         AND (data->>'expires_at')::timestamptz > %s
+                       LIMIT 1 FOR UPDATE""",
+                    (value.order_id, value.public_url, now),
+                )
+                if cur.fetchone():
+                    raise PublicAccessPolicyConflictError(
+                        "Shared public pilot already has an active order"
+                    )
+                cur.execute(
+                    """INSERT INTO access_policies (order_id, data)
+                       VALUES (%s, %s::jsonb)""",
+                    (value.order_id, data),
+                )
+            conn.commit()
+            return value, True
+        except PublicAccessPolicyConflictError:
+            conn.rollback()
+            raise
+        except Exception as exc:
+            conn.rollback()
+            logger.warning("DB create public access policy error: %s", exc)
+            raise PersistenceUnavailableError(
+                "Authoritative public access policy could not be persisted"
             ) from exc
         finally:
             conn.close()

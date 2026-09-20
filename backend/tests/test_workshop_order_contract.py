@@ -23,6 +23,7 @@ from app.main import app
 from app.services.cluster_registry import ClusterRegistry
 from app.services.lifecycle_worker import LifecycleQueueService
 from app.services.provisioning import ProvisioningService
+from app.services.public_access import PublicAccessPolicyAlreadyExistsError
 from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
 from fastapi.testclient import TestClient
 from pydantic import ValidationError
@@ -519,6 +520,47 @@ def test_public_workshop_order_persists_generated_public_url():
         call.args[0].public_url == public_url
         for call in save_workshop.call_args_list
     )
+
+
+def test_concurrent_public_workshop_activation_returns_conflict_to_loser():
+    workshop = Workshop(
+        tenant_id="public-code-race-tenant",
+        catalog_item_id="intel-llm-cpu-serving",
+        num_users=1,
+        status=WorkshopStatus.AWAITING_CONFIRMATION,
+        exposure_policy="public_code",
+        seats=[WorkshopSeat(workshop_id="pending", seat_number=1)],
+    )
+    with (
+        patch.object(
+            api_provisioning_service,
+            "create_workshop_order",
+            return_value=workshop,
+        ),
+        patch(
+            "app.api.routers.workshops.public_access_service.get_policy",
+            return_value=None,
+        ),
+        patch(
+            "app.api.routers.workshops.public_access_service.create_policy",
+            side_effect=PublicAccessPolicyAlreadyExistsError(
+                "Public access policy already exists"
+            ),
+        ),
+    ):
+        response = client.post(
+            "/api/v1/workshops/orders",
+            json={
+                "tenant_id": workshop.tenant_id,
+                "catalog_item_id": workshop.catalog_item_id,
+                "num_users": 1,
+                "ttl": "4h",
+                "exposure_policy": "public_code",
+            },
+        )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Public access policy already exists"
 
 
 def test_ha_confirm_enqueues_durable_work_without_api_background_execution(

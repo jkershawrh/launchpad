@@ -30,7 +30,10 @@ from app.services.event_reservations import (
 from app.services.events import EventManifestStore
 from app.services.lifecycle_worker import LifecycleQueueService, LifecycleWorker
 from app.services.provisioning import ProvisioningService
-from app.services.public_access import PublicAccessService
+from app.services.public_access import (
+    PublicAccessPolicyAlreadyExistsError,
+    PublicAccessService,
+)
 from app.storage import database
 from app.storage.lifecycle_jobs import PostgresLifecycleJobStore
 from app.storage.stores import (
@@ -238,6 +241,55 @@ def test_concurrent_postgres_workshop_creation_is_idempotent_across_replicas() -
     )
     with pytest.raises(WorkshopIdempotencyConflictError):
         PostgresWorkshopStore().create_idempotent(conflicting)
+
+
+def test_concurrent_postgres_public_activation_discloses_one_code() -> None:
+    barrier = threading.Barrier(3)
+    successes = []
+    errors = []
+
+    def activate() -> None:
+        try:
+            access = PublicAccessService(
+                store=PostgresAccessStore(),
+                enabled=True,
+                shared_origin="https://labs.example.io",
+                shared_path_mode=True,
+            )
+            barrier.wait()
+            successes.append(
+                access.create_policy(
+                    order_id="ha-public-order",
+                    order_type="workshop",
+                    catalog_slug="build-agent",
+                    seat_refs=["seat-1"],
+                    expires_at=datetime.now(UTC) + timedelta(hours=1),
+                )
+            )
+        except Exception as exc:  # noqa: BLE001 - preserve thread failures
+            errors.append(exc)
+
+    first = threading.Thread(target=activate)
+    second = threading.Thread(target=activate)
+    first.start()
+    second.start()
+    barrier.wait()
+    first.join(timeout=10)
+    second.join(timeout=10)
+
+    assert len(successes) == 1
+    assert len(errors) == 1
+    assert isinstance(errors[0], PublicAccessPolicyAlreadyExistsError)
+    persisted = PostgresAccessStore().list_policies()
+    assert len(persisted) == 1
+    policy, plaintext = successes[0]
+    assert persisted[0].policy_id == policy.policy_id
+    PublicAccessService(
+        store=PostgresAccessStore(),
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )._hasher.verify(persisted[0].code_hash, plaintext)
 
 
 def _prepare_reclaimed_event() -> EventRecord:

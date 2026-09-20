@@ -7,7 +7,7 @@ import secrets
 import threading
 import time
 from collections import defaultdict, deque
-from datetime import datetime
+from datetime import UTC, datetime
 from urllib.parse import urlsplit
 
 from argon2 import PasswordHasher
@@ -23,6 +23,10 @@ from app.domain.access import (
 )
 
 GENERIC_DENIAL = "Access request cannot be completed"
+
+
+class PublicAccessPolicyAlreadyExistsError(ValueError):
+    """Only the request that creates a policy may receive its plaintext code."""
 
 
 class PublicAccessService:
@@ -176,9 +180,19 @@ class PublicAccessService:
                 public_url=public_url,
                 expires_at=expires_at,
             )
-            self._policies[order_id] = policy
-            if self.store:
-                self.store.save_policy(policy)
+            if self.store and hasattr(self.store, "create_policy_once"):
+                policy, created = self.store.create_policy_once(
+                    policy, now=datetime.now(UTC)
+                )
+                self._policies[order_id] = policy
+                if not created:
+                    raise PublicAccessPolicyAlreadyExistsError(
+                        "Public access policy already exists"
+                    )
+            else:
+                self._policies[order_id] = policy
+                if self.store:
+                    self.store.save_policy(policy)
             return policy, plaintext
 
     def set_public_url(self, order_id: str, public_url: str) -> AccessPolicy:

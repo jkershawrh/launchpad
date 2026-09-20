@@ -2,9 +2,12 @@
 
 import asyncio
 import sys
+from collections import deque
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 
 import pytest
+from app.domain.access import AccessPolicy
 from app.domain.enums import SessionStatus, WorkshopStatus
 from app.domain.models import LabSession, Workshop
 from app.storage import database, stores
@@ -199,6 +202,106 @@ def test_workshop_create_idempotent_rejects_conflicting_order(monkeypatch):
         match="different workshop order",
     ):
         stores.PostgresWorkshopStore().create_idempotent(_keyed_workshop(seats=2))
+
+    assert connection.commits == 0
+    assert connection.rollbacks == 1
+
+
+class _PolicyCursor:
+    def __init__(self, rows):
+        self.rows = deque(rows)
+        self.statements = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def execute(self, sql, params=None):
+        self.statements.append((" ".join(sql.split()), params))
+
+    def fetchone(self):
+        value = self.rows.popleft()
+        return (value.model_dump(mode="json"),) if value else None
+
+
+class _PolicyConnection:
+    def __init__(self, rows):
+        self.cursor_value = _PolicyCursor(rows)
+        self.commits = 0
+        self.rollbacks = 0
+        self.closed = False
+
+    def cursor(self):
+        return self.cursor_value
+
+    def commit(self):
+        self.commits += 1
+
+    def rollback(self):
+        self.rollbacks += 1
+
+    def close(self):
+        self.closed = True
+
+
+def _access_policy(*, order_id="order-1", public_url="https://labs.example.io"):
+    return AccessPolicy(
+        order_id=order_id,
+        order_type="workshop",
+        catalog_slug="agent-lab",
+        code_hash="$argon2id$authoritative-hash",
+        seat_refs=["seat-1"],
+        public_url=public_url,
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+
+
+def test_public_policy_is_inserted_once_behind_order_and_origin_locks(monkeypatch):
+    connection = _PolicyConnection([None, None])
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+    policy = _access_policy()
+
+    persisted, created = stores.PostgresAccessStore().create_policy_once(
+        policy, now=datetime.utcnow()
+    )
+
+    assert created is True
+    assert persisted == policy
+    statements = [statement for statement, _params in connection.cursor_value.statements]
+    assert sum("pg_advisory_xact_lock" in statement for statement in statements) == 2
+    assert statements[-1].startswith("INSERT INTO access_policies")
+    assert connection.commits == 1
+
+
+def test_public_policy_concurrent_loser_recovers_authoritative_hash(monkeypatch):
+    existing = _access_policy()
+    connection = _PolicyConnection([existing])
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    persisted, created = stores.PostgresAccessStore().create_policy_once(
+        _access_policy(), now=datetime.utcnow()
+    )
+
+    assert created is False
+    assert persisted.code_hash == existing.code_hash
+    assert len(connection.cursor_value.statements) == 3
+    assert connection.commits == 1
+
+
+def test_public_policy_rejects_another_active_order_on_same_origin(monkeypatch):
+    existing = _access_policy(order_id="other-order")
+    connection = _PolicyConnection([None, existing])
+    monkeypatch.setattr(stores, "_get_sync_conn", lambda: connection)
+
+    with pytest.raises(
+        stores.PublicAccessPolicyConflictError,
+        match="active order",
+    ):
+        stores.PostgresAccessStore().create_policy_once(
+            _access_policy(), now=datetime.utcnow()
+        )
 
     assert connection.commits == 0
     assert connection.rollbacks == 1

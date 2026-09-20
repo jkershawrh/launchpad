@@ -8,7 +8,10 @@ from app.api.routers.public_access import _participant_tool_urls
 from app.domain.access import EntitlementStatus, ExposurePolicy
 from app.domain.clusters import ClusterTarget
 from app.services.cluster_registry import ClusterRegistry
-from app.services.public_access import PublicAccessService
+from app.services.public_access import (
+    PublicAccessPolicyAlreadyExistsError,
+    PublicAccessService,
+)
 from fastapi import HTTPException
 
 
@@ -173,6 +176,71 @@ def test_code_is_one_time_plaintext_and_argon2id_hashed():
     assert len(plaintext.replace("-", "")) >= 16
     assert policy.public_url.startswith("https://operator-lab-")
     assert policy.public_url.endswith(".labs.example.io")
+
+
+def test_concurrent_policy_activation_discloses_only_one_authoritative_code():
+    import threading
+
+    class AtomicPolicyStore:
+        def __init__(self):
+            self.policy = None
+            self.lock = threading.Lock()
+
+        def load_all(self):
+            return {
+                "policies": [self.policy] if self.policy else [],
+                "identities": [],
+                "entitlements": [],
+                "sessions": [],
+            }
+
+        def create_policy_once(self, policy, *, now):
+            del now
+            with self.lock:
+                if self.policy:
+                    return self.policy, False
+                self.policy = policy
+                return policy, True
+
+    store = AtomicPolicyStore()
+    services = [
+        PublicAccessService(
+            public_domain="labs.example.io", enabled=True, store=store
+        )
+        for _ in range(2)
+    ]
+    barrier = threading.Barrier(3)
+    successes = []
+    errors = []
+
+    def activate(access):
+        try:
+            barrier.wait()
+            successes.append(
+                access.create_policy(
+                    order_id="one-code-order",
+                    order_type="workshop",
+                    catalog_slug="agent-lab",
+                    seat_refs=["seat-1"],
+                    expires_at=datetime.utcnow() + timedelta(hours=1),
+                )
+            )
+        except Exception as exc:  # noqa: BLE001 - preserve thread failures
+            errors.append(exc)
+
+    threads = [threading.Thread(target=activate, args=(access,)) for access in services]
+    for thread in threads:
+        thread.start()
+    barrier.wait()
+    for thread in threads:
+        thread.join()
+
+    assert len(successes) == 1
+    assert len(errors) == 1
+    assert isinstance(errors[0], PublicAccessPolicyAlreadyExistsError)
+    policy, plaintext = successes[0]
+    assert store.policy.policy_id == policy.policy_id
+    services[0]._hasher.verify(store.policy.code_hash, plaintext)
 
 
 def test_claim_normalizes_email_and_recovers_same_seat():
