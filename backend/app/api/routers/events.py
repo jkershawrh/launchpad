@@ -23,6 +23,7 @@ from app.domain.events import (
     EventReservationReleaseResult,
     EventWorkshopLaunchRequest,
     EventWorkshopLaunchResult,
+    EventWorkshopPublicAccessResult,
     calculate_event_capacity,
 )
 from app.services.event_orchestration import (
@@ -184,3 +185,32 @@ def launch_event_workshops(
         raise HTTPException(503, "Event orchestration persistence is unavailable") from exc
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
+
+
+@router.post(
+    "/{event_id}/workshops/{workshop_id}/public-access",
+    response_model=EventWorkshopPublicAccessResult,
+    status_code=201,
+    dependencies=[Depends(require_admin)],
+)
+def activate_event_workshop_public_access(
+    event_id: str,
+    workshop_id: str,
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+    orchestration: Annotated[
+        EventOrchestrationService, Depends(get_event_orchestration_service)
+    ],
+) -> EventWorkshopPublicAccessResult:
+    """Return one instructor code after all reserved seats are ready."""
+
+    record = store.get(event_id)
+    if record is None:
+        raise HTTPException(404, f"Approved event {event_id} was not found")
+    try:
+        return orchestration.activate_public_access(record, workshop_id)
+    except EventOrchestrationConflictError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except PersistenceUnavailableError as exc:
+        raise HTTPException(503, "Public access persistence is unavailable") from exc
+    except ValueError as exc:
+        raise HTTPException(503, str(exc)) from exc

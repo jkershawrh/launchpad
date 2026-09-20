@@ -320,6 +320,7 @@ def get_event_orchestration_service():
         reservation_ledger=event_reservation_ledger,
         provisioning=provisioning_service,
         lifecycle_queue=lifecycle_queue_service,
+        public_access=public_access_service,
     )
 
 

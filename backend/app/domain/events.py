@@ -413,6 +413,14 @@ class EventWorkshopLaunchResult(BaseModel):
     workshops: list[EventWorkshopLaunchItem] = Field(min_length=1)
 
 
+class EventWorkshopPublicAccessResult(BaseModel):
+    event_id: str
+    workshop_id: str
+    public_url: str
+    one_time_access_code: str = Field(json_schema_extra={"readOnly": True})
+    expires_at: datetime
+
+
 class EventManifestConflictError(RuntimeError):
     """Raised when an immutable event ID has already been persisted."""
 

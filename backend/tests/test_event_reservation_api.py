@@ -45,9 +45,10 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
     from app.services.event_orchestration import EventOrchestrationService
     from app.services.lifecycle_worker import LifecycleQueueService
     from app.services.provisioning import ProvisioningService
+    from app.services.public_access import PublicAccessService
     from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
 
-    from backend.tests.test_event_orchestration import _catalog
+    from backend.tests.test_event_orchestration import _catalog, _make_ready
 
     _supply_value, _event_store, ledger = _overrides()
     reserve = TestClient(app).post(
@@ -62,6 +63,11 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
         reservation_ledger=ledger,
         provisioning=provisioning,
         lifecycle_queue=LifecycleQueueService(job_store),
+        public_access=PublicAccessService(
+            enabled=True,
+            shared_origin="https://labs.example.io",
+            shared_path_mode=True,
+        ),
     )
     app.dependency_overrides[deps.get_event_orchestration_service] = (
         lambda: orchestration
@@ -78,6 +84,11 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
                 "/api/v1/events/event-a/workshops/launch",
                 json={"tenant_id": "event-tenant"},
             )
+            workshop_id = launched.json()["workshops"][0]["workshop_id"]
+            _make_ready(provisioning, workshop_id)
+            activated = TestClient(app).post(
+                f"/api/v1/events/event-a/workshops/{workshop_id}/public-access"
+            )
     finally:
         _clear_overrides()
 
@@ -87,6 +98,11 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
     assert launched.json()["public_access_state"] == "pending_activation"
     assert len(launched.json()["workshops"]) == 2
     assert len(job_store.list_all()) == 2
+    assert activated.status_code == 201
+    assert activated.json()["public_url"].startswith(
+        "https://labs.example.io/labs/"
+    )
+    assert activated.json()["one_time_access_code"]
 
 
 def test_admin_approves_and_reserves_persisted_cluster_assignments():

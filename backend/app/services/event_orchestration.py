@@ -2,17 +2,22 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from app.domain.access import ExposurePolicy
+from app.domain.enums import WorkshopSeatStatus, WorkshopStatus
 from app.domain.events import (
     EventCapacityReservation,
     EventRecord,
     EventWorkshopLaunchItem,
     EventWorkshopLaunchRequest,
     EventWorkshopLaunchResult,
+    EventWorkshopPublicAccessResult,
 )
 from app.services.event_reservations import EventReservationLedger
 from app.services.lifecycle_worker import LifecycleQueueService
 from app.services.provisioning import ProvisioningService
+from app.services.public_access import PublicAccessService
 
 
 class EventOrchestrationConflictError(RuntimeError):
@@ -33,10 +38,12 @@ class EventOrchestrationService:
         reservation_ledger: EventReservationLedger,
         provisioning: ProvisioningService,
         lifecycle_queue: LifecycleQueueService,
+        public_access: PublicAccessService | None = None,
     ) -> None:
         self.reservation_ledger = reservation_ledger
         self.provisioning = provisioning
         self.lifecycle_queue = lifecycle_queue
+        self.public_access = public_access
 
     def launch(
         self,
@@ -112,6 +119,94 @@ class EventOrchestrationService:
                 else "not_required"
             ),
             workshops=items,
+        )
+
+    def activate_public_access(
+        self,
+        record: EventRecord,
+        workshop_id: str,
+    ) -> EventWorkshopPublicAccessResult:
+        """Issue one workshop code only after every reserved seat is ready."""
+
+        if self.public_access is None:
+            raise ValueError("Public access service is unavailable")
+        workshop = self.provisioning.get_workshop(workshop_id)
+        if workshop is None or workshop.metadata.get("event_id") != record.manifest.event_id:
+            raise EventOrchestrationConflictError(
+                "Workshop does not belong to the approved event"
+            )
+        if (
+            record.manifest.exposure_policy != ExposurePolicy.PUBLIC_CODE.value
+            or workshop.exposure_policy != ExposurePolicy.PUBLIC_CODE
+        ):
+            raise EventOrchestrationConflictError(
+                "Workshop is not approved for public access"
+            )
+        try:
+            self.provisioning._validate_reserved_workshop_binding(workshop)
+        except ValueError as exc:
+            raise EventOrchestrationConflictError(str(exc)) from exc
+        if self.public_access.get_policy(workshop_id) is not None:
+            raise EventOrchestrationConflictError(
+                "Public access is already activated; rotate the code if it was lost"
+            )
+        if workshop.status not in {WorkshopStatus.READY, WorkshopStatus.ACTIVE}:
+            raise EventOrchestrationConflictError("Workshop is not fully ready")
+        if len(workshop.seats) != workshop.num_users or any(
+            seat.status not in {WorkshopSeatStatus.READY, WorkshopSeatStatus.ACTIVE}
+            or not seat.session_id
+            for seat in workshop.seats
+        ):
+            raise EventOrchestrationConflictError("Workshop is not fully ready")
+        if len({seat.session_id for seat in workshop.seats}) != workshop.num_users:
+            raise EventOrchestrationConflictError(
+                "Workshop seat lifecycle evidence is incomplete"
+            )
+
+        sessions = [
+            self.provisioning.get_session(seat.session_id)
+            for seat in workshop.seats
+        ]
+        if any(
+            session is None
+            or session.cluster_ref != workshop.cluster_ref
+            or session.expires_at is None
+            for session in sessions
+        ):
+            raise EventOrchestrationConflictError(
+                "Workshop seat lifecycle evidence is incomplete"
+            )
+        expires_at = min(session.expires_at for session in sessions if session)
+        if expires_at.tzinfo is not None:
+            expires_at = expires_at.astimezone(UTC).replace(tzinfo=None)
+        if expires_at <= datetime.now(UTC).replace(tzinfo=None):
+            raise EventOrchestrationConflictError(
+                "Workshop public access expiration has already passed"
+            )
+        policy, plaintext = self.public_access.create_policy(
+            order_id=workshop.workshop_id,
+            order_type="workshop",
+            catalog_slug=workshop.catalog_item_id,
+            seat_refs=[seat.seat_id for seat in workshop.seats],
+            expires_at=expires_at,
+        )
+        updated = workshop.model_copy(
+            update={
+                "public_url": policy.public_url,
+                "metadata": {
+                    **workshop.metadata,
+                    "public_access_state": "active",
+                    "public_access_code_version": policy.code_version,
+                },
+            }
+        )
+        self.provisioning._save_workshop(updated)
+        return EventWorkshopPublicAccessResult(
+            event_id=record.manifest.event_id,
+            workshop_id=workshop.workshop_id,
+            public_url=policy.public_url,
+            one_time_access_code=plaintext,
+            expires_at=policy.expires_at,
         )
 
     @staticmethod

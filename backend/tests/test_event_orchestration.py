@@ -1,14 +1,21 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 import yaml
-from app.domain.enums import CatalogCategory, CatalogStatus, WorkshopStatus
+from app.domain.enums import (
+    CatalogCategory,
+    CatalogStatus,
+    SessionStatus,
+    WorkshopSeatStatus,
+    WorkshopStatus,
+)
 from app.domain.events import EventWorkshopLaunchRequest
-from app.domain.models import CatalogItem
+from app.domain.models import CatalogItem, LabSession
 from app.services.event_orchestration import (
     EventOrchestrationConflictError,
     EventOrchestrationService,
@@ -16,6 +23,7 @@ from app.services.event_orchestration import (
 from app.services.event_reservations import EventReservationLedger
 from app.services.lifecycle_worker import LifecycleQueueService
 from app.services.provisioning import ProvisioningService
+from app.services.public_access import PublicAccessService
 from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
 
 from backend.tests.test_event_reservation_ledger import NOW, _plan, _record, _supply
@@ -30,7 +38,7 @@ def test_event_orchestration_contract_keeps_public_access_pending():
     ]["post"]
     result = contract["components"]["schemas"]["EventWorkshopLaunchResult"]
 
-    assert contract["info"]["version"] == "1.0.0"
+    assert contract["info"]["version"] == "1.1.0"
     assert operation["responses"]["202"]["content"]["application/json"][
         "schema"
     ] == {"$ref": "#/components/schemas/EventWorkshopLaunchResult"}
@@ -38,6 +46,12 @@ def test_event_orchestration_contract_keeps_public_access_pending():
         "not_required",
         "pending_activation",
     ]
+    assert (
+        contract["paths"][
+            "/api/v1/events/{event_id}/workshops/{workshop_id}/public-access"
+        ]["post"]["responses"]["201"]["content"]["application/json"]["schema"]
+        == {"$ref": "#/components/schemas/EventWorkshopPublicAccessResult"}
+    )
 
 
 def _catalog():
@@ -80,6 +94,39 @@ def _services():
         lifecycle_queue=LifecycleQueueService(jobs),
     )
     return record, ledger, provisioning, jobs, orchestration
+
+
+def _make_ready(provisioning, workshop_id: str):
+    workshop = provisioning.get_workshop(workshop_id)
+    expires = datetime.now(UTC).replace(tzinfo=None) + timedelta(hours=4)
+    seats = []
+    for seat in workshop.seats:
+        session = LabSession(
+            request_id=f"request-{seat.seat_number}",
+            tenant_id=workshop.tenant_id,
+            catalog_item_id=workshop.catalog_item_id,
+            cluster_ref=workshop.cluster_ref,
+            status=SessionStatus.READY,
+            expires_at=expires,
+        )
+        provisioning._save_session(session)
+        seats.append(
+            seat.model_copy(
+                update={
+                    "status": WorkshopSeatStatus.READY,
+                    "session_id": session.session_id,
+                }
+            )
+        )
+    ready = workshop.model_copy(
+        update={
+            "status": WorkshopStatus.READY,
+            "seats": seats,
+            "session_ids": [seat.session_id for seat in seats],
+        }
+    )
+    provisioning._save_workshop(ready)
+    return ready, expires
 
 
 def test_launch_queues_every_reserved_workshop_on_its_persisted_cluster():
@@ -173,3 +220,84 @@ def test_launch_fails_closed_when_event_reservations_are_incomplete():
         orchestration.launch(
             record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
         )
+
+
+def test_public_access_activation_waits_for_complete_workshop_readiness():
+    record, _ledger, provisioning, _jobs, orchestration = _services()
+    access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    orchestration.public_access = access
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+
+    with pytest.raises(EventOrchestrationConflictError, match="not fully ready"):
+        orchestration.activate_public_access(
+            record, launched.workshops[0].workshop_id
+        )
+
+
+def test_public_access_activation_returns_code_once_after_readiness():
+    record, _ledger, provisioning, _jobs, orchestration = _services()
+    access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    orchestration.public_access = access
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    workshop_id = launched.workshops[0].workshop_id
+    ready, expires = _make_ready(provisioning, workshop_id)
+
+    activated = orchestration.activate_public_access(record, workshop_id)
+
+    assert activated.workshop_id == workshop_id
+    assert activated.public_url.startswith("https://labs.example.io/labs/")
+    assert activated.one_time_access_code
+    assert activated.expires_at == expires
+    policy = access.get_policy(workshop_id)
+    assert policy.seat_refs == [seat.seat_id for seat in ready.seats]
+    saved = provisioning.get_workshop(workshop_id)
+    assert saved.public_url == activated.public_url
+    assert saved.metadata["public_access_state"] == "active"
+
+    with pytest.raises(EventOrchestrationConflictError, match="already activated"):
+        orchestration.activate_public_access(record, workshop_id)
+
+
+def test_public_access_activation_rejects_released_capacity_binding():
+    record, ledger, provisioning, _jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    workshop_id = launched.workshops[0].workshop_id
+    _make_ready(provisioning, workshop_id)
+    ledger.release(
+        record.manifest.event_id,
+        cleanup_evidence_id="evidence:cleanup:event-a",
+    )
+
+    with pytest.raises(
+        EventOrchestrationConflictError,
+        match="consumed event reservation",
+    ):
+        orchestration.activate_public_access(record, workshop_id)

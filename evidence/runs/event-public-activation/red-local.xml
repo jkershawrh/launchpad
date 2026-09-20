@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="7" time="0.174" timestamp="2026-09-19T20:11:04.459968-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_event_orchestration" name="test_event_orchestration_contract_keeps_public_access_pending" time="0.003"><failure message="AssertionError: assert '1.0.0' == '1.1.0'&#10;  &#10;  - 1.1.0&#10;  + 1.0.0">def test_event_orchestration_contract_keeps_public_access_pending():
+        contract = yaml.safe_load(CONTRACT.read_text())
+        operation = contract["paths"][
+            "/api/v1/events/{event_id}/workshops/launch"
+        ]["post"]
+        result = contract["components"]["schemas"]["EventWorkshopLaunchResult"]
+
+&gt;       assert contract["info"]["version"] == "1.1.0"
+E       AssertionError: assert '1.0.0' == '1.1.0'
+E
+E         - 1.1.0
+E         + 1.0.0
+
+backend/tests/test_event_orchestration.py:40: AssertionError</failure></testcase><testcase classname="backend.tests.test_event_orchestration" name="test_launch_queues_every_reserved_workshop_on_its_persisted_cluster" time="0.003" /><testcase classname="backend.tests.test_event_orchestration" name="test_launch_is_idempotent_and_does_not_duplicate_lifecycle_jobs" time="0.001" /><testcase classname="backend.tests.test_event_orchestration" name="test_partial_queue_failure_can_be_retried_without_duplicate_workshops" time="0.002" /><testcase classname="backend.tests.test_event_orchestration" name="test_launch_fails_closed_when_event_reservations_are_incomplete" time="0.001" /><testcase classname="backend.tests.test_event_orchestration" name="test_public_access_activation_waits_for_complete_workshop_readiness" time="0.001"><failure message="AttributeError: 'EventOrchestrationService' object has no attribute 'activate_public_access'">def test_public_access_activation_waits_for_complete_workshop_readiness():
+        record, _ledger, provisioning, _jobs, orchestration = _services()
+        access = PublicAccessService(
+            enabled=True,
+            shared_origin="https://labs.example.io",
+            shared_path_mode=True,
+        )
+        orchestration.public_access = access
+        with patch.object(
+            provisioning, "check_workshop_capacity", return_value=(True, "ok")
+        ):
+            launched = orchestration.launch(
+                record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+            )
+
+        with pytest.raises(EventOrchestrationConflictError, match="not fully ready"):
+&gt;           orchestration.activate_public_access(
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                record, launched.workshops[0].workshop_id
+            )
+E           AttributeError: 'EventOrchestrationService' object has no attribute 'activate_public_access'
+
+backend/tests/test_event_orchestration.py:240: AttributeError</failure></testcase><testcase classname="backend.tests.test_event_orchestration" name="test_public_access_activation_returns_code_once_after_readiness" time="0.002"><failure message="AttributeError: 'EventOrchestrationService' object has no attribute 'activate_public_access'">def test_public_access_activation_returns_code_once_after_readiness():
+        record, _ledger, provisioning, _jobs, orchestration = _services()
+        access = PublicAccessService(
+            enabled=True,
+            shared_origin="https://labs.example.io",
+            shared_path_mode=True,
+        )
+        orchestration.public_access = access
+        with patch.object(
+            provisioning, "check_workshop_capacity", return_value=(True, "ok")
+        ):
+            launched = orchestration.launch(
+                record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+            )
+        workshop_id = launched.workshops[0].workshop_id
+        ready, expires = _make_ready(provisioning, workshop_id)
+
+&gt;       activated = orchestration.activate_public_access(record, workshop_id)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'EventOrchestrationService' object has no attribute 'activate_public_access'
+
+backend/tests/test_event_orchestration.py:262: AttributeError</failure></testcase></testsuite></testsuites>

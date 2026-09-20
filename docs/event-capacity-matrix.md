@@ -118,13 +118,22 @@ Public workshops remain explicitly `pending_activation`; instructor codes are
 issued only after readiness so a failed event request cannot lose a one-time
 secret.
 
+Public activation is a separate admin-only, single-workshop action. It requires
+the workshop and every reserved seat to be ready, verifies that every seat has
+a session on the persisted cluster with a finite expiration, and uses the
+earliest seat expiration for the access policy. The response returns the
+public URL and instructor code once; only the Argon2id hash is retained. A
+repeat activation fails closed and directs the operator to the existing code
+rotation workflow. Activating one workshop at a time prevents a later failure
+from discarding codes already created for other workshops.
+
 A real PostgreSQL integration run, event-wide reconciliation, public-access
-activation, zero-residue cleanup, and live proof remain separate gates.
+claim/SSO validation, zero-residue cleanup, and live proof remain separate
+gates.
 
 ## Next boundary
 
-The next orchestration increment must activate public access after readiness,
-return one-time instructor codes safely, reconcile event-wide worker outcomes,
-and drive bulk reclaim. It must prove real database-backed concurrency,
-event-wide recovery, reconciliation, and zero-residue cleanup before release or
-live use.
+The next orchestration increment must reconcile event-wide worker and public
+access outcomes and drive bulk reclaim. It must prove real database-backed
+concurrency, event-wide recovery, participant claim/SSO, reconciliation, and
+zero-residue cleanup before release or live use.

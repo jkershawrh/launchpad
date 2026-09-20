@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T01:05:40Z",
+  "updated_at": "2026-09-20T01:11:22Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -453,6 +453,23 @@
         "evidence/runs/event-orchestration/red-local.xml"
       ],
       "note": "Local slice queues one deterministic lifecycle job per complete cohort/lab reservation, persists the target cluster, exposes an admin-only 202 API, and recovers idempotently after an injected partial queue failure. Public access remains pending until post-readiness code activation; PostgreSQL integration, event reconciliation, bounded seat waves, bulk reclaim, cleanup, and live proof remain open."
+    },
+    "LP-T023": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/tests/test_event_orchestration.py",
+        "contracts/event-orchestration-v1.yaml",
+        "evidence/runs/event-public-activation/green-local.xml",
+        "evidence/runs/event-public-activation/red-local.xml"
+      ],
+      "note": "Local slice activates public access one ready workshop at a time, verifies every reserved seat/session and persisted cluster, derives policy expiry from the earliest seat expiry, returns the instructor code once, stores only its Argon2id hash, and fails closed on repeat activation. Instructor readiness estimates, event-wide status/support view, participant claim/SSO integration, PostgreSQL integration, and GREEN-live proof remain open."
     }
   },
   "rubric": [
