@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T03:17:27Z",
+  "updated_at": "2026-09-20T03:25:09Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -505,6 +505,10 @@
       "evidence": [
         "contracts/event-orchestration-v1.yaml",
         "contracts/public-access-v1.yaml",
+        "evidence/runs/event-live-acceptance-preflight/arena-red-live-20260920.json",
+        "evidence/runs/event-live-acceptance-preflight/green-local.xml",
+        "evidence/runs/event-live-acceptance-preflight/manifest.json",
+        "evidence/runs/event-live-acceptance-preflight/red-local.xml",
         "evidence/runs/event-participant-http-contract/green-integration.xml",
         "evidence/runs/event-participant-http-contract/manifest.json",
         "evidence/runs/event-participant-http-contract/red-integration.xml",
@@ -515,7 +519,7 @@
         "evidence/runs/event-participant-journey/manifest.json",
         "evidence/runs/event-participant-journey/red-local.xml"
       ],
-      "note": "Exact 1-, 5-, 25-, and 30-seat journeys are GREEN-integration across TDD, EDD, CDD, BDD, and CBT. PostgreSQL proves durable reconstruction and transactional lifecycle state; FastAPI proves event and participant HTTP contracts through reclaim and denial. Live external browser/Keycloak/gateway and OpenShift/Argo CD/LiteLLM acceptance remain open."
+      "note": "Exact 1-, 5-, 25-, and 30-seat journeys remain GREEN-integration across TDD, EDD, CDD, BDD, and CBT. The first read-only live preflight proved permanent DNS/TLS and OIDC discovery but failed closed because the saved Arena credential is unauthorized; no live resource was changed. A refreshed scoped credential and green preflight are required before a one-seat canary."
     }
   },
   "rubric": [

@@ -1,0 +1,52 @@
+{
+  "checks": {
+    "cluster_authentication": {
+      "error_type": "unauthorized",
+      "passed": false
+    },
+    "oidc_discovery": {
+      "authorization_endpoint_same_origin": true,
+      "duration_seconds": 0.966,
+      "http_status": 200,
+      "issuer_matches": true,
+      "passed": true,
+      "tls_verified": true,
+      "token_endpoint_same_origin": true
+    },
+    "public_health": {
+      "duration_seconds": 0.432,
+      "http_status": 200,
+      "marker_present": true,
+      "passed": true,
+      "tls_verified": true
+    },
+    "read_permission": {
+      "namespace": "partner-ai-launchpad",
+      "passed": false
+    },
+    "required_deployments": {
+      "deployments": {
+        "backend": {"available": 0, "desired": 0, "ready": false},
+        "cloudflare-tunnel": {"available": 0, "desired": 0, "ready": false},
+        "lifecycle-worker": {"available": 0, "desired": 0, "ready": false},
+        "public-access-gateway": {"available": 0, "desired": 0, "ready": false}
+      },
+      "namespace": "partner-ai-launchpad",
+      "passed": false
+    },
+    "target_cluster": {
+      "configured_api_server": "https://api.arena.fm2aihpcsed.com:6443",
+      "expected_api_server": "https://api.arena.fm2aihpcsed.com:6443",
+      "passed": true
+    }
+  },
+  "cluster_resources_mutated": 0,
+  "contains_plaintext_credentials": false,
+  "expected_api_server": "https://api.arena.fm2aihpcsed.com:6443",
+  "mode": "read-only",
+  "namespace": "partner-ai-launchpad",
+  "observed_at": "2026-09-20T03:24:15Z",
+  "public_origin": "https://labs.smg-helix.ai",
+  "ready_for_canary": false,
+  "schema_version": "launchpad.intel.com/live-acceptance-preflight/v1"
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": "launchpad.intel.com/test-evidence/v1",
+  "run_id": "event-live-acceptance-preflight-20260920T032450Z",
+  "observed_at": "2026-09-20T03:24:50Z",
+  "source_commit": "57e66ed656975450c30b7b96cfbf7ad32cb7422c",
+  "result": "blocked",
+  "tool": "scripts/preflight_event_live_acceptance.py",
+  "proof": {
+    "public_health_http_status": 200,
+    "public_tls_verified": true,
+    "oidc_discovery_http_status": 200,
+    "oidc_issuer_matches_permanent_origin": true,
+    "oidc_endpoints_same_origin": true,
+    "configured_api_server_matches_arena": true,
+    "cluster_authentication": false,
+    "namespace_read_permission": false,
+    "required_deployment_readiness_proven": false,
+    "ready_for_canary": false,
+    "cluster_resources_mutated": 0,
+    "plaintext_credentials_recorded": 0
+  },
+  "required_deployments": [
+    "backend",
+    "lifecycle-worker",
+    "public-access-gateway",
+    "cloudflare-tunnel"
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/runs/event-live-acceptance-preflight/red-local.xml",
+      "sha256": "daa0dd90a2f5dbfad1b15c2ef6c9ad42ba9732406310d0c75f2ace5dd4972662"
+    },
+    {
+      "path": "evidence/runs/event-live-acceptance-preflight/green-local.xml",
+      "sha256": "a9c9e100ee2dcf7ab55aa8149d0f5908025300168d99f7fa08eb4c77e221b82f"
+    },
+    {
+      "path": "evidence/runs/event-live-acceptance-preflight/arena-red-live-20260920.json",
+      "sha256": "9e4f7482bf78a6df9c54ab754be1582cf67ecaac277a000671410eefd51accf1"
+    }
+  ],
+  "next_gate": "Install or refresh a scoped Arena credential, rerun the read-only preflight to green, and only then authorize a disposable one-seat live canary.",
+  "limitations": [
+    "Deployment readiness is unknown because the saved Arena credential is unauthorized.",
+    "No workshop, namespace, identity, model key, route, or application was created or changed.",
+    "This is preflight evidence, not participant acceptance evidence."
+  ]
+}

@@ -252,6 +252,16 @@ GREEN-integration. It is not a live browser or infrastructure acceptance run:
 the provider is in-process, namespace RoleBinding is a component boundary, and
 the external gateway, Keycloak, OpenShift, Argo CD, and LiteLLM are not called.
 
+The first read-only Arena live preflight is intentionally RED. The permanent
+`labs.smg-helix.ai` health endpoint returned `200` with trusted TLS, and OIDC
+discovery returned the exact permanent issuer plus same-origin authorization
+and token endpoints. The kubeconfig also names the expected Arena API server.
+However, the saved Arena credential is unauthorized, so namespace read access
+and the four required deployment readiness checks cannot be proven. The
+preflight therefore refused to declare the target ready and changed zero
+cluster resources. A refreshed scoped credential and a fully green rerun are
+required before any live canary is created or activated.
+
 ## Next boundary
 
 The next orchestration increment must exercise the external participant
