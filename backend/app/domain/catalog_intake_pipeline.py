@@ -35,7 +35,7 @@ class CatalogIntakePipelineView(BaseModel):
     intake_id: str
     source_standard: Literal["quickstart-repository"] = "quickstart-repository"
     metadata_policy: Literal["discover-from-source"] = "discover-from-source"
-    current_stage: Literal["submitted"] = "submitted"
+    current_stage: Literal["submitted", "draft-generated"] = "submitted"
     orderable: Literal[False] = False
     promotion_eligible: Literal[False] = False
     durable_storage: bool

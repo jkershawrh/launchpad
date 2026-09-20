@@ -1,0 +1,45 @@
+{
+  "schema_version": "launchpad.intel.com/evidence-manifest/v1",
+  "evidence_id": "catalog-intake-review-journey-green-local-20260920",
+  "base_commit": "948102db7a70cd21ee6e4eeb71f44a43b2eb1769",
+  "recorded_at": "2026-09-20T11:25:00-05:00",
+  "scope": "Quickstart discovery receipt to persisted admin catalog-draft review journey",
+  "red": {
+    "result": "3 failed",
+    "artifact": "evidence/runs/catalog-intake-review-journey/red-local.xml",
+    "sha256": "f5c2b8181da9e7debec810cdcf39797970bbe5e57642ef92a5ab3a80187fa23e"
+  },
+  "green_backend": {
+    "result": "32 passed",
+    "artifact": "evidence/runs/catalog-intake-review-journey/green-local.xml",
+    "sha256": "e06420eced9e591f62c8be3448018829d7540303d133b2c106d9da15c85bcf29"
+  },
+  "green_frontend": {
+    "result": "5 passed",
+    "artifact": "evidence/runs/catalog-intake-review-journey/frontend-green.json",
+    "sha256": "86e7fc13b87ec28885c7326b041a745289c13ac0fba45801c1669bed744cf126"
+  },
+  "contract": {
+    "artifact": "contracts/catalog-intake-review-v1.yaml",
+    "sha256": "0f0000fc83786dcc23af9e07b3a240bc3b83aca9aef2184baf1deb4250f1b42d"
+  },
+  "claims": [
+    "A matching successful discovery receipt deterministically creates one persisted non-orderable catalog preview.",
+    "Receipt identity, cleanup, output hash, and catalog identity are verified before the draft changes.",
+    "The transition is idempotent and uses compare-and-swap persistence to reject concurrent drift.",
+    "The admin review page shows discovery evidence, cleanup status, catalog metadata, capabilities, blockers, and pipeline progress."
+  ],
+  "non_claims": [
+    "The admin UI does not dispatch the isolated discovery worker.",
+    "No artifact, security, model, target, lifecycle, approval, or publication gate has passed.",
+    "No catalog item was published and no lab or cluster was changed."
+  ],
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false
+  },
+  "release_eligible": false
+}

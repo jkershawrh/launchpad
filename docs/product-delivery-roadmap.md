@@ -350,9 +350,11 @@ repository and receive a safe, reviewable, certified catalog draft.**
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
   **GREEN-local (catalog-draft slice):** a versioned immutable discovery
-  receipt deterministically generates the reviewable catalog draft. Deployment
-  package, journey, ownership, support, and complete certification generation
-  remain open.
+  receipt deterministically generates and persists the reviewable catalog
+  draft. The admin journey now shows its discovery proof, cleanup result,
+  capabilities, generated metadata, and remaining blockers. Deployment package,
+  participant journey, ownership, support, and complete certification remain
+  open.
 - `LP-T099` Default generated entries to draft, internal-only, and one-seat;
   fail closed on ambiguous, privileged, mutable, or unsupported requirements.
   **GREEN-local:** draft generation enforces draft status, internal-only
@@ -373,9 +375,9 @@ repository and receive a safe, reviewable, certified catalog draft.**
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
   release identity, approval history, and rollback metadata in the admin UI.
   **GREEN-integration (draft visibility):** draft responses and the admin Intake
-  screens expose these fields, the durable storage scope, and the full locked
-  pipeline. They truthfully report no supported target, no approval, undefined
-  rollback, unrun evidence, and disabled certification/promotion controls.
+  screens expose these fields, the durable storage scope, and the full gated
+  pipeline. A completed discovery advances the view to catalog-draft review
+  while certification, approval, and promotion remain visibly locked.
 - **Gate:** a new quickstart progresses from immutable repository revision to a
   certified draft and approved promotion without a bespoke platform code edit.
 

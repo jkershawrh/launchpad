@@ -41,6 +41,26 @@ const draft: CatalogIntakeDraft = {
   },
   approval_history: [],
   rollback: { status: 'not-defined', metadata: {} },
+  discovery: {
+    status: 'passed',
+    attempt_id: 'attempt-001',
+    output_hash: `sha256:${'c'.repeat(64)}`,
+    worker_image_digest: `sha256:${'b'.repeat(64)}`,
+    files_scanned: 12,
+    bytes_scanned: 4096,
+    cleanup_verified: true,
+  },
+  catalog_preview: {
+    catalog_item_id: 'agent-lab',
+    display_name: 'Agent Lab',
+    description: 'Repository-discovered onboarding draft.',
+    category: 'guided_build',
+    version: '0.1.0',
+    status: 'draft',
+    required_capabilities: ['openshift', 'showroom'],
+    optional_capabilities: [],
+    metadata: { allowed_exposure_policies: ['internal'] },
+  },
 };
 
 const pipeline = {
@@ -81,6 +101,7 @@ describe('CatalogIntakes', () => {
     expect(await screen.findByRole('heading', { name: 'Catalog intake' })).toBeInTheDocument();
     expect(screen.getByText('Agent Lab', { selector: 'p' })).toBeInTheDocument();
     expect(screen.getByText('Draft')).toBeInTheDocument();
+    expect(screen.getByText('Catalog draft review')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'New intake submission' })).toHaveAttribute(
       'href',
       '/intakes/new',
@@ -105,6 +126,11 @@ describe('CatalogIntakes', () => {
     expect(screen.getByText('1 seat')).toBeInTheDocument();
     expect(screen.getByText('No approvals recorded')).toBeInTheDocument();
     expect(screen.getByText('Rollback not defined')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Discovery result' })).toBeInTheDocument();
+    expect(screen.getByText('12 files scanned')).toBeInTheDocument();
+    expect(screen.getByText('Stage: Catalog draft review')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Catalog draft preview' })).toBeInTheDocument();
+    expect(screen.getByText('openshift, showroom')).toBeInTheDocument();
     expect(screen.getByText('Durable PostgreSQL')).toBeInTheDocument();
     expect(screen.getByText('Submitted')).toBeInTheDocument();
     expect(screen.getByText('Certified')).toBeInTheDocument();

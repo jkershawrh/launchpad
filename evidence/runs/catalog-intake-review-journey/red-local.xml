@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="0.118" timestamp="2026-09-20T11:20:36.324004-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_catalog_intake_review_journey" name="test_successful_discovery_becomes_a_persisted_reviewable_catalog_draft" time="0.007"><failure message="AttributeError: 'CatalogIntakeSubmissionService' object has no attribute 'record_discovery'">tmp_path = PosixPath('/private/var/folders/qh/kgyp2lln3nb8t1rt2yc1rr4w0000gn/T/pytest-of-jkershaw/pytest-403/test_successful_discovery_beco0')
+
+    def test_successful_discovery_becomes_a_persisted_reviewable_catalog_draft(
+        tmp_path: Path,
+    ) -&gt; None:
+        service = CatalogIntakeSubmissionService()
+        submitted = service.submit(_submission())
+        receipt = _receipt(tmp_path, submitted.intake_id)
+
+&gt;       reviewed = service.record_discovery(submitted.intake_id, receipt)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'CatalogIntakeSubmissionService' object has no attribute 'record_discovery'
+
+backend/tests/test_catalog_intake_review_journey.py:104: AttributeError</failure></testcase><testcase classname="backend.tests.test_catalog_intake_review_journey" name="test_discovery_receipt_must_match_intake_and_remain_fail_closed" time="0.004"><failure message="AttributeError: 'CatalogIntakeSubmissionService' object has no attribute 'record_discovery'">tmp_path = PosixPath('/private/var/folders/qh/kgyp2lln3nb8t1rt2yc1rr4w0000gn/T/pytest-of-jkershaw/pytest-403/test_discovery_receipt_must_ma0')
+
+    def test_discovery_receipt_must_match_intake_and_remain_fail_closed(
+        tmp_path: Path,
+    ) -&gt; None:
+        service = CatalogIntakeSubmissionService()
+        submitted = service.submit(_submission())
+        receipt = _receipt(tmp_path, submitted.intake_id)
+
+        with pytest.raises(ValueError, match="repository identity"):
+&gt;           service.record_discovery(
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+                submitted.intake_id,
+                receipt.model_copy(update={"revision": "f" * 40}),
+            )
+E           AttributeError: 'CatalogIntakeSubmissionService' object has no attribute 'record_discovery'
+
+backend/tests/test_catalog_intake_review_journey.py:148: AttributeError</failure></testcase><testcase classname="backend.tests.test_catalog_intake_review_journey" name="test_recording_the_same_discovery_receipt_is_idempotent" time="0.003"><failure message="AttributeError: 'CatalogIntakeSubmissionService' object has no attribute 'record_discovery'">tmp_path = PosixPath('/private/var/folders/qh/kgyp2lln3nb8t1rt2yc1rr4w0000gn/T/pytest-of-jkershaw/pytest-403/test_recording_the_same_discov0')
+
+    def test_recording_the_same_discovery_receipt_is_idempotent(tmp_path: Path) -&gt; None:
+        service = CatalogIntakeSubmissionService()
+        submitted = service.submit(_submission())
+        receipt = _receipt(tmp_path, submitted.intake_id)
+
+&gt;       first = service.record_discovery(submitted.intake_id, receipt)
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'CatalogIntakeSubmissionService' object has no attribute 'record_discovery'
+
+backend/tests/test_catalog_intake_review_journey.py:172: AttributeError</failure></testcase></testsuite></testsuites>

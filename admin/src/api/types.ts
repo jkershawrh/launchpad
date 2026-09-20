@@ -290,7 +290,7 @@ export interface CatalogIntakeDraft {
   defaults: { exposure_policies: string[]; maximum_seats: number };
   blockers: string[];
   evidence: {
-    status: 'not-run';
+    status: 'not-run' | 'partial';
     artifacts: string[];
     required_gates: string[];
   };
@@ -299,6 +299,26 @@ export interface CatalogIntakeDraft {
   release_identity: { repository_url: string; revision: string };
   approval_history: Array<Record<string, string>>;
   rollback: { status: 'not-defined'; metadata: Record<string, string> };
+  discovery?: {
+    status: 'passed';
+    attempt_id: string;
+    output_hash: string;
+    worker_image_digest: string;
+    files_scanned: number;
+    bytes_scanned: number;
+    cleanup_verified: true;
+  } | null;
+  catalog_preview?: {
+    catalog_item_id: string;
+    display_name: string;
+    description: string;
+    category: CatalogIntakeLabType;
+    version: string;
+    status: 'draft';
+    required_capabilities: string[];
+    optional_capabilities: string[];
+    metadata: Record<string, unknown>;
+  } | null;
 }
 
 export interface CatalogIntakePipelineView {
@@ -306,7 +326,7 @@ export interface CatalogIntakePipelineView {
   intake_id: string;
   source_standard: 'quickstart-repository';
   metadata_policy: 'discover-from-source';
-  current_stage: 'submitted';
+  current_stage: 'submitted' | 'draft-generated';
   orderable: false;
   promotion_eligible: false;
   durable_storage: boolean;

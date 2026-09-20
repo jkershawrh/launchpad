@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T16:12:57Z",
+  "updated_at": "2026-09-20T16:24:00Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -652,9 +652,10 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "evidence/runs/catalog-intake-draft-generation/green-local.json"
+        "evidence/runs/catalog-intake-draft-generation/green-local.json",
+        "evidence/runs/catalog-intake-review-journey/manifest.json"
       ],
-      "note": "A versioned immutable discovery receipt now deterministically generates a fail-closed catalog draft and refuses mismatched identity, source, revision, or inventory. This is GREEN-local for the catalog-draft slice only; deployment package, functional journey, certification, ownership, and support-plan generation remain open."
+      "note": "A verified discovery receipt now deterministically becomes a persisted, non-orderable catalog preview with identity/hash/cleanup validation, compare-and-swap storage, partial evidence references, and unresolved blockers. Deployment package, participant journey, ownership, support, and certification remain open."
     },
     "LP-T099": {
       "state": "green-local",
@@ -757,9 +758,10 @@
         "evidence/runs/admin-catalog-intake-ui/manifest.json",
         "evidence/runs/catalog-intake-durability/green-integration.json",
         "evidence/runs/catalog-intake-pipeline/manifest.json",
+        "evidence/runs/catalog-intake-review-journey/manifest.json",
         "evidence/runs/catalog-intake-submission/green-local.json"
       ],
-      "note": "Admin Intake now shows canonical Quickstart identity, durable storage scope, blockers, gates, evidence, targets, scale ceiling, approvals, rollback, and every locked pipeline stage. Certification and promotion controls remain disabled and no live deployment was performed."
+      "note": "Admin Intake now renders the completed discovery result and generated catalog preview, advances the read-only pipeline to catalog-draft review, and keeps certification, approval, promotion, provisioning, and all live mutations disabled."
     },
     "LP-T100": {
       "state": "green-local",

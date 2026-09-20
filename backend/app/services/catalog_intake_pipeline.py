@@ -40,31 +40,44 @@ def build_catalog_intake_pipeline_view(
     if not isolated_worker_available:
         first_blockers.append("An approved isolated intake worker is not available.")
 
+    draft_generated = draft.discovery is not None and draft.catalog_preview is not None
     gates = []
     for index, (gate_id, label, evidence) in enumerate(GATES):
+        if draft_generated and index < 2:
+            status = "passed"
+            blockers = []
+        elif draft_generated and index == 2:
+            status = "blocked"
+            blockers = list(draft.blockers)
+        else:
+            status = "blocked" if index == 0 else "not-run"
+            blockers = first_blockers if index == 0 else ["Previous gate has not passed."]
         gates.append(
             CatalogIntakePipelineGate(
                 gate_id=gate_id,
                 label=label,
-                status="blocked" if index == 0 else "not-run",
+                status=status,
                 required_evidence=evidence,
-                blockers=first_blockers if index == 0 else ["Previous gate has not passed."],
+                blockers=blockers,
             )
         )
     stages = [
         CatalogIntakePipelineStage(
-            stage_id="submitted", label="Submitted", status="current", gate_ids=[]
+            stage_id="submitted",
+            label="Submitted",
+            status="complete" if draft_generated else "current",
+            gate_ids=[],
         ),
         CatalogIntakePipelineStage(
             stage_id="discovered",
             label="Repository discovered",
-            status="locked",
+            status="complete" if draft_generated else "locked",
             gate_ids=["repository-discovery"],
         ),
         CatalogIntakePipelineStage(
             stage_id="draft-generated",
             label="Draft generated",
-            status="locked",
+            status="current" if draft_generated else "locked",
             gate_ids=["catalog-draft"],
         ),
         CatalogIntakePipelineStage(
@@ -88,7 +101,7 @@ def build_catalog_intake_pipeline_view(
     ]
     return CatalogIntakePipelineView(
         intake_id=draft.intake_id,
-        current_stage="submitted",
+        current_stage="draft-generated" if draft_generated else "submitted",
         durable_storage=durable,
         isolated_worker_available=isolated_worker_available,
         stages=stages,

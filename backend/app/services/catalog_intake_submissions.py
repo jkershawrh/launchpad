@@ -5,10 +5,16 @@ import json
 import os
 
 from app.domain.catalog_intake import (
+    CatalogIntakeDiscoverySummary,
     CatalogIntakeDraft,
     CatalogIntakeEvidence,
     CatalogIntakeReleaseIdentity,
     CatalogIntakeSubmission,
+)
+from app.domain.catalog_intake_discovery import CatalogIntakeDiscoveryReceipt
+from app.services.catalog_onboarding import (
+    DISCOVERY_RECEIPT_VERSION,
+    build_catalog_draft_from_receipt,
 )
 from app.storage.catalog_intakes import (
     CatalogIntakeDraftStore,
@@ -91,6 +97,105 @@ class CatalogIntakeSubmissionService:
 
     def list_all(self) -> list[CatalogIntakeDraft]:
         return self.store.list_all()
+
+    def record_discovery(
+        self,
+        intake_id: str,
+        receipt: CatalogIntakeDiscoveryReceipt,
+    ) -> CatalogIntakeDraft:
+        """Attach one trusted discovery result and create its review-only preview."""
+
+        draft = self.store.get(intake_id)
+        if draft is None:
+            raise KeyError(intake_id)
+        if receipt.intake_id != intake_id:
+            raise ValueError("discovery receipt intake identity does not match")
+        if (
+            receipt.repository_url != draft.release_identity.repository_url
+            or receipt.revision != draft.release_identity.revision
+        ):
+            raise ValueError("discovery receipt repository identity does not match")
+        if (
+            receipt.status != "passed"
+            or receipt.error_codes
+            or receipt.draft_intake is None
+            or receipt.output_hash is None
+            or receipt.cleanup.result != "pass"
+            or not receipt.cleanup.workspace_removed
+        ):
+            raise ValueError("catalog review requires a successful discovery receipt")
+
+        encoded = json.dumps(
+            receipt.draft_intake,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+        expected_hash = "sha256:" + hashlib.sha256(encoded).hexdigest()
+        if receipt.output_hash != expected_hash:
+            raise ValueError("discovery receipt output hash does not match")
+
+        if draft.discovery is not None:
+            if (
+                draft.discovery.attempt_id == receipt.attempt_id
+                and draft.discovery.output_hash == receipt.output_hash
+            ):
+                return draft
+            raise ValueError("catalog intake already has a different discovery result")
+
+        discovered_catalog = receipt.draft_intake.get("catalog") or {}
+        if discovered_catalog.get("catalog_item_id") != draft.requested.catalog_item_id:
+            raise ValueError("discovered catalog identity does not match intake")
+        inventory = (receipt.draft_intake.get("discovery") or {}).get("inventory")
+        compatibility_receipt = {
+            "schema": DISCOVERY_RECEIPT_VERSION,
+            "discovery_status": "pass",
+            "catalog_item_id": draft.requested.catalog_item_id,
+            "repo_url": receipt.repository_url,
+            "revision": receipt.revision,
+            "inventory": inventory,
+            "draft_intake": receipt.draft_intake,
+            "errors": [],
+        }
+        preview = build_catalog_draft_from_receipt(compatibility_receipt)
+        if preview.get("status") != "draft":
+            raise ValueError("discovery may produce only a draft catalog preview")
+
+        resolved = {
+            "Immutable repository discovery and static inventory have not been run.",
+            "Generated catalog draft and deployment package have not been reviewed.",
+        }
+        blockers = [item for item in draft.blockers if item not in resolved]
+        blockers.extend(
+            (receipt.draft_intake.get("certification") or {}).get(
+                "activation_blockers", []
+            )
+        )
+        blockers = list(dict.fromkeys(blockers))
+        updated = draft.model_copy(
+            update={
+                "blockers": blockers,
+                "discovery": CatalogIntakeDiscoverySummary(
+                    attempt_id=receipt.attempt_id,
+                    output_hash=receipt.output_hash,
+                    worker_image_digest=receipt.worker_image_digest,
+                    files_scanned=receipt.scan_summary.get("files_scanned", 0),
+                    bytes_scanned=receipt.scan_summary.get("bytes_scanned", 0),
+                    cleanup_verified=True,
+                ),
+                "catalog_preview": preview,
+                "evidence": draft.evidence.model_copy(
+                    update={
+                        "status": "partial",
+                        "artifacts": [
+                            f"discovery-receipt:{receipt.attempt_id}",
+                            f"catalog-preview:{receipt.output_hash}",
+                        ],
+                    }
+                ),
+            }
+        )
+        validated = CatalogIntakeDraft.model_validate(updated.model_dump())
+        return self.store.replace(draft, validated)
 
     def clear(self) -> None:
         """Clear local drafts for deterministic tests; never touches catalog state."""

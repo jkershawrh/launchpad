@@ -26,6 +26,12 @@ class CatalogIntakeDraftStore(Protocol):
 
     def list_all(self) -> list[CatalogIntakeDraft]: ...
 
+    def replace(
+        self,
+        expected: CatalogIntakeDraft,
+        draft: CatalogIntakeDraft,
+    ) -> CatalogIntakeDraft: ...
+
 
 def _serialized(draft: CatalogIntakeDraft) -> str:
     return json.dumps(
@@ -71,6 +77,22 @@ class InMemoryCatalogIntakeDraftStore:
                 self._drafts[intake_id].model_copy(deep=True)
                 for intake_id in sorted(self._drafts)
             ]
+
+    def replace(
+        self,
+        expected: CatalogIntakeDraft,
+        draft: CatalogIntakeDraft,
+    ) -> CatalogIntakeDraft:
+        with self._lock:
+            existing = self._drafts.get(draft.intake_id)
+            if existing is None:
+                raise KeyError(draft.intake_id)
+            if existing != expected:
+                raise CatalogIntakeDraftConflictError(
+                    f"Catalog intake {draft.intake_id} changed during discovery"
+                )
+            self._drafts[draft.intake_id] = draft.model_copy(deep=True)
+            return draft.model_copy(deep=True)
 
     def clear(self) -> None:
         with self._lock:
@@ -184,6 +206,49 @@ class PostgresCatalogIntakeDraftStore:
             logger.warning("Catalog intake draft listing failed: %s", exc)
             raise PersistenceUnavailableError(
                 "Catalog intake drafts could not be durably listed"
+            ) from exc
+        finally:
+            conn.close()
+
+    def replace(
+        self,
+        expected: CatalogIntakeDraft,
+        draft: CatalogIntakeDraft,
+    ) -> CatalogIntakeDraft:
+        data = _serialized(draft)
+        conn = self._connect()
+        try:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(hashtextextended(%s, 0))",
+                    (f"catalog-intake:{draft.intake_id}",),
+                )
+                cur.execute(
+                    "SELECT data FROM catalog_intake_drafts WHERE intake_id = %s FOR UPDATE",
+                    (draft.intake_id,),
+                )
+                row = cur.fetchone()
+                if row is None:
+                    raise KeyError(draft.intake_id)
+                existing = CatalogIntakeDraft.model_validate(_decoded(row[0]))
+                if existing != expected:
+                    raise CatalogIntakeDraftConflictError(
+                        f"Catalog intake {draft.intake_id} changed during discovery"
+                    )
+                cur.execute(
+                    "UPDATE catalog_intake_drafts SET data = %s::jsonb WHERE intake_id = %s",
+                    (data, draft.intake_id),
+                )
+            conn.commit()
+            return draft.model_copy(deep=True)
+        except (CatalogIntakeDraftConflictError, KeyError):
+            conn.rollback()
+            raise
+        except Exception as exc:
+            conn.rollback()
+            logger.warning("Catalog intake draft update failed: %s", exc)
+            raise PersistenceUnavailableError(
+                "Catalog intake draft could not be durably updated"
             ) from exc
         finally:
             conn.close()

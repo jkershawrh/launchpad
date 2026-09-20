@@ -1,0 +1,52 @@
+schema_version: launchpad.redhat.com/catalog-intake-review/v1
+kind: LaunchpadCatalogIntakeReview
+metadata:
+  version: 1.0.0
+  status: GREEN-local
+
+source:
+  standard: quickstart-repository
+  identity_match_required:
+    - intake_id
+    - repository_url
+    - revision
+    - catalog_item_id
+  accepted_discovery_status: passed
+  cleanup_receipt_required: true
+  output_hash_required: true
+
+transition:
+  from: submitted
+  to: draft-generated
+  persistence: compare-and-swap
+  idempotent_by:
+    - attempt_id
+    - output_hash
+  generated_outputs:
+    - discovery summary
+    - non-orderable catalog preview
+    - partial evidence references
+    - unresolved activation blockers
+
+review:
+  visible_in_admin: true
+  source_identity_visible: true
+  discovery_counts_visible: true
+  cleanup_result_visible: true
+  catalog_preview_visible: true
+  blockers_visible: true
+
+authority:
+  orderable: false
+  promotion_eligible: false
+  may_run_certification: false
+  may_request_approval: false
+  may_publish_catalog: false
+  may_provision: false
+  may_mutate_live_catalog: false
+  may_mutate_cluster: false
+
+next_gate:
+  name: artifact-security
+  state: blocked
+  reason: artifact, security, model, target, lifecycle, approval, and rollback evidence remain incomplete

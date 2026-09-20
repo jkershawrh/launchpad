@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Literal
+from typing import Any, Literal
 from urllib.parse import urlparse
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -79,7 +79,7 @@ class CatalogIntakeDefaults(BaseModel):
 
 
 class CatalogIntakeEvidence(BaseModel):
-    status: Literal["not-run"] = "not-run"
+    status: Literal["not-run", "partial"] = "not-run"
     artifacts: list[str] = Field(default_factory=list)
     required_gates: list[str] = Field(default_factory=list)
 
@@ -92,6 +92,16 @@ class CatalogIntakeReleaseIdentity(BaseModel):
 class CatalogIntakeRollback(BaseModel):
     status: Literal["not-defined"] = "not-defined"
     metadata: dict[str, str] = Field(default_factory=dict)
+
+
+class CatalogIntakeDiscoverySummary(BaseModel):
+    status: Literal["passed"] = "passed"
+    attempt_id: str
+    output_hash: str
+    worker_image_digest: str
+    files_scanned: int = Field(ge=0)
+    bytes_scanned: int = Field(ge=0)
+    cleanup_verified: Literal[True] = True
 
 
 class CatalogIntakeDraft(BaseModel):
@@ -111,3 +121,5 @@ class CatalogIntakeDraft(BaseModel):
     release_identity: CatalogIntakeReleaseIdentity
     approval_history: list[dict[str, str]] = Field(default_factory=list)
     rollback: CatalogIntakeRollback = Field(default_factory=CatalogIntakeRollback)
+    discovery: CatalogIntakeDiscoverySummary | None = None
+    catalog_preview: dict[str, Any] | None = None
