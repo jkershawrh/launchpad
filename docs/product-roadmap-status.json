@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:19:33Z",
+  "updated_at": "2026-09-20T02:22:12Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -460,7 +460,7 @@
         "evidence/runs/event-orchestration/green-local.xml",
         "evidence/runs/event-orchestration/red-local.xml"
       ],
-      "note": "Disposable PostgreSQL 16 integration now proves a two-seat public event through claim, durable reclaim, process restart, SHA-256 cleanup finalization, second restart, and idempotent replay. A concurrent run with two reconstructed finalizers converges on one release and one digest. Overall state remains green-local because TDD, CDD, and BDD integration proof, database failure injection, live OpenShift residue inspection, external OIDC, and model-key revocation receipts remain open."
+      "note": "Disposable PostgreSQL 16 integration proves restart-safe and concurrent event cleanup finalization: a two-seat public event survives service reconstruction, converges on one SHA-256 digest and one release across two finalizers, and fully rolls back an injected database release failure before an unchanged recovery retry. Overall state remains green-local because TDD, CDD, and BDD integration proof, live OpenShift residue inspection, external OIDC, and model-key revocation receipts remain open."
     },
     "LP-T023": {
       "state": "green-local",

@@ -31,6 +31,7 @@ from app.services.public_access import PublicAccessService
 from app.storage import database
 from app.storage.lifecycle_jobs import PostgresLifecycleJobStore
 from app.storage.stores import (
+    PersistenceUnavailableError,
     PostgresAccessStore,
     PostgresEventReservationStore,
     PostgresEventStore,
@@ -56,6 +57,11 @@ def event_schema(monkeypatch):
     conn = psycopg2.connect(TEST_DATABASE_URL)
     with conn.cursor() as cur:
         cur.execute(
+            "DROP TRIGGER IF EXISTS inject_event_release_failure "
+            "ON event_capacity_reservations"
+        )
+        cur.execute("DROP FUNCTION IF EXISTS inject_event_release_failure()")
+        cur.execute(
             """TRUNCATE event_capacity_reservations, event_manifests,
                        lifecycle_jobs, lifecycle_aggregate_leases,
                        workshops, lab_sessions, access_policies,
@@ -66,6 +72,15 @@ def event_schema(monkeypatch):
     conn.commit()
     conn.close()
     yield
+    conn = psycopg2.connect(TEST_DATABASE_URL)
+    with conn.cursor() as cur:
+        cur.execute(
+            "DROP TRIGGER IF EXISTS inject_event_release_failure "
+            "ON event_capacity_reservations"
+        )
+        cur.execute("DROP FUNCTION IF EXISTS inject_event_release_failure()")
+    conn.commit()
+    conn.close()
 
 
 def _event(now: datetime) -> tuple[EventRecord, EventCapacitySupply]:
@@ -287,3 +302,58 @@ def test_concurrent_restarted_finalizers_converge_on_one_release() -> None:
     assert {item.cleanup_evidence_id for item in persisted} == {
         results[0].cleanup_evidence_id
     }
+
+
+def test_release_transaction_failure_rolls_back_and_retry_recovers() -> None:
+    import psycopg2
+
+    record = _prepare_reclaimed_event()
+    conn = psycopg2.connect(TEST_DATABASE_URL)
+    with conn.cursor() as cur:
+        cur.execute(
+            """CREATE FUNCTION inject_event_release_failure()
+               RETURNS trigger LANGUAGE plpgsql AS $$
+               BEGIN
+                 IF NEW.status = 'released' THEN
+                   RAISE EXCEPTION 'injected event release failure';
+                 END IF;
+                 RETURN NEW;
+               END;
+               $$"""
+        )
+        cur.execute(
+            """CREATE TRIGGER inject_event_release_failure
+               BEFORE UPDATE OF status ON event_capacity_reservations
+               FOR EACH ROW EXECUTE FUNCTION inject_event_release_failure()"""
+        )
+    conn.commit()
+    conn.close()
+
+    restarted_record = EventManifestStore(db_store=PostgresEventStore()).get(
+        record.manifest.event_id
+    )
+    assert restarted_record is not None
+    _, _, _, _, restarted = _services()
+    with pytest.raises(PersistenceUnavailableError):
+        restarted.finalize_cleanup(restarted_record)
+
+    after_failure = EventReservationLedger(
+        db_store=PostgresEventReservationStore()
+    ).list_for_event(record.manifest.event_id)
+    assert {item.status for item in after_failure} == {"consumed"}
+    assert {item.cleanup_evidence_id for item in after_failure} == {None}
+
+    conn = psycopg2.connect(TEST_DATABASE_URL)
+    with conn.cursor() as cur:
+        cur.execute(
+            "DROP TRIGGER inject_event_release_failure "
+            "ON event_capacity_reservations"
+        )
+        cur.execute("DROP FUNCTION inject_event_release_failure()")
+    conn.commit()
+    conn.close()
+
+    _, _, _, _, recovered = _services()
+    finalized = recovered.finalize_cleanup(restarted_record)
+    assert finalized.released_reservations == 1
+    assert finalized.cleanup_evidence_id.startswith("sha256:")

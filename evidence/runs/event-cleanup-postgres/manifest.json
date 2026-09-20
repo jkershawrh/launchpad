@@ -18,21 +18,23 @@
     "participant_claims": 1,
     "process_restarts": 4,
     "concurrent_finalizers": 2,
+    "database_release_failures_injected": 1,
     "first_release_count": 1,
     "idempotent_replay_release_count": 0,
     "concurrent_release_counts": [0, 1],
+    "failed_release_rolled_back": true,
+    "recovery_retry_release_count": 1,
     "live_cluster_mutations": 0
   },
   "artifacts": [
     {
       "path": "evidence/runs/event-cleanup-postgres/green-integration.xml",
-      "sha256": "856768ba813c8908c54a4cc12f61615cbd9d1381fa161b9f2b72f44a8418815b"
+      "sha256": "bd08ecdfd0178bcde60c3de0d4479580912083f879efad73bb4d6ac5eec9112e"
     }
   ],
   "limitations": [
     "The execution-cluster resource inspector is not exercised.",
     "The external OIDC browser journey is not exercised.",
-    "External model-key revocation receipts are not exercised.",
-    "Database failure injection remains open."
+    "External model-key revocation receipts are not exercised."
   ]
 }
