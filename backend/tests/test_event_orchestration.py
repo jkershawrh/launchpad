@@ -22,7 +22,7 @@ from app.services.event_orchestration import (
     EventOrchestrationService,
 )
 from app.services.event_reservations import EventReservationLedger
-from app.services.lifecycle_worker import LifecycleQueueService
+from app.services.lifecycle_worker import LifecycleQueueService, LifecycleWorker
 from app.services.provisioning import ProvisioningService
 from app.services.public_access import PublicAccessService
 from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
@@ -39,7 +39,7 @@ def test_event_orchestration_contract_keeps_public_access_pending():
     ]["post"]
     result = contract["components"]["schemas"]["EventWorkshopLaunchResult"]
 
-    assert contract["info"]["version"] == "1.3.0"
+    assert contract["info"]["version"] == "1.4.0"
     assert operation["responses"]["202"]["content"]["application/json"][
         "schema"
     ] == {"$ref": "#/components/schemas/EventWorkshopLaunchResult"}
@@ -65,6 +65,14 @@ def test_event_orchestration_contract_keeps_public_access_pending():
         ["responses"]["202"]["content"]["application/json"]["schema"]
         == {"$ref": "#/components/schemas/EventWorkshopReclaimResult"}
     )
+    assert (
+        contract["paths"]["/api/v1/events/{event_id}/reclaim/finalize"]
+        ["post"]["responses"]["200"]["content"]["application/json"]["schema"]
+        == {"$ref": "#/components/schemas/EventCleanupEvidenceResult"}
+    )
+    cleanup = contract["components"]["schemas"]["EventCleanupEvidenceResult"]
+    assert "one_time_access_code" not in str(cleanup)
+    assert "email" not in str(cleanup)
 
 
 def _catalog():
@@ -95,6 +103,16 @@ def _services():
     supply = _supply()
     record = _record("event-a", supply)
     plan = _plan("event-a", supply)
+    expires_at = max(NOW, datetime.now(UTC)) + timedelta(hours=8)
+    plan = plan.model_copy(
+        update={
+            "expires_at": expires_at,
+            "reservations": [
+                item.model_copy(update={"expires_at": expires_at})
+                for item in plan.reservations
+            ],
+        }
+    )
     ledger = EventReservationLedger()
     ledger.reserve(plan, supply, now=NOW)
     provisioning = ProvisioningService(
@@ -498,3 +516,156 @@ def test_partial_event_reclaim_queue_failure_recovers_without_duplicate_jobs():
     ]
     assert len(recovered.workshops) == 2
     assert len(reclaim_jobs) == 2
+
+
+def _run_event_reclaim_jobs(provisioning, jobs):
+    worker = LifecycleWorker(
+        store=jobs,
+        provisioning_service=provisioning,
+        worker_id="event-cleanup-worker",
+        lease_seconds=10,
+        heartbeat_interval_seconds=1,
+    )
+    assert worker.run_once() == "succeeded"
+    assert worker.run_once() == "succeeded"
+
+
+def test_event_cleanup_finalization_releases_capacity_with_stable_evidence():
+    record, ledger, provisioning, jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    for item in launched.workshops:
+        _make_ready(provisioning, item.workshop_id)
+        orchestration.activate_public_access(record, item.workshop_id)
+    orchestration.reclaim(record)
+    _run_event_reclaim_jobs(provisioning, jobs)
+
+    finalized = orchestration.finalize_cleanup(record)
+    repeated = orchestration.finalize_cleanup(record)
+
+    assert finalized.cleanup_verified is True
+    assert finalized.cleanup_evidence_id.startswith("sha256:")
+    assert finalized.released_reservations == 2
+    assert repeated.cleanup_evidence_id == finalized.cleanup_evidence_id
+    assert repeated.released_reservations == 0
+    assert finalized.summary.workshops == 2
+    assert finalized.summary.seats == 60
+    assert finalized.summary.sessions == 60
+    assert finalized.summary.external_residue == 0
+    assert finalized.summary.active_entitlements == 0
+    assert {
+        item.status
+        for item in ledger.list_for_event(record.manifest.event_id, now=NOW)
+    } == {"released"}
+
+
+def test_event_cleanup_finalization_fails_closed_until_jobs_complete():
+    record, ledger, provisioning, _jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    for item in launched.workshops:
+        _make_ready(provisioning, item.workshop_id)
+        orchestration.activate_public_access(record, item.workshop_id)
+    orchestration.reclaim(record)
+
+    with pytest.raises(EventOrchestrationConflictError, match="not proven"):
+        orchestration.finalize_cleanup(record)
+
+    assert {
+        item.status
+        for item in ledger.list_for_event(record.manifest.event_id, now=NOW)
+    } == {"consumed"}
+
+
+def test_event_cleanup_finalization_rejects_external_residue():
+    record, ledger, provisioning, jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    for item in launched.workshops:
+        _make_ready(provisioning, item.workshop_id)
+        orchestration.activate_public_access(record, item.workshop_id)
+    orchestration.reclaim(record)
+    _run_event_reclaim_jobs(provisioning, jobs)
+
+    with (
+        patch.object(
+            provisioning,
+            "inspect_session_cleanup",
+            return_value={
+                "namespace": 1,
+                "image_puller_role_binding": 0,
+                "showroom_application": 0,
+                "workload_application": 0,
+                "credentials": 0,
+            },
+        ),
+        pytest.raises(EventOrchestrationConflictError, match="not proven"),
+    ):
+        orchestration.finalize_cleanup(record)
+
+    assert {
+        item.status
+        for item in ledger.list_for_event(record.manifest.event_id, now=NOW)
+    } == {"consumed"}
+
+
+def test_event_cleanup_finalization_fails_closed_when_inspection_errors():
+    record, ledger, provisioning, jobs, orchestration = _services()
+    orchestration.public_access = PublicAccessService(
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    with patch.object(
+        provisioning, "check_workshop_capacity", return_value=(True, "ok")
+    ):
+        launched = orchestration.launch(
+            record, EventWorkshopLaunchRequest(tenant_id="event-tenant")
+        )
+    for item in launched.workshops:
+        _make_ready(provisioning, item.workshop_id)
+        orchestration.activate_public_access(record, item.workshop_id)
+    orchestration.reclaim(record)
+    _run_event_reclaim_jobs(provisioning, jobs)
+
+    with (
+        patch.object(
+            provisioning,
+            "inspect_session_cleanup",
+            side_effect=RuntimeError("cluster API unavailable"),
+        ),
+        pytest.raises(EventOrchestrationConflictError, match="not proven"),
+    ):
+        orchestration.finalize_cleanup(record)
+
+    assert {
+        item.status
+        for item in ledger.list_for_event(record.manifest.event_id, now=NOW)
+    } == {"consumed"}

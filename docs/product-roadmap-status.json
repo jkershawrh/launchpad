@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T01:22:21Z",
+  "updated_at": "2026-09-20T02:11:22Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -453,10 +453,12 @@
         "docs/event-capacity-matrix.md",
         "evidence/runs/event-bulk-reclaim/green-local.xml",
         "evidence/runs/event-bulk-reclaim/red-local.xml",
+        "evidence/runs/event-cleanup-finalization/green-local.xml",
+        "evidence/runs/event-cleanup-finalization/red-local.xml",
         "evidence/runs/event-orchestration/green-local.xml",
         "evidence/runs/event-orchestration/red-local.xml"
       ],
-      "note": "Local event-wide reclaim preflights every consumed reservation binding, disables all public access before cleanup, queues stable cluster-bound reclaim jobs, and is idempotent. PostgreSQL integration, bounded seat waves, cleanup-evidence reconciliation, zero-residue release, and live proof remain."
+      "note": "Local zero-residue finalization now verifies completed cluster-bound reclaim jobs, reclaimed seats and sessions, absent namespaces/control RBAC/Argo applications, scrubbed stored credentials, and disabled public-access residue before releasing capacity with a deterministic SHA-256 evidence ID. External model-key revocation receipts, PostgreSQL/restart proof, claim/SSO cleanup, and live staged certification remain open."
     },
     "LP-T023": {
       "state": "green-local",

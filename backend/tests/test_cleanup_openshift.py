@@ -4,9 +4,9 @@ Fix 5: Gateway lock, Fix 6: Cleanup timeout, Fix 7: Orphaned RoleBinding.
 """
 
 import threading
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
 from app.domain.enums import CatalogCategory
 from app.domain.models import LabRequest
 from app.services.provisioning import ProvisioningService
@@ -171,6 +171,34 @@ class TestOrphanedRoleBindingCleanup:
             name="test-demo-namespace-image-puller",
             namespace="partner-ai-launchpad",
         )
+
+    def test_cleanup_residue_inspection_is_read_only_and_counts_every_owner(self):
+        from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+
+        adapter = OpenShiftCleanupAdapter.__new__(OpenShiftCleanupAdapter)
+        adapter._core_v1 = MagicMock()
+        adapter._rbac_v1 = MagicMock()
+        adapter._showroom_gitops = MagicMock()
+        adapter._workload_gitops = MagicMock()
+        missing = _K8sApiException(status=404)
+        adapter._core_v1.read_namespace.side_effect = missing
+        adapter._rbac_v1.read_namespaced_role_binding.side_effect = missing
+        adapter._showroom_gitops.custom_objects.get_namespaced_custom_object.side_effect = (
+            missing
+        )
+        adapter._workload_gitops.custom_objects.get_namespaced_custom_object.return_value = {
+            "metadata": {"name": "residue"}
+        }
+
+        result = adapter.inspect_residue("test-demo-namespace")
+
+        assert result == {
+            "namespace": 0,
+            "image_puller_role_binding": 0,
+            "showroom_application": 0,
+            "workload_application": 1,
+        }
+        adapter._core_v1.delete_namespace.assert_not_called()
 
     def test_cleanup_ignores_missing_role_binding(self):
         """RED: if RoleBinding doesn't exist, cleanup should not fail."""

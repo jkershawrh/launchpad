@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -11,6 +12,20 @@ from app.services.event_reservations import EventReservationLedger
 from app.services.provisioning import ProvisioningService
 
 from backend.tests.test_event_reservation_ledger import NOW, _plan, _supply
+
+
+def _active_plan(event_id: str, supply):
+    plan = _plan(event_id, supply)
+    expires_at = max(NOW, datetime.now(UTC)) + timedelta(hours=8)
+    return plan.model_copy(
+        update={
+            "expires_at": expires_at,
+            "reservations": [
+                item.model_copy(update={"expires_at": expires_at})
+                for item in plan.reservations
+            ],
+        }
+    )
 
 
 def _catalog(*, version: str):
@@ -36,7 +51,7 @@ def _catalog(*, version: str):
 
 def test_reserved_workshop_order_uses_exact_cluster_release_and_seats():
     supply = _supply()
-    plan = _plan("event-a", supply)
+    plan = _active_plan("event-a", supply)
     reservation = plan.reservations[0]
     ledger = EventReservationLedger()
     ledger.reserve(plan, supply, now=NOW)
@@ -77,7 +92,7 @@ def test_reserved_workshop_order_uses_exact_cluster_release_and_seats():
 
 def test_reserved_workshop_retry_does_not_recheck_already_owned_capacity():
     supply = _supply()
-    plan = _plan("event-a", supply)
+    plan = _active_plan("event-a", supply)
     reservation = plan.reservations[0]
     ledger = EventReservationLedger()
     ledger.reserve(plan, supply, now=NOW)
@@ -112,7 +127,7 @@ def test_reserved_workshop_retry_does_not_recheck_already_owned_capacity():
 
 def test_catalog_drift_fails_before_reservation_consumption():
     supply = _supply()
-    plan = _plan("event-a", supply)
+    plan = _active_plan("event-a", supply)
     reservation = plan.reservations[0]
     ledger = EventReservationLedger()
     ledger.reserve(plan, supply, now=NOW)
@@ -139,7 +154,7 @@ def test_catalog_drift_fails_before_reservation_consumption():
 
 def test_provisioning_rejects_cluster_or_seat_tampering_after_consumption():
     supply = _supply()
-    plan = _plan("event-a", supply)
+    plan = _active_plan("event-a", supply)
     reservation = plan.reservations[0]
     ledger = EventReservationLedger()
     ledger.reserve(plan, supply, now=NOW)
@@ -167,7 +182,7 @@ def test_provisioning_rejects_cluster_or_seat_tampering_after_consumption():
 
 def test_lifecycle_provisions_every_reserved_seat_on_persisted_cluster():
     supply = _supply()
-    plan = _plan("event-a", supply)
+    plan = _active_plan("event-a", supply)
     reservation = plan.reservations[0]
     ledger = EventReservationLedger()
     ledger.reserve(plan, supply, now=NOW)

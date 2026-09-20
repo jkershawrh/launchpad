@@ -1498,6 +1498,44 @@ class ProvisioningService:
             return None
         return session.model_copy(update={"maas_api_key": None})
 
+    def inspect_session_cleanup(self, session_id: str) -> dict[str, int]:
+        """Read cleanup residue without deleting or repairing resources."""
+
+        session = self.get_session(session_id)
+        if session is None:
+            raise ValueError(f"Session {session_id} not found")
+        residue = {
+            "namespace": 0,
+            "image_puller_role_binding": 0,
+            "showroom_application": 0,
+            "workload_application": 0,
+            "credentials": int(
+                bool(session.maas_api_key)
+                or any(
+                    key in session.resources
+                    for key in ("sa_token", "sandbox_data", "maas_api_key")
+                )
+            ),
+        }
+        if not session.namespace:
+            return residue
+        cleanup = self._get_cleanup(session.cluster_ref)
+        inspect = getattr(cleanup, "inspect_residue", None) if cleanup else None
+        if not callable(inspect):
+            raise ValueError(
+                f"Cleanup residue inspection is unavailable for cluster "
+                f"{session.cluster_ref or 'local'}"
+            )
+        observed = inspect(session.namespace)
+        for key in residue:
+            if key == "credentials":
+                continue
+            value = observed.get(key)
+            if not isinstance(value, int) or value < 0:
+                raise ValueError(f"Invalid cleanup residue count for {key}")
+            residue[key] = value
+        return residue
+
     def reinitialize_session(self, session_id: str) -> LabSession:
         session = self._sessions.get(session_id)
         if not session:

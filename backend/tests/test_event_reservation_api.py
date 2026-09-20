@@ -39,6 +39,10 @@ def _clear_overrides():
         app.dependency_overrides.pop(dependency, None)
 
 
+def _expires_at() -> str:
+    return (datetime.now(UTC) + timedelta(hours=8)).isoformat()
+
+
 def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
     from unittest.mock import patch
 
@@ -48,12 +52,16 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
     from app.services.public_access import PublicAccessService
     from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
 
-    from backend.tests.test_event_orchestration import _catalog, _make_ready
+    from backend.tests.test_event_orchestration import (
+        _catalog,
+        _make_ready,
+        _run_event_reclaim_jobs,
+    )
 
     _supply_value, _event_store, ledger = _overrides()
     reserve = TestClient(app).post(
         "/api/v1/events/event-a/reservations",
-        json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+        json={"expires_at": _expires_at()},
     )
     provisioning = ProvisioningService(
         catalog=_catalog(), event_reservation_ledger=ledger
@@ -92,6 +100,10 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
             )
             status = TestClient(app).get("/api/v1/events/event-a/status")
             reclaimed = TestClient(app).post("/api/v1/events/event-a/reclaim")
+            _run_event_reclaim_jobs(provisioning, job_store)
+            finalized = TestClient(app).post(
+                "/api/v1/events/event-a/reclaim/finalize"
+            )
     finally:
         _clear_overrides()
 
@@ -121,6 +133,10 @@ def test_admin_launches_all_reserved_workshops_as_bounded_jobs():
         item["public_access_state"] for item in reclaimed.json()["workshops"]
     } == {"disabled"}
     assert len(job_store.list_all()) == 4
+    assert finalized.status_code == 200
+    assert finalized.json()["cleanup_verified"] is True
+    assert finalized.json()["cleanup_evidence_id"].startswith("sha256:")
+    assert finalized.json()["released_reservations"] == 2
 
 
 def test_admin_approves_and_reserves_persisted_cluster_assignments():
@@ -128,7 +144,7 @@ def test_admin_approves_and_reserves_persisted_cluster_assignments():
     try:
         response = TestClient(app).post(
             "/api/v1/events/event-a/reservations",
-            json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+            json={"expires_at": _expires_at()},
         )
     finally:
         _clear_overrides()
@@ -147,21 +163,25 @@ def test_reservation_requires_admin_and_existing_approved_event():
     try:
         forbidden = TestClient(app).post(
             "/api/v1/events/event-a/reservations",
-            json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+            json={"expires_at": _expires_at()},
         )
         status_forbidden = TestClient(app).get("/api/v1/events/event-a/status")
         reclaim_forbidden = TestClient(app).post("/api/v1/events/event-a/reclaim")
+        finalize_forbidden = TestClient(app).post(
+            "/api/v1/events/event-a/reclaim/finalize"
+        )
     finally:
         _clear_overrides()
     assert forbidden.status_code == 403
     assert status_forbidden.status_code == 403
     assert reclaim_forbidden.status_code == 403
+    assert finalize_forbidden.status_code == 403
 
     _overrides()
     try:
         missing = TestClient(app).post(
             "/api/v1/events/missing/reservations",
-            json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+            json={"expires_at": _expires_at()},
         )
     finally:
         _clear_overrides()
@@ -174,7 +194,7 @@ def test_release_requires_positive_cleanup_evidence_and_is_idempotent():
     try:
         held = TestClient(app).post(
             "/api/v1/events/event-a/reservations",
-            json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+            json={"expires_at": _expires_at()},
         )
         unsafe = TestClient(app).post(
             "/api/v1/events/event-a/reservations/release",
@@ -196,7 +216,7 @@ def test_release_requires_positive_cleanup_evidence_and_is_idempotent():
         )
         second = TestClient(app).post(
             "/api/v1/events/event-b/reservations",
-            json={"expires_at": (NOW + timedelta(hours=8)).isoformat()},
+            json={"expires_at": _expires_at()},
         )
     finally:
         _clear_overrides()

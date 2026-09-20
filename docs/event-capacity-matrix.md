@@ -146,13 +146,29 @@ persisted cluster. Identical retries reuse the same jobs, and a missing
 reservation fails before access is changed. The action does not release held
 capacity; release remains a separate cleanup-evidenced transition.
 
-A real PostgreSQL integration run, public-access claim/SSO validation,
-zero-residue cleanup, and live proof remain separate gates.
+Cleanup finalization is a separate admin-only proof gate. It requires every
+cluster-bound reclaim job to have succeeded, every workshop to be completed,
+every seat and persisted session to be reclaimed, and all stored credentials
+to be scrubbed. For OpenShift sessions it performs read-only checks for the
+seat namespace, the control-namespace image-puller RoleBinding, and the
+deterministic Showroom and workload Argo CD Applications. It also verifies the
+public policy is disabled, no active or reauthentication entitlement remains,
+and any identity with no other active lab has been disabled. Any unavailable
+probe, incomplete record, or nonzero count fails closed.
+
+The exact sorted evidence payload is hashed with SHA-256. That evidence ID is
+persisted on every released reservation, making retries idempotent and causing
+changed cleanup evidence to fail closed. The result exposes only counts,
+resource identifiers, and the digest; it contains no instructor code,
+participant email, access token, or model credential.
+
+A real PostgreSQL integration run, public-access claim/SSO validation, and live
+zero-residue proof remain separate gates.
 
 ## Next boundary
 
-The next orchestration increment must reconcile completed reclaim jobs with
-namespace, route, RoleBinding, Argo CD, model-key, entitlement, and identity
-cleanup evidence before releasing capacity. It must prove real database-backed
-concurrency, event-wide recovery, participant claim/SSO, and live zero-residue
-cleanup before release or live use.
+The next orchestration increment must prove this unchanged flow against real
+PostgreSQL concurrency and restart recovery, then exercise participant
+claim/SSO and live zero-residue cleanup at the staged 1-, 5-, and certified-seat
+gates. A release remains local-only until those integration and live proofs
+exist.

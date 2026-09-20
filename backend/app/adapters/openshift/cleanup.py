@@ -99,6 +99,57 @@ class OpenShiftCleanupAdapter:
         self._active_namespaces.pop(namespace, None)
         return True
 
+    @staticmethod
+    def _present(read) -> int:
+        try:
+            read()
+            return 1
+        except Exception as exc:
+            if getattr(exc, "status", None) == 404:
+                return 0
+            raise
+
+    def inspect_residue(self, namespace: str) -> dict[str, int]:
+        """Count externally visible resources after cleanup, without mutation."""
+
+        from app.adapters.openshift.showroom_gitops import application_name
+        from app.adapters.openshift.workload_gitops import workload_application_name
+
+        operator_namespace = os.environ.get(
+            "OPERATOR_NAMESPACE", "partner-ai-launchpad"
+        )
+        binding_name = f"{namespace}-image-puller"
+        showroom = self._showroom_gitops
+        workload = self._workload_gitops
+        return {
+            "namespace": self._present(
+                lambda: self._core_v1.read_namespace(namespace)
+            ),
+            "image_puller_role_binding": self._present(
+                lambda: self._rbac_v1.read_namespaced_role_binding(
+                    binding_name, operator_namespace
+                )
+            ),
+            "showroom_application": self._present(
+                lambda: showroom.custom_objects.get_namespaced_custom_object(
+                    "argoproj.io",
+                    "v1alpha1",
+                    showroom.namespace,
+                    "applications",
+                    application_name(namespace),
+                )
+            ),
+            "workload_application": self._present(
+                lambda: workload.custom_objects.get_namespaced_custom_object(
+                    "argoproj.io",
+                    "v1alpha1",
+                    workload.namespace,
+                    "applications",
+                    workload_application_name(namespace),
+                )
+            ),
+        }
+
     def _wait_for_deletion(self, namespace: str, timeout: int = 60) -> None:
         deadline = time.time() + timeout
         while time.time() < deadline:

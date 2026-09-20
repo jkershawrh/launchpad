@@ -22,7 +22,6 @@ from app.domain.access import (
     ParticipantIdentity,
 )
 
-
 GENERIC_DENIAL = "Access request cannot be completed"
 
 
@@ -488,6 +487,53 @@ class PublicAccessService:
     def get_policy(self, order_id: str) -> AccessPolicy | None:
         self._refresh()
         return self._policies.get(order_id)
+
+    def cleanup_state(self, order_id: str) -> dict[str, int]:
+        """Return secret-free order access residue for cleanup evidence."""
+
+        self._refresh()
+        with self._lock:
+            policy = self._policies.get(order_id)
+            order_entitlements = [
+                item
+                for item in self._entitlements.values()
+                if item.order_id == order_id
+            ]
+            active_entitlements = [
+                item
+                for item in order_entitlements
+                if item.status
+                in {EntitlementStatus.ACTIVE, EntitlementStatus.REAUTH_REQUIRED}
+            ]
+            participants = {item.participant_id for item in order_entitlements}
+            identities_due_disable = 0
+            for participant_id in participants:
+                has_other_access = any(
+                    item.participant_id == participant_id
+                    and item.order_id != order_id
+                    and item.status
+                    in {
+                        EntitlementStatus.ACTIVE,
+                        EntitlementStatus.REAUTH_REQUIRED,
+                    }
+                    and item.expires_at > datetime.utcnow()
+                    for item in self._entitlements.values()
+                )
+                identity = next(
+                    (
+                        item
+                        for item in self._identities.values()
+                        if item.participant_id == participant_id
+                    ),
+                    None,
+                )
+                if not has_other_access and identity and identity.disabled_at is None:
+                    identities_due_disable += 1
+            return {
+                "policy_enabled": int(bool(policy and policy.enabled)),
+                "active_entitlements": len(active_entitlements),
+                "identities_due_disable": identities_due_disable,
+            }
 
     def get_policy_by_host(self, host: str) -> AccessPolicy | None:
         self._refresh()

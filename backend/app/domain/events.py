@@ -486,6 +486,39 @@ class EventWorkshopReclaimResult(BaseModel):
     workshops: list[EventWorkshopReclaimItem] = Field(min_length=1)
 
 
+class EventCleanupWorkshopEvidence(BaseModel):
+    reservation_id: str
+    workshop_id: str
+    lifecycle_job_id: str
+    cluster_ref: str
+    seats: int = Field(ge=1)
+    sessions: int = Field(ge=0)
+    external_residue: int = Field(ge=0)
+    access_residue: int = Field(ge=0)
+    residue: dict[str, int]
+    access: dict[str, int]
+
+
+class EventCleanupSummary(BaseModel):
+    workshops: int = Field(ge=0)
+    seats: int = Field(ge=0)
+    sessions: int = Field(ge=0)
+    external_residue: int = Field(ge=0)
+    access_residue: int = Field(ge=0)
+    active_entitlements: int = Field(ge=0)
+    identities_due_disable: int = Field(ge=0)
+
+
+class EventCleanupEvidenceResult(BaseModel):
+    event_id: str
+    cleanup_verified: Literal[True] = True
+    cleanup_evidence_id: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+    released_reservations: int = Field(ge=0)
+    summary: EventCleanupSummary
+    workshops: list[EventCleanupWorkshopEvidence] = Field(min_length=1)
+    observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
 class EventManifestConflictError(RuntimeError):
     """Raised when an immutable event ID has already been persisted."""
 

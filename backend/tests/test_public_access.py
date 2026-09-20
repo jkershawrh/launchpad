@@ -818,6 +818,11 @@ def test_final_entitlement_expiry_disables_identity_and_revokes_session():
     identity = access._identities["person@example.com"]
     assert identity.disabled_at is not None
     assert access._sessions[access._token_hash(claim.session_token)].revoked_at is not None
+    assert access.cleanup_state("final") == {
+        "policy_enabled": 0,
+        "active_entitlements": 0,
+        "identities_due_disable": 0,
+    }
 
 
 def test_claiming_a_later_lab_reactivates_the_ephemeral_identity():

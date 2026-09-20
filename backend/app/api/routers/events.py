@@ -14,6 +14,7 @@ from app.auth.oauth import get_current_user, require_admin
 from app.domain.events import (
     EventCapacityPreview,
     EventCapacitySupply,
+    EventCleanupEvidenceResult,
     EventManifest,
     EventManifestConflictError,
     EventRecord,
@@ -97,6 +98,31 @@ def reclaim_event_workshops(
         raise HTTPException(503, "Event reclaim persistence is unavailable") from exc
     except ValueError as exc:
         raise HTTPException(503, str(exc)) from exc
+
+
+@router.post(
+    "/{event_id}/reclaim/finalize",
+    response_model=EventCleanupEvidenceResult,
+    dependencies=[Depends(require_admin)],
+)
+def finalize_event_cleanup(
+    event_id: str,
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+    orchestration: Annotated[
+        EventOrchestrationService, Depends(get_event_orchestration_service)
+    ],
+) -> EventCleanupEvidenceResult:
+    """Release event capacity only after zero-residue proof."""
+
+    record = store.get(event_id)
+    if record is None:
+        raise HTTPException(404, f"Approved event {event_id} was not found")
+    try:
+        return orchestration.finalize_cleanup(record)
+    except (EventOrchestrationConflictError, EventReservationConflictError) as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except PersistenceUnavailableError as exc:
+        raise HTTPException(503, "Cleanup evidence persistence is unavailable") from exc
 
 
 @router.post("/capacity-preview", response_model=EventCapacityPreview)

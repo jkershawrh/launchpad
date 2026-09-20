@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from datetime import UTC, datetime
 
 from app.domain.access import ExposurePolicy
-from app.domain.enums import WorkshopSeatStatus, WorkshopStatus
+from app.domain.enums import SessionStatus, WorkshopSeatStatus, WorkshopStatus
 from app.domain.events import (
     EventCapacityReservation,
+    EventCleanupEvidenceResult,
+    EventCleanupSummary,
+    EventCleanupWorkshopEvidence,
     EventRecord,
     EventStatusResult,
     EventStatusSummary,
@@ -19,6 +24,7 @@ from app.domain.events import (
     EventWorkshopReclaimResult,
     EventWorkshopStatusItem,
 )
+from app.domain.lifecycle_jobs import LifecycleJobOperation, LifecycleJobStatus
 from app.services.event_reservations import EventReservationLedger
 from app.services.lifecycle_worker import LifecycleQueueService
 from app.services.provisioning import ProvisioningService
@@ -441,6 +447,201 @@ class EventOrchestrationService:
             event_id=record.manifest.event_id,
             workshops=items,
         )
+
+    def finalize_cleanup(self, record: EventRecord) -> EventCleanupEvidenceResult:
+        """Release capacity only after complete, read-only zero-residue proof."""
+
+        reservations = self.reservation_ledger.list_for_event(
+            record.manifest.event_id
+        )
+        if (
+            record.manifest.exposure_policy == ExposurePolicy.PUBLIC_CODE.value
+            and self.public_access is None
+        ):
+            raise EventOrchestrationConflictError(
+                "Public access cleanup inspection is unavailable"
+            )
+        if not self._plan_matches(record, reservations):
+            raise EventOrchestrationConflictError(
+                "Event does not have a complete reservation plan"
+            )
+        released = [item for item in reservations if item.status == "released"]
+        if released and len(released) != len(reservations):
+            raise EventOrchestrationConflictError(
+                "Event reservations have a partial release state"
+            )
+        if any(not item.workshop_id for item in reservations):
+            raise EventOrchestrationConflictError(
+                "Every event reservation must have a workshop binding"
+            )
+
+        jobs = {job.job_id: job for job in self.lifecycle_queue.list_all()}
+        rows: list[EventCleanupWorkshopEvidence] = []
+        failures: list[str] = []
+        total_active_entitlements = 0
+        total_identities_due_disable = 0
+        for reservation in reservations:
+            workshop = self.provisioning.get_workshop(reservation.workshop_id)
+            if (
+                workshop is None
+                or workshop.metadata.get("event_id") != record.manifest.event_id
+                or workshop.cluster_ref != reservation.cluster_ref
+            ):
+                failures.append(f"{reservation.reservation_id}: workshop binding")
+                continue
+            job_id = str(workshop.metadata.get("lifecycle_job_id", ""))
+            job = jobs.get(job_id)
+            if (
+                job is None
+                or job.operation != LifecycleJobOperation.RECLAIM_WORKSHOP
+                or job.status != LifecycleJobStatus.SUCCEEDED
+                or job.cluster_ref != reservation.cluster_ref
+            ):
+                failures.append(f"{workshop.workshop_id}: reclaim job")
+            if workshop.status != WorkshopStatus.COMPLETED:
+                failures.append(f"{workshop.workshop_id}: workshop status")
+            if len(workshop.seats) != workshop.num_users or any(
+                seat.status != WorkshopSeatStatus.RECLAIMED
+                for seat in workshop.seats
+            ):
+                failures.append(f"{workshop.workshop_id}: seat cleanup")
+
+            external_residue = 0
+            residue_counts = {
+                "namespace": 0,
+                "image_puller_role_binding": 0,
+                "showroom_application": 0,
+                "workload_application": 0,
+                "credentials": 0,
+            }
+            session_count = 0
+            for seat in workshop.seats:
+                if not seat.session_id:
+                    continue
+                session_count += 1
+                session = self.provisioning.get_session(seat.session_id)
+                if session is None or session.status != SessionStatus.RECLAIMED:
+                    failures.append(f"{seat.seat_id}: session cleanup")
+                    continue
+                try:
+                    residue = self.provisioning.inspect_session_cleanup(
+                        session.session_id
+                    )
+                except Exception:  # noqa: BLE001 - evidence gates must fail closed
+                    failures.append(f"{seat.seat_id}: residue inspection")
+                    continue
+                for key, value in residue.items():
+                    residue_counts[key] = residue_counts.get(key, 0) + value
+                external_residue += sum(residue.values())
+
+            access_state = (
+                self.public_access.cleanup_state(workshop.workshop_id)
+                if self.public_access
+                else {
+                    "policy_enabled": 0,
+                    "active_entitlements": 0,
+                    "identities_due_disable": 0,
+                }
+            )
+            access_residue = sum(access_state.values())
+            total_active_entitlements += access_state["active_entitlements"]
+            total_identities_due_disable += access_state["identities_due_disable"]
+            if external_residue:
+                failures.append(f"{workshop.workshop_id}: external residue")
+            if access_residue:
+                failures.append(f"{workshop.workshop_id}: access residue")
+            rows.append(
+                EventCleanupWorkshopEvidence(
+                    reservation_id=reservation.reservation_id,
+                    workshop_id=workshop.workshop_id,
+                    lifecycle_job_id=job_id,
+                    cluster_ref=reservation.cluster_ref,
+                    seats=workshop.num_users,
+                    sessions=session_count,
+                    external_residue=external_residue,
+                    access_residue=access_residue,
+                    residue=residue_counts,
+                    access=access_state,
+                )
+            )
+
+        if failures or len(rows) != len(reservations):
+            raise EventOrchestrationConflictError(
+                "Zero-residue cleanup is not proven: " + ", ".join(sorted(failures))
+            )
+        summary = EventCleanupSummary(
+            workshops=len(rows),
+            seats=sum(item.seats for item in rows),
+            sessions=sum(item.sessions for item in rows),
+            external_residue=sum(item.external_residue for item in rows),
+            access_residue=sum(item.access_residue for item in rows),
+            active_entitlements=total_active_entitlements,
+            identities_due_disable=total_identities_due_disable,
+        )
+        evidence_payload = {
+            "schema_version": "launchpad.intel.com/event-cleanup/v1",
+            "event_id": record.manifest.event_id,
+            "summary": summary.model_dump(mode="json"),
+            "workshops": [
+                item.model_dump(mode="json")
+                for item in sorted(rows, key=lambda value: value.reservation_id)
+            ],
+        }
+        digest = hashlib.sha256(
+            json.dumps(
+                evidence_payload,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
+        evidence_id = f"sha256:{digest}"
+        prior_evidence = {
+            item.cleanup_evidence_id for item in released if item.cleanup_evidence_id
+        }
+        if prior_evidence and prior_evidence != {evidence_id}:
+            raise EventOrchestrationConflictError(
+                "Event cleanup evidence changed after capacity release"
+            )
+        released_count = self.reservation_ledger.release(
+            record.manifest.event_id,
+            cleanup_evidence_id=evidence_id,
+        )
+        return EventCleanupEvidenceResult(
+            event_id=record.manifest.event_id,
+            cleanup_evidence_id=evidence_id,
+            released_reservations=released_count,
+            summary=summary,
+            workshops=rows,
+        )
+
+    @staticmethod
+    def _plan_matches(
+        record: EventRecord,
+        reservations: list[EventCapacityReservation],
+    ) -> bool:
+        expected = {
+            (
+                item.cohort_id,
+                item.lab_ref,
+                item.catalog_id,
+                item.catalog_release,
+                item.cluster_id,
+                item.seats,
+            )
+            for item in record.capacity_preview.allocations
+        }
+        actual = {
+            (
+                item.cohort_id,
+                item.lab_ref,
+                item.catalog_id,
+                item.catalog_release,
+                item.cluster_ref,
+                item.resources.seats,
+            )
+            for item in reservations
+        }
+        return expected == actual and len(reservations) == len(expected)
 
     @staticmethod
     def _validate_complete_plan(
