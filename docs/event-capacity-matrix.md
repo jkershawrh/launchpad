@@ -206,6 +206,22 @@ live LiteLLM revocation. The PostgreSQL claim proof exercises Launchpad's
 identity, entitlement, seat, and hashed-session boundary; it does not certify
 the external gateway or OpenShift Console SSO path.
 
+The exact documented participant workflow is now executable as a bounded local
+BDD journey at both the one-seat and five-seat gates. Each run starts from an
+approved event record and aggregate reservation, launches the workshop through
+the durable lifecycle worker, verifies every seat Ready, activates public
+access, claims all seats concurrently, validates every participant session,
+queues bulk reclaim, proves the old sessions are denied, and releases capacity
+only after a zero-residue cleanup result. The five-seat run assigns five unique
+seat references under a simultaneous claim burst.
+
+This is GREEN-local evidence for workflow composition, not live acceptance.
+The lifecycle queue and reservation ledger are local in-memory components, and
+the external-resource inspection boundary is supplied an explicit zero-residue
+result. It does not prove Keycloak/OIDC, browser rendering, OpenShift RBAC or
+Console access, live LiteLLM revocation, Argo CD deletion, or live namespace
+cleanup. Those remain required at integration/live and 25/30-seat gates.
+
 ## Next boundary
 
 The next orchestration increment must exercise the external participant
