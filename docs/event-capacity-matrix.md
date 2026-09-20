@@ -238,6 +238,20 @@ It remains synthetic at the infrastructure boundary: the external resource
 inspector returns an explicit zero-residue result, and neither the HTTP/browser
 contracts nor OpenShift, Argo CD, LiteLLM, or Keycloak are invoked.
 
+The FastAPI provider/consumer boundary now executes the same four seat gates
+through the versioned event and public-access interfaces. It proves HTTP
+reservation (`201`), asynchronous workshop launch (`202`), post-readiness code
+activation (`201`), simultaneous participant claims (`200`), secure-cookie
+authorization (`200`), reconciled event status (`200`), bulk reclaim (`202`),
+post-reclaim denial (`403`), and cleanup finalization (`200`). Participant JSON
+responses never expose the hashed-session secret; it is issued only as the
+secure access cookie. The 30-request burst assigns 30 distinct seats.
+
+Together with the separate PostgreSQL reconstruction proof, this moves CDD to
+GREEN-integration. It is not a live browser or infrastructure acceptance run:
+the provider is in-process, namespace RoleBinding is a component boundary, and
+the external gateway, Keycloak, OpenShift, Argo CD, and LiteLLM are not called.
+
 ## Next boundary
 
 The next orchestration increment must exercise the external participant

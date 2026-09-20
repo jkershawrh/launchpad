@@ -1,0 +1,56 @@
+{
+  "schema_version": "launchpad.intel.com/test-evidence/v1",
+  "run_id": "event-participant-http-contract-20260920T031700Z",
+  "observed_at": "2026-09-20T03:17:00Z",
+  "source_commit": "66d5bc911dc27047c0c21ba1fccaedec0b624fca",
+  "test": "backend/tests/test_event_participant_journey.py",
+  "result": "passed",
+  "proof": {
+    "seat_gates": [
+      1,
+      5,
+      25,
+      30
+    ],
+    "event_reservation_http_status": 201,
+    "workshop_launch_http_status": 202,
+    "public_access_activation_http_status": 201,
+    "participant_claim_http_status": 200,
+    "participant_authorization_http_status": 200,
+    "event_status_http_status": 200,
+    "event_reclaim_http_status": 202,
+    "post_reclaim_authorization_http_status": 403,
+    "cleanup_finalization_http_status": 200,
+    "simultaneous_claims_at_largest_gate": 30,
+    "distinct_seats_assigned": 61,
+    "plaintext_session_tokens_in_json_responses": 0,
+    "live_cluster_mutations": 0
+  },
+  "contract_boundaries": [
+    "event reservation",
+    "event workshop launch",
+    "post-readiness public access activation",
+    "participant claim and secure cookie issuance",
+    "participant cookie authorization",
+    "event status reconciliation",
+    "event bulk reclaim",
+    "post-reclaim authorization denial",
+    "cleanup finalization and capacity release"
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/runs/event-participant-http-contract/red-integration.xml",
+      "sha256": "21941dae68e51d5b67ef6abc422b35fd8ef02e9b8b2b75f7876da5edb86614d5"
+    },
+    {
+      "path": "evidence/runs/event-participant-http-contract/green-integration.xml",
+      "sha256": "0b8a29a02679b502c7ee175ff14413bf78134664579b624e988b856d82160f94"
+    }
+  ],
+  "limitations": [
+    "The HTTP provider runs in-process through FastAPI TestClient.",
+    "Namespace RoleBinding is replaced with a no-op component boundary; OpenShift RBAC is not certified.",
+    "The event and access stores are in-memory in this contract run; PostgreSQL durability is proven separately.",
+    "No external browser, Keycloak, gateway, OpenShift, Argo CD, or LiteLLM endpoint is invoked."
+  ]
+}
