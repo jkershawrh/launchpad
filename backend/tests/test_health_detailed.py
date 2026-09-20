@@ -1,6 +1,7 @@
 """TDD tests for /health/detailed endpoint — Phase 5 gate matrix."""
 from __future__ import annotations
 
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
@@ -101,6 +102,108 @@ class TestReadinessIsFailClosed:
             "os.environ", {"LIFECYCLE_HA_ENABLED": "false"}, clear=False
         ):
             assert _direct_lifecycle_background_tasks_enabled()
+
+    def test_ha_mode_rejects_process_local_state_bindings(self):
+        from app.main import app
+
+        client = TestClient(app, raise_server_exceptions=False)
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "LAUNCHPAD_MODE": "openshift",
+                    "LIFECYCLE_HA_ENABLED": "true",
+                },
+                clear=False,
+            ),
+            patch("app.services.health._check_db", return_value={"status": "pass"}),
+            patch(
+                "app.services.health._check_lifecycle_schema",
+                return_value={"status": "pass"},
+            ),
+            patch(
+                "app.services.health._check_durable_state_bindings",
+                return_value={
+                    "status": "fail",
+                    "message": "HA state is not fully bound to durable storage",
+                    "unbound": ["lifecycle_queue"],
+                },
+            ),
+        ):
+            response = client.get("/ready")
+
+        assert response.status_code == 503
+        assert response.json()["checks"]["durable_state_bindings"]["unbound"] == [
+            "lifecycle_queue"
+        ]
+
+
+class TestDurableStateBindings:
+    @staticmethod
+    def _postgres_bindings():
+        from app.storage.lifecycle_jobs import PostgresLifecycleJobStore
+        from app.storage.stores import (
+            PostgresAccessStore,
+            PostgresEventReservationStore,
+            PostgresEventStore,
+            PostgresPlanStore,
+            PostgresRequestStore,
+            PostgresSessionStore,
+            PostgresShowbackStore,
+            PostgresTenantStore,
+            PostgresWorkshopStore,
+        )
+
+        stores = SimpleNamespace(
+            tenants=PostgresTenantStore(),
+            requests=PostgresRequestStore(),
+            sessions=PostgresSessionStore(),
+            plans=PostgresPlanStore(),
+            showback=PostgresShowbackStore(),
+            workshops=PostgresWorkshopStore(),
+            access=PostgresAccessStore(),
+            events=PostgresEventStore(),
+            event_reservations=PostgresEventReservationStore(),
+            lifecycle_jobs=PostgresLifecycleJobStore(),
+        )
+        return SimpleNamespace(
+            db_stores=stores,
+            provisioning_service=SimpleNamespace(db=stores),
+            tenant_store=SimpleNamespace(_db=stores.tenants),
+            public_access_service=SimpleNamespace(store=stores.access),
+            event_manifest_store=SimpleNamespace(_db=stores.events),
+            event_reservation_ledger=SimpleNamespace(_db=stores.event_reservations),
+            lifecycle_job_store=stores.lifecycle_jobs,
+        )
+
+    def test_complete_postgres_wiring_passes(self):
+        from app.services.health import _check_durable_state_bindings
+
+        assert _check_durable_state_bindings(self._postgres_bindings()) == {
+            "status": "pass"
+        }
+
+    def test_in_memory_lifecycle_queue_fails_closed(self):
+        from app.services.health import _check_durable_state_bindings
+        from app.storage.lifecycle_jobs import InMemoryLifecycleJobStore
+
+        bindings = self._postgres_bindings()
+        bindings.lifecycle_job_store = InMemoryLifecycleJobStore()
+
+        result = _check_durable_state_bindings(bindings)
+
+        assert result["status"] == "fail"
+        assert result["unbound"] == ["lifecycle_queue"]
+
+    def test_missing_store_bundle_lists_all_unbound_state(self):
+        from app.services.health import _check_durable_state_bindings
+
+        result = _check_durable_state_bindings(SimpleNamespace())
+
+        assert result["status"] == "fail"
+        assert "database_store_bundle" in result["unbound"]
+        assert "public_access" in result["unbound"]
+        assert "event_manifests" in result["unbound"]
 
 
 # ── Gate 5.2: test_detailed_returns_checks ───────────────────────────

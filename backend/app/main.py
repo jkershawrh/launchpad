@@ -221,7 +221,11 @@ def ready():
     if mode == "mock":
         return {"status": "ready", "checks": {}}
 
-    from app.services.health import _check_db, _check_lifecycle_schema
+    from app.services.health import (
+        _check_db,
+        _check_durable_state_bindings,
+        _check_lifecycle_schema,
+    )
 
     role = os.environ.get("LAUNCHPAD_CONTROL_PLANE_ROLE", "active").lower()
     checks = {
@@ -233,6 +237,7 @@ def ready():
     }
     if os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true":
         checks["lifecycle_schema"] = _check_lifecycle_schema()
+        checks["durable_state_bindings"] = _check_durable_state_bindings()
     ready_state = all(check["status"] == "pass" for check in checks.values())
     payload = {"status": "ready" if ready_state else "not_ready", "checks": checks}
     return payload if ready_state else JSONResponse(status_code=503, content=payload)

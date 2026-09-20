@@ -95,6 +95,82 @@ def _check_lifecycle_schema() -> Dict[str, Any]:
         return {"status": "fail", "message": str(e)}
 
 
+def _check_durable_state_bindings(bindings=None) -> Dict[str, Any]:
+    """Prove an HA process is wired to durable stores, not local fallbacks.
+
+    A reachable database is necessary but insufficient: dependency wiring can
+    still construct process-local services.  Readiness must reject that split
+    state before the pod receives mutating traffic.
+    """
+    if bindings is None:
+        from app.api import deps as bindings
+
+    failures: list[str] = []
+
+    def require_postgres(name: str, value: Any) -> None:
+        store_type = type(value)
+        if not (
+            store_type.__module__.startswith("app.storage.")
+            and store_type.__name__.startswith("Postgres")
+        ):
+            failures.append(name)
+
+    stores = getattr(bindings, "db_stores", None)
+    if stores is None:
+        failures.append("database_store_bundle")
+    else:
+        for name in (
+            "tenants",
+            "requests",
+            "sessions",
+            "plans",
+            "showback",
+            "workshops",
+            "access",
+            "events",
+            "event_reservations",
+            "lifecycle_jobs",
+        ):
+            require_postgres(name, getattr(stores, name, None))
+
+    provisioning = getattr(bindings, "provisioning_service", None)
+    provisioning_stores = getattr(provisioning, "db", None)
+    if provisioning_stores is None:
+        failures.append("provisioning")
+    else:
+        for name in ("requests", "sessions", "plans", "showback", "workshops"):
+            require_postgres(
+                f"provisioning.{name}", getattr(provisioning_stores, name, None)
+            )
+
+    require_postgres(
+        "tenant_store", getattr(getattr(bindings, "tenant_store", None), "_db", None)
+    )
+    require_postgres(
+        "public_access",
+        getattr(getattr(bindings, "public_access_service", None), "store", None),
+    )
+    require_postgres(
+        "event_manifests",
+        getattr(getattr(bindings, "event_manifest_store", None), "_db", None),
+    )
+    require_postgres(
+        "event_reservations",
+        getattr(getattr(bindings, "event_reservation_ledger", None), "_db", None),
+    )
+    require_postgres(
+        "lifecycle_queue", getattr(bindings, "lifecycle_job_store", None)
+    )
+
+    if failures:
+        return {
+            "status": "fail",
+            "message": "HA state is not fully bound to durable storage",
+            "unbound": sorted(set(failures)),
+        }
+    return {"status": "pass"}
+
+
 def _check_k8s() -> Dict[str, Any]:
     try:
         from kubernetes import client, config

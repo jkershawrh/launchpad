@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T03:25:09Z",
+  "updated_at": "2026-09-20T03:34:31Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -520,6 +520,22 @@
         "evidence/runs/event-participant-journey/red-local.xml"
       ],
       "note": "Exact 1-, 5-, 25-, and 30-seat journeys remain GREEN-integration across TDD, EDD, CDD, BDD, and CBT. The first read-only live preflight proved permanent DNS/TLS and OIDC discovery but failed closed because the saved Arena credential is unauthorized; no live resource was changed. A refreshed scoped credential and green preflight are required before a one-seat canary."
+    },
+    "LP-T025": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/app/services/health.py",
+        "backend/tests/test_health_detailed.py",
+        "evidence/runs/control-plane-durable-bindings/green-local.xml"
+      ],
+      "note": "HA readiness now proves tenant, request, session, plan, showback, workshop, public-access, event, reservation, and lifecycle-queue state are bound to PostgreSQL-backed stores. A reachable database with any process-local fallback returns 503 and names the unsafe binding. Focused HA/readiness evidence is green locally; multi-replica fault injection and live failure-domain certification remain open, so LP-T025 is not integration- or live-green."
     }
   },
   "rubric": [
