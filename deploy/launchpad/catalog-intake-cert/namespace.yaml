@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: launchpad-catalog-intake-cert
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    launchpad.redhat.com/environment: certification
+    launchpad.redhat.com/live-catalog-access: "false"
+    launchpad.redhat.com/workshop-access: "false"

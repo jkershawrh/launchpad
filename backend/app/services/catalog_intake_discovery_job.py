@@ -91,7 +91,7 @@ def build_discovery_job_bundle(
                             "name": "discovery",
                             "image": image,
                             "imagePullPolicy": "IfNotPresent",
-                            "command": ["python", "-m", "app.catalog_intake_worker_main"],
+                            "command": ["python3.11", "-m", "app.catalog_intake_worker_main"],
                             "env": [
                                 {"name": "CATALOG_INTAKE_REQUEST_JSON", "value": request_json},
                                 {"name": "CATALOG_INTAKE_SOURCE_APPROVAL_JSON", "value": approval_json},
@@ -152,13 +152,14 @@ def build_discovery_job_bundle(
                                 "matchLabels": {
                                     "kubernetes.io/metadata.name": "openshift-dns"
                                 }
-                            },
-                            "podSelector": {"matchLabels": {"dns.operator.openshift.io/daemonset-dns": "default"}},
+                            }
                         }
                     ],
                     "ports": [
                         {"protocol": "UDP", "port": 53},
                         {"protocol": "TCP", "port": 53},
+                        {"protocol": "UDP", "port": 5353},
+                        {"protocol": "TCP", "port": 5353},
                     ],
                 },
                 {

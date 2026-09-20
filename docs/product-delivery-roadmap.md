@@ -341,15 +341,20 @@ repository and receive a safe, reviewable, certified catalog draft.**
   Repository discovery execution and promotion remain disabled and open.
 - `LP-T097` Discover Antora content, manifests, Containerfiles, images, models,
   Operators, ports, storage, secrets, resource envelopes, and cleanup behavior.
-  **GREEN-local (isolated worker slice):** immutable repository discovery now
+  **GREEN-live-partial (isolated worker slice):** immutable repository discovery now
   has a credential-free executable worker, complete-source secret scanning,
   sanitized receipts, deterministic draft output, and mandatory cleanup. A
   generated OpenShift Job/NetworkPolicy is non-root, read-only, tokenless,
   bounded, ephemeral, and restricted to DNS plus an allowlisting egress proxy.
   A durable, fail-closed dispatcher/collector contract now tracks queued,
   running, failed, and completed discovery attempts behind separate source
-  approval. The default dispatcher remains disabled; image publication, proxy,
-  deployed collection, and live fault proof remain open.
+  approval. Arena live proof now confirms tokenless/read-only execution,
+  bounded cleanup, DNS plus allowlisted-proxy egress, and denial of direct
+  GitHub, Kubernetes API, and production PostgreSQL access. Real Quickstarts
+  failed closed on source scanning or the canonical Antora contract without
+  emitting a catalog draft. The default dispatcher remains disabled; signed
+  external image publication, deployed receipt collection, one passing
+  canonical repository, and remaining live fault proof are open.
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
   **GREEN-local (catalog-draft slice):** a versioned immutable discovery
@@ -366,15 +371,16 @@ repository and receive a safe, reviewable, certified catalog draft.**
   remains open.
 - `LP-T100` Run source, content, artifact, security, model, one-seat lifecycle,
   restart, and zero-residue reclaim gates without editing a live catalog.
-  **GREEN-local (worker-safety contract):** a versioned fail-closed boundary now
+  **GREEN-live-partial (worker-safety contract):** a versioned fail-closed boundary now
   defines immutable approved sources, default-deny egress, credential denial,
   non-root/read-only execution, bounded resources, three-stage secret scanning,
   sanitized evidence, cleanup receipts, idempotency, and an explicit ban on
-  live mutations. A deployed isolated worker and all runtime/lifecycle proofs
-  remain open, so release eligibility stays false. **GREEN-local executable
-  slice:** payload/source/output scanning, stable idempotency, sanitized failure
-  codes, cleanup receipts, and the restricted Job contract now have component
-  proof; this does not enable the admin action or satisfy live security gates.
+  live mutations. Arena now proves runtime isolation and egress enforcement in
+  a dedicated non-production namespace. Payload/source/output scanning, stable
+  idempotency, sanitized failure codes, cleanup receipts, and the restricted
+  Job contract have component and partial live proof. Timeout, cancellation,
+  scanner-failure, retry recovery, signing/SBOM, and trusted collection remain
+  open, so release eligibility stays false and the admin action remains off.
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
   release identity, approval history, and rollback metadata in the admin UI.
   **GREEN-integration (draft visibility):** draft responses and the admin Intake

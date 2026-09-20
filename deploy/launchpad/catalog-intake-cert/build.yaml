@@ -1,0 +1,26 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: catalog-intake-worker
+  namespace: launchpad-catalog-intake-cert
+spec: {}
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: catalog-intake-worker
+  namespace: launchpad-catalog-intake-cert
+spec:
+  runPolicy: Serial
+  source:
+    type: Binary
+    binary: {}
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: backend/Containerfile.catalog-intake-worker
+  output:
+    to:
+      kind: ImageStreamTag
+      name: catalog-intake-worker:latest
+  triggers: []

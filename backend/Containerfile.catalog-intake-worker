@@ -1,14 +1,14 @@
-FROM registry.access.redhat.com/ubi9/python-311@sha256:7b6cb58d3ff034df7b300800bd89a469d9bd2f739d43250d76b9c9e805307ab5
+FROM registry.access.redhat.com/ubi9/ubi-minimal@sha256:d1bad2a2790eac1651e57e78159a81b72ddfa7b836936b26cf51e09744bf1c2d
 
 WORKDIR /opt/app-root/src
 
 USER 0
-RUN microdnf install -y git-core \
+RUN microdnf install -y git-core python3.11 python3.11-pip \
     && microdnf clean all \
-    && pip install --no-cache-dir pydantic==2.13.5 pyyaml==6.0.3
+    && python3.11 -m pip install --no-cache-dir pydantic==2.13.5 pyyaml==6.0.3
 
 COPY backend/app/ ./app/
 
 USER 1001
 
-ENTRYPOINT ["python", "-m", "app.catalog_intake_worker_main"]
+ENTRYPOINT ["python3.11", "-m", "app.catalog_intake_worker_main"]

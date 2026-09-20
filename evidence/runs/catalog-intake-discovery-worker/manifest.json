@@ -16,11 +16,11 @@
   },
   "contract": {
     "artifact": "contracts/catalog-intake-discovery-worker-v1.yaml",
-    "sha256": "018c1d431840bc8bfa04388c1dd8863aa5d0c4c335e4e5599f6383202eb87024"
+    "sha256": "c6c1311e146a775c576de04161c1fbf915298173b1b619ad31b36efb3e4838ab"
   },
   "containerfile": {
     "artifact": "backend/Containerfile.catalog-intake-worker",
-    "sha256": "b694bec783f2c38282a82836df3c88543837db7e248c9f917f47d520f11075d0"
+    "sha256": "4d604005da95fa06484172122621868d0cc5af74b11b93a3cfd9d9fc90234f6b"
   },
   "claims": [
     "Only HTTPS GitHub Quickstart repositories at full commit SHAs with a separate, active controller-issued approval are accepted.",
@@ -30,9 +30,9 @@
     "The generated NetworkPolicy permits only OpenShift DNS and an in-cluster egress proxy."
   ],
   "non_claims": [
-    "The worker image has not been built, signed, scanned, or published.",
-    "The egress proxy, dispatcher, and receipt collector have not been deployed.",
-    "No NetworkPolicy behavior, timeout, scanner failure, or cleanup fault has live evidence.",
+    "The certification worker image has not been signed, published externally, or paired with an SBOM.",
+    "The trusted dispatcher and receipt collector have not been deployed.",
+    "Timeout, cancellation, scanner-failure, and retry-recovery paths do not yet have complete live evidence.",
     "The admin Run discovery action remains disabled."
   ],
   "mutations": {

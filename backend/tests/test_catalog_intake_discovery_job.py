@@ -90,6 +90,15 @@ def test_job_bundle_only_allows_dns_and_egress_proxy() -> None:
     assert egress[0]["ports"] == [
         {"protocol": "UDP", "port": 53},
         {"protocol": "TCP", "port": 53},
+        {"protocol": "UDP", "port": 5353},
+        {"protocol": "TCP", "port": 5353},
+    ]
+    assert egress[0]["to"] == [
+        {
+            "namespaceSelector": {
+                "matchLabels": {"kubernetes.io/metadata.name": "openshift-dns"}
+            }
+        }
     ]
     assert egress[1]["ports"] == [{"protocol": "TCP", "port": 8080}]
 
@@ -153,9 +162,9 @@ def test_worker_container_has_pinned_base_and_no_cluster_tooling() -> None:
     root = Path(__file__).resolve().parents[2]
     containerfile = (root / "backend/Containerfile.catalog-intake-worker").read_text()
 
-    assert "ubi9/python-311@sha256:" in containerfile
+    assert "ubi9/ubi-minimal@sha256:" in containerfile
     assert "USER 1001" in containerfile
-    assert 'ENTRYPOINT ["python", "-m", "app.catalog_intake_worker_main"]' in containerfile
+    assert 'ENTRYPOINT ["python3.11", "-m", "app.catalog_intake_worker_main"]' in containerfile
     assert "kubectl" not in containerfile
     assert "openshift-client" not in containerfile
     assert " oc " not in containerfile

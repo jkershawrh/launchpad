@@ -1,0 +1,75 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-live-evidence/v1",
+  "run_id": "catalog-intake-arena-live-20260920",
+  "cluster_id": "arena",
+  "namespace": "launchpad-catalog-intake-cert",
+  "production_mutations": false,
+  "worker_image": "image-registry.openshift-image-registry.svc:5000/launchpad-catalog-intake-cert/catalog-intake-worker@sha256:3d98c917ac35d9b199a9c881ce76b0d653d2a7a36d3b2110ba275bf95521cd2e",
+  "runtime": {
+    "service_account_token": false,
+    "run_as_non_root": true,
+    "read_only_root_filesystem": true,
+    "allow_privilege_escalation": false,
+    "capabilities_dropped": ["ALL"],
+    "workspace": "bounded emptyDir",
+    "active_deadline_seconds": 300
+  },
+  "network_probe": {
+    "attempt_id": "network-probe-001",
+    "dns": true,
+    "allowlisted_proxy_to_github": true,
+    "direct_github": false,
+    "kubernetes_api": false,
+    "production_postgres": false,
+    "result": "pass"
+  },
+  "repository_proofs": [
+    {
+      "attempt_id": "it-self-service-002",
+      "repository": "https://github.com/rh-ai-quickstart/it-self-service-agent.git",
+      "revision": "23c567d71f45eb303d294b4f2eaf5b2389672125",
+      "outcome": "denied",
+      "error_codes": ["source-secret-detected"],
+      "cleanup_result": "pass",
+      "workspace_removed": true
+    },
+    {
+      "attempt_id": "rag-quickstart-002",
+      "repository": "https://github.com/rh-ai-quickstart/rag.git",
+      "revision": "b1d1f374d30ec9c0c88e7ce58351ccd872d2fdca",
+      "outcome": "failed",
+      "error_codes": ["repository-discovery-failed"],
+      "files_scanned": 194,
+      "bytes_scanned": 6614109,
+      "catalog_draft_emitted": false,
+      "cleanup_result": "pass",
+      "workspace_removed": true
+    }
+  ],
+  "red_green_findings": [
+    {
+      "red": "OpenShift DNS service port 53 translated to endpoint port 5353 and was denied",
+      "green": "Policy permits ports 53 and 5353 only inside openshift-dns"
+    },
+    {
+      "red": "Namespace-wide deny policy captured OpenShift binary build pods",
+      "green": "Default-deny now selects only worker and proxy runtime identities"
+    },
+    {
+      "red": "Documented ghp_ placeholder was classified as a live credential",
+      "green": "Explicit placeholder form passes while real high-risk fixtures remain denied"
+    }
+  ],
+  "verification_status": {
+    "INTAKE-RUNTIME-ISOLATION-LIVE": "GREEN-live",
+    "INTAKE-EGRESS-ENFORCEMENT-LIVE": "GREEN-live",
+    "INTAKE-SCANNER-AND-CLEANUP-FAULTS": "AMBER"
+  },
+  "release_eligible": false,
+  "remaining_blockers": [
+    "signed external worker image and SBOM",
+    "trusted dispatcher and sanitized receipt collector",
+    "timeout, cancellation, scanner-failure, and retry recovery evidence",
+    "one repository that passes the full canonical discovery contract"
+  ]
+}

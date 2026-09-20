@@ -4,7 +4,7 @@ metadata:
   version: 1.0.0
   owner: catalog-onboarding-owner
   security_owner: launchpad-security-owner
-  status: GREEN-local
+  status: GREEN-live-partial
 
 source:
   standard: quickstart-repository
@@ -100,11 +100,14 @@ evidence:
     - backend/tests/test_catalog_intake_discovery_worker.py
     - backend/tests/test_catalog_intake_discovery_job.py
   release_eligible: false
-  live_proofs_required:
-    - built signed worker image and SBOM
+  live_proofs_completed:
+    - built immutable worker image in isolated Arena certification namespace
     - deployed allowlisting egress proxy
-    - trusted dispatcher and sanitized receipt collector
     - enforced NetworkPolicy probe
+    - immutable Quickstart fetch, scan, denial, discovery failure, and cleanup
+  live_proofs_required:
+    - signed external worker image and SBOM
+    - trusted dispatcher and sanitized receipt collector
     - scanner failure and timeout fault injection
     - cleanup and retry recovery
-    - immutable Quickstart end-to-end discovery
+    - immutable Quickstart end-to-end passing discovery

@@ -30,6 +30,28 @@ SECRET_PATTERNS = (
     ),
     re.compile(rb"\bBearer\s+[A-Za-z0-9._~+/-]{12,}\b", re.IGNORECASE),
 )
+PLACEHOLDER_CREDENTIALS = (
+    re.compile(
+        rb"(?:sk-|ghp_|github_pat_)(?:your|example|fake|placeholder|replace|x{8,})[A-Za-z0-9_-]*$",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        rb"Bearer\s+(?:your|example|fake|placeholder|replace|test|valid|invalid|expired|x{8,})[A-Za-z0-9._~+/-]*$",
+        re.IGNORECASE,
+    ),
+)
+
+
+def _contains_secret(payload: bytes) -> bool:
+    for pattern in SECRET_PATTERNS:
+        for match in pattern.finditer(payload):
+            if any(
+                placeholder.fullmatch(match.group())
+                for placeholder in PLACEHOLDER_CREDENTIALS
+            ):
+                continue
+            return True
+    return False
 
 
 class SourcePolicyDeniedError(ValueError):
@@ -102,7 +124,7 @@ def _scan_workspace(root: Path) -> tuple[int, int]:
             previous = b""
             while chunk := handle.read(64 * 1024):
                 sample = previous + chunk
-                if any(pattern.search(sample) for pattern in SECRET_PATTERNS):
+                if _contains_secret(sample):
                     raise SourceSecretDetectedError("source-secret-detected")
                 previous = sample[-256:]
     return file_count, byte_count
@@ -112,14 +134,14 @@ def _safe_output(draft: dict) -> tuple[str, bytes]:
     encoded = json.dumps(draft, sort_keys=True, separators=(",", ":")).encode()
     if len(encoded) > MAX_OUTPUT_BYTES:
         raise SourcePolicyDeniedError("sanitized-output-size-exceeded")
-    if any(pattern.search(encoded) for pattern in SECRET_PATTERNS):
+    if _contains_secret(encoded):
         raise SourceSecretDetectedError("output-secret-detected")
     return "sha256:" + hashlib.sha256(encoded).hexdigest(), encoded
 
 
 def _request_contains_secret(request: CatalogIntakeDiscoveryRequest) -> bool:
     encoded = request.model_dump_json().encode()
-    return any(pattern.search(encoded) for pattern in SECRET_PATTERNS)
+    return _contains_secret(encoded)
 
 
 class CatalogIntakeDiscoveryRunner:

@@ -17,7 +17,16 @@ python scripts/validate_catalog_intake_worker_safety.py \
 pytest -q scripts/tests/test_validate_catalog_intake_worker_safety.py
 ```
 
-The local contract can be green while release remains blocked. A production worker stays ineligible until live evidence proves the runtime security context, default-deny network enforcement, scanner failure behavior, and cleanup fault behavior.
+The local contract can be green while release remains blocked. The first Arena
+certification run on 2026-09-20 proved the runtime security context and
+default-deny network enforcement in the isolated
+`launchpad-catalog-intake-cert` namespace. The worker reached GitHub only
+through its allowlisting proxy and could not reach GitHub directly, the
+Kubernetes API, or production PostgreSQL. Release remains blocked on a signed
+external image/SBOM, the trusted dispatcher and receipt collector, a fully
+passing canonical repository, and scanner/timeout/cancellation/retry fault
+evidence. The sanitized result is recorded in
+`evidence/runs/catalog-intake-arena-live-20260920.json`.
 
 ## Discovery worker implementation boundary
 
@@ -30,8 +39,9 @@ token or Secret mounts and can reach only OpenShift DNS and a separately
 approved egress proxy. It cannot reach the Kubernetes API, Launchpad database,
 catalog publisher, registry publisher, workshops, or execution clusters.
 
-This slice is deliberately not wired to the admin action yet. The worker image,
-egress proxy, trusted dispatcher/receipt collector, and live fault tests must be
-available before the read-only Intake pipeline can truthfully enable **Run
-discovery**. Until then, the UI and API continue to report the worker as
-unavailable and every mutation remains disabled.
+This slice is deliberately not wired to the admin action yet. An immutable
+worker image and egress proxy now run in the isolated Arena certification
+namespace, but the trusted dispatcher/receipt collector and remaining fault
+tests must be available before the read-only Intake pipeline can truthfully
+enable **Run discovery**. Until then, the UI and API continue to report the
+worker as unavailable and every mutation remains disabled.

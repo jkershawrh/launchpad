@@ -180,31 +180,23 @@ verification_catalog:
     owner: catalog-onboarding-owner
     evidence: [scripts/catalog_onboarding.py, backend/tests/test_catalog_onboarding_cli.py]
   - id: INTAKE-RUNTIME-ISOLATION-LIVE
-    status: planned
+    status: implemented
     owner: launchpad-sre-owner
-    evidence: [docs/product-delivery-roadmap.md]
+    evidence:
+      - deploy/launchpad/catalog-intake-cert/README.md
+      - evidence/runs/catalog-intake-arena-live-20260920.json
   - id: INTAKE-EGRESS-ENFORCEMENT-LIVE
-    status: planned
+    status: implemented
     owner: launchpad-security-owner
-    evidence: [docs/product-delivery-roadmap.md]
+    evidence:
+      - deploy/launchpad/catalog-intake-cert/network-policy.yaml
+      - evidence/runs/catalog-intake-arena-live-20260920.json
   - id: INTAKE-SCANNER-AND-CLEANUP-FAULTS
     status: planned
     owner: launchpad-security-owner
     evidence: [docs/product-delivery-roadmap.md]
 
 unresolved_risks:
-  - id: INTAKE-RISK-001
-    severity: high
-    owner: launchpad-sre-owner
-    statement: No deployed isolated intake worker currently proves the runtime security context and resource limits.
-    blocks_release: true
-    required_verification: INTAKE-RUNTIME-ISOLATION-LIVE
-  - id: INTAKE-RISK-002
-    severity: high
-    owner: launchpad-security-owner
-    statement: Default-deny egress and destination enforcement have not been live certified.
-    blocks_release: true
-    required_verification: INTAKE-EGRESS-ENFORCEMENT-LIVE
   - id: INTAKE-RISK-003
     severity: high
     owner: launchpad-security-owner

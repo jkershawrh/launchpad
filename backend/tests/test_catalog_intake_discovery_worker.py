@@ -183,6 +183,27 @@ def test_discovery_runner_scans_the_entire_source_file(tmp_path: Path) -> None:
     assert leaked.decode() not in receipt.model_dump_json()
 
 
+def test_discovery_runner_allows_explicit_documentation_placeholder(
+    tmp_path: Path,
+) -> None:
+    source = _quickstart(tmp_path)
+    (source / "README.md").write_text(
+        'token: "ghp_your_personal_access_token"\n'
+        'Authorization: "Bearer test-token"\n',
+        encoding="utf-8",
+    )
+    runner = CatalogIntakeDiscoveryRunner(
+        source_approvals=[_approval()],
+        checkout=_checkout_from(source),
+        workspace_parent=tmp_path / "workspaces",
+    )
+
+    receipt = runner.run(_request())
+
+    assert receipt.status == "passed"
+    assert receipt.scan_summary["files_scanned"] > 0
+
+
 def test_discovery_idempotency_key_is_stable_for_same_source_and_policy() -> None:
     first = _request()
     second = _request().model_copy(update={"attempt_id": "attempt-002"})
