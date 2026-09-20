@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="5" failures="0" errors="0" time="0.167615875">
+    <testsuite name="src/api/catalogIntakeContract.test.ts" timestamp="2026-09-20T15:58:09.260Z" hostname="jkershaw-mac" tests="2" failures="0" errors="0" skipped="0" time="0.013760167">
+        <testcase classname="src/api/catalogIntakeContract.test.ts" name="catalog intake API contract &gt; uses the versioned admin collection for list and detail reads" time="0.01211425">
+        </testcase>
+        <testcase classname="src/api/catalogIntakeContract.test.ts" name="catalog intake API contract &gt; posts the immutable release submission without inventing approval fields" time="0.000853459">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/CatalogIntakes.test.tsx" timestamp="2026-09-20T15:58:09.261Z" hostname="jkershaw-mac" tests="3" failures="0" errors="0" skipped="0" time="0.153855708">
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; lists draft submissions and exposes a clear new-intake path" time="0.087138375">
+        </testcase>
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; renders contract boundaries and disables unavailable release actions" time="0.033760291">
+        </testcase>
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; submits only the declared intake fields and navigates to the draft" time="0.032293167">
+        </testcase>
+    </testsuite>
+</testsuites>

@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.api.deps import catalog_intake_submission_service
 from app.auth.oauth import require_admin
 from app.domain.catalog_intake import CatalogIntakeDraft, CatalogIntakeSubmission
+from app.domain.catalog_intake_pipeline import CatalogIntakePipelineView
+from app.services.catalog_intake_pipeline import build_catalog_intake_pipeline_view
 
 router = APIRouter(
     prefix="/admin/catalog-intakes",
@@ -29,3 +31,11 @@ def get_catalog_intake(intake_id: str) -> CatalogIntakeDraft:
     if draft is None:
         raise HTTPException(404, f"Catalog intake {intake_id} not found")
     return draft
+
+
+@router.get("/{intake_id}/pipeline", response_model=CatalogIntakePipelineView)
+def get_catalog_intake_pipeline(intake_id: str) -> CatalogIntakePipelineView:
+    draft = catalog_intake_submission_service.get(intake_id)
+    if draft is None:
+        raise HTTPException(404, f"Catalog intake {intake_id} not found")
+    return build_catalog_intake_pipeline_view(draft)

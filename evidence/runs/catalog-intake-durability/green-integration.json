@@ -1,0 +1,57 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-durability-evidence/v1",
+  "run_id": "catalog-intake-durability-green-integration-20260920",
+  "recorded_at": "2026-09-20T00:00:00-05:00",
+  "result": "GREEN-integration",
+  "requirements": [
+    "LP-T096",
+    "LP-T101"
+  ],
+  "red": {
+    "observed": true,
+    "expected_failure": "durable store and storage-selection factory were absent",
+    "result": "two test modules failed during collection"
+  },
+  "green_local": {
+    "tests": 24,
+    "skipped": 3,
+    "command": "PYTHONPATH=.:backend ./.venv/bin/pytest -q backend/tests/test_catalog_intake_submission.py backend/tests/test_catalog_intake_storage.py backend/tests/test_catalog_intake_postgres.py backend/tests/test_catalog_intake_api.py",
+    "result": "pass"
+  },
+  "green_integration": {
+    "tests": 4,
+    "database": "disposable local PostgreSQL",
+    "database_retained": false,
+    "result": "pass",
+    "proof": [
+      "migration applied",
+      "draft survived service reconstruction",
+      "four concurrent independent services converged on one row",
+      "conflicting data for one identity was rejected"
+    ]
+  },
+  "contract": {
+    "ha_requires_postgres": true,
+    "non_local_requires_postgres": true,
+    "unavailable_postgres_fails_closed": true,
+    "local_fallback_modes": [
+      "mock",
+      "local",
+      "test"
+    ],
+    "live_catalog_dependency": false,
+    "stored_state": "draft",
+    "promotion_actions": false
+  },
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false
+  },
+  "release": {
+    "eligible": false,
+    "boundary": "Durable draft storage only; repository execution, evidence orchestration, supported-target approval, rollback definition, admin frontend, and promotion remain open."
+  }
+}

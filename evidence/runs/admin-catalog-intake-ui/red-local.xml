@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="3" failures="3" errors="0" time="0.017331667">
+    <testsuite name="src/api/catalogIntakeContract.test.ts" timestamp="2026-09-20T15:52:26.916Z" hostname="jkershaw-mac" tests="2" failures="2" errors="0" skipped="0" time="0.017331667">
+        <testcase classname="src/api/catalogIntakeContract.test.ts" name="catalog intake API contract &gt; uses the versioned admin collection for list and detail reads" time="0.015396">
+            <failure message="api.listCatalogIntakes is not a function" type="TypeError">
+TypeError: api.listCatalogIntakes is not a function
+ ❯ src/api/catalogIntakeContract.test.ts:28:15
+            </failure>
+        </testcase>
+        <testcase classname="src/api/catalogIntakeContract.test.ts" name="catalog intake API contract &gt; posts the immutable release submission without inventing approval fields" time="0.000990292">
+            <failure message="api.submitCatalogIntake is not a function" type="TypeError">
+TypeError: api.submitCatalogIntake is not a function
+ ❯ src/api/catalogIntakeContract.test.ts:43:15
+            </failure>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/CatalogIntakes.test.tsx" timestamp="2026-09-20T15:52:26.919Z" hostname="jkershaw-mac" tests="1" failures="1" errors="0" skipped="0" time="0">
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="src/pages/CatalogIntakes.test.tsx" time="0">
+            <failure message="Failed to resolve import &quot;./CatalogIntakeDetail&quot; from &quot;src/pages/CatalogIntakes.test.tsx&quot;. Does the file exist?" type="Error">
+Error: Failed to resolve import &quot;./CatalogIntakeDetail&quot; from &quot;src/pages/CatalogIntakes.test.tsx&quot;. Does the file exist?
+  Plugin: vite:import-analysis
+  File: /Users/jkershaw/Documents/launchpad/admin/src/pages/CatalogIntakes.test.tsx:8:32
+  5  |  import { afterEach, describe, expect, it, vi } from &quot;vitest&quot;;
+  6  |  import { api } from &quot;../api/client&quot;;
+  7  |  import CatalogIntakeDetail from &quot;./CatalogIntakeDetail&quot;;
+     |                                   ^
+  8  |  import CatalogIntakes from &quot;./CatalogIntakes&quot;;
+  9  |  var _jsxFileName = &quot;/Users/jkershaw/Documents/launchpad/admin/src/pages/CatalogIntakes.test.tsx&quot;;
+ ❯ TransformPluginContext._formatLog node_modules/vite/dist/node/chunks/node.js:31147:39
+ ❯ TransformPluginContext.error node_modules/vite/dist/node/chunks/node.js:31144:14
+ ❯ normalizeUrl node_modules/vite/dist/node/chunks/node.js:28083:18
+ ❯ node_modules/vite/dist/node/chunks/node.js:28153:30
+ ❯ TransformPluginContext.transform node_modules/vite/dist/node/chunks/node.js:28119:4
+ ❯ EnvironmentPluginContainer.transform node_modules/vite/dist/node/chunks/node.js:30932:14
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/node.js:20671:26
+            </failure>
+        </testcase>
+    </testsuite>
+</testsuites>

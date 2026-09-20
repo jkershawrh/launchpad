@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="10" skipped="0" tests="10" time="0.062" timestamp="2026-09-20T10:52:43.332403-05:00" hostname="jkershaw-mac"><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_repository_contract_is_complete_and_release_blocking" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_repository_contract_is_complete_and_release_blocking() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:28:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x107763f50&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_source_requires_immutable_sha_and_explicit_authorization" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_source_requires_immutable_sha_and_explicit_authorization() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:41:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1077632f0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_payload_rejects_user_credentials_and_sensitive_fields" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_payload_rejects_user_credentials_and_sensitive_fields() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:55:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1077f3fb0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_runtime_requires_unprivileged_read_only_ephemeral_limits" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_runtime_requires_unprivileged_read_only_ephemeral_limits() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:64:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1077f30b0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_egress_defaults_deny_and_blocks_control_plane_destinations" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_egress_defaults_deny_and_blocks_control_plane_destinations() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:78:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10788c1d0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_worker_has_no_live_catalog_or_cluster_credentials" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_worker_has_no_live_catalog_or_cluster_credentials() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:92:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x1077f3dd0&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_scanning_logs_evidence_and_cleanup_are_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_scanning_logs_evidence_and_cleanup_are_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:101:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10788ce30&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_retry_is_bounded_and_idempotent_without_side_effects" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_retry_is_bounded_and_idempotent_without_side_effects() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:115:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10788d250&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_missing_evidence_and_unknown_verification_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_missing_evidence_and_unknown_verification_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:129:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10788d790&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase><testcase classname="scripts.tests.test_validate_catalog_intake_worker_safety" name="test_duplicate_ids_and_unsupported_schema_fail_closed" time="0.000"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'">def test_duplicate_ids_and_unsupported_schema_fail_closed() -&gt; None:
+&gt;       module = load_module()
+                 ^^^^^^^^^^^^^
+
+scripts/tests/test_validate_catalog_intake_worker_safety.py:145:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+scripts/tests/test_validate_catalog_intake_worker_safety.py:19: in load_module
+    spec.loader.exec_module(module)
+&lt;frozen importlib._bootstrap_external&gt;:755: in exec_module
+    ???
+&lt;frozen importlib._bootstrap_external&gt;:892: in get_code
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;_frozen_importlib_external.SourceFileLoader object at 0x10788db50&gt;
+path = '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&gt;   ???
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/jkershaw/Documents/launchpad/scripts/validate_catalog_intake_worker_safety.py'
+
+&lt;frozen importlib._bootstrap_external&gt;:950: FileNotFoundError</failure></testcase></testsuite></testsuites>

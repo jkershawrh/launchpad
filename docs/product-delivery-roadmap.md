@@ -333,10 +333,12 @@ repository and receive a safe, reviewable, certified catalog draft.**
 
 - `LP-T096` Add a self-service intake API and admin workflow for repository,
   immutable revision, owner, audience, duration, lab type, and expected scale.
-  **GREEN-local (API slice):** the authenticated admin contract accepts every
-  required field and returns a content-addressed, process-local draft that has
-  no live-catalog, provisioning, workshop, or cluster dependency. Durable
-  storage and the admin frontend remain open.
+  **GREEN-integration (draft workflow slice):** the authenticated admin
+  contract accepts a pinned canonical Quickstart repository plus Launchpad
+  hints, returns a content-addressed draft, persists it durably in PostgreSQL,
+  and exposes repo-first list, submit, detail, and gated-pipeline views. Four
+  concurrent service instances converged on one draft in disposable PostgreSQL.
+  Repository discovery execution and promotion remain disabled and open.
 - `LP-T097` Discover Antora content, manifests, Containerfiles, images, models,
   Operators, ports, storage, secrets, resource envelopes, and cleanup behavior.
   **GREEN-local:** immutable repository discovery produces a secret-safe,
@@ -356,11 +358,18 @@ repository and receive a safe, reviewable, certified catalog draft.**
   remains open.
 - `LP-T100` Run source, content, artifact, security, model, one-seat lifecycle,
   restart, and zero-residue reclaim gates without editing a live catalog.
+  **GREEN-local (worker-safety contract):** a versioned fail-closed boundary now
+  defines immutable approved sources, default-deny egress, credential denial,
+  non-root/read-only execution, bounded resources, three-stage secret scanning,
+  sanitized evidence, cleanup receipts, idempotency, and an explicit ban on
+  live mutations. A deployed isolated worker and all runtime/lifecycle proofs
+  remain open, so release eligibility stays false.
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
   release identity, approval history, and rollback metadata in the admin UI.
-  **GREEN-local (API contract):** draft responses expose these fields and
-  explicitly report no supported target, no approval, undefined rollback, and
-  unrun evidence. The visual admin workflow and durable history remain open.
+  **GREEN-integration (draft visibility):** draft responses and the admin Intake
+  screens expose these fields, the durable storage scope, and the full locked
+  pipeline. They truthfully report no supported target, no approval, undefined
+  rollback, unrun evidence, and disabled certification/promotion controls.
 - **Gate:** a new quickstart progresses from immutable repository revision to a
   certified draft and approved promotion without a bespoke platform code edit.
 

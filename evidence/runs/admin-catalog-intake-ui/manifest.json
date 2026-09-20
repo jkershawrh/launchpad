@@ -1,0 +1,37 @@
+{
+  "schema_version": "launchpad.intel.com/evidence-manifest/v1",
+  "evidence_id": "admin-catalog-intake-ui-20260920",
+  "base_commit": "cea8357a353cd4e675a856c8daa2a43172326c42",
+  "recorded_at": "2026-09-20T15:56:28Z",
+  "scope": "admin frontend only; no backend, live system, roadmap, or workshop mutation",
+  "red": {
+    "result": "3 failed",
+    "reason": "intake API methods and components were absent",
+    "artifact": "red-local.xml",
+    "sha256": "b0878a3aeba93d77977b6f5cdf32d522b337622a6622a1aa56abeff328fba11a"
+  },
+  "green": {
+    "result": "5 passed",
+    "artifact": "green-local.xml",
+    "sha256": "d7d5145ddfcbb612df89448a5c86c4d57f0a6b8b3b5b6e4d99879326d750b8ad",
+    "additional_checks": [
+      "admin TypeScript production build passed",
+      "admin ESLint passed",
+      "git diff check passed"
+    ]
+  },
+  "claims": [
+    "Admin navigation exposes a repo-first Intake surface.",
+    "List, new submission, and detail views use the versioned catalog-intake API contract.",
+    "The pinned Quickstart repository is presented as canonical and required fields as draft hints or overrides.",
+    "Draft state, blockers, evidence, supported targets, current seat ceiling, immutable release identity, approvals, and rollback are visible.",
+    "The read-only pipeline view exposes submitted and locked stages while keeping every action unavailable.",
+    "Process-local and durable PostgreSQL draft storage scopes are rendered from the API response.",
+    "Certification and promotion actions remain disabled."
+  ],
+  "non_claims": [
+    "No automated repository discovery is implemented by this frontend slice.",
+    "No certification, approval, promotion, or execution endpoint is called.",
+    "No deployment or live browser certification was performed."
+  ]
+}

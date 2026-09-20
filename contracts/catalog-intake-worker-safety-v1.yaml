@@ -1,0 +1,224 @@
+schema_version: launchpad.redhat.com/catalog-intake-worker-safety/v1
+kind: LaunchpadCatalogIntakeWorkerSafetyPolicy
+metadata:
+  id: catalog-intake-worker-safety
+  version: 1.0.0
+  owner: launchpad-security-owner
+  service_owner: catalog-onboarding-owner
+  review_policy: review on source, worker image, network, scanner, credential, or execution-boundary change
+
+source_policy:
+  default: deny
+  allowed_schemes: [https]
+  allowed_hosts: [github.com]
+  immutable_revision:
+    required: true
+    format: full-40-character-git-commit-sha
+    branch_tag_or_symbolic_ref_allowed: false
+  repository_authorization:
+    approved_repositories: []
+    unlisted_repository_policy: require-recorded-approval
+    approval_record_fields: [repository, commit_sha, requested_by, approved_by, approved_at, expires_at, purpose]
+    approval_must_precede_fetch: true
+  redirects:
+    allowed: false
+  submodules:
+    allowed: false
+    exception_requires_separate_source_approval: true
+
+payload_policy:
+  maximum_bytes: 65536
+  allow_only_schema_fields: true
+  user_credentials_allowed: false
+  forbidden_key_patterns:
+    - '*password*'
+    - '*passwd*'
+    - '*token*'
+    - '*secret*'
+    - '*api_key*'
+    - '*private_key*'
+    - '*kubeconfig*'
+    - '*cookie*'
+  forbidden_value_classes: [credential, session-cookie, private-key, kubeconfig, bearer-token]
+  rejection_behavior: reject before worker dispatch and emit secret-free audit metadata
+
+runtime_policy:
+  security_context:
+    run_as_non_root: true
+    privileged: false
+    allow_privilege_escalation: false
+    read_only_root_filesystem: true
+    seccomp_profile: RuntimeDefault
+    drop_capabilities: [ALL]
+    automount_service_account_token: false
+    host_network: false
+    host_pid: false
+    host_ipc: false
+    host_path_allowed: false
+  workspace:
+    ephemeral: true
+    persistent_volume_allowed: false
+    maximum_size_mib: 512
+    unique_per_attempt: true
+    cleanup_always: true
+  limits:
+    cpu: 1000m
+    memory_mib: 1024
+    ephemeral_storage_mib: 1024
+    wall_clock_seconds: 300
+    maximum_processes: 64
+    maximum_output_bytes: 1048576
+
+egress_policy:
+  default: deny
+  dns_policy: approved-resolver-only
+  allowed_destinations:
+    - host: github.com
+      ports: [443]
+      purpose: approved immutable source fetch
+    - host: api.github.com
+      ports: [443]
+      purpose: immutable commit verification
+  blocked_destination_classes:
+    - kubernetes-api
+    - cloud-instance-metadata
+    - internal-service-network
+    - cluster-ingress-domain
+    - database
+    - artifact-registry-publisher
+  redirects_revalidated_against_allowlist: true
+  ip_literals_allowed: false
+
+credential_policy:
+  live_credentials_allowed: false
+  worker_service_account_allowed: false
+  source_fetch_mode: anonymous-public-read
+  forbidden_credentials:
+    - cluster-admin
+    - kubeconfig
+    - catalog-database
+    - catalog-publisher
+    - argocd
+    - registry-publisher
+    - keycloak-admin
+    - tunnel
+    - model-api
+  environment_secret_import_allowed: false
+  secret_volume_mount_allowed: false
+
+scanning_policy:
+  owner: launchpad-security-owner
+  secret_scan_stages: [payload-before-dispatch, source-after-fetch, output-before-evidence]
+  scanner_configuration_versioned: true
+  scan_entire_workspace: true
+  findings_include_path_and-rule_not_secret_value: true
+  on_detection: reject-quarantine-and-redact
+  on_scanner_failure: reject
+
+logging_and_evidence:
+  owner: catalog-onboarding-owner
+  sanitized_only: true
+  raw_source_content_allowed: false
+  environment_dump_allowed: false
+  credential_values_allowed: false
+  bounded_output_required: true
+  required_fields:
+    - intake_request_id
+    - idempotency_key
+    - repository
+    - commit_sha
+    - policy_version
+    - worker_image_digest
+    - started_at
+    - finished_at
+    - outcome
+    - scan_summary
+    - output_hash
+    - cleanup_receipt_id
+
+cleanup_policy:
+  owner: catalog-onboarding-owner
+  runs_on: [success, validation-failure, timeout, cancellation, worker-failure]
+  workspace_deleted: true
+  child_processes_terminated: true
+  network_identity_revoked: true
+  receipt_required: true
+  receipt_fields: [receipt_id, attempt_id, completed_at, workspace_removed, process_count, bytes_removed, result]
+  receipt_forbids: [source-content, environment-values, credential-values]
+
+retry_policy:
+  owner: catalog-onboarding-owner
+  max_attempts: 3
+  retryable_outcomes: [worker-start-failure, transient-approved-source-failure]
+  non_retryable_outcomes: [policy-denial, source-approval-denial, secret-detection, contract-validation-failure]
+  backoff: exponential-with-jitter
+  idempotency_key_fields: [repository, commit_sha, policy_version, normalized_payload_hash]
+  same_key_reuses_terminal_result: true
+  live_side_effects_allowed: false
+  cleanup_receipt_required_before_retry: true
+
+authority_boundary:
+  mode: analysis-only
+  allowed_outputs: [normalized-contract, validation-findings, sanitized-evidence]
+  forbidden_mutations:
+    - live-catalog
+    - catalog-database
+    - openshift-cluster
+    - argocd
+    - artifact-registry
+    - workshop
+    - session
+  promotion_requires_separate_authenticated-approved-stage: true
+
+verification_catalog:
+  - id: INTAKE-CONTRACT-LOCAL
+    status: implemented
+    owner: launchpad-security-owner
+    evidence: [scripts/tests/test_validate_catalog_intake_worker_safety.py, contracts/catalog-intake-worker-safety-v1.yaml]
+  - id: INTAKE-SOURCE-PINNING-LOCAL
+    status: implemented
+    owner: catalog-onboarding-owner
+    evidence: [scripts/catalog_onboarding.py, backend/tests/test_catalog_onboarding_cli.py]
+  - id: INTAKE-RUNTIME-ISOLATION-LIVE
+    status: planned
+    owner: launchpad-sre-owner
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: INTAKE-EGRESS-ENFORCEMENT-LIVE
+    status: planned
+    owner: launchpad-security-owner
+    evidence: [docs/product-delivery-roadmap.md]
+  - id: INTAKE-SCANNER-AND-CLEANUP-FAULTS
+    status: planned
+    owner: launchpad-security-owner
+    evidence: [docs/product-delivery-roadmap.md]
+
+unresolved_risks:
+  - id: INTAKE-RISK-001
+    severity: high
+    owner: launchpad-sre-owner
+    statement: No deployed isolated intake worker currently proves the runtime security context and resource limits.
+    blocks_release: true
+    required_verification: INTAKE-RUNTIME-ISOLATION-LIVE
+  - id: INTAKE-RISK-002
+    severity: high
+    owner: launchpad-security-owner
+    statement: Default-deny egress and destination enforcement have not been live certified.
+    blocks_release: true
+    required_verification: INTAKE-EGRESS-ENFORCEMENT-LIVE
+  - id: INTAKE-RISK-003
+    severity: high
+    owner: launchpad-security-owner
+    statement: Secret scanning failure and cleanup fault paths lack durable live evidence.
+    blocks_release: true
+    required_verification: INTAKE-SCANNER-AND-CLEANUP-FAULTS
+
+release_policy:
+  release_eligible: false
+  fail_closed: true
+  required_verifications:
+    - INTAKE-CONTRACT-LOCAL
+    - INTAKE-SOURCE-PINNING-LOCAL
+    - INTAKE-RUNTIME-ISOLATION-LIVE
+    - INTAKE-EGRESS-ENFORCEMENT-LIVE
+    - INTAKE-SCANNER-AND-CLEANUP-FAULTS
+  blockers: [unresolved-high-or-critical-risk, missing-verification, missing-cleanup-receipt, scanner-failure]

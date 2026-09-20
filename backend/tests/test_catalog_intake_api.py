@@ -94,3 +94,23 @@ def test_admin_submission_rejects_mutable_revision_and_missing_intake(client):
     assert "immutable 40-character Git SHA" in rejected.text
     missing = client.get("/api/v1/admin/catalog-intakes/intake-missing")
     assert missing.status_code == 404
+
+
+def test_catalog_intake_pipeline_is_read_only_and_fail_closed(client):
+    created = client.post("/api/v1/admin/catalog-intakes", json=_payload())
+    intake_id = created.json()["intake_id"]
+
+    response = client.get(f"/api/v1/admin/catalog-intakes/{intake_id}/pipeline")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["current_stage"] == "submitted"
+    assert payload["orderable"] is False
+    assert payload["promotion_eligible"] is False
+    assert payload["actions"] == {
+        "run_discovery": False,
+        "generate_draft": False,
+        "run_one_seat_certification": False,
+        "request_review": False,
+        "promote": False,
+    }

@@ -1,0 +1,27 @@
+{
+  "contract_id": "catalog-intake-worker-safety",
+  "contract_status": "GREEN-local",
+  "contract_version": "1.0.0",
+  "egress_default": "deny",
+  "evidence_paths": [
+    "backend/tests/test_catalog_onboarding_cli.py",
+    "contracts/catalog-intake-worker-safety-v1.yaml",
+    "docs/product-delivery-roadmap.md",
+    "scripts/catalog_onboarding.py",
+    "scripts/tests/test_validate_catalog_intake_worker_safety.py"
+  ],
+  "live_credentials_allowed": false,
+  "pending_verifications": [
+    "INTAKE-EGRESS-ENFORCEMENT-LIVE",
+    "INTAKE-RUNTIME-ISOLATION-LIVE",
+    "INTAKE-SCANNER-AND-CLEANUP-FAULTS"
+  ],
+  "release_eligible": false,
+  "source_default": "deny",
+  "unresolved_risks": [
+    "INTAKE-RISK-001",
+    "INTAKE-RISK-002",
+    "INTAKE-RISK-003"
+  ],
+  "verification_count": 5
+}

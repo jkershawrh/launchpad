@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T15:36:01Z",
+  "updated_at": "2026-09-20T15:59:48Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -727,32 +727,48 @@
       "note": "A versioned offline scheduled-event pre-pull contract now creates an immutable, deduplicated exact-digest plan by assigned cluster. Readiness fails closed unless every cluster/image pair proves full-node cache coverage, digest and signature verification, mirror/source attribution, and matching evidence. This is GREEN-local only: no pull ran and authentic integration/live cache-loss recovery remain open."
     },
     "LP-T096": {
-      "state": "green-local",
+      "state": "green-integration",
       "methods": {
         "tdd": "green-local",
-        "edd": "green-local",
+        "edd": "green-integration",
         "cdd": "green-local",
         "bdd": "green-local",
         "cbt": "green-local"
       },
       "evidence": [
+        "evidence/runs/admin-catalog-intake-ui/manifest.json",
+        "evidence/runs/catalog-intake-durability/green-integration.json",
+        "evidence/runs/catalog-intake-pipeline/manifest.json",
         "evidence/runs/catalog-intake-submission/green-local.json"
       ],
-      "note": "An authenticated, strict draft-only intake API now accepts immutable repository/revision, owner, audience, duration, lab type, and expected scale and returns a content-addressed response with no catalog, provisioning, workshop, lifecycle, or cluster dependency. This is GREEN-local and process-local; durable persistence, repository execution, admin UI, and promotion remain open."
+      "note": "Pinned Quickstart submissions now persist as durable, content-addressed PostgreSQL drafts and are visible through a repo-first admin workflow and read-only gated pipeline. Disposable PostgreSQL proved restart persistence and four-way concurrent convergence. Repository discovery execution and promotion remain disabled."
     },
     "LP-T101": {
-      "state": "green-local",
+      "state": "green-integration",
       "methods": {
         "tdd": "green-local",
         "edd": "green-local",
         "cdd": "green-local",
         "bdd": "green-local",
-        "cbt": "green-local"
+        "cbt": "green-integration"
       },
       "evidence": [
+        "evidence/runs/admin-catalog-intake-ui/manifest.json",
+        "evidence/runs/catalog-intake-durability/green-integration.json",
+        "evidence/runs/catalog-intake-pipeline/manifest.json",
         "evidence/runs/catalog-intake-submission/green-local.json"
       ],
-      "note": "The intake API response now presents blockers, required evidence, supported targets, scale ceiling, immutable release identity, approval history, rollback state, orderability, and promotion eligibility. It truthfully reports no target, no approval, undefined rollback, and unrun evidence. This is GREEN-local API evidence; the admin frontend and durable history remain open."
+      "note": "Admin Intake now shows canonical Quickstart identity, durable storage scope, blockers, gates, evidence, targets, scale ceiling, approvals, rollback, and every locked pipeline stage. Certification and promotion controls remain disabled and no live deployment was performed."
+    },
+    "LP-T100": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/catalog-intake-worker-safety/evidence.json"
+      ],
+      "note": "A fail-closed worker safety contract covers immutable approved sources, default-deny egress, credential denial, non-root read-only execution, bounded resources, secret scanning, sanitized evidence, cleanup, and idempotency. Release eligibility remains false until deployed worker isolation, egress, scanner-failure, lifecycle, and zero-residue proofs pass."
     }
   },
   "rubric": [

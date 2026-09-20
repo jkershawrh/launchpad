@@ -108,3 +108,33 @@ def test_service_returns_copies_and_missing_intake_is_not_found():
 
     assert "tampered" not in service.get(created.intake_id).blockers
     assert service.get("intake-missing") is None
+
+
+class _DurableDraftStore:
+    durable = True
+
+    def __init__(self):
+        self.items = {}
+
+    def create_idempotent(self, draft):
+        return self.items.setdefault(draft.intake_id, draft).model_copy(deep=True)
+
+    def get(self, intake_id):
+        draft = self.items.get(intake_id)
+        return draft.model_copy(deep=True) if draft else None
+
+    def list_all(self):
+        return [self.items[key].model_copy(deep=True) for key in sorted(self.items)]
+
+    def clear(self):
+        self.items.clear()
+
+
+def test_durable_service_removes_only_the_local_persistence_blocker():
+    service = CatalogIntakeSubmissionService(store=_DurableDraftStore())
+
+    draft = service.submit(_submission(expected_scale=1))
+
+    assert draft.storage_scope == "durable-postgres"
+    assert not any("Durable intake persistence" in item for item in draft.blockers)
+    assert any("repository discovery" in item.lower() for item in draft.blockers)

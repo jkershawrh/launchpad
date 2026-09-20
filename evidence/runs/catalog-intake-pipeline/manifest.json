@@ -1,0 +1,32 @@
+{
+  "schema_version": "launchpad.intel.com/evidence-manifest/v1",
+  "evidence_id": "catalog-intake-pipeline-green-local-20260920",
+  "base_commit": "cea8357a353cd4e675a856c8daa2a43172326c42",
+  "recorded_at": "2026-09-20T11:00:00-05:00",
+  "scope": "read-only Quickstart catalog-intake pipeline view",
+  "result": "GREEN-local",
+  "test": {
+    "result": "7 passed",
+    "artifact": "evidence/runs/catalog-intake-pipeline/green-local.xml",
+    "sha256": "d98001789381785c8a3d1aecc460ee83df284e57d5ce1526a38abaf92093502c"
+  },
+  "contract": {
+    "artifact": "contracts/catalog-intake-pipeline-v1.yaml",
+    "sha256": "5b4bc80b3c70cfa964cdd4378ab08bd06749e5e23b7d72cdf28438f56258cb2e"
+  },
+  "claims": [
+    "Quickstart repositories are the canonical intake source.",
+    "Source-owned metadata is discovered rather than duplicated.",
+    "Submitted, discovered, draft, certified, approved, and published stages are visible.",
+    "Every discovery, certification, review, and promotion action remains disabled.",
+    "Missing durable storage or isolated worker availability is reported as a blocker."
+  ],
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false
+  },
+  "release_eligible": false
+}

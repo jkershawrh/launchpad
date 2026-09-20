@@ -265,3 +265,70 @@ export interface CatalogReclaimResult {
     error?: string;
   }>;
 }
+
+export type CatalogIntakeLabType = 'quick_start' | 'guided_build' | 'open_sandbox';
+
+export interface CatalogIntakeSubmission {
+  catalog_item_id: string;
+  display_name: string;
+  repository_url: string;
+  revision: string;
+  owner: string;
+  audience: string[];
+  duration_hours: number;
+  lab_type: CatalogIntakeLabType;
+  expected_scale: number;
+}
+
+export interface CatalogIntakeDraft {
+  intake_id: string;
+  state: 'draft';
+  orderable: false;
+  promotion_eligible: false;
+  storage_scope: 'process-local-draft' | 'durable-postgres';
+  requested: CatalogIntakeSubmission;
+  defaults: { exposure_policies: string[]; maximum_seats: number };
+  blockers: string[];
+  evidence: {
+    status: 'not-run';
+    artifacts: string[];
+    required_gates: string[];
+  };
+  supported_targets: string[];
+  target_status: 'unverified';
+  release_identity: { repository_url: string; revision: string };
+  approval_history: Array<Record<string, string>>;
+  rollback: { status: 'not-defined'; metadata: Record<string, string> };
+}
+
+export interface CatalogIntakePipelineView {
+  schema_version: 'launchpad.redhat.com/catalog-intake-pipeline/v1';
+  intake_id: string;
+  source_standard: 'quickstart-repository';
+  metadata_policy: 'discover-from-source';
+  current_stage: 'submitted';
+  orderable: false;
+  promotion_eligible: false;
+  durable_storage: boolean;
+  isolated_worker_available: boolean;
+  stages: Array<{
+    stage_id: string;
+    label: string;
+    status: 'current' | 'locked' | 'complete';
+    gate_ids: string[];
+  }>;
+  gates: Array<{
+    gate_id: string;
+    label: string;
+    status: 'blocked' | 'not-run' | 'passed' | 'failed';
+    required_evidence: string[];
+    blockers: string[];
+  }>;
+  actions: {
+    run_discovery: boolean;
+    generate_draft: boolean;
+    run_one_seat_certification: boolean;
+    request_review: boolean;
+    promote: boolean;
+  };
+}

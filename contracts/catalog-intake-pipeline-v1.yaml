@@ -1,0 +1,53 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Catalog Intake Pipeline View
+  version: 1.0.0
+  description: >-
+    Read-only fail-closed representation of intake stages, evidence gates, and
+    unavailable actions. It does not authorize discovery, certification, or
+    promotion.
+paths: {}
+components:
+  schemas:
+    PipelineActionSet:
+      type: object
+      required:
+        - run_discovery
+        - generate_draft
+        - run_one_seat_certification
+        - request_review
+        - promote
+      properties:
+        run_discovery: {const: false}
+        generate_draft: {const: false}
+        run_one_seat_certification: {const: false}
+        request_review: {const: false}
+        promote: {const: false}
+    CatalogIntakePipelineView:
+      type: object
+      required:
+        - schema_version
+        - intake_id
+        - source_standard
+        - metadata_policy
+        - current_stage
+        - orderable
+        - promotion_eligible
+        - durable_storage
+        - isolated_worker_available
+        - stages
+        - gates
+        - actions
+      properties:
+        schema_version: {const: launchpad.redhat.com/catalog-intake-pipeline/v1}
+        intake_id: {type: string, minLength: 1}
+        source_standard: {const: quickstart-repository}
+        metadata_policy: {const: discover-from-source}
+        current_stage: {const: submitted}
+        orderable: {const: false}
+        promotion_eligible: {const: false}
+        durable_storage: {type: boolean}
+        isolated_worker_available: {type: boolean}
+        stages: {type: array, minItems: 6}
+        gates: {type: array, minItems: 7}
+        actions: {$ref: '#/components/schemas/PipelineActionSet'}

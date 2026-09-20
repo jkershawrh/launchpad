@@ -99,7 +99,9 @@ class CatalogIntakeDraft(BaseModel):
     state: Literal["draft"] = "draft"
     orderable: Literal[False] = False
     promotion_eligible: Literal[False] = False
-    storage_scope: Literal["process-local-draft"] = "process-local-draft"
+    storage_scope: Literal["process-local-draft", "durable-postgres"] = (
+        "process-local-draft"
+    )
     requested: CatalogIntakeSubmission
     defaults: CatalogIntakeDefaults = Field(default_factory=CatalogIntakeDefaults)
     blockers: list[str]

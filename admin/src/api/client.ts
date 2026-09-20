@@ -19,6 +19,9 @@ import type {
   Tenant,
   AdminObservability,
   LifecycleHealth,
+  CatalogIntakeDraft,
+  CatalogIntakeSubmission,
+  CatalogIntakePipelineView,
 } from './types';
 
 const BASE = '/api';
@@ -104,6 +107,17 @@ export const api = {
     request<CatalogItem>(`/admin/catalog/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   setCatalogStatus: (id: string, status: string) =>
     request<CatalogItem>(`/admin/catalog/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  listCatalogIntakes: () =>
+    request<CatalogIntakeDraft[]>('/v1/admin/catalog-intakes'),
+  getCatalogIntake: (id: string) =>
+    request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}`),
+  getCatalogIntakePipeline: (id: string) =>
+    request<CatalogIntakePipelineView>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/pipeline`),
+  submitCatalogIntake: (data: CatalogIntakeSubmission) =>
+    request<CatalogIntakeDraft>('/v1/admin/catalog-intakes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
   // Intelligence / Feedback
   getFeedbackSummary: () =>

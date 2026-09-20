@@ -60,15 +60,26 @@ not a catalog item. It always reports:
 - no supported execution targets until target evidence exists;
 - the immutable release identity, empty evidence and approval history, and
   undefined rollback metadata; and
-- `storage_scope: process-local-draft`, which remains an explicit blocker until
-  durable multi-replica intake storage is implemented.
+- `storage_scope`, which is `durable-postgres` in a configured deployment and
+  `process-local-draft` only in an explicit local, mock, or test runtime.
 
 Unknown fields are rejected, including attempts to submit `active`,
 `public_code`, or pre-approved target values. The draft service has no catalog,
 provisioning, lifecycle, workshop, or cluster dependency. Exact resubmissions
 are idempotent within the local process and return the same content-addressed
-intake ID. This API is therefore suitable for contract and admin integration
-work, but not yet for production intake retention.
+intake ID. PostgreSQL-backed submissions use the same identity and a database
+transaction lock, so concurrent submissions from independent API replicas
+converge on one durable draft. A conflicting payload for an existing identity
+is rejected instead of overwritten.
+
+The `catalog_intake_drafts` table is intentionally disconnected from the live
+catalog: it stores only `state: draft` records and has no promotion trigger or
+foreign-key path into orderable catalog state. OpenShift, RHDP, production, or
+HA configurations fail during dependency construction when `DATABASE_URL` is
+missing. Only `mock`, `local`, and `test` modes may use the process-local store,
+and that response retains the durable-persistence blocker. A configured but
+unreachable PostgreSQL service fails intake reads and writes rather than
+falling back to memory.
 
 ## Deployment-class and artifact review
 
@@ -135,6 +146,15 @@ integration and live certification gate.
 ## Local workflow
 
 ### Start from an existing quickstart repository
+
+The existing Quickstart repository layout is the canonical intake standard.
+Solution owners provide a pinned repository revision; Launchpad discovers the
+Showroom/Antora content, deployable workload, images, resource declarations,
+and other source-owned metadata from that revision. Authors must not maintain a
+second copy of Quickstart metadata in Launchpad. The intake request contains
+only ownership, intended audience and scale, plus explicit Launchpad overrides
+that discovery cannot safely infer. Every override remains visible in the
+reviewable draft and requires evidence before promotion.
 
 The onboarding CLI can inspect an immutable quickstart revision and generate
 the first fail-closed intake. It discovers a local Antora playbook/component
