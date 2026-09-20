@@ -194,13 +194,15 @@ verification_catalog:
   - id: INTAKE-SCANNER-AND-CLEANUP-FAULTS
     status: planned
     owner: launchpad-security-owner
-    evidence: [docs/product-delivery-roadmap.md]
+    evidence:
+      - docs/product-delivery-roadmap.md
+      - evidence/runs/catalog-intake-faults-arena-live-20260920.json
 
 unresolved_risks:
   - id: INTAKE-RISK-003
     severity: high
     owner: launchpad-security-owner
-    statement: Secret scanning failure and cleanup fault paths lack durable live evidence.
+    statement: Scanner failure is proven fail-closed, but forced timeout and cancellation cannot yet produce a trusted external zero-residue receipt.
     blocks_release: true
     required_verification: INTAKE-SCANNER-AND-CLEANUP-FAULTS
 

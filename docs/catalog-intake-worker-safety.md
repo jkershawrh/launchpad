@@ -24,9 +24,13 @@ default-deny network enforcement in the isolated
 through its allowlisting proxy and could not reach GitHub directly, the
 Kubernetes API, or production PostgreSQL. Release remains blocked on a signed
 external image/SBOM, the trusted dispatcher and receipt collector, a fully
-passing canonical repository, and scanner/timeout/cancellation/retry fault
-evidence. The sanitized result is recorded in
-`evidence/runs/catalog-intake-arena-live-20260920.json`.
+passing canonical repository, and trusted forced-termination cleanup evidence.
+A second Arena run proved scanner failure is sanitized and cleaned, and that
+Kubernetes removes the timeout/cancellation pods and their ephemeral volumes.
+Those forced terminations cannot emit their own cleanup receipt, so they remain
+AMBER until a trusted external collector attests zero residue. The sanitized
+results are recorded in `evidence/runs/catalog-intake-arena-live-20260920.json`
+and `evidence/runs/catalog-intake-faults-arena-live-20260920.json`.
 
 ## Discovery worker implementation boundary
 

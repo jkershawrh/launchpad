@@ -10,7 +10,10 @@ from app.domain.catalog_intake_discovery import (
     CatalogIntakeDiscoveryRequest,
     CatalogIntakeSourceApproval,
 )
-from app.services.catalog_intake_discovery import CatalogIntakeDiscoveryRunner
+from app.services.catalog_intake_discovery import (
+    CatalogIntakeDiscoveryRunner,
+    SourceScannerFailedError,
+)
 from pydantic import ValidationError
 
 REPOSITORY = "https://github.com/example/quickstart.git"
@@ -202,6 +205,32 @@ def test_discovery_runner_allows_explicit_documentation_placeholder(
 
     assert receipt.status == "passed"
     assert receipt.scan_summary["files_scanned"] > 0
+
+
+def test_scanner_failure_is_sanitized_and_workspace_is_removed(
+    tmp_path: Path,
+) -> None:
+    source = _quickstart(tmp_path)
+
+    def fail_scan(_source: Path) -> tuple[int, int]:
+        raise SourceScannerFailedError("sensitive-scanner-detail")
+
+    workspaces = tmp_path / "workspaces"
+    runner = CatalogIntakeDiscoveryRunner(
+        source_approvals=[_approval()],
+        checkout=_checkout_from(source),
+        workspace_parent=workspaces,
+        scan=fail_scan,
+    )
+
+    receipt = runner.run(_request())
+
+    assert receipt.status == "failed"
+    assert receipt.error_codes == ["source-scan-failed"]
+    assert "sensitive-scanner-detail" not in receipt.model_dump_json()
+    assert receipt.cleanup.result == "pass"
+    assert receipt.cleanup.workspace_removed is True
+    assert list(workspaces.iterdir()) == []
 
 
 def test_discovery_idempotency_key_is_stable_for_same_source_and_policy() -> None:

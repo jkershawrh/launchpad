@@ -113,6 +113,11 @@ class CatalogIntakeDiscoveryExecution(BaseModel):
     requested_by: str
     requested_at: datetime
     error_codes: list[str] = Field(default_factory=list)
+    attempt_number: int = Field(default=1, ge=1, le=3)
+    retry_of: str | None = None
+    idempotency_key: str | None = None
+    cleanup_receipt_id: str | None = None
+    cleanup_verified: bool = False
 
 
 class CatalogIntakeDraft(BaseModel):

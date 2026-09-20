@@ -41,6 +41,12 @@ REQUIRED_GATES = [
     "promotion-approval",
 ]
 
+RETRYABLE_DISCOVERY_ERRORS = {
+    "dispatch-failed",
+    "worker-start-failure",
+    "transient-approved-source-failure",
+}
+
 
 class CatalogIntakeSubmissionService:
     """Draft registry with no live catalog or cluster dependency."""
@@ -179,13 +185,65 @@ class CatalogIntakeSubmissionService:
         return self.store.replace(draft, updated)
 
     def mark_discovery_failed(
-        self, intake_id: str, error_codes: list[str]
+        self,
+        intake_id: str,
+        error_codes: list[str],
+        *,
+        idempotency_key: str | None = None,
+        cleanup_receipt_id: str | None = None,
+        cleanup_verified: bool = False,
     ) -> CatalogIntakeDraft:
         draft = self.store.get(intake_id)
         if draft is None or draft.discovery_execution is None:
             raise KeyError(intake_id)
         execution = draft.discovery_execution.model_copy(
-            update={"state": "failed", "error_codes": error_codes}
+            update={
+                "state": "failed",
+                "error_codes": error_codes,
+                "idempotency_key": idempotency_key,
+                "cleanup_receipt_id": cleanup_receipt_id,
+                "cleanup_verified": cleanup_verified,
+            }
+        )
+        updated = CatalogIntakeDraft.model_validate(
+            draft.model_copy(update={"discovery_execution": execution}).model_dump()
+        )
+        return self.store.replace(draft, updated)
+
+    def retry_discovery(
+        self,
+        intake_id: str,
+        *,
+        requested_by: str,
+        now: datetime | None = None,
+    ) -> CatalogIntakeDraft:
+        draft = self.store.get(intake_id)
+        if draft is None or draft.discovery_execution is None:
+            raise KeyError(intake_id)
+        if not self.store.durable:
+            raise ValueError("discovery retry requires durable intake storage")
+        previous = draft.discovery_execution
+        if previous.state != "failed":
+            raise ValueError("only a failed discovery can be retried")
+        if not previous.cleanup_verified or not previous.cleanup_receipt_id:
+            raise ValueError("discovery retry requires a verified cleanup receipt")
+        if not previous.error_codes or not set(previous.error_codes).issubset(
+            RETRYABLE_DISCOVERY_ERRORS
+        ):
+            raise ValueError("discovery outcome is not retryable")
+        if previous.attempt_number >= 3:
+            raise ValueError("discovery retry limit reached")
+        now = now or datetime.now(UTC)
+        approval = draft.source_approval
+        if approval is None or not (approval.approved_at <= now < approval.expires_at):
+            raise ValueError("discovery retry requires an active source approval")
+        execution = CatalogIntakeDiscoveryExecution(
+            attempt_id="attempt-" + uuid.uuid4().hex[:16],
+            state="queued",
+            requested_by=requested_by,
+            requested_at=now,
+            attempt_number=previous.attempt_number + 1,
+            retry_of=previous.attempt_id,
         )
         updated = CatalogIntakeDraft.model_validate(
             draft.model_copy(update={"discovery_execution": execution}).model_dump()

@@ -1,40 +1,27 @@
 {
-  "evidence_id": "catalog-intake-worker-safety-green-local-20260920",
-  "generated_at": "2026-09-20T15:54:18Z",
-  "base_commit": "cea8357a353cd4e675a856c8daa2a43172326c42",
-  "scope": "repository-only isolated catalog-intake worker safety contract",
-  "live_systems_touched": false,
-  "release_eligible": false,
-  "red": {
-    "result": "10 failed",
-    "reason": "validator and contract intentionally absent",
-    "artifact": "evidence/runs/catalog-intake-worker-safety/red.xml",
-    "sha256": "b56877742f346140bb5d7e30268f5171ea445aed85a0f12cf7235efa3bde1b41"
-  },
-  "green": {
-    "result": "10 passed",
-    "artifact": "evidence/runs/catalog-intake-worker-safety/green-local.xml",
-    "sha256": "1d3572edcb49fdf5d7a7407563f1475c3e9c2c580cf469099bd57e4c6cd1c796"
-  },
-  "contract": {
-    "artifact": "contracts/catalog-intake-worker-safety-v1.yaml",
-    "sha256": "2b258a9a01db00ddec9e45321a91577267a18386c1bb401287eb2f5a4d642441"
-  },
-  "validator": {
-    "artifact": "scripts/validate_catalog_intake_worker_safety.py",
-    "sha256": "18ef84256913d346a204b4e30ee19a0fdd3ca86b58e28b92884289b4e0050ef2"
-  },
-  "tests": {
-    "artifact": "scripts/tests/test_validate_catalog_intake_worker_safety.py",
-    "sha256": "7d4b4d0dfeca53fa5ecb37851af04882e48a5f0fd2f40c321df8edfd983801c4"
-  },
-  "report": {
-    "artifact": "evidence/runs/catalog-intake-worker-safety/report.json",
-    "sha256": "ced63da8c86995f1f577def941c7a4cca045525bbc00d10efbc59b0b53d2b0e4"
-  },
-  "pending_live_verifications": [
-    "INTAKE-RUNTIME-ISOLATION-LIVE",
-    "INTAKE-EGRESS-ENFORCEMENT-LIVE",
+  "contract_id": "catalog-intake-worker-safety",
+  "contract_status": "GREEN-local",
+  "contract_version": "1.0.0",
+  "egress_default": "deny",
+  "evidence_paths": [
+    "backend/tests/test_catalog_onboarding_cli.py",
+    "contracts/catalog-intake-worker-safety-v1.yaml",
+    "deploy/launchpad/catalog-intake-cert/README.md",
+    "deploy/launchpad/catalog-intake-cert/network-policy.yaml",
+    "docs/product-delivery-roadmap.md",
+    "evidence/runs/catalog-intake-arena-live-20260920.json",
+    "evidence/runs/catalog-intake-faults-arena-live-20260920.json",
+    "scripts/catalog_onboarding.py",
+    "scripts/tests/test_validate_catalog_intake_worker_safety.py"
+  ],
+  "live_credentials_allowed": false,
+  "pending_verifications": [
     "INTAKE-SCANNER-AND-CLEANUP-FAULTS"
-  ]
+  ],
+  "release_eligible": false,
+  "source_default": "deny",
+  "unresolved_risks": [
+    "INTAKE-RISK-003"
+  ],
+  "verification_count": 5
 }

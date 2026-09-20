@@ -1,0 +1,78 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-fault-evidence/v1",
+  "run_id": "catalog-intake-faults-arena-live-20260920",
+  "cluster_id": "arena",
+  "namespace": "launchpad-catalog-intake-cert",
+  "production_mutations": false,
+  "workshops_touched": false,
+  "worker_image": "image-registry.openshift-image-registry.svc:5000/launchpad-catalog-intake-cert/catalog-intake-worker@sha256:7531228798cd02f98f03b7110af60f7ff38b66cf01307fbe45039447578529a9",
+  "scanner_failure": {
+    "attempt_id": "scanner-fault-001",
+    "job": "catalog-intake-scanner-fault-001",
+    "job_result": "Complete",
+    "receipt_status": "failed",
+    "error_codes": ["source-scan-failed"],
+    "injected_error_text_disclosed": false,
+    "cleanup_result": "pass",
+    "workspace_removed": true,
+    "cleanup_receipt_present": true,
+    "result": "GREEN-live"
+  },
+  "timeout": {
+    "attempt_id": "timeout-001",
+    "job": "catalog-intake-timeout-001",
+    "active_deadline_seconds": 5,
+    "job_reason": "DeadlineExceeded",
+    "remaining_pods": 0,
+    "worker_cleanup_receipt_present": false,
+    "result": "AMBER",
+    "blocker": "A forcibly terminated worker cannot emit its own cleanup receipt; a trusted external collector must attest zero residue."
+  },
+  "cancellation": {
+    "attempt_id": "cancel-001",
+    "job": "catalog-intake-cancel-001",
+    "pod_reached_running": true,
+    "job_deleted": true,
+    "remaining_pods": 0,
+    "worker_cleanup_receipt_present": false,
+    "result": "AMBER",
+    "blocker": "Deletion removes the pod and emptyDir but does not produce the required trusted cleanup receipt."
+  },
+  "retry_contract": {
+    "stage": "GREEN-local",
+    "maximum_attempts": 3,
+    "verified_cleanup_required": true,
+    "stable_idempotency_key_required": true,
+    "retryable_outcomes": [
+      "dispatch-failed",
+      "worker-start-failure",
+      "transient-approved-source-failure"
+    ],
+    "scanner_failure_retryable": false
+  },
+  "local_regression": {
+    "result": "41 passed",
+    "artifact": "evidence/runs/catalog-intake-faults/green-local.xml",
+    "sha256": "38bf45dbf66059b2463a87a12088a3553939f7c12080647febe759a6ac4c821b"
+  },
+  "contracts": [
+    {
+      "artifact": "contracts/catalog-intake-worker-safety-v1.yaml",
+      "sha256": "94919b80014813227c215bf6112d9df692351561bff8b9f27385a55b68922ba7"
+    },
+    {
+      "artifact": "contracts/catalog-intake-discovery-worker-v1.yaml",
+      "sha256": "197c6b54055723a3df89ed1e17d8c8c13faccc9498add58bfae4b5ebf4d86f33"
+    }
+  ],
+  "verification_status": {
+    "INTAKE-SCANNER-AND-CLEANUP-FAULTS": "GREEN-live-partial"
+  },
+  "release_eligible": false,
+  "remaining_blockers": [
+    "trusted dispatcher and sanitized receipt collector",
+    "trusted timeout and cancellation zero-residue receipts",
+    "signed external worker image and SBOM",
+    "one immutable Quickstart that passes the full canonical discovery contract"
+  ]
+}

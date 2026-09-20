@@ -766,16 +766,21 @@
       "note": "Admin Intake now conditionally exposes source approval and discovery actions only when durable storage and worker prerequisites pass, renders execution state, and keeps certification, publication, provisioning, and live mutation disabled."
     },
     "LP-T100": {
-      "state": "green-local",
+      "state": "green-integration",
       "methods": {
-        "cdd": "green-local",
-        "cbt": "green-local"
+        "tdd": "green-integration",
+        "edd": "green-integration",
+        "cdd": "green-integration",
+        "bdd": "green-local",
+        "cbt": "green-integration"
       },
       "evidence": [
         "evidence/runs/catalog-intake-discovery-worker/manifest.json",
-        "evidence/runs/catalog-intake-worker-safety/evidence.json"
+        "evidence/runs/catalog-intake-worker-safety/evidence.json",
+        "evidence/runs/catalog-intake-arena-live-20260920.json",
+        "evidence/runs/catalog-intake-faults-arena-live-20260920.json"
       ],
-      "note": "Worker safety now has executable component proof for strict payload validation, approved immutable source enforcement, complete-source and output scanning, stable idempotency, sanitized failures, cleanup receipts, and a bounded tokenless OpenShift Job/NetworkPolicy. Release remains blocked pending built/signed image, proxy, dispatcher/collector, and live isolation/fault/lifecycle proof."
+      "note": "Arena proves the tokenless/read-only runtime, allowlisted proxy egress, denial of direct GitHub/API/database access, sanitized scanner failure, and pod removal after timeout/cancellation. Local and integration proof now bounds retry to three attempts, preserves idempotency, requires verified cleanup, and rejects scanner/policy failures. The task remains effectively GREEN-local because BDD has not advanced and release remains blocked on trusted external forced-termination receipts, a deployed dispatcher/collector, signed image/SBOM, and one passing canonical Quickstart."
     }
   },
   "rubric": [

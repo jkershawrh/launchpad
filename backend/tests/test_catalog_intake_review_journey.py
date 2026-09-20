@@ -344,6 +344,134 @@ def test_collector_rejects_a_receipt_for_another_attempt() -> None:
         coordinator.collect(wrong)
 
 
+def test_failed_discovery_retries_only_after_verified_cleanup(
+    tmp_path: Path,
+) -> None:
+    service = CatalogIntakeSubmissionService(store=_DurableMemoryStore())
+    dispatcher = _FakeDispatcher()
+    coordinator = CatalogIntakeDiscoveryCoordinator(service, dispatcher)
+    submitted = service.submit(_submission())
+    service.approve_source(submitted.intake_id, approved_by="catalog-reviewer")
+
+    running = coordinator.start(submitted.intake_id, requested_by="catalog-reviewer")
+    first_execution = running.discovery_execution
+    assert first_execution is not None
+    first_request, _ = dispatcher.dispatched[-1]
+    receipt = _receipt(tmp_path, submitted.intake_id).model_copy(
+        update={
+            "attempt_id": first_execution.attempt_id,
+            "status": "failed",
+            "error_codes": ["transient-approved-source-failure"],
+            "output_hash": None,
+            "draft_intake": None,
+            "cleanup": CatalogIntakeCleanupReceipt(
+                receipt_id="sha256:" + "e" * 64,
+                attempt_id=first_execution.attempt_id,
+                workspace_removed=True,
+                result="pass",
+            ),
+        }
+    )
+
+    failed = coordinator.collect(receipt)
+    assert failed.discovery_execution is not None
+    assert failed.discovery_execution.cleanup_verified is True
+    assert failed.discovery_execution.cleanup_receipt_id == receipt.cleanup.receipt_id
+    assert failed.discovery_execution.idempotency_key == receipt.idempotency_key
+
+    retried = coordinator.retry(
+        submitted.intake_id, requested_by="catalog-reviewer"
+    )
+    second_execution = retried.discovery_execution
+    assert second_execution is not None
+    assert second_execution.state == "running"
+    assert second_execution.attempt_number == 2
+    assert second_execution.retry_of == first_execution.attempt_id
+    second_request, _ = dispatcher.dispatched[-1]
+    assert second_request.idempotency_key() == first_request.idempotency_key()
+
+
+def test_retry_is_blocked_without_cleanup_or_after_third_attempt(
+    tmp_path: Path,
+) -> None:
+    service = CatalogIntakeSubmissionService(store=_DurableMemoryStore())
+    dispatcher = _FakeDispatcher()
+    coordinator = CatalogIntakeDiscoveryCoordinator(service, dispatcher)
+    submitted = service.submit(_submission())
+    service.approve_source(submitted.intake_id, approved_by="catalog-reviewer")
+    running = coordinator.start(submitted.intake_id, requested_by="catalog-reviewer")
+    execution = running.discovery_execution
+    assert execution is not None
+
+    invalid_cleanup = _receipt(tmp_path, submitted.intake_id).model_copy(
+        update={
+            "attempt_id": execution.attempt_id,
+            "status": "failed",
+            "error_codes": ["worker-timeout"],
+            "output_hash": None,
+            "draft_intake": None,
+            "cleanup": CatalogIntakeCleanupReceipt(
+                receipt_id="sha256:" + "f" * 64,
+                attempt_id=execution.attempt_id,
+                workspace_removed=False,
+                result="fail",
+            ),
+        }
+    )
+    coordinator.collect(invalid_cleanup)
+    with pytest.raises(ValueError, match="verified cleanup receipt"):
+        coordinator.retry(submitted.intake_id, requested_by="catalog-reviewer")
+
+    failed = service.get(submitted.intake_id)
+    assert failed is not None and failed.discovery_execution is not None
+    forced_third = failed.discovery_execution.model_copy(
+        update={
+            "attempt_number": 3,
+            "error_codes": ["worker-start-failure"],
+            "cleanup_verified": True,
+            "cleanup_receipt_id": "sha256:" + "a" * 64,
+        }
+    )
+    service.store.replace(
+        failed,
+        failed.model_copy(update={"discovery_execution": forced_third}),
+    )
+    with pytest.raises(ValueError, match="retry limit reached"):
+        coordinator.retry(submitted.intake_id, requested_by="catalog-reviewer")
+
+
+def test_scanner_failure_is_not_retryable_even_after_verified_cleanup(
+    tmp_path: Path,
+) -> None:
+    service = CatalogIntakeSubmissionService(store=_DurableMemoryStore())
+    dispatcher = _FakeDispatcher()
+    coordinator = CatalogIntakeDiscoveryCoordinator(service, dispatcher)
+    submitted = service.submit(_submission())
+    service.approve_source(submitted.intake_id, approved_by="catalog-reviewer")
+    running = coordinator.start(submitted.intake_id, requested_by="catalog-reviewer")
+    execution = running.discovery_execution
+    assert execution is not None
+    receipt = _receipt(tmp_path, submitted.intake_id).model_copy(
+        update={
+            "attempt_id": execution.attempt_id,
+            "status": "failed",
+            "error_codes": ["source-scan-failed"],
+            "output_hash": None,
+            "draft_intake": None,
+            "cleanup": CatalogIntakeCleanupReceipt(
+                receipt_id="sha256:" + "b" * 64,
+                attempt_id=execution.attempt_id,
+                workspace_removed=True,
+                result="pass",
+            ),
+        }
+    )
+    coordinator.collect(receipt)
+
+    with pytest.raises(ValueError, match="not retryable"):
+        coordinator.retry(submitted.intake_id, requested_by="catalog-reviewer")
+
+
 def test_discovery_bridge_contract_keeps_live_authority_disabled() -> None:
     root = Path(__file__).resolve().parents[2]
     contract = yaml.safe_load(

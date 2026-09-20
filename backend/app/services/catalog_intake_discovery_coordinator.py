@@ -35,10 +35,8 @@ class CatalogIntakeDiscoveryCoordinator:
         self.service = service
         self.dispatcher = dispatcher
 
-    def start(self, intake_id: str, *, requested_by: str) -> CatalogIntakeDraft:
-        if not self.dispatcher.available:
-            raise ValueError("isolated discovery worker is not available")
-        queued = self.service.start_discovery(intake_id, requested_by=requested_by)
+    def _dispatch(self, queued: CatalogIntakeDraft) -> CatalogIntakeDraft:
+        intake_id = queued.intake_id
         approval = queued.source_approval
         execution = queued.discovery_execution
         assert approval is not None and execution is not None
@@ -60,6 +58,20 @@ class CatalogIntakeDiscoveryCoordinator:
             raise ValueError("discovery dispatch failed") from None
         return self.service.mark_discovery_running(intake_id)
 
+    def start(self, intake_id: str, *, requested_by: str) -> CatalogIntakeDraft:
+        if not self.dispatcher.available:
+            raise ValueError("isolated discovery worker is not available")
+        queued = self.service.start_discovery(intake_id, requested_by=requested_by)
+        return self._dispatch(queued)
+
+    def retry(self, intake_id: str, *, requested_by: str) -> CatalogIntakeDraft:
+        if not self.dispatcher.available:
+            raise ValueError("isolated discovery worker is not available")
+        queued = self.service.retry_discovery(
+            intake_id, requested_by=requested_by
+        )
+        return self._dispatch(queued)
+
     def collect(self, receipt: CatalogIntakeDiscoveryReceipt) -> CatalogIntakeDraft:
         draft = self.service.get(receipt.intake_id)
         if draft is None:
@@ -77,7 +89,18 @@ class CatalogIntakeDiscoveryCoordinator:
         ):
             raise ValueError("discovery receipt repository identity does not match")
         if receipt.status != "passed":
+            cleanup_verified = (
+                receipt.cleanup.attempt_id == receipt.attempt_id
+                and receipt.cleanup.result == "pass"
+                and receipt.cleanup.workspace_removed
+            )
             return self.service.mark_discovery_failed(
-                receipt.intake_id, receipt.error_codes or ["worker-failed"]
+                receipt.intake_id,
+                receipt.error_codes or ["worker-failed"],
+                idempotency_key=receipt.idempotency_key,
+                cleanup_receipt_id=(
+                    receipt.cleanup.receipt_id if cleanup_verified else None
+                ),
+                cleanup_verified=cleanup_verified,
             )
         return self.service.record_discovery(receipt.intake_id, receipt)

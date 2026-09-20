@@ -19,6 +19,7 @@ from app.domain.catalog_intake_discovery import (
 from app.services.catalog_onboarding import discover_quickstart_repo
 
 Checkout = Callable[[str, str, Path], None]
+Scanner = Callable[[Path], tuple[int, int]]
 MAX_WORKSPACE_BYTES = 512 * 1024 * 1024
 MAX_OUTPUT_BYTES = 1024 * 1024
 SECRET_PATTERNS = (
@@ -59,6 +60,10 @@ class SourcePolicyDeniedError(ValueError):
 
 
 class SourceSecretDetectedError(ValueError):
+    pass
+
+
+class SourceScannerFailedError(RuntimeError):
     pass
 
 
@@ -110,23 +115,26 @@ def checkout_immutable_github_source(
 def _scan_workspace(root: Path) -> tuple[int, int]:
     file_count = 0
     byte_count = 0
-    for path in sorted(root.rglob("*")):
-        if path.is_symlink():
-            raise SourcePolicyDeniedError("source-symlink-denied")
-        if not path.is_file() or ".git" in path.parts:
-            continue
-        file_count += 1
-        size = path.stat().st_size
-        byte_count += size
-        if byte_count > MAX_WORKSPACE_BYTES:
-            raise SourcePolicyDeniedError("source-size-exceeded")
-        with path.open("rb") as handle:
-            previous = b""
-            while chunk := handle.read(64 * 1024):
-                sample = previous + chunk
-                if _contains_secret(sample):
-                    raise SourceSecretDetectedError("source-secret-detected")
-                previous = sample[-256:]
+    try:
+        for path in sorted(root.rglob("*")):
+            if path.is_symlink():
+                raise SourcePolicyDeniedError("source-symlink-denied")
+            if not path.is_file() or ".git" in path.parts:
+                continue
+            file_count += 1
+            size = path.stat().st_size
+            byte_count += size
+            if byte_count > MAX_WORKSPACE_BYTES:
+                raise SourcePolicyDeniedError("source-size-exceeded")
+            with path.open("rb") as handle:
+                previous = b""
+                while chunk := handle.read(64 * 1024):
+                    sample = previous + chunk
+                    if _contains_secret(sample):
+                        raise SourceSecretDetectedError("source-secret-detected")
+                    previous = sample[-256:]
+    except OSError as exc:
+        raise SourceScannerFailedError("source-scan-failed") from exc
     return file_count, byte_count
 
 
@@ -153,12 +161,14 @@ class CatalogIntakeDiscoveryRunner:
         source_approvals: list[CatalogIntakeSourceApproval],
         workspace_parent: Path,
         checkout: Checkout = checkout_immutable_github_source,
+        scan: Scanner = _scan_workspace,
     ) -> None:
         self.source_approvals = {
             approval.approval_id: approval for approval in source_approvals
         }
         self.workspace_parent = workspace_parent
         self.checkout = checkout
+        self.scan = scan
 
     def _source_is_approved(
         self,
@@ -225,7 +235,7 @@ class CatalogIntakeDiscoveryRunner:
             source = workspace / "source"
             try:
                 self.checkout(request.repository_url, request.revision, source)
-                file_count, byte_count = _scan_workspace(source)
+                file_count, byte_count = self.scan(source)
                 draft, report = discover_quickstart_repo(
                     source,
                     repo_url=request.repository_url,
@@ -247,6 +257,10 @@ class CatalogIntakeDiscoveryRunner:
             except SourcePolicyDeniedError as exc:
                 status = "denied"
                 error_codes = [str(exc)]
+                draft = None
+            except SourceScannerFailedError:
+                status = "failed"
+                error_codes = ["source-scan-failed"]
                 draft = None
             except Exception:  # noqa: BLE001 - receipt must not leak failure detail
                 status = "failed"

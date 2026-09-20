@@ -378,9 +378,15 @@ repository and receive a safe, reviewable, certified catalog draft.**
   live mutations. Arena now proves runtime isolation and egress enforcement in
   a dedicated non-production namespace. Payload/source/output scanning, stable
   idempotency, sanitized failure codes, cleanup receipts, and the restricted
-  Job contract have component and partial live proof. Timeout, cancellation,
-  scanner-failure, retry recovery, signing/SBOM, and trusted collection remain
-  open, so release eligibility stays false and the admin action remains off.
+  Job contract have component and partial live proof. Arena fault injection now
+  proves sanitized scanner failure with a passing cleanup receipt, and proves
+  timeout/cancellation remove their pods and ephemeral volumes. Bounded retry
+  is GREEN-local and requires a verified cleanup receipt, preserves the stable
+  idempotency key, and rejects scanner or policy failures. Forced termination
+  still cannot produce the required trusted zero-residue receipt; deployed
+  retry recovery, signing/SBOM, a trusted collector, and one fully passing
+  canonical repository remain open. Release eligibility stays false and the
+  admin action remains off.
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
   release identity, approval history, and rollback metadata in the admin UI.
   **GREEN-integration (draft visibility):** draft responses and the admin Intake

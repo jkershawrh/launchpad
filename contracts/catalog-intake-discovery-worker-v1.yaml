@@ -105,9 +105,12 @@ evidence:
     - deployed allowlisting egress proxy
     - enforced NetworkPolicy probe
     - immutable Quickstart fetch, scan, denial, discovery failure, and cleanup
+    - scanner failure returns only a sanitized code and a passing cleanup receipt
+    - Kubernetes deadline and cancellation remove the worker pod and ephemeral volume
+    - retry is bounded, preserves idempotency, and requires verified cleanup
   live_proofs_required:
     - signed external worker image and SBOM
     - trusted dispatcher and sanitized receipt collector
-    - scanner failure and timeout fault injection
-    - cleanup and retry recovery
+    - trusted external timeout and cancellation cleanup receipts
+    - deployed retry recovery through the trusted dispatcher and collector
     - immutable Quickstart end-to-end passing discovery

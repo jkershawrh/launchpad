@@ -16,7 +16,7 @@
   },
   "contract": {
     "artifact": "contracts/catalog-intake-discovery-worker-v1.yaml",
-    "sha256": "c6c1311e146a775c576de04161c1fbf915298173b1b619ad31b36efb3e4838ab"
+    "sha256": "197c6b54055723a3df89ed1e17d8c8c13faccc9498add58bfae4b5ebf4d86f33"
   },
   "containerfile": {
     "artifact": "backend/Containerfile.catalog-intake-worker",
