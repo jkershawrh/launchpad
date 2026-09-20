@@ -1,0 +1,38 @@
+{
+  "schema_version": "launchpad.intel.com/test-evidence/v1",
+  "run_id": "event-cleanup-postgres-20260920T021716Z",
+  "observed_at": "2026-09-20T02:17:16Z",
+  "source_commit": "18a022097713ce3442f3556876b7bcc11f574229",
+  "test": "backend/tests/test_event_cleanup_postgres.py",
+  "result": "passed",
+  "database": {
+    "engine": "PostgreSQL",
+    "version": "16.15",
+    "container_image": "docker.io/library/postgres:16-alpine",
+    "container_digest": "sha256:738d1359df5aa0b6d50a9071e989c49fdd39152a2a805c6ff131bf5e2243e0b3",
+    "scope": "disposable local integration database"
+  },
+  "proof": {
+    "event_workshops": 1,
+    "event_seats": 2,
+    "participant_claims": 1,
+    "process_restarts": 4,
+    "concurrent_finalizers": 2,
+    "first_release_count": 1,
+    "idempotent_replay_release_count": 0,
+    "concurrent_release_counts": [0, 1],
+    "live_cluster_mutations": 0
+  },
+  "artifacts": [
+    {
+      "path": "evidence/runs/event-cleanup-postgres/green-integration.xml",
+      "sha256": "856768ba813c8908c54a4cc12f61615cbd9d1381fa161b9f2b72f44a8418815b"
+    }
+  ],
+  "limitations": [
+    "The execution-cluster resource inspector is not exercised.",
+    "The external OIDC browser journey is not exercised.",
+    "External model-key revocation receipts are not exercised.",
+    "Database failure injection remains open."
+  ]
+}

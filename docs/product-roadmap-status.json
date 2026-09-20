@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:11:22Z",
+  "updated_at": "2026-09-20T02:19:33Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -441,10 +441,10 @@
       "state": "green-local",
       "methods": {
         "tdd": "green-local",
-        "edd": "green-local",
+        "edd": "green-integration",
         "cdd": "green-local",
         "bdd": "green-local",
-        "cbt": "green-local"
+        "cbt": "green-integration"
       },
       "evidence": [
         "backend/tests/test_event_orchestration.py",
@@ -455,10 +455,12 @@
         "evidence/runs/event-bulk-reclaim/red-local.xml",
         "evidence/runs/event-cleanup-finalization/green-local.xml",
         "evidence/runs/event-cleanup-finalization/red-local.xml",
+        "evidence/runs/event-cleanup-postgres/green-integration.xml",
+        "evidence/runs/event-cleanup-postgres/manifest.json",
         "evidence/runs/event-orchestration/green-local.xml",
         "evidence/runs/event-orchestration/red-local.xml"
       ],
-      "note": "Local zero-residue finalization now verifies completed cluster-bound reclaim jobs, reclaimed seats and sessions, absent namespaces/control RBAC/Argo applications, scrubbed stored credentials, and disabled public-access residue before releasing capacity with a deterministic SHA-256 evidence ID. External model-key revocation receipts, PostgreSQL/restart proof, claim/SSO cleanup, and live staged certification remain open."
+      "note": "Disposable PostgreSQL 16 integration now proves a two-seat public event through claim, durable reclaim, process restart, SHA-256 cleanup finalization, second restart, and idempotent replay. A concurrent run with two reconstructed finalizers converges on one release and one digest. Overall state remains green-local because TDD, CDD, and BDD integration proof, database failure injection, live OpenShift residue inspection, external OIDC, and model-key revocation receipts remain open."
     },
     "LP-T023": {
       "state": "green-local",

@@ -162,13 +162,21 @@ changed cleanup evidence to fail closed. The result exposes only counts,
 resource identifiers, and the digest; it contains no instructor code,
 participant email, access token, or model credential.
 
-A real PostgreSQL integration run, public-access claim/SSO validation, and live
-zero-residue proof remain separate gates.
+A disposable PostgreSQL 16 integration run now proves a two-seat public event
+across the approved manifest, reservation ledger, workshop/session stores,
+public-access store, and lifecycle-job store. The run claims one seat, queues
+and executes reclaim, reconstructs every service from PostgreSQL, finalizes
+cleanup, reconstructs the services a second time, and verifies that the same
+evidence digest returns an idempotent zero-release replay. A second run starts
+two reconstructed finalizers concurrently and proves that PostgreSQL releases
+the reservation exactly once while both callers converge on the same digest.
+This is integration evidence for persistence, process restart, and concurrent
+finalization; it does not represent a live OpenShift cleanup, external OIDC
+browser journey, or model-key revocation receipt.
 
 ## Next boundary
 
-The next orchestration increment must prove this unchanged flow against real
-PostgreSQL concurrency and restart recovery, then exercise participant
-claim/SSO and live zero-residue cleanup at the staged 1-, 5-, and certified-seat
-gates. A release remains local-only until those integration and live proofs
-exist.
+The next orchestration increment must add PostgreSQL failure injection, then
+exercise participant claim/SSO and live zero-residue cleanup at the staged 1-,
+5-, and certified-seat gates. A release remains short of live acceptance until
+those external and staged proofs exist.
