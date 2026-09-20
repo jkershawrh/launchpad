@@ -222,6 +222,22 @@ result. It does not prove Keycloak/OIDC, browser rendering, OpenShift RBAC or
 Console access, live LiteLLM revocation, Argo CD deletion, or live namespace
 cleanup. Those remain required at the integration and live gates.
 
+A second proof repeats all four seat gates against disposable PostgreSQL 16.
+For each gate, the test persists the event, reservation, workshop, sessions,
+access policy, identities, entitlements, hashed access sessions, lifecycle
+jobs, cleanup evidence, and capacity release. It reconstructs the platform
+services before checking provisioned state, uses one independent access-service
+instance per participant during the claim burst, reconstructs again before
+reclaim, and validates denial through another reconstructed service. The
+30-seat gate assigns 30 unique seats and all 61 sessions across the four gates
+survive reconstruction before being durably denied after reclaim.
+
+That run is GREEN-integration for persistence, service reconstruction,
+multi-replica claim behavior, lifecycle execution, and transactional cleanup.
+It remains synthetic at the infrastructure boundary: the external resource
+inspector returns an explicit zero-residue result, and neither the HTTP/browser
+contracts nor OpenShift, Argo CD, LiteLLM, or Keycloak are invoked.
+
 ## Next boundary
 
 The next orchestration increment must exercise the external participant

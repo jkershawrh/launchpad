@@ -1,0 +1,61 @@
+{
+  "schema_version": "launchpad.intel.com/test-evidence/v1",
+  "run_id": "event-participant-journey-postgres-20260920T031403Z",
+  "observed_at": "2026-09-20T03:14:03Z",
+  "source_commit": "82c74b56c34dd55d17772f1acd510de71df7ad57",
+  "test": "backend/tests/test_event_cleanup_postgres.py",
+  "result": "passed",
+  "database": {
+    "engine": "PostgreSQL",
+    "version": "16",
+    "container_image": "docker.io/library/postgres:16-alpine",
+    "container_digest": "sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685",
+    "scope": "disposable local integration database"
+  },
+  "proof": {
+    "seat_gates": [
+      1,
+      5,
+      25,
+      30
+    ],
+    "workshops_launched": 4,
+    "seats_provisioned": 61,
+    "independent_claim_service_instances_at_largest_gate": 30,
+    "simultaneous_claims_at_largest_gate": 30,
+    "distinct_seats_assigned": 61,
+    "sessions_valid_after_service_reconstruction": 61,
+    "sessions_denied_after_durable_reclaim": 61,
+    "capacity_reservations_released_after_zero_residue": 4,
+    "additional_restart_and_transaction_tests": 4,
+    "live_cluster_mutations": 0
+  },
+  "durable_boundaries": [
+    "event manifest",
+    "aggregate capacity reservation",
+    "workshop",
+    "lab sessions",
+    "public access policy",
+    "participant identity",
+    "seat entitlement",
+    "hashed access session",
+    "lifecycle jobs",
+    "cleanup evidence and capacity release"
+  ],
+  "artifacts": [
+    {
+      "path": "evidence/runs/event-participant-journey-postgres/red-integration.xml",
+      "sha256": "e7b4ffabefa63ca1edee27d45c5d0768c80ab4b0c364c040f51f6108139bd4f7"
+    },
+    {
+      "path": "evidence/runs/event-participant-journey-postgres/green-integration.xml",
+      "sha256": "1aa3c0c978e73088378b05b0e8079805c268b6b59d29c7142ba7ed6d7f661b93"
+    }
+  ],
+  "limitations": [
+    "The OpenShift, Argo CD, LiteLLM, and external identity-provider boundaries are not invoked.",
+    "The external resource inspector is fixed to an explicit zero-residue response.",
+    "The HTTP event-order and participant-browser contracts are not exercised by this service-level integration run.",
+    "No live workshop, namespace, model endpoint, or public route is changed."
+  ]
+}

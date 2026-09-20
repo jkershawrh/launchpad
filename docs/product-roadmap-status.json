@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:53:45Z",
+  "updated_at": "2026-09-20T03:14:32Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -496,20 +496,23 @@
     "LP-T024": {
       "state": "green-local",
       "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
+        "tdd": "green-integration",
+        "edd": "green-integration",
         "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
+        "bdd": "green-integration",
+        "cbt": "green-integration"
       },
       "evidence": [
         "contracts/event-orchestration-v1.yaml",
         "contracts/public-access-v1.yaml",
+        "evidence/runs/event-participant-journey-postgres/green-integration.xml",
+        "evidence/runs/event-participant-journey-postgres/manifest.json",
+        "evidence/runs/event-participant-journey-postgres/red-integration.xml",
         "evidence/runs/event-participant-journey/green-local.xml",
         "evidence/runs/event-participant-journey/manifest.json",
         "evidence/runs/event-participant-journey/red-local.xml"
       ],
-      "note": "Exact 1-, 5-, 25-, and 30-seat local journeys are green from approved event and reservation through provisioning, simultaneous claims, authorization, reclaim, denial, cleanup finalization, and capacity release. External browser/OIDC and live OpenShift/LiteLLM/Argo CD integration and acceptance gates remain open."
+      "note": "Exact 1-, 5-, 25-, and 30-seat journeys are GREEN-integration for PostgreSQL persistence, service reconstruction, multi-replica claims, durable lifecycle execution, reclaim denial, cleanup evidence, and capacity release. Overall remains GREEN-local because HTTP/browser contracts and live Keycloak, OpenShift, Argo CD, and LiteLLM acceptance remain open."
     }
   },
   "rubric": [

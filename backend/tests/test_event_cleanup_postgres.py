@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import os
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+from app.domain.enums import SessionStatus, WorkshopStatus
 from app.domain.events import (
     EventCapacitySupply,
     EventCatalogCapacity,
@@ -83,10 +85,15 @@ def event_schema(monkeypatch):
     conn.close()
 
 
-def _event(now: datetime) -> tuple[EventRecord, EventCapacitySupply]:
+def _event(
+    now: datetime,
+    *,
+    seats: int = 2,
+    event_id: str = "restart-proof",
+) -> tuple[EventRecord, EventCapacitySupply]:
     manifest = EventManifest.model_validate(
         {
-            "event_id": "restart-proof",
+            "event_id": event_id,
             "name": "Restart proof",
             "owner": "event-owner",
             "technical_approver": "technical-owner",
@@ -95,7 +102,7 @@ def _event(now: datetime) -> tuple[EventRecord, EventCapacitySupply]:
             "cohorts": [
                 {
                     "cohort_id": "wave-1",
-                    "participants": 2,
+                    "participants": seats,
                     "lab_refs": ["agent"],
                 }
             ],
@@ -111,10 +118,19 @@ def _event(now: datetime) -> tuple[EventRecord, EventCapacitySupply]:
             "approval": {
                 "event_owner_approved": True,
                 "technical_approver_approved": True,
-                "approved_seat_environments": 2,
+                "approved_seat_environments": seats,
                 "approved_retention_hours": 8,
             },
         }
+    )
+    per_seat = EventResourceVector(
+        seats=1,
+        cpu_millicores=1_000,
+        memory_mib=2_000,
+        pods=3,
+        storage_gib=10,
+        routes=3,
+        model_slots=1,
     )
     supply = EventCapacitySupply(
         matrix_id="restart-matrix-v1",
@@ -127,30 +143,14 @@ def _event(now: datetime) -> tuple[EventRecord, EventCapacitySupply]:
                 enabled=True,
                 exposure_policies=["public_code"],
                 capabilities=["cpu", "model-endpoint"],
-                certified_seats=2,
-                resource_capacity=EventResourceVector(
-                    seats=2,
-                    cpu_millicores=2_000,
-                    memory_mib=4_000,
-                    pods=6,
-                    storage_gib=20,
-                    routes=6,
-                    model_slots=2,
-                ),
+                certified_seats=seats,
+                resource_capacity=per_seat.scaled(seats),
                 catalogs=[
                     EventCatalogCapacity(
                         catalog_id="build-agent",
                         catalog_release="v2",
-                        certified_seats=2,
-                        resources_per_seat=EventResourceVector(
-                            seats=1,
-                            cpu_millicores=1_000,
-                            memory_mib=2_000,
-                            pods=3,
-                            storage_gib=10,
-                            routes=3,
-                            model_slots=1,
-                        ),
+                        certified_seats=seats,
+                        resources_per_seat=per_seat,
                     )
                 ],
             )
@@ -233,6 +233,146 @@ def _prepare_reclaimed_event() -> EventRecord:
     )
     assert worker.run_once() == "succeeded"
     return record
+
+
+@pytest.mark.parametrize("seats", [1, 5, 25, 30])
+def test_durable_participant_journey_survives_process_reconstruction(
+    seats: int,
+) -> None:
+    now = datetime.now(UTC)
+    event_id = f"durable-participant-journey-{seats}"
+    record, supply = _event(now, seats=seats, event_id=event_id)
+    EventManifestStore(db_store=PostgresEventStore()).create(record)
+    ledger, provisioning, _, jobs, orchestration = _services()
+    plan = build_event_reservation_plan(
+        record,
+        supply,
+        expires_at=now + timedelta(hours=8),
+        now=now,
+    )
+    ledger.reserve(plan, supply, now=now)
+
+    with patch.object(
+        provisioning,
+        "check_workshop_capacity",
+        return_value=(True, "reserved event capacity"),
+    ):
+        launched = orchestration.launch(
+            record,
+            request=EventWorkshopLaunchRequest(
+                tenant_id="event-tenant",
+                ttl="8h",
+            ),
+        )
+        worker = LifecycleWorker(
+            store=jobs,
+            provisioning_service=provisioning,
+            worker_id=f"durable-provision-{seats}",
+            lease_seconds=10,
+            heartbeat_interval_seconds=1,
+        )
+        assert worker.run_once() == "succeeded"
+
+    workshop_id = launched.workshops[0].workshop_id
+    _, restarted_provisioning, _, _, restarted_orchestration = _services()
+    workshop = restarted_provisioning.get_workshop(workshop_id)
+    assert workshop.status == WorkshopStatus.READY
+    assert len(workshop.session_ids) == seats
+    assert {
+        restarted_provisioning.get_session(session_id).status
+        for session_id in workshop.session_ids
+    } == {SessionStatus.READY}
+
+    activated = restarted_orchestration.activate_public_access(record, workshop_id)
+    replicas = [
+        PublicAccessService(
+            store=PostgresAccessStore(),
+            enabled=True,
+            shared_origin="https://labs.example.io",
+            shared_path_mode=True,
+        )
+        for _ in range(seats)
+    ]
+    barrier = threading.Barrier(seats)
+
+    def claim(participant: int):
+        barrier.wait()
+        return replicas[participant - 1].claim(
+            order_id=workshop_id,
+            email=f"participant-{participant}@example.test",
+            code=activated.one_time_access_code,
+            ip_address=f"192.0.2.{participant}",
+        )
+
+    with ThreadPoolExecutor(max_workers=seats) as pool:
+        claims = list(pool.map(claim, range(1, seats + 1)))
+    assert len({item.entitlement.seat_ref for item in claims}) == seats
+
+    session_reader = PublicAccessService(
+        store=PostgresAccessStore(),
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    for item in claims:
+        restored = session_reader.validate_session(item.session_token, workshop_id)
+        assert restored.participant_id == item.identity.participant_id
+
+    restarted_record = EventManifestStore(db_store=PostgresEventStore()).get(event_id)
+    assert restarted_record is not None
+    (
+        reclaimed_ledger,
+        reclaimed_provisioning,
+        _,
+        reclaimed_jobs,
+        reclaimed_orchestration,
+    ) = _services()
+    queued = reclaimed_orchestration.reclaim(restarted_record)
+    assert queued.status == "queued"
+    reclaim_worker = LifecycleWorker(
+        store=reclaimed_jobs,
+        provisioning_service=reclaimed_provisioning,
+        worker_id=f"durable-reclaim-{seats}",
+        lease_seconds=10,
+        heartbeat_interval_seconds=1,
+    )
+    assert reclaim_worker.run_once() == "succeeded"
+    assert (
+        reclaimed_provisioning.get_workshop(workshop_id).status
+        == WorkshopStatus.COMPLETED
+    )
+
+    denied_reader = PublicAccessService(
+        store=PostgresAccessStore(),
+        enabled=True,
+        shared_origin="https://labs.example.io",
+        shared_path_mode=True,
+    )
+    for item in claims:
+        with pytest.raises(ValueError, match="Access denied"):
+            denied_reader.validate_session(item.session_token, workshop_id)
+
+    zero_residue = {
+        "namespace": 0,
+        "image_puller_role_binding": 0,
+        "showroom_application": 0,
+        "workload_application": 0,
+        "credentials": 0,
+        "model_key_revocation": 0,
+    }
+    with patch.object(
+        reclaimed_provisioning,
+        "inspect_session_cleanup",
+        return_value=zero_residue,
+    ):
+        finalized = reclaimed_orchestration.finalize_cleanup(restarted_record)
+    assert finalized.cleanup_verified is True
+    assert finalized.summary.seats == seats
+    assert finalized.summary.external_residue == 0
+    assert finalized.summary.access_residue == 0
+    assert {
+        item.status for item in reclaimed_ledger.list_for_event(event_id)
+    } == {"released"}
 
 
 def test_parallel_api_replicas_claim_unique_seats_and_survive_restart() -> None:
