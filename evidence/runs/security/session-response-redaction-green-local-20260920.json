@@ -1,0 +1,40 @@
+{
+  "evidence_id": "session-response-redaction-green-local-20260920",
+  "generated_at": "2026-09-20T05:54:00Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T058"],
+  "related_open_task_ids": ["LP-T057", "LP-T059"],
+  "red": {
+    "tests_failed": 6,
+    "result": "session API responses exposed persisted credential fields before a public response contract existed"
+  },
+  "green": {
+    "focused_security_tests_passed": 9,
+    "combined_convergence_tests_passed": 121,
+    "tests_failed": 0
+  },
+  "proof": {
+    "response_contract": "LabSessionResponse",
+    "maas_api_key_in_openapi_schema": false,
+    "nested_credential_values_returned": false,
+    "covered_paths": [
+      "session list and detail",
+      "request provisioning",
+      "validate, activate, reset, and reclaim",
+      "admin force reclaim",
+      "public session service representation"
+    ],
+    "preserved_public_fields": [
+      "namespace",
+      "cluster reference",
+      "lab and dashboard URLs",
+      "non-sensitive resource metadata"
+    ]
+  },
+  "boundary": [
+    "This is a local API contract and regression proof, not a live deployment result",
+    "Persisted credentials remain available only to internal lifecycle code",
+    "Credential rotation, signing, policy-as-code, and abuse testing remain open roadmap work",
+    "No execution cluster or retained workshop was accessed"
+  ]
+}

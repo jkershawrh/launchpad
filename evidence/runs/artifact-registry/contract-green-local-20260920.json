@@ -1,0 +1,46 @@
+{
+  "evidence_id": "artifact-registry-contract-green-local-20260920",
+  "generated_at": "2026-09-20T05:46:07Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T018"],
+  "related_open_task_ids": ["LP-T019", "LP-T020"],
+  "red": {
+    "test": "backend/tests/test_artifact_registry_policy.py",
+    "result": "collection failed because build_registry_policy_report did not exist"
+  },
+  "green": {
+    "tests_passed": 9,
+    "tests_failed": 0,
+    "contract_status": "GREEN-local",
+    "release_eligible": false,
+    "contract_violations": 0
+  },
+  "authority": {
+    "provider": "quay",
+    "origin": "quay.io/redhat-gpte",
+    "state": "provisional"
+  },
+  "repositories": {
+    "admin": "quay.io/redhat-gpte/launchpad-admin",
+    "backend": "quay.io/redhat-gpte/launchpad-backend",
+    "keycloak": "quay.io/redhat-gpte/launchpad-keycloak",
+    "portal": "quay.io/redhat-gpte/launchpad-portal",
+    "showroom_git_cloner": "quay.io/redhat-gpte/launchpad-showroom-git-cloner",
+    "showroom_terminal": "quay.io/redhat-gpte/launchpad-showroom-terminal"
+  },
+  "release_gaps": [
+    "organization ownership approval is not recorded",
+    "component pull grants are not verified",
+    "signing identity is not approved",
+    "Arena destination qualification is not GREEN-live",
+    "Brutus destination qualification is not GREEN-live",
+    "Flightpath destination qualification is not GREEN-live",
+    "Oberon destination qualification is not GREEN-live"
+  ],
+  "boundary": [
+    "No registry repository or permission was changed",
+    "No image was promoted or deleted",
+    "No execution cluster or retained workshop was accessed",
+    "The local contract is green but production release remains fail-closed"
+  ]
+}

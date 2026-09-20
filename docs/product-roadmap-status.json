@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T05:37:57Z",
+  "updated_at": "2026-09-20T05:54:53Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -569,6 +569,62 @@
         "evidence/runs/public-access-atomic-rotation/green-local.xml"
       ],
       "note": "Flightpath isolated stage now proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. No public Route, production tunnel token, execution-cluster credential, lifecycle worker, or live workshop was touched. This remains GREEN-integration: realm/client/browser and namespace-RBAC journeys, a dedicated staging connector, PostgreSQL HA, external load, live failover, and soak remain open."
+    },
+    "LP-T018": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/artifact-registry/contract-green-local-20260920.json"
+      ],
+      "note": "Quay is selected as the provisional authoritative image origin with dedicated component repositories, scoped credential roles, immutable-release controls, retention guards, destination qualification requirements, and a fail-closed CI/local validator. The contract is GREEN-local only. Production release remains ineligible until organization ownership, dedicated repository grants, signing identity, restore evidence, and exact-digest cold-pull/cache-loss certification are GREEN-live on each eligible cluster."
+    },
+    "LP-T097": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/catalog-intake/static-inventory-green-local-20260920.json"
+      ],
+      "note": "Immutable quickstart discovery now emits a deterministic, review-only inventory of Containerfiles, images, Kubernetes resources, Operators, routes, ports, model references, resource envelopes, storage, Secret references, cluster-scoped resources, privilege findings, and cleanup candidates. Secret payloads are never copied, and risky or ambiguous findings add activation blockers. This is GREEN-local discovery evidence only; intake API, draft generation, deployed certification, promotion, and admin workflow remain open."
+    },
+    "LP-T102": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/event-capacity-reconciliation/manifest.json"
+      ],
+      "note": "The September 17 manifest and recorded postmortem now reconcile through a versioned offline contract: 3 cohorts, 90 participants, 9 workshops, and 270 seat-environments forecast and provisioned, with 191 claimed and 79 unclaimed. Missing reservation, resource, model, queue, and cache measurements remain explicitly unavailable rather than being represented as zero. This is GREEN-local recorded-data evidence only; live measurement, atomic reservation, admission, and capacity release remain open."
+    },
+    "LP-T058": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/security/session-response-redaction-green-local-20260920.json"
+      ],
+      "note": "A dedicated secret-free LabSessionResponse contract now covers list, detail, provisioning, lifecycle mutation, admin reclaim, and public service representations. MaaS keys are absent from OpenAPI and JSON responses, nested credential-like resource fields are recursively removed, and required public routing metadata remains. This is GREEN-local API evidence; rotation, policy-as-code, signing, live abuse tests, and the broader production security gate remain open."
     }
   },
   "rubric": [

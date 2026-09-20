@@ -38,6 +38,7 @@ from app.domain.lifecycle import transition
 from app.domain.models import (
     LabRequest,
     LabSession,
+    LabSessionResponse,
     LifecycleEvent,
     MaaSKeyRevocationReceipt,
     ProvisioningPlan,
@@ -1555,11 +1556,13 @@ class ProvisioningService:
                 self._sessions[session_id] = persisted
         return self._sessions.get(session_id)
 
-    def get_session_public(self, session_id: str) -> Optional[LabSession]:
+    def get_session_public(self, session_id: str) -> Optional[LabSessionResponse]:
         session = self.get_session(session_id)
         if not session:
             return None
-        return session.model_copy(update={"maas_api_key": None})
+        payload = session.model_dump()
+        payload["maas_api_key"] = None
+        return LabSessionResponse.model_validate(payload)
 
     def inspect_session_cleanup(self, session_id: str) -> dict[str, int]:
         """Read cleanup residue without deleting or repairing resources."""

@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.api.deps import catalog_adapter, lifecycle_job_store, provisioning_service
 from app.auth.oauth import require_admin
 from app.domain.enums import CatalogStatus
-from app.domain.models import CatalogItem, LabSession
+from app.domain.models import CatalogItem, LabSessionResponse
 from app.integrations.llm_audit import get_llm_audit_log
 from app.services.admin_observability import build_admin_observability
 from app.services.health import check_health_detailed
@@ -138,7 +138,7 @@ def restart_container(name: str) -> Dict[str, Any]:
     return result
 
 
-@router.post("/sessions/{session_id}/force-reclaim", response_model=LabSession)
+@router.post("/sessions/{session_id}/force-reclaim", response_model=LabSessionResponse)
 def force_reclaim(session_id: str):
     try:
         return provisioning_service.force_reclaim_session(session_id)

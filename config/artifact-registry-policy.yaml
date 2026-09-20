@@ -1,0 +1,78 @@
+api_version: launchpad.redhat.com/artifact-registry-policy/v1
+authority:
+  provider: quay
+  origin: quay.io/redhat-gpte
+  state: provisional
+  organization_ownership_approved: false
+  note: >-
+    Quay is the selected authoritative candidate for immutable platform and
+    catalog images. Production use remains fail-closed until organizational
+    ownership, repository grants, signing identity, retention, restore, and
+    destination cold-pull evidence are approved.
+
+repositories:
+  backend:
+    repository: quay.io/redhat-gpte/launchpad-backend
+    pull_grant_verified: false
+  portal:
+    repository: quay.io/redhat-gpte/launchpad-portal
+    pull_grant_verified: false
+  admin:
+    repository: quay.io/redhat-gpte/launchpad-admin
+    pull_grant_verified: false
+  keycloak:
+    repository: quay.io/redhat-gpte/launchpad-keycloak
+    pull_grant_verified: false
+  showroom_terminal:
+    repository: quay.io/redhat-gpte/launchpad-showroom-terminal
+    pull_grant_verified: false
+  showroom_git_cloner:
+    repository: quay.io/redhat-gpte/launchpad-showroom-git-cloner
+    pull_grant_verified: false
+
+credentials:
+  ci_publisher:
+    permissions: [pull, push]
+    delivery: external-secret
+  execution_cluster_pull:
+    permissions: [pull]
+    delivery: external-secret
+  human_operator:
+    permissions: [pull]
+    delivery: federated-login
+
+retention:
+  delete_while_referenced: false
+  minimum_rollback_releases: 3
+  superseded_release_days: 365
+  sbom_provenance_days: 365
+  quarantine_before_delete_days: 30
+
+required_controls:
+  immutable_digest: true
+  vulnerability_scan: true
+  sbom: true
+  signature: true
+  provenance: true
+  license_policy: true
+  architecture_metadata: true
+  backup_restore: true
+
+signing:
+  identity_approved: false
+  keyless_ci_preferred: true
+
+destination_qualification:
+  required_checks:
+    - credential
+    - certificate
+    - architecture
+    - signature
+    - exact_digest
+    - cold_pull
+    - cache_loss
+  clusters:
+    arena: {status: RED, evidence: []}
+    brutus: {status: RED, evidence: []}
+    flightpath: {status: RED, evidence: []}
+    oberon: {status: RED, evidence: []}

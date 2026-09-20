@@ -66,15 +66,42 @@ Mutable tags may be human-friendly aliases but are never the deployed catalog
 contract. An execution cluster's internal registry may be a cache or mirror;
 it is not the authoritative or cross-cluster source.
 
+### Authoritative registry status
+
+`config/artifact-registry-policy.yaml` selects `quay.io/redhat-gpte` as the
+provisional authoritative origin and reserves a dedicated repository for each
+platform component. The policy is intentionally fail-closed: it does not make
+a release production-eligible until organizational ownership, scoped robot
+grants, signing identity, retention/restore, and per-cluster exact-digest cold
+pull evidence are recorded. In particular, the Keycloak image must use its own
+repository; temporarily storing a stage build in the backend repository is not
+a promotable production pattern.
+
+Run `make artifact-registry` for the local contract gate. Release automation
+must additionally use `scripts/validate_artifact_registry.py
+--require-release-ready`, which remains red until every integration and live
+qualification is complete.
+
 ## Local workflow
 
 ### Start from an existing quickstart repository
 
 The onboarding CLI can inspect an immutable quickstart revision and generate
 the first fail-closed intake. It discovers a local Antora playbook/component
-pair and a Helm, Kustomize, or manifest workload package. It deliberately does
-not guess resource sizing, models, participant tabs, identity, runtime Secrets,
-or certification results.
+pair and a Helm, Kustomize, or manifest workload package. It also creates a
+review-only repository inventory covering Containerfiles, image references,
+Kubernetes resource kinds, Operators, ports, Routes, model-valued environment
+variables, resource requests and limits, persistent storage, Secret references,
+cluster-scoped resources, privileged behavior, and cleanup candidates.
+
+Discovery records Secret names and reference locations only. It never copies
+Secret `data` or `stringData` into the intake or discovery receipt. The
+inventory is evidence for a reviewer, not an approval: it deliberately does
+not infer supported resource sizing, models, participant tabs, identity,
+runtime Secret delivery, cleanup safety, or certification results. Mutable
+images, cluster-scoped resources, privileged behavior, repository-managed
+Secret manifests, and manifests that cannot be parsed all add explicit
+activation blockers.
 
 Inspect a protected, clean local checkout whose `HEAD` equals the supplied SHA:
 
@@ -98,6 +125,13 @@ Antora source or deployable workload is found. Multiple candidates produce a
 warning and block activation until the deterministic selection is reviewed.
 Local discovery rejects a non-Git directory, a different `HEAD`, or uncommitted
 changes so the receipt cannot describe content other than the declared SHA.
+
+The static image inventory is intentionally separate from artifact promotion.
+It identifies what the repository appears to reference and flags mutable
+references. The authoritative registry, signing, SBOM, provenance, retention,
+pull-grant, architecture, mirror, cold-pull, and rollback checks remain the
+supply-chain promotion gate. Static discovery never marks an image approved or
+deployable.
 
 After review, commit the intake, render the catalog record, and use the existing
 source/build/certification path below. There is one pipeline, not a per-lab

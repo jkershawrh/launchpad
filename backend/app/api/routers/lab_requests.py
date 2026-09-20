@@ -12,7 +12,7 @@ from app.api.deps import (
 )
 from app.auth.oauth import User, can_access_tenant, get_current_user, require_tenant_access
 from app.domain.access import ExposurePolicy
-from app.domain.models import LabRequest, LabSession
+from app.domain.models import LabRequest, LabSessionResponse
 
 router = APIRouter(prefix="/lab-requests", tags=["lab-requests"], dependencies=[Depends(get_current_user)])
 
@@ -64,7 +64,7 @@ def get_lab_request(request_id: str, user: User = Depends(get_current_user)):
     return req
 
 
-@router.post("/{request_id}/provision", response_model=LabSession, status_code=201)
+@router.post("/{request_id}/provision", response_model=LabSessionResponse, status_code=201)
 def provision_lab(
     request_id: str,
     response: Response,

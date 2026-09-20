@@ -149,6 +149,64 @@ class LabSession(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+_SENSITIVE_SESSION_RESOURCE_KEYS = {
+    "api_key",
+    "client_secret",
+    "credential",
+    "credentials",
+    "maas_api_key",
+    "password",
+    "private_key",
+    "refresh_token",
+    "sa_token",
+    "sandbox_data",
+    "ssh_password",
+    "token",
+    "workspace_password",
+}
+_SENSITIVE_SESSION_RESOURCE_SUFFIXES = (
+    "_api_key",
+    "_client_secret",
+    "_credential",
+    "_password",
+    "_private_key",
+    "_secret",
+    "_token",
+)
+
+
+def _secret_free_session_resources(value: Any) -> Any:
+    """Return participant-visible resource metadata without credential material."""
+
+    if isinstance(value, dict):
+        public: dict[str, Any] = {}
+        for key, item in value.items():
+            normalized = str(key).strip().lower().replace("-", "_")
+            if (
+                normalized in _SENSITIVE_SESSION_RESOURCE_KEYS
+                or normalized.endswith(_SENSITIVE_SESSION_RESOURCE_SUFFIXES)
+            ):
+                continue
+            public[key] = _secret_free_session_resources(item)
+        return public
+    if isinstance(value, list):
+        return [_secret_free_session_resources(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(_secret_free_session_resources(item) for item in value)
+    return value
+
+
+class LabSessionResponse(LabSession):
+    """Secret-free API representation of a persisted lab session."""
+
+    maas_api_key: Optional[str] = Field(default=None, exclude=True)
+
+    @field_validator("resources", mode="before")
+    @classmethod
+    def resources_are_secret_free(cls, value: Any) -> Dict[str, Any]:
+        return _secret_free_session_resources(value or {})
+
+
 class MaaSKeyRevocationReceipt(BaseModel):
     """Secret-free confirmation that a scoped model key was revoked."""
 

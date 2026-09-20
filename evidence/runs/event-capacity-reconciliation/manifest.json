@@ -1,0 +1,58 @@
+{
+  "schema_version": "launchpad.intel.com/test-evidence/v1",
+  "run_id": "event-capacity-reconciliation-20260920T055053Z",
+  "observed_at": "2026-09-20T05:50:53Z",
+  "source_commit": "a86b91072594bf2c4abebe5b38a5fbbf597f744f",
+  "result": "passed",
+  "scope": "Offline forecast-to-postmortem capacity reconciliation using recorded files only",
+  "tests": {
+    "count": 12,
+    "passed": 12,
+    "failed": 0,
+    "live_cluster_calls": 0,
+    "live_cluster_mutations": 0
+  },
+  "recorded_sources": [
+    {
+      "path": "fixtures/events/september-17-2026.yaml",
+      "sha256": "93d456b943e88a315cb9ccbd421ded0cb08d51cb75401398ca783f057ed00a00"
+    },
+    {
+      "path": "docs/september-17-pilot-postmortem.json",
+      "sha256": "edc26263dc0bb5855c7620950f5c2c71611004b082fe08f7f7d4d03841213a35"
+    }
+  ],
+  "proof": {
+    "forecast_participants": 90,
+    "forecast_workshops": 9,
+    "forecast_seat_environments": 270,
+    "observed_workshops": 9,
+    "observed_seats_provisioned": 270,
+    "observed_seats_claimed": 191,
+    "observed_seats_unclaimed": 79,
+    "provisioned_seat_variance": 0,
+    "missing_measurements_are_explicitly_unavailable": true,
+    "catalog_labels_are_not_guessed_into_ids": true
+  },
+  "artifacts": [
+    {
+      "path": "evidence/runs/event-capacity-reconciliation/red-local.xml",
+      "sha256": "2eee939edbdc92792a015e0aa25c2e620480560dfe13d6cf7b0924bb218363b6"
+    },
+    {
+      "path": "evidence/runs/event-capacity-reconciliation/red-approval-local.xml",
+      "sha256": "b86d64a7ad27ffdfa7f91ab3566337a1c306c646bce36911f9036a21d9bf9e88"
+    },
+    {
+      "path": "evidence/runs/event-capacity-reconciliation/green-local.xml",
+      "sha256": "106740d03affa1311e94b5e7369746b373b826055a926c2a20dded38000c207b"
+    }
+  ],
+  "boundaries": [
+    "No live cluster, model, registry, identity, or workshop endpoint was called.",
+    "No reservation records exist for the reconstructed pilot, so reservation reconciliation remains unavailable.",
+    "Actual CPU, memory, storage, model request, token, queue, and image-cache measurements remain unavailable.",
+    "Provisioned and claimed seats are not evidence of participant completion.",
+    "This is GREEN-local contract and recorded-data evidence only."
+  ]
+}

@@ -310,6 +310,10 @@ editing the live environment.**
 an order.**
 
 - `LP-T018` Select the durable HA registry/content origin and retention policy.
+  **GREEN-local:** Quay is the provisional authoritative origin with dedicated
+  component repositories, scoped credential roles, retention guards, and a
+  fail-closed contract gate. Organization ownership, repository grants,
+  signing, restore, and destination cold-pull evidence remain open.
 - `LP-T019` Add destination pull, certificate, architecture, signature, and
   cold-cache checks to eligibility.
 - `LP-T020` Pre-pull scheduled-event releases and report cache/mirror status.
@@ -325,6 +329,9 @@ repository and receive a safe, reviewable, certified catalog draft.**
   immutable revision, owner, audience, duration, lab type, and expected scale.
 - `LP-T097` Discover Antora content, manifests, Containerfiles, images, models,
   Operators, ports, storage, secrets, resource envelopes, and cleanup behavior.
+  **GREEN-local:** immutable repository discovery produces a secret-safe,
+  review-only inventory and blocks ambiguous, mutable, privileged, or
+  cluster-scoped findings; deployed certification and promotion remain open.
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
 - `LP-T099` Default generated entries to draft, internal-only, and one-seat;
@@ -601,6 +608,10 @@ and reconcile complete event demand across cluster and model supply.**
 
 - `LP-T102` Join cohort demand, labs per participant, retention, provisioning
   waves, catalog envelopes, and deployment class into a versioned forecast.
+  **GREEN-local:** the versioned offline reconciliation contract joins the
+  September 17 event manifest to its recorded postmortem without inventing
+  unavailable operational measurements; live supply and reservation remain
+  open.
 - `LP-T103` Measure eligible CPU, memory, pods, storage, routes, image
   availability, model replicas, concurrency, tokens, queues, and DR headroom.
 - `LP-T104` Reserve cluster and inference supply atomically for the whole
@@ -726,6 +737,10 @@ software provenance, secret hygiene, and accountable mutation.**
   plane, artifact supply, data flow, and support access.
 - `LP-T058` Enforce least privilege, credential rotation, secret scanning,
   policy-as-code, signing/verification, audit retention, and incident response.
+  **GREEN-local (session-response slice):** session APIs now use a dedicated
+  secret-free response contract across requester, participant, lifecycle, and
+  admin paths. Rotation, signing, live policy enforcement, and abuse testing
+  remain open.
 - `LP-T059` Run cross-seat, cross-tenant, cross-cluster, expired-entitlement,
   supply-chain, and recovery abuse tests.
 - **Gate:** zero critical/high findings and complete corrective evidence for the

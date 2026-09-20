@@ -54,9 +54,9 @@ jobs:
           # fatal Python errors blocked globally while applying the full rule
           # set to the release-candidate supply-chain code introduced here.
           ruff check app/ tests/ --select E9,F63,F7,F82
-          ruff check app/services/catalog_supply_chain.py tests/test_catalog_supply_chain.py
+          ruff check app/services/catalog_supply_chain.py tests/test_catalog_supply_chain.py tests/test_artifact_registry_policy.py
           cd ..
-          ruff check scripts/validate_delivery_governance.py scripts/tests/test_validate_delivery_governance.py
+          ruff check scripts/validate_artifact_registry.py scripts/validate_delivery_governance.py scripts/tests/test_validate_delivery_governance.py
 
       - name: Validate product roadmap dashboard
         run: |
@@ -179,6 +179,13 @@ jobs:
           python scripts/validate_catalog_artifacts.py \
             --output "$RECEIPT_DIR/catalog-artifact-policy.json"
 
+      - name: Validate authoritative registry contract
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/launchpad-receipts
+        run: |
+          python scripts/validate_artifact_registry.py \
+            --output "$RECEIPT_DIR/artifact-registry-policy.json"
+
       - name: Upload onboarding evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -188,6 +195,7 @@ jobs:
             ${{ runner.temp }}/launchpad-receipts/catalog-onboarding-*.json
             ${{ runner.temp }}/launchpad-receipts/catalog-certification-*.json
             ${{ runner.temp }}/launchpad-receipts/catalog-artifact-policy.json
+            ${{ runner.temp }}/launchpad-receipts/artifact-registry-policy.json
 
   frontend-check:
     name: Frontend TypeScript

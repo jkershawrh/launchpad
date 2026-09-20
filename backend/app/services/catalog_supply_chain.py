@@ -18,6 +18,34 @@ EXECUTION_CLUSTER_MARKERS = (
     ".apps.flightpath.",
     ".apps.oberon.",
 )
+REGISTRY_POLICY_VERSION = "launchpad.redhat.com/artifact-registry-policy/v1"
+REQUIRED_REGISTRY_REPOSITORIES = {
+    "backend",
+    "portal",
+    "admin",
+    "keycloak",
+    "showroom_terminal",
+    "showroom_git_cloner",
+}
+REQUIRED_REGISTRY_CONTROLS = {
+    "immutable_digest",
+    "vulnerability_scan",
+    "sbom",
+    "signature",
+    "provenance",
+    "license_policy",
+    "architecture_metadata",
+    "backup_restore",
+}
+REQUIRED_DESTINATION_CHECKS = {
+    "credential",
+    "certificate",
+    "architecture",
+    "signature",
+    "exact_digest",
+    "cold_pull",
+    "cache_loss",
+}
 
 
 def validate_image_reference(
@@ -46,6 +74,125 @@ def _catalog_images(metadata: dict[str, Any]) -> list[str]:
 
 def _artifact_images(path: Path) -> list[str]:
     return MANIFEST_IMAGE.findall(path.read_text())
+
+
+def build_registry_policy_report(policy_path: Path | str) -> dict[str, Any]:
+    """Validate the authoritative artifact-registry contract.
+
+    A structurally complete policy can be GREEN-local while production release
+    remains ineligible. Runtime repository grants, signatures, restore, and
+    destination cold pulls require separate integration/live evidence.
+    """
+    path = Path(policy_path)
+    payload = yaml.safe_load(path.read_text())
+    if not isinstance(payload, dict):
+        raise TypeError("artifact registry policy must be a YAML mapping")
+
+    violations: list[str] = []
+    gaps: list[str] = []
+    if payload.get("api_version") != REGISTRY_POLICY_VERSION:
+        violations.append(f"api_version must be {REGISTRY_POLICY_VERSION}")
+
+    authority = payload.get("authority") or {}
+    origin = str(authority.get("origin", "")).strip().rstrip("/")
+    if not origin or "://" in origin or "@" in origin:
+        violations.append("authority origin must be a registry host/organization path")
+    if any(marker in origin for marker in EXECUTION_CLUSTER_MARKERS):
+        violations.append("execution-cluster registry cannot be authoritative")
+    if not authority.get("organization_ownership_approved"):
+        gaps.append("organization ownership approval is not recorded")
+
+    repository_payload = payload.get("repositories") or {}
+    missing_repositories = sorted(REQUIRED_REGISTRY_REPOSITORIES - set(repository_payload))
+    if missing_repositories:
+        violations.append(
+            "required dedicated repositories are missing: "
+            + ", ".join(missing_repositories)
+        )
+    repositories: dict[str, str] = {}
+    for component, contract in sorted(repository_payload.items()):
+        if not isinstance(contract, dict):
+            violations.append(f"{component} repository contract must be a mapping")
+            continue
+        repository = str(contract.get("repository", "")).rstrip("/")
+        repositories[component] = repository
+        if not repository or not repository.startswith(f"{origin}/"):
+            violations.append(
+                f"{component} repository must be under the authoritative origin"
+            )
+        if not contract.get("pull_grant_verified"):
+            gaps.append(f"{component} pull grant is not verified")
+    nonempty_repositories = [item for item in repositories.values() if item]
+    if len(nonempty_repositories) != len(set(nonempty_repositories)):
+        violations.append("each platform component requires a dedicated repository")
+
+    credentials = payload.get("credentials") or {}
+    publisher_permissions = set(
+        (credentials.get("ci_publisher") or {}).get("permissions") or []
+    )
+    pull_permissions = list(
+        (credentials.get("execution_cluster_pull") or {}).get("permissions") or []
+    )
+    human_permissions = set(
+        (credentials.get("human_operator") or {}).get("permissions") or []
+    )
+    if publisher_permissions != {"pull", "push"}:
+        violations.append("CI publisher must have only pull and push permissions")
+    if pull_permissions != ["pull"]:
+        violations.append("execution-cluster credentials must be pull-only")
+    if "push" in human_permissions:
+        violations.append("human operator credentials must not push production images")
+    for role, contract in credentials.items():
+        if any(key in (contract or {}) for key in ("token", "password", "auth")):
+            violations.append(f"{role} contains an inline credential")
+
+    retention = payload.get("retention") or {}
+    if retention.get("delete_while_referenced") is not False:
+        violations.append("referenced artifacts must never be deleted")
+    if int(retention.get("minimum_rollback_releases") or 0) < 3:
+        violations.append("retention must preserve at least three rollback releases")
+    if int(retention.get("superseded_release_days") or 0) < 180:
+        violations.append("superseded releases must be retained for at least 180 days")
+
+    controls = payload.get("required_controls") or {}
+    missing_controls = sorted(
+        control for control in REQUIRED_REGISTRY_CONTROLS if controls.get(control) is not True
+    )
+    if missing_controls:
+        violations.append("required controls are disabled: " + ", ".join(missing_controls))
+    if not (payload.get("signing") or {}).get("identity_approved"):
+        gaps.append("signing identity is not approved")
+
+    destination = payload.get("destination_qualification") or {}
+    declared_checks = set(destination.get("required_checks") or [])
+    missing_checks = sorted(REQUIRED_DESTINATION_CHECKS - declared_checks)
+    if missing_checks:
+        violations.append(
+            "destination qualification checks are missing: " + ", ".join(missing_checks)
+        )
+    clusters = destination.get("clusters") or {}
+    if not clusters:
+        violations.append("destination qualification requires at least one cluster")
+    for cluster_id, qualification in sorted(clusters.items()):
+        if (qualification or {}).get("status") != "GREEN-live":
+            gaps.append(f"{cluster_id} destination qualification is not GREEN-live")
+        if not (qualification or {}).get("evidence"):
+            gaps.append(f"{cluster_id} destination evidence is missing")
+
+    contract_status = "RED" if violations else "GREEN-local"
+    return {
+        "contract_status": contract_status,
+        "release_eligible": contract_status == "GREEN-local" and not gaps,
+        "authority": {
+            "provider": authority.get("provider", ""),
+            "origin": origin,
+            "state": authority.get("state", ""),
+        },
+        "repositories": repositories,
+        "contract_violations": violations,
+        "release_gaps": gaps,
+        "destination_clusters": sorted(clusters),
+    }
 
 
 def build_supply_chain_report(

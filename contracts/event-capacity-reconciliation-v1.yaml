@@ -1,0 +1,110 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Event Capacity Reconciliation Contract
+  version: 1.0.0
+  description: >-
+    Offline, evidence-backed comparison of an approved event forecast with a
+    recorded postmortem. Missing measurements remain unavailable and never
+    become inferred zeroes.
+paths: {}
+components:
+  schemas:
+    CapacityMeasurement:
+      type: object
+      required: [status, value, unit, reason]
+      properties:
+        status: {type: string, enum: [available, unavailable]}
+        value: {type: [integer, number, string, 'null']}
+        unit: {type: [string, 'null']}
+        reason: {type: [string, 'null']}
+      allOf:
+        - if:
+            properties: {status: {const: unavailable}}
+          then:
+            properties:
+              value: {type: 'null'}
+              reason: {type: string, minLength: 1}
+    EvidenceSource:
+      type: object
+      required: [role, path, sha256]
+      properties:
+        role: {type: string, enum: [forecast, observed]}
+        path: {type: string, minLength: 1}
+        sha256: {type: string, pattern: '^sha256:[0-9a-f]{64}$'}
+    CapacityForecast:
+      type: object
+      required:
+        - cohort_count
+        - participant_count
+        - workshop_count
+        - seat_environments
+        - peak_concurrent_participants
+        - peak_retained_environments
+        - retention_hours
+        - provisioning_waves
+        - wave_schedule
+        - deployment_class
+        - catalogs
+      additionalProperties: true
+    ObservedCapacity:
+      type: object
+      required:
+        - waves
+        - workshops_ordered
+        - workshops_ready_retained
+        - workshops_reclaimed
+        - seats_provisioned
+        - seats_claimed
+        - seats_unclaimed
+        - claim_utilization_percent
+        - catalogs
+        - clusters
+        - models
+        - reservations
+        - actual_cpu_millicore_hours
+        - actual_memory_mib_hours
+        - actual_storage_gib_hours
+        - model_requests
+        - model_input_tokens
+        - model_output_tokens
+        - model_queue_seconds
+        - image_cache_hit_rate
+      additionalProperties: true
+    CapacityVariance:
+      type: object
+      required:
+        - provisioned_seat_environments
+        - workshop_count
+        - unclaimed_seat_environments
+        - claim_utilization_percent
+        - reservation_variance
+        - actual_resource_variance
+        - model_demand_variance
+      additionalProperties: true
+    CapacityReconciliation:
+      type: object
+      required:
+        - schema_version
+        - event_id
+        - observed_at
+        - sources
+        - forecast
+        - observed
+        - variance
+        - limitations
+      properties:
+        schema_version:
+          const: launchpad.intel.com/capacity-reconciliation/v1
+        event_id: {type: string, minLength: 1}
+        observed_at: {type: string, format: date-time}
+        sources:
+          type: array
+          minItems: 2
+          items: {$ref: '#/components/schemas/EvidenceSource'}
+        forecast: {$ref: '#/components/schemas/CapacityForecast'}
+        observed: {$ref: '#/components/schemas/ObservedCapacity'}
+        variance: {$ref: '#/components/schemas/CapacityVariance'}
+        limitations:
+          type: array
+          minItems: 1
+          items: {type: string}

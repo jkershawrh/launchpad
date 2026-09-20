@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from app.api.deps import lifecycle_queue_service, provisioning_service
 from app.auth.oauth import User, can_access_tenant, get_current_user
 from app.domain.lifecycle import InvalidTransitionError, ValidationRequiredError
-from app.domain.models import LabSession, ShowbackRecord
+from app.domain.models import LabSession, LabSessionResponse, ShowbackRecord
 from app.domain.reports import HandoffPackage, RepeatabilityReport, SecurityPlan
 
 router = APIRouter(dependencies=[Depends(get_current_user)], prefix="/lab-sessions", tags=["lab-sessions"])
@@ -18,7 +18,7 @@ def _lifecycle_ha_enabled() -> bool:
     return os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true"
 
 
-@router.get("", response_model=List[LabSession])
+@router.get("", response_model=List[LabSessionResponse])
 def list_lab_sessions(
     limit: int | None = Query(default=None, ge=1, le=500),
     newest_first: bool = False,
@@ -40,7 +40,7 @@ def list_lab_sessions(
     return sessions
 
 
-@router.get("/{session_id}", response_model=LabSession)
+@router.get("/{session_id}", response_model=LabSessionResponse)
 def get_lab_session(session_id: str, user: User = Depends(get_current_user)):
     session = provisioning_service.get_session(session_id)
     if not session:
@@ -57,7 +57,7 @@ def _authorized_session(session_id: str, user: User) -> LabSession:
     return session
 
 
-@router.post("/{session_id}/validate", response_model=LabSession)
+@router.post("/{session_id}/validate", response_model=LabSessionResponse)
 def validate_session(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
@@ -66,7 +66,7 @@ def validate_session(session_id: str, user: User = Depends(get_current_user)):
         raise HTTPException(400, str(e))
 
 
-@router.post("/{session_id}/activate", response_model=LabSession)
+@router.post("/{session_id}/activate", response_model=LabSessionResponse)
 def activate_session(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
@@ -75,7 +75,7 @@ def activate_session(session_id: str, user: User = Depends(get_current_user)):
         raise HTTPException(400, str(e))
 
 
-@router.post("/{session_id}/reset", response_model=LabSession)
+@router.post("/{session_id}/reset", response_model=LabSessionResponse)
 def reset_session(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
@@ -84,7 +84,7 @@ def reset_session(session_id: str, user: User = Depends(get_current_user)):
         raise HTTPException(400, str(e))
 
 
-@router.post("/{session_id}/reclaim", response_model=LabSession)
+@router.post("/{session_id}/reclaim", response_model=LabSessionResponse)
 def reclaim_session(
     session_id: str,
     response: Response,

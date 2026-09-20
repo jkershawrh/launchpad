@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 import re
 from pathlib import Path, PurePath
 from typing import Any
@@ -15,6 +16,26 @@ VALUE_PATH = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*(?:\.[A-Za-z][A-Za-z0-9_-]*)*$"
 RUNTIME_TEMPLATE_FIELD = re.compile(r"\{([A-Z][A-Z0-9_]*)\}")
 SENSITIVE_RUNTIME_MARKERS = ("PASSWORD", "TOKEN", "SECRET", "API_KEY", "PRIVATE_KEY")
 DISCOVERY_IGNORED_PARTS = {".git", ".venv", "node_modules", "build", "dist"}
+CONTAINERFILE_NAMES = {"Containerfile", "Dockerfile"}
+FROM_IMAGE = re.compile(r"(?im)^\s*FROM(?:\s+--platform=\S+)?\s+(\S+)")
+IMMUTABLE_IMAGE = re.compile(r"^[^\s@]+@sha256:[0-9a-f]{64}$")
+OPERATOR_KINDS = {"ClusterServiceVersion", "OperatorGroup", "Subscription"}
+CLUSTER_SCOPED_KINDS = {
+    "APIService",
+    "ClusterRole",
+    "ClusterRoleBinding",
+    "ClusterResourceQuota",
+    "CustomResourceDefinition",
+    "MachineConfig",
+    "Namespace",
+    "Node",
+    "OAuth",
+    "PriorityClass",
+    "SecurityContextConstraints",
+    "StorageClass",
+    "ValidatingWebhookConfiguration",
+    "MutatingWebhookConfiguration",
+}
 
 
 def load_intake(path: Path | str) -> dict[str, Any]:
@@ -113,6 +134,307 @@ def _discover_workload(root: Path) -> tuple[dict[str, str], list[str], list[str]
     }, warnings, errors
 
 
+def _append_unique(items: list[dict[str, Any]], item: dict[str, Any]) -> None:
+    marker = json.dumps(item, sort_keys=True)
+    if all(json.dumps(existing, sort_keys=True) != marker for existing in items):
+        items.append(item)
+
+
+def _walk_mappings(value: Any):
+    if isinstance(value, dict):
+        yield value
+        for child in value.values():
+            yield from _walk_mappings(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from _walk_mappings(child)
+
+
+def _resource_identity(document: dict[str, Any], path: str) -> dict[str, str]:
+    metadata = document.get("metadata") or {}
+    return {
+        "api_version": str(document.get("apiVersion", "")),
+        "kind": str(document.get("kind", "")),
+        "name": str(metadata.get("name", "")),
+        "path": path,
+    }
+
+
+def _container_inventory(
+    document: dict[str, Any],
+    path: str,
+    inventory: dict[str, list[Any]],
+) -> None:
+    for mapping in _walk_mappings(document):
+        for container_key in ("containers", "initContainers"):
+            containers = mapping.get(container_key)
+            if not isinstance(containers, list):
+                continue
+            for container in containers:
+                if not isinstance(container, dict):
+                    continue
+                container_name = str(container.get("name", ""))
+                image = container.get("image")
+                if isinstance(image, str) and image.strip():
+                    _append_unique(
+                        inventory["images"],
+                        {
+                            "path": path,
+                            "reference": image.strip(),
+                            "source": "manifest",
+                        },
+                    )
+                for port in container.get("ports") or []:
+                    if not isinstance(port, dict) or "containerPort" not in port:
+                        continue
+                    _append_unique(
+                        inventory["ports"],
+                        {
+                            "container": container_name,
+                            "name": str(port.get("name", "")),
+                            "path": path,
+                            "port": port["containerPort"],
+                            "protocol": str(port.get("protocol", "TCP")),
+                        },
+                    )
+                resources = container.get("resources") or {}
+                requests = resources.get("requests") or {}
+                limits = resources.get("limits") or {}
+                if requests or limits:
+                    _append_unique(
+                        inventory["resource_envelopes"],
+                        {
+                            "container": container_name,
+                            "limits": {
+                                str(key): str(value)
+                                for key, value in sorted(limits.items())
+                            },
+                            "path": path,
+                            "requests": {
+                                str(key): str(value)
+                                for key, value in sorted(requests.items())
+                            },
+                        },
+                    )
+                security_context = container.get("securityContext") or {}
+                if security_context.get("privileged") is True:
+                    _append_unique(
+                        inventory["privileged_findings"],
+                        {
+                            "container": container_name,
+                            "path": path,
+                            "reason": "privileged container enabled",
+                        },
+                    )
+                for env in container.get("env") or []:
+                    if not isinstance(env, dict):
+                        continue
+                    env_name = str(env.get("name", ""))
+                    value = env.get("value")
+                    if (
+                        "MODEL" in env_name.upper()
+                        and isinstance(value, (str, int, float))
+                        and not any(
+                            marker in env_name.upper()
+                            for marker in SENSITIVE_RUNTIME_MARKERS
+                        )
+                    ):
+                        _append_unique(
+                            inventory["models"],
+                            {
+                                "environment": env_name,
+                                "path": path,
+                                "value": str(value),
+                            },
+                        )
+
+
+def _secret_reference_inventory(
+    document: dict[str, Any],
+    path: str,
+    inventory: dict[str, list[Any]],
+) -> None:
+    for mapping in _walk_mappings(document):
+        for source in ("secretKeyRef", "secretRef"):
+            reference = mapping.get(source)
+            if isinstance(reference, dict) and str(reference.get("name", "")).strip():
+                _append_unique(
+                    inventory["secret_references"],
+                    {
+                        "name": str(reference["name"]),
+                        "path": path,
+                        "source": source,
+                    },
+                )
+        secret_volume = mapping.get("secret")
+        if (
+            isinstance(secret_volume, dict)
+            and str(secret_volume.get("secretName", "")).strip()
+        ):
+            _append_unique(
+                inventory["secret_references"],
+                {
+                    "name": str(secret_volume["secretName"]),
+                    "path": path,
+                    "source": "volumeSecret",
+                },
+            )
+
+
+def _privilege_inventory(
+    document: dict[str, Any],
+    path: str,
+    inventory: dict[str, list[Any]],
+) -> None:
+    for mapping in _walk_mappings(document):
+        for field, reason in (
+            ("hostNetwork", "hostNetwork enabled"),
+            ("hostPID", "hostPID enabled"),
+            ("hostIPC", "hostIPC enabled"),
+        ):
+            if mapping.get(field) is True:
+                _append_unique(
+                    inventory["privileged_findings"],
+                    {"path": path, "reason": reason},
+                )
+        if isinstance(mapping.get("hostPath"), dict):
+            _append_unique(
+                inventory["privileged_findings"],
+                {"path": path, "reason": "hostPath volume declared"},
+            )
+
+
+def _storage_inventory(
+    document: dict[str, Any],
+    path: str,
+    inventory: dict[str, list[Any]],
+) -> None:
+    claims: list[dict[str, Any]] = []
+    if document.get("kind") == "PersistentVolumeClaim":
+        claims.append(document)
+    for mapping in _walk_mappings(document):
+        templates = mapping.get("volumeClaimTemplates")
+        if isinstance(templates, list):
+            claims.extend(item for item in templates if isinstance(item, dict))
+    for claim in claims:
+        metadata = claim.get("metadata") or {}
+        spec = claim.get("spec") or {}
+        requests = ((spec.get("resources") or {}).get("requests") or {})
+        _append_unique(
+            inventory["storage"],
+            {
+                "access_modes": [str(value) for value in spec.get("accessModes") or []],
+                "name": str(metadata.get("name", "")),
+                "path": path,
+                "request": str(requests.get("storage", "")),
+                "storage_class": str(spec.get("storageClassName", "")),
+            },
+        )
+
+
+def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
+    """Return review-only facts without copying Secret payloads or granting support."""
+    inventory: dict[str, list[Any]] = {
+        "cluster_scoped_resources": [],
+        "cleanup_candidates": [],
+        "containerfiles": [],
+        "images": [],
+        "manifest_resources": [],
+        "models": [],
+        "mutable_images": [],
+        "operators": [],
+        "ports": [],
+        "privileged_findings": [],
+        "routes": [],
+        "secret_manifests": [],
+        "secret_references": [],
+        "storage": [],
+        "resource_envelopes": [],
+        "unparsed_manifests": [],
+    }
+
+    for path in sorted(root.rglob("*")):
+        if not path.is_file() or any(
+            part in DISCOVERY_IGNORED_PARTS for part in path.parts
+        ):
+            continue
+        relative = _repository_path(root, path)
+        if path.name in CONTAINERFILE_NAMES or path.name.startswith("Containerfile."):
+            inventory["containerfiles"].append(relative)
+            try:
+                text = path.read_text()
+            except (OSError, UnicodeDecodeError):
+                continue
+            for reference in FROM_IMAGE.findall(text):
+                if reference.lower() == "scratch":
+                    continue
+                _append_unique(
+                    inventory["images"],
+                    {
+                        "path": relative,
+                        "reference": reference,
+                        "source": "containerfile",
+                    },
+                )
+            continue
+        if path.suffix.lower() not in {".yaml", ".yml"}:
+            continue
+        try:
+            text = path.read_text()
+        except (OSError, UnicodeDecodeError):
+            continue
+        if not re.search(r"(?m)^\s*apiVersion:\s*\S+", text) or not re.search(
+            r"(?m)^\s*kind:\s*\S+", text
+        ):
+            continue
+        try:
+            documents = list(yaml.safe_load_all(text))
+        except yaml.YAMLError:
+            inventory["unparsed_manifests"].append(relative)
+            continue
+        for document in documents:
+            if not isinstance(document, dict) or not document.get("kind"):
+                continue
+            identity = _resource_identity(document, relative)
+            _append_unique(inventory["manifest_resources"], identity)
+            _append_unique(inventory["cleanup_candidates"], identity)
+            kind = identity["kind"]
+            if kind in CLUSTER_SCOPED_KINDS or kind.startswith("Cluster"):
+                _append_unique(inventory["cluster_scoped_resources"], identity)
+            if kind in OPERATOR_KINDS:
+                _append_unique(inventory["operators"], identity)
+            if kind == "Secret":
+                _append_unique(
+                    inventory["secret_manifests"],
+                    {"name": identity["name"], "path": relative},
+                )
+            if kind == "Route":
+                _append_unique(
+                    inventory["routes"],
+                    {
+                        "host": str((document.get("spec") or {}).get("host", "")),
+                        "name": identity["name"],
+                        "path": relative,
+                    },
+                )
+            _container_inventory(document, relative, inventory)
+            _secret_reference_inventory(document, relative, inventory)
+            _privilege_inventory(document, relative, inventory)
+            _storage_inventory(document, relative, inventory)
+
+    for key, values in inventory.items():
+        inventory[key] = sorted(
+            values,
+            key=lambda value: json.dumps(value, sort_keys=True),
+        )
+    inventory["mutable_images"] = [
+        copy.deepcopy(image)
+        for image in inventory["images"]
+        if not IMMUTABLE_IMAGE.fullmatch(str(image["reference"]))
+    ]
+    return inventory
+
+
 def discover_quickstart_repo(
     source: Path | str,
     *,
@@ -141,6 +463,7 @@ def discover_quickstart_repo(
 
     showroom, showroom_warnings, showroom_errors = _discover_showroom(root)
     workload, workload_warnings, workload_errors = _discover_workload(root)
+    inventory = _discover_repository_inventory(root)
     errors = showroom_errors + workload_errors
     warnings = showroom_warnings + workload_warnings
 
@@ -153,6 +476,26 @@ def discover_quickstart_repo(
         blockers.append("Resolve every repository discovery warning before activation.")
     if errors:
         blockers.append("Resolve repository discovery failures before rendering or activation.")
+    if inventory["mutable_images"]:
+        blockers.append(
+            "Review every mutable container image and replace it with an approved immutable digest."
+        )
+    if inventory["cluster_scoped_resources"]:
+        blockers.append(
+            "Review every cluster-scoped resource and document its isolation, ownership, and cleanup contract."
+        )
+    if inventory["privileged_findings"]:
+        blockers.append(
+            "Review privileged workload behavior and reject it unless an explicit security exception is approved."
+        )
+    if inventory["secret_manifests"]:
+        blockers.append(
+            "Replace each repository Secret manifest with an approved runtime Secret source before activation."
+        )
+    if inventory["unparsed_manifests"]:
+        blockers.append(
+            "Review every unparsed manifest; templating or invalid YAML prevents complete static discovery."
+        )
 
     intake: dict[str, Any] = {
         "api_version": "launchpad.redhat.com/v1alpha1",
@@ -199,6 +542,7 @@ def discover_quickstart_repo(
         },
         "discovery": {
             "source": "quickstart-repository",
+            "inventory": inventory,
             "warnings": warnings,
             "errors": errors,
             "provisional_fields": [
@@ -217,6 +561,7 @@ def discover_quickstart_repo(
         "revision": revision,
         "showroom": showroom,
         "workload": workload,
+        "inventory": inventory,
         "warnings": warnings,
         "errors": errors,
     }

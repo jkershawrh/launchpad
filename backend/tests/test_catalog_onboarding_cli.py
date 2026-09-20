@@ -30,6 +30,22 @@ def test_scaffold_cli_turns_quickstart_repo_into_reviewable_draft(tmp_path: Path
         "apiVersion: v2\nname: example\nversion: 0.1.0\n"
     )
     (chart / "values.yaml").write_text("{}\n")
+    templates = chart / "templates"
+    templates.mkdir()
+    (templates / "deployment.yaml").write_text(
+        """
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          image: quay.io/example/app:latest
+""".lstrip()
+    )
     subprocess.run(["git", "init", "--quiet"], cwd=source, check=True)
     subprocess.run(
         ["git", "-c", "user.name=Launchpad Test", "-c", "user.email=test@example.com", "add", "."],
@@ -96,6 +112,21 @@ def test_scaffold_cli_turns_quickstart_repo_into_reviewable_draft(tmp_path: Path
     assert intake["certification"]["activation_blockers"]
     assert report["discovery_status"] == "pass"
     assert report["workload"]["deployment_type"] == "helm"
+    assert report["inventory"] == intake["discovery"]["inventory"]
+    assert report["inventory"]["images"] == [
+        {
+            "path": "deploy/chart/templates/deployment.yaml",
+            "reference": "quay.io/example/app:latest",
+            "source": "manifest",
+        }
+    ]
+    assert report["inventory"]["mutable_images"] == [
+        {
+            "path": "deploy/chart/templates/deployment.yaml",
+            "reference": "quay.io/example/app:latest",
+            "source": "manifest",
+        }
+    ]
 
 
 def test_scaffold_cli_rejects_local_checkout_at_another_revision(tmp_path: Path):

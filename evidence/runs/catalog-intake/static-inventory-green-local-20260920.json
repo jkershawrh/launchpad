@@ -1,0 +1,46 @@
+{
+  "evidence_id": "catalog-intake-static-inventory-green-local-20260920",
+  "generated_at": "2026-09-20T05:54:00Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T097"],
+  "related_open_task_ids": ["LP-T096", "LP-T098", "LP-T099", "LP-T100", "LP-T101"],
+  "red": {
+    "tests_failed": 3,
+    "tests_passed": 16,
+    "result": "repository inventory expectations failed before static inventory discovery existed"
+  },
+  "green": {
+    "tests_passed": 35,
+    "tests_failed": 0,
+    "scope": "catalog onboarding, onboarding CLI, and catalog certification"
+  },
+  "proof": {
+    "discovers": [
+      "Containerfiles and base images",
+      "manifest image references and resource kinds",
+      "Operators, ports, and Routes",
+      "model-valued environment variables",
+      "resource requests and limits",
+      "persistent storage",
+      "Secret references by name only",
+      "cluster-scoped resources",
+      "privileged behavior",
+      "cleanup candidates",
+      "unparsed manifests"
+    ],
+    "fail_closed_blockers": [
+      "mutable image references",
+      "cluster-scoped resources",
+      "privileged behavior",
+      "repository-managed Secret manifests",
+      "unparsed manifests"
+    ],
+    "secret_payloads_copied": false
+  },
+  "boundary": [
+    "Static discovery does not approve an image, model, repository, signature, SBOM, or deployment target",
+    "No catalog item was promoted or changed",
+    "No execution cluster or retained workshop was accessed",
+    "Generated entries remain subject to certification and promotion gates"
+  ]
+}

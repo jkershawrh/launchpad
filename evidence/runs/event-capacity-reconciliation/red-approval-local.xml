@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="0.076" timestamp="2026-09-20T00:52:05.637827-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_event_capacity_forecast" name="test_forecast_joins_cohorts_labs_retention_and_exact_catalog_releases" time="0.004" /><testcase classname="backend.tests.test_event_capacity_forecast" name="test_forecast_does_not_invent_missing_wave_schedule_or_deployment_class" time="0.002" /><testcase classname="backend.tests.test_event_capacity_forecast" name="test_forecast_fails_closed_when_recorded_approval_does_not_match_demand" time="0.002"><failure message="Failed: DID NOT RAISE ValueError">def test_forecast_fails_closed_when_recorded_approval_does_not_match_demand():
+        payload = yaml.safe_load(
+            (ROOT / "fixtures/events/september-17-2026.yaml").read_text()
+        )
+        changed = deepcopy(payload)
+        changed["spec"]["approval"]["approved_seat_environments"] = 90
+
+&gt;       with pytest.raises(ValueError, match="approved 90 seat-environments.*requires 270"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+backend/tests/test_event_capacity_forecast.py:58: Failed</failure></testcase></testsuite></testsuites>

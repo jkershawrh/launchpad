@@ -381,6 +381,78 @@ def test_quickstart_discovery_scaffolds_fail_closed_intake(tmp_path: Path):
         "apiVersion: v2\nname: example\nversion: 0.1.0\n"
     )
     (chart / "values.yaml").write_text("{}\n")
+    (chart / "Containerfile").write_text(
+        "FROM registry.access.redhat.com/ubi9/python-311:latest\n"
+    )
+    templates = chart / "templates"
+    templates.mkdir()
+    (templates / "workload.yaml").write_text(
+        """
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          image: quay.io/example/app:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MODEL_ID
+              value: granite-3.2-8b-instruct
+            - name: API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: example-runtime
+                  key: token
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: example
+spec:
+  to:
+    kind: Service
+    name: example
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: example-data
+spec:
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 5Gi
+""".lstrip()
+    )
+    (templates / "operator.yaml").write_text(
+        """
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: example-operator
+spec:
+  name: example-operator
+  channel: stable
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: example-cluster-reader
+rules: []
+""".lstrip()
+    )
 
     intake, report = discover_quickstart_repo(
         tmp_path,
@@ -409,6 +481,81 @@ def test_quickstart_discovery_scaffolds_fail_closed_intake(tmp_path: Path):
     blockers = "\n".join(intake["certification"]["activation_blockers"])
     assert "resource measurements" in blockers
     assert "participant tabs" in blockers
+    inventory = intake["discovery"]["inventory"]
+    assert inventory["containerfiles"] == ["deploy/chart/Containerfile"]
+    assert {image["reference"] for image in inventory["images"]} == {
+        "quay.io/example/app:latest",
+        "registry.access.redhat.com/ubi9/python-311:latest",
+    }
+    assert {image["reference"] for image in inventory["mutable_images"]} == {
+        "quay.io/example/app:latest",
+        "registry.access.redhat.com/ubi9/python-311:latest",
+    }
+    assert inventory["operators"] == [
+        {
+            "api_version": "operators.coreos.com/v1alpha1",
+            "kind": "Subscription",
+            "name": "example-operator",
+            "path": "deploy/chart/templates/operator.yaml",
+        }
+    ]
+    assert inventory["ports"] == [
+        {
+            "container": "app",
+            "name": "",
+            "path": "deploy/chart/templates/workload.yaml",
+            "port": 8080,
+            "protocol": "TCP",
+        }
+    ]
+    assert inventory["routes"] == [
+        {
+            "host": "",
+            "name": "example",
+            "path": "deploy/chart/templates/workload.yaml",
+        }
+    ]
+    assert inventory["storage"] == [
+        {
+            "access_modes": [],
+            "name": "example-data",
+            "path": "deploy/chart/templates/workload.yaml",
+            "request": "5Gi",
+            "storage_class": "nfs-storage",
+        }
+    ]
+    assert inventory["secret_references"] == [
+        {
+            "name": "example-runtime",
+            "path": "deploy/chart/templates/workload.yaml",
+            "source": "secretKeyRef",
+        }
+    ]
+    assert inventory["models"] == [
+        {
+            "environment": "MODEL_ID",
+            "path": "deploy/chart/templates/workload.yaml",
+            "value": "granite-3.2-8b-instruct",
+        }
+    ]
+    assert inventory["resource_envelopes"] == [
+        {
+            "container": "app",
+            "limits": {"cpu": "1", "memory": "1Gi"},
+            "path": "deploy/chart/templates/workload.yaml",
+            "requests": {"cpu": "250m", "memory": "256Mi"},
+        }
+    ]
+    assert any(
+        item["kind"] == "ClusterRole"
+        for item in inventory["cluster_scoped_resources"]
+    )
+    assert any(
+        item["kind"] == "Deployment"
+        for item in inventory["cleanup_candidates"]
+    )
+    assert "mutable container image" in blockers
+    assert "cluster-scoped resource" in blockers
     assert validate_intake(intake)["validation_status"] == "pass"
     assert validate_intake(intake)["activation_status"] == "blocked"
 
@@ -428,3 +575,80 @@ def test_quickstart_discovery_fails_closed_without_showroom_or_workload(tmp_path
     assert any("Antora playbook" in error for error in report["errors"])
     assert any("deployable workload" in error for error in report["errors"])
     assert intake["certification"]["max_workshop_seats"] == 1
+
+
+def test_quickstart_inventory_flags_privilege_and_never_copies_secret_data(
+    tmp_path: Path,
+):
+    content = tmp_path / "showroom"
+    pages = content / "modules/ROOT/pages"
+    pages.mkdir(parents=True)
+    (tmp_path / "site.yml").write_text(
+        "content:\n  sources:\n    - url: .\n      start_path: showroom\n"
+    )
+    (content / "antora.yml").write_text("name: example\ntitle: Example\nversion: ~\n")
+    (pages / "index.adoc").write_text("= Start\n")
+    manifests = tmp_path / "deploy/manifests"
+    manifests.mkdir(parents=True)
+    (manifests / "workload.yaml").write_text(
+        """
+apiVersion: v1
+kind: Secret
+metadata:
+  name: embedded-secret
+stringData:
+  password: must-never-appear-in-the-report
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: privileged-app
+spec:
+  template:
+    spec:
+      hostNetwork: true
+      volumes:
+        - name: host
+          hostPath:
+            path: /var/lib/example
+      containers:
+        - name: app
+          image: quay.io/example/app@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          securityContext:
+            privileged: true
+          envFrom:
+            - secretRef:
+                name: embedded-secret
+""".lstrip()
+    )
+
+    intake, report = discover_quickstart_repo(
+        tmp_path,
+        repo_url="https://github.com/example/quickstart.git",
+        revision="c" * 40,
+        catalog_id="privileged-quickstart",
+        display_name="Privileged Quickstart",
+    )
+
+    inventory = intake["discovery"]["inventory"]
+    serialized = yaml.safe_dump({"inventory": inventory, "report": report})
+    assert "must-never-appear-in-the-report" not in serialized
+    assert inventory["secret_manifests"] == [
+        {"name": "embedded-secret", "path": "deploy/manifests/workload.yaml"}
+    ]
+    assert inventory["secret_references"] == [
+        {
+            "name": "embedded-secret",
+            "path": "deploy/manifests/workload.yaml",
+            "source": "secretRef",
+        }
+    ]
+    assert {finding["reason"] for finding in inventory["privileged_findings"]} == {
+        "hostNetwork enabled",
+        "hostPath volume declared",
+        "privileged container enabled",
+    }
+    assert inventory["mutable_images"] == []
+    blockers = "\n".join(intake["certification"]["activation_blockers"])
+    assert "privileged workload behavior" in blockers
+    assert "Secret manifest" in blockers
