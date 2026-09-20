@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Workshop Orchestration Contract
-  version: 1.4.0
+  version: 1.5.0
   description: >-
     Consumes every approved event reservation into one deterministic workshop
     and queues one idempotent, cluster-bound lifecycle job per workshop. The
@@ -129,7 +129,21 @@ components:
         access_residue: {type: integer, minimum: 0}
         residue:
           type: object
-          additionalProperties: {type: integer, minimum: 0}
+          additionalProperties: false
+          required:
+            - namespace
+            - image_puller_role_binding
+            - showroom_application
+            - workload_application
+            - credentials
+            - model_key_revocation
+          properties:
+            namespace: {type: integer, minimum: 0}
+            image_puller_role_binding: {type: integer, minimum: 0}
+            showroom_application: {type: integer, minimum: 0}
+            workload_application: {type: integer, minimum: 0}
+            credentials: {type: integer, minimum: 0}
+            model_key_revocation: {type: integer, minimum: 0}
         access:
           type: object
           additionalProperties: {type: integer, minimum: 0}

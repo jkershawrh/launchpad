@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 import httpx
+
+from app.domain.models import MaaSKeyRevocationReceipt
 
 
 @dataclass(frozen=True)
@@ -55,9 +58,11 @@ class LiteLLMVirtualKeyBroker:
             raise ValueError("LiteLLM key generation returned no key")
         return MaaSKey(key=key, key_id=str(payload.get("token_id") or ""))
 
-    def revoke_key(self, key: str) -> None:
+    def revoke_key(
+        self, key: str, *, key_id: str
+    ) -> MaaSKeyRevocationReceipt | None:
         if not key:
-            return
+            return None
         response = httpx.post(
             f"{self.api_base}/key/delete",
             headers=self._headers,
@@ -65,3 +70,10 @@ class LiteLLMVirtualKeyBroker:
             timeout=self.timeout,
         )
         response.raise_for_status()
+        confirmation_id = response.headers.get("x-request-id", "").strip()
+        return MaaSKeyRevocationReceipt(
+            provider="litellm",
+            key_id=key_id,
+            confirmed_at=datetime.now(UTC),
+            confirmation_id=confirmation_id or "http-success",
+        )

@@ -156,6 +156,20 @@ public policy is disabled, no active or reauthentication entitlement remains,
 and any identity with no other active lab has been disabled. Any unavailable
 probe, incomplete record, or nonzero count fails closed.
 
+Sessions issued a scoped LiteLLM key now require a persisted, secret-free
+revocation receipt before cleanup can be finalized. The receipt records the
+provider, stable key ID, timezone-aware confirmation time, and provider request
+ID when supplied (or an explicit successful-HTTP fallback); it never stores the
+raw key. Missing, malformed, or mismatched receipts keep
+`model_key_revocation` nonzero. A retry after a persisted matching receipt does
+not call the provider again. If the provider rejects revocation or returns no
+receipt, Launchpad scrubs the raw credential and marks cleanup failed. Because
+the secret is deliberately not retained, that failure currently requires an
+operator to confirm or remediate revocation by the stable key ID. The supported
+workflow for attaching that manual confirmation is not implemented yet, so the
+session and reservation remain failed closed rather than being released on an
+unverifiable assertion.
+
 The exact sorted evidence payload is hashed with SHA-256. That evidence ID is
 persisted on every released reservation, making retries idempotent and causing
 changed cleanup evidence to fail closed. The result exposes only counts,
@@ -173,13 +187,14 @@ the reservation exactly once while both callers converge on the same digest.
 This is integration evidence for persistence, process restart, and concurrent
 finalization. A PostgreSQL trigger fault also proves that a rejected release
 transaction rolls back fully, keeps reservations consumed without an evidence
-ID, and succeeds on an unchanged retry after recovery. This does not represent
-a live OpenShift cleanup, external OIDC browser journey, or model-key
-revocation receipt.
+ID, and succeeds on an unchanged retry after recovery. Local component proof
+now covers provider-confirmed HTTP key-revocation receipts, idempotent receipt
+replay, and fail-closed missing-receipt behavior. This does not represent a live
+OpenShift cleanup, external OIDC browser journey, or live LiteLLM revocation.
 
 ## Next boundary
 
-The next orchestration increment must exercise participant claim/SSO,
-model-key revocation evidence, and live zero-residue cleanup at the staged 1-,
-5-, and certified-seat gates. A release remains short of live acceptance until
-those external and staged proofs exist.
+The next orchestration increment must exercise participant claim/SSO, live
+LiteLLM revocation, and live zero-residue cleanup at the staged 1-, 5-, and
+certified-seat gates. A release remains short of live acceptance until those
+external and staged proofs exist.

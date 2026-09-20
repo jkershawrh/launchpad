@@ -513,6 +513,7 @@ class EventOrchestrationService:
                 "showroom_application": 0,
                 "workload_application": 0,
                 "credentials": 0,
+                "model_key_revocation": 0,
             }
             session_count = 0
             for seat in workshop.seats:

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.051" timestamp="2026-09-19T21:29:14.258513-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_model_key_revocation_red" name="test_secret_free_model_key_revocation_receipt_exists" time="0.000"><failure message="AssertionError: assert False&#10; +  where False = hasattr(&lt;module 'app.domain.models' from '/private/tmp/launchpad-model-key-red/backend/app/domain/models.py'&gt;, 'MaaSKeyRevocationReceipt')">def test_secret_free_model_key_revocation_receipt_exists():
+        from app.domain import models
+    
+&gt;       assert hasattr(models, "MaaSKeyRevocationReceipt")
+E       AssertionError: assert False
+E        +  where False = hasattr(&lt;module 'app.domain.models' from '/private/tmp/launchpad-model-key-red/backend/app/domain/models.py'&gt;, 'MaaSKeyRevocationReceipt')
+
+backend/tests/test_model_key_revocation_red.py:9: AssertionError</failure></testcase><testcase classname="backend.tests.test_model_key_revocation_red" name="test_cleanup_contract_requires_model_key_revocation_evidence" time="0.012"><failure message="AssertionError: assert '1.4.0' == '1.5.0'&#10;  &#10;  - 1.5.0&#10;  ?   ^&#10;  + 1.4.0&#10;  ?   ^">def test_cleanup_contract_requires_model_key_revocation_evidence():
+        contract = yaml.safe_load(
+            (Path(__file__).parents[2] / "contracts" / "event-orchestration-v1.yaml")
+            .read_text()
+        )
+    
+&gt;       assert contract["info"]["version"] == "1.5.0"
+E       AssertionError: assert '1.4.0' == '1.5.0'
+E         
+E         - 1.5.0
+E         ?   ^
+E         + 1.4.0
+E         ?   ^
+
+backend/tests/test_model_key_revocation_red.py:18: AssertionError</failure></testcase></testsuite></testsuites>

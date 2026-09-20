@@ -1,9 +1,10 @@
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
 from app.adapters.openshift.maas_keys import LiteLLMVirtualKeyBroker
 from app.domain.enums import CatalogCategory
-from app.domain.models import LabRequest
+from app.domain.models import LabRequest, MaaSKeyRevocationReceipt
 from app.services.provisioning import ProvisioningService
 
 
@@ -40,13 +41,19 @@ def test_virtual_key_generation_fails_without_returned_key():
 
 def test_virtual_key_is_revoked_at_gateway():
     response = MagicMock()
+    response.headers = {"x-request-id": "request-123"}
     with patch("httpx.post", return_value=response) as post:
         broker = LiteLLMVirtualKeyBroker("http://litellm:4000", "master")
-        broker.revoke_key("sk-real")
+        receipt = broker.revoke_key("sk-real", key_id="token-1")
 
     assert post.call_args.args[0] == "http://litellm:4000/key/delete"
     assert post.call_args.kwargs["json"] == {"keys": ["sk-real"]}
     response.raise_for_status.assert_called_once()
+    assert receipt is not None
+    assert receipt.provider == "litellm"
+    assert receipt.key_id == "token-1"
+    assert receipt.confirmation_id == "request-123"
+    assert "sk-real" not in receipt.model_dump_json()
 
 
 def _request():
@@ -61,6 +68,12 @@ def test_provisioning_uses_broker_key_and_reclaim_revokes_it():
     broker = MagicMock()
     broker.create_key.return_value.key = "sk-gateway-issued"
     broker.create_key.return_value.key_id = "token-seat-1"
+    broker.revoke_key.return_value = MaaSKeyRevocationReceipt(
+        provider="litellm",
+        key_id="token-seat-1",
+        confirmed_at=datetime.now(UTC),
+        confirmation_id="request-seat-1",
+    )
     service = ProvisioningService(maas_key_broker=broker)
     request = service.submit_request(_request())
 
@@ -78,9 +91,130 @@ def test_provisioning_uses_broker_key_and_reclaim_revokes_it():
     assert "sk-gateway-issued" not in session.metadata.values()
 
     reclaimed = service.force_reclaim_session(session.session_id)
-    broker.revoke_key.assert_called_once_with("sk-gateway-issued")
+    broker.revoke_key.assert_called_once_with(
+        "sk-gateway-issued",
+        key_id="token-seat-1",
+    )
     assert reclaimed.maas_api_key is None
     assert reclaimed.metadata["maas_key_id"] == "token-seat-1"
+    receipt = reclaimed.metadata["maas_key_revocation"]
+    assert receipt["key_id"] == "token-seat-1"
+    assert receipt["confirmation_id"] == "request-seat-1"
+    assert "sk-gateway-issued" not in str(receipt)
+
+
+def test_cleanup_inspection_requires_matching_model_key_receipt():
+    service = ProvisioningService()
+    request = service.submit_request(_request())
+    session = service.provision(request.request_id)
+    session = session.model_copy(
+        update={
+            "maas_api_key": None,
+            "namespace": None,
+            "metadata": {**session.metadata, "maas_key_id": "token-seat-1"},
+        }
+    )
+    service._save_session(session)
+
+    assert service.inspect_session_cleanup(session.session_id)[
+        "model_key_revocation"
+    ] == 1
+
+    mismatched_receipt = MaaSKeyRevocationReceipt(
+        provider="litellm",
+        key_id="different-key",
+        confirmed_at=datetime.now(UTC),
+        confirmation_id="request-other",
+    )
+    service._save_session(
+        session.model_copy(
+            update={
+                "metadata": {
+                    **session.metadata,
+                    "maas_key_revocation": mismatched_receipt.model_dump(mode="json"),
+                }
+            }
+        )
+    )
+    assert service.inspect_session_cleanup(session.session_id)[
+        "model_key_revocation"
+    ] == 1
+
+    receipt = MaaSKeyRevocationReceipt(
+        provider="litellm",
+        key_id="token-seat-1",
+        confirmed_at=datetime.now(UTC),
+        confirmation_id="request-seat-1",
+    )
+    service._save_session(
+        session.model_copy(
+            update={
+                "metadata": {
+                    **session.metadata,
+                    "maas_key_revocation": receipt.model_dump(mode="json"),
+                }
+            }
+        )
+    )
+    assert service.inspect_session_cleanup(session.session_id)[
+        "model_key_revocation"
+    ] == 0
+
+
+def test_reclaim_fails_closed_when_broker_returns_no_revocation_receipt():
+    broker = MagicMock()
+    broker.create_key.return_value.key = "sk-gateway-issued"
+    broker.create_key.return_value.key_id = "token-seat-1"
+    broker.revoke_key.return_value = None
+    service = ProvisioningService(maas_key_broker=broker)
+    request = service.submit_request(_request())
+    session = service.provision(request.request_id)
+
+    reclaimed = service.force_reclaim_session(
+        session.session_id,
+        require_cleanup_success=True,
+    )
+
+    assert reclaimed.status.value == "cleanup_failed"
+    assert reclaimed.maas_api_key is None
+    assert "maas_key_revocation" not in reclaimed.metadata
+    service._save_session(reclaimed.model_copy(update={"namespace": None}))
+    assert service.inspect_session_cleanup(reclaimed.session_id)[
+        "model_key_revocation"
+    ] == 1
+
+
+def test_existing_matching_receipt_makes_key_revocation_retry_idempotent():
+    broker = MagicMock()
+    broker.create_key.return_value.key = "sk-gateway-issued"
+    broker.create_key.return_value.key_id = "token-seat-1"
+    service = ProvisioningService(maas_key_broker=broker)
+    request = service.submit_request(_request())
+    session = service.provision(request.request_id)
+    receipt = MaaSKeyRevocationReceipt(
+        provider="litellm",
+        key_id="token-seat-1",
+        confirmed_at=datetime.now(UTC),
+        confirmation_id="request-seat-1",
+    )
+    service._save_session(
+        session.model_copy(
+            update={
+                "metadata": {
+                    **session.metadata,
+                    "maas_key_revocation": receipt.model_dump(mode="json"),
+                }
+            }
+        )
+    )
+
+    reclaimed = service.force_reclaim_session(
+        session.session_id,
+        require_cleanup_success=True,
+    )
+
+    assert reclaimed.status.value == "reclaimed"
+    broker.revoke_key.assert_not_called()
 
 
 def test_virtual_key_metadata_carries_workshop_and_seat_identity():

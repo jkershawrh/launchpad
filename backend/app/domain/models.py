@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, field_validator
 
 from app.domain.access import ExposurePolicy
-
 from app.domain.enums import (
     BrandingTheme,
     CatalogCategory,
@@ -148,6 +147,22 @@ class LabSession(BaseModel):
     maas_api_key: Optional[str] = None
     lifecycle_events: List[LifecycleEvent] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class MaaSKeyRevocationReceipt(BaseModel):
+    """Secret-free confirmation that a scoped model key was revoked."""
+
+    provider: str = Field(min_length=1)
+    key_id: str = Field(min_length=1)
+    confirmed_at: datetime
+    confirmation_id: str = Field(min_length=1)
+
+    @field_validator("confirmed_at")
+    @classmethod
+    def confirmed_at_is_timezone_aware(cls, value: datetime) -> datetime:
+        if value.tzinfo is None:
+            raise ValueError("revocation confirmation must include a timezone")
+        return value
 
 
 class HardwareProfile(BaseModel):

@@ -39,6 +39,7 @@ from app.domain.models import (
     LabRequest,
     LabSession,
     LifecycleEvent,
+    MaaSKeyRevocationReceipt,
     ProvisioningPlan,
     ShowbackRecord,
     Workshop,
@@ -892,7 +893,10 @@ class ProvisioningService:
                     )
             if self.maas_key_broker and maas_api_key:
                 try:
-                    self.maas_key_broker.revoke_key(maas_api_key)
+                    self.maas_key_broker.revoke_key(
+                        maas_api_key,
+                        key_id=maas_key_id,
+                    )
                 except Exception:
                     logger.exception(
                         "Late session key revocation failed for %s",
@@ -1186,6 +1190,40 @@ class ProvisioningService:
         self._save_session(queued)
         return queued
 
+    def _revoke_maas_key(self, session: LabSession) -> LabSession:
+        """Revoke a scoped key and persist only its secret-free receipt."""
+
+        if not self.maas_key_broker or not session.maas_api_key:
+            return session
+        key_id = str(session.metadata.get("maas_key_id", "")).strip()
+        if not key_id:
+            raise ValueError("MaaS key revocation requires its persisted key ID")
+        existing = session.metadata.get("maas_key_revocation")
+        if existing:
+            receipt = MaaSKeyRevocationReceipt.model_validate(existing)
+            if receipt.key_id != key_id:
+                raise ValueError("MaaS key revocation receipt does not match key ID")
+            return session
+        receipt = self.maas_key_broker.revoke_key(
+            session.maas_api_key,
+            key_id=key_id,
+        )
+        if receipt is None:
+            raise ValueError("MaaS key broker returned no revocation receipt")
+        receipt = MaaSKeyRevocationReceipt.model_validate(receipt)
+        if receipt.key_id != key_id:
+            raise ValueError("MaaS key broker confirmed a different key ID")
+        updated = session.model_copy(
+            update={
+                "metadata": {
+                    **session.metadata,
+                    "maas_key_revocation": receipt.model_dump(mode="json"),
+                }
+            }
+        )
+        self._save_session(updated)
+        return updated
+
     def reclaim_session(
         self,
         session_id: str,
@@ -1212,7 +1250,7 @@ class ProvisioningService:
         if self.maas_key_broker and session.maas_api_key:
             self._require_lifecycle_ownership(lifecycle_guard)
             try:
-                self.maas_key_broker.revoke_key(session.maas_api_key)
+                session = self._revoke_maas_key(session)
             except Exception as e:
                 cleanup_errors.append(f"MaaS key revocation failed: {e}")
         cleanup_adapter = self._get_cleanup(session.cluster_ref)
@@ -1295,7 +1333,7 @@ class ProvisioningService:
         if self.maas_key_broker and session.maas_api_key:
             self._require_lifecycle_ownership(lifecycle_guard)
             try:
-                self.maas_key_broker.revoke_key(session.maas_api_key)
+                session = self._revoke_maas_key(session)
             except Exception as exc:
                 key_revocation_error = str(exc)
         self._require_lifecycle_ownership(lifecycle_guard)
@@ -1516,7 +1554,18 @@ class ProvisioningService:
                     for key in ("sa_token", "sandbox_data", "maas_api_key")
                 )
             ),
+            "model_key_revocation": 0,
         }
+        key_id = str(session.metadata.get("maas_key_id", "")).strip()
+        if key_id:
+            try:
+                receipt = MaaSKeyRevocationReceipt.model_validate(
+                    session.metadata.get("maas_key_revocation")
+                )
+                if receipt.key_id != key_id:
+                    residue["model_key_revocation"] = 1
+            except (TypeError, ValueError):
+                residue["model_key_revocation"] = 1
         if not session.namespace:
             return residue
         cleanup = self._get_cleanup(session.cluster_ref)
@@ -1528,7 +1577,7 @@ class ProvisioningService:
             )
         observed = inspect(session.namespace)
         for key in residue:
-            if key == "credentials":
+            if key in {"credentials", "model_key_revocation"}:
                 continue
             value = observed.get(key)
             if not isinstance(value, int) or value < 0:

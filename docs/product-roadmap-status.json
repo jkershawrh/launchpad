@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-20T02:22:12Z",
+  "updated_at": "2026-09-20T02:29:50Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -449,6 +449,7 @@
       "evidence": [
         "backend/tests/test_event_orchestration.py",
         "backend/tests/test_event_reservation_api.py",
+        "backend/tests/test_maas_key_broker.py",
         "contracts/event-orchestration-v1.yaml",
         "docs/event-capacity-matrix.md",
         "evidence/runs/event-bulk-reclaim/green-local.xml",
@@ -458,9 +459,11 @@
         "evidence/runs/event-cleanup-postgres/green-integration.xml",
         "evidence/runs/event-cleanup-postgres/manifest.json",
         "evidence/runs/event-orchestration/green-local.xml",
-        "evidence/runs/event-orchestration/red-local.xml"
+        "evidence/runs/event-orchestration/red-local.xml",
+        "evidence/runs/model-key-revocation/green-local.xml",
+        "evidence/runs/model-key-revocation/red-local.xml"
       ],
-      "note": "Disposable PostgreSQL 16 integration proves restart-safe and concurrent event cleanup finalization: a two-seat public event survives service reconstruction, converges on one SHA-256 digest and one release across two finalizers, and fully rolls back an injected database release failure before an unchanged recovery retry. Overall state remains green-local because TDD, CDD, and BDD integration proof, live OpenShift residue inspection, external OIDC, and model-key revocation receipts remain open."
+      "note": "Local RED/GREEN proof now requires secret-free LiteLLM key-revocation receipts, rejects missing or mismatched receipts, and makes receipt replay idempotent. Disposable PostgreSQL integration still proves restart-safe, concurrent, rollback-safe cleanup finalization. Overall state remains green-local because live LiteLLM revocation, live OpenShift zero-residue inspection, external OIDC, and staged 1-, 5-, and certified-seat proofs remain open."
     },
     "LP-T023": {
       "state": "green-local",

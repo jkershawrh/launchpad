@@ -39,7 +39,7 @@ def test_event_orchestration_contract_keeps_public_access_pending():
     ]["post"]
     result = contract["components"]["schemas"]["EventWorkshopLaunchResult"]
 
-    assert contract["info"]["version"] == "1.4.0"
+    assert contract["info"]["version"] == "1.5.0"
     assert operation["responses"]["202"]["content"]["application/json"][
         "schema"
     ] == {"$ref": "#/components/schemas/EventWorkshopLaunchResult"}
@@ -73,6 +73,11 @@ def test_event_orchestration_contract_keeps_public_access_pending():
     cleanup = contract["components"]["schemas"]["EventCleanupEvidenceResult"]
     assert "one_time_access_code" not in str(cleanup)
     assert "email" not in str(cleanup)
+    residue = contract["components"]["schemas"][
+        "EventCleanupWorkshopEvidence"
+    ]["properties"]["residue"]
+    assert residue["additionalProperties"] is False
+    assert "model_key_revocation" in residue["required"]
 
 
 def _catalog():
