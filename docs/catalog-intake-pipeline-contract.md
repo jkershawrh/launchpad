@@ -36,3 +36,9 @@ Service, external IP, or malformed network spec yields the stable
 manifests. An ordinary internal ClusterIP Service remains reviewable. This
 closes a local source-to-render consistency gap; target-cluster ingress and
 egress certification are still separate gates.
+
+The receiving checker also bounds YAML object-graph depth and node visits
+before walking manifests. Recursive aliases and excessive nesting now return
+stable `render-structure-*` findings rather than crashing review or echoing
+source content. This is a local parser-safety prerequisite for a future
+trusted collector; it does not make caller-supplied render receipts authentic.

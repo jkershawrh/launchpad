@@ -1,0 +1,27 @@
+{
+  "evidence_id": "catalog-intake-render-structure-green-local-20260921",
+  "generated_at": "2026-09-21T13:58:39Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T100"],
+  "red": {
+    "test": "backend/tests/test_catalog_intake_render_review.py",
+    "result": "A recursive YAML alias crashed review with RecursionError; excessive nesting and excessive scalar breadth were incorrectly review-ready"
+  },
+  "green": {
+    "focused_tests": "22 passed",
+    "backend_regression": "2143 passed, 27 skipped, 13 deselected",
+    "lint": "ruff passed",
+    "contract": "contracts/catalog-intake-rendered-output-v1.yaml"
+  },
+  "enforced_local_bounds": {
+    "maximum_depth": 64,
+    "maximum_node_visits_per_document": 10000,
+    "wide_scalar_mapping": "blocked before expanding the traversal stack",
+    "recursive_alias": "blocked before recursive manifest traversal",
+    "bounded_nonrecursive_alias": "reviewable"
+  },
+  "boundary": [
+    "The rendered-output receipt remains caller-supplied in local tests; an authenticated collector is still missing.",
+    "No isolated renderer, catalog activation, or live lab was changed."
+  ]
+}

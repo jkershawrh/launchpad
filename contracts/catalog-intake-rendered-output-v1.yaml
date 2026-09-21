@@ -11,6 +11,8 @@ input:
   rendered_manifest: bounded bytes; raw content is not persisted in the review report
   maximum_bytes: 1048576
   maximum_resources: 500
+  maximum_yaml_structure_depth: 64
+  maximum_yaml_structure_nodes_per_document: 10000
 checks:
   - source and approval identity match
   - manifest digest matches exact bytes
@@ -18,6 +20,7 @@ checks:
   - every Kubernetes document has an identity
   - no Secret, cluster-scoped, host-privileged, mutable-image, or unresolved-template content
   - fixed ingress hosts, externally exposed Services, and malformed network specs remain review blockers after rendering
+  - recursive YAML aliases and structures beyond the depth/node bounds are blocked before manifest traversal
 output:
   status: blocked or review-ready
   findings: stable codes only, no source URLs, hostnames, Secret values, or raw manifests

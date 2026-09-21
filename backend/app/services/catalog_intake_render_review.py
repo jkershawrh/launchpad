@@ -19,6 +19,8 @@ from app.services.catalog_onboarding import (
 SCHEMA_VERSION = "launchpad.redhat.com/catalog-intake-rendered-output/v1"
 MAX_RENDERED_BYTES = 1024 * 1024
 MAX_RESOURCES = 500
+MAX_STRUCTURE_DEPTH = 64
+MAX_STRUCTURE_NODES = 10_000
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 RECEIPT_FIELDS = {
     "schema_version",
@@ -35,6 +37,35 @@ RECEIPT_FIELDS = {
 }
 
 
+def _structure_issue(value: Any) -> str | None:
+    """Bound YAML alias expansion before recursive manifest inspection."""
+
+    active: set[int] = set()
+    visited = 0
+    stack: list[tuple[Any, int, bool]] = [(value, 0, False)]
+    while stack:
+        node, depth, leaving = stack.pop()
+        if leaving:
+            active.remove(id(node))
+            continue
+        visited += 1
+        if depth > MAX_STRUCTURE_DEPTH or visited > MAX_STRUCTURE_NODES:
+            return "render-structure-limit-exceeded"
+        if not isinstance(node, (dict, list)):
+            continue
+        identity = id(node)
+        if identity in active:
+            return "render-structure-cycle"
+        active.add(identity)
+        stack.append((node, depth, True))
+        children = node.values() if isinstance(node, dict) else node
+        children = list(children)
+        if visited + len(stack) + len(children) > MAX_STRUCTURE_NODES:
+            return "render-structure-limit-exceeded"
+        stack.extend((child, depth + 1, False) for child in reversed(children))
+    return None
+
+
 def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
     findings: set[str] = set()
     count = image_count = 0
@@ -44,10 +75,14 @@ def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
         findings.add("template-unresolved")
     try:
         documents = list(yaml.safe_load_all(output.decode("utf-8")))
-    except (UnicodeDecodeError, yaml.YAMLError):
+    except (UnicodeDecodeError, yaml.YAMLError, RecursionError):
         return sorted(findings | {"render-output-unparseable"}), 0, 0
     if not documents or len(documents) > MAX_RESOURCES:
         findings.add("render-resource-count-invalid")
+    for document in documents[:MAX_RESOURCES]:
+        issue = _structure_issue(document)
+        if issue:
+            return sorted(findings | {issue}), 0, 0
     network_inventory: dict[str, list[Any]] = {"network_exposure": []}
     for document in documents[:MAX_RESOURCES]:
         if not isinstance(document, dict):

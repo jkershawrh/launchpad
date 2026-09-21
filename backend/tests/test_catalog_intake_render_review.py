@@ -209,6 +209,62 @@ def test_render_review_allows_internal_cluster_ip_service() -> None:
     assert report["release_eligible"] is False
 
 
+def test_render_review_rejects_recursive_yaml_alias_without_crashing() -> None:
+    recursive = (
+        b"apiVersion: apps/v1\nkind: Deployment\n"
+        b"metadata: {name: recursive}\n"
+        b"spec:\n  loop: &loop\n    self: *loop\n"
+    )
+
+    report = review_rendered_output(_discovery(), _render_receipt(recursive), recursive)
+
+    assert report["status"] == "blocked"
+    assert "render-structure-cycle" in report["findings"]
+    assert report["release_eligible"] is False
+
+
+def test_render_review_rejects_excessive_yaml_depth() -> None:
+    nested = "leaf: value\n"
+    for _ in range(70):
+        nested = "nested:\n" + "".join("  " + line for line in nested.splitlines(True))
+    rendered = (
+        "apiVersion: apps/v1\nkind: Deployment\n"
+        "metadata: {name: deep}\nspec:\n" +
+        "".join("  " + line for line in nested.splitlines(True))
+    ).encode()
+
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert report["status"] == "blocked"
+    assert "render-structure-limit-exceeded" in report["findings"]
+
+
+def test_render_review_allows_bounded_nonrecursive_alias() -> None:
+    rendered = (
+        b"apiVersion: apps/v1\nkind: Deployment\n"
+        b"metadata: {name: shared}\n"
+        b"spec:\n  first: &common {replicas: 1}\n  second: *common\n"
+    )
+
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert report["status"] == "review-ready"
+    assert report["release_eligible"] is False
+
+
+def test_render_review_rejects_excessive_yaml_breadth() -> None:
+    fields = "".join(f"  key{index}: value\n" for index in range(10_001))
+    rendered = (
+        "apiVersion: apps/v1\nkind: Deployment\n"
+        "metadata: {name: wide}\nspec:\n" + fields
+    ).encode()
+
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert report["status"] == "blocked"
+    assert "render-structure-limit-exceeded" in report["findings"]
+
+
 def test_oversized_output_is_rejected_before_parsing() -> None:
     oversized = SAFE_MANIFEST + b" " * (1024 * 1024)
 
@@ -249,3 +305,5 @@ def test_render_review_contract_does_not_authorize_host_render_or_promotion() ->
     assert contract["authority"]["may_publish_catalog"] is False
     assert contract["authority"]["review_ready_is_certified"] is False
     assert any("fixed ingress hosts" in check for check in contract["checks"])
+    assert contract["input"]["maximum_yaml_structure_depth"] == 64
+    assert contract["input"]["maximum_yaml_structure_nodes_per_document"] == 10000
