@@ -843,8 +843,10 @@ software provenance, secret hygiene, and accountable mutation.**
   Validation, cleanup, seat, and admin observability/endpoint errors now use
   stable public text. Service exception bodies now preserve status with generic
   text, and the unused raw container-log browser API is denied. Capacity and
-  cluster reason strings, approved log-access design, rotation, signing,
-  live policy enforcement, and abuse testing
+  cluster-inspection provider exceptions now use stable public reason strings,
+  while known policy and seat-limit messages remain actionable. The approved
+  pilot log-access boundary is documented, but a future support UI, rotation,
+  signing, live policy enforcement, and abuse testing
   remain open. **GREEN-local (audit slice):** a versioned audit-integrity and
   retention contract now defines accountable events, recursive redaction,
   separated roles, retention classes, tamper-evident chaining/anchors, governed

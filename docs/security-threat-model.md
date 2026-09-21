@@ -25,6 +25,11 @@ fleet credential rotation, signed/SBOM-backed artifacts and cold pulls,
 model/tool abuse testing, durable audit retention, and time-bounded support
 access. Those are documented risks, not implied certifications.
 
+The current pilot path for investigating failures without restoring raw
+browser log access is defined in
+[`operator-log-access.md`](operator-log-access.md). Its future support UI is a
+separate security gate, not an implemented capability.
+
 ## Change control
 
 Review and version the contract whenever an identity flow, network boundary,

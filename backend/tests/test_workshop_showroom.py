@@ -449,7 +449,7 @@ class TestCapacityGuard:
             can, reason = svc.check_workshop_capacity(workshop)
 
         assert can is False
-        assert "failed" in reason.lower()
+        assert reason == "Capacity check unavailable"
 
     def test_live_pod_slots_limit_workshop_capacity(self):
         item = _make_catalog_item()

@@ -1,0 +1,28 @@
+{
+  "evidence_id": "LP-T058-CAPACITY-CLUSTER-REASON-20260921",
+  "scope": "local source and unit tests only; no live cluster mutation",
+  "requirements": [
+    "Capacity previews fail closed without exposing provider exception content",
+    "Fleet health returns a stable unavailable reason without exposing provider exception content",
+    "Captured application logs omit provider exception content for these paths"
+  ],
+  "red": {
+    "command": "PYTHONPATH=. ../.venv/bin/pytest -q tests/test_multicluster.py -k does_not_expose_provider_exception --disable-warnings",
+    "result": "2 failed",
+    "observed": [
+      "Fleet inspection reason contained Authorization: Bearer private-token",
+      "Capacity preview reason contained Authorization: Bearer private-token"
+    ]
+  },
+  "green": {
+    "command": "PYTHONPATH=. ../.venv/bin/pytest -q tests/test_multicluster.py --disable-warnings",
+    "result": "24 passed",
+    "regression_command": "PYTHONPATH=backend:. .venv/bin/pytest -q backend/tests -m 'not local' --disable-warnings --tb=short",
+    "regression_result": "2098 passed, 27 skipped, 13 deselected"
+  },
+  "limitations": [
+    "Not a live deployment or external-browser security certification",
+    "Authorized central operator log access and independent security review remain open",
+    "Other operational telemetry and log producers require separate boundary review"
+  ]
+}

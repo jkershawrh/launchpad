@@ -3083,13 +3083,18 @@ class ProvisioningService:
                     "ingress_domain": target.ingress_domain,
                 })
             except Exception as exc:
+                logger.warning(
+                    "Cluster inspection unavailable for %s (%s)",
+                    target.cluster_id,
+                    type(exc).__name__,
+                )
                 results.append({
                     "cluster_id": target.cluster_id,
                     "cluster_name": target.display_name,
                     "health_status": "unreachable",
                     "healthy": False,
                     "eligible": False,
-                    "reason": str(exc),
+                    "reason": "Cluster inspection unavailable",
                     "configured_enabled": target.enabled,
                     "inspection_only": not target.enabled,
                     "available_cpu_millicores": 0,
@@ -3137,9 +3142,9 @@ class ProvisioningService:
                 )
         except ImportError:
             return False, "kubernetes package not available — capacity cannot be verified"
-        except Exception as e:
-            logger.warning("Capacity check failed closed: %s", e)
-            return False, f"Capacity check failed: {e}"
+        except Exception as exc:
+            logger.warning("Capacity check unavailable (%s)", type(exc).__name__)
+            return False, "Capacity check unavailable"
 
     def _estimate_max_seats(self, workshop: Workshop) -> int:
         try:

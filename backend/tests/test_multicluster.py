@@ -274,6 +274,50 @@ def test_fleet_inspection_reports_healthy_disabled_target_as_ineligible():
     factory.clients.assert_called_once_with("brutus", allow_disabled=True)
 
 
+def test_fleet_inspection_does_not_expose_provider_exception(caplog):
+    registry = ClusterRegistry([target("arena", 10, ["cpu", "openshift"])])
+    factory = MagicMock()
+    factory.clients.side_effect = RuntimeError("Authorization: Bearer private-token")
+    service = ProvisioningService(
+        cluster_registry=registry,
+        cluster_client_factory=factory,
+    )
+
+    result = service.get_cluster_fleet_health()
+
+    assert result[0]["health_status"] == "unreachable"
+    assert result[0]["reason"] == "Cluster inspection unavailable"
+    assert "private-token" not in str(result)
+    assert "private-token" not in caplog.text
+
+
+def test_capacity_preview_does_not_expose_provider_exception(monkeypatch, caplog):
+    monkeypatch.setenv("LAUNCHPAD_MODE", "cluster")
+    registry = ClusterRegistry([target("arena", 10, ["cpu", "openshift"])])
+    catalog = MagicMock()
+    catalog.get_item.return_value = SimpleNamespace(
+        required_capabilities=["cpu"],
+        metadata={"max_workshop_seats": 25},
+    )
+    service = ProvisioningService(
+        catalog=catalog,
+        cluster_registry=registry,
+        cluster_client_factory=MagicMock(),
+    )
+    service._target_clients = MagicMock(
+        side_effect=RuntimeError("Authorization: Bearer private-token")
+    )
+
+    result = service.preview_workshop_capacity(
+        Workshop(tenant_id="pilot-tenant", catalog_item_id="cpu-lab", num_users=2)
+    )
+
+    assert result["can_provision"] is False
+    assert result["reason"] == "Capacity check unavailable"
+    assert "private-token" not in str(result)
+    assert "private-token" not in caplog.text
+
+
 def test_registry_filters_capabilities_and_models_and_validates_override():
     registry = ClusterRegistry([
         target("oberon", 50, ["openshift", "gaudi"], {"large": "https://model"}),
