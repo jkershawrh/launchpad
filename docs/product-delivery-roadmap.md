@@ -400,7 +400,11 @@ repository and receive a safe, reviewable, certified catalog draft.**
   screens expose these fields, the durable storage scope, and the full gated
   pipeline. A completed discovery advances the view to catalog-draft review
   while source approval and discovery controls appear only when their durable
-  preconditions pass. Certification, approval, and promotion remain locked.
+  preconditions pass. **GREEN-local quality-review slice:** the same detail
+  view now presents authoring-artifact coverage, Showroom depth, inferred model
+  access mode, mutable-image counts, activation findings, and the analysis-only
+  authority boundary from the versioned intake-quality profile. Certification,
+  approval, and promotion remain locked.
 - **Gate:** a new quickstart progresses from immutable repository revision to a
   certified draft and approved promotion without a bespoke platform code edit.
 

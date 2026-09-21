@@ -763,9 +763,10 @@
         "evidence/runs/catalog-intake-durability/green-integration.json",
         "evidence/runs/catalog-intake-pipeline/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json",
-        "evidence/runs/catalog-intake-submission/green-local.json"
+        "evidence/runs/catalog-intake-submission/green-local.json",
+        "evidence/runs/admin-intake-quality-ui/manifest.json"
       ],
-      "note": "Admin Intake now conditionally exposes source approval and discovery actions only when durable storage and worker prerequisites pass, renders execution state, and keeps certification, publication, provisioning, and live mutation disabled."
+      "note": "Admin Intake now conditionally exposes source approval and discovery actions only when durable storage and worker prerequisites pass, renders execution state, and presents the versioned Quickstart quality profile: authoring artifacts, Showroom depth, inferred model access, supply-chain signals, activation findings, and its analysis-only authority. Certification, publication, provisioning, and live mutation remain disabled."
     },
     "LP-T100": {
       "state": "green-integration",

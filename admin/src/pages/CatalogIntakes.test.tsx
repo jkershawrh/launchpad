@@ -59,7 +59,72 @@ const draft: CatalogIntakeDraft = {
     status: 'draft',
     required_capabilities: ['openshift', 'showroom'],
     optional_capabilities: [],
-    metadata: { allowed_exposure_policies: ['internal'] },
+    metadata: {
+      allowed_exposure_policies: ['internal'],
+      intake_quality: {
+        schema_version: 'launchpad.redhat.com/catalog-intake-quality/v1',
+        business_solution: {
+          status: 'review-required',
+          readme_present: true,
+          title: 'Build an Agent Lab',
+          action_oriented_title: true,
+          required_sections_present: true,
+          missing_sections: [],
+          business_language_present: true,
+          human_review_required: true,
+        },
+        artifacts: {
+          validation_matrix: { path: 'tests/validation_matrix.yaml', status: 'present-valid', entry_count: 5 },
+          claim_registry: { path: 'tests/claim_registry.yaml', status: 'missing', entry_count: 0 },
+          benchmark_rubric: { path: 'tests/benchmark_rubric.yaml', status: 'present-valid', entry_count: 3 },
+          publication_test: { path: 'tests/publication/test_readme.py', status: 'present' },
+          makefile: { path: 'Makefile', status: 'present' },
+          ci_workflows: { path: '.github/workflows', status: 'present' },
+        },
+        showroom: {
+          page_count: 4,
+          hands_on_module_count: 3,
+          execute_block_count: 8,
+          see_section_count: 3,
+          verification_section_count: 3,
+          key_takeaway_count: 3,
+          thin_modules: [],
+        },
+        capacity_proposal: {
+          status: 'review-required',
+          inference_mode: 'remote-endpoint',
+          framework_signals: ['openai'],
+          declared_models: [],
+          explicit_resource_envelopes: 0,
+          measurement_required_before_placement: true,
+        },
+        security_summary: {
+          status: 'review-required',
+          mutable_image_count: 1,
+          cluster_scoped_resource_count: 0,
+          privileged_finding_count: 0,
+          secret_manifest_count: 0,
+          unparsed_manifest_count: 0,
+          secret_values_included: false,
+        },
+        portfolio_overlap: {
+          status: 'not-run',
+          reason: 'A pinned versioned portfolio inventory was not supplied.',
+          mutable_live_org_scan_allowed: false,
+        },
+        gate: {
+          status: 'blocked',
+          blocking_findings: ['tests/claim_registry.yaml is missing or invalid'],
+        },
+        authority: {
+          mode: 'analysis-only',
+          may_modify_source: false,
+          may_publish_catalog: false,
+          may_provision: false,
+          may_certify: false,
+        },
+      },
+    },
   },
 };
 
@@ -130,6 +195,13 @@ describe('CatalogIntakes', () => {
     expect(screen.getByText('12 files scanned')).toBeInTheDocument();
     expect(screen.getByText('Stage: Catalog draft review')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Catalog draft preview' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Quickstart quality review' })).toBeInTheDocument();
+    expect(screen.getByText('Blocked')).toBeInTheDocument();
+    expect(screen.getByText('tests/claim_registry.yaml is missing or invalid')).toBeInTheDocument();
+    expect(screen.getByText('3 hands-on modules')).toBeInTheDocument();
+    expect(screen.getByText('Remote endpoint')).toBeInTheDocument();
+    expect(screen.getByText('1 mutable image')).toBeInTheDocument();
+    expect(screen.getByText(/Analysis only/)).toBeInTheDocument();
     expect(screen.getByText('openshift, showroom')).toBeInTheDocument();
     expect(screen.getByText('Durable PostgreSQL')).toBeInTheDocument();
     expect(screen.getByText('Submitted')).toBeInTheDocument();

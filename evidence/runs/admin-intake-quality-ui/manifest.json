@@ -1,0 +1,57 @@
+{
+  "schema_version": "launchpad.redhat.com/evidence-manifest/v1",
+  "evidence_id": "admin-intake-quality-ui-20260920",
+  "recorded_at": "2026-09-20T22:42:30-05:00",
+  "base_commit": "bb115c00529db034d69a028667afccf0b5ded27e",
+  "requirements": ["LP-T101"],
+  "methods": {
+    "tdd": "green-local",
+    "edd": "green-local",
+    "cdd": "green-local",
+    "bdd": "green-local",
+    "cbt": "green-local"
+  },
+  "artifacts": [
+    {
+      "path": "evidence/runs/admin-intake-quality-ui/red-local.xml",
+      "sha256": "5595b3ab48bca23e2baec228bd4e48c22450e9b8d8b0d022b8b08edfe91ad2a9",
+      "result": "RED"
+    },
+    {
+      "path": "evidence/runs/admin-intake-quality-ui/green-local.xml",
+      "sha256": "ed4e90220903554879bcaf75a498a66b845bdba5c58f2cc47fe47378dd67bce2",
+      "result": "GREEN-local"
+    },
+    {
+      "path": "contracts/catalog-intake-quality-v1.yaml",
+      "sha256": "68cf69a42ef8b0eadc9bb269e3955b9fd788a66d00f67be4a7e8015bfce5ddcb",
+      "result": "provider-contract"
+    },
+    {
+      "path": "admin/src/api/types.ts",
+      "sha256": "6792dfd26ac898fb40652bbc7d934240d3f0d9b63d2beaf0c866a6fbeb9d7180",
+      "result": "consumer-contract"
+    },
+    {
+      "path": "admin/src/pages/CatalogIntakeDetail.tsx",
+      "sha256": "d34a586f540833e4d189c50d42f378c813dda4133ceb3929be90a2f207a06eec",
+      "result": "component"
+    },
+    {
+      "path": "admin/src/pages/CatalogIntakes.test.tsx",
+      "sha256": "a54a2b766dbcdf5dcf62a41c29e2a64e29084c10273ddb05a4a96a7b18cffe58",
+      "result": "behavior"
+    }
+  ],
+  "claims": [
+    "Admin Intake displays the quality gate state and activation findings from a generated catalog preview.",
+    "The view distinguishes static discovery signals from human review and certification evidence.",
+    "Certification and promotion controls remain disabled."
+  ],
+  "non_claims": [
+    "No Admin image or live environment was deployed.",
+    "No Quickstart was certified, promoted, published, provisioned, or made orderable.",
+    "No existing workshop or catalog record was changed."
+  ],
+  "release_eligible": false
+}

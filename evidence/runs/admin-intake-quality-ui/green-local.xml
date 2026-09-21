@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="3" failures="0" errors="0" time="0.210135459">
+    <testsuite name="src/pages/CatalogIntakes.test.tsx" timestamp="2026-09-21T03:41:56.989Z" hostname="jkershaw-mac" tests="3" failures="0" errors="0" skipped="0" time="0.210135459">
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; lists draft submissions and exposes a clear new-intake path" time="0.083098125">
+        </testcase>
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; renders contract boundaries and disables unavailable release actions" time="0.095926375">
+        </testcase>
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; submits only the declared intake fields and navigates to the draft" time="0.030474416">
+        </testcase>
+    </testsuite>
+</testsuites>

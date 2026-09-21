@@ -280,6 +280,69 @@ export interface CatalogIntakeSubmission {
   expected_scale: number;
 }
 
+export interface CatalogIntakeQualityArtifact {
+  path: string;
+  status: 'present' | 'present-valid' | 'missing' | 'invalid';
+  entry_count?: number;
+}
+
+export interface CatalogIntakeQualityProfile {
+  schema_version: 'launchpad.redhat.com/catalog-intake-quality/v1';
+  business_solution: {
+    status: 'review-required';
+    readme_present: boolean;
+    title: string;
+    action_oriented_title: boolean;
+    required_sections_present: boolean;
+    missing_sections: string[];
+    business_language_present: boolean;
+    human_review_required: true;
+  };
+  artifacts: Record<string, CatalogIntakeQualityArtifact>;
+  showroom: {
+    page_count: number;
+    hands_on_module_count: number;
+    execute_block_count: number;
+    see_section_count: number;
+    verification_section_count: number;
+    key_takeaway_count: number;
+    thin_modules: string[];
+  };
+  capacity_proposal: {
+    status: 'review-required';
+    inference_mode: 'local-model' | 'remote-endpoint' | 'unknown';
+    framework_signals: string[];
+    declared_models: unknown[];
+    explicit_resource_envelopes: number;
+    measurement_required_before_placement: true;
+  };
+  security_summary: {
+    status: 'review-required';
+    mutable_image_count: number;
+    cluster_scoped_resource_count: number;
+    privileged_finding_count: number;
+    secret_manifest_count: number;
+    unparsed_manifest_count: number;
+    secret_values_included: false;
+  };
+  portfolio_overlap: {
+    status: 'not-run';
+    reason: string;
+    mutable_live_org_scan_allowed: false;
+  };
+  gate: {
+    status: 'blocked' | 'review-required';
+    blocking_findings: string[];
+  };
+  authority: {
+    mode: 'analysis-only';
+    may_modify_source: false;
+    may_publish_catalog: false;
+    may_provision: false;
+    may_certify: false;
+  };
+}
+
 export interface CatalogIntakeDraft {
   intake_id: string;
   state: 'draft';
@@ -317,7 +380,9 @@ export interface CatalogIntakeDraft {
     status: 'draft';
     required_capabilities: string[];
     optional_capabilities: string[];
-    metadata: Record<string, unknown>;
+    metadata: Record<string, unknown> & {
+      intake_quality?: CatalogIntakeQualityProfile;
+    };
   } | null;
   source_approval?: {
     approval_id: string;
