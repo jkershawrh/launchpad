@@ -134,11 +134,16 @@
         "evidence/runs/event-admin-visibility/admin-green-local.xml",
         "evidence/runs/event-admin-visibility/backend-green-local.xml",
         "evidence/runs/event-admin-visibility/red-local.json",
+        "evidence/runs/event-admission-forecast/admin-green-local.xml",
+        "evidence/runs/event-admission-forecast/backend-green-local.xml",
+        "evidence/runs/event-admission-forecast/red-local.json",
+        "backend/tests/test_event_admission_forecast.py",
+        "contracts/event-admission-forecast-v1.yaml",
         "admin/src/pages/Events.test.tsx",
         "admin/src/pages/Events.tsx",
         "fixtures/events/september-17-2026.yaml"
       ],
-      "note": "The v1.2 event contract uses a server-owned catalog-by-cluster certification matrix and records both its immutable ID and SHA-256 source digest in every preview and persisted decision. The file provider accepts only versioned evidence with two distinct approvers, a timezone-aware approval timestamp, and unique evidence references; absent configuration yields unconfigured zero capacity, while an explicitly configured missing or invalid document returns 503. The manifest explicitly versions the current single_cluster_per_workshop policy. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact releases, capabilities, exposure, catalog-cell ceilings, and cluster ceilings. Disabled, DR-reserved, and uncertified capacity remain non-placeable. The admin portal now has an admin-only, read-only Events surface showing approved demand, immutable releases, certified placement, and capacity evidence; contract tests prove reads do not create reservations and expose no launch, reserve, or reclaim controls. Local RED/GREEN evidence exists. Transactional reservation approval UI, integration proof, and live proof remain open."
+      "note": "The v1.2 event contract uses a server-owned catalog-by-cluster certification matrix and records both its immutable ID and SHA-256 source digest in every preview and persisted decision. The file provider accepts only versioned evidence with two distinct approvers, a timezone-aware approval timestamp, and unique evidence references; absent configuration yields unconfigured zero capacity, while an explicitly configured missing or invalid document returns 503. The manifest explicitly versions the current single_cluster_per_workshop policy. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact releases, capabilities, exposure, catalog-cell ceilings, and cluster ceilings. Disabled, DR-reserved, and uncertified capacity remain non-placeable. The admin-only read-only Events surface now includes a multidimensional admission forecast comparing approved demand with active holds; it blocks evidence drift, stale fleet snapshots, expired holds, missing releases/capabilities, and overcommit without creating reservations. Artifact cold-pull, exact model health, and measured in-flight resource use remain separate gates. Local RED/GREEN evidence exists. Transactional reservation approval UI, integration proof, and live proof remain open."
     },
     "LP-T069": {
       "state": "green-local",

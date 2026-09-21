@@ -13,6 +13,7 @@ from app.api.deps import (
 from app.auth.oauth import get_current_user, require_admin
 from app.domain.events import (
     EventCapacityPreview,
+    EventAdmissionForecast,
     EventCapacitySupply,
     EventCleanupEvidenceResult,
     EventManifest,
@@ -38,6 +39,7 @@ from app.services.event_reservations import (
     EventReservationLedger,
     EventReservationUnavailableError,
     build_event_reservation_plan,
+    forecast_event_admission,
 )
 from app.services.events import EventManifestStore
 from app.storage.stores import PersistenceUnavailableError
@@ -77,6 +79,30 @@ def get_approved_event(
     if record is None:
         raise HTTPException(404, f"Approved event {event_id} was not found")
     return record
+
+
+@router.get(
+    "/{event_id}/admission-forecast",
+    response_model=EventAdmissionForecast,
+    dependencies=[Depends(require_admin)],
+)
+def get_event_admission_forecast(
+    event_id: str,
+    supply: Annotated[EventCapacitySupply, Depends(get_event_capacity_supply)],
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+    ledger: Annotated[
+        EventReservationLedger, Depends(get_event_reservation_ledger)
+    ],
+) -> EventAdmissionForecast:
+    """Compare approved demand with current certified capacity without reserving it."""
+
+    record = store.get(event_id)
+    if record is None:
+        raise HTTPException(404, f"Approved event {event_id} was not found")
+    try:
+        return forecast_event_admission(record, supply, ledger.snapshot_active())
+    except PersistenceUnavailableError as exc:
+        raise HTTPException(503, "Capacity forecast persistence is unavailable") from exc
 
 
 @router.get(

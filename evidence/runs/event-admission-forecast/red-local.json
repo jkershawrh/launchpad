@@ -1,0 +1,28 @@
+{
+  "schema_version": "launchpad.redhat.com/red-green-evidence/v1",
+  "evidence_id": "event-admission-forecast-red-local-20260921",
+  "stage": "red-local",
+  "requirements": [
+    "Read-only event forecast compares certified multidimensional capacity with capacity-bearing event reservations.",
+    "Matrix drift, stale fleet evidence, expired holds, missing catalog releases, missing capabilities, and overcommit fail closed.",
+    "The admin sees demand, remaining headroom, DR reserve, and limits without an admission mutation."
+  ],
+  "observations": [
+    {
+      "component": "forecast service",
+      "result": "failed-as-expected",
+      "detail": "Import of forecast_event_admission failed because the read-only forecast did not exist."
+    },
+    {
+      "component": "API",
+      "result": "failed-as-expected",
+      "detail": "GET /api/v1/events/{event_id}/admission-forecast returned 404 before the route was added."
+    },
+    {
+      "component": "fail-closed regression",
+      "result": "failed-as-expected",
+      "detail": "Initial forecast incorrectly marked a drifted held event and a missing model-endpoint capability available; both are now blocked."
+    }
+  ],
+  "live_mutation": false
+}

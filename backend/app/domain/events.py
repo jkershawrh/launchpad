@@ -519,6 +519,32 @@ class EventCleanupEvidenceResult(BaseModel):
     observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
+class EventClusterAdmissionForecast(BaseModel):
+    cluster_id: str
+    demand: EventResourceVector
+    reserved: EventResourceVector
+    certified: EventResourceVector
+    remaining_after_event: EventResourceVector
+    required_capabilities: list[str] = Field(default_factory=list)
+    catalog_releases: list[str] = Field(default_factory=list)
+    eligible: bool
+    blockers: list[str] = Field(default_factory=list)
+
+
+class EventAdmissionForecast(BaseModel):
+    event_id: str
+    status: Literal["available", "reserved", "blocked"]
+    eligible: bool
+    evidence_matches: bool
+    current_active_reservations: int = Field(ge=0)
+    matrix_id: str
+    matrix_digest: str
+    fleet_snapshot_id: str
+    clusters: list[EventClusterAdmissionForecast] = Field(default_factory=list)
+    explanation: str
+    observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
 class EventManifestConflictError(RuntimeError):
     """Raised when an immutable event ID has already been persisted."""
 

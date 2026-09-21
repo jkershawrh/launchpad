@@ -24,6 +24,7 @@ import type {
   CatalogIntakePipelineView,
   EventRecord,
   EventStatusResult,
+  EventAdmissionForecast,
 } from './types';
 
 const BASE = '/api';
@@ -129,6 +130,7 @@ export const api = {
   listEvents: () => request<EventRecord[]>('/v1/events'),
   getEvent: (id: string) => request<EventRecord>(`/v1/events/${encodeURIComponent(id)}`),
   getEventStatus: (id: string) => request<EventStatusResult>(`/v1/events/${encodeURIComponent(id)}/status`),
+  getEventAdmissionForecast: (id: string) => request<EventAdmissionForecast>(`/v1/events/${encodeURIComponent(id)}/admission-forecast`),
 
   // Intelligence / Feedback
   getFeedbackSummary: () =>

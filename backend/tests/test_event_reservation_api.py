@@ -241,6 +241,30 @@ def test_non_admin_cannot_read_one_approved_event():
     assert response.status_code == 403
 
 
+def test_admin_forecasts_event_admission_without_creating_capacity_holds():
+    _supply_value, _event_store, ledger = _overrides()
+    try:
+        response = TestClient(app).get("/api/v1/events/event-a/admission-forecast")
+    finally:
+        _clear_overrides()
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "available"
+    assert response.json()["eligible"] is True
+    assert response.json()["clusters"][0]["demand"]["seats"] == 60
+    assert ledger.snapshot_active() == []
+
+
+def test_non_admin_cannot_forecast_event_admission():
+    _overrides(admin=False)
+    try:
+        response = TestClient(app).get("/api/v1/events/event-a/admission-forecast")
+    finally:
+        _clear_overrides()
+
+    assert response.status_code == 403
+
+
 def test_release_requires_positive_cleanup_evidence_and_is_idempotent():
     supply, event_store, _ledger = _overrides()
     event_store.create(_record("event-b", supply))

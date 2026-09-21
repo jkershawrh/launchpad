@@ -555,3 +555,27 @@ export interface EventStatusResult {
   workshops: EventWorkshopStatusItem[];
   observed_at: string;
 }
+
+export interface EventAdmissionForecast {
+  event_id: string;
+  status: 'available' | 'reserved' | 'blocked';
+  eligible: boolean;
+  evidence_matches: boolean;
+  current_active_reservations: number;
+  matrix_id: string;
+  matrix_digest: string;
+  fleet_snapshot_id: string;
+  clusters: Array<{
+    cluster_id: string;
+    demand: EventResourceVector;
+    reserved: EventResourceVector;
+    certified: EventResourceVector;
+    remaining_after_event: EventResourceVector;
+    required_capabilities: string[];
+    catalog_releases: string[];
+    eligible: boolean;
+    blockers: string[];
+  }>;
+  explanation: string;
+  observed_at: string;
+}

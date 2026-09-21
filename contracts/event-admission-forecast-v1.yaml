@@ -1,0 +1,72 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Read-only Event Admission Forecast
+  version: 1.0.0
+  description: >-
+    An admin-only diagnostic comparison of an approved event's persisted
+    allocation against the current certified matrix and all capacity-bearing
+    event reservations. It never creates a hold and is not an admission token,
+    a substitute for the atomic reservation transaction, or a live workload
+    health probe. Exact model availability, artifact cold-pull readiness, and
+    measured in-flight resource consumption require separate evidence gates.
+paths:
+  /api/v1/events/{event_id}/admission-forecast:
+    get:
+      summary: Read current event admission forecast
+      parameters:
+        - in: path
+          name: event_id
+          required: true
+          schema: {type: string, minLength: 1}
+      responses:
+        '200':
+          description: Fail-closed forecast, not a reservation
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/EventAdmissionForecast'}
+        '403': {description: Administrator authorization required}
+        '404': {description: Approved event not found}
+        '503': {description: Certified capacity or reservation persistence unavailable}
+components:
+  schemas:
+    EventAdmissionForecast:
+      type: object
+      required: [event_id, status, eligible, evidence_matches, current_active_reservations, matrix_id, matrix_digest, fleet_snapshot_id, explanation]
+      properties:
+        event_id: {type: string}
+        status: {type: string, enum: [available, reserved, blocked]}
+        eligible: {type: boolean}
+        evidence_matches: {type: boolean}
+        current_active_reservations: {type: integer, minimum: 0}
+        matrix_id: {type: string}
+        matrix_digest: {type: string}
+        fleet_snapshot_id: {type: string}
+        clusters:
+          type: array
+          items: {$ref: '#/components/schemas/EventClusterAdmissionForecast'}
+        explanation: {type: string}
+        observed_at: {type: string, format: date-time}
+    EventClusterAdmissionForecast:
+      type: object
+      required: [cluster_id, demand, reserved, certified, remaining_after_event, eligible]
+      properties:
+        cluster_id: {type: string}
+        demand: {$ref: '#/components/schemas/EventResourceVector'}
+        reserved: {$ref: '#/components/schemas/EventResourceVector'}
+        certified: {$ref: '#/components/schemas/EventResourceVector'}
+        remaining_after_event: {$ref: '#/components/schemas/EventResourceVector'}
+        required_capabilities: {type: array, items: {type: string}}
+        catalog_releases: {type: array, items: {type: string}}
+        eligible: {type: boolean}
+        blockers: {type: array, items: {type: string}}
+    EventResourceVector:
+      type: object
+      required: []
+      properties:
+        seats: {type: integer, minimum: 0}
+        cpu_millicores: {type: integer, minimum: 0}
+        memory_mib: {type: integer, minimum: 0}
+        pods: {type: integer, minimum: 0}
+        storage_gib: {type: integer, minimum: 0}
+        routes: {type: integer, minimum: 0}
+        model_slots: {type: integer, minimum: 0}

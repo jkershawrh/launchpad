@@ -4,7 +4,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { api } from '../api/client';
-import type { EventRecord, EventStatusResult } from '../api/types';
+import type { EventAdmissionForecast, EventRecord, EventStatusResult } from '../api/types';
 import EventDetail from './EventDetail';
 
 const event: EventRecord = {
@@ -39,22 +39,41 @@ const status: EventStatusResult = {
   observed_at: '2026-09-21T16:00:00Z',
 };
 
+const forecast: EventAdmissionForecast = {
+  event_id: 'field-day', status: 'reserved', eligible: true, evidence_matches: true,
+  current_active_reservations: 2, matrix_id: 'matrix-v3', matrix_digest: `sha256:${'a'.repeat(64)}`,
+  fleet_snapshot_id: `sha256:${'b'.repeat(64)}`, explanation: 'Capacity is already reserved and placement remains pinned.',
+  observed_at: '2026-09-21T16:00:00Z',
+  clusters: [{
+    cluster_id: 'arena',
+    demand: { seats: 30, cpu_millicores: 30000, memory_mib: 60000, pods: 90, storage_gib: 300, routes: 90, model_slots: 30 },
+    reserved: { seats: 0, cpu_millicores: 0, memory_mib: 0, pods: 0, storage_gib: 0, routes: 0, model_slots: 0 },
+    certified: { seats: 90, cpu_millicores: 90000, memory_mib: 180000, pods: 270, storage_gib: 900, routes: 270, model_slots: 90 },
+    remaining_after_event: { seats: 60, cpu_millicores: 60000, memory_mib: 120000, pods: 180, storage_gib: 600, routes: 180, model_slots: 60 },
+    required_capabilities: ['cpu', 'model-endpoint'], catalog_releases: ['intel-llm-cpu-serving@v3'], eligible: true, blockers: [],
+  }],
+};
+
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 describe('EventDetail', () => {
   it('unifies readiness, access, placement, support, and evidence without lifecycle controls', async () => {
     vi.spyOn(api, 'getEvent').mockResolvedValue(event);
     vi.spyOn(api, 'getEventStatus').mockResolvedValue(status);
+    vi.spyOn(api, 'getEventAdmissionForecast').mockResolvedValue(forecast);
     render(<MemoryRouter initialEntries={['/events/field-day']}><Routes><Route path="/events/:eventId" element={<EventDetail />} /></Routes></MemoryRouter>);
 
     expect(await screen.findByRole('heading', { name: 'Intel Field Day' })).toBeInTheDocument();
     expect(screen.getByText('60 / 60 ready')).toBeInTheDocument();
     expect(screen.getByText('No failed seats')).toBeInTheDocument();
-    expect(screen.getByText('arena')).toBeInTheDocument();
+    expect(screen.getAllByText('arena')).toHaveLength(2);
     expect(screen.getByText('brutus')).toBeInTheDocument();
     expect(screen.getAllByText('Public access active')).toHaveLength(2);
     expect(screen.getByRole('link', { name: 'Open intel-llm-cpu-serving' })).toHaveAttribute('href', 'https://labs.example.io/labs/serve');
     expect(screen.getByText('matrix-v3')).toBeInTheDocument();
+    expect(screen.getByText('Admission protected')).toBeInTheDocument();
+    expect(screen.getByText('60 seats remaining')).toBeInTheDocument();
+    expect(screen.getByText('cpu · model-endpoint')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /launch|reserve|activate|reclaim/i })).not.toBeInTheDocument();
   });
 });
