@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.api.deps import (
     get_event_capacity_supply,
+    get_event_model_health_snapshot,
     get_event_manifest_store,
     get_event_orchestration_service,
     get_event_reservation_ledger,
@@ -30,6 +31,7 @@ from app.domain.events import (
     EventWorkshopReclaimResult,
     calculate_event_capacity,
 )
+from app.domain.event_model_health import EventModelHealthSnapshot
 from app.services.event_orchestration import (
     EventOrchestrationConflictError,
     EventOrchestrationService,
@@ -89,6 +91,9 @@ def get_approved_event(
 def get_event_admission_forecast(
     event_id: str,
     supply: Annotated[EventCapacitySupply, Depends(get_event_capacity_supply)],
+    model_health: Annotated[
+        EventModelHealthSnapshot | None, Depends(get_event_model_health_snapshot)
+    ],
     store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
     ledger: Annotated[
         EventReservationLedger, Depends(get_event_reservation_ledger)
@@ -100,7 +105,9 @@ def get_event_admission_forecast(
     if record is None:
         raise HTTPException(404, f"Approved event {event_id} was not found")
     try:
-        return forecast_event_admission(record, supply, ledger.snapshot_active())
+        return forecast_event_admission(
+            record, supply, ledger.snapshot_active(), model_health=model_health
+        )
     except PersistenceUnavailableError as exc:
         raise HTTPException(503, "Capacity forecast persistence is unavailable") from exc
 
@@ -232,6 +239,9 @@ def approve_event_reservation(
     event_id: str,
     request: EventReservationCreate,
     supply: Annotated[EventCapacitySupply, Depends(get_event_capacity_supply)],
+    model_health: Annotated[
+        EventModelHealthSnapshot | None, Depends(get_event_model_health_snapshot)
+    ],
     store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
     ledger: Annotated[
         EventReservationLedger, Depends(get_event_reservation_ledger)
@@ -247,6 +257,7 @@ def approve_event_reservation(
             record,
             supply,
             expires_at=request.expires_at,
+            model_health=model_health,
         )
         reservations = ledger.reserve(plan, supply)
         return plan.model_copy(update={"reservations": reservations})

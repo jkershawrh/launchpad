@@ -1,0 +1,35 @@
+schema_version: '1.0'
+title: Launchpad event model-serving snapshot
+owner: trusted server-side collector
+transport: EVENT_MODEL_HEALTH_SNAPSHOT_FILE
+format: JSON
+freshness:
+  maximum_age_seconds: 120
+  maximum_future_skew_seconds: 30
+identity:
+  snapshot_id: sha256 of exact source bytes, computed by Launchpad
+  model_key: [cluster_id, model_id]
+required:
+  - schema_version
+  - observed_at
+  - models
+model_row_required:
+  - cluster_id
+  - model_id
+  - ready_replicas
+  - route_exposed
+  - probe_success
+semantics:
+  ready_replicas: at least one ready serving replica
+  route_exposed: model route externally addressable from its intended caller
+  probe_success: representative inference request succeeded after model load
+  warning: responsiveness is not throughput or concurrency certification
+example:
+  schema_version: '1.0'
+  observed_at: '2026-09-21T18:00:00Z'
+  models:
+    - cluster_id: arena
+      model_id: granite-8b
+      ready_replicas: 1
+      route_exposed: true
+      probe_success: true

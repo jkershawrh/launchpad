@@ -1,0 +1,8 @@
+{
+  "gate": "event-model-health",
+  "phase": "RED-local",
+  "command": "PYTHONPATH=. .venv/bin/pytest -q backend/tests/test_event_model_health.py",
+  "result": "collection failed",
+  "failure": "ModuleNotFoundError: No module named 'app.domain.event_model_health'",
+  "assertion": "Model-dependent events require fresh, cluster-specific runtime evidence before reservation"
+}

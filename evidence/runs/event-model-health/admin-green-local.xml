@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="8" failures="0" errors="0" time="0.506410042">
+    <testsuite name="src/api/catalogIntakeContract.test.ts" timestamp="2026-09-21T05:34:01.789Z" hostname="jkershaw-mac" tests="2" failures="0" errors="0" skipped="0" time="0.032196167">
+        <testcase classname="src/api/catalogIntakeContract.test.ts" name="catalog intake API contract &gt; uses the versioned admin collection for list and detail reads" time="0.028954583">
+        </testcase>
+        <testcase classname="src/api/catalogIntakeContract.test.ts" name="catalog intake API contract &gt; posts the immutable release submission without inventing approval fields" time="0.001343875">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/CatalogIntakes.test.tsx" timestamp="2026-09-21T05:34:01.790Z" hostname="jkershaw-mac" tests="3" failures="0" errors="0" skipped="0" time="0.213972167">
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; lists draft submissions and exposes a clear new-intake path" time="0.102917834">
+        </testcase>
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; renders contract boundaries and disables unavailable release actions" time="0.078024542">
+        </testcase>
+        <testcase classname="src/pages/CatalogIntakes.test.tsx" name="CatalogIntakes &gt; submits only the declared intake fields and navigates to the draft" time="0.032375375">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/EventDetail.test.tsx" timestamp="2026-09-21T05:34:01.791Z" hostname="jkershaw-mac" tests="1" failures="0" errors="0" skipped="0" time="0.1458045">
+        <testcase classname="src/pages/EventDetail.test.tsx" name="EventDetail &gt; unifies readiness, access, placement, support, and evidence without lifecycle controls" time="0.145102833">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/pages/Events.test.tsx" timestamp="2026-09-21T05:34:01.791Z" hostname="jkershaw-mac" tests="2" failures="0" errors="0" skipped="0" time="0.114437208">
+        <testcase classname="src/pages/Events.test.tsx" name="Events &gt; shows approved event demand and placement evidence without lifecycle controls" time="0.102042209">
+        </testcase>
+        <testcase classname="src/pages/Events.test.tsx" name="Events &gt; explains the empty approved-event state" time="0.011677541">
+        </testcase>
+    </testsuite>
+</testsuites>

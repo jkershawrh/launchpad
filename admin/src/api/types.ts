@@ -566,6 +566,8 @@ export interface EventAdmissionForecast {
   matrix_id: string;
   matrix_digest: string;
   fleet_snapshot_id: string;
+  model_health_status?: 'not_required' | 'ready' | 'blocked';
+  model_health_snapshot_id?: string | null;
   clusters: Array<{
     cluster_id: string;
     demand: EventResourceVector;

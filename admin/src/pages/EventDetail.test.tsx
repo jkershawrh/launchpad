@@ -43,6 +43,7 @@ const forecast: EventAdmissionForecast = {
   event_id: 'field-day', status: 'reserved', eligible: true, evidence_matches: true,
   current_active_reservations: 2, matrix_id: 'matrix-v3', matrix_digest: `sha256:${'a'.repeat(64)}`,
   fleet_snapshot_id: `sha256:${'b'.repeat(64)}`, explanation: 'Capacity is already reserved and placement remains pinned.',
+  model_health_status: 'ready', model_health_snapshot_id: `sha256:${'d'.repeat(64)}`,
   observed_at: '2026-09-21T16:00:00Z',
   clusters: [{
     cluster_id: 'arena',
@@ -72,6 +73,7 @@ describe('EventDetail', () => {
     expect(screen.getByRole('link', { name: 'Open intel-llm-cpu-serving' })).toHaveAttribute('href', 'https://labs.example.io/labs/serve');
     expect(screen.getByText('matrix-v3')).toBeInTheDocument();
     expect(screen.getByText('Admission protected')).toBeInTheDocument();
+    expect(screen.getByText(/model serving evidence: ready/)).toBeInTheDocument();
     expect(screen.getByText('60 seats remaining')).toBeInTheDocument();
     expect(screen.getByText('cpu · model-endpoint')).toBeInTheDocument();
     expect(screen.getByText(/granite-3\.2-8b-tools/)).toBeInTheDocument();

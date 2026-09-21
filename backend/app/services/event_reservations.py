@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from threading import Lock
 
+from app.domain.event_model_health import EventModelHealthSnapshot
 from app.domain.events import (
     EventAdmissionForecast,
     EventCapacityReservation,
@@ -15,6 +16,7 @@ from app.domain.events import (
     EventReservationPlan,
     EventResourceVector,
 )
+from app.services.event_model_health import assess_event_model_health
 
 
 class EventReservationConflictError(RuntimeError):
@@ -31,6 +33,7 @@ def build_event_reservation_plan(
     *,
     expires_at: datetime,
     now: datetime | None = None,
+    model_health: EventModelHealthSnapshot | None = None,
 ) -> EventReservationPlan:
     """Convert an approved preview into server-owned resource holds."""
 
@@ -137,6 +140,9 @@ def build_event_reservation_plan(
 
     if len(reservations) != len(preview.allocations):
         raise EventReservationConflictError("Incomplete reservation plan")
+    health = assess_event_model_health(record, model_health, current)
+    if health.status == "blocked":
+        raise EventReservationConflictError(health.explanation)
     return EventReservationPlan(
         event_id=record.manifest.event_id,
         matrix_id=supply.matrix_id,
@@ -473,10 +479,12 @@ def forecast_event_admission(
     active: list[EventCapacityReservation],
     *,
     now: datetime | None = None,
+    model_health: EventModelHealthSnapshot | None = None,
 ) -> EventAdmissionForecast:
     """Forecast admission against current evidence without creating a hold."""
 
     current = now or datetime.now(UTC)
+    health = assess_event_model_health(record, model_health, current)
     preview = record.capacity_preview
     evidence_matches = (
         preview.matrix_id,
@@ -505,6 +513,7 @@ def forecast_event_admission(
         eligible = (
             evidence_matches
             and fresh
+            and health.status != "blocked"
             and not expired
             and held == expected
             and all(item.eligible for item in clusters)
@@ -518,10 +527,13 @@ def forecast_event_admission(
             matrix_id=supply.matrix_id,
             matrix_digest=supply.matrix_digest,
             fleet_snapshot_id=supply.fleet_snapshot_id,
+            model_health_status=health.status,
+            model_health_snapshot_id=health.snapshot_id,
             clusters=clusters,
             explanation=(
                 "Capacity is already reserved and placement remains pinned."
                 if eligible
+                else health.explanation if health.status == "blocked"
                 else "The existing event reservation has incomplete, expired, stale, or drifted certification evidence."
             ),
             observed_at=current,
@@ -533,6 +545,7 @@ def forecast_event_admission(
             supply,
             expires_at=current + timedelta(minutes=5),
             now=current,
+            model_health=model_health,
         )
     except (EventReservationConflictError, EventReservationUnavailableError) as exc:
         return EventAdmissionForecast(
@@ -544,6 +557,8 @@ def forecast_event_admission(
             matrix_id=supply.matrix_id,
             matrix_digest=supply.matrix_digest,
             fleet_snapshot_id=supply.fleet_snapshot_id,
+            model_health_status=health.status,
+            model_health_snapshot_id=health.snapshot_id,
             explanation=str(exc),
             observed_at=current,
         )
@@ -561,6 +576,8 @@ def forecast_event_admission(
         matrix_id=supply.matrix_id,
         matrix_digest=supply.matrix_digest,
         fleet_snapshot_id=supply.fleet_snapshot_id,
+        model_health_status=health.status,
+        model_health_snapshot_id=health.snapshot_id,
         clusters=clusters,
         explanation=(
             "Current certified capacity can satisfy the complete event reservation."

@@ -568,6 +568,8 @@ class EventAdmissionForecast(BaseModel):
     matrix_id: str
     matrix_digest: str
     fleet_snapshot_id: str
+    model_health_status: Literal["not_required", "ready", "blocked"] = "not_required"
+    model_health_snapshot_id: str | None = None
     clusters: list[EventClusterAdmissionForecast] = Field(default_factory=list)
     explanation: str
     observed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

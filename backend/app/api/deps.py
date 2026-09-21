@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from app.adapters.mock.branding import FileBrandingAdapter
 from app.adapters.mock.catalog import MockCatalogAdapter
 from app.domain.events import EventCapacitySupply
+from app.domain.event_model_health import EventModelHealthSnapshot
 from app.domain.models import Tenant
 from app.services.catalog_intake_discovery_coordinator import (
     CatalogIntakeDiscoveryCoordinator,
@@ -378,6 +379,23 @@ def get_event_capacity_supply() -> EventCapacitySupply:
         raise HTTPException(
             503, "Certified event capacity is unavailable"
         ) from exc
+
+
+def get_event_model_health_snapshot() -> EventModelHealthSnapshot | None:
+    """Return short-lived model-serving evidence independent of certification."""
+
+    path = os.environ.get("EVENT_MODEL_HEALTH_SNAPSHOT_FILE", "").strip()
+    if not path:
+        return None
+    from app.services.event_model_health import (
+        EventModelHealthUnavailableError,
+        FileEventModelHealthProvider,
+    )
+
+    try:
+        return FileEventModelHealthProvider(path).load()
+    except EventModelHealthUnavailableError as exc:
+        raise HTTPException(503, str(exc)) from exc
 
 
 def get_event_manifest_store() -> EventManifestStore:

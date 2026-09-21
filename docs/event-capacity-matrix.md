@@ -35,15 +35,38 @@ greedy choice, but it never splits one workshop across clusters.
   declared model requirements cannot be omitted from the event manifest.
 - Model ID certification is a static placement requirement, not proof that a
   model replica is currently warm, exposed, responsive, or able to serve the
-  expected concurrency. Runtime inference health remains a separate gate.
+  expected concurrency. Reservation now also requires a separate fresh
+  runtime-health snapshot for every required model on its allocated cluster.
+  This is not a concurrency or load certification.
 - Disabled clusters, DR-reserved capacity, and uncertified capacity never make
   an event eligible.
 - A capacity preview or persisted event record does not reserve capacity,
   provision workshops, or mutate a cluster.
 - Runtime resource measurements do not become certified capacity
-  automatically. A later provider must join approved certification evidence
-  and current reservations into this matrix and fail closed when either is
-  unavailable.
+automatically. A later provider must join approved certification evidence
+and current reservations into this matrix and fail closed when either is
+unavailable.
+
+## Runtime model-serving gate
+
+`EVENT_MODEL_HEALTH_SNAPSHOT_FILE` optionally points to a server-managed JSON
+snapshot. Its document has `schema_version: "1.0"`, timezone-aware
+`observed_at`, and a `models` array. Each model row identifies `cluster_id`,
+`model_id`, `ready_replicas`, `route_exposed`, and `probe_success`. The provider
+hashes the exact file bytes into a snapshot ID. The file must be produced by
+an authorized collector; this repository does not yet deploy that collector.
+The producer contract is `contracts/event-model-health-v1.yaml`.
+The collector must perform fresh probes for all included rows at `observed_at`;
+it must not refresh the document timestamp while carrying forward old results.
+
+For any approved allocation with required models, missing, invalid, older than
+120 seconds, future-dated beyond 30 seconds, duplicate, unready, unexposed, or
+probe-failing evidence blocks new reservations. The admin forecast reports
+that status and snapshot ID without creating a hold. Events with no required
+models remain compatible. A configured invalid file returns 503; an absent
+setting blocks only model-dependent events. This gate checks responsiveness,
+not model capacity at 25/30-seat concurrency. Do not use a hand-authored or
+long-lived file to claim GREEN-live.
 
 ## Provider contract
 

@@ -7,7 +7,8 @@ info:
     allocation against the current certified matrix and all capacity-bearing
     event reservations. It never creates a hold and is not an admission token,
     a substitute for the atomic reservation transaction, or a live workload
-    health probe. Exact model availability, artifact cold-pull readiness, and
+    health probe. It joins a separately supplied, short-lived model-serving
+    snapshot for model-dependent events. Artifact cold-pull readiness and
     measured in-flight resource consumption require separate evidence gates.
 paths:
   /api/v1/events/{event_id}/admission-forecast:
@@ -41,6 +42,8 @@ components:
         matrix_id: {type: string}
         matrix_digest: {type: string}
         fleet_snapshot_id: {type: string}
+        model_health_status: {type: string, enum: [not_required, ready, blocked]}
+        model_health_snapshot_id: {type: [string, 'null']}
         clusters:
           type: array
           items: {$ref: '#/components/schemas/EventClusterAdmissionForecast'}
