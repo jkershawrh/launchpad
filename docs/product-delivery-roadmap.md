@@ -358,7 +358,11 @@ repository and receive a safe, reviewable, certified catalog draft.**
   structure, capacity signals, and security findings. Missing required quality
   artifacts block activation; static signals cannot certify, publish, or relax
   capacity. AgnosticV/AgnosticD and RHDP-specific delivery remain outside this
-  pipeline. The default dispatcher remains disabled; signed
+  pipeline. **GREEN-local canonical-source slice:** README-first Quickstarts
+  with a deployable workload now enter review as non-orderable drafts, while a
+  mandatory Showroom-conversion warning and missing-content findings remain
+  activation blockers. The draft never claims that README content is already a
+  Showroom. The default dispatcher remains disabled; signed
   external image publication, deployed receipt collection, one passing
   canonical repository, and remaining live fault proof are open.
 - `LP-T098` Generate the catalog record, deployment package, functional

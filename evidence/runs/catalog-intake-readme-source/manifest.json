@@ -1,0 +1,53 @@
+{
+  "schema_version": "launchpad.redhat.com/evidence-manifest/v1",
+  "evidence_id": "catalog-intake-readme-source-20260920",
+  "recorded_at": "2026-09-20T22:50:00-05:00",
+  "base_commit": "3e90b56787757feb1ba068cac805c3e606ace227",
+  "requirements": ["LP-T097", "LP-T098"],
+  "methods": {
+    "tdd": "green-local",
+    "edd": "green-local",
+    "cdd": "green-local",
+    "bdd": "green-local",
+    "cbt": "green-local"
+  },
+  "artifacts": [
+    {
+      "path": "evidence/runs/catalog-intake-readme-source/red-local.xml",
+      "sha256": "3d32000de1e8fc34d78f9be5d00f0696b66ae09092d09a4ae3afdd7195a8f7de",
+      "result": "RED"
+    },
+    {
+      "path": "evidence/runs/catalog-intake-readme-source/green-local.xml",
+      "sha256": "83fd43f7b212147d1aa139f9be428e8e258ffea6c3c201d56b1d596d11e48777",
+      "result": "GREEN-local"
+    },
+    {
+      "path": "backend/app/services/catalog_onboarding.py",
+      "sha256": "44f98942da8435e7929a288082fa97476209e4ba3b58a82a9bc5cbb7f9e1f82a",
+      "result": "provider"
+    },
+    {
+      "path": "backend/tests/test_catalog_intake_quality.py",
+      "sha256": "0f8a0f4d74b431edd34f74ebf932b6a5936a1c97a14ffc024f409b38bdd4fe9f",
+      "result": "behavior-and-component"
+    },
+    {
+      "path": "backend/tests/test_catalog_onboarding.py",
+      "sha256": "368315ced127fdceb79042136c9e7edfe9398ede143d8db9c89755f2e2cd8bb7",
+      "result": "compatibility"
+    }
+  ],
+  "claims": [
+    "A README-first Quickstart with a deployable workload can produce a deterministic, internal-only, one-seat review draft.",
+    "The resulting draft identifies README content as quickstart-readme and does not claim that Showroom exists.",
+    "Showroom conversion and missing quality artifacts remain activation blockers."
+  ],
+  "non_claims": [
+    "No external repository was cloned or executed on the control-plane host.",
+    "No Showroom was generated automatically.",
+    "No Quickstart was certified, promoted, provisioned, or made orderable.",
+    "No live environment was changed."
+  ],
+  "release_eligible": false
+}

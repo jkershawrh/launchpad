@@ -597,9 +597,10 @@
         "evidence/runs/catalog-intake-discovery-bridge/manifest.json",
         "evidence/runs/catalog-intake-discovery-worker/manifest.json",
         "evidence/runs/catalog-intake/static-inventory-green-local-20260920.json",
-        "evidence/runs/catalog-intake-quality/manifest.json"
+        "evidence/runs/catalog-intake-quality/manifest.json",
+        "evidence/runs/catalog-intake-readme-source/manifest.json"
       ],
-      "note": "The canonical Quickstart path now has a durable fail-closed bridge contract and a deterministic review-only quality profile covering business/teachability signals, required validation and claim artifacts, Showroom learning structure, capacity proposals, and security findings. Missing quality artifacts block activation; the profile cannot certify, publish, provision, relax capacity, or generate RHDP/Agnostic delivery. The default dispatcher stays disabled pending a trusted deployed worker/collector path and one passing canonical repository."
+      "note": "The canonical Quickstart path now has a durable fail-closed bridge and deterministic review-only quality profile. It accepts either embedded Antora or canonical README-first content with a deployable workload. README-first sources produce non-Showroom drafts and explicit conversion/quality blockers; they never masquerade as participant-ready guides. The profile cannot certify, publish, provision, relax capacity, or generate RHDP/Agnostic delivery. The default dispatcher stays disabled pending a trusted deployed worker/collector path and one passing canonical repository."
     },
     "LP-T102": {
       "state": "green-local",
@@ -656,9 +657,10 @@
       "evidence": [
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json",
-        "evidence/runs/catalog-intake-quality/manifest.json"
+        "evidence/runs/catalog-intake-quality/manifest.json",
+        "evidence/runs/catalog-intake-readme-source/manifest.json"
       ],
-      "note": "A verified discovery receipt now deterministically becomes a persisted, non-orderable catalog preview with identity/hash/cleanup validation, source-derived quality metadata, partial evidence references, and unresolved blockers. Deployment package, participant journey, ownership, support, and certification remain open."
+      "note": "A verified discovery receipt now deterministically becomes a persisted, non-orderable catalog preview with identity/hash/cleanup validation, source-derived quality metadata, partial evidence references, and unresolved blockers. README-first sources are labeled as content requiring Showroom conversion rather than being advertised as Showroom-ready. Deployment package, participant journey, ownership, support, and certification remain open."
     },
     "LP-T099": {
       "state": "green-local",

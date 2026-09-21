@@ -157,8 +157,11 @@ that discovery cannot safely infer. Every override remains visible in the
 reviewable draft and requires evidence before promotion.
 
 The onboarding CLI can inspect an immutable quickstart revision and generate
-the first fail-closed intake. It discovers a local Antora playbook/component
-pair and a Helm, Kustomize, or manifest workload package. It also creates a
+the first fail-closed intake. It discovers either a local Antora
+playbook/component pair or canonical README-first Quickstart content, plus a
+Helm, Kustomize, or manifest workload package. README-first content produces a
+non-Showroom review draft and an explicit Showroom-conversion blocker; it is
+never represented as a participant-ready visual guide. The CLI also creates a
 review-only repository inventory covering Containerfiles, image references,
 Kubernetes resource kinds, Operators, ports, Routes, model-valued environment
 variables, resource requests and limits, persistent storage, Secret references,

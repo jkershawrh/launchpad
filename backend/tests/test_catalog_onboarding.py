@@ -561,7 +561,9 @@ rules: []
     assert validate_intake(intake)["activation_status"] == "blocked"
 
 
-def test_quickstart_discovery_fails_closed_without_showroom_or_workload(tmp_path: Path):
+def test_quickstart_discovery_accepts_readme_content_but_fails_without_workload(
+    tmp_path: Path,
+):
     (tmp_path / "README.md").write_text("# Empty quickstart\n")
 
     intake, report = discover_quickstart_repo(
@@ -573,7 +575,8 @@ def test_quickstart_discovery_fails_closed_without_showroom_or_workload(tmp_path
     )
 
     assert report["discovery_status"] == "fail"
-    assert any("Antora playbook" in error for error in report["errors"])
+    assert report["showroom"]["source_kind"] == "quickstart-readme"
+    assert any("Showroom conversion" in warning for warning in report["warnings"])
     assert any("deployable workload" in error for error in report["errors"])
     assert intake["certification"]["max_workshop_seats"] == 1
 

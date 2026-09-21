@@ -92,8 +92,19 @@ def _discover_showroom(root: Path) -> tuple[dict[str, str], list[str], list[str]
                     }
                 )
     if not candidates:
+        readme = root / "README.md"
+        if readme.is_file():
+            warnings.append(
+                "README-first Quickstart content was discovered; Showroom conversion and review are required before activation."
+            )
+            return {
+                "source_kind": "quickstart-readme",
+                "content_path": "README.md",
+                "playbook": "",
+                "start_path": ".",
+            }, warnings, errors
         errors.append(
-            "No Antora playbook with a local content source and matching antora.yml was discovered."
+            "No Antora playbook or README-first Quickstart content source was discovered."
         )
         return {"playbook": "site.yml", "start_path": "."}, warnings, errors
     if len(candidates) > 1:
@@ -803,6 +814,14 @@ def discover_quickstart_repo(
                 "revision": revision,
                 "playbook": showroom["playbook"],
                 "start_path": showroom["start_path"],
+                **(
+                    {
+                        "source_kind": showroom["source_kind"],
+                        "content_path": showroom["content_path"],
+                    }
+                    if showroom.get("source_kind") == "quickstart-readme"
+                    else {}
+                ),
             },
             "workload": {
                 "repo_url": repo_url,
@@ -949,6 +968,21 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
     quality_metadata = {}
     if quality:
         quality_metadata["intake_quality"] = copy.deepcopy(quality)
+    showroom_source_kind = showroom.get("source_kind", "antora")
+    if showroom_source_kind == "quickstart-readme":
+        showroom_metadata = {
+            "showroom": False,
+            "showroom_content_source_kind": "quickstart-readme",
+            "showroom_content_path": showroom.get("content_path", "README.md"),
+        }
+    else:
+        showroom_metadata = {
+            "showroom": True,
+            "showroom_content_repo_url": showroom["repo_url"],
+            "showroom_content_ref": showroom["revision"],
+            "showroom_content_playbook": showroom["playbook"],
+            "showroom_content_start_path": showroom["start_path"],
+        }
     if certification.get("proof_contract"):
         certification_metadata["certification_proof_contract"] = certification[
             "proof_contract"
@@ -1010,7 +1044,7 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "supported_branding", ["redhat-intel-default", "intel-internal"]
         ),
         "metadata": {
-            "showroom": True,
+            **showroom_metadata,
             "operator_workshop": True,
             "content_only": False,
             "onboarding_managed": True,
@@ -1027,10 +1061,6 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "showroom_journey": catalog["catalog_item_id"],
             "showroom_title": catalog["display_name"],
             "namespace_slug": runtime.get("namespace_slug", catalog["catalog_item_id"]),
-            "showroom_content_repo_url": showroom["repo_url"],
-            "showroom_content_ref": showroom["revision"],
-            "showroom_content_playbook": showroom["playbook"],
-            "showroom_content_start_path": showroom["start_path"],
             "showroom_terminal_storage": bool(
                 runtime.get("showroom_terminal_storage", True)
             ),
@@ -1394,6 +1424,17 @@ def _resolve_image(content_root: Path, page: Path, reference: str) -> bool:
 def _validate_showroom(
     source: Path, showroom: dict[str, Any], errors: list[str], warnings: list[str]
 ) -> None:
+    if showroom.get("source_kind") == "quickstart-readme":
+        content_path = source / str(showroom.get("content_path", "README.md"))
+        if not content_path.is_file():
+            errors.append(
+                f"Quickstart content source is missing: {content_path.relative_to(source)}"
+            )
+        else:
+            warnings.append(
+                "README-first Quickstart content requires Showroom conversion before activation"
+            )
+        return
     errors_before_structure = len(errors)
     playbook_path = source / str(showroom.get("playbook", ""))
     content_root = source / str(showroom.get("start_path", ""))

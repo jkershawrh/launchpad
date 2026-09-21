@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="0.071" timestamp="2026-09-20T22:44:16.114376-05:00" hostname="jkershaw-mac"><testcase classname="backend.tests.test_catalog_intake_quality" name="test_quality_profile_reuses_quickstart_authoring_and_showroom_signals" time="0.007" /><testcase classname="backend.tests.test_catalog_intake_quality" name="test_repository_discovery_blocks_missing_quickstart_quality_artifacts" time="0.010" /><testcase classname="backend.tests.test_catalog_intake_quality" name="test_quality_contract_keeps_rhdp_delivery_and_live_mutation_outside_scope" time="0.002" /><testcase classname="backend.tests.test_catalog_intake_quality" name="test_readme_first_quickstart_becomes_a_blocked_review_draft" time="0.003"><failure message="AssertionError: assert 'fail' == 'pass'&#10;  &#10;  - pass&#10;  + fail">tmp_path = PosixPath('/private/var/folders/qh/kgyp2lln3nb8t1rt2yc1rr4w0000gn/T/pytest-of-jkershaw/pytest-444/test_readme_first_quickstart_b0')
+
+    def test_readme_first_quickstart_becomes_a_blocked_review_draft(
+        tmp_path: Path,
+    ) -&gt; None:
+        source = tmp_path / "readme-quickstart"
+        chart = source / "helm"
+        chart.mkdir(parents=True)
+        (source / "README.md").write_text(
+            """# Build an IT Support Agent
+    
+    Help support teams reduce ticket resolution time.
+    
+    ## Table of Contents
+    ## Overview
+    ## Architecture
+    ## Requirements
+    ## Deploy
+    ## Repository structure
+    ## References
+    ## Tags
+    """,
+            encoding="utf-8",
+        )
+        (chart / "Chart.yaml").write_text(
+            "apiVersion: v2\nname: support-agent\nversion: 0.1.0\n",
+            encoding="utf-8",
+        )
+        (chart / "values.yaml").write_text("{}\n", encoding="utf-8")
+    
+        intake, report = discover_quickstart_repo(
+            source,
+            repo_url="https://github.com/example/support-agent.git",
+            revision="b" * 40,
+            catalog_id="support-agent",
+            display_name="Support Agent",
+        )
+    
+&gt;       assert report["discovery_status"] == "pass"
+E       AssertionError: assert 'fail' == 'pass'
+E         
+E         - pass
+E         + fail
+
+backend/tests/test_catalog_intake_quality.py:229: AssertionError</failure></testcase></testsuite></testsuites>

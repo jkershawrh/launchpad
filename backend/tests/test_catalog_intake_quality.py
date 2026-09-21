@@ -5,6 +5,7 @@ from pathlib import Path
 import yaml
 
 from app.services.catalog_onboarding import (
+    build_catalog_draft_from_receipt,
     build_catalog_item,
     discover_quickstart_quality,
     discover_quickstart_repo,
@@ -187,3 +188,56 @@ def test_quality_contract_keeps_rhdp_delivery_and_live_mutation_outside_scope() 
     assert contract["outputs"]["agnosticd"] is False
     assert contract["execution"]["untrusted_source_runs_on_host"] is False
     assert contract["portfolio_overlap"]["mutable_live_org_scan_allowed"] is False
+
+
+def test_readme_first_quickstart_becomes_a_blocked_review_draft(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "readme-quickstart"
+    chart = source / "helm"
+    chart.mkdir(parents=True)
+    (source / "README.md").write_text(
+        """# Build an IT Support Agent
+
+Help support teams reduce ticket resolution time.
+
+## Table of Contents
+## Overview
+## Architecture
+## Requirements
+## Deploy
+## Repository structure
+## References
+## Tags
+""",
+        encoding="utf-8",
+    )
+    (chart / "Chart.yaml").write_text(
+        "apiVersion: v2\nname: support-agent\nversion: 0.1.0\n",
+        encoding="utf-8",
+    )
+    (chart / "values.yaml").write_text("{}\n", encoding="utf-8")
+
+    intake, report = discover_quickstart_repo(
+        source,
+        repo_url="https://github.com/example/support-agent.git",
+        revision="b" * 40,
+        catalog_id="support-agent",
+        display_name="Support Agent",
+    )
+
+    assert report["discovery_status"] == "pass"
+    assert report["showroom"] == {
+        "source_kind": "quickstart-readme",
+        "content_path": "README.md",
+        "playbook": "",
+        "start_path": ".",
+    }
+    assert any("Showroom conversion" in warning for warning in report["warnings"])
+    assert any("discovery warning" in blocker for blocker in intake["certification"]["activation_blockers"])
+
+    catalog = build_catalog_draft_from_receipt(report)
+    assert catalog["metadata"]["showroom"] is False
+    assert catalog["metadata"]["showroom_content_source_kind"] == "quickstart-readme"
+    assert catalog["metadata"]["showroom_content_path"] == "README.md"
+    assert "showroom_content_playbook" not in catalog["metadata"]
