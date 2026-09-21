@@ -192,15 +192,13 @@ def collect_inflight_capacity(
                 if value is not None:
                     _identity(value, f"{label} label")
             expected = by_workshop.get((target.cluster_id, workshop_id or ""))
-            if workshop_id and expected is None:
-                if reservation_id or seat_id:
-                    raise InflightCollectionBlocked("event namespace identity is incomplete")
-                raise InflightCollectionBlocked(
-                    "Launchpad workshop identity has no active reservation"
-                )
+            if workshop_id and expected is None and reservation_id:
+                raise InflightCollectionBlocked("event namespace identity is incomplete")
+            # Ordinary workshops also carry workshop-id and seat-id. Their pods
+            # remain physical usage but do not consume an event reservation.
             if expected and (reservation_id != expected or not seat_id):
                 raise InflightCollectionBlocked("event namespace identity is incomplete")
-            if reservation_id or seat_id:
+            if reservation_id or (seat_id and not workshop_id):
                 if not (reservation_id and workshop_id and seat_id):
                     raise InflightCollectionBlocked("event namespace identity is incomplete")
                 reservation = by_id.get(reservation_id)

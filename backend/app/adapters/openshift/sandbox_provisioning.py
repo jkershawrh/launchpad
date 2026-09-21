@@ -15,6 +15,7 @@ except ImportError:
     pass
 
 from app.adapters.interfaces import ProvisionResult
+from app.domain.event_namespace_identity import event_namespace_labels
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
 
 SANDBOX_IMAGE = os.environ.get(
@@ -59,6 +60,7 @@ class OpenShiftSandboxProvisioner:
           self._rbac_v1 = clients.rbac
 
     def create_plan(self, request: LabRequest, catalog_item: CatalogItem) -> ProvisioningPlan:
+        event_labels = event_namespace_labels(request.metadata)
         meta = catalog_item.metadata or {}
         req_meta = request.metadata or {}
         sandbox_config = req_meta.get("sandbox_config", {})
@@ -107,6 +109,12 @@ class OpenShiftSandboxProvisioner:
                 "tenant_id": request.tenant_id,
                 "requester_id": request.requester_id,
                 "catalog_item_id": request.catalog_item_id,
+                "workshop_id": request.metadata.get("workshop_id"),
+                "seat_id": request.metadata.get("seat_id"),
+                **(
+                    {"event_reservation_id": event_labels["launchpad.redhat.com/event-reservation-id"]}
+                    if event_labels else {}
+                ),
                 "operator_capabilities": meta.get("optional_capabilities", []),
                 "storage_class": target.storage_class if target else "nfs-storage",
                 "ingress_domain": target.ingress_domain if target else os.environ.get("OPENSHIFT_APPS_DOMAIN", "apps.oberon.fm2aihpcsed.com"),
@@ -135,6 +143,7 @@ class OpenShiftSandboxProvisioner:
         workshop_id = plan.required_resources.get("workshop_id")
         if workshop_id:
             ns_labels["launchpad.redhat.com/workshop-id"] = workshop_id
+        ns_labels.update(event_namespace_labels(res))
         self._create_namespace(namespace, extra_labels=ns_labels)
 
         # Give both the requesting human and the in-workspace CLI identity

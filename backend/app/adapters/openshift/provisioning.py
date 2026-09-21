@@ -39,6 +39,7 @@ from app.adapters.openshift.workload_gitops import (
     build_runtime_secret,
     build_workload_application,
 )
+from app.domain.event_namespace_identity import event_namespace_labels
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
 
 _CONTAINER_DEMOS = Path("/opt/demos-deploy/cluster")
@@ -105,6 +106,7 @@ class OpenShiftProvisioningAdapter:
         )
 
     def create_plan(self, request: LabRequest, catalog_item: CatalogItem) -> ProvisioningPlan:
+        event_labels = event_namespace_labels(request.metadata)
         meta = catalog_item.metadata or {}
         demo_source = meta.get("demo_source", "launchpad")
         deploy_method = meta.get("deploy_method", "kustomize-dir")
@@ -158,6 +160,10 @@ class OpenShiftProvisioningAdapter:
                 "content_only": bool(meta.get("content_only", False)),
                 "workshop_id": request.metadata.get("workshop_id", request.request_id),
                 "seat_id": request.metadata.get("seat_id", request.request_id),
+                **(
+                    {"event_reservation_id": event_labels["launchpad.redhat.com/event-reservation-id"]}
+                    if event_labels else {}
+                ),
                 "participant_id": request.metadata.get("participant_id", request.requester_id),
                 "exposure_policy": request.exposure_policy.value,
                 "required_capabilities": list(catalog_item.required_capabilities),
@@ -206,6 +212,7 @@ class OpenShiftProvisioningAdapter:
 
     def provision(self, plan: ProvisioningPlan) -> ProvisionResult:
         res = plan.required_resources
+        event_labels = event_namespace_labels(res)
         res.get("deploy_method", "kustomize-dir")
         res.get("deploy_path", str(self._overlay_path))
         demo_pages = res.get("demo_pages", "all")
@@ -257,6 +264,7 @@ class OpenShiftProvisioningAdapter:
                 "launchpad.redhat.com/seat-id": str(res.get("seat_id", "")),
                 "launchpad.redhat.com/tenant": tenant_id,
                 "launchpad.redhat.com/cluster-id": plan.target_cluster or "oberon",
+                **event_labels,
             },
             (
                 {

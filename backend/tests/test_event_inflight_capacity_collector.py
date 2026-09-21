@@ -154,13 +154,15 @@ def test_missing_reservation_or_seat_label_is_blocked():
             _collect(_inventory(labels))
 
 
-def test_orphan_workshop_label_cannot_be_counted_as_external_or_written(tmp_path):
-    labels = {"launchpad.redhat.com/workshop-id": "unknown-workshop"}
-    output = tmp_path / "snapshot.json"
-    with pytest.raises(InflightCollectionBlocked, match="workshop identity"):
-        document = _collect(_inventory(labels))
-        write_inflight_capacity_snapshot(output, document)
-    assert not output.exists()
+def test_non_event_workshop_label_counts_as_external_usage():
+    labels = {
+        "launchpad.redhat.com/workshop-id": "unknown-workshop",
+        "launchpad.redhat.com/seat-id": "ordinary-seat-1",
+    }
+    workload = _collect(_inventory(labels))["clusters"][0]["workloads"][0]
+    assert workload["reservation_id"] is None
+    assert workload["seat_refs"] == []
+    assert workload["resources"]["cpu_millicores"] == 100
 
 
 @pytest.mark.parametrize(

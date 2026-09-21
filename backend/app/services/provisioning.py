@@ -2835,6 +2835,11 @@ class ProvisioningService:
                 "participant_id": seat.participant_id,
                 "purpose": workshop.purpose,
                 "target_cluster": workshop.cluster_ref,
+                **(
+                    {"event_reservation_id": workshop.metadata["event_reservation_id"]}
+                    if workshop.metadata.get("event_reservation_id")
+                    else {}
+                ),
             },
         )
         accepted = self.submit_request(request)
