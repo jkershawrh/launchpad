@@ -1,0 +1,36 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-one-seat-evidence/v1",
+  "observed_at": "2026-09-21T15:56:26Z",
+  "result": "GREEN-partial-one-seat-lifecycle",
+  "scope": "isolated internal Serve LLMs workshop; no existing workshops changed",
+  "control_plane": "arena",
+  "execution_cluster": "flightpath",
+  "catalog_item_id": "intel-llm-cpu-serving",
+  "tenant_id": "ha-cert-tenant",
+  "workshop_id": "b73596b5-d9e1-43d9-a6ab-4b41e9435b85",
+  "session_id": "94cc51a0-a6e7-4423-8e18-0ba04fc67b78",
+  "namespace": "launchpad-ha-cert-tenant-intel-llm-cpu-serv-5830ad",
+  "deployed_backend_image": "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend@sha256:dc1d6cdceb5be1ff4a1f941b85d8c0e078fe5fce3de49a26fb5f168ad833736d",
+  "local_source_commit_not_deployed": "14562657e79a8f566c446542a017c91ccf4de9f7",
+  "checks": {
+    "target_capacity_preview": "pass: one seat selected Flightpath with available headroom",
+    "persisted_cluster_affinity": "pass: workshop and session both reference Flightpath",
+    "showroom_images": "pass: terminal, content, Traefik ready; git-cloner and Antora init containers exited zero",
+    "showroom_route": "pass: Launchpad validator reported HTTP 200 and Flightpath Route admitted",
+    "showroom_gitops": "pass: Argo CD Application Healthy and Synced before reclaim",
+    "participant_namespace_scope": "pass: Showroom service account could work in its own namespace and could not read partner-ai-launchpad pods or list nodes",
+    "model_inference": "pass: a disposable pod using the Showroom service account and mounted model CA received HTTP 200 with a choices response",
+    "workshop_reclaim": "pass: workshop completed and seat/session reclaimed through Launchpad API",
+    "zero_residue": "pass: no namespace or matching Argo CD Application remained after reclaim; image-puller RoleBinding absent"
+  },
+  "expected_boundary": "Remote provisioner pods/exec was denied; certification used the existing Showroom service account in a disposable pod instead of widening provisioner RBAC.",
+  "test_artifacts": "Two disposable certification pods were contained in the reclaimed seat namespace and removed with it.",
+  "not_proven": [
+    "Participant browser login and full Showroom walkthrough",
+    "AnythingLLM deployment and grounded RAG journey",
+    "OpenShift Console SSO for the participant",
+    "The local image-pull-grant code change, which was not deployed during this run",
+    "Five-seat or workshop-scale Flightpath certification"
+  ],
+  "contains_secret_values": false
+}
