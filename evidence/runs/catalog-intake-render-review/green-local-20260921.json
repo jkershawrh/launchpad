@@ -1,0 +1,30 @@
+{
+  "evidence_id": "LP-T100-RENDER-REVIEW-20260921",
+  "scope": "Local receiving contract and component tests only; no untrusted package render, dependency fetch, catalog activation, or live mutation",
+  "red": {
+    "command": "PYTHONPATH=backend:. .venv/bin/pytest -q backend/tests/test_catalog_intake_render_review.py --tb=short",
+    "result": "collection error: render-review service missing"
+  },
+  "green": {
+    "focused_command": "PYTHONPATH=backend:. .venv/bin/pytest -q backend/tests/test_catalog_intake_render_review.py backend/tests/test_catalog_intake_pipeline.py --tb=short --disable-warnings",
+    "focused_result": "14 passed",
+    "regression_command": "PYTHONPATH=backend:. .venv/bin/pytest -q backend/tests -m 'not local' --disable-warnings --tb=short",
+    "regression_result": "2113 passed, 27 skipped, 13 deselected"
+  },
+  "contract": {
+    "source_binding": "repository, revision, catalog, approval, and discovery output hash",
+    "output_binding": "exact manifest SHA-256 digest and bounded bytes",
+    "checks": [
+      "denied network egress and removed workspace claimed",
+      "valid Kubernetes resource identities",
+      "no Secret or cluster-scoped resources",
+      "no host privilege, mutable image, or unresolved template",
+      "no raw manifest or receipt values copied into the report"
+    ],
+    "result_authority": "review-ready only; release_eligible is always false"
+  },
+  "limitations": [
+    "The current isolated worker has no Helm or Kustomize renderer",
+    "Receipt authenticity, renderer signing, isolated execution, exact target compatibility, human approval, and live certification remain open"
+  ]
+}

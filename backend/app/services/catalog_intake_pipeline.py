@@ -15,7 +15,7 @@ GATES = (
     (
         "artifact-security",
         "Artifact and security review",
-        ["image policy", "SBOM", "signature", "threat review"],
+        ["rendered manifest review", "image policy", "SBOM", "signature", "threat review"],
     ),
     (
         "one-seat-lifecycle",

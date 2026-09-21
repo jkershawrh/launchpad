@@ -107,6 +107,7 @@ promotion:
     - reviewed quality findings
     - measured capacity
     - approved immutable artifacts
+    - isolated rendered-output review bound to the immutable source
     - model compatibility evidence
     - one-seat lifecycle proof
     - restart and cleanup proof

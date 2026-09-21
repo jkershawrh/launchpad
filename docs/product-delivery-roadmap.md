@@ -418,7 +418,12 @@ repository and receive a safe, reviewable, certified catalog draft.**
   still cannot produce the required trusted zero-residue receipt; deployed
   retry recovery, signing/SBOM, a trusted collector, and one fully passing
   canonical repository remain open. Release eligibility stays false and the
-  admin action remains off.
+  admin action remains off. **GREEN-local (render review contract):** the
+  artifact/security gate names rendered-manifest evidence, and a pure checker
+  binds a future isolated render to the discovery identity and exact output
+  digest while rejecting unsafe resources without exposing manifest content.
+  Review-ready is not certification; the renderer and trusted collector are
+  not yet connected.
 - `LP-T101` Present blockers, evidence, supported targets, scale ceiling,
   release identity, approval history, and rollback metadata in the admin UI.
   **GREEN-integration (draft visibility):** draft responses and the admin Intake

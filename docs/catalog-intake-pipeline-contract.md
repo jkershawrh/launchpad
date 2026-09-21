@@ -19,3 +19,12 @@ Even when discovery has produced a draft with no static findings, artifact and
 security review remains blocked with an explicit explanation until separate
 certification evidence is collected. Displaying a gate does not run it or
 grant publication authority.
+
+The artifact/security gate now explicitly requires rendered-manifest review.
+`contracts/catalog-intake-rendered-output-v1.yaml` defines the local receiving
+contract for a future isolated renderer: bind the exact discovery identity and
+manifest digest, reject unsafe rendered resources, and return stable finding
+codes without persisting raw manifests. A structurally review-ready result is
+not certification or approval. The current intake worker image does not run
+Helm or Kustomize, and no requester can supply a render receipt to bypass the
+locked gate.

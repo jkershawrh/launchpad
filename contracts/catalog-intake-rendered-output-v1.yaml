@@ -1,0 +1,32 @@
+schema_version: launchpad.redhat.com/catalog-intake-rendered-output/v1
+kind: CatalogIntakeRenderedOutputReview
+metadata:
+  version: 1.0.0
+  owner: catalog-onboarding-owner
+  security_owner: launchpad-security-owner
+purpose: Bind a future isolated package render to one approved discovery result and inspect its output without granting certification.
+input:
+  discovery_receipt: passed with verified cleanup and immutable source identity
+  render_receipt: exact versioned fields, immutable renderer digest, source/discovery binding, egress denial, cleanup, and output digest
+  rendered_manifest: bounded bytes; raw content is not persisted in the review report
+  maximum_bytes: 1048576
+  maximum_resources: 500
+checks:
+  - source and approval identity match
+  - manifest digest matches exact bytes
+  - isolated render reports denied network egress and removed workspace
+  - every Kubernetes document has an identity
+  - no Secret, cluster-scoped, host-privileged, mutable-image, or unresolved-template content
+output:
+  status: blocked or review-ready
+  findings: stable codes only, no source URLs, hostnames, Secret values, or raw manifests
+  release_eligible: false
+authority:
+  may_render_untrusted_source_on_host: false
+  may_publish_catalog: false
+  review_ready_is_certified: false
+required_later:
+  - isolated renderer image, signing, SBOM, and provenance
+  - trusted dispatcher and collector, not a requester-supplied receipt
+  - actual Helm/Kustomize rendering without unapproved network fetch
+  - target-cluster compatibility, artifact, security, lifecycle, and human approval gates

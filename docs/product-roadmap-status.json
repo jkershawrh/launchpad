@@ -904,9 +904,10 @@
         "evidence/runs/catalog-intake-discovery-worker/manifest.json",
         "evidence/runs/catalog-intake-worker-safety/evidence.json",
         "evidence/runs/catalog-intake-arena-live-20260920.json",
-        "evidence/runs/catalog-intake-faults-arena-live-20260920.json"
+        "evidence/runs/catalog-intake-faults-arena-live-20260920.json",
+        "evidence/runs/catalog-intake-render-review/green-local-20260921.json"
       ],
-      "note": "Arena proves the tokenless/read-only runtime, allowlisted proxy egress, denial of direct GitHub/API/database access, sanitized scanner failure, and pod removal after timeout/cancellation. Local and integration proof now bounds retry to three attempts, preserves idempotency, requires verified cleanup, and rejects scanner/policy failures. The task remains effectively GREEN-local because BDD has not advanced and release remains blocked on trusted external forced-termination receipts, a deployed dispatcher/collector, signed image/SBOM, and one passing canonical Quickstart."
+      "note": "Arena proves the tokenless/read-only runtime, allowlisted proxy egress, denial of direct GitHub/API/database access, sanitized scanner failure, and pod removal after timeout/cancellation. Local and integration proof bounds retry to three attempts, preserves idempotency, requires verified cleanup, and rejects scanner/policy failures. A GREEN-local rendered-output receiving contract binds source identity and manifest digest and rejects unsafe resources, but cannot certify or publish. The task remains effectively GREEN-local because BDD has not advanced and release remains blocked on an isolated renderer, trusted collector and forced-termination receipts, signed image/SBOM, and one passing canonical Quickstart."
     }
   },
   "rubric": [

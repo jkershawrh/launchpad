@@ -58,6 +58,7 @@ def test_pipeline_names_every_required_gate_and_evidence_family() -> None:
     assert "discovery receipt" in first.required_evidence
     assert any("Durable intake persistence" in item for item in first.blockers)
     assert any("isolated intake worker" in item for item in first.blockers)
+    assert "rendered manifest review" in view.gates[2].required_evidence
 
 
 def test_worker_availability_does_not_bypass_durable_storage_or_evidence() -> None:
