@@ -134,6 +134,21 @@ missing, failed, credential-bearing, mutable, wrong-origin, or unsupported-
 architecture receipts are rejected as a whole. The evaluator is offline and
 does not treat a synthetic receipt as live cluster qualification.
 
+The source-to-image release boundary is versioned in
+`contracts/artifact-release-evidence-v1.yaml`. It binds one clean immutable Git
+revision to one component-specific image digest, architecture list, builder
+identity, vulnerability result, SBOM, signature, provenance, license decision,
+and retention proof. `scripts/validate_artifact_release.py` fails closed on a
+missing or inconsistent field and rejects inline credentials. This local gate
+does not claim that the Quay organization, signing identity, or evidence
+artifacts exist; those require authentic integration and live proof.
+
+A September 21 read-only registry check found local Quay authentication but no
+readable release tag at the six proposed `quay.io/redhat-gpte/launchpad-*`
+paths. Repository existence and administrative rights were not inferred from
+that result. Launchpad will not create repositories, change grants, or publish
+images until the organization owner and service identities are approved.
+
 Scheduled-event cache preparation uses the versioned
 `contracts/event-artifact-prepull-v1.yaml` contract. The plan deduplicates exact
 digest images per assigned cluster and binds them to an immutable plan ID,

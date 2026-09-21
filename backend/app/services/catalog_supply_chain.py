@@ -49,7 +49,34 @@ REQUIRED_DESTINATION_CHECKS = {
 DESTINATION_QUALIFICATION_VERSION = (
     "launchpad.redhat.com/artifact-destination-qualification/v1"
 )
+ARTIFACT_RELEASE_EVIDENCE_VERSION = (
+    "launchpad.redhat.com/artifact-release-evidence/v1"
+)
+REQUIRED_RELEASE_CHECKS = {
+    "vulnerability_scan",
+    "sbom",
+    "signature",
+    "provenance",
+    "license_policy",
+    "retention",
+}
 _INLINE_CREDENTIAL_KEYS = {"auth", "password", "private_key", "secret", "token"}
+
+
+def _inline_credential_paths(value: Any, path: str = "receipt") -> list[str]:
+    findings: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            normalized = str(key).lower().replace("-", "_")
+            if normalized in _INLINE_CREDENTIAL_KEYS or normalized.endswith(
+                ("_password", "_private_key", "_secret", "_token")
+            ):
+                findings.append(f"inline credential field is prohibited: {path}.{key}")
+            findings.extend(_inline_credential_paths(child, f"{path}.{key}"))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            findings.extend(_inline_credential_paths(child, f"{path}[{index}]"))
+    return findings
 
 
 def validate_image_reference(
@@ -246,20 +273,7 @@ def evaluate_destination_qualification(
     if not str(receipt.get("observed_at", "")).strip():
         failures.append("receipt observed_at is required")
 
-    def _find_inline_credentials(value: Any, path: str = "receipt") -> None:
-        if isinstance(value, dict):
-            for key, child in value.items():
-                normalized = str(key).lower().replace("-", "_")
-                if normalized in _INLINE_CREDENTIAL_KEYS or normalized.endswith(
-                    ("_password", "_private_key", "_secret", "_token")
-                ):
-                    failures.append(f"inline credential field is prohibited: {path}.{key}")
-                _find_inline_credentials(child, f"{path}.{key}")
-        elif isinstance(value, list):
-            for index, child in enumerate(value):
-                _find_inline_credentials(child, f"{path}[{index}]")
-
-    _find_inline_credentials(receipt)
+    failures.extend(_inline_credential_paths(receipt))
 
     required = set(destination.get("required_checks") or [])
     checks = receipt.get("checks") or {}
@@ -282,6 +296,123 @@ def evaluate_destination_qualification(
         "cluster_id": cluster_id,
         "image": image,
         "architecture": architecture,
+        "status": "GREEN-integration" if not failures else "RED",
+        "eligible": not failures,
+        "failures": failures,
+        "unexpected_checks": unexpected,
+    }
+
+
+def evaluate_artifact_release_evidence(
+    policy_path: Path | str,
+    receipt_path: Path | str,
+) -> dict[str, Any]:
+    """Evaluate one source-to-image release evidence bundle.
+
+    The evaluator is deliberately offline. It proves that a receipt is complete
+    and internally consistent; registry ownership, signature verification, and
+    destination pulls still need authentic integration or live evidence.
+    """
+
+    policy = yaml.safe_load(Path(policy_path).read_text())
+    receipt = yaml.safe_load(Path(receipt_path).read_text())
+    if not isinstance(policy, dict) or not isinstance(receipt, dict):
+        raise TypeError("registry policy and release evidence must be mappings")
+
+    failures: list[str] = []
+    if receipt.get("schema_version") != ARTIFACT_RELEASE_EVIDENCE_VERSION:
+        failures.append(f"schema_version must be {ARTIFACT_RELEASE_EVIDENCE_VERSION}")
+
+    component = str(receipt.get("component", "")).strip()
+    repository_contract = (policy.get("repositories") or {}).get(component)
+    if not component or not isinstance(repository_contract, dict):
+        failures.append("component is not declared by registry policy")
+        expected_repository = ""
+    else:
+        expected_repository = str(repository_contract.get("repository", "")).rstrip("/")
+
+    image = str(receipt.get("image", "")).strip()
+    if not IMMUTABLE_IMAGE.fullmatch(image):
+        failures.append("image must use an immutable sha256 digest")
+    image_repository = image.split("@", 1)[0]
+    if not expected_repository or image_repository != expected_repository:
+        failures.append("image does not match the component repository")
+
+    source = receipt.get("source") or {}
+    if not str(source.get("repository", "")).strip():
+        failures.append("source repository is required")
+    if not IMMUTABLE_GIT_SHA.fullmatch(str(source.get("revision", ""))):
+        failures.append("source revision must be an immutable 40-character Git SHA")
+    if source.get("tree_dirty") is not False:
+        failures.append("source tree must be clean")
+
+    architectures = receipt.get("architectures") or []
+    if not isinstance(architectures, list) or not architectures or not all(
+        isinstance(item, str) and item.strip() for item in architectures
+    ):
+        failures.append("at least one image architecture is required")
+
+    build = receipt.get("build") or {}
+    for field in ("builder_identity", "workflow_url", "completed_at"):
+        if not str(build.get(field, "")).strip():
+            failures.append(f"build {field} is required")
+
+    failures.extend(_inline_credential_paths(receipt))
+
+    checks = receipt.get("checks") or {}
+    for name in sorted(REQUIRED_RELEASE_CHECKS):
+        check = checks.get(name)
+        if not isinstance(check, dict):
+            failures.append(f"required release check is missing: {name}")
+            continue
+        if check.get("status") != "passed":
+            failures.append(f"release check did not pass: {name}")
+        evidence = check.get("evidence") or []
+        if not isinstance(evidence, list) or not evidence or not all(
+            isinstance(item, str) and item.strip() for item in evidence
+        ):
+            failures.append(f"release check has no evidence: {name}")
+
+    vulnerability = checks.get("vulnerability_scan") or {}
+    if int(vulnerability.get("critical_findings", 0) or 0) > 0:
+        failures.append("vulnerability scan contains critical findings")
+    if int(vulnerability.get("high_findings", 0) or 0) > 0:
+        failures.append("vulnerability scan contains high findings")
+
+    for name in ("sbom", "provenance"):
+        check = checks.get(name) or {}
+        if not str(check.get("artifact", "")).strip():
+            failures.append(f"{name} artifact reference is required")
+        if not re.fullmatch(r"[0-9a-f]{64}", str(check.get("sha256", ""))):
+            failures.append(f"{name} sha256 digest is invalid")
+
+    signature = checks.get("signature") or {}
+    if not str(signature.get("identity", "")).strip():
+        failures.append("signature identity is required")
+    if signature.get("verified") is not True:
+        failures.append("signature verification did not pass")
+
+    provenance = checks.get("provenance") or {}
+    if provenance.get("verified") is not True:
+        failures.append("provenance verification did not pass")
+
+    retention = checks.get("retention") or {}
+    minimum_releases = int(
+        (policy.get("retention") or {}).get("minimum_rollback_releases") or 0
+    )
+    retained = int(retention.get("rollback_releases_retained", 0) or 0)
+    if retained < minimum_releases:
+        failures.append("retention proof preserves fewer releases than policy")
+    if not str(retention.get("protected_until", "")).strip():
+        failures.append("retention protected_until is required")
+
+    unexpected = sorted(set(checks) - REQUIRED_RELEASE_CHECKS)
+    return {
+        "schema_version": ARTIFACT_RELEASE_EVIDENCE_VERSION,
+        "component": component,
+        "source_revision": str(source.get("revision", "")),
+        "image": image,
+        "architectures": architectures,
         "status": "GREEN-integration" if not failures else "RED",
         "eligible": not failures,
         "failures": failures,

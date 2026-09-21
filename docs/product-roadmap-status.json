@@ -215,16 +215,19 @@
       "methods": {
         "tdd": "green-local",
         "cdd": "green-local",
-        "edd": "green-local"
+        "edd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
       },
       "evidence": [
         ".github/workflows/ci.yml",
         "Makefile",
         "evidence/runs/pilot-h1/PILOT-FEAT-001-green-local.xml",
         "evidence/runs/pilot-h1/PILOT-FEAT-001-red.xml",
+        "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json",
         "scripts/validate_catalog_artifacts.py"
       ],
-      "note": "The artifact subset of the promotion gate is GREEN-local: CI and make reject mutable, missing, unapproved, and execution-cluster-local image references and retain a JSON receipt. Secret, supported-model, signing, SBOM, cross-cluster cold-pull, rollback, and GREEN-live gates remain open; retained workshops were not changed."
+      "note": "The artifact subset of the promotion gate is GREEN-local: CI and local gates reject mutable, missing, unapproved, execution-cluster-local, wrong-component, dirty-source, and credential-bearing releases. A versioned receipt now requires vulnerability, SBOM, signature, provenance, license, architecture, builder, and retention evidence. Secret and supported-model gates plus authentic publication, signing, restore, cross-cluster cold-pull, rollback, and GREEN-live proof remain open; retained workshops were not changed."
     },
     "LP-T114": {
       "state": "green-local",
@@ -580,9 +583,10 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "evidence/runs/artifact-registry/contract-green-local-20260920.json"
+        "evidence/runs/artifact-registry/contract-green-local-20260920.json",
+        "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json"
       ],
-      "note": "Quay is selected as the provisional authoritative image origin with dedicated component repositories, scoped credential roles, immutable-release controls, retention guards, destination qualification requirements, and a fail-closed CI/local validator. The contract is GREEN-local only. Production release remains ineligible until organization ownership, dedicated repository grants, signing identity, restore evidence, and exact-digest cold-pull/cache-loss certification are GREEN-live on each eligible cluster."
+      "note": "Quay is selected as the provisional authoritative image origin with dedicated component repositories, scoped credential roles, immutable-release controls, retention guards, a source-to-image evidence contract, destination qualification requirements, and fail-closed validators. A read-only check found local Quay authentication but no readable release tags at the six proposed component paths; repository existence and administrative rights were not inferred. Production remains ineligible until organization ownership, dedicated repository grants, signing identity, authentic SBOM/provenance, restore evidence, and exact-digest cold-pull/cache-loss certification are GREEN-live on each eligible cluster."
     },
     "LP-T097": {
       "state": "green-local",

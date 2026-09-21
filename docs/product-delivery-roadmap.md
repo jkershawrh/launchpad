@@ -294,6 +294,12 @@ editing the live environment.**
   deployment manifests, image digests, model capabilities, journeys, resource
   envelope, cleanup, and supported targets.
 - `LP-T014` Build, scan, generate SBOM, sign, and attest images and content.
+  **GREEN-local (release-evidence contract):** a versioned source-to-image
+  receipt and fail-closed evaluator now bind a clean immutable Git revision to
+  one component repository and image digest, architectures, builder identity,
+  zero critical/high scan result, SBOM, signature, provenance, license policy,
+  and retention evidence. Authentic build, signing, publication, and restore
+  proof remain open.
 - `LP-T015` Add test → approval → production promotion with immutable release
   identity and rollback metadata.
 - `LP-T016` Show the exact release identity in requester, participant, and admin
@@ -301,8 +307,11 @@ editing the live environment.**
 - `LP-T017` Block promotion when a cross-cluster image, mutable tag, secret, or
   unsupported model is detected. **GREEN-local (artifact subset):** CI and the
   local `catalog-artifacts` gate reject mutable, unapproved, missing, and
-  execution-cluster-local image references and retain a JSON receipt. Secret,
-  model-compatibility, signature, SBOM, and deployed pullability gates remain.
+  execution-cluster-local image references and retain a JSON receipt. The new
+  artifact-release gate also rejects dirty/unpinned source, wrong component
+  repositories, missing SBOM/signature/provenance/license/retention proof,
+  high vulnerabilities, and inline credentials. Secret, model compatibility,
+  authentic signature verification, and deployed pullability remain open.
 - **Gate:** one quickstart repository enters through the pipeline and reaches a
   production catalog without a bespoke platform edit.
 
@@ -312,8 +321,11 @@ an order.**
 - `LP-T018` Select the durable HA registry/content origin and retention policy.
   **GREEN-local:** Quay is the provisional authoritative origin with dedicated
   component repositories, scoped credential roles, retention guards, and a
-  fail-closed contract gate. Organization ownership, repository grants,
-  signing, restore, and destination cold-pull evidence remain open.
+  fail-closed contract gate. A read-only check found local Quay authentication
+  but no readable releases at the six proposed component paths; it did not
+  infer repository existence or administrative rights. Organization ownership,
+  repository grants, signing, restore, and destination cold-pull evidence
+  remain open.
 - `LP-T019` Add destination pull, certificate, architecture, signature, and
   cold-cache checks to eligibility. **GREEN-local:** a versioned, fail-closed
   destination receipt contract and evaluator now require evidence for every

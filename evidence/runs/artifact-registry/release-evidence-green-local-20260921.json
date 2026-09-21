@@ -1,0 +1,59 @@
+{
+  "evidence_id": "artifact-release-evidence-green-local-20260921",
+  "generated_at": "2026-09-21T05:04:17Z",
+  "stage": "GREEN-local",
+  "task_ids": [
+    "LP-T014",
+    "LP-T017",
+    "LP-T018"
+  ],
+  "red": {
+    "test": "backend/tests/test_artifact_release_evidence.py",
+    "result": "collection failed because evaluate_artifact_release_evidence did not exist; the CLI test then failed because scripts/validate_artifact_release.py did not exist"
+  },
+  "green": {
+    "focused_tests_passed": 19,
+    "focused_tests_failed": 0,
+    "lint": "pass",
+    "openapi_contract": "pass",
+    "contract": "contracts/artifact-release-evidence-v1.yaml",
+    "evaluator": "backend/app/services/catalog_supply_chain.py",
+    "cli": "scripts/validate_artifact_release.py"
+  },
+  "enforced_release_identity": [
+    "clean immutable source revision",
+    "component-specific authoritative repository",
+    "immutable image digest",
+    "declared image architectures",
+    "builder identity and workflow",
+    "zero critical and high vulnerability findings",
+    "SBOM reference and digest",
+    "verified signing identity",
+    "verified provenance reference and digest",
+    "passing license policy",
+    "policy-compliant retention",
+    "no inline credentials"
+  ],
+  "registry_readiness_observation": {
+    "mode": "read-only",
+    "local_quay_authentication": "present",
+    "proposed_origin": "quay.io/redhat-gpte",
+    "repositories_checked": 6,
+    "release_tags_confirmed": 0,
+    "interpretation": "The proposed component paths do not currently expose a readable latest release. This does not prove whether each private repository exists or whether the local identity has administrative rights.",
+    "decision": "Do not create repositories, change grants, or publish images until organizational ownership and service identities are approved."
+  },
+  "remaining_gates": [
+    "Approve the authoritative Quay organization owner.",
+    "Create or verify the six dedicated repositories and scoped robot grants.",
+    "Approve the signing identity and CI trust policy.",
+    "Publish one authentic signed image with SBOM and provenance.",
+    "Prove retention and restore.",
+    "Qualify exact-digest cold pull and cache-loss behavior on every eligible cluster."
+  ],
+  "boundary": [
+    "No registry repository, permission, image, or tag was changed.",
+    "No execution cluster or retained workshop was accessed.",
+    "A synthetic passing receipt proves evaluator behavior only and is not live release evidence."
+  ]
+}

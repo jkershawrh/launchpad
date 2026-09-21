@@ -1,0 +1,110 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Artifact Release Evidence
+  version: 1.0.0
+  description: >-
+    Evidence joining one clean immutable source revision to one immutable image
+    digest and its required security, provenance, architecture, and retention
+    controls. A structurally valid receipt does not replace authentic registry
+    or execution-cluster qualification.
+paths: {}
+components:
+  schemas:
+    EvidenceCheck:
+      type: object
+      required: [status, evidence]
+      properties:
+        status: {type: string, enum: [passed, failed]}
+        evidence:
+          type: array
+          minItems: 1
+          items: {type: string, minLength: 1}
+    ArtifactReleaseEvidence:
+      type: object
+      required:
+        - schema_version
+        - component
+        - source
+        - image
+        - architectures
+        - build
+        - checks
+      properties:
+        schema_version:
+          const: launchpad.redhat.com/artifact-release-evidence/v1
+        component: {type: string, minLength: 1}
+        source:
+          type: object
+          required: [repository, revision, tree_dirty]
+          properties:
+            repository: {type: string, minLength: 1}
+            revision: {type: string, pattern: '^[0-9a-f]{40}$'}
+            tree_dirty: {const: false}
+        image:
+          type: string
+          pattern: '^[^[:space:]@]+@sha256:[0-9a-f]{64}$'
+        architectures:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {type: string, minLength: 1}
+        build:
+          type: object
+          required: [builder_identity, workflow_url, completed_at]
+          properties:
+            builder_identity: {type: string, minLength: 1}
+            workflow_url: {type: string, minLength: 1}
+            completed_at: {type: string, format: date-time}
+        checks:
+          type: object
+          required:
+            - vulnerability_scan
+            - sbom
+            - signature
+            - provenance
+            - license_policy
+            - retention
+          additionalProperties: false
+          properties:
+            vulnerability_scan:
+              allOf:
+                - {$ref: '#/components/schemas/EvidenceCheck'}
+                - type: object
+                  required: [critical_findings, high_findings]
+                  properties:
+                    critical_findings: {type: integer, const: 0}
+                    high_findings: {type: integer, const: 0}
+            sbom:
+              allOf:
+                - {$ref: '#/components/schemas/EvidenceCheck'}
+                - type: object
+                  required: [artifact, sha256]
+                  properties:
+                    artifact: {type: string, minLength: 1}
+                    sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+            signature:
+              allOf:
+                - {$ref: '#/components/schemas/EvidenceCheck'}
+                - type: object
+                  required: [identity, verified]
+                  properties:
+                    identity: {type: string, minLength: 1}
+                    verified: {const: true}
+            provenance:
+              allOf:
+                - {$ref: '#/components/schemas/EvidenceCheck'}
+                - type: object
+                  required: [artifact, sha256, verified]
+                  properties:
+                    artifact: {type: string, minLength: 1}
+                    sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+                    verified: {const: true}
+            license_policy: {$ref: '#/components/schemas/EvidenceCheck'}
+            retention:
+              allOf:
+                - {$ref: '#/components/schemas/EvidenceCheck'}
+                - type: object
+                  required: [protected_until, rollback_releases_retained]
+                  properties:
+                    protected_until: {type: string, format: date-time}
+                    rollback_releases_retained: {type: integer, minimum: 3}
