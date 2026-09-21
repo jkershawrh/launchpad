@@ -1,0 +1,30 @@
+schema_version: launchpad.redhat.com/event-admission-convergence/v1
+status: local-rehearsal-only
+purpose: Join independent event admission evidence without mutating a hold.
+inputs:
+  - approved_event_record_with_persisted_allocations
+  - certified_capacity_matrix_and_fresh_fleet_snapshot
+  - current_capacity_bearing_reservations
+  - exact_model_runtime_snapshot_when_required
+  - authenticated_promoted_release_source
+  - authenticated_eligible_node_source
+  - artifact_cold_pull_snapshot
+  - complete_inflight_capacity_snapshot
+decision_order:
+  - reject_duplicate_or_existing_same_event_hold
+  - require_certified_matrix_and_reservation_forecast_fit
+  - derive_exact_image_and_node_requirements_from_trusted_sources
+  - require_fresh_per_image_per_node_cold_pull_proof
+  - compare_candidate_resource_vector_against_reconciled_physical_headroom
+output:
+  status: [available, blocked]
+  model_status: [not_required, ready, blocked]
+  artifact_status: [not_evaluated, ready, blocked]
+  inflight_status: [not_evaluated, available, blocked]
+  reservation_count: Number of proposed cohort/lab holds; zero when blocked.
+  evidence_ids: Capacity matrix, fleet, and present runtime snapshot identities.
+security_boundary:
+  - No requester-provided image, eligible-node, or runtime snapshot is accepted.
+  - All missing or stale evidence blocks the local decision.
+  - This component does not create a reservation or authorize provisioning.
+  - Transaction-safe recheck and live collectors are required before API wiring.

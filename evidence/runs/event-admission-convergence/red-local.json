@@ -1,0 +1,8 @@
+{
+  "gate": "event-admission-convergence",
+  "phase": "RED-local",
+  "command": "PYTHONPATH=. .venv/bin/pytest -q backend/tests/test_event_admission_convergence.py",
+  "result": "collection failed",
+  "failure": "ModuleNotFoundError: No module named 'app.services.event_admission_convergence'",
+  "scope": "read-only local composition; no live collectors or reservation API wiring"
+}

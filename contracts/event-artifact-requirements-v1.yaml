@@ -1,0 +1,44 @@
+schema_version: launchpad.redhat.com/event-artifact-requirements/v1
+purpose: >-
+  Resolve exact immutable image and eligible-node expectations for each
+  persisted event allocation before evaluating cold-pull evidence.
+status: local-contract-only
+inputs:
+  event_record:
+    authority: Server-persisted approved event manifest and capacity allocation.
+    identity: [event_id, cohort_id, lab_ref, catalog_id, catalog_release, cluster_id]
+    rule: Every manifest cohort/lab pair must have exactly one matching allocation.
+  promoted_release:
+    authority: Authenticated, server-owned catalog promotion registry adapter.
+    lookup: [catalog_id, catalog_release]
+    required_fields: [catalog_id, catalog_release, image_refs, promotion_evidence_id]
+    rule: >-
+      All runtime image references for the exact promoted release must be
+      enumerated by immutable sha256 digest. A catalog metadata hint or a
+      requester-supplied list is not sufficient. The adapter must verify the
+      promotion evidence identity against its authoritative release record.
+  eligible_nodes:
+    authority: Authenticated, server-owned current scheduler/placement inventory adapter.
+    lookup: [cluster_id, catalog_id, catalog_release]
+    required_fields: [cluster_id, catalog_id, catalog_release, node_ids, observed_at]
+    max_age_seconds: 300
+    max_future_skew_seconds: 30
+    rule: >-
+      Node IDs must cover all currently eligible nodes for this release on
+      the selected cluster, including new or replaced nodes. An empty set
+      is not proof of readiness. Node eligibility must account for scheduling
+      constraints, architecture, taints, and capacity at collection time.
+output:
+  type: ArtifactReadinessRequirement
+  key: [cluster_id, catalog_id, catalog_release]
+  fields: [image_refs, expected_node_ids, minimum_cold_samples, maximum_cold_pull_p95_seconds]
+  ordering: Deterministic, deduplicated release key and sorted image/node lists.
+  consumer: assess_event_artifact_health
+security:
+  forbidden_sources: [request_body, runtime_health_snapshot, pre_pull_receipt]
+  fail_closed_if: >-
+    Missing, duplicate, stale, future-dated, mutable, empty, malformed, or
+    identity-mismatched authority input; incomplete or ineligible allocation.
+  live_claim: >-
+    This contract is not live certification. Admission wiring and authenticated
+    production adapters remain separate implementation and certification gates.

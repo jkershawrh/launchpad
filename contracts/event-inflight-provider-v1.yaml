@@ -1,0 +1,55 @@
+schema_version: '1.0'
+title: Launchpad file-backed in-flight capacity snapshot
+owner: trusted server-side accounting collector
+transport: server-configured JSON file; never a requester-supplied body
+identity:
+  snapshot_id: sha256 of exact source bytes, computed by Launchpad
+  schema_version: '1.0'
+  cluster_key: cluster_id
+  workload_key: [cluster_id, namespace]
+required:
+  - schema_version
+  - observed_at
+  - clusters
+cluster_row_required:
+  - cluster_id
+  - allocatable
+  - accounting_complete
+  - workloads
+workload_row_required:
+  - namespace
+  - resources
+workload_row_optional:
+  - reservation_id
+  - workshop_id
+  - seat_refs
+resource_dimensions:
+  - cpu_millicores
+  - memory_mib
+  - pods
+  - model_slots
+validation:
+  additional_fields: forbidden at every level
+  duplicate_json_keys: forbidden
+  duplicate_cluster_or_namespace: forbidden
+  resource_amounts: nonnegative integers, not booleans or numeric strings
+  observed_at: timezone-aware ISO 8601 string
+  maximum_source_bytes: 8388608
+  stale_or_future_evidence: rejected by the separate admission assessment
+semantics:
+  accounting_complete: 'Producer assertion that all current workload requests, including unowned namespaces, are represented.'
+  trust_boundary: 'The file provider validates shape and digest, but cannot independently prove producer ownership or cluster completeness.'
+  admission: 'Snapshot is supplemental evidence; certified capacity and atomic reservation ledger remain authoritative gates.'
+example:
+  schema_version: '1.0'
+  observed_at: '2026-09-21T18:00:00Z'
+  clusters:
+    - cluster_id: arena
+      allocatable: {cpu_millicores: 8000, memory_mib: 16384, pods: 30, model_slots: 4}
+      accounting_complete: true
+      workloads:
+        - namespace: launchpad-seat-one
+          reservation_id: event:cohort:lab
+          workshop_id: workshop-one
+          seat_refs: [seat-1]
+          resources: {cpu_millicores: 1000, memory_mib: 1024, pods: 2, model_slots: 1}
