@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
-
 from app.services.catalog_onboarding import (
     build_catalog_draft_from_receipt,
     build_catalog_item,
@@ -145,6 +144,71 @@ def test_quality_profile_reuses_quickstart_authoring_and_showroom_signals(
     assert quality["portfolio_overlap"]["status"] == "not-run"
     assert quality["authority"]["may_modify_source"] is False
     assert quality["authority"]["may_publish_catalog"] is False
+
+
+def test_requirement_review_fails_closed_on_unresolved_platform_dependencies(
+    tmp_path: Path,
+) -> None:
+    source = _quality_source(tmp_path)
+    (source / "src/client.py").write_text(
+        'OPENAI_API_BASE = "https://model.example.test/v1"\n'
+        'VLLM_CPU_KVCACHE_SPACE = "4"\n',
+        encoding="utf-8",
+    )
+    quality = discover_quickstart_quality(source, inventory={
+        "models": [{"path": "deploy/model.yaml", "environment": "MODEL_ID", "value": "example"}],
+        "operators": [{"kind": "Subscription", "path": "deploy/operator.yaml"}],
+        "storage": [{"name": "data", "path": "deploy/pvc.yaml", "request": "20Gi", "storage_class": ""}],
+        "cluster_scoped_resources": [{"kind": "ClusterRole", "path": "deploy/rbac.yaml"}],
+        "privileged_findings": [{"path": "deploy/pod.yaml", "reason": "hostNetwork enabled"}],
+        "unparsed_manifests": ["deploy/template.yaml"],
+    })
+
+    review = quality["requirement_review"]
+    assert review["status"] == "blocked"
+    assert review["resolution_authority"] == "human-and-cluster-evidence"
+    assert {finding["code"] for finding in review["findings"]} == {
+        "inference-mode-ambiguous",
+        "model-endpoint-unresolved",
+        "operator-capability-unresolved",
+        "storage-capability-unresolved",
+        "cluster-scope-unresolved",
+        "privileged-workload-unresolved",
+        "manifest-unparsed",
+    }
+    assert quality["gate"]["status"] == "blocked"
+    assert any("requirement" in finding.lower() for finding in quality["gate"]["blocking_findings"])
+
+
+def test_discovery_carries_requirement_blockers_into_non_orderable_draft(
+    tmp_path: Path,
+) -> None:
+    source = _quality_source(tmp_path)
+    manifest = source / "deploy/chart/templates/pvc.yaml"
+    manifest.parent.mkdir()
+    manifest.write_text(
+        "apiVersion: v1\nkind: PersistentVolumeClaim\n"
+        "metadata:\n  name: data\nspec:\n"
+        "  resources:\n    requests:\n      storage: 20Gi\n",
+        encoding="utf-8",
+    )
+    intake, report = discover_quickstart_repo(
+        source,
+        repo_url="https://github.com/example/support-assistant.git",
+        revision="a" * 40,
+        catalog_id="support-assistant",
+        display_name="Support Assistant",
+    )
+
+    assert report["discovery_status"] == "pass"
+    assert intake["quality"]["requirement_review"]["status"] == "blocked"
+    assert any(
+        "storage" in blocker.lower()
+        for blocker in intake["certification"]["activation_blockers"]
+    )
+    catalog = build_catalog_draft_from_receipt(report)
+    assert catalog["status"] == "draft"
+    assert catalog["metadata"]["intake_quality"]["requirement_review"]["status"] == "blocked"
 
 
 def test_repository_discovery_blocks_missing_quickstart_quality_artifacts(

@@ -47,6 +47,19 @@ checks:
       - declared models
       - explicit resource envelopes
     measurement_required_before_placement: true
+  requirement_review:
+    result: blocked-until-human-and-target-cluster-evidence
+    source_signals:
+      - simultaneous local and remote inference modes
+      - model-valued environment variables or remote inference markers
+      - Operator manifests
+      - persistent storage claims
+      - cluster-scoped resources
+      - privileged workload behavior
+      - unparsed manifests
+    target_support_inferred: false
+    finding_payload: stable code and evidence count only; no Secret or model value
+    admission_authority: none
   security:
     consumes_worker_source_scan: true
     summarizes_repository_inventory_only: true

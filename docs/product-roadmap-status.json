@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T10:33:06Z",
+  "updated_at": "2026-09-21T10:39:22Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -386,10 +386,11 @@
       "evidence": [
         ".github/workflows/ci.yml",
         "Makefile",
+        "scripts/validate_delivery_governance.py",
         "scripts/tests/test_validate_delivery_governance.py",
         "evidence/runs/delivery-governance/green-local.xml"
       ],
-      "note": "The local fail-closed governance gate and CI step are defined. Remote CI execution is required before GREEN-integration."
+      "note": "The local fail-closed governance gate and CI step are defined. Every registered contract now requires a focused producer-consumer convergence scenario; the omnibus release scenario alone cannot satisfy it. Remote CI execution and deployed integration proof are required before GREEN-integration."
     },
     "LP-T120": {
       "state": "green-local",
@@ -717,9 +718,10 @@
       },
       "evidence": [
         "evidence/runs/audit-integrity-retention/evidence.json",
-        "evidence/runs/security/session-response-redaction-green-local-20260920.json"
+        "evidence/runs/security/session-response-redaction-green-local-20260920.json",
+        "backend/tests/test_session_response_security.py"
       ],
-      "note": "Local security contracts now prevent session credential serialization and define accountable audit events, recursive redaction, separated producer/investigator/export/retention roles, retention classes, tamper-evident hash chaining and external anchors, governed exports, disposition receipts, and legal holds. This remains GREEN-local: credential rotation, deployed append-only storage, anchors, retention/legal-hold execution, export/restore proof, signing, live policy enforcement, and abuse tests remain release-blocking."
+      "note": "Local security contracts now redact credential-shaped keys in session resource and metadata responses without changing persisted metadata, and define accountable audit events, recursive redaction, separated producer/investigator/export/retention roles, retention classes, tamper-evident hash chaining and external anchors, governed exports, disposition receipts, and legal holds. This remains GREEN-local: free-form string and workshop/seat metadata review, credential rotation, deployed append-only storage, anchors, retention/legal-hold execution, export/restore proof, signing, live policy enforcement, and abuse tests remain release-blocking."
     },
     "LP-T019": {
       "state": "green-local",
@@ -764,9 +766,11 @@
       },
       "evidence": [
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json"
+        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
+        "contracts/catalog-intake-quality-v1.yaml",
+        "backend/tests/test_catalog_intake_quality.py"
       ],
-      "note": "The hybrid fraud detection proof confirms that a corrected external Quickstart with a buildable Showroom is still enforced as draft, internal-only, one-seat, and blocked from activation. Mutable images, unmeasured resources, rendered runtime review, model/identity/secret integration, and live certification remain explicit gates."
+      "note": "The hybrid fraud detection proof confirms that a corrected external Quickstart with a buildable Showroom is still enforced as draft, internal-only, one-seat, and blocked from activation. Static requirement review now blocks unresolved inference mode, model endpoint, operator, storage, cluster-scope, privileged workload, and unparsed-manifest needs rather than inferring target-cluster support. Mutable images, unmeasured resources, rendered runtime review, model/identity/secret integration, and live certification remain explicit gates."
     },
     "LP-T104": {
       "state": "green-local",

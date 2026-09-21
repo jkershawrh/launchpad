@@ -42,7 +42,11 @@ def session() -> LabSession:
                 {"password": "nested-password", "name": "preserve-item"},
             ],
         },
-        metadata={"purpose": "security-contract"},
+        metadata={
+            "purpose": "security-contract",
+            "broker_token": "metadata-broker-secret",
+            "nested": {"client_secret": "metadata-client-secret", "note": "safe"},
+        },
     )
     provisioning_service._sessions[session.session_id] = session
     return session
@@ -65,6 +69,8 @@ def _assert_secret_free(payload: dict) -> None:
     assert "cluster-credential-secret" not in rendered
     assert "nested-api-secret" not in rendered
     assert "nested-password" not in rendered
+    assert "metadata-broker-secret" not in rendered
+    assert "metadata-client-secret" not in rendered
 
     assert payload["namespace"] == "seat-namespace"
     assert payload["cluster_ref"] == "arena"
@@ -74,7 +80,10 @@ def _assert_secret_free(payload: dict) -> None:
     assert payload["resources"]["workspace_path"] == "/workspace"
     assert payload["resources"]["nested"] == {"public_value": "preserve-me"}
     assert payload["resources"]["items"] == [{"name": "preserve-item"}]
-    assert payload["metadata"] == {"purpose": "security-contract"}
+    assert payload["metadata"] == {
+        "purpose": "security-contract",
+        "nested": {"note": "safe"},
+    }
 
 
 def test_session_list_and_detail_responses_are_secret_free(
@@ -96,6 +105,8 @@ def test_public_session_service_model_is_secret_free(session: LabSession) -> Non
     assert public is not None
     assert public.maas_api_key is None
     _assert_secret_free(public.model_dump())
+    assert session.metadata["broker_token"] == "metadata-broker-secret"
+    assert session.metadata["nested"]["client_secret"] == "metadata-client-secret"
 
 
 def test_openapi_session_response_schema_has_no_maas_key() -> None:

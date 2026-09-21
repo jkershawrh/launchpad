@@ -513,6 +513,40 @@ def _quality_yaml_artifact(
     }
 
 
+def _requirement_review(
+    inventory: dict[str, list[Any]],
+    *,
+    local_inference: bool,
+    remote_inference: bool,
+) -> dict[str, Any]:
+    """Flag source-derived needs that cannot establish target-cluster support."""
+    findings: list[dict[str, Any]] = []
+
+    def add(code: str, evidence_count: int) -> None:
+        findings.append({"code": code, "evidence_count": evidence_count})
+
+    if local_inference and remote_inference:
+        add("inference-mode-ambiguous", 2)
+    if remote_inference or inventory.get("models"):
+        add("model-endpoint-unresolved", len(inventory.get("models", [])))
+    if inventory.get("operators"):
+        add("operator-capability-unresolved", len(inventory["operators"]))
+    if inventory.get("storage"):
+        add("storage-capability-unresolved", len(inventory["storage"]))
+    if inventory.get("cluster_scoped_resources"):
+        add("cluster-scope-unresolved", len(inventory["cluster_scoped_resources"]))
+    if inventory.get("privileged_findings"):
+        add("privileged-workload-unresolved", len(inventory["privileged_findings"]))
+    if inventory.get("unparsed_manifests"):
+        add("manifest-unparsed", len(inventory["unparsed_manifests"]))
+    return {
+        "status": "blocked" if findings else "review-required",
+        "resolution_authority": "human-and-cluster-evidence",
+        "findings": findings,
+        "target_support_inferred": False,
+    }
+
+
 def discover_quickstart_quality(
     source: Path | str,
     *,
@@ -607,6 +641,12 @@ def discover_quickstart_quality(
     else:
         inference_mode = "unknown"
 
+    requirement_review = _requirement_review(
+        inventory,
+        local_inference=local_inference,
+        remote_inference=remote_inference,
+    )
+
     blocking_findings: list[str] = []
     if not readme:
         blocking_findings.append("README.md is missing or unreadable")
@@ -648,6 +688,10 @@ def discover_quickstart_quality(
         blocking_findings.append(
             "One or more Showroom modules are below the content-depth threshold"
         )
+    blocking_findings.extend(
+        "Unresolved Quickstart requirement: " + finding["code"]
+        for finding in requirement_review["findings"]
+    )
 
     return {
         "schema_version": QUALITY_SCHEMA_VERSION,
@@ -696,6 +740,7 @@ def discover_quickstart_quality(
             ),
             "measurement_required_before_placement": True,
         },
+        "requirement_review": requirement_review,
         "security_summary": {
             "status": "review-required",
             "mutable_image_count": len(inventory.get("mutable_images", [])),
@@ -795,6 +840,12 @@ def discover_quickstart_repo(
     if quality["gate"]["status"] == "blocked":
         blockers.append(
             "Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings."
+        )
+    if quality["requirement_review"]["status"] == "blocked":
+        blockers.extend(
+            "Resolve Quickstart requirement with approved target evidence: "
+            + finding["code"]
+            for finding in quality["requirement_review"]["findings"]
         )
 
     intake: dict[str, Any] = {

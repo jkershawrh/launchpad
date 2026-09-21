@@ -206,6 +206,11 @@ class LabSessionResponse(LabSession):
     def resources_are_secret_free(cls, value: Any) -> Dict[str, Any]:
         return _secret_free_session_resources(value or {})
 
+    @field_validator("metadata", mode="before")
+    @classmethod
+    def metadata_is_secret_free(cls, value: Any) -> dict[str, Any]:
+        return _secret_free_session_resources(value or {})
+
 
 class MaaSKeyRevocationReceipt(BaseModel):
     """Secret-free confirmation that a scoped model key was revoked."""

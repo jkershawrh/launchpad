@@ -127,3 +127,27 @@ def test_green_scenario_requires_complete_method_evidence():
 
     with pytest.raises(ValueError, match="evidence|method"):
         module.validate(streams, matrix, root=ROOT)
+
+
+def test_registered_contract_requires_producer_consumer_convergence_scenario():
+    module = load_module()
+    streams, matrix = load_contracts()
+    contract = next(
+        item for item in streams["contracts"] if item["id"] == "ai-control-plane-gateway-v1"
+    )
+    contract["consumers"] = ["product-gtm-customer-success"]
+
+    with pytest.raises(ValueError, match="ai-control-plane-gateway-v1.*producer-consumer"):
+        module.validate(streams, matrix, root=ROOT)
+
+
+def test_scenario_must_include_its_owner_as_participant():
+    module = load_module()
+    streams, matrix = load_contracts()
+    scenario = next(
+        item for item in matrix["scenarios"] if item["id"] == "event-demand-calculation"
+    )
+    scenario["participating_streams"].remove("event-orchestration")
+
+    with pytest.raises(ValueError, match="event-demand-calculation.*owner"):
+        module.validate(streams, matrix, root=ROOT)

@@ -201,6 +201,15 @@ hands-on Antora modules, executable command blocks, See/Verify/Key takeaway
 sections, and sufficient module depth. It proposes—not certifies—the inference
 mode, framework/model signals, resource-envelope coverage, and security review
 counts. Business language is only a signal and always requires human review.
+The `requirement_review` gate now blocks on source signals for ambiguous
+inference mode, unresolved model endpoint, Operator, storage, cluster-scoped or
+privileged needs, and unparsed manifests. Findings contain stable codes and
+counts, not model values or Secret material. These signals do not prove a
+cluster supports—or cannot support—the workload: a reviewer must resolve each
+against approved target-cluster capability, model, storage, and security
+evidence before promotion. Static scanning cannot see every templated or
+runtime dependency, so an empty finding list is still review-required, never
+automatic approval or permission to order the draft.
 
 This quality layer is intentionally Launchpad-native. It does not generate or
 depend on AgnosticV/AgnosticD, RHDP credentials, catalog pools, or RHDP URLs. It

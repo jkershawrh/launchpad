@@ -208,6 +208,10 @@ def validate(
     for scenario in scenarios:
         scenario_id = scenario["id"]
         _require(scenario.get("owner") in streams, f"Scenario {scenario_id} has unknown owner")
+        _require(
+            scenario["owner"] in scenario.get("participating_streams", []),
+            f"Scenario {scenario_id} must include its owner as a participant",
+        )
         for participant in scenario.get("participating_streams", []):
             _require(
                 participant in streams, f"Scenario {scenario_id} has unknown stream {participant}"
@@ -247,6 +251,24 @@ def validate(
                 oss_dimensions <= set(scenario.get("conditional_dimensions", [])),
                 f"Scenario {scenario_id} lacks OSS release dimensions",
             )
+
+    # The omnibus release journey cannot substitute for a focused contract
+    # handoff. Every registry entry needs at least one scenario where its
+    # producer and a declared consumer both participate.
+    for contract_id, contract in contracts.items():
+        _require(
+            any(
+                scenario["id"] != "end-to-end-staged-release"
+                and contract_id in scenario.get("contracts", [])
+                and contract["owner"] in scenario.get("participating_streams", [])
+                and bool(
+                    set(contract.get("consumers", []))
+                    & set(scenario.get("participating_streams", []))
+                )
+                for scenario in scenarios
+            ),
+            f"Contract {contract_id} requires focused producer-consumer convergence proof",
+        )
 
     end_to_end = next(
         (item for item in scenarios if item.get("id") == "end-to-end-staged-release"), None
