@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +62,16 @@ REQUIRED_RELEASE_CHECKS = {
     "retention",
 }
 _INLINE_CREDENTIAL_KEYS = {"auth", "password", "private_key", "secret", "token"}
+
+
+def _aware_timestamp(value: Any) -> datetime | None:
+    if not isinstance(value, str) or "T" not in value:
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None and parsed.utcoffset() is not None else None
 
 
 def _inline_credential_paths(value: Any, path: str = "receipt") -> list[str]:
@@ -356,6 +367,9 @@ def evaluate_artifact_release_evidence(
     for field in ("builder_identity", "workflow_url", "completed_at"):
         if not str(build.get(field, "")).strip():
             failures.append(f"build {field} is required")
+    completed_at = _aware_timestamp(build.get("completed_at"))
+    if build.get("completed_at") and completed_at is None:
+        failures.append("build completed_at must be a timezone-aware ISO 8601 timestamp")
 
     failures.extend(_inline_credential_paths(receipt))
 
@@ -435,6 +449,15 @@ def evaluate_artifact_release_evidence(
         failures.append("retention proof preserves fewer releases than policy")
     if not str(retention.get("protected_until", "")).strip():
         failures.append("retention protected_until is required")
+    protected_until = _aware_timestamp(retention.get("protected_until"))
+    if retention.get("protected_until") and protected_until is None:
+        failures.append(
+            "retention protected_until must be a timezone-aware ISO 8601 timestamp"
+        )
+    if completed_at is not None and protected_until is not None:
+        required_days = int((policy.get("retention") or {}).get("superseded_release_days") or 0)
+        if protected_until < completed_at + timedelta(days=required_days):
+            failures.append("retention protected_until is earlier than policy requires")
 
     unexpected = sorted(set(checks) - REQUIRED_RELEASE_CHECKS)
     return {

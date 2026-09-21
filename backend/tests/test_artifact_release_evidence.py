@@ -222,6 +222,34 @@ def test_release_evidence_rejects_inline_credentials_and_weak_retention(
     assert "retention proof preserves fewer releases than policy" in report["failures"]
 
 
+def test_release_evidence_rejects_retention_shorter_than_policy(tmp_path: Path) -> None:
+    receipt = _receipt()
+    receipt["checks"]["retention"]["protected_until"] = "2026-10-01T06:00:00Z"
+
+    report = evaluate_artifact_release_evidence(POLICY, _write(tmp_path, receipt))
+
+    assert report["eligible"] is False
+    assert "retention protected_until is earlier than policy requires" in report["failures"]
+
+
+def test_release_evidence_rejects_invalid_or_unzoned_retention_dates(
+    tmp_path: Path,
+) -> None:
+    receipt = _receipt()
+    receipt["build"]["completed_at"] = "not-a-date"
+    receipt["checks"]["retention"]["protected_until"] = "2027-09-21T06:00:00"
+
+    report = evaluate_artifact_release_evidence(POLICY, _write(tmp_path, receipt))
+
+    assert report["eligible"] is False
+    assert "build completed_at must be a timezone-aware ISO 8601 timestamp" in report[
+        "failures"
+    ]
+    assert "retention protected_until must be a timezone-aware ISO 8601 timestamp" in report[
+        "failures"
+    ]
+
+
 def test_release_evidence_cli_emits_machine_readable_gate(tmp_path: Path) -> None:
     receipt = _write(tmp_path, _receipt())
     output = tmp_path / "report.json"
