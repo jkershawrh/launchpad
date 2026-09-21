@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import os
-from typing import List
-
 from fastapi import APIRouter, Depends, HTTPException, Response
 
 from app.api.deps import (
@@ -12,7 +10,12 @@ from app.api.deps import (
 )
 from app.auth.oauth import User, can_access_tenant, get_current_user, require_tenant_access
 from app.domain.access import ExposurePolicy
-from app.domain.models import LabRequest, LabSessionResponse
+from app.domain.models import (
+    LabRequest,
+    LabRequestCreateResponse,
+    LabRequestResponse,
+    LabSessionResponse,
+)
 
 router = APIRouter(prefix="/lab-requests", tags=["lab-requests"], dependencies=[Depends(get_current_user)])
 
@@ -21,7 +24,7 @@ def _lifecycle_ha_enabled() -> bool:
     return os.environ.get("LIFECYCLE_HA_ENABLED", "false").lower() == "true"
 
 
-@router.post("", status_code=201)
+@router.post("", response_model=LabRequestCreateResponse, status_code=201)
 def create_lab_request(request: LabRequest, user: User = Depends(get_current_user)):
     require_tenant_access(user, request.tenant_id)
     if request.metadata.get("target_cluster") and not user.is_admin:
@@ -45,7 +48,7 @@ def create_lab_request(request: LabRequest, user: User = Depends(get_current_use
     return result
 
 
-@router.get("", response_model=List[LabRequest])
+@router.get("", response_model=list[LabRequestResponse])
 def list_lab_requests(user: User = Depends(get_current_user)):
     return [
         request
@@ -54,7 +57,7 @@ def list_lab_requests(user: User = Depends(get_current_user)):
     ]
 
 
-@router.get("/{request_id}", response_model=LabRequest)
+@router.get("/{request_id}", response_model=LabRequestResponse)
 def get_lab_request(request_id: str, user: User = Depends(get_current_user)):
     req = provisioning_service.get_request(request_id)
     if not req:

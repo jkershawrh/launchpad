@@ -16,7 +16,7 @@ from app.auth.oauth import (
 )
 from app.domain.access import ExposurePolicy
 from app.domain.enums import WorkshopStatus
-from app.domain.models import Workshop
+from app.domain.models import Workshop, WorkshopResponse
 from app.services.public_access import PublicAccessPolicyAlreadyExistsError
 
 router = APIRouter(
@@ -85,7 +85,7 @@ class WorkshopCapacityPreview(BaseModel):
     resource_breakdown: WorkshopResourceBreakdown | None = None
 
 
-class WorkshopOrderResponse(Workshop):
+class WorkshopOrderResponse(WorkshopResponse):
     one_time_access_code: str | None = Field(
         default=None,
         json_schema_extra={"readOnly": True},
@@ -125,7 +125,7 @@ def _authorized_workshop(workshop_id: str, user: User) -> Workshop:
     return workshop
 
 
-@router.post("", response_model=Workshop, status_code=201)
+@router.post("", response_model=WorkshopResponse, status_code=201)
 def create_workshop(
     body: WorkshopCreate,
     response: Response,
@@ -152,7 +152,7 @@ def create_workshop(
         raise HTTPException(400, str(e))
 
 
-@router.get("", response_model=list[Workshop])
+@router.get("", response_model=list[WorkshopResponse])
 def list_workshops(user: User = Depends(get_current_user)):
     return [
         workshop
@@ -210,7 +210,7 @@ def create_workshop_order(
         raise HTTPException(400, str(e))
 
 
-@router.post("/{workshop_id}/confirm", response_model=Workshop, status_code=202)
+@router.post("/{workshop_id}/confirm", response_model=WorkshopResponse, status_code=202)
 def confirm_workshop(
     workshop_id: str,
     background_tasks: BackgroundTasks,
@@ -234,12 +234,12 @@ def confirm_workshop(
         raise HTTPException(409, str(e))
 
 
-@router.get("/{workshop_id}", response_model=Workshop)
+@router.get("/{workshop_id}", response_model=WorkshopResponse)
 def get_workshop(workshop_id: str, user: User = Depends(get_current_user)):
     return _authorized_workshop(workshop_id, user)
 
 
-@router.post("/{workshop_id}/retry-failed", response_model=Workshop, status_code=202)
+@router.post("/{workshop_id}/retry-failed", response_model=WorkshopResponse, status_code=202)
 def retry_failed_workshop_seats(
     workshop_id: str,
     background_tasks: BackgroundTasks,
@@ -278,7 +278,7 @@ def get_workshop_capacity(workshop_id: str, user: User = Depends(get_current_use
     return {"can_provision": can, "reason": reason, "seats_provisioned": len(workshop.session_ids)}
 
 
-@router.delete("/{workshop_id}", response_model=Workshop, status_code=202)
+@router.delete("/{workshop_id}", response_model=WorkshopResponse, status_code=202)
 def delete_workshop(
     workshop_id: str,
     background_tasks: BackgroundTasks,

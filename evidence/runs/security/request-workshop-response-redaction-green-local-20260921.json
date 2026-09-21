@@ -1,0 +1,32 @@
+{
+  "evidence_id": "request-workshop-response-redaction-green-local-20260921",
+  "generated_at": "2026-09-21T10:46:53Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T058"],
+  "red": {
+    "tests_failed": 3,
+    "result": "request, workshop, and nested seat API responses exposed credential-shaped metadata values"
+  },
+  "green": {
+    "focused_contract_and_security_tests_passed": 16,
+    "full_backend_tests_passed": 2089,
+    "full_backend_tests_skipped": 27,
+    "tests_failed": 0
+  },
+  "proof": {
+    "response_contracts": ["LabRequestResponse", "WorkshopResponse", "WorkshopSeatResponse"],
+    "covered_paths": [
+      "request create, list, and detail",
+      "workshop order, list, detail, confirm, retry, and reclaim",
+      "nested workshop seats",
+      "one-time instructor code on public request creation"
+    ],
+    "credential_shaped_metadata_values_returned": false,
+    "persisted_metadata_changed": false
+  },
+  "boundary": [
+    "This is a local API contract and regression proof, not a live deployment result",
+    "Free-form error strings may still contain sensitive values and require separate review",
+    "No execution cluster or retained workshop was accessed"
+  ]
+}

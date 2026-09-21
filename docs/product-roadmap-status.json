@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T10:39:22Z",
+  "updated_at": "2026-09-21T10:45:01Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -719,9 +719,12 @@
       "evidence": [
         "evidence/runs/audit-integrity-retention/evidence.json",
         "evidence/runs/security/session-response-redaction-green-local-20260920.json",
-        "backend/tests/test_session_response_security.py"
+        "evidence/runs/security/request-workshop-response-redaction-green-local-20260921.json",
+        "backend/tests/test_session_response_security.py",
+        "backend/tests/test_workshop_response_security.py",
+        "backend/tests/test_requester_api_contract.py"
       ],
-      "note": "Local security contracts now redact credential-shaped keys in session resource and metadata responses without changing persisted metadata, and define accountable audit events, recursive redaction, separated producer/investigator/export/retention roles, retention classes, tamper-evident hash chaining and external anchors, governed exports, disposition receipts, and legal holds. This remains GREEN-local: free-form string and workshop/seat metadata review, credential rotation, deployed append-only storage, anchors, retention/legal-hold execution, export/restore proof, signing, live policy enforcement, and abuse tests remain release-blocking."
+      "note": "Local requester and operations response contracts now redact credential-shaped keys in request, session, workshop, and nested seat metadata without changing persisted records; one-time instructor codes remain creation-only. Accountable audit events, recursive redaction, separated roles, retention classes, tamper-evident chaining/anchors, governed exports, disposition receipts, and legal holds are defined. This remains GREEN-local: free-form error/string values, credential rotation, deployed append-only storage, anchors, retention/legal-hold execution, export/restore proof, signing, live policy enforcement, and abuse tests remain release-blocking."
     },
     "LP-T019": {
       "state": "green-local",

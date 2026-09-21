@@ -837,9 +837,10 @@ software provenance, secret hygiene, and accountable mutation.**
   release.
 - `LP-T058` Enforce least privilege, credential rotation, secret scanning,
   policy-as-code, signing/verification, audit retention, and incident response.
-  **GREEN-local (session-response slice):** session APIs now use a dedicated
-  secret-free response contract across requester, participant, lifecycle, and
-  admin paths. Rotation, signing, live policy enforcement, and abuse testing
+  **GREEN-local (API-response slice):** request, session, workshop, and nested
+  seat APIs now use secret-free metadata response contracts across requester,
+  participant, lifecycle, and admin paths without changing persisted records.
+  Free-form error strings, rotation, signing, live policy enforcement, and abuse testing
   remain open. **GREEN-local (audit slice):** a versioned audit-integrity and
   retention contract now defines accountable events, recursive redaction,
   separated roles, retention classes, tamper-evident chaining/anchors, governed

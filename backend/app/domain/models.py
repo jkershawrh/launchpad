@@ -196,6 +196,25 @@ def _secret_free_session_resources(value: Any) -> Any:
     return value
 
 
+class LabRequestResponse(LabRequest):
+    """Secret-free requester view of a persisted lab request."""
+
+    @field_validator("metadata", mode="before")
+    @classmethod
+    def metadata_is_secret_free(cls, value: Any) -> dict[str, Any]:
+        return _secret_free_session_resources(value or {})
+
+
+class LabRequestCreateResponse(LabRequestResponse):
+    """Creation-only public access details; the instructor code is one-time."""
+
+    public_url: str | None = None
+    one_time_access_code: str | None = Field(
+        default=None,
+        json_schema_extra={"readOnly": True},
+    )
+
+
 class LabSessionResponse(LabSession):
     """Secret-free API representation of a persisted lab session."""
 
@@ -366,3 +385,28 @@ class Workshop(BaseModel):
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WorkshopSeatResponse(WorkshopSeat):
+    """Secret-free seat view without changing the persisted seat record."""
+
+    @field_validator("metadata", mode="before")
+    @classmethod
+    def metadata_is_secret_free(cls, value: Any) -> dict[str, Any]:
+        return _secret_free_session_resources(value or {})
+
+
+class WorkshopResponse(Workshop):
+    """Secret-free workshop view for requester and operations APIs."""
+
+    seats: list[WorkshopSeatResponse] = Field(default_factory=list)
+
+    @field_validator("seats", mode="before")
+    @classmethod
+    def seats_are_response_models(cls, value: Any) -> list[Any]:
+        return [seat.model_dump() if isinstance(seat, WorkshopSeat) else seat for seat in value or []]
+
+    @field_validator("metadata", mode="before")
+    @classmethod
+    def metadata_is_secret_free(cls, value: Any) -> dict[str, Any]:
+        return _secret_free_session_resources(value or {})
