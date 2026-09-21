@@ -37,6 +37,21 @@ CLUSTER_SCOPED_KINDS = {
     "ValidatingWebhookConfiguration",
     "MutatingWebhookConfiguration",
 }
+QUALITY_SCHEMA_VERSION = "launchpad.redhat.com/catalog-intake-quality/v1"
+ACTION_TITLE_VERBS = {
+    "accelerate", "analyze", "automate", "boost", "build", "classify",
+    "create", "deploy", "detect", "encrypt", "govern", "monitor",
+    "optimize", "orchestrate", "route", "run", "scale", "secure",
+    "serve", "stream", "transform",
+}
+QUALITY_TEXT_SUFFIXES = {
+    ".adoc", ".cfg", ".conf", ".env", ".ini", ".java", ".js", ".json",
+    ".md", ".py", ".sh", ".toml", ".ts", ".tsx", ".yaml", ".yml",
+}
+FRAMEWORK_SIGNALS = {
+    "gradio", "langchain", "llama_index", "openai", "openvino", "optimum",
+    "react", "streamlit", "torch", "transformers", "vllm",
+}
 
 
 def load_intake(path: Path | str) -> dict[str, Any]:
@@ -436,6 +451,274 @@ def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
     return inventory
 
 
+def _read_quality_text(path: Path) -> str:
+    try:
+        if path.stat().st_size > 1024 * 1024:
+            return ""
+        return path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return ""
+
+
+def _quality_text_corpus(root: Path) -> str:
+    parts: list[str] = []
+    for path in sorted(root.rglob("*")):
+        if (
+            not path.is_file()
+            or any(part in DISCOVERY_IGNORED_PARTS for part in path.parts)
+            or (
+                path.suffix.lower() not in QUALITY_TEXT_SUFFIXES
+                and path.name != "Makefile"
+            )
+        ):
+            continue
+        text = _read_quality_text(path)
+        if text:
+            parts.append(text.lower())
+    return "\n".join(parts)
+
+
+def _quality_yaml_artifact(
+    root: Path,
+    relative: str,
+    collection: str,
+) -> dict[str, Any]:
+    path = root / relative
+    if not path.is_file():
+        return {"path": relative, "status": "missing", "entry_count": 0}
+    try:
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return {"path": relative, "status": "invalid", "entry_count": 0}
+    if not isinstance(document, dict) or collection not in document:
+        return {"path": relative, "status": "invalid", "entry_count": 0}
+    entries = document[collection]
+    if not isinstance(entries, list):
+        return {"path": relative, "status": "invalid", "entry_count": 0}
+    return {
+        "path": relative,
+        "status": "present-valid",
+        "entry_count": len(entries),
+    }
+
+
+def discover_quickstart_quality(
+    source: Path | str,
+    *,
+    inventory: dict[str, list[Any]],
+) -> dict[str, Any]:
+    """Return deterministic, review-only quality signals for one Quickstart."""
+
+    root = Path(source).resolve()
+    readme = _read_quality_text(root / "README.md")
+    title_match = re.search(r"(?m)^#\s+(.+)$", readme)
+    title = title_match.group(1).strip() if title_match else ""
+    title_verb = title.split(maxsplit=1)[0].lower() if title else ""
+    headings = {
+        match.group(1).strip().lower()
+        for match in re.finditer(r"(?m)^##\s+(.+?)\s*$", readme)
+    }
+    required_sections = {
+        "architecture", "deploy", "overview", "references", "requirements",
+        "repository structure", "table of contents", "tags",
+    }
+    business_terms = {
+        "business", "customer", "outcome", "problem", "reduce", "save", "team",
+    }
+
+    artifacts = {
+        "validation_matrix": _quality_yaml_artifact(
+            root, "tests/validation_matrix.yaml", "stages"
+        ),
+        "claim_registry": _quality_yaml_artifact(
+            root, "tests/claim_registry.yaml", "claims"
+        ),
+        "benchmark_rubric": _quality_yaml_artifact(
+            root, "tests/benchmark_rubric.yaml", "benchmarks"
+        ),
+        "publication_test": {
+            "path": "tests/publication/test_readme.py",
+            "status": (
+                "present"
+                if (root / "tests/publication/test_readme.py").is_file()
+                else "missing"
+            ),
+        },
+        "makefile": {
+            "path": "Makefile",
+            "status": "present" if (root / "Makefile").is_file() else "missing",
+        },
+        "ci_workflows": {
+            "path": ".github/workflows",
+            "status": (
+                "present"
+                if any((root / ".github/workflows").glob("*.y*ml"))
+                else "missing"
+            ),
+        },
+    }
+
+    pages = [
+        path
+        for path in sorted(root.rglob("*.adoc"))
+        if "modules" in path.parts and "pages" in path.parts
+    ]
+    hands_on = [
+        path
+        for path in pages
+        if path.stem.lower()
+        not in {"index", "conclusion", "accessing-cluster", "01-accessing-cluster"}
+    ]
+    module_text = {path: _read_quality_text(path) for path in hands_on}
+    thin_modules = [
+        _repository_path(root, path)
+        for path, text in module_text.items()
+        if len([line for line in text.splitlines() if line.strip()]) < 50
+    ]
+    corpus = _quality_text_corpus(root)
+    local_markers = (
+        "vllm serve",
+        "vllm_cpu_kvcache_space",
+        "habana_visible_modules",
+    )
+    remote_markers = (
+        "openai_api_base",
+        "model_endpoint",
+        "maas_api_url",
+        "/v1/chat/completions",
+    )
+    local_inference = any(marker in corpus for marker in local_markers)
+    remote_inference = any(marker in corpus for marker in remote_markers)
+    if local_inference:
+        inference_mode = "local-model"
+    elif remote_inference:
+        inference_mode = "remote-endpoint"
+    else:
+        inference_mode = "unknown"
+
+    blocking_findings: list[str] = []
+    if not readme:
+        blocking_findings.append("README.md is missing or unreadable")
+    if title_verb not in ACTION_TITLE_VERBS:
+        blocking_findings.append("README title is not action oriented")
+    missing_sections = sorted(required_sections - headings)
+    if missing_sections:
+        blocking_findings.append(
+            "README is missing required sections: " + ", ".join(missing_sections)
+        )
+    for name in ("validation_matrix", "claim_registry", "benchmark_rubric"):
+        if artifacts[name]["status"] != "present-valid":
+            blocking_findings.append(
+                f"{artifacts[name]['path']} is missing or invalid"
+            )
+    if artifacts["publication_test"]["status"] != "present":
+        blocking_findings.append("tests/publication/test_readme.py is missing")
+    if not hands_on:
+        blocking_findings.append("No hands-on Showroom module was discovered")
+    for label, pattern in (
+        ("What you will learn", r"(?mi)^==\s+What you will learn\s*$"),
+        ("See", r"(?mi)^==\s+See(?::|\s)"),
+        ("Verify", r"(?mi)^===?\s+Verify\s*$"),
+        ("Key takeaway", r"(?mi)^==\s+Key takeaway\s*$"),
+    ):
+        if hands_on and any(
+            not re.search(pattern, text) for text in module_text.values()
+        ):
+            blocking_findings.append(
+                f"One or more Showroom modules lack the {label} section"
+            )
+    if hands_on and any(
+        'role="execute"' not in text for text in module_text.values()
+    ):
+        blocking_findings.append(
+            "One or more Showroom modules lack an executable command block"
+        )
+    if thin_modules:
+        blocking_findings.append(
+            "One or more Showroom modules are below the content-depth threshold"
+        )
+
+    return {
+        "schema_version": QUALITY_SCHEMA_VERSION,
+        "business_solution": {
+            "status": "review-required",
+            "readme_present": bool(readme),
+            "title": title,
+            "action_oriented_title": title_verb in ACTION_TITLE_VERBS,
+            "required_sections_present": not missing_sections,
+            "missing_sections": missing_sections,
+            "business_language_present": any(
+                term in readme.lower() for term in business_terms
+            ),
+            "human_review_required": True,
+        },
+        "artifacts": artifacts,
+        "showroom": {
+            "page_count": len(pages),
+            "hands_on_module_count": len(hands_on),
+            "execute_block_count": sum(
+                text.count('role="execute"') for text in module_text.values()
+            ),
+            "see_section_count": sum(
+                bool(re.search(r"(?mi)^==\s+See(?::|\s)", text))
+                for text in module_text.values()
+            ),
+            "verification_section_count": sum(
+                bool(re.search(r"(?mi)^===?\s+Verify\s*$", text))
+                for text in module_text.values()
+            ),
+            "key_takeaway_count": sum(
+                bool(re.search(r"(?mi)^==\s+Key takeaway\s*$", text))
+                for text in module_text.values()
+            ),
+            "thin_modules": thin_modules,
+        },
+        "capacity_proposal": {
+            "status": "review-required",
+            "inference_mode": inference_mode,
+            "framework_signals": sorted(
+                signal for signal in FRAMEWORK_SIGNALS if signal in corpus
+            ),
+            "declared_models": copy.deepcopy(inventory.get("models", [])),
+            "explicit_resource_envelopes": len(
+                inventory.get("resource_envelopes", [])
+            ),
+            "measurement_required_before_placement": True,
+        },
+        "security_summary": {
+            "status": "review-required",
+            "mutable_image_count": len(inventory.get("mutable_images", [])),
+            "cluster_scoped_resource_count": len(
+                inventory.get("cluster_scoped_resources", [])
+            ),
+            "privileged_finding_count": len(
+                inventory.get("privileged_findings", [])
+            ),
+            "secret_manifest_count": len(inventory.get("secret_manifests", [])),
+            "unparsed_manifest_count": len(
+                inventory.get("unparsed_manifests", [])
+            ),
+            "secret_values_included": False,
+        },
+        "portfolio_overlap": {
+            "status": "not-run",
+            "reason": "A pinned versioned portfolio inventory was not supplied.",
+            "mutable_live_org_scan_allowed": False,
+        },
+        "gate": {
+            "status": "blocked" if blocking_findings else "review-required",
+            "blocking_findings": blocking_findings,
+        },
+        "authority": {
+            "mode": "analysis-only",
+            "may_modify_source": False,
+            "may_publish_catalog": False,
+            "may_provision": False,
+            "may_certify": False,
+        },
+    }
+
+
 def discover_quickstart_repo(
     source: Path | str,
     *,
@@ -465,6 +748,7 @@ def discover_quickstart_repo(
     showroom, showroom_warnings, showroom_errors = _discover_showroom(root)
     workload, workload_warnings, workload_errors = _discover_workload(root)
     inventory = _discover_repository_inventory(root)
+    quality = discover_quickstart_quality(root, inventory=inventory)
     errors = showroom_errors + workload_errors
     warnings = showroom_warnings + workload_warnings
 
@@ -496,6 +780,10 @@ def discover_quickstart_repo(
     if inventory["unparsed_manifests"]:
         blockers.append(
             "Review every unparsed manifest; templating or invalid YAML prevents complete static discovery."
+        )
+    if quality["gate"]["status"] == "blocked":
+        blockers.append(
+            "Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings."
         )
 
     intake: dict[str, Any] = {
@@ -541,6 +829,7 @@ def discover_quickstart_repo(
             "promotion_sequence": [1, 5, 25],
             "activation_blockers": blockers,
         },
+        "quality": quality,
         "discovery": {
             "source": "quickstart-repository",
             "inventory": inventory,
@@ -564,6 +853,7 @@ def discover_quickstart_repo(
         "showroom": showroom,
         "workload": workload,
         "inventory": inventory,
+        "quality": quality,
         "draft_intake": copy.deepcopy(intake),
         "warnings": warnings,
         "errors": errors,
@@ -651,10 +941,14 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
     shared_resources = runtime.get("workshop_shared_resources", {})
     workload_contract = runtime.get("workload", {})
     references = intake.get("references", {})
+    quality = intake.get("quality", {})
     capacity_metadata = {}
     track_metadata = {}
     certification_metadata = {}
     access_metadata = {}
+    quality_metadata = {}
+    if quality:
+        quality_metadata["intake_quality"] = copy.deepcopy(quality)
     if certification.get("proof_contract"):
         certification_metadata["certification_proof_contract"] = certification[
             "proof_contract"
@@ -794,6 +1088,7 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "source_content_repo": showroom["repo_url"],
             "source_content_revision": showroom["revision"],
             "source_references": references,
+            **quality_metadata,
         },
     }
 

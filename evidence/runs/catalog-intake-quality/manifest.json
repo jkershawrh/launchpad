@@ -1,0 +1,53 @@
+{
+  "schema_version": "launchpad.redhat.com/evidence-manifest/v1",
+  "evidence_id": "catalog-intake-quality-20260920",
+  "recorded_at": "2026-09-20T21:30:00-05:00",
+  "base_commit": "a60fd9b68379aae2a3ec71f0efef5de936aac3f9",
+  "source_references": [
+    {
+      "repository": "https://github.com/jkershawrh/quickstart-intake",
+      "revision": "aa9480986185f079d99b115a84c3ad25ebedbef9"
+    },
+    {
+      "repository": "https://github.com/jkershawrh/quickstart-onboard",
+      "revision": "e05e04e6b30f6f9ee8ca0200d3b043502ac5a253"
+    }
+  ],
+  "requirements": ["LP-T097", "LP-T098"],
+  "methods": {
+    "tdd": "green-local",
+    "edd": "green-local",
+    "cdd": "green-local",
+    "bdd": "green-local",
+    "cbt": "green-local"
+  },
+  "artifacts": [
+    {
+      "path": "evidence/runs/catalog-intake-quality/red-local.xml",
+      "sha256": "821aadc357b8141d784bde0f359ba8cc055a159b8f43977ed8cdd836bbbd8822",
+      "result": "RED"
+    },
+    {
+      "path": "evidence/runs/catalog-intake-quality/green-local.xml",
+      "sha256": "5dfa2657809536b3ea37aabd69cf0c1dcafbe9a5decbbc2cdbb808e1768d88ce",
+      "result": "GREEN-local"
+    },
+    {
+      "path": "contracts/catalog-intake-quality-v1.yaml",
+      "sha256": "68cf69a42ef8b0eadc9bb269e3955b9fd788a66d00f67be4a7e8015bfce5ddcb",
+      "result": "versioned-contract"
+    }
+  ],
+  "claims": [
+    "Immutable Quickstart discovery emits a deterministic review-only quality profile.",
+    "Missing required authoring or Showroom quality artifacts fail closed as activation blockers.",
+    "The quality boundary never modifies source, publishes, provisions, certifies, approves claims, selects a production model, or relaxes capacity.",
+    "AgnosticV, AgnosticD, and RHDP-specific delivery are outside the Launchpad intake output."
+  ],
+  "non_claims": [
+    "No live worker or catalog was deployed by this change.",
+    "No Quickstart is certified or orderable by this evidence.",
+    "No live portfolio overlap, capacity, security, model, or lifecycle certification was performed."
+  ],
+  "release_eligible": false
+}

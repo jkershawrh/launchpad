@@ -173,6 +173,24 @@ images, cluster-scoped resources, privileged behavior, repository-managed
 Secret manifests, and manifests that cannot be parsed all add explicit
 activation blockers.
 
+Discovery also attaches a deterministic `intake_quality` review profile based
+on the useful authoring checks from the `quickstart-intake` and
+`quickstart-onboard` workflows. The profile checks for a business-first README,
+the validation matrix, claim registry, benchmark rubric, publication test,
+hands-on Antora modules, executable command blocks, See/Verify/Key takeaway
+sections, and sufficient module depth. It proposes—not certifies—the inference
+mode, framework/model signals, resource-envelope coverage, and security review
+counts. Business language is only a signal and always requires human review.
+
+This quality layer is intentionally Launchpad-native. It does not generate or
+depend on AgnosticV/AgnosticD, RHDP credentials, catalog pools, or RHDP URLs. It
+does not install dependencies, build images, or execute untrusted repository
+content on the control-plane host. Portfolio-overlap analysis is also disabled
+until a pinned, versioned inventory is supplied; a mutable live organization
+scan cannot become certification evidence. The quality contract is versioned
+in `contracts/catalog-intake-quality-v1.yaml`, and any missing required quality
+artifact remains an activation blocker rather than being silently inferred.
+
 Inspect a protected, clean local checkout whose `HEAD` equals the supplied SHA:
 
 ```bash

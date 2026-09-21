@@ -352,17 +352,24 @@ repository and receive a safe, reviewable, certified catalog draft.**
   bounded cleanup, DNS plus allowlisted-proxy egress, and denial of direct
   GitHub, Kubernetes API, and production PostgreSQL access. Real Quickstarts
   failed closed on source scanning or the canonical Antora contract without
-  emitting a catalog draft. The default dispatcher remains disabled; signed
+  emitting a catalog draft. **GREEN-local quality slice:** discovery now
+  produces a deterministic review-only profile for business/teachability,
+  validation matrices, claim and benchmark artifacts, Showroom learning
+  structure, capacity signals, and security findings. Missing required quality
+  artifacts block activation; static signals cannot certify, publish, or relax
+  capacity. AgnosticV/AgnosticD and RHDP-specific delivery remain outside this
+  pipeline. The default dispatcher remains disabled; signed
   external image publication, deployed receipt collection, one passing
   canonical repository, and remaining live fault proof are open.
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
   **GREEN-local (catalog-draft slice):** a versioned immutable discovery
   receipt deterministically generates and persists the reviewable catalog
-  draft. The admin journey now shows its discovery proof, cleanup result,
-  capabilities, generated metadata, and remaining blockers. Deployment package,
-  participant journey, ownership, support, and complete certification remain
-  open.
+  draft, including the source-derived quality profile and its fail-closed
+  activation findings. The admin journey now shows its discovery proof,
+  cleanup result, capabilities, generated metadata, and remaining blockers.
+  Deployment package, participant journey, ownership, support, and complete
+  certification remain open.
 - `LP-T099` Default generated entries to draft, internal-only, and one-seat;
   fail closed on ambiguous, privileged, mutable, or unsupported requirements.
   **GREEN-local:** draft generation enforces draft status, internal-only

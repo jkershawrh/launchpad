@@ -1,0 +1,98 @@
+schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+kind: LaunchpadCatalogIntakeQualityPolicy
+metadata:
+  version: 1.0.0
+  owner: catalog-onboarding-owner
+  security_owner: launchpad-security-owner
+  source_references:
+    - https://github.com/jkershawrh/quickstart-intake
+    - https://github.com/jkershawrh/quickstart-onboard
+
+purpose:
+  input: one approved immutable canonical Quickstart repository
+  outcome: one deterministic review-only quality profile attached to the Launchpad intake draft
+  canonical_pipeline: quickstart-to-launchpad
+  optional_predecessor: source-repository-to-quickstart-authoring
+
+checks:
+  business_solution:
+    - README exists
+    - title is action oriented
+    - required business-first sections are present
+    - business outcome language is present
+    - human review remains required
+  quickstart_artifacts:
+    required:
+      - tests/validation_matrix.yaml
+      - tests/claim_registry.yaml
+      - tests/benchmark_rubric.yaml
+      - tests/publication/test_readme.py
+    supporting:
+      - Makefile
+      - .github/workflows
+  showroom_content:
+    - at least one hands-on module
+    - what-you-will-learn section
+    - see section before commands
+    - executable command role
+    - verification section
+    - key takeaway
+    - minimum content depth
+  capacity:
+    result: proposal-only
+    signals:
+      - local model runtime
+      - remote model endpoint
+      - frameworks
+      - declared models
+      - explicit resource envelopes
+    measurement_required_before_placement: true
+  security:
+    consumes_worker_source_scan: true
+    summarizes_repository_inventory_only: true
+    secret_values_in_output: false
+
+portfolio_overlap:
+  status: not-run-by-default
+  mutable_live_org_scan_allowed: false
+  required_input: pinned-versioned-portfolio-inventory
+  result: review-only
+
+execution:
+  worker: isolated-catalog-intake-worker
+  untrusted_source_runs_on_host: false
+  dependency_install_on_host: false
+  container_build_on_host: false
+  compose_run_on_host: false
+  network: worker-policy-controlled
+
+outputs:
+  launchpad_quality_profile: true
+  launchpad_catalog_draft: true
+  source_patch: false
+  showroom_patch: false
+  agnosticv: false
+  agnosticd: false
+  rhdp_catalog: false
+
+authority:
+  mode: analysis-only
+  may_modify_source: false
+  may_publish_catalog: false
+  may_provision: false
+  may_certify: false
+  may_approve_claims: false
+  may_select_production_model: false
+  may_relax_capacity: false
+
+promotion:
+  automatic: false
+  requires:
+    - reviewed quality findings
+    - measured capacity
+    - approved immutable artifacts
+    - model compatibility evidence
+    - one-seat lifecycle proof
+    - restart and cleanup proof
+    - progressive scale proof
+    - human approval and rollback metadata
