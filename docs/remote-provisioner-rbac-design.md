@@ -62,3 +62,9 @@ cluster-target overlay and all three pilot catalog items, builds their plans,
 and verifies that only Flightpath's pinned external-image paths skip the
 cross-namespace grant. It checks the known multi-agent chart's image fields;
 it does not prove registry reachability, pull permissions, or runtime behavior.
+
+Run `.venv/bin/python scripts/flightpath_execution_preflight.py` for a
+read-only JSON summary of this source gate. A `static_contract_passed` result
+does not certify an execution seat: the report leaves image pulls, model calls,
+Showroom/workspace access, and zero-residue reclaim as `not_run`. The separate
+DR standby preflight likewise checks image references, not actual pullability.

@@ -70,7 +70,7 @@ while IFS= read -r image; do
   [[ "$image" != *"image-registry.openshift-image-registry.svc"* ]] \
     || fail "image depends on an execution cluster internal registry: $image"
 done <<< "$images"
-pass "workload images are immutable and externally reachable"
+pass "workload images are immutable and externally referenced (pullability not proven)"
 
 KUBECONFIG="$flightpath_kubeconfig" oc get crd applications.argoproj.io -o name >/dev/null \
   || fail "Flightpath Argo CD Application CRD is unavailable"
