@@ -1,0 +1,23 @@
+{
+  "schema_version": "launchpad.redhat.com/red-green-evidence/v1",
+  "evidence_id": "event-model-certification-red-local-20260921",
+  "stage": "red-local",
+  "requirements": [
+    "Approved event labs declare exact required model IDs.",
+    "Certified cluster and catalog cells declare matching exact model IDs.",
+    "A missing model blocks placement, forecast, and reservation without changing running labs."
+  ],
+  "observations": [
+    {
+      "component": "event matrix",
+      "result": "failed-as-expected",
+      "detail": "EventLab had no required_models field, so a named model could not be part of the approved placement contract."
+    },
+    {
+      "component": "certification matrix",
+      "result": "failed-as-expected",
+      "detail": "EventClusterCapacity and EventCatalogCapacity had no model certification fields."
+    }
+  ],
+  "live_mutation": false
+}

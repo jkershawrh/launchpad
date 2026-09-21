@@ -25,7 +25,14 @@ def test_event_manifest_contract_requires_unambiguous_capacity_inputs():
     contract = yaml.safe_load(CONTRACT.read_text())
     schema = contract["components"]["schemas"]["EventManifest"]
 
-    assert contract["info"]["version"] == "1.4.0"
+    assert contract["info"]["version"] == "1.5.0"
+    assert "required_models" in contract["components"]["schemas"]["EventLab"]["properties"]
+    assert "required_models" in contract["components"]["schemas"]["EventCatalogCapacity"]["properties"]
+    assert "certified_models" in contract["components"]["schemas"]["EventClusterCapacity"]["properties"]
+    generated = app.openapi()["components"]["schemas"]
+    assert "required_models" in generated["EventLab"]["properties"]
+    assert "required_models" in EventCatalogCapacity.model_json_schema()["properties"]
+    assert "certified_models" in EventClusterCapacity.model_json_schema()["properties"]
     assert {
         "event_id",
         "name",

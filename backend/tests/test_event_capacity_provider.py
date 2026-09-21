@@ -75,6 +75,19 @@ def test_provider_loads_jointly_approved_versioned_matrix(tmp_path):
     assert supply.clusters[0].cluster_id == "arena"
 
 
+def test_provider_requires_catalog_models_to_be_certified_on_cluster(tmp_path):
+    payload = _matrix()
+    payload["clusters"][0]["catalogs"][0]["required_models"] = ["granite-3.2-8b-tools"]
+    path = _write(tmp_path / "matrix.yaml", payload)
+
+    with pytest.raises(EventCapacityMatrixUnavailableError, match="absent from cluster certification"):
+        FileEventCapacityProvider(path).load()
+
+    payload["clusters"][0]["certified_models"] = ["granite-3.2-8b-tools"]
+    certified = FileEventCapacityProvider(_write(path, payload)).load()
+    assert certified.clusters[0].certified_models == ["granite-3.2-8b-tools"]
+
+
 @pytest.mark.parametrize(
     ("field", "value", "message"),
     [

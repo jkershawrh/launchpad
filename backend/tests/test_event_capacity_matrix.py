@@ -117,6 +117,47 @@ def test_matrix_allocates_each_exact_catalog_release_deterministically():
     ]
 
 
+def test_exact_required_model_must_be_certified_on_selected_cluster():
+    manifest = _manifest()
+    manifest.labs[0].required_models = ["granite-3.2-8b-tools"]
+    missing = _cluster(
+        "arena", certified_seats=60,
+        catalogs=[("serve-llms", "v1", 30), ("build-agent", "v2", 30)],
+    )
+    preview = calculate_event_capacity(
+        manifest, EventCapacitySupply(clusters=[missing])
+    )
+
+    assert preview.eligible is False
+    assert preview.capacity_shortfall == 30
+    assert all(item.lab_ref != "serve" for item in preview.allocations)
+
+    missing.certified_models = ["granite-3.2-8b-tools"]
+    certified = calculate_event_capacity(
+        manifest, EventCapacitySupply(clusters=[missing])
+    )
+    assert certified.eligible is True
+    assert {item.lab_ref for item in certified.allocations} == {"serve", "agent"}
+
+
+def test_catalog_model_requirement_cannot_be_omitted_from_event_manifest():
+    manifest = _manifest()
+    cluster = _cluster(
+        "arena", certified_seats=60,
+        catalogs=[("serve-llms", "v1", 30), ("build-agent", "v2", 30)],
+    )
+    cluster.certified_models = ["granite-3.2-8b-tools"]
+    cluster.catalogs[0].required_models = ["granite-3.2-8b-tools"]
+
+    omitted = calculate_event_capacity(manifest, EventCapacitySupply(clusters=[cluster]))
+    assert omitted.eligible is False
+    assert omitted.capacity_shortfall == 30
+
+    manifest.labs[0].required_models = ["granite-3.2-8b-tools"]
+    declared = calculate_event_capacity(manifest, EventCapacitySupply(clusters=[cluster]))
+    assert declared.eligible is True
+
+
 def test_cluster_total_prevents_catalog_cells_from_double_counting_capacity():
     preview = calculate_event_capacity(
         _manifest(),
@@ -278,7 +319,7 @@ def test_matrix_contract_declares_cluster_catalog_and_allocation_shapes():
     )
     schemas = contract["components"]["schemas"]
 
-    assert contract["info"]["version"] == "1.4.0"
+    assert contract["info"]["version"] == "1.5.0"
     assert "EventClusterCapacity" in schemas
     assert "EventCatalogCapacity" in schemas
     assert "EventResourceVector" in schemas

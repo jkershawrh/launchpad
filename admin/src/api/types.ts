@@ -458,6 +458,7 @@ export interface EventLab {
   catalog_id: string;
   catalog_release: string;
   required_capabilities: string[];
+  required_models?: string[];
 }
 
 export interface EventManifest {

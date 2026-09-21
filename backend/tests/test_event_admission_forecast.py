@@ -1,11 +1,13 @@
 from datetime import timedelta
 from pathlib import Path
 
+import pytest
 import yaml
 
 from app.main import app
 
 from app.services.event_reservations import (
+    EventReservationConflictError,
     EventReservationLedger,
     build_event_reservation_plan,
     forecast_event_admission,
@@ -154,6 +156,26 @@ def test_forecast_excludes_uncertified_model_capability_and_stale_fleet():
     stale = forecast_event_admission(record, supply, [], now=NOW + timedelta(minutes=3))
     assert stale.status == "blocked"
     assert "stale" in stale.explanation
+
+
+def test_forecast_fails_closed_when_exact_model_certification_is_removed():
+    supply = _supply(seats=60)
+    supply.clusters[0].certified_models = ["granite-3.2-8b-tools"]
+    manifest = _record("event-a", supply).manifest
+    manifest.labs[0].required_models = ["granite-3.2-8b-tools"]
+    record = _record("event-a", supply).model_copy(update={"manifest": manifest})
+    supply.clusters[0].certified_models = []
+
+    forecast = forecast_event_admission(record, supply, [], now=NOW)
+
+    assert forecast.status == "blocked"
+    assert forecast.eligible is False
+    assert "exact required model certification" in forecast.explanation
+    assert forecast.clusters == []
+    with pytest.raises(EventReservationConflictError, match="exact required model certification"):
+        build_event_reservation_plan(
+            record, supply, expires_at=NOW + timedelta(hours=8), now=NOW
+        )
 
 
 def test_forecast_blocks_expired_held_reservation_without_mutating_ledger():

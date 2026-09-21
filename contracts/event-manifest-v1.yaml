@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Manifest Contract
-  version: 1.4.0
+  version: 1.5.0
   description: >-
     Defines an event before capacity is reserved. Participant count, cohorts,
     labs per participant, retention, exposure, certified capacity, and human
@@ -102,6 +102,10 @@ components:
           type: array
           uniqueItems: true
           items: {type: string}
+        required_models:
+          type: array
+          uniqueItems: true
+          items: {type: string, minLength: 1}
     EventRetention:
       type: object
       additionalProperties: false
@@ -175,6 +179,10 @@ components:
         catalog_id: {type: string, minLength: 1}
         catalog_release: {type: string, minLength: 1}
         certified_seats: {type: integer, minimum: 0}
+        required_models:
+          type: array
+          uniqueItems: true
+          items: {type: string, minLength: 1}
         resources_per_seat: {$ref: '#/components/schemas/EventResourceVector'}
     EventClusterCapacity:
       type: object
@@ -202,6 +210,10 @@ components:
           type: array
           uniqueItems: true
           items: {type: string}
+        certified_models:
+          type: array
+          uniqueItems: true
+          items: {type: string, minLength: 1}
         certified_seats: {type: integer, minimum: 0}
         dr_reserved_seats: {type: integer, minimum: 0}
         uncertified_seats: {type: integer, minimum: 0}

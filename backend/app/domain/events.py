@@ -57,6 +57,15 @@ class EventLab(BaseModel):
     catalog_id: str = Field(min_length=1)
     catalog_release: str = Field(min_length=1)
     required_capabilities: list[str] = Field(default_factory=list)
+    required_models: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def unique_required_models(self) -> EventLab:
+        if len(self.required_models) != len(set(self.required_models)):
+            raise ValueError(f"Lab {self.lab_ref} contains duplicate required models")
+        if any(not model.strip() for model in self.required_models):
+            raise ValueError(f"Lab {self.lab_ref} contains an empty required model")
+        return self
 
 
 class EventRetention(BaseModel):
@@ -113,9 +122,18 @@ class EventCatalogCapacity(BaseModel):
     catalog_id: str = Field(min_length=1)
     catalog_release: str = Field(min_length=1)
     certified_seats: int = Field(ge=0)
+    required_models: list[str] = Field(default_factory=list)
     resources_per_seat: EventResourceVector = Field(
         default_factory=EventResourceVector
     )
+
+    @model_validator(mode="after")
+    def unique_required_models(self) -> EventCatalogCapacity:
+        if len(self.required_models) != len(set(self.required_models)):
+            raise ValueError(f"Catalog {self.catalog_id} contains duplicate required models")
+        if any(not model.strip() for model in self.required_models):
+            raise ValueError(f"Catalog {self.catalog_id} contains an empty required model")
+        return self
 
 
 class EventClusterCapacity(BaseModel):
@@ -128,6 +146,7 @@ class EventClusterCapacity(BaseModel):
         default_factory=list
     )
     capabilities: list[str] = Field(default_factory=list)
+    certified_models: list[str] = Field(default_factory=list)
     certified_seats: int = Field(default=0, ge=0)
     dr_reserved_seats: int = Field(default=0, ge=0)
     uncertified_seats: int = Field(default=0, ge=0)
@@ -143,6 +162,10 @@ class EventClusterCapacity(BaseModel):
             raise ValueError(
                 f"Cluster {self.cluster_id} contains duplicate catalog release capacity"
             )
+        if len(self.certified_models) != len(set(self.certified_models)):
+            raise ValueError(f"Cluster {self.cluster_id} contains duplicate certified models")
+        if any(not model.strip() for model in self.certified_models):
+            raise ValueError(f"Cluster {self.cluster_id} contains an empty certified model")
         return self
 
 
@@ -208,6 +231,11 @@ class EventCapacityMatrixDocument(BaseModel):
                     f"Cluster {cluster.cluster_id} resource seats must equal certified seats"
                 )
             for catalog in cluster.catalogs:
+                if not set(catalog.required_models).issubset(cluster.certified_models):
+                    raise ValueError(
+                        f"Catalog {catalog.catalog_id}@{catalog.catalog_release} "
+                        "requires models absent from cluster certification"
+                    )
                 if catalog.certified_seats > 0 and not any(
                     catalog.resources_per_seat.model_dump().values()
                 ):
@@ -671,6 +699,13 @@ def _allocate_certified_capacity(
             cluster.cluster_id
             for cluster in clusters
             if set(lab.required_capabilities).issubset(cluster.capabilities)
+            and set(lab.required_models).issubset(cluster.certified_models)
+            and any(
+                catalog.catalog_id == lab.catalog_id
+                and catalog.catalog_release == lab.catalog_release
+                and set(catalog.required_models).issubset(lab.required_models)
+                for catalog in cluster.catalogs
+            )
             and (
                 cluster.cluster_id,
                 lab.catalog_id,

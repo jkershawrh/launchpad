@@ -13,7 +13,7 @@ const event: EventRecord = {
     exposure_policy: 'public_code', placement_policy: 'single_cluster_per_workshop',
     cohorts: [{ cohort_id: 'morning', participants: 30, lab_refs: ['serve', 'agents'] }],
     labs: [
-      { lab_ref: 'serve', catalog_id: 'intel-llm-cpu-serving', catalog_release: 'v3', required_capabilities: ['cpu'] },
+      { lab_ref: 'serve', catalog_id: 'intel-llm-cpu-serving', catalog_release: 'v3', required_capabilities: ['cpu'], required_models: ['granite-3.2-8b-tools'] },
       { lab_ref: 'agents', catalog_id: 'multi-agent-quickstart', catalog_release: 'v4', required_capabilities: ['showroom'] },
     ],
     retention: { hours: 24, starts_from: 'cohort_start' },
@@ -74,6 +74,7 @@ describe('EventDetail', () => {
     expect(screen.getByText('Admission protected')).toBeInTheDocument();
     expect(screen.getByText('60 seats remaining')).toBeInTheDocument();
     expect(screen.getByText('cpu · model-endpoint')).toBeInTheDocument();
+    expect(screen.getByText(/granite-3\.2-8b-tools/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /launch|reserve|activate|reclaim/i })).not.toBeInTheDocument();
   });
 });

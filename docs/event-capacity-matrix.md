@@ -6,7 +6,7 @@ Event admission uses an explicit, server-owned catalog-by-cluster matrix. A
 single fleet-wide seat count is not sufficient evidence that a particular lab
 release can run on a particular cluster.
 
-The v1.4 manifest makes `single_cluster_per_workshop` an explicit placement
+The v1.5 manifest makes `single_cluster_per_workshop` an explicit placement
 policy. It is the safe current default, not a permanent assumption: a future
 mode must be separately specified, tested, and certified before use.
 
@@ -16,6 +16,9 @@ Each cluster envelope declares:
 - the exposure policies and capabilities it supports;
 - an aggregate simultaneous certified-seat ceiling;
 - an exact catalog ID and immutable release ceiling for each supported lab;
+- exact certified model IDs for each cluster and required model IDs for each
+  catalog release; an approved event must declare those required IDs rather
+  than relying on a generic `model-endpoint` capability;
 - DR-reserved and uncertified capacity as visible, non-placeable categories.
 
 The preview treats every cohort × lab pair as one atomic workshop and applies
@@ -28,6 +31,11 @@ greedy choice, but it never splits one workshop across clusters.
 - Exact catalog release matching is mandatory.
 - Public events cannot consume internal-only certification.
 - Missing capabilities make that catalog/cluster cell ineligible.
+- Missing exact model certification makes the cell ineligible, and a catalog's
+  declared model requirements cannot be omitted from the event manifest.
+- Model ID certification is a static placement requirement, not proof that a
+  model replica is currently warm, exposed, responsive, or able to serve the
+  expected concurrency. Runtime inference health remains a separate gate.
 - Disabled clusters, DR-reserved capacity, and uncertified capacity never make
   an event eligible.
 - A capacity preview or persisted event record does not reserve capacity,

@@ -78,12 +78,18 @@ def build_event_reservation_plan(
         )
 
     clusters = {item.cluster_id: item for item in supply.clusters}
+    labs = {item.lab_ref: item for item in record.manifest.labs}
     reservations: list[EventCapacityReservation] = []
     for allocation in preview.allocations:
         cluster = clusters.get(allocation.cluster_id)
         if cluster is None or not cluster.enabled:
             raise EventReservationConflictError(
                 f"Allocated cluster {allocation.cluster_id} is no longer eligible"
+            )
+        lab = labs[allocation.lab_ref]
+        if not set(lab.required_models).issubset(cluster.certified_models):
+            raise EventReservationConflictError(
+                f"Allocated cluster {allocation.cluster_id} lacks exact required model certification"
             )
         catalog = next(
             (
@@ -97,6 +103,10 @@ def build_event_reservation_plan(
         if catalog is None:
             raise EventReservationConflictError(
                 "Allocated catalog release is absent from certified capacity"
+            )
+        if not set(catalog.required_models).issubset(lab.required_models):
+            raise EventReservationConflictError(
+                "Approved event omitted a required model from the certified catalog release"
             )
         if not any(catalog.resources_per_seat.model_dump().values()):
             raise EventReservationConflictError(
@@ -610,6 +620,11 @@ def _build_cluster_forecasts(
                 for capability in lab.required_capabilities
                 if capability not in cluster.capabilities
             )
+            blockers.extend(
+                f"model:{model_id}"
+                for model_id in lab.required_models
+                if model_id not in cluster.certified_models
+            )
             catalog = next(
                 (
                     entry
@@ -622,6 +637,8 @@ def _build_cluster_forecasts(
             if catalog is None:
                 blockers.append(f"catalog:{item.catalog_id}@{item.catalog_release}")
             else:
+                if not set(catalog.required_models).issubset(lab.required_models):
+                    blockers.append(f"catalog-models:{item.catalog_id}@{item.catalog_release}")
                 expected = catalog.resources_per_seat.scaled(item.resources.seats)
                 expected.seats = item.resources.seats
                 if expected != item.resources:
