@@ -775,10 +775,11 @@
       "evidence": [
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
         "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
+        "evidence/runs/catalog-intake-network-requirements/green-local-20260921.json",
         "contracts/catalog-intake-quality-v1.yaml",
         "backend/tests/test_catalog_intake_quality.py"
       ],
-      "note": "The hybrid fraud detection proof confirms that a corrected external Quickstart with a buildable Showroom is still enforced as draft, internal-only, one-seat, and blocked from activation. Static requirement review now blocks unresolved inference mode, model endpoint, operator, storage, cluster-scope, privileged workload, and unparsed-manifest needs rather than inferring target-cluster support. Mutable images, unmeasured resources, rendered runtime review, model/identity/secret integration, and live certification remain explicit gates."
+      "note": "The hybrid fraud detection proof confirms that a corrected external Quickstart with a buildable Showroom is still enforced as draft, internal-only, one-seat, and blocked from activation. Static requirement review blocks unresolved inference mode, model endpoint, operator, storage, cluster-scope, privileged workload, unparsed-manifest, and external-network needs rather than inferring target-cluster support. Network findings cover fixed ingress hosts, externally exposed Services, and malformed specs without copying hostnames into the finding. Mutable images, unmeasured resources, rendered runtime review, model/identity/secret integration, and live certification remain explicit gates."
     },
     "LP-T104": {
       "state": "green-local",

@@ -211,6 +211,138 @@ def test_discovery_carries_requirement_blockers_into_non_orderable_draft(
     assert catalog["metadata"]["intake_quality"]["requirement_review"]["status"] == "blocked"
 
 
+def test_network_exposure_requires_target_review_without_copying_hostnames(
+    tmp_path: Path,
+) -> None:
+    source = _quality_source(tmp_path)
+    manifests = source / "deploy/chart/templates/network.yaml"
+    manifests.parent.mkdir()
+    manifests.write_text(
+        """apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: fixed-route
+spec:
+  host: private-training.example.test
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: fixed-ingress
+spec:
+  rules:
+    - host: another-private.example.test
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: public-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ordinary-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+""",
+        encoding="utf-8",
+    )
+
+    intake, report = discover_quickstart_repo(
+        source,
+        repo_url="https://github.com/example/support-assistant.git",
+        revision="a" * 40,
+        catalog_id="support-assistant",
+        display_name="Support Assistant",
+    )
+
+    exposure = report["inventory"]["network_exposure"]
+    assert len(exposure) == 3
+    assert {item["kind"] for item in exposure} == {"Route", "Ingress", "Service"}
+    finding = next(
+        item for item in intake["quality"]["requirement_review"]["findings"]
+        if item["code"] == "network-exposure-unresolved"
+    )
+    assert finding["evidence_count"] == 3
+    assert "private-training.example.test" not in str(finding)
+    assert intake["quality"]["gate"]["status"] == "blocked"
+    assert any(
+        "network-exposure-unresolved" in blocker
+        for blocker in intake["certification"]["activation_blockers"]
+    )
+    catalog = build_catalog_draft_from_receipt(report)
+    assert catalog["status"] == "draft"
+    assert catalog["metadata"]["intake_quality"]["requirement_review"]["status"] == "blocked"
+
+
+def test_alternate_external_network_requirements_are_not_silently_supported(
+    tmp_path: Path,
+) -> None:
+    source = _quality_source(tmp_path)
+    manifest = source / "deploy/chart/templates/other-network.yaml"
+    manifest.parent.mkdir()
+    manifest.write_text(
+        """apiVersion: v1
+kind: Service
+metadata: {name: node-port}
+spec: {type: NodePort}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: external-name}
+spec: {type: ExternalName, externalName: service.example.test}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: external-ip}
+spec: {externalIPs: [192.0.2.4]}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata: {name: fixed-subdomain}
+spec: {subdomain: training}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: tls-host}
+spec:
+  tls:
+    - hosts: [training.example.test]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: invalid-network-spec}
+spec: []
+""",
+        encoding="utf-8",
+    )
+
+    _, report = discover_quickstart_repo(
+        source,
+        repo_url="https://github.com/example/support-assistant.git",
+        revision="a" * 40,
+        catalog_id="support-assistant",
+        display_name="Support Assistant",
+    )
+
+    exposure = report["inventory"]["network_exposure"]
+    assert len(exposure) == 6
+    assert {item["reason"] for item in exposure} == {
+        "service-NodePort",
+        "service-ExternalName",
+        "service-external-ips",
+        "fixed-route-host",
+        "fixed-ingress-host",
+        "network-spec-unresolved",
+    }
+
+
 def test_repository_discovery_blocks_missing_quickstart_quality_artifacts(
     tmp_path: Path,
 ) -> None:
@@ -252,6 +384,9 @@ def test_quality_contract_keeps_rhdp_delivery_and_live_mutation_outside_scope() 
     assert contract["outputs"]["agnosticd"] is False
     assert contract["execution"]["untrusted_source_runs_on_host"] is False
     assert contract["portfolio_overlap"]["mutable_live_org_scan_allowed"] is False
+    assert "fixed ingress hosts or externally exposed Services" in (
+        contract["checks"]["requirement_review"]["source_signals"]
+    )
 
 
 def test_readme_first_quickstart_becomes_a_blocked_review_draft(

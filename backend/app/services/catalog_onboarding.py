@@ -359,6 +359,56 @@ def _storage_inventory(
         )
 
 
+def _network_exposure_inventory(
+    document: dict[str, Any],
+    path: str,
+    inventory: dict[str, list[Any]],
+) -> None:
+    """Flag fixed ingress and externally exposed Services for target review."""
+    kind = document.get("kind")
+    spec = document.get("spec", {})
+    if not isinstance(spec, dict):
+        if kind in {"Route", "Ingress", "Service"}:
+            _append_unique(
+                inventory["network_exposure"],
+                {
+                    "kind": str(kind),
+                    "name": str((document.get("metadata") or {}).get("name", "")),
+                    "path": path,
+                    "reason": "network-spec-unresolved",
+                },
+            )
+        return
+    reason = None
+    if kind == "Route" and (spec.get("host") or spec.get("subdomain")):
+        reason = "fixed-route-host"
+    elif kind == "Ingress":
+        rules = spec.get("rules") or []
+        tls = spec.get("tls") or []
+        if any(isinstance(rule, dict) and rule.get("host") for rule in rules) or any(
+            isinstance(entry, dict) and entry.get("hosts") for entry in tls
+        ):
+            reason = "fixed-ingress-host"
+    elif kind == "Service":
+        service_type = spec.get("type", "ClusterIP")
+        if not isinstance(service_type, str):
+            reason = "network-spec-unresolved"
+        elif service_type in {"LoadBalancer", "NodePort", "ExternalName"}:
+            reason = f"service-{service_type}"
+        elif spec.get("externalIPs"):
+            reason = "service-external-ips"
+    if reason:
+        _append_unique(
+            inventory["network_exposure"],
+            {
+                "kind": str(kind),
+                "name": str((document.get("metadata") or {}).get("name", "")),
+                "path": path,
+                "reason": reason,
+            },
+        )
+
+
 def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
     """Return review-only facts without copying Secret payloads or granting support."""
     inventory: dict[str, list[Any]] = {
@@ -369,6 +419,7 @@ def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
         "manifest_resources": [],
         "models": [],
         "mutable_images": [],
+        "network_exposure": [],
         "operators": [],
         "ports": [],
         "privileged_findings": [],
@@ -448,6 +499,7 @@ def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
             _secret_reference_inventory(document, relative, inventory)
             _privilege_inventory(document, relative, inventory)
             _storage_inventory(document, relative, inventory)
+            _network_exposure_inventory(document, relative, inventory)
 
     for key, values in inventory.items():
         inventory[key] = sorted(
@@ -539,6 +591,8 @@ def _requirement_review(
         add("privileged-workload-unresolved", len(inventory["privileged_findings"]))
     if inventory.get("unparsed_manifests"):
         add("manifest-unparsed", len(inventory["unparsed_manifests"]))
+    if inventory.get("network_exposure"):
+        add("network-exposure-unresolved", len(inventory["network_exposure"]))
     return {
         "status": "blocked" if findings else "review-required",
         "resolution_authority": "human-and-cluster-evidence",

@@ -516,6 +516,7 @@ rules: []
             "path": "deploy/chart/templates/workload.yaml",
         }
     ]
+    assert inventory["network_exposure"] == []
     assert inventory["storage"] == [
         {
             "access_modes": [],
