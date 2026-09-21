@@ -841,7 +841,10 @@
         "evidence/runs/catalog-intake-pipeline/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json",
         "evidence/runs/catalog-intake-submission/green-local.json",
-        "evidence/runs/admin-intake-quality-ui/manifest.json"
+        "evidence/runs/admin-intake-quality-ui/manifest.json",
+        "contracts/catalog-intake-pipeline-v1.1.yaml",
+        "backend/tests/test_catalog_intake_pipeline_contract_alignment.py",
+        "docs/catalog-intake-pipeline-contract.md"
       ],
       "note": "Admin Intake now conditionally exposes source approval and discovery actions only when durable storage and worker prerequisites pass, renders execution state, and presents the versioned Quickstart quality profile: authoring artifacts, Showroom depth, inferred model access, supply-chain signals, activation findings, and its analysis-only authority. Certification, publication, provisioning, and live mutation remain disabled."
     },

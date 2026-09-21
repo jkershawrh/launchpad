@@ -1,0 +1,65 @@
+openapi: 3.1.0
+info:
+  title: Launchpad Catalog Intake Pipeline View
+  version: 1.1.0
+  description: >-
+    Read-only representation of intake stages and eligibility hints. This
+    version supersedes the narrower v1.0 response description without changing
+    the API schema_version or granting discovery, certification, or promotion.
+paths: {}
+x-launchpad-authority:
+  response_is_authorization: false
+  may_mutate_live_catalog: false
+  may_provision: false
+  may_promote: false
+components:
+  schemas:
+    PipelineActionSet:
+      type: object
+      required:
+        - approve_source
+        - run_discovery
+        - generate_draft
+        - run_one_seat_certification
+        - request_review
+        - promote
+      properties:
+        approve_source:
+          type: boolean
+          description: Display-only eligibility; the authenticated endpoint rechecks authority.
+        run_discovery:
+          type: boolean
+          description: Display-only eligibility; the authenticated endpoint rechecks worker and approval state.
+        generate_draft: {const: false}
+        run_one_seat_certification: {const: false}
+        request_review: {const: false}
+        promote: {const: false}
+    CatalogIntakePipelineView:
+      type: object
+      required:
+        - schema_version
+        - intake_id
+        - source_standard
+        - metadata_policy
+        - current_stage
+        - orderable
+        - promotion_eligible
+        - durable_storage
+        - isolated_worker_available
+        - stages
+        - gates
+        - actions
+      properties:
+        schema_version: {const: launchpad.redhat.com/catalog-intake-pipeline/v1}
+        intake_id: {type: string, minLength: 1}
+        source_standard: {const: quickstart-repository}
+        metadata_policy: {const: discover-from-source}
+        current_stage:
+          enum: [submitted, draft-generated]
+        orderable: {const: false}
+        promotion_eligible: {const: false}
+        durable_storage: {type: boolean}
+        isolated_worker_available: {type: boolean}
+        stages: {type: array, minItems: 6}
+        gates: {type: array, minItems: 7}
+        actions: {$ref: '#/components/schemas/PipelineActionSet'}
