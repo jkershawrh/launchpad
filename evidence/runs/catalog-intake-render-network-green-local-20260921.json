@@ -1,0 +1,26 @@
+{
+  "evidence_id": "catalog-intake-render-network-green-local-20260921",
+  "generated_at": "2026-09-21T13:53:18Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T099", "LP-T100"],
+  "red": {
+    "test": "backend/tests/test_catalog_intake_render_review.py",
+    "result": "2 failed, 10 deselected: rendered external Route/Ingress/Service requirements and malformed network specs were incorrectly review-ready"
+  },
+  "green": {
+    "focused_tests": "18 passed",
+    "backend_regression": "2139 passed, 27 skipped, 13 deselected",
+    "lint": "ruff passed",
+    "contract": "contracts/catalog-intake-rendered-output-v1.yaml"
+  },
+  "behavior": [
+    "Rendered fixed ingress hosts, LoadBalancer/NodePort/ExternalName Services, external IPs, and malformed network specs produce the stable network-exposure-unresolved finding.",
+    "The review report does not return hostnames or raw manifests.",
+    "An ordinary internal ClusterIP Service remains review-ready but never release-eligible."
+  ],
+  "boundary": [
+    "No isolated renderer or trusted receipt collector was deployed or invoked.",
+    "No catalog was activated and no live lab or cluster was changed.",
+    "Target ingress/egress compatibility and external access remain unproven."
+  ]
+}

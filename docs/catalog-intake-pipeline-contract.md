@@ -28,3 +28,11 @@ codes without persisting raw manifests. A structurally review-ready result is
 not certification or approval. The current intake worker image does not run
 Helm or Kustomize, and no requester can supply a render receipt to bypass the
 locked gate.
+
+Rendered-output review now applies the same network-exposure rule as static
+source discovery. A fixed Route/Ingress host, LoadBalancer/NodePort/ExternalName
+Service, external IP, or malformed network spec yields the stable
+`network-exposure-unresolved` finding without returning hostnames or raw
+manifests. An ordinary internal ClusterIP Service remains reviewable. This
+closes a local source-to-render consistency gap; target-cluster ingress and
+egress certification are still separate gates.

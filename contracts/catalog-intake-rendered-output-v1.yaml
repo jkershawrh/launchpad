@@ -17,6 +17,7 @@ checks:
   - isolated render reports denied network egress and removed workspace
   - every Kubernetes document has an identity
   - no Secret, cluster-scoped, host-privileged, mutable-image, or unresolved-template content
+  - fixed ingress hosts, externally exposed Services, and malformed network specs remain review blockers after rendering
 output:
   status: blocked or review-ready
   findings: stable codes only, no source URLs, hostnames, Secret values, or raw manifests

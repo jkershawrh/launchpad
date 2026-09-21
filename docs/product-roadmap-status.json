@@ -780,6 +780,7 @@
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
         "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
         "evidence/runs/catalog-intake-network-requirements/green-local-20260921.json",
+        "evidence/runs/catalog-intake-render-network-green-local-20260921.json",
         "evidence/runs/catalog-intake-render-dependencies/green-local-20260921.json",
         "contracts/catalog-intake-quality-v1.yaml",
         "backend/tests/test_catalog_intake_quality.py"
@@ -909,7 +910,8 @@
         "evidence/runs/catalog-intake-worker-safety/evidence.json",
         "evidence/runs/catalog-intake-arena-live-20260920.json",
         "evidence/runs/catalog-intake-faults-arena-live-20260920.json",
-        "evidence/runs/catalog-intake-render-review/green-local-20260921.json"
+        "evidence/runs/catalog-intake-render-review/green-local-20260921.json",
+        "evidence/runs/catalog-intake-render-network-green-local-20260921.json"
       ],
       "note": "Arena proves the tokenless/read-only runtime, allowlisted proxy egress, denial of direct GitHub/API/database access, sanitized scanner failure, and pod removal after timeout/cancellation. Local and integration proof bounds retry to three attempts, preserves idempotency, requires verified cleanup, and rejects scanner/policy failures. A GREEN-local rendered-output receiving contract binds source identity and manifest digest and rejects unsafe resources, but cannot certify or publish. The task remains effectively GREEN-local because BDD has not advanced and release remains blocked on an isolated renderer, trusted collector and forced-termination receipts, signed image/SBOM, and one passing canonical Quickstart."
     }

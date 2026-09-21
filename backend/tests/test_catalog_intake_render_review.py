@@ -4,6 +4,7 @@ import hashlib
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
 import yaml
 from app.domain.catalog_intake_discovery import (
     CatalogIntakeCleanupReceipt,
@@ -136,6 +137,78 @@ def test_render_review_rejects_unresolved_template_and_cluster_scope() -> None:
     assert "cluster-scoped-resource" in report["findings"]
 
 
+def test_render_review_rejects_external_network_exposure_without_echoing_hosts() -> None:
+    hostname = "private-training.example.test"
+    unsafe = f"""apiVersion: route.openshift.io/v1
+kind: Route
+metadata: {{name: fixed-route}}
+spec: {{host: {hostname}}}
+---
+apiVersion: v1
+kind: Service
+metadata: {{name: public-service}}
+spec: {{type: LoadBalancer, ports: [{{port: 443}}]}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {{name: fixed-ingress}}
+spec: {{rules: [{{host: {hostname}}}]}}
+""".encode()
+
+    report = review_rendered_output(_discovery(), _render_receipt(unsafe), unsafe)
+
+    assert report["status"] == "blocked"
+    assert "network-exposure-unresolved" in report["findings"]
+    assert hostname not in str(report)
+    assert report["release_eligible"] is False
+
+
+def test_render_review_rejects_malformed_network_spec() -> None:
+    unsafe = (
+        b"apiVersion: v1\nkind: Service\nmetadata: {name: malformed}\n"
+        b"spec: []\n"
+    )
+
+    report = review_rendered_output(_discovery(), _render_receipt(unsafe), unsafe)
+
+    assert report["status"] == "blocked"
+    assert "network-exposure-unresolved" in report["findings"]
+
+
+@pytest.mark.parametrize(
+    "kind,spec",
+    [
+        ("Service", "type: NodePort"),
+        ("Service", "type: ExternalName\n  externalName: other.example.test"),
+        ("Service", "externalIPs: [192.0.2.4]"),
+        ("Route", "subdomain: training"),
+        ("Ingress", "tls: [{hosts: [training.example.test]}]"),
+    ],
+)
+def test_render_review_covers_alternate_network_exposure(kind: str, spec: str) -> None:
+    rendered = (
+        f"apiVersion: v1\nkind: {kind}\nmetadata: {{name: network}}\nspec:\n  {spec}\n"
+    ).encode()
+
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert report["status"] == "blocked"
+    assert "network-exposure-unresolved" in report["findings"]
+    assert "training.example.test" not in str(report)
+
+
+def test_render_review_allows_internal_cluster_ip_service() -> None:
+    rendered = (
+        b"apiVersion: v1\nkind: Service\nmetadata: {name: internal}\n"
+        b"spec: {type: ClusterIP, ports: [{port: 8080}]}\n"
+    )
+
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert report["status"] == "review-ready"
+    assert report["release_eligible"] is False
+
+
 def test_oversized_output_is_rejected_before_parsing() -> None:
     oversized = SAFE_MANIFEST + b" " * (1024 * 1024)
 
@@ -175,3 +248,4 @@ def test_render_review_contract_does_not_authorize_host_render_or_promotion() ->
     assert contract["authority"]["may_render_untrusted_source_on_host"] is False
     assert contract["authority"]["may_publish_catalog"] is False
     assert contract["authority"]["review_ready_is_certified"] is False
+    assert any("fixed ingress hosts" in check for check in contract["checks"])

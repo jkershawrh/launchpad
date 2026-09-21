@@ -9,7 +9,12 @@ import yaml
 
 from app.domain.catalog_intake_discovery import CatalogIntakeDiscoveryReceipt
 from app.services.catalog_intake_discovery import _contains_secret
-from app.services.catalog_onboarding import CLUSTER_SCOPED_KINDS, IMMUTABLE_IMAGE, _walk_mappings
+from app.services.catalog_onboarding import (
+    CLUSTER_SCOPED_KINDS,
+    IMMUTABLE_IMAGE,
+    _network_exposure_inventory,
+    _walk_mappings,
+)
 
 SCHEMA_VERSION = "launchpad.redhat.com/catalog-intake-rendered-output/v1"
 MAX_RENDERED_BYTES = 1024 * 1024
@@ -43,6 +48,7 @@ def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
         return sorted(findings | {"render-output-unparseable"}), 0, 0
     if not documents or len(documents) > MAX_RESOURCES:
         findings.add("render-resource-count-invalid")
+    network_inventory: dict[str, list[Any]] = {"network_exposure": []}
     for document in documents[:MAX_RESOURCES]:
         if not isinstance(document, dict):
             findings.add("render-resource-invalid")
@@ -62,6 +68,7 @@ def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
             findings.add("secret-resource")
         if kind in CLUSTER_SCOPED_KINDS or kind.startswith("Cluster"):
             findings.add("cluster-scoped-resource")
+        _network_exposure_inventory(document, "rendered-output", network_inventory)
         for mapping in _walk_mappings(document):
             if any(mapping.get(field) is True for field in ("hostNetwork", "hostPID", "hostIPC")):
                 findings.add("host-privilege-required")
@@ -72,6 +79,8 @@ def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
                 image_count += 1
                 if not isinstance(image, str) or not IMMUTABLE_IMAGE.fullmatch(image):
                     findings.add("mutable-or-invalid-image")
+    if network_inventory["network_exposure"]:
+        findings.add("network-exposure-unresolved")
     return sorted(findings), count, image_count
 
 
