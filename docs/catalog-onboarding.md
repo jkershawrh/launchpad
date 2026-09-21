@@ -154,7 +154,9 @@ Scheduled-event cache preparation uses the versioned
 digest images per assigned cluster and binds them to an immutable plan ID,
 event window, catalogs, and workshops. Its status evaluator requires complete
 node coverage, digest and signature verification, mirror/source attribution,
-and evidence for every planned cluster/image pair. This local contract neither
+and a timezone-aware observation within the plan's pre-pull window, plus
+evidence for every planned cluster/image pair. A missing, stale, or late
+observation fails closed. This local contract neither
 pulls images nor changes node caches; real pre-pull execution remains an
 integration and live certification gate.
 

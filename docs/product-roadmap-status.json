@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T10:03:31Z",
+  "updated_at": "2026-09-21T10:17:43Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -185,6 +185,8 @@
         "backend/tests/test_event_namespace_identity.py",
         "backend/app/services/event_kubernetes_inventory_observer.py",
         "backend/tests/test_event_kubernetes_inventory_observer.py",
+        "backend/app/services/event_model_slot_source.py",
+        "backend/tests/test_event_model_slot_source.py",
         "scripts/collect_event_inflight_capacity.py",
         "docs/event-inflight-capacity-collector.md",
         "backend/tests/test_event_reservation_guard.py",
@@ -205,9 +207,10 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "docs/active-seat-inventory-20260917.md"
+        "docs/active-seat-inventory-20260917.md",
+        "backend/tests/test_reclaim_readiness.py"
       ],
-      "note": "Session records and namespaces were reconciled read-only across the active fleet."
+      "note": "The September 17 session records and namespaces were reconciled read-only across the active fleet. A local-only pre-reclaim validator now checks supplied workshop, session, namespace, cluster, and reservation balance; it cannot establish authoritative completeness. Tuesday's fresh T-30 inventory remains open."
     },
     "LP-T070": {
       "state": "green-local",
@@ -216,9 +219,12 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "docs/active-seat-inventory-20260917.md"
+        "docs/active-seat-inventory-20260917.md",
+        "backend/app/services/reclaim_readiness.py",
+        "backend/tests/test_reclaim_readiness.py",
+        "docs/reclaim-readiness-local-contract.md"
       ],
-      "note": "Claims, expiry, readiness, routes, restarts, models, and resource counts were captured."
+      "note": "The September 17 claims, expiry, readiness, routes, restarts, models, and resource counts were captured. The new local balance check is not a fresh inventory, reclaim authorization, or zero-residue proof; the approved lifecycle test remains open."
     },
     "LP-T084": {
       "state": "green-local",
@@ -804,9 +810,11 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "evidence/runs/artifact-registry/prepull-contract-green-local-20260920.json"
+        "evidence/runs/artifact-registry/prepull-contract-green-local-20260920.json",
+        "backend/tests/test_artifact_prepull.py",
+        "contracts/event-artifact-prepull-v1.yaml"
       ],
-      "note": "A versioned offline scheduled-event pre-pull contract now creates an immutable, deduplicated exact-digest plan by assigned cluster. Readiness fails closed unless every cluster/image pair proves full-node cache coverage, digest and signature verification, mirror/source attribution, and matching evidence. This is GREEN-local only: no pull ran and authentic integration/live cache-loss recovery remain open."
+      "note": "A versioned offline scheduled-event pre-pull contract creates an immutable, deduplicated exact-digest plan by assigned cluster. Readiness fails closed unless every cluster/image pair supplies full-node cache coverage, digest and signature verification, mirror/source attribution, matching evidence, and a timezone-aware observation inside the planned warm-up window. This is GREEN-local only: receipt timestamps are self-reported; no pull ran and authentic integration/live cache-loss recovery remain open."
     },
     "LP-T096": {
       "state": "green-integration",

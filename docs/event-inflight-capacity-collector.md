@@ -34,10 +34,14 @@ workshop through each seat request and plan into the namespace labels for both
 demo/Showroom and sandbox provisioners. Incomplete event identity fails before
 namespace creation. This is local code proof only: existing live namespaces
 were not relabeled. The Kubernetes observer exists as local code, but no
-approved read-only service-account binding, authoritative model-slot source,
+approved read-only service-account binding, authoritative model-slot producer,
 persisted-workshop adapter, source attestation, or live completeness proof is
-connected. The CLI intentionally has no fixture mode that could accidentally
-mint trusted-looking runtime evidence.
+connected. A local-only file adapter now checks that a supplied model-slot
+observation is complete, target-specific, fresh, and explicitly based on
+promoted model concurrency. It does not establish that its policy reference is
+authentic or that the slot number is certified; it is not wired to admission.
+The CLI intentionally has no fixture mode that could accidentally mint
+trusted-looking runtime evidence.
 
 This evidence alone is not an admission lock. The reservation transaction
 must recheck fresh evidence and active holds atomically before new orders use

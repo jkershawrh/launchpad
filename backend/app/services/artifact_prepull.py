@@ -15,6 +15,16 @@ def _digest(value: Any) -> str:
     return "sha256:" + hashlib.sha256(encoded).hexdigest()
 
 
+def _aware_datetime(value: Any) -> datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    return parsed if parsed.utcoffset() is not None else None
+
+
 def build_event_prepull_plan(
     *,
     event_id: str,
@@ -96,6 +106,10 @@ def evaluate_prepull_receipts(
     }
     by_key: dict[tuple[str, str], dict[str, Any]] = {}
     failures: list[str] = []
+    not_before = _aware_datetime(plan.get("not_before"))
+    complete_by = _aware_datetime(plan.get("complete_by"))
+    if not_before is None or complete_by is None or not_before > complete_by:
+        failures.append("plan pre-pull observation window is invalid")
     for receipt in receipts:
         if receipt.get("schema_version") != (
             "launchpad.redhat.com/event-artifact-prepull-receipt/v1"
@@ -130,6 +144,14 @@ def evaluate_prepull_receipts(
             failures.append(f"image signature is not verified: {label}")
         if not str(receipt.get("mirror_source", "")).strip():
             failures.append(f"mirror/source attribution is missing: {label}")
+        observed_at = _aware_datetime(receipt.get("observed_at"))
+        if (
+            observed_at is None
+            or not_before is None
+            or complete_by is None
+            or not not_before <= observed_at <= complete_by
+        ):
+            failures.append(f"pre-pull observation time is outside the plan window: {label}")
         ready = receipt.get("nodes_ready")
         expected_nodes = receipt.get("nodes_expected")
         if not isinstance(ready, int) or not isinstance(expected_nodes, int) or ready < 1:

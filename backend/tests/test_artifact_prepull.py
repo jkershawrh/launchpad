@@ -64,6 +64,7 @@ def _receipts(plan: dict) -> list[dict]:
             "mirror_source": "quay.io/redhat-gpte",
             "nodes_expected": 2,
             "nodes_ready": 2,
+            "observed_at": "2026-09-30T15:00:00+00:00",
             "evidence": ["evidence/prepull.json"],
         }
         for item in plan["items"]
@@ -126,3 +127,26 @@ def test_missing_incomplete_or_wrong_plan_receipts_fail_closed() -> None:
     assert any("node coverage is incomplete" in item for item in report["failures"])
     assert any("plan_id does not match" in item for item in report["failures"])
     assert sum("receipt is missing" in item for item in report["failures"]) == 2
+
+
+@pytest.mark.parametrize(
+    "observed_at",
+    [
+        None,
+        "2026-09-30T13:29:59+00:00",  # Earlier than the planned warm-up window.
+        "2026-10-01T13:30:01+00:00",  # Too late for the event margin.
+        "2026-09-30T15:00:00",  # A naive timestamp cannot prove the window.
+        "not-a-timestamp",
+    ],
+)
+def test_receipt_without_timely_timezone_aware_observation_fails_closed(
+    observed_at: str | None,
+) -> None:
+    plan = _plan()
+    receipts = _receipts(plan)
+    receipts[0]["observed_at"] = observed_at
+
+    report = evaluate_prepull_receipts(plan, receipts)
+
+    assert report["eligible"] is False
+    assert any("observation time" in failure for failure in report["failures"])
