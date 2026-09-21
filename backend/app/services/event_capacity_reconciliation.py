@@ -69,8 +69,9 @@ def build_capacity_forecast(manifest: RecordedEventManifest) -> CapacityForecast
         participant_count=participants,
         workshop_count=workshops,
         seat_environments=seats,
-        peak_concurrent_participants=max(cohort.participants for cohort in spec.cohorts),
-        # Without explicit end/reuse semantics, retained capacity accumulates.
+        # Without enforceable end/reuse semantics, both participant concurrency
+        # and retained seat demand use their conservative upper bounds.
+        peak_concurrent_participants=participants,
         peak_retained_environments=seats,
         retention_hours=spec.retention.hours,
         provisioning_waves=_available(len(spec.cohorts), "waves"),

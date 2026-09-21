@@ -33,6 +33,11 @@ enforced end or reuse window. The UI labels this as an upper bound, not a
 measured concurrency value. Certified model-serving capacity still needs its
 own runtime and load proof before an event is admitted.
 
+Serial workshop ordering windows have a separate local contract in
+[`event-order-schedule.md`](event-order-schedule.md). Its validator checks
+manifest-bound, complete, non-overlapping windows but is not yet wired into
+the live event lifecycle; it does not authorize seat reuse.
+
 ## Safety boundary
 
 - Exact catalog release matching is mandatory.

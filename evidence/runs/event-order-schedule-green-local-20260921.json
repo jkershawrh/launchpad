@@ -1,0 +1,30 @@
+{
+  "evidence_id": "event-order-schedule-green-local-20260921",
+  "generated_at": "2026-09-21T13:08:51Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T021"],
+  "red": [
+    "Offline capacity forecast reported 30 instead of the safe 90-person concurrency bound for three unscheduled 30-person cohorts.",
+    "Schedule tests could not collect because the event-order-schedule evaluator did not exist.",
+    "The first evaluator accepted a manifest whose approved seat count was 90 while its demand was 270."
+  ],
+  "green": {
+    "focused_tests": "14 passed",
+    "backend_regression": "2131 passed, 27 skipped, 13 deselected",
+    "lint": "ruff passed",
+    "contract": "contracts/event-order-schedule-v1.yaml",
+    "cli": "scripts/validate_event_order_schedule.py"
+  },
+  "enforced_local_contract": [
+    "Schedule is bound to full canonical event manifest digest and exact event ID.",
+    "One positive timezone-aware ordering window exists for each cohort/lab workshop, with no omissions or duplicates.",
+    "Serial windows do not overlap and each ends before its cohort begins.",
+    "Both distinct manifest approvers are named and approval precedes ordering.",
+    "Approved seat-environment and retention values match event demand."
+  ],
+  "boundary": [
+    "The approver names are declared data, not authenticated human signatures.",
+    "The live event API and reservation worker do not yet consume this schedule.",
+    "No capacity reuse, order dispatch, cluster change, or retained-workshop mutation occurred."
+  ]
+}

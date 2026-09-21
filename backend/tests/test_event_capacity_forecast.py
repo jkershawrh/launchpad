@@ -23,7 +23,7 @@ def test_forecast_joins_cohorts_labs_retention_and_exact_catalog_releases():
     assert forecast.participant_count == 90
     assert forecast.workshop_count == 9
     assert forecast.seat_environments == 270
-    assert forecast.peak_concurrent_participants == 30
+    assert forecast.peak_concurrent_participants == 90
     assert forecast.peak_retained_environments == 270
     assert forecast.retention_hours == 168
     assert {item.catalog_id for item in forecast.catalogs} == {
