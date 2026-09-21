@@ -445,7 +445,11 @@ one compatible candidate that earns each release stage through evidence.**
   pivots without rewriting completed evidence or the active candidate.
 - `LP-T118` Fail CI on ownership conflicts, unknown or cyclic dependencies,
   illegal live-mutation authority, missing evidence, or unsupported green
-  claims.
+  claims. **GREEN-local (CI receipt integrity slice):** the backend unit-test
+  receipt now reads the exact run's JUnit XML and step outcome instead of
+  rerunning a different suite and hard-coding zero failures. Missing, failed,
+  invalid, and all-skipped evidence cannot produce a green receipt. Remote CI
+  execution remains unverified.
 - `LP-T119` Promote one unchanged signed candidate through local, integration,
   canary, staging, limited-production, and production gates with human
   acceptance and tested rollback.

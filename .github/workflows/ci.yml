@@ -56,7 +56,7 @@ jobs:
           ruff check app/ tests/ --select E9,F63,F7,F82
           ruff check app/services/catalog_supply_chain.py tests/test_catalog_supply_chain.py tests/test_artifact_registry_policy.py
           cd ..
-          ruff check scripts/validate_artifact_registry.py scripts/validate_security_threat_model.py scripts/validate_audit_integrity_retention.py scripts/validate_delivery_governance.py scripts/tests/test_validate_security_threat_model.py scripts/tests/test_validate_audit_integrity_retention.py scripts/tests/test_validate_delivery_governance.py
+          ruff check scripts/validate_artifact_registry.py scripts/validate_security_threat_model.py scripts/validate_audit_integrity_retention.py scripts/validate_delivery_governance.py scripts/write_ci_test_receipt.py scripts/tests/test_validate_security_threat_model.py scripts/tests/test_validate_audit_integrity_retention.py scripts/tests/test_validate_delivery_governance.py scripts/tests/test_write_ci_test_receipt.py
 
       - name: Validate product roadmap dashboard
         run: |
@@ -64,6 +64,7 @@ jobs:
           python -m pytest scripts/tests/test_validate_delivery_governance.py -q
           python -m pytest scripts/tests/test_validate_security_threat_model.py -q
           python -m pytest scripts/tests/test_validate_audit_integrity_retention.py -q
+          python -m pytest scripts/tests/test_write_ci_test_receipt.py -q
           python scripts/validate_delivery_governance.py \
             --output "${{ runner.temp }}/delivery-governance.json"
           python scripts/validate_security_threat_model.py \
@@ -73,6 +74,7 @@ jobs:
           python scripts/generate_product_roadmap_dashboard.py --check
 
       - name: Unit tests
+        id: unit_tests
         env:
           PYTHONPATH: backend
         run: >
@@ -82,32 +84,20 @@ jobs:
           --ignore=backend/tests/test_demo_migration.py
           -k "not (test_system_status or test_container_list or test_container_logs or test_container_restart or test_diagnostics_returns_health or test_api_system_status)"
           --tb=short
+          --junitxml="${{ runner.temp }}/backend-unit-tests.xml"
 
       - name: Save test receipt
         if: always()
         env:
-          RECEIPT_DIR: ${{ runner.temp }}/launchpad-receipts
+          UNIT_TEST_STEP_OUTCOME: ${{ steps.unit_tests.outcome }}
         run: |
-          cd backend
-          mkdir -p "$RECEIPT_DIR"
-          TOTAL=$(python -m pytest tests/ -q --ignore=tests/test_local_provisioning.py --ignore=tests/test_sandbox.py --tb=no 2>&1 | tail -1 | grep -o "[0-9]* passed" | grep -o "[0-9]*" || echo "0")
-          python3 -c "
-          import json, os, uuid, subprocess
-          from datetime import datetime
-          commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], text=True).strip()
-          receipt = {
-              'test_run_id': str(uuid.uuid4()),
-              'timestamp': datetime.utcnow().isoformat() + 'Z',
-              'environment': 'ci',
-              'launchpad_commit': commit,
-              'summary': {'total': $TOTAL, 'passed': $TOTAL, 'failed': 0},
-              'trigger': '${{ github.event_name }}',
-              'branch': '${{ github.ref_name }}',
-          }
-          with open(os.path.join(os.environ['RECEIPT_DIR'], 'ci-latest.json'), 'w') as f:
-              json.dump(receipt, f, indent=2)
-          print(f'Receipt: {$TOTAL} tests, commit {commit}')
-          "
+          python scripts/write_ci_test_receipt.py \
+            --junit "${{ runner.temp }}/backend-unit-tests.xml" \
+            --output "${{ runner.temp }}/launchpad-receipts/ci-latest.json" \
+            --step-outcome "$UNIT_TEST_STEP_OUTCOME" \
+            --commit "$GITHUB_SHA" \
+            --trigger "$GITHUB_EVENT_NAME" \
+            --branch "$GITHUB_REF_NAME"
 
       - name: Upload receipt
         if: always()

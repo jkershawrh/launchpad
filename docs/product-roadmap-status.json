@@ -388,9 +388,10 @@
         "Makefile",
         "scripts/validate_delivery_governance.py",
         "scripts/tests/test_validate_delivery_governance.py",
-        "evidence/runs/delivery-governance/green-local.xml"
+        "evidence/runs/delivery-governance/green-local.xml",
+        "evidence/runs/catalog-intake-ci-receipt/green-local-20260921.json"
       ],
-      "note": "The local fail-closed governance gate and CI step are defined. Every registered contract now requires a focused producer-consumer convergence scenario; the omnibus release scenario alone cannot satisfy it. Remote CI execution and deployed integration proof are required before GREEN-integration."
+      "note": "The local fail-closed governance gate and CI step are defined. Every registered contract requires a focused producer-consumer convergence scenario; the omnibus release scenario alone cannot satisfy it. The backend CI test receipt now uses the exact test run's JUnit XML and outcome, failing closed for missing, failed, invalid, or all-skipped evidence instead of rerunning a different suite and hard-coding zero failures. Remote CI execution and deployed integration proof are required before GREEN-integration."
     },
     "LP-T120": {
       "state": "green-local",

@@ -1,0 +1,33 @@
+{
+  "evidence_id": "LP-T118-CI-RECEIPT-20260921",
+  "scope": "Local CI receipt contract only; no catalog activation, worker dispatch, or live lab mutation",
+  "finding": "The prior CI receipt reran a different pytest command and hard-coded failed=0, so it could claim a pass after a failed run.",
+  "red": {
+    "command": ".venv/bin/pytest -q scripts/tests/test_write_ci_test_receipt.py --tb=short",
+    "result": "5 failed",
+    "reason": "Receipt writer and exact-run JUnit wiring did not exist"
+  },
+  "green": {
+    "command": ".venv/bin/pytest -q scripts/tests/test_write_ci_test_receipt.py --tb=short",
+    "result": "7 passed",
+    "additional_checks": [
+      "Ruff passed for receipt writer and tests",
+      "CI workflow YAML parsed successfully",
+      "The exact backend CI command produced JUnit XML: 2026 passed, 27 skipped, 10 deselected; the receipt reported 2053 total, 2026 passed, 27 skipped, 0 failed"
+    ]
+  },
+  "contract": {
+    "source": "JUnit XML from the same backend Unit tests CI step",
+    "status_values": ["passed", "failed", "missing-evidence"],
+    "fails_closed_on": [
+      "failed or cancelled test step",
+      "missing or invalid JUnit XML",
+      "zero or all-skipped tests",
+      "JUnit failures or collection errors"
+    ]
+  },
+  "limitations": [
+    "Remote GitHub Actions execution has not been observed",
+    "This receipt is not an intake promotion or live certification receipt"
+  ]
+}
