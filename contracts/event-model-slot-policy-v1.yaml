@@ -1,0 +1,53 @@
+openapi: 3.1.0
+info:
+  title: Launchpad local model-slot policy evidence boundary
+  version: 1.0.0
+  description: >-
+    Contract for local verification only. A policy digest pinned independently
+    of both files is the trust anchor; approver names in a self-supplied file
+    do not independently certify capacity. This contract is not wired to live
+    event admission or a runtime model-capacity producer.
+paths: {}
+components:
+  schemas:
+    PromotedModelConcurrencyPolicy:
+      type: object
+      additionalProperties: false
+      required: [schema_version, policy_id, cluster_id, model_id, model_release, max_concurrent_requests, promotion_state, approved_at, approvers]
+      properties:
+        schema_version: {const: '1.0'}
+        policy_id: {type: string, minLength: 1}
+        cluster_id: {type: string, minLength: 1}
+        model_id: {type: string, minLength: 1}
+        model_release: {type: string, minLength: 1}
+        max_concurrent_requests: {type: integer, minimum: 0}
+        promotion_state: {const: promoted}
+        approved_at: {type: string, format: date-time}
+        approvers:
+          type: array
+          minItems: 2
+          maxItems: 2
+          uniqueItems: true
+          items: {type: string, minLength: 1}
+    ModelSlotObservation:
+      type: object
+      additionalProperties: false
+      required: [schema_version, cluster_id, observed_at, basis, capacity_policy_ref, capacity_policy_digest, model_id, model_release, allocatable_slots, complete]
+      properties:
+        schema_version: {const: '1.1'}
+        cluster_id: {type: string, minLength: 1}
+        observed_at: {type: string, format: date-time}
+        basis: {const: promoted-model-concurrency}
+        capacity_policy_ref: {type: string, minLength: 1}
+        capacity_policy_digest:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
+        model_id: {type: string, minLength: 1}
+        model_release: {type: string, minLength: 1}
+        allocatable_slots: {type: integer, minimum: 0}
+        complete: {const: true}
+x-trust-boundary:
+  trusted_digest_source: independently reviewed release configuration, not either evidence file
+  required_equality: [cluster_id, model_id, model_release, capacity_policy_ref, capacity_policy_digest]
+  capacity_constraint: observation.allocatable_slots <= policy.max_concurrent_requests
+  on_failure: reject observation; never infer slots from ready replicas or model health

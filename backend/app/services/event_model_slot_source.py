@@ -17,6 +17,7 @@ from typing import Any
 from app.domain.clusters import ClusterTarget
 from app.services.event_inflight_capacity_collector import InflightCollectionBlocked
 from app.services.event_kubernetes_inventory_observer import ModelSlotObservation
+from app.services.event_model_slot_policy import PinnedModelConcurrencyPolicy
 
 _FIELDS = {
     "schema_version",
@@ -24,6 +25,9 @@ _FIELDS = {
     "observed_at",
     "basis",
     "capacity_policy_ref",
+    "capacity_policy_digest",
+    "model_id",
+    "model_release",
     "allocatable_slots",
     "complete",
 }
@@ -50,9 +54,13 @@ class FileModelSlotSource:
         self,
         path: str | Path,
         *,
+        policy_authority: PinnedModelConcurrencyPolicy,
         clock: Callable[[], datetime] = lambda: datetime.now(UTC),
     ) -> None:
+        if not isinstance(policy_authority, PinnedModelConcurrencyPolicy):
+            raise TypeError("policy_authority must be a pinned promoted policy")
         self.path = Path(path)
+        self.policy_authority = policy_authority
         self.clock = clock
 
     def observe_model_slots(self, target: ClusterTarget) -> ModelSlotObservation:
@@ -64,7 +72,7 @@ class FileModelSlotSource:
             document = json.loads(self.path.read_bytes(), object_pairs_hook=_unique_pairs)
             if type(document) is not dict or set(document) != _FIELDS:
                 raise ValueError("model slot evidence shape is incomplete")
-            if document["schema_version"] != "1.0":
+            if document["schema_version"] != "1.1":
                 raise ValueError("model slot evidence schema is unsupported")
             if (
                 document["cluster_id"] != target.cluster_id
@@ -73,11 +81,22 @@ class FileModelSlotSource:
                 raise ValueError("model slot evidence target mismatch")
             if document["basis"] != "promoted-model-concurrency":
                 raise ValueError("model slot evidence basis is untrusted")
-            policy = document["capacity_policy_ref"]
-            if type(policy) is not str or not policy or policy.strip() != policy:
-                raise ValueError("model slot capacity policy reference is missing")
+            policy = self.policy_authority.load()
+            if (
+                document["capacity_policy_ref"] != policy.policy_id
+                or document["capacity_policy_digest"] != policy.digest
+                or document["model_id"] != policy.model_id
+                or document["model_release"] != policy.model_release
+                or target.cluster_id != policy.cluster_id
+            ):
+                raise ValueError("model slot evidence does not match promoted policy")
             slots = document["allocatable_slots"]
-            if type(slots) is not int or slots < 0 or document["complete"] is not True:
+            if (
+                type(slots) is not int
+                or slots < 0
+                or slots > policy.max_concurrent_requests
+                or document["complete"] is not True
+            ):
                 raise ValueError("model slot accounting is incomplete")
             raw_time = document["observed_at"]
             if type(raw_time) is not str:
@@ -86,6 +105,8 @@ class FileModelSlotSource:
             now = self.clock()
             if observed_at.tzinfo is None or not isinstance(now, datetime) or now.tzinfo is None:
                 raise ValueError("model slot observation time requires timezone")
+            if observed_at < policy.approved_at:
+                raise ValueError("model slot observation predates policy promotion")
             if not -30 <= (now - observed_at).total_seconds() <= 120:
                 raise ValueError("model slot evidence is stale or future-dated")
             return ModelSlotObservation(

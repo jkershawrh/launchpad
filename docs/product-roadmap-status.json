@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T10:25:46Z",
+  "updated_at": "2026-09-21T10:33:06Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -187,6 +187,9 @@
         "backend/tests/test_event_kubernetes_inventory_observer.py",
         "backend/app/services/event_model_slot_source.py",
         "backend/tests/test_event_model_slot_source.py",
+        "backend/app/services/event_model_slot_policy.py",
+        "contracts/event-model-slot-policy-v1.yaml",
+        "docs/event-model-slot-policy-boundary.md",
         "backend/app/services/event_persisted_seat_evidence.py",
         "backend/tests/test_event_persisted_seat_evidence.py",
         "scripts/collect_event_inflight_capacity.py",
@@ -213,9 +216,12 @@
         "backend/tests/test_reclaim_readiness.py",
         "backend/app/services/reclaim_inventory_collector.py",
         "backend/tests/test_reclaim_inventory_collector.py",
-        "docs/reclaim-inventory-collector-local.md"
+        "docs/reclaim-inventory-collector-local.md",
+        "backend/app/services/reclaim_paginated_source.py",
+        "backend/tests/test_reclaim_paginated_source.py",
+        "docs/reclaim-paginated-source-contract.md"
       ],
-      "note": "The September 17 session records and namespaces were reconciled read-only across the active fleet. A local-only injected-provider collector now scans every registered cluster and checks supplied workshop, session, namespace, and reservation balance. It has no live provider, cannot establish authoritative completeness from self-reported flags, and does not authorize reclaim. Tuesday's fresh T-30 inventory remains open."
+      "note": "The September 17 session records and namespaces were reconciled read-only across the active fleet. Local-only collector and paginated-source adapters now check supplied workshop, session, namespace, and reservation balance across every registered cluster, with pinned source identity, revision, cursor, count, and freshness checks. No live provider is connected; self-reported counts cannot establish authoritative completeness or authorize reclaim. Tuesday's fresh T-30 inventory remains open."
     },
     "LP-T070": {
       "state": "green-local",
@@ -821,9 +827,13 @@
         "backend/app/services/artifact_prepull_attestation.py",
         "backend/tests/test_artifact_prepull_attestation.py",
         "contracts/event-artifact-prepull-attestation-v1.yaml",
-        "docs/event-artifact-prepull-attestation.md"
+        "docs/event-artifact-prepull-attestation.md",
+        "backend/app/services/artifact_prepull_evidence.py",
+        "backend/tests/test_artifact_prepull_evidence.py",
+        "contracts/event-artifact-prepull-evidence-v1.yaml",
+        "docs/event-artifact-prepull-evidence.md"
       ],
-      "note": "A versioned offline scheduled-event pre-pull contract creates an immutable, deduplicated exact-digest plan by assigned cluster. A local attestation adapter now verifies a designated producer MAC, per-node claims against a separately supplied eligible-node roster, and observation timing. A MAC proves key possession, not a real pull or verified evidence artifact. This remains GREEN-local only: no pull ran, no live producer or admission wiring exists, and authentic integration/live cache-loss recovery remain open."
+      "note": "A versioned offline scheduled-event pre-pull contract creates an immutable, deduplicated exact-digest plan by assigned cluster. Local adapters verify a designated producer MAC, bounded per-node proof bytes and hashes, claim identity, separately supplied node-roster source and freshness, and observation timing. The producer and roster are not independently deployed or authenticated here, and proof bytes can still contain false claims. This remains GREEN-local only: no pull ran, no live producer or admission wiring exists, and authentic integration/live cache-loss recovery remain open."
     },
     "LP-T096": {
       "state": "green-integration",
