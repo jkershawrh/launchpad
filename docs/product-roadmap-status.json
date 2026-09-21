@@ -181,6 +181,8 @@
         "contracts/event-eligible-node-source-v1.yaml",
         "backend/app/services/event_inflight_capacity_collector.py",
         "backend/tests/test_event_inflight_capacity_collector.py",
+        "backend/app/domain/event_namespace_identity.py",
+        "backend/tests/test_event_namespace_identity.py",
         "scripts/collect_event_inflight_capacity.py",
         "docs/event-inflight-capacity-collector.md",
         "backend/tests/test_event_reservation_guard.py",

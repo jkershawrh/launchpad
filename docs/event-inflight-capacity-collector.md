@@ -15,16 +15,21 @@ must come from an explicit, complete source; zero cannot mean “unknown.” The
 collector refuses missing, duplicate, stale, or cross-cluster inventory and
 never emits `accounting_complete: true` for a partial scan. Snapshot writing
 is atomic, private (`0600`), and validated by the production file provider.
-Any namespace carrying a Launchpad workshop ID without a matching active
-reservation is treated as ambiguous ownership, not as an external workload;
-the whole collection is blocked without replacing the previous snapshot.
+An ordinary workshop namespace may carry workshop and seat IDs without an
+event reservation ID. Its pods count as external physical usage, not as
+consumption of an event reservation. A namespace matching a currently
+consumed event workshop must carry the exact reservation/workshop/seat triplet;
+partial or mismatched event identity blocks collection without replacing the
+previous snapshot.
 
-Current blocker: the existing workshop namespace labels include workshop ID,
-but do not consistently carry event reservation ID and seat ID. A future
-persisted-workshop adapter must provide the exact seat IDs and the provisioning
-path must label each seat namespace with all three IDs before a live collector
-can safely publish evidence. The CLI intentionally has no fixture mode that
-could accidentally mint trusted-looking runtime evidence.
+Future event orders now propagate the reservation ID from the persisted
+workshop through each seat request and plan into the namespace labels for both
+demo/Showroom and sandbox provisioners. Incomplete event identity fails before
+namespace creation. This is local code proof only: existing live namespaces
+were not relabeled, and the read-only cluster observer and persisted-workshop
+adapter are still required before a live collector can publish evidence. The
+CLI intentionally has no fixture mode that could accidentally mint
+trusted-looking runtime evidence.
 
 This evidence alone is not an admission lock. The reservation transaction
 must recheck fresh evidence and active holds atomically before new orders use
