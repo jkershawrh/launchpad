@@ -183,6 +183,8 @@
         "backend/tests/test_event_inflight_capacity_collector.py",
         "backend/app/domain/event_namespace_identity.py",
         "backend/tests/test_event_namespace_identity.py",
+        "backend/app/services/event_kubernetes_inventory_observer.py",
+        "backend/tests/test_event_kubernetes_inventory_observer.py",
         "scripts/collect_event_inflight_capacity.py",
         "docs/event-inflight-capacity-collector.md",
         "backend/tests/test_event_reservation_guard.py",

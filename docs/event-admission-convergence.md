@@ -47,8 +47,10 @@ public route was changed.
 - The in-flight collector can publish a strict private snapshot only from a
   complete inventory and exact reservation/workshop/seat identities. The
   current platform does not consistently label live seat namespaces with all
-  of those IDs, and no trusted cluster observer is shipped. Its CLI therefore
-  exits without writing a snapshot. Future labeling changes must apply to new
-  workshops only until existing workshops are reclaimed normally.
+  of those IDs. A local read-only Kubernetes observer now handles complete
+  paginated inventory and effective pod requests, but its model-slot source,
+  scoped service account, persisted-workshop adapter, attestation, and live
+  proof are absent. The CLI therefore exits without writing a snapshot. New
+  labels apply to future orders only; existing workshops remain untouched.
 - The guard seam is optional and has no effect on current orders. It is not
   yet supplied by the API because these producer and identity proofs are open.

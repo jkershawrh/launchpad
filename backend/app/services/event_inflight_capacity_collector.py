@@ -1,9 +1,9 @@
 """Local-only boundary for *complete* physical capacity accounting evidence.
 
-No Kubernetes adapter is included. A future read-only adapter must list all
-namespaces and pods, node allocatable, and model slots from the selected
-server-owned target, then attest each inventory dimension. A partial scan is
-never serialized as an admission-ready snapshot.
+A separate local Kubernetes adapter can list namespaces, pods, and node
+allocatable from the selected target. An authoritative model-slot source,
+persisted-seat adapter, scoped credentials, and live completeness proof are
+still required. A partial scan is never serialized as admission-ready evidence.
 """
 
 from __future__ import annotations
