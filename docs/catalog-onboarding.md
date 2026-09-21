@@ -426,11 +426,13 @@ optional Track 3 runtime integrations remain fail-closed. See
 `hybrid-fraud-detection` is the first genuinely new Quickstart corrected and
 re-evaluated through the generic intake path. The candidate is pinned to the
 source branch `codex/launchpad-intake` in `jkershawrh/hybrid-fraud-detection`
-at `f80683fbf708062d26dc32500671b6029e18c669`. It now provides a real Antora
+at `aa5c4e1c686bbecd70b17f4c4e27d26f033966e4`. It now provides a real Antora
 Showroom journey, a participant UI and Route in the Helm chart, Launchpad-shaped
 validation and benchmark artifacts, pinned Showroom tooling, and source-owned
 RED/GREEN evidence. The source suite (55 tests), lint, Helm render, container
 build, Antora build, local scorer/UI smoke, and secret scan passed.
+The branch's GitHub workflow also passed all eight contract, publication,
+Showroom, Helm, container, compose, lint, and staged-test jobs.
 
 Credential-free discovery from a temporary immutable checkout also passed,
 generated a deterministic review contract and catalog preview, and built the

@@ -26,7 +26,7 @@ supported_branding:
 metadata:
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  showroom_content_ref: f80683fbf708062d26dc32500671b6029e18c669
+  showroom_content_ref: aa5c4e1c686bbecd70b17f4c4e27d26f033966e4
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -70,7 +70,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  workload_revision: f80683fbf708062d26dc32500671b6029e18c669
+  workload_revision: aa5c4e1c686bbecd70b17f4c4e27d26f033966e4
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -86,7 +86,7 @@ metadata:
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  source_content_revision: f80683fbf708062d26dc32500671b6029e18c669
+  source_content_revision: aa5c4e1c686bbecd70b17f4c4e27d26f033966e4
   source_references: {}
   intake_quality:
     artifacts:

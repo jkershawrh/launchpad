@@ -364,9 +364,10 @@ repository and receive a safe, reviewable, certified catalog draft.**
   source branch to provide a buildable Antora Showroom, participant UI, valid
   quality artifacts, Helm render, container build, local functional smoke, and
   source-owned RED/GREEN evidence. Re-discovery at immutable revision
-  `f80683fbf708062d26dc32500671b6029e18c669` now has no blocking authoring
-  findings, while the draft remains fail-closed for image, measured capacity,
-  runtime integration, and live certification. The default dispatcher remains
+  `aa5c4e1c686bbecd70b17f4c4e27d26f033966e4` now has no blocking authoring
+  findings and all eight GitHub workflow jobs pass, while the draft remains
+  fail-closed for image, measured capacity, runtime integration, and live
+  certification. The default dispatcher remains
   disabled; signed external image publication, deployed receipt collection,
   default-branch promotion, and remaining live fault proof are open.
 - `LP-T098` Generate the catalog record, deployment package, functional

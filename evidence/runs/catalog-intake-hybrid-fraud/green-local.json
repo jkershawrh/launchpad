@@ -11,7 +11,7 @@
   "launchpad_revision": "c3a2c062ac20ea9b7008e753e344cba1eccad3ea",
   "source": {
     "repository_url": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
-    "revision": "f80683fbf708062d26dc32500671b6029e18c669",
+    "revision": "aa5c4e1c686bbecd70b17f4c4e27d26f033966e4",
     "implementation_revision": "93568a3f92421657621b8dc736bc96d9d1e784c9",
     "branch": "codex/launchpad-intake",
     "catalog_item_id": "hybrid-fraud-detection",
@@ -35,6 +35,21 @@
     "container_build": "pass",
     "local_scorer_and_ui_smoke": "pass",
     "secret_scan": "pass",
+    "remote_branch_ci": {
+      "result": "pass",
+      "run_id": 35562018928,
+      "url": "https://github.com/jkershawrh/hybrid-fraud-detection/actions/runs/35562018928",
+      "jobs": [
+        "contracts",
+        "publication",
+        "showroom-build",
+        "helm-lint",
+        "container-build",
+        "compose-config",
+        "lint",
+        "unit-integration-benchmarks"
+      ]
+    },
     "catalog_drift": "pass",
     "deterministic_draft": "pass",
     "focused_regression_tests": {
@@ -46,19 +61,19 @@
   "artifacts": {
     "onboarding_contract": {
       "path": "catalog-onboarding/hybrid-fraud-detection.yaml",
-      "sha256": "cee02cb91cbf7e4290a56d881626919f526b943b159f8d55dc85c4c4440102ce"
+      "sha256": "b1f6b134ae30aec9bb0b6779d8673dc245cbdc6f8b14f3dae0db6afeff51e367"
     },
     "catalog_draft": {
       "path": "catalog/hybrid-fraud-detection/catalog-item.yaml",
-      "sha256": "4a2749a48cc1130a145e17483860a3de3d8e7ff3c7e5e6a723c8a97fa1d5d105"
+      "sha256": "999eb8bb9a27f3710844edca545e0e59a3eef87b6cfd27911f5297eba69750a2"
     },
     "discovery_receipt": {
       "retained_in_git": false,
-      "sha256": "3fc5154ae0ff747e3d9a75b6b46072a8db9bd7a65b8e20de43dabe5301836947"
+      "sha256": "d99a7a0169d06152bc54da555fd5c2759df3480e64cb2a07091341803f817d37"
     },
     "validation_receipt": {
       "retained_in_git": false,
-      "sha256": "1b8770017fc11c15ca8ffdd4d1bbc877f3299e781e78c54e60e16b0b490e3d59"
+      "sha256": "fb43b4af311026e8c7a8ab5fb0bd78b160f7482b49a68fa109baa5346a53cea3"
     },
     "source_authoring_evidence": {
       "path": "evidence/runs/launchpad-intake-authoring/green-local.json",
