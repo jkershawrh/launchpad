@@ -37,6 +37,27 @@ RECEIPT_FIELDS = {
 }
 
 
+class _UniqueKeyLoader(yaml.SafeLoader):
+    """Reject ambiguous rendered mappings before security inventory runs."""
+
+    def construct_mapping(self, node: yaml.MappingNode, deep: bool = False) -> dict:
+        seen: set[Any] = set()
+        for key_node, _ in node.value:
+            key = self.construct_object(key_node, deep=True)
+            try:
+                duplicate = key in seen
+                seen.add(key)
+            except TypeError as exc:
+                raise yaml.constructor.ConstructorError(
+                    None, None, "unhashable mapping key", key_node.start_mark
+                ) from exc
+            if duplicate:
+                raise yaml.constructor.ConstructorError(
+                    None, None, "duplicate mapping key", key_node.start_mark
+                )
+        return super().construct_mapping(node, deep=deep)
+
+
 def _structure_issue(value: Any) -> str | None:
     """Bound YAML alias expansion before recursive manifest inspection."""
 
@@ -74,7 +95,7 @@ def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
     if b"{{" in output or b"${" in output:
         findings.add("template-unresolved")
     try:
-        documents = list(yaml.safe_load_all(output.decode("utf-8")))
+        documents = list(yaml.load_all(output.decode("utf-8"), Loader=_UniqueKeyLoader))
     except (UnicodeDecodeError, yaml.YAMLError, RecursionError):
         return sorted(findings | {"render-output-unparseable"}), 0, 0
     if not documents or len(documents) > MAX_RESOURCES:

@@ -176,6 +176,25 @@ def test_render_review_rejects_malformed_network_spec() -> None:
 
 
 @pytest.mark.parametrize(
+    "rendered",
+    [
+        b"apiVersion: v1\nkind: Secret\nkind: ConfigMap\nmetadata: {name: hidden}\n",
+        (
+            b"apiVersion: apps/v1\nkind: Deployment\nmetadata: {name: hidden}\n"
+            b"spec:\n  template:\n    spec:\n      hostNetwork: true\n"
+            b"      hostNetwork: false\n"
+        ),
+    ],
+)
+def test_render_review_rejects_duplicate_yaml_keys(rendered: bytes) -> None:
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert report["status"] == "blocked"
+    assert "render-output-unparseable" in report["findings"]
+    assert report["release_eligible"] is False
+
+
+@pytest.mark.parametrize(
     "kind,spec",
     [
         ("Service", "type: NodePort"),
