@@ -1,0 +1,31 @@
+# Server-side producer contract. This is not a requester-supplied API body.
+schema_version: "1.0"
+kind: event-inflight-capacity
+required:
+  - schema_version
+  - observed_at
+  - clusters
+cluster_row_required:
+  - cluster_id
+  - allocatable
+  - accounting_complete
+  - workloads
+workload_row_required:
+  - namespace
+  - resources
+optional_workload_ownership:
+  - reservation_id
+  - workshop_id
+  - seat_refs
+resource_dimensions:
+  - cpu_millicores
+  - memory_mib
+  - pods
+  - model_slots
+semantics:
+  freshness_seconds: 120
+  future_skew_seconds: 30
+  accounting_complete: "All current workload requests in the cluster are represented, including unowned namespaces."
+  ownership: "A reservation-owned workload identifies its persisted reservation, workshop, namespace, and observed seats."
+  free_capacity: "Allocatable minus all observed workload requests minus the unobserved remainder of active reservations."
+  admission: "This physical headroom gate supplements, but never replaces, certified capacity and atomic reservation checks."

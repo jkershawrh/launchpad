@@ -1,0 +1,50 @@
+schema_version: launchpad.redhat.com/event-artifact-health/v1
+purpose: >-
+  Admission-time cold-pull readiness evidence for immutable catalog releases.
+  This is distinct from publication, registry reachability, and an offline
+  pre-pull plan or receipt. No producer or admission API is wired by this contract.
+trust_boundary:
+  requirement_source: >-
+    Server-trusted catalog release manifest supplies exact immutable image refs;
+    current cluster placement evidence supplies exact eligible node IDs.
+    Neither set may be accepted from the runtime snapshot or requester.
+  snapshot_source: Server-trusted collector; snapshot_id must be content-verified by its provider.
+  note: A self-reported snapshot without trusted collection is not live certification.
+requirement:
+  key: [cluster_id, catalog_id, catalog_release]
+  required_fields:
+    - image_refs
+    - expected_node_ids
+    - minimum_cold_samples
+    - maximum_cold_pull_p95_seconds
+  image_refs: Immutable registry image references pinned by sha256 digest; nonempty.
+  expected_node_ids: Eligible node set from trusted current placement; nonempty.
+snapshot:
+  required_fields: [snapshot_id, observed_at, releases]
+  max_age_seconds: 300
+  max_future_skew_seconds: 30
+  release_key: [cluster_id, catalog_id, catalog_release]
+  release_fields: [registry_reachable, pulls]
+  pull_key: [image_ref, node_id]
+  pull_fields:
+    - cold_cache_verified
+    - cold_samples
+    - failures
+    - cold_pull_p95_seconds
+    - digest_verified
+    - signature_verified
+policy:
+  status: [ready, blocked]
+  ready_if: >-
+    Snapshot is fresh, exact release exists, registry is reachable, and every
+    expected image on every expected node has verified cold-cache proof,
+    sufficient cold samples, zero failures, p95 at or below the configured
+    threshold, verified digest, and verified signature.
+  blocked_if: >-
+    Trusted requirements are absent, snapshot is absent/stale/future-dated,
+    or any release, image, node, or proof field fails the policy.
+certification_assumptions:
+  - Default minimum of three cold samples per image and node is provisional.
+  - Default p95 cold-pull ceiling of 180 seconds is provisional.
+  - The producer must measure actual cold pulls rather than cached warm starts.
+  - New or replaced eligible nodes invalidate readiness until proved.

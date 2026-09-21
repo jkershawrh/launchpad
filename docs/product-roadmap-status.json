@@ -147,13 +147,27 @@
         "backend/app/services/event_model_health.py",
         "backend/tests/test_event_model_health.py",
         "contracts/event-model-health-v1.yaml",
+        "backend/app/services/event_model_health_collector.py",
+        "backend/app/domain/event_artifact_health.py",
+        "backend/app/services/event_artifact_health.py",
+        "backend/app/domain/event_inflight_capacity.py",
+        "backend/app/services/event_inflight_capacity.py",
+        "backend/tests/test_event_model_health_collector.py",
+        "backend/tests/test_event_artifact_health.py",
+        "backend/tests/test_event_inflight_capacity.py",
+        "contracts/event-artifact-health-v1.yaml",
+        "contracts/event-inflight-capacity-v1.yaml",
+        "docs/event-model-health-collector.md",
+        "docs/event-admission-parallel-gates.md",
+        "evidence/runs/event-admission-parallel/red-local.json",
+        "evidence/runs/event-admission-parallel/backend-green-local.xml",
         "backend/tests/test_event_admission_forecast.py",
         "contracts/event-admission-forecast-v1.yaml",
         "admin/src/pages/Events.test.tsx",
         "admin/src/pages/Events.tsx",
         "fixtures/events/september-17-2026.yaml"
       ],
-      "note": "The v1.5 event contract uses a server-owned catalog-by-cluster certification matrix and records both its immutable ID and SHA-256 source digest in every preview and persisted decision. The file provider accepts only versioned evidence with two distinct approvers, a timezone-aware approval timestamp, and unique evidence references; absent configuration yields unconfigured zero capacity, while an explicitly configured missing or invalid document returns 503. The manifest explicitly versions the current single_cluster_per_workshop policy. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact releases, named model IDs, capabilities, exposure, catalog-cell ceilings, and cluster ceilings. A catalog's model requirement cannot be omitted from the approved event, and an exact model missing from the selected cluster blocks preview and reservation. Disabled, DR-reserved, and uncertified capacity remain non-placeable. The admin-only read-only Events surface includes a multidimensional admission forecast comparing approved demand with active holds; it blocks evidence drift, stale fleet snapshots, expired holds, missing releases/capabilities, and overcommit without creating reservations. Model-dependent reservations now also require a separate fresh server-owned runtime model snapshot for every allocated cluster/model, including ready replicas, exposed route, and successful inference probe; the forecast reports this gate. Missing evidence fails closed. The collector and GREEN-live proof are not yet deployed. Artifact cold-pull and measured in-flight resource use remain separate gates. Local RED/GREEN evidence exists. Transactional reservation approval UI, integration proof, and live proof remain open."
+      "note": "The v1.5 event contract uses a server-owned catalog-by-cluster certification matrix and records both its immutable ID and SHA-256 source digest in every preview and persisted decision. The file provider accepts only versioned evidence with two distinct approvers, a timezone-aware approval timestamp, and unique evidence references; absent configuration yields unconfigured zero capacity, while an explicitly configured missing or invalid document returns 503. The manifest explicitly versions the current single_cluster_per_workshop policy. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact releases, named model IDs, capabilities, exposure, catalog-cell ceilings, and cluster ceilings. A catalog's model requirement cannot be omitted from the approved event, and an exact model missing from the selected cluster blocks preview and reservation. Disabled, DR-reserved, and uncertified capacity remain non-placeable. The admin-only read-only Events surface includes a multidimensional admission forecast comparing approved demand with active holds; it blocks evidence drift, stale fleet snapshots, expired holds, missing releases/capabilities, and overcommit without creating reservations. Model-dependent reservations also require a separate fresh server-owned runtime model snapshot. Three parallel local component streams now provide an opt-in exact-model probe collector, an artifact cold-pull assessor, and an in-flight capacity assessor that avoids double counting consumed reservations. Artifact and in-flight gates are NOT wired into admission; trusted producers, threshold certification, transaction-safe joining, integration proof, and GREEN-live proof remain open. Current labs were not touched."
     },
     "LP-T069": {
       "state": "green-local",

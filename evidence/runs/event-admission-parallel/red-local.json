@@ -1,0 +1,11 @@
+{
+  "gate": "event-admission-parallel-components",
+  "phase": "RED-local",
+  "tests": [
+    "backend/tests/test_event_artifact_health.py",
+    "backend/tests/test_event_inflight_capacity.py",
+    "backend/tests/test_event_model_health_collector.py"
+  ],
+  "initial_failure": "collection failed because the new component modules did not exist",
+  "scope": "component proof only; no deployed collector or admission integration"
+}
