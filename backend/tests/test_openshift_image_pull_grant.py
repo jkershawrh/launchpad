@@ -1,10 +1,16 @@
 """Non-live proof of the cross-namespace image-pull grant boundary."""
 
+from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
+import yaml
 from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
+from app.domain.models import CatalogItem, LabRequest
 from kubernetes.client.exceptions import ApiException
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def _external_operator_resources() -> dict:
@@ -32,6 +38,49 @@ def test_external_operator_images_do_not_request_internal_registry_grant() -> No
     adapter._ensure_image_pull_access("launchpad-seat", resources)
 
     adapter._grant_image_pull.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "catalog_id",
+    ("intel-llm-cpu-serving", "intel-xeon6-agent-201", "multi-agent-quickstart"),
+)
+def test_deployed_cluster_images_and_pilot_catalog_preserve_grant_boundary(
+    catalog_id: str,
+) -> None:
+    overlay = yaml.safe_load(
+        (ROOT / "deploy/launchpad/overlays/arena/arena-clusters.yaml").read_text()
+    )
+    clusters = yaml.safe_load(overlay["data"]["clusters.yaml"])["clusters"]
+    targets = {cluster["cluster_id"]: cluster for cluster in clusters}
+    item = CatalogItem.model_validate(
+        yaml.safe_load((ROOT / "catalog" / catalog_id / "catalog-item.yaml").read_text())
+    )
+    request = LabRequest(
+        tenant_id="test-tenant",
+        requester_id="test-user",
+        catalog_item_id=item.catalog_item_id,
+        requested_mode=item.category,
+    )
+
+    for cluster_id, expected_grant in (("arena", True), ("brutus", True), ("flightpath", False)):
+        adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
+        adapter._overlay_path = "/tmp/demo"
+        adapter._target = SimpleNamespace(
+            cluster_id=cluster_id,
+            image_references=targets[cluster_id]["image_references"],
+        )
+        adapter._select_workshop_node_name = MagicMock(return_value="")
+
+        plan = adapter.create_plan(request, item)
+
+        assert adapter._requires_image_pull_grant(plan.required_resources) is expected_grant
+
+    if catalog_id == "multi-agent-quickstart":
+        chart_templates = ROOT / "deploy/workloads/multi-agent-seat/templates"
+        for template in chart_templates.glob("*.yaml"):
+            for line in template.read_text().splitlines():
+                if line.strip().startswith("image:"):
+                    assert 'include "multiAgent.image"' in line, template
 
 
 def test_internal_images_and_unknown_workload_images_require_grant() -> None:

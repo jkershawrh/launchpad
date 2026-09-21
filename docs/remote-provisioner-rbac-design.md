@@ -57,3 +57,8 @@ narrowly scoped grant path is resolved. Do not broadly allow writes in
 Local guardrails: `backend/tests/test_remote_scoped_rbac_contract.py` checks
 the reference manifest's global binding and admission invariants. These are
 source contracts, not live authorization evidence.
+`backend/tests/test_openshift_image_pull_grant.py` also reads the deployed Arena
+cluster-target overlay and all three pilot catalog items, builds their plans,
+and verifies that only Flightpath's pinned external-image paths skip the
+cross-namespace grant. It checks the known multi-agent chart's image fields;
+it does not prove registry reachability, pull permissions, or runtime behavior.
