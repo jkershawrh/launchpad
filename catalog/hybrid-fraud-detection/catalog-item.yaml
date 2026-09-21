@@ -24,9 +24,11 @@ supported_branding:
 - redhat-intel-default
 - intel-internal
 metadata:
-  showroom: false
-  showroom_content_source_kind: quickstart-readme
-  showroom_content_path: README.md
+  showroom: true
+  showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
+  showroom_content_ref: f80683fbf708062d26dc32500671b6029e18c669
+  showroom_content_playbook: site.yml
+  showroom_content_start_path: showroom
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -43,12 +45,10 @@ metadata:
     runtime Secret sources.
   - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
     before activation.
-  - Resolve every repository discovery warning before activation.
   - Review every mutable container image and replace it with an approved immutable
     digest.
   - Review every unparsed manifest; templating or invalid YAML prevents complete static
     discovery.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
   allowed_exposure_policies:
   - internal
   showroom_journey: hybrid-fraud-detection
@@ -70,7 +70,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  workload_revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
+  workload_revision: f80683fbf708062d26dc32500671b6029e18c669
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -86,14 +86,14 @@ metadata:
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  source_content_revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
+  source_content_revision: f80683fbf708062d26dc32500671b6029e18c669
   source_references: {}
   intake_quality:
     artifacts:
       benchmark_rubric:
-        entry_count: 0
+        entry_count: 5
         path: tests/benchmark_rubric.yaml
-        status: invalid
+        status: present-valid
       ci_workflows:
         path: .github/workflows
         status: present
@@ -108,9 +108,9 @@ metadata:
         path: tests/publication/test_readme.py
         status: present
       validation_matrix:
-        entry_count: 0
+        entry_count: 7
         path: tests/validation_matrix.yaml
-        status: invalid
+        status: present-valid
     authority:
       may_certify: false
       may_modify_source: false
@@ -121,10 +121,9 @@ metadata:
       action_oriented_title: true
       business_language_present: true
       human_review_required: true
-      missing_sections:
-      - architecture
+      missing_sections: []
       readme_present: true
-      required_sections_present: false
+      required_sections_present: true
       status: review-required
       title: Build a hybrid fraud-scoring demo with explainable AI
     capacity_proposal:
@@ -133,16 +132,13 @@ metadata:
       framework_signals:
       - gradio
       - openai
+      - react
       inference_mode: remote-endpoint
       measurement_required_before_placement: true
       status: review-required
     gate:
-      blocking_findings:
-      - 'README is missing required sections: architecture'
-      - tests/validation_matrix.yaml is missing or invalid
-      - tests/benchmark_rubric.yaml is missing or invalid
-      - No hands-on Showroom module was discovered
-      status: blocked
+      blocking_findings: []
+      status: review-required
     portfolio_overlap:
       mutable_live_org_scan_allowed: false
       reason: A pinned versioned portfolio inventory was not supplied.
@@ -155,12 +151,12 @@ metadata:
       secret_manifest_count: 0
       secret_values_included: false
       status: review-required
-      unparsed_manifest_count: 3
+      unparsed_manifest_count: 4
     showroom:
-      execute_block_count: 0
-      hands_on_module_count: 0
-      key_takeaway_count: 0
-      page_count: 0
-      see_section_count: 0
+      execute_block_count: 7
+      hands_on_module_count: 1
+      key_takeaway_count: 1
+      page_count: 3
+      see_section_count: 1
       thin_modules: []
-      verification_section_count: 0
+      verification_section_count: 1

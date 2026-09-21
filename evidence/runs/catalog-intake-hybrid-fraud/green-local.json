@@ -1,7 +1,7 @@
 {
   "schema": "launchpad.redhat.com/catalog-intake-candidate-evidence/v1",
-  "run_id": "catalog-intake-hybrid-fraud-green-local-20260921",
-  "recorded_at": "2026-09-21T04:14:18Z",
+  "run_id": "catalog-intake-hybrid-fraud-green-local-20260921-source-ready",
+  "recorded_at": "2026-09-21T04:40:33Z",
   "result": "GREEN-local",
   "requirements": [
     "LP-T097",
@@ -11,9 +11,11 @@
   "launchpad_revision": "c3a2c062ac20ea9b7008e753e344cba1eccad3ea",
   "source": {
     "repository_url": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
-    "revision": "eb85ce0014cb958244b865da8ca3b5e62cfcab0d",
+    "revision": "f80683fbf708062d26dc32500671b6029e18c669",
+    "implementation_revision": "93568a3f92421657621b8dc736bc96d9d1e784c9",
+    "branch": "codex/launchpad-intake",
     "catalog_item_id": "hybrid-fraud-detection",
-    "source_kind": "quickstart-readme",
+    "source_kind": "antora-showroom",
     "deployment_type": "helm"
   },
   "checks": {
@@ -22,7 +24,17 @@
     "repository_discovery": "pass",
     "intake_contract": "pass",
     "workload_structure": "pass",
-    "readme_source_structure": "pass",
+    "showroom_structure": "pass",
+    "showroom_build": "pass",
+    "source_test_suite": {
+      "result": "pass",
+      "passed": 55,
+      "failed": 0
+    },
+    "helm_lint_and_render": "pass",
+    "container_build": "pass",
+    "local_scorer_and_ui_smoke": "pass",
+    "secret_scan": "pass",
     "catalog_drift": "pass",
     "deterministic_draft": "pass",
     "focused_regression_tests": {
@@ -34,19 +46,25 @@
   "artifacts": {
     "onboarding_contract": {
       "path": "catalog-onboarding/hybrid-fraud-detection.yaml",
-      "sha256": "1de1fe07f6153ee3ce7ac0f4d4c4a808ed090df24617657748da493f6a2d3354"
+      "sha256": "cee02cb91cbf7e4290a56d881626919f526b943b159f8d55dc85c4c4440102ce"
     },
     "catalog_draft": {
       "path": "catalog/hybrid-fraud-detection/catalog-item.yaml",
-      "sha256": "88776ae0661bd02e6175c125a267d9f59909d27356ab2cdafa108a093f9e6d3a"
+      "sha256": "4a2749a48cc1130a145e17483860a3de3d8e7ff3c7e5e6a723c8a97fa1d5d105"
     },
     "discovery_receipt": {
       "retained_in_git": false,
-      "sha256": "5c5cd3861f24e16d1a514c2162d3766451b9618062626c539dc48a2106ff55ad"
+      "sha256": "3fc5154ae0ff747e3d9a75b6b46072a8db9bd7a65b8e20de43dabe5301836947"
     },
     "validation_receipt": {
       "retained_in_git": false,
-      "sha256": "e8cbf923ca7bcdc76003f540ca2edbedff606a50ac2b14523958a353d52c9ab8"
+      "sha256": "1b8770017fc11c15ca8ffdd4d1bbc877f3299e781e78c54e60e16b0b490e3d59"
+    },
+    "source_authoring_evidence": {
+      "path": "evidence/runs/launchpad-intake-authoring/green-local.json",
+      "repository": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+      "revision": "f80683fbf708062d26dc32500671b6029e18c669",
+      "sha256": "60f8673a18553b099007a3cf96a2262a776edd4d3cd6d046702ca739f2972a27"
     }
   },
   "fail_closed_result": {
@@ -56,18 +74,15 @@
       "internal"
     ],
     "maximum_seats": 1,
-    "showroom_ready": false,
+    "showroom_ready": true,
     "promotion_eligible": false,
     "activation_status": "blocked"
   },
   "discovered_blockers": [
-    "Showroom conversion and participant journey are not present.",
     "Per-seat resource values are unmeasured placeholders.",
     "Required model, route, tab, identity, and runtime Secret contracts need review.",
     "Mutable image references require immutable approved digests.",
     "Templated Helm manifests require rendered review.",
-    "The Quickstart validation matrix and benchmark rubric do not match the Launchpad intake quality schema.",
-    "The source repository's latest CI run has a lint failure.",
     "One-seat, five-seat, and intended-scale live certification have not run."
   ],
   "mutations": {
@@ -76,10 +91,10 @@
     "workshops": false,
     "routes": false,
     "credentials": false,
-    "source_repository": false
+    "source_repository": "dedicated branch only; default branch unchanged"
   },
   "release": {
     "eligible": false,
-    "next_gate": "Correct the source-owned Quickstart contract, build the Showroom journey, pin deployable images, and repeat discovery at a new immutable revision."
+    "next_gate": "Review runtime wiring, pin deployable images, measure one-seat resources, and earn 1/5/25-seat live certification before activation."
   }
 }

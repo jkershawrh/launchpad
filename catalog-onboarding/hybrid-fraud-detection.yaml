@@ -11,14 +11,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
-    playbook: ''
-    start_path: .
-    source_kind: quickstart-readme
-    content_path: README.md
+    revision: f80683fbf708062d26dc32500671b6029e18c669
+    playbook: site.yml
+    start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
+    revision: f80683fbf708062d26dc32500671b6029e18c669
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -49,12 +47,10 @@ certification:
     runtime Secret sources.
   - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
     before activation.
-  - Resolve every repository discovery warning before activation.
   - Review every mutable container image and replace it with an approved immutable
     digest.
   - Review every unparsed manifest; templating or invalid YAML prevents complete static
     discovery.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:
@@ -62,24 +58,23 @@ quality:
     readme_present: true
     title: Build a hybrid fraud-scoring demo with explainable AI
     action_oriented_title: true
-    required_sections_present: false
-    missing_sections:
-    - architecture
+    required_sections_present: true
+    missing_sections: []
     business_language_present: true
     human_review_required: true
   artifacts:
     validation_matrix:
       path: tests/validation_matrix.yaml
-      status: invalid
-      entry_count: 0
+      status: present-valid
+      entry_count: 7
     claim_registry:
       path: tests/claim_registry.yaml
       status: present-valid
       entry_count: 1
     benchmark_rubric:
       path: tests/benchmark_rubric.yaml
-      status: invalid
-      entry_count: 0
+      status: present-valid
+      entry_count: 5
     publication_test:
       path: tests/publication/test_readme.py
       status: present
@@ -90,12 +85,12 @@ quality:
       path: .github/workflows
       status: present
   showroom:
-    page_count: 0
-    hands_on_module_count: 0
-    execute_block_count: 0
-    see_section_count: 0
-    verification_section_count: 0
-    key_takeaway_count: 0
+    page_count: 3
+    hands_on_module_count: 1
+    execute_block_count: 7
+    see_section_count: 1
+    verification_section_count: 1
+    key_takeaway_count: 1
     thin_modules: []
   capacity_proposal:
     status: review-required
@@ -103,6 +98,7 @@ quality:
     framework_signals:
     - gradio
     - openai
+    - react
     declared_models: []
     explicit_resource_envelopes: 0
     measurement_required_before_placement: true
@@ -112,19 +108,15 @@ quality:
     cluster_scoped_resource_count: 0
     privileged_finding_count: 0
     secret_manifest_count: 0
-    unparsed_manifest_count: 3
+    unparsed_manifest_count: 4
     secret_values_included: false
   portfolio_overlap:
     status: not-run
     reason: A pinned versioned portfolio inventory was not supplied.
     mutable_live_org_scan_allowed: false
   gate:
-    status: blocked
-    blocking_findings:
-    - 'README is missing required sections: architecture'
-    - tests/validation_matrix.yaml is missing or invalid
-    - tests/benchmark_rubric.yaml is missing or invalid
-    - No hands-on Showroom module was discovered
+    status: review-required
+    blocking_findings: []
   authority:
     mode: analysis-only
     may_modify_source: false
@@ -170,11 +162,10 @@ discovery:
     resource_envelopes: []
     unparsed_manifests:
     - chart/templates/deployment.yaml
+    - chart/templates/route-ui.yaml
     - chart/templates/route.yaml
     - chart/templates/service.yaml
-  warnings:
-  - README-first Quickstart content was discovered; Showroom conversion and review
-    are required before activation.
+  warnings: []
   errors: []
   provisional_fields:
   - catalog.description

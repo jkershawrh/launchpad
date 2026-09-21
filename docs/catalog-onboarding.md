@@ -423,21 +423,25 @@ optional Track 3 runtime integrations remain fail-closed. See
 
 ## Hybrid fraud detection intake proof
 
-`hybrid-fraud-detection` is the first genuinely new README-first Quickstart
-exercised through the generic intake path. The source is pinned to
-`jkershawrh/hybrid-fraud-detection` at
-`eb85ce0014cb958244b865da8ca3b5e62cfcab0d`. Credential-free discovery from a
-temporary checkout passed, found the Helm workload, generated a deterministic
-review contract and catalog preview, and validated both source revisions
-without executing repository code.
+`hybrid-fraud-detection` is the first genuinely new Quickstart corrected and
+re-evaluated through the generic intake path. The candidate is pinned to the
+source branch `codex/launchpad-intake` in `jkershawrh/hybrid-fraud-detection`
+at `f80683fbf708062d26dc32500671b6029e18c669`. It now provides a real Antora
+Showroom journey, a participant UI and Route in the Helm chart, Launchpad-shaped
+validation and benchmark artifacts, pinned Showroom tooling, and source-owned
+RED/GREEN evidence. The source suite (55 tests), lint, Helm render, container
+build, Antora build, local scorer/UI smoke, and secret scan passed.
+
+Credential-free discovery from a temporary immutable checkout also passed,
+generated a deterministic review contract and catalog preview, and built the
+Showroom successfully. Its quality gate has no blocking authoring findings.
 
 The result is deliberately not orderable: it remains `draft`, internal-only,
-limited to one seat, and marked `showroom: false`. Discovery identified the
-missing Showroom journey, unmeasured capacity, mutable images, rendered-Helm
-review, source quality-schema differences, model/runtime integration, and
-1/5/intended-scale certification as activation work. No live catalog,
-workshop, route, cluster, credential, or source repository was changed. The
-sanitized proof is retained in
+and limited to one seat. Unmeasured capacity, mutable images, rendered runtime
+review, model/secret/tab/route integration, and 1/5/intended-scale live
+certification remain activation gates. No live catalog, workshop, route,
+cluster, or credential was changed; the public repository's default branch was
+not changed. The sanitized Launchpad proof is retained in
 `evidence/runs/catalog-intake-hybrid-fraud/green-local.json`.
 
 ## AgentOps intake status

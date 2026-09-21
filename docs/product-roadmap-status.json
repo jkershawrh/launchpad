@@ -601,7 +601,7 @@
         "evidence/runs/catalog-intake-readme-source/manifest.json",
         "evidence/runs/catalog-intake/static-inventory-green-local-20260920.json"
       ],
-      "note": "The generic Quickstart discovery path now has a first genuinely new repository proof: hybrid-fraud-detection at immutable revision eb85ce0014cb958244b865da8ca3b5e62cfcab0d passed credential-free remote discovery and contract validation. It correctly remains a non-Showroom, non-orderable, internal one-seat draft with source, supply-chain, capacity, runtime, and certification blockers. A trusted deployed worker/collector and corrected source revision remain open."
+      "note": "The generic Quickstart discovery path now has a corrected first new-repository proof: hybrid-fraud-detection at immutable candidate revision f80683fbf708062d26dc32500671b6029e18c669 passed credential-free remote discovery, Showroom build, and contract validation. Source authoring is GREEN-local with 55 tests, lint, Helm render, container build, Antora build, local UI/scorer smoke, and secret scan. It remains a non-orderable internal one-seat draft until image, resource, runtime, and live certification gates are earned; the source default branch and all live environments remain unchanged."
     },
     "LP-T102": {
       "state": "green-local",
@@ -662,7 +662,7 @@
         "evidence/runs/catalog-intake-readme-source/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json"
       ],
-      "note": "A real README-first Quickstart now deterministically produces a reviewable onboarding contract and catalog preview with immutable source identity, quality findings, static inventory, and unresolved activation blockers. Hybrid fraud detection proves the draft path without creating an orderable catalog or mutating a cluster; runtime integration and certification remain open."
+      "note": "A real Quickstart now deterministically produces a reviewable onboarding contract and catalog preview with immutable source identity, quality findings, static inventory, and unresolved activation blockers. Hybrid fraud detection now supplies valid Showroom, validation-matrix, benchmark-rubric, Helm UI, and source proof artifacts without creating an orderable catalog or mutating a cluster; runtime integration and certification remain open."
     },
     "LP-T099": {
       "state": "green-local",
@@ -677,7 +677,7 @@
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
         "evidence/runs/catalog-intake-hybrid-fraud/green-local.json"
       ],
-      "note": "The hybrid fraud detection proof confirms that a real external Quickstart is enforced as draft, internal-only, one-seat, showroom:false, immutable-source, and blocked from activation. Mutable images, unmeasured resources, rendered Helm review, source quality mismatches, and live certification remain explicit gates."
+      "note": "The hybrid fraud detection proof confirms that a corrected external Quickstart with a buildable Showroom is still enforced as draft, internal-only, one-seat, and blocked from activation. Mutable images, unmeasured resources, rendered runtime review, model/identity/secret integration, and live certification remain explicit gates."
     },
     "LP-T104": {
       "state": "green-local",

@@ -359,12 +359,16 @@ repository and receive a safe, reviewable, certified catalog draft.**
   artifacts block activation; static signals cannot certify, publish, or relax
   capacity. AgnosticV/AgnosticD and RHDP-specific delivery remain outside this
   pipeline. **GREEN-local canonical-source slice:** README-first Quickstarts
-  with a deployable workload now enter review as non-orderable drafts, while a
-  mandatory Showroom-conversion warning and missing-content findings remain
-  activation blockers. The draft never claims that README content is already a
-  Showroom. The default dispatcher remains disabled; signed
-  external image publication, deployed receipt collection, one passing
-  canonical repository, and remaining live fault proof are open.
+  with a deployable workload enter review as non-orderable drafts. The first
+  new candidate, hybrid fraud detection, was then corrected on a dedicated
+  source branch to provide a buildable Antora Showroom, participant UI, valid
+  quality artifacts, Helm render, container build, local functional smoke, and
+  source-owned RED/GREEN evidence. Re-discovery at immutable revision
+  `f80683fbf708062d26dc32500671b6029e18c669` now has no blocking authoring
+  findings, while the draft remains fail-closed for image, measured capacity,
+  runtime integration, and live certification. The default dispatcher remains
+  disabled; signed external image publication, deployed receipt collection,
+  default-branch promotion, and remaining live fault proof are open.
 - `LP-T098` Generate the catalog record, deployment package, functional
   journey, certification contract, ownership record, and initial support plan.
   **GREEN-local (catalog-draft slice):** a versioned immutable discovery
@@ -372,7 +376,8 @@ repository and receive a safe, reviewable, certified catalog draft.**
   draft, including the source-derived quality profile and its fail-closed
   activation findings. The admin journey now shows its discovery proof,
   cleanup result, capabilities, generated metadata, and remaining blockers.
-  Deployment package, participant journey, ownership, support, and complete
+  Hybrid fraud detection proves the source-owned Showroom and Helm package
+  authoring path; runtime integration, ownership, support, and complete live
   certification remain open.
 - `LP-T099` Default generated entries to draft, internal-only, and one-seat;
   fail closed on ambiguous, privileged, mutable, or unsupported requirements.
