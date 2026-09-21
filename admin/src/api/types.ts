@@ -435,3 +435,85 @@ export interface CatalogIntakePipelineView {
     promote: boolean;
   };
 }
+
+export interface EventResourceVector {
+  seats: number;
+  cpu_millicores: number;
+  memory_mib: number;
+  pods: number;
+  storage_gib: number;
+  routes: number;
+  model_slots: number;
+}
+
+export interface EventCohort {
+  cohort_id: string;
+  participants: number;
+  lab_refs: string[];
+  starts_at?: string | null;
+}
+
+export interface EventLab {
+  lab_ref: string;
+  catalog_id: string;
+  catalog_release: string;
+  required_capabilities: string[];
+}
+
+export interface EventManifest {
+  event_id: string;
+  name: string;
+  owner: string;
+  technical_approver: string;
+  exposure_policy: 'internal' | 'public_code';
+  placement_policy: 'single_cluster_per_workshop';
+  cohorts: EventCohort[];
+  labs: EventLab[];
+  retention: { hours: number; starts_from: 'event_start' | 'cohort_start' | 'claim' };
+  approval: {
+    event_owner_approved: boolean;
+    technical_approver_approved: boolean;
+    approved_seat_environments: number;
+    approved_retention_hours: number;
+    approved_at?: string | null;
+  };
+}
+
+export interface EventCapacityPreview {
+  matrix_id: string;
+  matrix_digest: string;
+  fleet_snapshot_id: string;
+  fleet_observed_at?: string | null;
+  participant_count: number;
+  seat_environments: number;
+  peak_concurrent_participants: number;
+  peak_retained_environments: number;
+  certified_capacity: number;
+  dr_reserved_capacity: number;
+  uncertified_capacity: number;
+  capacity_shortfall: number;
+  eligible: boolean;
+  explanation: string;
+  allocations: Array<{
+    cohort_id: string;
+    lab_ref: string;
+    catalog_id: string;
+    catalog_release: string;
+    cluster_id: string;
+    seats: number;
+  }>;
+  lab_capacity: Array<{
+    lab_ref: string;
+    catalog_id: string;
+    catalog_release: string;
+    required_seats: number;
+    allocated_seats: number;
+    shortfall: number;
+  }>;
+}
+
+export interface EventRecord {
+  manifest: EventManifest;
+  capacity_preview: EventCapacityPreview;
+  created_at: string;
+}

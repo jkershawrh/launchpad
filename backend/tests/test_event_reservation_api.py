@@ -188,6 +188,35 @@ def test_reservation_requires_admin_and_existing_approved_event():
     assert missing.status_code == 404
 
 
+def test_admin_lists_approved_events_without_lifecycle_side_effects():
+    supply, event_store, ledger = _overrides()
+    newest = _record("event-b", supply).model_copy(
+        update={"created_at": NOW + timedelta(minutes=1)}
+    )
+    event_store.create(newest)
+    try:
+        response = TestClient(app).get("/api/v1/events")
+    finally:
+        _clear_overrides()
+
+    assert response.status_code == 200
+    assert [item["manifest"]["event_id"] for item in response.json()] == [
+        "event-b",
+        "event-a",
+    ]
+    assert ledger.list_active(now=NOW) == []
+
+
+def test_non_admin_cannot_list_approved_events():
+    _overrides(admin=False)
+    try:
+        response = TestClient(app).get("/api/v1/events")
+    finally:
+        _clear_overrides()
+
+    assert response.status_code == 403
+
+
 def test_release_requires_positive_cleanup_evidence_and_is_idempotent():
     supply, event_store, _ledger = _overrides()
     event_store.create(_record("event-b", supply))

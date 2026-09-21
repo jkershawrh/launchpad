@@ -12,6 +12,7 @@ import Observability from './pages/Observability';
 import CatalogIntakes from './pages/CatalogIntakes';
 import CatalogIntakeDetail from './pages/CatalogIntakeDetail';
 import NewCatalogIntake from './pages/NewCatalogIntake';
+import Events from './pages/Events';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/reports" element={<Reports />} />
           <Route path="/analytics" element={<ProvisioningAnalytics />} />
           <Route path="/observability" element={<Observability />} />
+          <Route path="/events" element={<Events />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -22,6 +22,7 @@ import type {
   CatalogIntakeDraft,
   CatalogIntakeSubmission,
   CatalogIntakePipelineView,
+  EventRecord,
 } from './types';
 
 const BASE = '/api';
@@ -122,6 +123,9 @@ export const api = {
     request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/source-approval`, { method: 'POST' }),
   runCatalogIntakeDiscovery: (id: string) =>
     request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/discovery`, { method: 'POST' }),
+
+  // Approved event demand (read-only admin visibility)
+  listEvents: () => request<EventRecord[]>('/v1/events'),
 
   // Intelligence / Feedback
   getFeedbackSummary: () =>

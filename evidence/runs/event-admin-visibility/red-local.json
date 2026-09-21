@@ -1,0 +1,26 @@
+{
+  "schema_version": "launchpad.redhat.com/red-green-evidence/v1",
+  "evidence_id": "event-admin-visibility-red-local-20260921",
+  "stage": "red-local",
+  "requirements": [
+    "An administrator can list approved event manifests newest first.",
+    "Reading approved events does not reserve capacity or mutate lifecycle state.",
+    "A non-administrator cannot list approved event manifests.",
+    "The admin portal visualizes event demand, placement, and capacity without lifecycle controls."
+  ],
+  "observations": [
+    {
+      "component": "backend",
+      "command": "PYTHONPATH=. .venv/bin/pytest -q backend/tests/test_event_reservation_api.py",
+      "result": "failed-as-expected",
+      "detail": "GET /api/v1/events returned 405 for both the admin and non-admin contract tests because no collection read endpoint existed."
+    },
+    {
+      "component": "admin",
+      "command": "npm test -- --run src/pages/Events.test.tsx",
+      "result": "failed-as-expected",
+      "detail": "The test suite could not resolve ./Events because the read-only Events page did not exist."
+    }
+  ],
+  "live_mutation": false
+}

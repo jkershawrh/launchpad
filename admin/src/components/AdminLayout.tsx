@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { path: '/system', label: 'System' },
   { path: '/catalog', label: 'Catalog' },
   { path: '/intakes', label: 'Intake' },
+  { path: '/events', label: 'Events' },
   { path: '/reports', label: 'Reports' },
   { path: '/analytics', label: 'Analytics' },
   { path: '/observability', label: 'Observability' },

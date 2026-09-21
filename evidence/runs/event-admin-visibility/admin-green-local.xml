@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="2" failures="0" errors="0" time="0.090291958">
+    <testsuite name="src/pages/Events.test.tsx" timestamp="2026-09-21T05:10:28.931Z" hostname="jkershaw-mac" tests="2" failures="0" errors="0" skipped="0" time="0.090291958">
+        <testcase classname="src/pages/Events.test.tsx" name="Events &gt; shows approved event demand and placement evidence without lifecycle controls" time="0.084634208">
+        </testcase>
+        <testcase classname="src/pages/Events.test.tsx" name="Events &gt; explains the empty approved-event state" time="0.005014">
+        </testcase>
+    </testsuite>
+</testsuites>

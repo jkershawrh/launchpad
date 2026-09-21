@@ -50,6 +50,19 @@ router = APIRouter(
 
 
 @router.get(
+    "",
+    response_model=list[EventRecord],
+    dependencies=[Depends(require_admin)],
+)
+def list_approved_events(
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+) -> list[EventRecord]:
+    """List approved event manifests without changing lifecycle state."""
+
+    return sorted(store.list_all(), key=lambda item: item.created_at, reverse=True)
+
+
+@router.get(
     "/{event_id}/status",
     response_model=EventStatusResult,
     dependencies=[Depends(require_admin)],
