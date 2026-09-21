@@ -4,8 +4,8 @@ from unittest.mock import patch
 import pytest
 from app.api.deps import provisioning_service, public_access_service
 from app.auth.oauth import User, get_current_user, require_admin
-from app.domain.enums import SessionStatus
-from app.domain.models import LabRequest, LabSession
+from app.domain.enums import SessionStatus, ValidationResultStatus
+from app.domain.models import LabRequest, LabSession, LifecycleEvent, ValidationResult
 from app.main import app
 from fastapi.testclient import TestClient
 
@@ -43,12 +43,30 @@ def session() -> LabSession:
             "items": [
                 {"password": "nested-password", "name": "preserve-item"},
             ],
+            "error": "provisioner returned token=resource-error-secret",
         },
         metadata={
             "purpose": "security-contract",
             "broker_token": "metadata-broker-secret",
             "nested": {"client_secret": "metadata-client-secret", "note": "safe"},
+            "error": "request failed with token=metadata-error-secret",
         },
+        validation_results=[
+            ValidationResult(
+                session_id="session-1",
+                check_name="route",
+                result=ValidationResultStatus.FAIL,
+                message="Route rejected bearer validation-message-secret",
+                evidence="Authorization: Bearer validation-evidence-secret",
+            )
+        ],
+        lifecycle_events=[
+            LifecycleEvent(
+                from_status=SessionStatus.RESETTING,
+                to_status=SessionStatus.CLEANUP_FAILED,
+                reason="Cleanup failed: password=cleanup-reason-secret",
+            )
+        ],
     )
     provisioning_service._sessions[session.session_id] = session
     return session
@@ -73,6 +91,11 @@ def _assert_secret_free(payload: dict) -> None:
     assert "nested-password" not in rendered
     assert "metadata-broker-secret" not in rendered
     assert "metadata-client-secret" not in rendered
+    assert "metadata-error-secret" not in rendered
+    assert "validation-message-secret" not in rendered
+    assert "validation-evidence-secret" not in rendered
+    assert "cleanup-reason-secret" not in rendered
+    assert "resource-error-secret" not in rendered
 
     assert payload["namespace"] == "seat-namespace"
     assert payload["cluster_ref"] == "arena"
@@ -86,6 +109,10 @@ def _assert_secret_free(payload: dict) -> None:
         "purpose": "security-contract",
         "nested": {"note": "safe"},
     }
+    assert payload["validation_results"][0]["result"] == "fail"
+    assert payload["validation_results"][0]["message"] == "Validation failed; contact support"
+    assert payload["validation_results"][0]["evidence"] is None
+    assert payload["lifecycle_events"][0]["reason"] == "Cleanup failed; contact support"
 
 
 def test_session_list_and_detail_responses_are_secret_free(
@@ -128,6 +155,7 @@ def test_request_list_and_detail_redact_metadata(
         metadata={
             "broker_token": "request-broker-secret",
             "nested": {"client_secret": "request-client-secret", "note": "safe"},
+            "error": "request failed: token=request-error-secret",
         },
     )
     provisioning_service._requests[request.request_id] = request
@@ -140,6 +168,7 @@ def test_request_list_and_detail_redact_metadata(
     for payload in (listed.json()[0], detailed.json()):
         assert "request-broker-secret" not in str(payload)
         assert "request-client-secret" not in str(payload)
+        assert "request-error-secret" not in str(payload)
         assert payload["metadata"] == {"nested": {"note": "safe"}}
     assert request.metadata["broker_token"] == "request-broker-secret"
 
@@ -226,3 +255,18 @@ def test_admin_force_reclaim_response_is_secret_free(session: LabSession) -> Non
 
     assert response.status_code == 200
     _assert_secret_free(response.json())
+
+
+def test_admin_diagnostics_do_not_echo_endpoint_exception(session: LabSession) -> None:
+    app.dependency_overrides[require_admin] = lambda: User(username="admin", is_admin=True)
+    client = TestClient(app)
+
+    with (
+        patch("app.api.routers.admin.monitor.list_containers", return_value=[]),
+        patch("httpx.get", side_effect=RuntimeError("token=diagnostic-exception-secret")),
+    ):
+        response = client.get(f"/api/v1/admin/sessions/{session.session_id}/diagnostics")
+
+    assert response.status_code == 200
+    assert "diagnostic-exception-secret" not in str(response.json())
+    assert response.json()["health_checks"][0]["error"] == "Endpoint check failed"

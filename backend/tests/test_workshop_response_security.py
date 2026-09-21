@@ -32,11 +32,14 @@ def workshop() -> Workshop:
                     "workspace_password": "seat-password-secret",
                     "nested": {"api_key": "seat-api-secret", "note": "safe-seat"},
                 },
+                error="Service returned token=seat-error-secret",
             )
         ],
         metadata={
             "credential_secret": "workshop-credential-secret",
             "nested": {"refresh_token": "workshop-refresh-secret", "note": "safe-order"},
+            "failed_reclaims": [{"error": "password=workshop-error-secret"}],
+            "readiness_failures": {"1": "token=readiness-error-secret"},
         },
     )
     workshop.seats[0].workshop_id = workshop.workshop_id
@@ -59,10 +62,18 @@ def _assert_secret_free(payload: dict) -> None:
         "seat-api-secret",
         "workshop-credential-secret",
         "workshop-refresh-secret",
+        "seat-error-secret",
+        "workshop-error-secret",
+        "readiness-error-secret",
     ):
         assert secret not in rendered
-    assert payload["metadata"] == {"nested": {"note": "safe-order"}}
+    assert payload["metadata"] == {
+        "nested": {"note": "safe-order"},
+        "failed_reclaims": [{}],
+        "readiness_failures": {"1": "Seat readiness check failed"},
+    }
     assert payload["seats"][0]["metadata"] == {"nested": {"note": "safe-seat"}}
+    assert payload["seats"][0]["error"] == "Seat operation failed; contact support"
 
 
 def test_workshop_list_and_detail_redact_nested_metadata(

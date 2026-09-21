@@ -840,7 +840,9 @@ software provenance, secret hygiene, and accountable mutation.**
   **GREEN-local (API-response slice):** request, session, workshop, and nested
   seat APIs now use secret-free metadata response contracts across requester,
   participant, lifecycle, and admin paths without changing persisted records.
-  Free-form error strings, rotation, signing, live policy enforcement, and abuse testing
+  Validation, cleanup, seat, and admin observability/endpoint errors now use
+  stable public text. Other HTTP exception bodies and privileged logs, rotation,
+  signing, live policy enforcement, and abuse testing
   remain open. **GREEN-local (audit slice):** a versioned audit-integrity and
   retention contract now defines accountable events, recursive redaction,
   separated roles, retention classes, tamper-evident chaining/anchors, governed

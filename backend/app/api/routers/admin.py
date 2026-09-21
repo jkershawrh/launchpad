@@ -170,8 +170,8 @@ def session_diagnostics(session_id: str) -> Dict[str, Any]:
                 import httpx
                 resp = httpx.get(url, timeout=5)
                 health_checks.append({"url": url, "status": resp.status_code, "healthy": resp.status_code == 200})
-            except Exception as e:
-                health_checks.append({"url": url, "status": 0, "healthy": False, "error": str(e)})
+            except Exception:
+                health_checks.append({"url": url, "status": 0, "healthy": False, "error": "Endpoint check failed"})
 
     return {
         "session_id": session_id,

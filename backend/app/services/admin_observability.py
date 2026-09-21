@@ -107,6 +107,7 @@ def _seat_row(
     last_transition_at = _last_transition(session) if session else None
     ready_at = _ready_at(session) if session else None
     end = ready_at or last_transition_at or now
+    has_error = bool(fallback_error or (_session_error(session) if session else None))
     return {
         "seat_number": seat_number,
         "session_id": session.session_id if session else None,
@@ -116,7 +117,7 @@ def _seat_row(
         "last_transition_at": _iso(last_transition_at),
         "provisioning_seconds": _seconds(started_at, end),
         "resolution_state": _resolution_state(status),
-        "error": fallback_error or (_session_error(session) if session else None),
+        "error": "Seat operation failed; inspect internal diagnostics" if has_error else None,
         "detail_url": f"/sessions/{session.session_id}" if session else None,
         "resource_usage": dict(resource_usage or {
             "available": False,

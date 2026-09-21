@@ -173,6 +173,17 @@ _SENSITIVE_SESSION_RESOURCE_SUFFIXES = (
     "_secret",
     "_token",
 )
+_UNSAFE_PUBLIC_DIAGNOSTIC_KEYS = {
+    "error",
+    "errors",
+    "evidence",
+    "failed_late_seat_reclaims",
+    "failed_reclaims",
+    "message",
+    "preflight_failure",
+    "readiness_failures",
+    "reason",
+}
 
 
 def _secret_free_session_resources(value: Any) -> Any:
@@ -182,9 +193,20 @@ def _secret_free_session_resources(value: Any) -> Any:
         public: dict[str, Any] = {}
         for key, item in value.items():
             normalized = str(key).strip().lower().replace("-", "_")
+            if normalized == "readiness_failures" and isinstance(item, dict):
+                public[key] = {
+                    str(seat): "Seat readiness check failed"
+                    for seat in item
+                    if str(seat).isdecimal()
+                }
+                continue
+            if normalized in {"failed_reclaims", "failed_late_seat_reclaims"} and isinstance(item, list):
+                public[key] = [{} for _ in item]
+                continue
             if (
                 normalized in _SENSITIVE_SESSION_RESOURCE_KEYS
                 or normalized.endswith(_SENSITIVE_SESSION_RESOURCE_SUFFIXES)
+                or normalized in _UNSAFE_PUBLIC_DIAGNOSTIC_KEYS
             ):
                 continue
             public[key] = _secret_free_session_resources(item)
@@ -229,6 +251,34 @@ class LabSessionResponse(LabSession):
     @classmethod
     def metadata_is_secret_free(cls, value: Any) -> dict[str, Any]:
         return _secret_free_session_resources(value or {})
+
+    @field_validator("validation_results", mode="before")
+    @classmethod
+    def validation_results_are_secret_free(cls, value: Any) -> list[dict[str, Any]]:
+        public = []
+        labels = {
+            ValidationResultStatus.PASS: "Validation passed",
+            ValidationResultStatus.FAIL: "Validation failed; contact support",
+            ValidationResultStatus.WARN: "Validation warning; contact support",
+            ValidationResultStatus.SKIPPED: "Validation skipped",
+        }
+        for result in value or []:
+            item = result.model_dump() if isinstance(result, ValidationResult) else dict(result)
+            item["message"] = labels[ValidationResultStatus(item["result"])]
+            item["evidence"] = None
+            public.append(item)
+        return public
+
+    @field_validator("lifecycle_events", mode="before")
+    @classmethod
+    def lifecycle_events_are_secret_free(cls, value: Any) -> list[dict[str, Any]]:
+        public = []
+        for event in value or []:
+            item = event.model_dump() if isinstance(event, LifecycleEvent) else dict(event)
+            if item["to_status"] == SessionStatus.CLEANUP_FAILED:
+                item["reason"] = "Cleanup failed; contact support"
+            public.append(item)
+        return public
 
 
 class MaaSKeyRevocationReceipt(BaseModel):
@@ -394,6 +444,11 @@ class WorkshopSeatResponse(WorkshopSeat):
     @classmethod
     def metadata_is_secret_free(cls, value: Any) -> dict[str, Any]:
         return _secret_free_session_resources(value or {})
+
+    @field_validator("error", mode="before")
+    @classmethod
+    def error_is_secret_free(cls, value: Any) -> str | None:
+        return "Seat operation failed; contact support" if value else None
 
 
 class WorkshopResponse(Workshop):

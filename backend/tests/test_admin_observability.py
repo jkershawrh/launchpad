@@ -90,7 +90,7 @@ def test_observability_read_model_joins_cluster_lab_and_seat_lifecycle():
                 seat_number=3,
                 session_id="seat-3",
                 status=WorkshopSeatStatus.FAILED,
-                error="Showroom route returned 503",
+                error="Showroom route returned 503 token=admin-seat-error-secret",
             ),
         ],
         session_ids=["seat-1", "seat-2", "seat-3"],
@@ -223,7 +223,8 @@ def test_observability_read_model_joins_cluster_lab_and_seat_lifecycle():
     assert resolution["session_id"] == "seat-3"
     assert resolution["seat_number"] == 3
     assert resolution["state"] == "attention"
-    assert resolution["message"] == "Showroom route returned 503"
+    assert resolution["message"] == "Seat operation failed; inspect internal diagnostics"
+    assert "admin-seat-error-secret" not in str(result)
     assert resolution["detail_url"] == "/sessions/seat-3"
     assert result["grafana"] == {
         "configured": True,

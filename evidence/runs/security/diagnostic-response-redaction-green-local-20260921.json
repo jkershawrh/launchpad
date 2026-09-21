@@ -1,0 +1,30 @@
+{
+  "evidence_id": "diagnostic-response-redaction-green-local-20260921",
+  "generated_at": "2026-09-21T10:52:58Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T058"],
+  "red": {
+    "tests_failed": 12,
+    "result": "free-form validation, cleanup, seat, workshop, and admin diagnostic text could echo exception-carried credentials"
+  },
+  "green": {
+    "focused_security_and_observability_tests_passed": 19,
+    "full_backend_tests_passed": 2090,
+    "full_backend_tests_skipped": 27,
+    "tests_failed": 0
+  },
+  "proof": {
+    "public_validation_message": "stable status-specific text",
+    "public_validation_evidence": null,
+    "public_cleanup_and_seat_errors": "stable support-directed text",
+    "admin_observability_error": "stable support-directed text",
+    "admin_endpoint_probe_error": "Endpoint check failed",
+    "workshop_failure_counts": "preserved without raw error values",
+    "internal_persisted_diagnostics_changed": false
+  },
+  "boundary": [
+    "This is a local API and read-model proof; retained labs and clusters were not changed",
+    "HTTP exception bodies, privileged container logs, and other free-form telemetry remain under review",
+    "Live integration and abuse testing remain required before release"
+  ]
+}
