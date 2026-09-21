@@ -16,6 +16,7 @@ from app.services.event_order_schedule import (
     EventOrderSchedule,
     evaluate_event_order_schedule,
     manifest_scope_digest,
+    schedule_scope_digest,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -59,14 +60,29 @@ def _schedule(manifest: EventManifest) -> dict:
 
 def test_complete_schedule_binds_every_workshop_to_approved_manifest():
     manifest = _manifest()
+    schedule = EventOrderSchedule.model_validate(_schedule(manifest))
     result = evaluate_event_order_schedule(
-        manifest, EventOrderSchedule.model_validate(_schedule(manifest))
+        manifest, schedule
     )
 
     assert result.eligible is True
     assert result.status == "GREEN-local"
     assert result.workshop_count == 9
     assert result.seat_environments == 270
+    assert result.schedule_digest == schedule_scope_digest(schedule)
+
+
+def test_schedule_digest_changes_when_an_order_window_changes():
+    manifest = _manifest()
+    first = EventOrderSchedule.model_validate(_schedule(manifest))
+    changed = _schedule(manifest)
+    changed["windows"][0]["not_after"] = "2026-10-01T13:34:00Z"
+    second = EventOrderSchedule.model_validate(changed)
+
+    assert schedule_scope_digest(first) != schedule_scope_digest(second)
+    assert evaluate_event_order_schedule(manifest, second).schedule_digest == (
+        schedule_scope_digest(second)
+    )
 
 
 def test_schedule_contract_requires_approval_and_exact_windows():
@@ -77,6 +93,8 @@ def test_schedule_contract_requires_approval_and_exact_windows():
         schedule["required"]
     )
     assert schedule["properties"]["policy"]["const"] == "serial_per_event"
+    decision = schemas["EventOrderScheduleDecision"]
+    assert "schedule_digest" in decision["required"]
 
 
 def test_schedule_cli_emits_machine_readable_local_gate(tmp_path: Path):

@@ -1664,7 +1664,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "8480454a053a28b79762884be1a983cda041e602ba0b54399070e8eb0ef09eef"
+      "sha256": "fac5a84e55583b4851e6b247b07676f40107f95bc46a680040711661f9642aef"
     },
     {
       "area": "contracts",
@@ -6931,13 +6931,15 @@
       "owner": "unassigned",
       "path": "deploy/multicluster/flightpath-remote-rbac.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 6,
+      "reference_count": 8,
       "referenced_by": [
         "backend/tests/test_ha_dr_manifests.py",
         "backend/tests/test_rbac_source_boundaries.py",
+        "backend/tests/test_remote_scoped_rbac_contract.py",
         "deploy/multicluster/README.md",
         "docs/control-plane-dr-roadmap.md",
         "docs/flightpath-dr-runbook.md",
+        "docs/remote-provisioner-rbac-design.md",
         "evidence/ha-lifecycle-green-local-2026-09-08.json"
       ],
       "risk_flags": [
@@ -8348,7 +8350,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "47d1debab5bdef6e7b21f5d568831903467dd53d",
+  "source_commit": "66f0d42ff28cd5e2c8dd1ebe40254afbc85eba42",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

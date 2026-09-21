@@ -44,6 +44,7 @@ class EventOrderScheduleDecision(BaseModel):
     eligible: bool
     event_id: str
     manifest_digest: str
+    schedule_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
     workshop_count: int
     seat_environments: int
     failures: list[str]
@@ -54,6 +55,15 @@ def manifest_scope_digest(manifest: EventManifest) -> str:
 
     canonical = json.dumps(
         manifest.model_dump(mode="json"), sort_keys=True, separators=(",", ":")
+    ).encode()
+    return "sha256:" + hashlib.sha256(canonical).hexdigest()
+
+
+def schedule_scope_digest(schedule: EventOrderSchedule) -> str:
+    """Identify the exact approved ordering windows in local evidence."""
+
+    canonical = json.dumps(
+        schedule.model_dump(mode="json"), sort_keys=True, separators=(",", ":")
     ).encode()
     return "sha256:" + hashlib.sha256(canonical).hexdigest()
 
@@ -145,6 +155,7 @@ def evaluate_event_order_schedule(
         eligible=not failures,
         event_id=manifest.event_id,
         manifest_digest=digest,
+        schedule_digest=schedule_scope_digest(schedule),
         workshop_count=len(expected),
         seat_environments=seat_environments,
         failures=failures,

@@ -22,7 +22,10 @@ python scripts/validate_event_order_schedule.py \
 ```
 
 The command returns a machine-readable `GREEN-local` or `RED` decision and a
-nonzero exit code on rejection. Compute `manifest_digest` with
+nonzero exit code on rejection. Its `schedule_digest` identifies the canonical
+schedule contents used for this local result; changing a
+window changes the digest even when the event manifest is unchanged. Compute
+`manifest_digest` with
 `manifest_scope_digest(EventManifest.model_validate(manifest))`; the digest is
 not a signature or proof that the named humans approved the plan.
 

@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Launchpad Event Ordering Schedule
-  version: 1.0.0
+  version: 1.1.0
   description: >-
     Offline, manifest-bound planning proof for serial workshop order windows.
     A passing schedule does not reserve seats, authorize capacity reuse, or
@@ -54,6 +54,7 @@ components:
         - eligible
         - event_id
         - manifest_digest
+        - schedule_digest
         - workshop_count
         - seat_environments
         - failures
@@ -62,6 +63,9 @@ components:
         eligible: {type: boolean}
         event_id: {type: string}
         manifest_digest: {type: string}
+        schedule_digest:
+          type: string
+          pattern: '^sha256:[0-9a-f]{64}$'
         workshop_count: {type: integer, minimum: 1}
         seat_environments: {type: integer, minimum: 1}
         failures:
