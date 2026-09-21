@@ -194,6 +194,8 @@ describe('CatalogIntakes', () => {
     expect(screen.getByRole('heading', { name: 'Discovery result' })).toBeInTheDocument();
     expect(screen.getByText('12 files scanned')).toBeInTheDocument();
     expect(screen.getByText('Stage: Catalog draft review')).toBeInTheDocument();
+    expect(screen.getByText('Source discovery')).toBeInTheDocument();
+    expect(screen.getByText('discovery-not-run')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Catalog draft preview' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Quickstart quality review' })).toBeInTheDocument();
     expect(screen.getByText('Blocked')).toBeInTheDocument();

@@ -39,9 +39,7 @@ def build_catalog_intake_pipeline_view(
     durable = draft.storage_scope != "process-local-draft"
     now = now or datetime.now(UTC)
     approval = draft.source_approval
-    approval_active = bool(
-        approval and approval.approved_at <= now < approval.expires_at
-    )
+    approval_active = bool(approval and approval.approved_at <= now < approval.expires_at)
     first_blockers = list(draft.blockers)
     if not durable:
         first_blockers.append("Durable intake persistence is not active.")
@@ -56,7 +54,9 @@ def build_catalog_intake_pipeline_view(
             blockers = []
         elif draft_generated and index == 2:
             status = "blocked"
-            blockers = list(draft.blockers)
+            blockers = list(draft.blockers) or [
+                "Artifact and security certification evidence has not been collected."
+            ]
         else:
             status = "blocked" if index == 0 else "not-run"
             blockers = first_blockers if index == 0 else ["Previous gate has not passed."]

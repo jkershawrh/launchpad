@@ -1,4 +1,4 @@
-from app.domain.catalog_intake import CatalogIntakeSubmission
+from app.domain.catalog_intake import CatalogIntakeDiscoverySummary, CatalogIntakeSubmission
 from app.services.catalog_intake_pipeline import build_catalog_intake_pipeline_view
 from app.services.catalog_intake_submissions import CatalogIntakeSubmissionService
 
@@ -67,3 +67,29 @@ def test_worker_availability_does_not_bypass_durable_storage_or_evidence() -> No
     assert view.actions.run_discovery is False
     assert view.gates[0].status == "blocked"
     assert any("Durable intake persistence" in item for item in view.gates[0].blockers)
+
+
+def test_generated_draft_explains_why_artifact_review_is_still_blocked() -> None:
+    draft = _draft().model_copy(
+        update={
+            "storage_scope": "durable-postgres",
+            "blockers": [],
+            "discovery": CatalogIntakeDiscoverySummary(
+                attempt_id="attempt-1",
+                output_hash="a" * 64,
+                worker_image_digest="sha256:" + "b" * 64,
+                files_scanned=3,
+                bytes_scanned=128,
+            ),
+            "catalog_preview": {"catalog_item_id": "sample-lab", "status": "draft"},
+        }
+    )
+
+    view = build_catalog_intake_pipeline_view(draft, isolated_worker_available=True)
+
+    assert view.current_stage == "draft-generated"
+    assert [gate.status for gate in view.gates[:3]] == ["passed", "passed", "blocked"]
+    assert view.gates[2].blockers
+    assert any("artifact" in blocker.lower() for blocker in view.gates[2].blockers)
+    assert view.orderable is False
+    assert view.promotion_eligible is False

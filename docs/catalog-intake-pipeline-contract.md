@@ -13,3 +13,9 @@ approval, and worker availability at request time. Certification, review,
 promotion, publication, ordering, and live-catalog mutation remain unavailable
 through this pipeline. Contract-alignment tests cover both stage values and
 the immutable no-promotion boundary.
+
+The admin detail page displays each gate's required evidence and blockers.
+Even when discovery has produced a draft with no static findings, artifact and
+security review remains blocked with an explicit explanation until separate
+certification evidence is collected. Displaying a gate does not run it or
+grant publication authority.

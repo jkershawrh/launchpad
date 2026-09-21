@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T10:17:43Z",
+  "updated_at": "2026-09-21T10:25:46Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -187,6 +187,8 @@
         "backend/tests/test_event_kubernetes_inventory_observer.py",
         "backend/app/services/event_model_slot_source.py",
         "backend/tests/test_event_model_slot_source.py",
+        "backend/app/services/event_persisted_seat_evidence.py",
+        "backend/tests/test_event_persisted_seat_evidence.py",
         "scripts/collect_event_inflight_capacity.py",
         "docs/event-inflight-capacity-collector.md",
         "backend/tests/test_event_reservation_guard.py",
@@ -208,9 +210,12 @@
       },
       "evidence": [
         "docs/active-seat-inventory-20260917.md",
-        "backend/tests/test_reclaim_readiness.py"
+        "backend/tests/test_reclaim_readiness.py",
+        "backend/app/services/reclaim_inventory_collector.py",
+        "backend/tests/test_reclaim_inventory_collector.py",
+        "docs/reclaim-inventory-collector-local.md"
       ],
-      "note": "The September 17 session records and namespaces were reconciled read-only across the active fleet. A local-only pre-reclaim validator now checks supplied workshop, session, namespace, cluster, and reservation balance; it cannot establish authoritative completeness. Tuesday's fresh T-30 inventory remains open."
+      "note": "The September 17 session records and namespaces were reconciled read-only across the active fleet. A local-only injected-provider collector now scans every registered cluster and checks supplied workshop, session, namespace, and reservation balance. It has no live provider, cannot establish authoritative completeness from self-reported flags, and does not authorize reclaim. Tuesday's fresh T-30 inventory remains open."
     },
     "LP-T070": {
       "state": "green-local",
@@ -812,9 +817,13 @@
       "evidence": [
         "evidence/runs/artifact-registry/prepull-contract-green-local-20260920.json",
         "backend/tests/test_artifact_prepull.py",
-        "contracts/event-artifact-prepull-v1.yaml"
+        "contracts/event-artifact-prepull-v1.yaml",
+        "backend/app/services/artifact_prepull_attestation.py",
+        "backend/tests/test_artifact_prepull_attestation.py",
+        "contracts/event-artifact-prepull-attestation-v1.yaml",
+        "docs/event-artifact-prepull-attestation.md"
       ],
-      "note": "A versioned offline scheduled-event pre-pull contract creates an immutable, deduplicated exact-digest plan by assigned cluster. Readiness fails closed unless every cluster/image pair supplies full-node cache coverage, digest and signature verification, mirror/source attribution, matching evidence, and a timezone-aware observation inside the planned warm-up window. This is GREEN-local only: receipt timestamps are self-reported; no pull ran and authentic integration/live cache-loss recovery remain open."
+      "note": "A versioned offline scheduled-event pre-pull contract creates an immutable, deduplicated exact-digest plan by assigned cluster. A local attestation adapter now verifies a designated producer MAC, per-node claims against a separately supplied eligible-node roster, and observation timing. A MAC proves key possession, not a real pull or verified evidence artifact. This remains GREEN-local only: no pull ran, no live producer or admission wiring exists, and authentic integration/live cache-loss recovery remain open."
     },
     "LP-T096": {
       "state": "green-integration",
@@ -852,9 +861,11 @@
         "evidence/runs/admin-intake-quality-ui/manifest.json",
         "contracts/catalog-intake-pipeline-v1.1.yaml",
         "backend/tests/test_catalog_intake_pipeline_contract_alignment.py",
-        "docs/catalog-intake-pipeline-contract.md"
+        "docs/catalog-intake-pipeline-contract.md",
+        "backend/tests/test_catalog_intake_pipeline.py",
+        "admin/src/pages/CatalogIntakes.test.tsx"
       ],
-      "note": "Admin Intake now conditionally exposes source approval and discovery actions only when durable storage and worker prerequisites pass, renders execution state, and presents the versioned Quickstart quality profile: authoring artifacts, Showroom depth, inferred model access, supply-chain signals, activation findings, and its analysis-only authority. Certification, publication, provisioning, and live mutation remain disabled. The v1.1 read-only pipeline contract now matches the existing draft-generated state and conditional action hints without granting authorization; historical v1.0 evidence remains unchanged."
+      "note": "Admin Intake conditionally exposes source approval and discovery only when prerequisites pass, renders execution state and the versioned Quickstart quality profile, and now displays each certification gate's evidence requirements and blockers. A generated draft with no static findings still explains why artifact/security review is blocked. Certification, publication, provisioning, and live mutation remain disabled; historical v1.0 evidence remains unchanged."
     },
     "LP-T100": {
       "state": "green-integration",
