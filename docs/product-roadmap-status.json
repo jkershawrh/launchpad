@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T10:51:39Z",
+  "updated_at": "2026-09-21T10:59:07Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -721,12 +721,13 @@
         "evidence/runs/security/session-response-redaction-green-local-20260920.json",
         "evidence/runs/security/request-workshop-response-redaction-green-local-20260921.json",
         "evidence/runs/security/diagnostic-response-redaction-green-local-20260921.json",
+        "evidence/runs/security/api-error-boundary-green-local-20260921.json",
         "backend/tests/test_session_response_security.py",
         "backend/tests/test_workshop_response_security.py",
         "backend/tests/test_admin_observability.py",
         "backend/tests/test_requester_api_contract.py"
       ],
-      "note": "Local requester and operations response contracts redact credential-shaped and diagnostic metadata keys in request, session, workshop, and nested seat records without changing persisted data. Validation and cleanup exception text, seat errors, admin observability errors, and admin endpoint-probe exceptions now return stable public messages; one-time instructor codes remain creation-only. This remains GREEN-local: HTTP exception bodies, raw privileged logs, other free-form telemetry, credential rotation, durable audit controls, signing, live policy enforcement, and abuse tests remain release-blocking."
+      "note": "Local requester and operations response contracts redact credential-shaped and diagnostic metadata keys in request, session, workshop, and nested seat records without changing persisted data. Validation, cleanup, seat, admin observability, and endpoint-probe errors use stable public messages; service exception bodies now use status-preserving generic text, and the unused raw container-log browser API is denied. One-time instructor codes remain creation-only. This remains GREEN-local: capacity/cluster reason strings and other telemetry, authorized log-access design, credential rotation, durable audit controls, signing, live policy enforcement, and abuse tests remain release-blocking."
     },
     "LP-T019": {
       "state": "green-local",

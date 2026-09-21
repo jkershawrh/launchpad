@@ -118,6 +118,19 @@ def _authorize_overrides(body: WorkshopCreate, user: User) -> None:
         )
 
 
+def _safe_order_error(exc: ValueError) -> str:
+    """Keep actionable policy failures without reflecting provider diagnostics."""
+
+    message = str(exc)
+    if message == "No eligible execution cluster is available":
+        return message
+    if message.endswith("does not allow public_code exposure"):
+        return "This lab is not approved for public access"
+    if message.startswith("Requested ") and "cluster supports" in message:
+        return "Requested workshop exceeds available cluster capacity"
+    return "Workshop operation could not be completed"
+
+
 def _authorized_workshop(workshop_id: str, user: User) -> Workshop:
     workshop = provisioning_service.get_workshop(workshop_id)
     if not workshop or not can_access_tenant(user, workshop.tenant_id):
@@ -148,8 +161,8 @@ def create_workshop(
         return provisioning_service.provision_workshop(workshop, idempotency_key=idempotency_key)
     except ValueError as e:
         if "Idempotency key" in str(e):
-            raise HTTPException(409, str(e))
-        raise HTTPException(400, str(e))
+            raise HTTPException(409, "Idempotency key conflict")
+        raise HTTPException(400, _safe_order_error(e))
 
 
 @router.get("", response_model=list[WorkshopResponse])
@@ -202,12 +215,12 @@ def create_workshop_order(
             if plaintext:
                 result["one_time_access_code"] = plaintext
         return result
-    except PublicAccessPolicyAlreadyExistsError as e:
-        raise HTTPException(409, str(e))
+    except PublicAccessPolicyAlreadyExistsError:
+        raise HTTPException(409, "Public access policy already exists")
     except ValueError as e:
         if "Idempotency key" in str(e):
-            raise HTTPException(409, str(e))
-        raise HTTPException(400, str(e))
+            raise HTTPException(409, "Idempotency key conflict")
+        raise HTTPException(400, _safe_order_error(e))
 
 
 @router.post("/{workshop_id}/confirm", response_model=WorkshopResponse, status_code=202)
@@ -230,8 +243,8 @@ def confirm_workshop(
         return workshop
     except ValueError as e:
         if "not found" in str(e):
-            raise HTTPException(404, str(e))
-        raise HTTPException(409, str(e))
+            raise HTTPException(404, "Workshop not found")
+        raise HTTPException(409, "Workshop operation conflicts with current state")
 
 
 @router.get("/{workshop_id}", response_model=WorkshopResponse)
@@ -258,8 +271,8 @@ def retry_failed_workshop_seats(
         return workshop
     except ValueError as e:
         if "not found" in str(e):
-            raise HTTPException(404, str(e))
-        raise HTTPException(409, str(e))
+            raise HTTPException(404, "Workshop not found")
+        raise HTTPException(409, "Workshop operation conflicts with current state")
 
 
 @router.get("/{workshop_id}/users")
@@ -267,8 +280,8 @@ def get_workshop_users(workshop_id: str, user: User = Depends(get_current_user))
     _authorized_workshop(workshop_id, user)
     try:
         return provisioning_service.get_workshop_users(workshop_id)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Workshop not found")
 
 
 @router.get("/{workshop_id}/capacity")
@@ -298,5 +311,5 @@ def delete_workshop(
                     provisioning_service.reclaim_workshop, workshop_id
                 )
         return workshop
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Workshop not found")

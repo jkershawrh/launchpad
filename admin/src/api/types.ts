@@ -242,16 +242,10 @@ export interface SystemStatus {
   containers_list: Array<{ name: string; status: string; ports: string; uptime: string }>;
 }
 
-export interface ContainerLogs {
-  name: string;
-  logs: string;
-}
-
 export interface SessionDiagnostics {
   session_id: string;
   container_status: Array<Record<string, unknown>>;
   health_checks: Array<Record<string, unknown>>;
-  recent_logs: string;
 }
 
 export interface CatalogReclaimResult {

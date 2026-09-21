@@ -62,8 +62,8 @@ def validate_session(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
         return provisioning_service.validate_session(session_id)
-    except (ValueError, InvalidTransitionError, ValidationRequiredError) as e:
-        raise HTTPException(400, str(e))
+    except (ValueError, InvalidTransitionError, ValidationRequiredError):
+        raise HTTPException(400, "Session operation could not be completed")
 
 
 @router.post("/{session_id}/activate", response_model=LabSessionResponse)
@@ -71,8 +71,8 @@ def activate_session(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
         return provisioning_service.activate_session(session_id)
-    except (ValueError, InvalidTransitionError) as e:
-        raise HTTPException(400, str(e))
+    except (ValueError, InvalidTransitionError):
+        raise HTTPException(400, "Session operation could not be completed")
 
 
 @router.post("/{session_id}/reset", response_model=LabSessionResponse)
@@ -80,8 +80,8 @@ def reset_session(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
         return provisioning_service.reset_session(session_id)
-    except (ValueError, InvalidTransitionError) as e:
-        raise HTTPException(400, str(e))
+    except (ValueError, InvalidTransitionError):
+        raise HTTPException(400, "Session operation could not be completed")
 
 
 @router.post("/{session_id}/reclaim", response_model=LabSessionResponse)
@@ -107,8 +107,8 @@ def reclaim_session(
             response.status_code = 202
             return session
         return provisioning_service.reclaim_session(session_id)
-    except (ValueError, InvalidTransitionError) as e:
-        raise HTTPException(400, str(e))
+    except (ValueError, InvalidTransitionError):
+        raise HTTPException(400, "Session operation could not be completed")
 
 
 @router.get("/{session_id}/handoff", response_model=HandoffPackage)
@@ -116,8 +116,8 @@ def get_handoff(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
         return provisioning_service.get_handoff(session_id)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Session artifact not found")
 
 
 @router.get("/{session_id}/showback", response_model=ShowbackRecord)
@@ -125,8 +125,8 @@ def get_showback(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
         return provisioning_service.get_showback(session_id)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Session artifact not found")
 
 
 @router.get("/{session_id}/repeatability-report", response_model=RepeatabilityReport)
@@ -134,8 +134,8 @@ def get_repeatability_report(session_id: str, user: User = Depends(get_current_u
     _authorized_session(session_id, user)
     try:
         return provisioning_service.get_repeatability_report(session_id)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Session artifact not found")
 
 
 @router.get("/{session_id}/security-plan", response_model=SecurityPlan)
@@ -143,5 +143,5 @@ def get_security_plan(session_id: str, user: User = Depends(get_current_user)):
     _authorized_session(session_id, user)
     try:
         return provisioning_service.get_security_plan(session_id)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Session artifact not found")

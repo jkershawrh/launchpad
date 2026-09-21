@@ -1,0 +1,30 @@
+{
+  "evidence_id": "api-error-boundary-green-local-20260921",
+  "generated_at": "2026-09-21T10:59:07Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T058"],
+  "red": {
+    "tests_failed": 4,
+    "result": "request, session, workshop, and raw admin log endpoints returned exception or runtime text containing credential values"
+  },
+  "green": {
+    "focused_security_and_admin_tests_passed": 47,
+    "full_backend_tests_passed": 2096,
+    "full_backend_tests_skipped": 27,
+    "tests_failed": 0
+  },
+  "proof": {
+    "service_exception_status_codes_preserved": true,
+    "service_exception_text_returned": false,
+    "known_public_access_conflict_message_preserved": true,
+    "known_eligible_cluster_error_preserved": true,
+    "raw_container_log_api_status": 403,
+    "active_admin_ui_raw_log_consumer": false,
+    "internal_runtime_log_method_removed": false
+  },
+  "boundary": [
+    "This is local API proof only; no live deployment or retained-lab mutation occurred",
+    "Capacity and cluster reason strings, telemetry, and approved operator log access require separate review",
+    "Live abuse testing remains required before release"
+  ]
+}

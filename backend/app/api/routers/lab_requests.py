@@ -92,5 +92,5 @@ def provision_lab(
             response.status_code = 202
             return session
         return provisioning_service.provision(request_id)
-    except ValueError as e:
-        raise HTTPException(400, str(e))
+    except ValueError:
+        raise HTTPException(400, "Request could not be completed")

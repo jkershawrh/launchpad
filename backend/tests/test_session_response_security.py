@@ -270,3 +270,67 @@ def test_admin_diagnostics_do_not_echo_endpoint_exception(session: LabSession) -
     assert response.status_code == 200
     assert "diagnostic-exception-secret" not in str(response.json())
     assert response.json()["health_checks"][0]["error"] == "Endpoint check failed"
+
+
+def test_request_provision_error_does_not_echo_exception(
+    partner_client: TestClient, session: LabSession
+) -> None:
+    request = type("RequestRecord", (), {"request_id": session.request_id, "tenant_id": session.tenant_id})()
+    with (
+        patch.object(provisioning_service, "get_request", return_value=request),
+        patch.object(
+            provisioning_service,
+            "provision",
+            side_effect=ValueError("provider failed token=provision-error-secret"),
+        ),
+    ):
+        response = partner_client.post(f"/api/v1/lab-requests/{session.request_id}/provision")
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Request could not be completed"
+    assert "provision-error-secret" not in str(response.json())
+
+
+def test_session_operation_error_does_not_echo_exception(
+    partner_client: TestClient, session: LabSession
+) -> None:
+    with patch.object(
+        provisioning_service,
+        "validate_session",
+        side_effect=ValueError("provider failed password=session-error-secret"),
+    ):
+        response = partner_client.post(f"/api/v1/lab-sessions/{session.session_id}/validate")
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Session operation could not be completed"
+    assert "session-error-secret" not in str(response.json())
+
+
+def test_admin_api_does_not_expose_raw_container_logs() -> None:
+    app.dependency_overrides[require_admin] = lambda: User(username="admin", is_admin=True)
+    client = TestClient(app)
+
+    with patch(
+        "app.api.routers.admin.monitor.get_container_logs",
+        return_value={"name": "worker", "success": True, "logs": "token=raw-log-secret"},
+    ) as get_logs:
+        response = client.get("/api/v1/admin/system/containers/worker/logs")
+
+    assert response.status_code == 403
+    assert "raw-log-secret" not in str(response.json())
+    get_logs.assert_not_called()
+
+
+def test_admin_restart_error_does_not_echo_runtime_output() -> None:
+    app.dependency_overrides[require_admin] = lambda: User(username="admin", is_admin=True)
+    client = TestClient(app)
+
+    with patch(
+        "app.api.routers.admin.monitor.restart_container",
+        return_value={"success": False, "message": "password=runtime-error-secret"},
+    ):
+        response = client.post("/api/v1/admin/system/containers/worker/restart")
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Container restart could not be completed"
+    assert "runtime-error-secret" not in str(response.json())

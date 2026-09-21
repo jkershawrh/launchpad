@@ -105,3 +105,34 @@ def test_workshop_order_response_redacts_nested_metadata(
 
     assert response.status_code == 201
     _assert_secret_free(response.json())
+
+
+def test_workshop_order_error_does_not_echo_exception(client: TestClient) -> None:
+    with patch.object(
+        provisioning_service,
+        "create_workshop_order",
+        side_effect=ValueError("capacity provider failed token=workshop-order-secret"),
+    ):
+        response = client.post(
+            "/api/v1/workshops/orders",
+            json={"tenant_id": "partner-a", "catalog_item_id": "catalog-1", "num_users": 1},
+        )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Workshop operation could not be completed"
+    assert "workshop-order-secret" not in str(response.json())
+
+
+def test_workshop_order_preserves_known_safe_placement_error(client: TestClient) -> None:
+    with patch.object(
+        provisioning_service,
+        "create_workshop_order",
+        side_effect=ValueError("No eligible execution cluster is available"),
+    ):
+        response = client.post(
+            "/api/v1/workshops/orders",
+            json={"tenant_id": "partner-a", "catalog_item_id": "catalog-1", "num_users": 1},
+        )
+
+    assert response.status_code == 400
+    assert response.json()["detail"] == "No eligible execution cluster is available"

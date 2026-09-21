@@ -122,19 +122,18 @@ def list_containers() -> List[Dict[str, Any]]:
     return containers
 
 
-@router.get("/system/containers/{name}/logs")
+@router.get("/system/containers/{name}/logs", status_code=403)
 def container_logs(name: str, lines: int = 100) -> Dict[str, Any]:
-    result = monitor.get_container_logs(name, lines)
-    if not result["success"]:
-        raise HTTPException(404, f"Container {name} not found or not accessible")
-    return result
+    # Raw runtime output is unstructured and may contain credentials. Operators
+    # use approved log tooling; this API must not relay the raw stream.
+    raise HTTPException(403, "Raw container logs are not available through Launchpad")
 
 
 @router.post("/system/containers/{name}/restart")
 def restart_container(name: str) -> Dict[str, Any]:
     result = monitor.restart_container(name)
     if not result["success"]:
-        raise HTTPException(400, result["message"])
+        raise HTTPException(400, "Container restart could not be completed")
     return result
 
 
@@ -142,8 +141,8 @@ def restart_container(name: str) -> Dict[str, Any]:
 def force_reclaim(session_id: str):
     try:
         return provisioning_service.force_reclaim_session(session_id)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Session not found")
 
 
 @router.post("/catalog/{catalog_item_id}/force-reclaim")
@@ -185,16 +184,16 @@ def session_diagnostics(session_id: str) -> Dict[str, Any]:
 def add_catalog_item(item: CatalogItem):
     try:
         return catalog_adapter.add_item(item)
-    except ValueError as e:
-        raise HTTPException(409, str(e))
+    except ValueError:
+        raise HTTPException(409, "Catalog operation conflicts with current state")
 
 
 @router.put("/catalog/{catalog_item_id}", response_model=CatalogItem)
 def update_catalog_item(catalog_item_id: str, updates: Dict[str, Any]):
     try:
         return catalog_adapter.update_item(catalog_item_id, updates)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Catalog item not found")
 
 
 @router.patch("/catalog/{catalog_item_id}/status", response_model=CatalogItem)
@@ -205,8 +204,8 @@ def set_catalog_status(catalog_item_id: str, body: Dict[str, str]):
     try:
         status = CatalogStatus(status_str)
     except ValueError:
-        raise HTTPException(400, f"Invalid status: {status_str}")
+        raise HTTPException(400, "Invalid catalog status")
     try:
         return catalog_adapter.set_status(catalog_item_id, status)
-    except ValueError as e:
-        raise HTTPException(404, str(e))
+    except ValueError:
+        raise HTTPException(404, "Catalog item not found")

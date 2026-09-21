@@ -4,7 +4,6 @@ import type {
   ClusterCapacity,
   ClusterPreflightResponse,
   ContainerInfo,
-  ContainerLogs,
   DetailedSystemHealth,
   FeedbackSummary,
   HandoffPackage,
@@ -91,8 +90,6 @@ export const api = {
   getAdminObservability: () => request<AdminObservability>('/admin/observability'),
   getLifecycleHealth: () => request<LifecycleHealth>('/admin/lifecycle'),
   listContainers: () => request<ContainerInfo[]>('/admin/system/containers'),
-  getContainerLogs: (name: string, lines?: number) =>
-    request<ContainerLogs>(`/admin/system/containers/${name}/logs?lines=${lines || 100}`),
   restartContainer: (name: string) =>
     request<{ success: boolean }>(`/admin/system/containers/${name}/restart`, { method: 'POST' }),
   forceReclaimSession: (id: string) =>
