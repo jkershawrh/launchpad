@@ -33,8 +33,16 @@ def _receipt(image: str = IMAGE) -> dict:
     }
     checks["vulnerability_scan"].update(critical_findings=0, high_findings=0)
     checks["sbom"].update(artifact="oci://sbom", sha256="b" * 64)
-    checks["signature"].update(identity="trusted-ci", verified=True)
-    checks["provenance"].update(artifact="oci://provenance", sha256="c" * 64, verified=True)
+    checks["signature"].update(identity="trusted-ci", subject_image=image, verified=True)
+    checks["provenance"].update(
+        artifact="oci://provenance",
+        sha256="c" * 64,
+        subject_image=image,
+        source_repository="https://example/repo",
+        source_revision="d" * 40,
+        builder_identity="trusted-ci",
+        verified=True,
+    )
     checks["retention"].update(protected_until="2027-12-01T00:00:00Z", rollback_releases_retained=3)
     return {
         "schema_version": "launchpad.redhat.com/artifact-release-evidence/v1",

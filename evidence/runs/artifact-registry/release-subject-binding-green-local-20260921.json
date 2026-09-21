@@ -1,0 +1,27 @@
+{
+  "evidence_id": "artifact-release-subject-binding-green-local-20260921",
+  "generated_at": "2026-09-21T12:41:00Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T017"],
+  "red": {
+    "test": "backend/tests/test_artifact_release_evidence.py",
+    "result": "2 failed, 6 passed: receipts with mismatched or absent signature/provenance bindings were incorrectly eligible"
+  },
+  "green": {
+    "focused_tests": "23 passed",
+    "backend_regression": "2115 passed, 27 skipped, 13 deselected",
+    "lint": "ruff passed",
+    "contract": "contracts/artifact-release-evidence-v1.yaml"
+  },
+  "enforced_bindings": [
+    "signature subject image equals release image digest",
+    "provenance subject image equals release image digest",
+    "provenance source repository and revision equal release source",
+    "provenance builder identity equals release build"
+  ],
+  "limitations": [
+    "This is an offline consistency check of declared receipt fields, not cryptographic signature or provenance verification.",
+    "Authentic registry publication, signing identity approval, and exact-digest destination pulls remain unproven.",
+    "No registry, cluster, catalog, or retained workshop was changed."
+  ]
+}

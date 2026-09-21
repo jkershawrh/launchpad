@@ -305,9 +305,10 @@
         "evidence/runs/pilot-h1/PILOT-FEAT-001-green-local.xml",
         "evidence/runs/pilot-h1/PILOT-FEAT-001-red.xml",
         "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json",
+        "evidence/runs/artifact-registry/release-subject-binding-green-local-20260921.json",
         "scripts/validate_catalog_artifacts.py"
       ],
-      "note": "The artifact subset of the promotion gate is GREEN-local: CI and local gates reject mutable, missing, unapproved, execution-cluster-local, wrong-component, dirty-source, and credential-bearing releases. A versioned receipt now requires vulnerability, SBOM, signature, provenance, license, architecture, builder, and retention evidence. Secret and supported-model gates plus authentic publication, signing, restore, cross-cluster cold-pull, rollback, and GREEN-live proof remain open; retained workshops were not changed."
+      "note": "The artifact subset of the promotion gate is GREEN-local: CI and local gates reject mutable, missing, unapproved, execution-cluster-local, wrong-component, dirty-source, and credential-bearing releases. A versioned receipt requires vulnerability, SBOM, signature, provenance, license, architecture, builder, and retention evidence; signature and provenance subjects must match the exact release image, and provenance source/build fields must match the release receipt. These are declared-field consistency checks, not cryptographic verification. Secret and supported-model gates plus authentic publication, signing, restore, cross-cluster cold-pull, rollback, and GREEN-live proof remain open; retained workshops were not changed."
     },
     "LP-T114": {
       "state": "green-local",

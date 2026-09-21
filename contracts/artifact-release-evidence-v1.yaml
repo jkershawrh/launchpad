@@ -86,18 +86,34 @@ components:
               allOf:
                 - {$ref: '#/components/schemas/EvidenceCheck'}
                 - type: object
-                  required: [identity, verified]
+                  required: [identity, subject_image, verified]
                   properties:
                     identity: {type: string, minLength: 1}
+                    subject_image:
+                      type: string
+                      pattern: '^[^[:space:]@]+@sha256:[0-9a-f]{64}$'
                     verified: {const: true}
             provenance:
               allOf:
                 - {$ref: '#/components/schemas/EvidenceCheck'}
                 - type: object
-                  required: [artifact, sha256, verified]
+                  required:
+                    - artifact
+                    - sha256
+                    - subject_image
+                    - source_repository
+                    - source_revision
+                    - builder_identity
+                    - verified
                   properties:
                     artifact: {type: string, minLength: 1}
                     sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
+                    subject_image:
+                      type: string
+                      pattern: '^[^[:space:]@]+@sha256:[0-9a-f]{64}$'
+                    source_repository: {type: string, minLength: 1}
+                    source_revision: {type: string, pattern: '^[0-9a-f]{40}$'}
+                    builder_identity: {type: string, minLength: 1}
                     verified: {const: true}
             license_policy: {$ref: '#/components/schemas/EvidenceCheck'}
             retention:

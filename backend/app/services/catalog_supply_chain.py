@@ -391,10 +391,32 @@ def evaluate_artifact_release_evidence(
         failures.append("signature identity is required")
     if signature.get("verified") is not True:
         failures.append("signature verification did not pass")
+    if signature.get("subject_image") != image:
+        failures.append("signature subject image does not match release image")
 
     provenance = checks.get("provenance") or {}
     if provenance.get("verified") is not True:
         failures.append("provenance verification did not pass")
+    for field, expected, label in (
+        ("subject_image", image, "subject image does not match release image"),
+        (
+            "source_repository",
+            source.get("repository"),
+            "source repository does not match release source",
+        ),
+        (
+            "source_revision",
+            source.get("revision"),
+            "source revision does not match release source",
+        ),
+        (
+            "builder_identity",
+            build.get("builder_identity"),
+            "builder identity does not match release build",
+        ),
+    ):
+        if not provenance.get(field) or provenance.get(field) != expected:
+            failures.append(f"provenance {label}")
 
     retention = checks.get("retention") or {}
     minimum_releases = int(
@@ -413,7 +435,7 @@ def evaluate_artifact_release_evidence(
         "source_revision": str(source.get("revision", "")),
         "image": image,
         "architectures": architectures,
-        "status": "GREEN-integration" if not failures else "RED",
+        "status": "GREEN-local" if not failures else "RED",
         "eligible": not failures,
         "failures": failures,
         "unexpected_checks": unexpected,

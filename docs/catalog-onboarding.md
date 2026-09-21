@@ -139,7 +139,11 @@ The source-to-image release boundary is versioned in
 revision to one component-specific image digest, architecture list, builder
 identity, vulnerability result, SBOM, signature, provenance, license decision,
 and retention proof. `scripts/validate_artifact_release.py` fails closed on a
-missing or inconsistent field and rejects inline credentials. This local gate
+missing or inconsistent field, rejects inline credentials, and requires the
+signature subject to match the release image and the provenance subject,
+source repository/revision, and builder identity to match the release receipt.
+This local gate checks declared bindings; it does not cryptographically verify
+the signature or provenance artifact. It
 does not claim that the Quay organization, signing identity, or evidence
 artifacts exist; those require authentic integration and live proof.
 

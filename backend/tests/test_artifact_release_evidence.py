@@ -45,6 +45,7 @@ def _receipt() -> dict:
             "signature": {
                 "status": "passed",
                 "identity": "github-actions:jkershawrh/launchpad",
+                "subject_image": f"quay.io/redhat-gpte/launchpad-backend@sha256:{digest}",
                 "verified": True,
                 "evidence": ["evidence/signature.json"],
             },
@@ -52,6 +53,10 @@ def _receipt() -> dict:
                 "status": "passed",
                 "artifact": "oci://quay.io/redhat-gpte/launchpad-backend:provenance",
                 "sha256": "d" * 64,
+                "subject_image": f"quay.io/redhat-gpte/launchpad-backend@sha256:{digest}",
+                "source_repository": "https://github.com/jkershawrh/launchpad.git",
+                "source_revision": "b" * 40,
+                "builder_identity": "github-actions:jkershawrh/launchpad",
                 "verified": True,
                 "evidence": ["evidence/provenance.json"],
             },
@@ -75,10 +80,10 @@ def _write(tmp_path: Path, payload: dict) -> Path:
     return path
 
 
-def test_complete_release_evidence_is_integration_eligible(tmp_path: Path) -> None:
+def test_complete_release_evidence_is_locally_consistent(tmp_path: Path) -> None:
     report = evaluate_artifact_release_evidence(POLICY, _write(tmp_path, _receipt()))
 
-    assert report["status"] == "GREEN-integration"
+    assert report["status"] == "GREEN-local"
     assert report["eligible"] is True
     assert report["failures"] == []
     assert report["component"] == "backend"
@@ -127,6 +132,39 @@ def test_release_evidence_rejects_missing_or_failed_proof(tmp_path: Path) -> Non
     assert "release check has no evidence: license_policy" in report["failures"]
 
 
+def test_release_evidence_rejects_proof_for_another_image_or_source(
+    tmp_path: Path,
+) -> None:
+    receipt = _receipt()
+    receipt["checks"]["signature"]["subject_image"] = (
+        "quay.io/redhat-gpte/launchpad-backend@sha256:" + "e" * 64
+    )
+    provenance = receipt["checks"]["provenance"]
+    provenance["subject_image"] = receipt["checks"]["signature"]["subject_image"]
+    provenance["source_revision"] = "f" * 40
+    provenance["builder_identity"] = "github-actions:untrusted/repository"
+
+    report = evaluate_artifact_release_evidence(POLICY, _write(tmp_path, receipt))
+
+    assert report["eligible"] is False
+    assert "signature subject image does not match release image" in report["failures"]
+    assert "provenance subject image does not match release image" in report["failures"]
+    assert "provenance source revision does not match release source" in report["failures"]
+    assert "provenance builder identity does not match release build" in report["failures"]
+
+
+def test_release_evidence_rejects_missing_proof_bindings(tmp_path: Path) -> None:
+    receipt = _receipt()
+    del receipt["checks"]["signature"]["subject_image"]
+    del receipt["checks"]["provenance"]["source_repository"]
+
+    report = evaluate_artifact_release_evidence(POLICY, _write(tmp_path, receipt))
+
+    assert report["eligible"] is False
+    assert "signature subject image does not match release image" in report["failures"]
+    assert "provenance source repository does not match release source" in report["failures"]
+
+
 def test_release_evidence_rejects_inline_credentials_and_weak_retention(
     tmp_path: Path,
 ) -> None:
@@ -165,4 +203,4 @@ def test_release_evidence_cli_emits_machine_readable_gate(tmp_path: Path) -> Non
     assert result.returncode == 0
     payload = yaml.safe_load(output.read_text())
     assert payload["eligible"] is True
-    assert payload["status"] == "GREEN-integration"
+    assert payload["status"] == "GREEN-local"
