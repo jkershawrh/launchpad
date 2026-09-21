@@ -248,7 +248,7 @@ class OpenShiftProvisioningAdapter:
                 if not gw_existed:
                     self._create_namespace(gw_namespace)
                     self._grant_remote_control_plane_access(gw_namespace)
-                    self._grant_image_pull(gw_namespace)
+                    self._ensure_image_pull_access(gw_namespace, res)
                     self._create_demo_secrets(gw_namespace, session_maas_key)
                     self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
                     self._wait_for_deployments(gw_namespace, deployments={"postgres", "gateway"})
@@ -277,7 +277,7 @@ class OpenShiftProvisioningAdapter:
             ),
         )
         self._grant_remote_control_plane_access(demo_namespace)
-        self._grant_image_pull(demo_namespace)
+        self._ensure_image_pull_access(demo_namespace, res)
         if self._grants_direct_participant_access(res):
             self._grant_participant_access(
                 demo_namespace,
@@ -1092,6 +1092,44 @@ http {{
         catalog = slug(catalog_item_id)[:18].rstrip("-") or "lab"
         return f"launchpad-{tenant}-{catalog}-{suffix}"
 
+    @staticmethod
+    def _requires_image_pull_grant(resources: dict) -> bool:
+        """Only skip the integrated-registry grant for known, pinned Quay images.
+
+        Unknown charts or omitted support images retain the conservative grant.
+        Gateway-backed labs always use images in the control-plane registry.
+        """
+        if not resources.get("operator_workshop"):
+            return True
+
+        def pinned_quay(reference: object) -> bool:
+            return isinstance(reference, str) and bool(
+                re.fullmatch(r"quay\.io/[^\s]+@sha256:[0-9a-f]{64}", reference)
+            )
+
+        if resources.get("showroom_enabled"):
+            images = resources.get("showroom_support_images") or {}
+            if not all(
+                pinned_quay(images.get(name))
+                for name in ("showroom_terminal", "showroom_git_cloner")
+            ):
+                return True
+
+        if resources.get("workload_enabled"):
+            if resources.get("workload_deploy_path") != "deploy/workloads/multi-agent-seat":
+                return True
+            image = (resources.get("workload_helm_values") or {}).get("image") or {}
+            repository = image.get("repository", "")
+            digest = image.get("digest", "")
+            if not pinned_quay(f"{repository}@{digest}"):
+                return True
+
+        return False
+
+    def _ensure_image_pull_access(self, namespace: str, resources: dict) -> None:
+        if self._requires_image_pull_grant(resources):
+            self._grant_image_pull(namespace)
+
     def _grant_image_pull(self, namespace: str) -> None:
         body = client.V1RoleBinding(
             metadata=client.V1ObjectMeta(
@@ -1117,7 +1155,7 @@ http {{
             )
         except ApiException as exc:
             if exc.status != 409:
-                pass
+                raise
 
     def _grant_remote_control_plane_access(self, namespace: str) -> None:
         """Bind Flightpath identities only inside one managed namespace.

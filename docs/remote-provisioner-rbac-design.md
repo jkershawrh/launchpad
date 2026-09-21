@@ -24,15 +24,18 @@ not a production certification of this replacement.
 
 ## Known gap before a disposable proof
 
-`OpenShiftProvisioningAdapter._grant_image_pull` currently creates an
-`image-puller` RoleBinding in `partner-ai-launchpad`. Flightpath's admission
-policy denies that write for its provisioner, and this adapter currently
-swallows non-409 errors from the attempt. A green static RBAC test therefore
-does **not** prove the image-pull path. Resolve the need for cross-namespace
-pulls, choose a narrowly scoped identity/exception or an external registry,
-and make the grant failure observable before using the reference as a live
-replacement. Do not broadly allow writes in `partner-ai-launchpad` merely to
-make the test pass.
+`OpenShiftProvisioningAdapter._grant_image_pull` creates an `image-puller`
+RoleBinding in `partner-ai-launchpad`; Flightpath's admission policy denies
+that write for its provisioner. The adapter now skips the grant only for
+operator-style labs whose Showroom images are explicitly Quay digest refs and
+whose optional workload is the known single-image multi-agent chart with a
+Quay digest ref. Missing image refs, unknown charts, internal-registry images,
+and gateway-backed labs still require the grant. Non-409 API errors now fail
+provisioning instead of being swallowed. This is a **local code contract**, not
+live Flightpath certification: the external images must be pull-tested there,
+and gateway-backed Flightpath labs remain blocked until their image source or
+narrowly scoped grant path is resolved. Do not broadly allow writes in
+`partner-ai-launchpad` merely to make a test pass.
 
 ## Evidence required to promote
 
