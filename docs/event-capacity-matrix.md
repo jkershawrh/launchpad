@@ -26,6 +26,13 @@ both catalog-cell and cluster-total constraints. A bounded deterministic search
 can reroute flexible demand so that a constrained lab is not rejected by a
 greedy choice, but it never splits one workshop across clusters.
 
+The preview reports `peak_concurrent_participants` as a conservative planning
+upper bound equal to the total participants. Cohort start times alone cannot
+prove that retained lab use does not overlap; the current manifest has no
+enforced end or reuse window. The UI labels this as an upper bound, not a
+measured concurrency value. Certified model-serving capacity still needs its
+own runtime and load proof before an event is admitted.
+
 ## Safety boundary
 
 - Exact catalog release matching is mandatory.

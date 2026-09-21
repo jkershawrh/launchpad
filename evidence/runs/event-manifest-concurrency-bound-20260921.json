@@ -1,0 +1,22 @@
+{
+  "evidence_id": "event-manifest-concurrency-bound-green-local-20260921",
+  "generated_at": "2026-09-21T13:02:34Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T021"],
+  "red": {
+    "test": "backend/tests/test_event_manifest_contract.py::test_unscheduled_cohorts_cannot_understate_peak_participant_demand",
+    "result": "failed: the preview reported 30 concurrent participants for three unscheduled cohorts of 30, where the safe upper bound is 90"
+  },
+  "green": {
+    "focused_backend_tests": "15 passed",
+    "admin_tests": "8 passed",
+    "admin_build": "passed",
+    "backend_regression": "2120 passed, 27 skipped, 13 deselected"
+  },
+  "behavior": "Without an enforceable cohort end/reuse window, the event preview treats total participant slots as the conservative concurrency planning bound. The admin page labels this as a bound, not measured usage.",
+  "limitations": [
+    "This does not certify shared-model throughput or participant activity under simultaneous load.",
+    "A future versioned schedule and retention contract is needed to prove lower concurrency and safely reuse capacity.",
+    "No orders, reservations, clusters, or retained workshops were changed."
+  ]
+}

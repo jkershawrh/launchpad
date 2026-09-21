@@ -197,6 +197,7 @@
         "backend/tests/test_event_reservation_guard.py",
         "evidence/runs/event-admission-trusted-inputs/red-local.json",
         "evidence/runs/event-admission-trusted-inputs/backend-green-local.xml",
+        "evidence/runs/event-manifest-concurrency-bound-20260921.json",
         "backend/tests/test_event_admission_forecast.py",
         "contracts/event-admission-forecast-v1.yaml",
         "admin/src/pages/Events.test.tsx",

@@ -39,7 +39,7 @@ const event: EventRecord = {
     fleet_observed_at: '2026-09-21T14:59:00Z',
     participant_count: 60,
     seat_environments: 90,
-    peak_concurrent_participants: 30,
+    peak_concurrent_participants: 60,
     peak_retained_environments: 90,
     certified_capacity: 120,
     dr_reserved_capacity: 25,
@@ -72,6 +72,7 @@ describe('Events', () => {
     expect(screen.getByText('Intel Field Day')).toBeInTheDocument();
     expect(screen.getByText('90 seat environments')).toBeInTheDocument();
     expect(screen.getByText('2 cohorts')).toBeInTheDocument();
+    expect(screen.getByText('Up to 60 concurrent (planning bound)')).toBeInTheDocument();
     expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent === 'arena · 60 seats')).toBeInTheDocument();
     expect(screen.getByText((_, element) => element?.tagName === 'P' && element.textContent === 'brutus · 30 seats')).toBeInTheDocument();
     expect(screen.getByText('Capacity eligible')).toBeInTheDocument();

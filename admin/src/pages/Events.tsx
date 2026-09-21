@@ -63,7 +63,7 @@ export default function Events() {
 
                 <div className="grid gap-px bg-[#333] sm:grid-cols-2 lg:grid-cols-4">
                   <div className="bg-[#212121] p-5"><p className="text-xs uppercase tracking-wide text-[#A3A3A3]">Demand</p><p className="mt-2 text-lg font-semibold text-white">{capacity.seat_environments} seat environments</p><p className="text-xs text-[#A3A3A3]">{capacity.participant_count} participants</p></div>
-                  <div className="bg-[#212121] p-5"><p className="text-xs uppercase tracking-wide text-[#A3A3A3]">Schedule</p><p className="mt-2 text-lg font-semibold text-white">{manifest.cohorts.length} cohorts</p><p className="text-xs text-[#A3A3A3]">Peak {capacity.peak_concurrent_participants} concurrent</p></div>
+                  <div className="bg-[#212121] p-5"><p className="text-xs uppercase tracking-wide text-[#A3A3A3]">Schedule</p><p className="mt-2 text-lg font-semibold text-white">{manifest.cohorts.length} cohorts</p><p className="text-xs text-[#A3A3A3]">Up to {capacity.peak_concurrent_participants} concurrent (planning bound)</p></div>
                   <div className="bg-[#212121] p-5"><p className="text-xs uppercase tracking-wide text-[#A3A3A3]">Catalog</p><p className="mt-2 text-lg font-semibold text-white">{manifest.labs.length} labs</p><p className="text-xs text-[#A3A3A3]">Immutable releases</p></div>
                   <div className="bg-[#212121] p-5"><p className="text-xs uppercase tracking-wide text-[#A3A3A3]">Retention</p><p className="mt-2 text-lg font-semibold text-white">{manifest.retention.hours} hours</p><p className="text-xs text-[#A3A3A3]">From {manifest.retention.starts_from.replaceAll('_', ' ')}</p></div>
                 </div>

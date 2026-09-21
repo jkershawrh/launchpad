@@ -150,9 +150,19 @@ def test_event_capacity_calculation_distinguishes_people_from_environments():
 
     assert preview.participant_count == 90
     assert preview.seat_environments == 270
-    assert preview.peak_concurrent_participants == 30
+    assert preview.peak_concurrent_participants == 90
     assert preview.peak_retained_environments == 270
     assert preview.eligible is True
+
+
+def test_unscheduled_cohorts_cannot_understate_peak_participant_demand():
+    manifest = _pilot_manifest()
+    assert all(cohort.starts_at is None for cohort in manifest.cohorts)
+
+    preview = calculate_event_capacity(manifest, _pilot_supply())
+
+    assert preview.participant_count == 90
+    assert preview.peak_concurrent_participants == 90
 
 
 def test_dr_reserved_and_uncertified_capacity_never_make_event_eligible():

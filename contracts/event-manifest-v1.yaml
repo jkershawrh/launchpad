@@ -157,7 +157,12 @@ components:
             - {type: 'null'}
         participant_count: {type: integer, minimum: 1}
         seat_environments: {type: integer, minimum: 1}
-        peak_concurrent_participants: {type: integer, minimum: 1}
+        peak_concurrent_participants:
+          type: integer
+          minimum: 1
+          description: >-
+            Conservative upper bound equal to total participants until the
+            event contract proves non-overlapping use and reuse windows.
         peak_retained_environments: {type: integer, minimum: 1}
         certified_capacity: {type: integer, minimum: 0}
         dr_reserved_capacity: {type: integer, minimum: 0}

@@ -589,9 +589,10 @@ def calculate_event_capacity(
     seat_environments = sum(
         cohort.participants * len(cohort.lab_refs) for cohort in manifest.cohorts
     )
-    peak_concurrent_participants = max(
-        cohort.participants for cohort in manifest.cohorts
-    )
+    # The manifest has no cohort end time or enforceable separation. Even a
+    # starts_at value cannot prove that another cohort has stopped using its
+    # retained labs, so use the total as the safe concurrency upper bound.
+    peak_concurrent_participants = participant_count
 
     # Until the scheduler has explicit end times and reuse policy, retained
     # event capacity is conservatively assumed to accumulate across cohorts.
