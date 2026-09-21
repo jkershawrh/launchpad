@@ -21,6 +21,8 @@ demos/.env
 
 # Secrets and credentials
 *.pem
+.vef-private/
+vef-output/
 *.key
 *.cert
 *.crt

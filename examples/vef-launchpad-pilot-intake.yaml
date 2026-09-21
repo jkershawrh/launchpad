@@ -1,0 +1,80 @@
+schema_version: vef.project-intake.v1alpha1
+project:
+  name: launchpad-75-user-90-seat-pilot
+  decision: "Decide whether Launchpad should advance beyond a supervised internal pilot"
+  owners:
+    product_semantics: unknown
+    evidence: unknown
+    finance: unknown
+    privacy: unknown
+    customer_validation: unknown
+
+value_hypothesis:
+  capability: "Launchpad-managed lab provisioning and lifecycle"
+  customer_observable_outcome: "lower fully loaded cost per successful participant journey"
+  outcome_id: launchpad.cost-per-slo-qualified-journey
+  provisioned_seats: 90
+  enrolled_users: 75
+  active_users: "measured during pilot; never default to enrolled users"
+  successful_journey: "one enrolled participant activates one assigned seat and completes the preregistered track contract within the pilot window"
+  successful_paths:
+    building_an_ai_agent: "all three participant routes healthy; expected tools present; sourced architecture response satisfies the response contract without inference errors; own-project edit allowed; cross-project and cluster-wide reads denied"
+    multi_agent_quickstart: "UI and Showroom reachable; three agents ready; research, analyst, and executor each complete an MCP-backed step without error; participant UI succeeds; bounded policy change works and rolls back; guardrail and semantic-routing checks pass; authorization remains scoped"
+    serve_llms: "participant route ready; authenticated workspace and document ingestion succeed; the answer contains the planted fact and cites the supplied document without an application error"
+  common_success_gates: ["seat ready", "participant route admitted", "assigned track contract passed", "no unknown outcome", "no isolation failure"]
+  launchpad_platform_path:
+    request: "authorized requester submits the intended workshop/order and the catalog contract validates"
+    placement: "the order is assigned only to an approved cluster with capacity and the assignment is persisted"
+    provisioning: "the requested seat records reach ready state within the preregistered SLO without duplicate ownership"
+    participant_access: "each enrolled participant can claim only an assigned seat and reach the correct Showroom and lab"
+    operation: "health, journey outcomes, support interventions, and unknown states are recorded without sensitive payloads"
+    reclaim: "access is revoked and all owned lab resources are removed within the cleanup SLO with zero residue"
+    success: "every required stage passes; a ready lab alone is not an end-to-end Launchpad success"
+  period_start: unknown
+  period_end: unknown
+  minimum_meaningful_improvement: unknown
+  falsification_condition: "no improvement, negative net value, or a safety/cleanup threshold breach"
+
+counterfactual:
+  method: unknown
+  recommended: "matched current/manual workshop preparation and support process"
+  independent: false
+  matched_population: false
+  competing_factors: ["workshop mix", "facilitator experience", "platform contention", "participant experience", "model availability"]
+
+evidence:
+  aggregate_receipts:
+    - evidence/runs/september-17-pilot-release-decision-20260909.json
+    - evidence/runs/september-17-exact75-functional-run03-green-20260909.json
+    - evidence/runs/september-17-exact75-soak-run02-20260909/summary.json
+  private_cost_ledger: .vef-private/pilot-costs.json
+  unknown_outcomes: "must be explicit"
+  raw_storage: private
+  prohibited_export_fields: ["prompts", "responses", "emails", "participant identifiers", "namespaces", "cluster metadata", "credentials"]
+
+ai_usage:
+  measurement_state: unavailable
+  note: "Direct model endpoints do not currently provide authoritative per-seat spend events. Do not infer tokens or cost."
+
+economics:
+  infrastructure_cost: unknown
+  inference_cost: unknown
+  facilitator_hours: unknown
+  support_hours: unknown
+  loaded_role_rates: unknown
+  engineering_effort:
+    - {activity: pilot_design, lifecycle: initial, hours: unknown, loaded_role_rate: unknown}
+    - {activity: lab_validation, lifecycle: initial, hours: unknown, loaded_role_rate: unknown}
+    - {activity: pilot_support, lifecycle: recurring, hours: unknown, loaded_role_rate: unknown}
+    - {activity: cleanup_review, lifecycle: recurring, hours: unknown, loaded_role_rate: unknown}
+  marginal_delivery_cost: unknown
+  time_to_value: unknown
+
+safety_and_acceptance:
+  manual_frontend_acceptance_complete: false
+  security_triage_complete: false
+  customer_validated: false
+  finance_approved: false
+  privacy_approved: false
+  stop_conditions: ["accounting mismatch", "participant isolation failure", "probe/restart threshold breach", "cleanup residue", "privacy violation"]
+  boundary: "75 active users are supported by retained evidence; 90 active seats are not yet certified"
