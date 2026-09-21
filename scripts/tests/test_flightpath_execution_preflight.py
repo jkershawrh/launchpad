@@ -40,6 +40,63 @@ def test_preflight_reports_static_green_without_claiming_runtime_proof() -> None
     assert report["mutates_cluster"] is False
     assert set(report["catalogs"]) == set(_module().PILOT_CATALOG_IDS)
     assert set(report["runtime_proof"].values()) == {"not_run"}
+    assert len(report["image_references"]) == 3
+
+
+def test_registry_probe_requires_matching_digest_and_does_not_claim_cluster_pull() -> None:
+    module = _module()
+    digest = "sha256:" + "a" * 64
+
+    class Response:
+        status = 200
+
+        def __init__(self):
+            self.headers = {"Docker-Content-Digest": digest}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    observed = []
+
+    def opener(request, *, timeout):
+        observed.append((request.full_url, request.get_method(), timeout))
+        return Response()
+
+    report = module.probe_registry_manifests(
+        {"terminal": f"quay.io/example/terminal@{digest}"}, opener=opener
+    )
+
+    assert report["passed"] is True
+    assert report["proves_cluster_layer_pull"] is False
+    assert observed == [
+        (f"https://quay.io/v2/example/terminal/manifests/{digest}", "HEAD", 15)
+    ]
+
+
+def test_registry_probe_rejects_wrong_digest() -> None:
+    module = _module()
+
+    class Response:
+        status = 200
+
+        def __init__(self):
+            self.headers = {"Docker-Content-Digest": "sha256:" + "b" * 64}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+    report = module.probe_registry_manifests(
+        {"terminal": "quay.io/example/terminal@sha256:" + "a" * 64},
+        opener=lambda *_args, **_kwargs: Response(),
+    )
+
+    assert report["passed"] is False
 
 
 def test_preflight_fails_if_flightpath_image_drifts_to_internal_registry(tmp_path: Path) -> None:

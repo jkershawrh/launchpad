@@ -68,3 +68,6 @@ read-only JSON summary of this source gate. A `static_contract_passed` result
 does not certify an execution seat: the report leaves image pulls, model calls,
 Showroom/workspace access, and zero-residue reclaim as `not_run`. The separate
 DR standby preflight likewise checks image references, not actual pullability.
+Add `--probe-registry` to make anonymous HTTPS HEAD requests for each configured
+Quay manifest and verify the response digest. This proves manifest availability
+from the machine running the check, not layer pullability from Flightpath.

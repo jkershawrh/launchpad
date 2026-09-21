@@ -6,9 +6,13 @@ The report deliberately leaves runtime proof open.
 
 from __future__ import annotations
 
+import argparse
 import json
+import re
 import sys
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 import yaml
 
@@ -49,6 +53,7 @@ def evaluate(root: Path = ROOT) -> dict:
             for name in ("showroom_terminal", "showroom_git_cloner")
         ),
     }
+    image_references = dict(target.get("image_references", {}))
 
     catalogs = {}
     for catalog_id in PILOT_CATALOG_IDS:
@@ -71,6 +76,11 @@ def evaluate(root: Path = ROOT) -> dict:
         # Node selection is a runtime capacity check, not part of source proof.
         adapter._select_workshop_node_name = lambda _request, _metadata: ""
         plan = adapter.create_plan(request, item)
+        if plan.required_resources["workload_enabled"]:
+            image = plan.required_resources["workload_helm_values"].get("image", {})
+            image_references[f"{catalog_id}-workload"] = (
+                f"{image.get('repository', '')}@{image.get('digest', '')}"
+            )
         required_capabilities = set(item.required_capabilities)
         required_models = set(item.metadata.get("required_models", []))
         catalog_checks = {
@@ -99,10 +109,50 @@ def evaluate(root: Path = ROOT) -> dict:
             "showroom_and_workspace": "not_run",
             "reclaim_zero_residue": "not_run",
         },
+        "image_references": image_references,
+    }
+
+
+def probe_registry_manifests(image_references: dict[str, str], opener=urlopen) -> dict:
+    """Check anonymous HTTPS manifest HEAD only; never claim a cluster pull."""
+    results = {}
+    for name, reference in sorted(image_references.items()):
+        check = {"reference": reference, "passed": False}
+        try:
+            if not re.fullmatch(r"quay\.io/[a-zA-Z0-9._/-]+@sha256:[0-9a-f]{64}", reference):
+                raise ValueError("not a pinned Quay digest reference")
+            repository, digest = reference.removeprefix("quay.io/").split("@", 1)
+            url = f"https://quay.io/v2/{repository}/manifests/{digest}"
+            request = Request(url, method="HEAD")
+            with opener(request, timeout=15) as response:
+                observed = response.headers.get("Docker-Content-Digest", "")
+                check["http_status"] = response.status
+                check["observed_digest"] = observed
+                check["passed"] = response.status == 200 and observed == digest
+        except (HTTPError, URLError, TimeoutError, ValueError, OSError) as exc:
+            check["error_type"] = type(exc).__name__
+        results[name] = check
+    return {
+        "origin": "local-machine-anonymous-https",
+        "proves_cluster_layer_pull": False,
+        "passed": bool(results) and all(item["passed"] for item in results.values()),
+        "images": results,
     }
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--probe-registry",
+        action="store_true",
+        help="make anonymous read-only HEAD requests for configured Quay manifest digests",
+    )
+    args = parser.parse_args()
     report = evaluate()
+    if args.probe_registry:
+        report["registry_manifest_probe"] = probe_registry_manifests(report["image_references"])
     print(json.dumps(report, indent=2, sort_keys=True))
-    raise SystemExit(0 if report["static_contract_passed"] else 1)
+    passed = report["static_contract_passed"] and (
+        not args.probe_registry or report["registry_manifest_probe"]["passed"]
+    )
+    raise SystemExit(0 if passed else 1)
