@@ -32,12 +32,14 @@ def _receipt() -> dict:
         "checks": {
             "vulnerability_scan": {
                 "status": "passed",
+                "subject_image": f"quay.io/redhat-gpte/launchpad-backend@sha256:{digest}",
                 "critical_findings": 0,
                 "high_findings": 0,
                 "evidence": ["evidence/vulnerability-scan.json"],
             },
             "sbom": {
                 "status": "passed",
+                "subject_image": f"quay.io/redhat-gpte/launchpad-backend@sha256:{digest}",
                 "artifact": "oci://quay.io/redhat-gpte/launchpad-backend:sbom",
                 "sha256": "c" * 64,
                 "evidence": ["evidence/sbom.json"],
@@ -163,6 +165,47 @@ def test_release_evidence_rejects_missing_proof_bindings(tmp_path: Path) -> None
     assert report["eligible"] is False
     assert "signature subject image does not match release image" in report["failures"]
     assert "provenance source repository does not match release source" in report["failures"]
+
+
+def test_release_evidence_rejects_sbom_and_scan_for_another_image(
+    tmp_path: Path,
+) -> None:
+    receipt = _receipt()
+    other_image = "quay.io/redhat-gpte/launchpad-backend@sha256:" + "e" * 64
+    receipt["checks"]["sbom"]["subject_image"] = other_image
+    receipt["checks"]["vulnerability_scan"]["subject_image"] = other_image
+
+    report = evaluate_artifact_release_evidence(POLICY, _write(tmp_path, receipt))
+
+    assert report["eligible"] is False
+    assert "sbom subject image does not match release image" in report["failures"]
+    assert "vulnerability scan subject image does not match release image" in report[
+        "failures"
+    ]
+
+
+def test_release_evidence_rejects_missing_or_invalid_scan_results(
+    tmp_path: Path,
+) -> None:
+    receipt = _receipt()
+    del receipt["checks"]["vulnerability_scan"]["subject_image"]
+    del receipt["checks"]["vulnerability_scan"]["critical_findings"]
+    receipt["checks"]["vulnerability_scan"]["high_findings"] = "0"
+    del receipt["checks"]["sbom"]["subject_image"]
+
+    report = evaluate_artifact_release_evidence(POLICY, _write(tmp_path, receipt))
+
+    assert report["eligible"] is False
+    assert "vulnerability scan subject image does not match release image" in report[
+        "failures"
+    ]
+    assert "sbom subject image does not match release image" in report["failures"]
+    assert "vulnerability scan critical_findings must be integer zero" in report[
+        "failures"
+    ]
+    assert "vulnerability scan high_findings must be integer zero" in report[
+        "failures"
+    ]
 
 
 def test_release_evidence_rejects_inline_credentials_and_weak_retention(

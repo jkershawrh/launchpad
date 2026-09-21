@@ -31,8 +31,12 @@ def _receipt(image: str = IMAGE) -> dict:
             "retention",
         )
     }
-    checks["vulnerability_scan"].update(critical_findings=0, high_findings=0)
-    checks["sbom"].update(artifact="oci://sbom", sha256="b" * 64)
+    checks["vulnerability_scan"].update(
+        subject_image=image, critical_findings=0, high_findings=0
+    )
+    checks["sbom"].update(
+        subject_image=image, artifact="oci://sbom", sha256="b" * 64
+    )
     checks["signature"].update(identity="trusted-ci", subject_image=image, verified=True)
     checks["provenance"].update(
         artifact="oci://provenance",
@@ -161,6 +165,8 @@ def test_release_root_symlink_is_rejected(tmp_path: Path):
         "extra_image",
         "mutable",
         "bad_receipt",
+        "misbound_scan",
+        "misbound_sbom",
         "wrong_identity",
         "not_promoted",
         "path_escape",
@@ -189,6 +195,20 @@ def test_untrusted_or_incomplete_release_fails_closed(tmp_path: Path, change: st
         (release_dir / "release.sig").write_text(hmac.new(KEY, raw, hashlib.sha256).hexdigest())
     elif change == "bad_receipt":
         (release_dir / "receipt.yaml").write_text("image: bad")
+    elif change in {"misbound_scan", "misbound_sbom"}:
+        receipt_path = release_dir / "receipt.yaml"
+        receipt = yaml.safe_load(receipt_path.read_text())
+        check = "vulnerability_scan" if change == "misbound_scan" else "sbom"
+        receipt["checks"][check]["subject_image"] = (
+            "quay.io/example/serve@sha256:" + "e" * 64
+        )
+        receipt_bytes = yaml.safe_dump(receipt).encode()
+        receipt_path.write_bytes(receipt_bytes)
+        manifest = json.loads(manifest_path.read_bytes())
+        manifest["image_evidence"][0]["sha256"] = hashlib.sha256(receipt_bytes).hexdigest()
+        raw = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode()
+        manifest_path.write_bytes(raw)
+        (release_dir / "release.sig").write_text(hmac.new(KEY, raw, hashlib.sha256).hexdigest())
     elif change == "path_escape":
         manifest = json.loads(manifest_path.read_bytes())
         manifest["image_evidence"][0]["path"] = "../../other.yaml"

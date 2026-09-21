@@ -70,16 +70,22 @@ components:
               allOf:
                 - {$ref: '#/components/schemas/EvidenceCheck'}
                 - type: object
-                  required: [critical_findings, high_findings]
+                  required: [subject_image, critical_findings, high_findings]
                   properties:
+                    subject_image:
+                      type: string
+                      pattern: '^[^[:space:]@]+@sha256:[0-9a-f]{64}$'
                     critical_findings: {type: integer, const: 0}
                     high_findings: {type: integer, const: 0}
             sbom:
               allOf:
                 - {$ref: '#/components/schemas/EvidenceCheck'}
                 - type: object
-                  required: [artifact, sha256]
+                  required: [subject_image, artifact, sha256]
                   properties:
+                    subject_image:
+                      type: string
+                      pattern: '^[^[:space:]@]+@sha256:[0-9a-f]{64}$'
                     artifact: {type: string, minLength: 1}
                     sha256: {type: string, pattern: '^[0-9a-f]{64}$'}
             signature:

@@ -374,10 +374,15 @@ def evaluate_artifact_release_evidence(
             failures.append(f"release check has no evidence: {name}")
 
     vulnerability = checks.get("vulnerability_scan") or {}
-    if int(vulnerability.get("critical_findings", 0) or 0) > 0:
-        failures.append("vulnerability scan contains critical findings")
-    if int(vulnerability.get("high_findings", 0) or 0) > 0:
-        failures.append("vulnerability scan contains high findings")
+    if vulnerability.get("subject_image") != image:
+        failures.append("vulnerability scan subject image does not match release image")
+    for severity in ("critical", "high"):
+        field = f"{severity}_findings"
+        count = vulnerability.get(field)
+        if type(count) is not int or count < 0:
+            failures.append(f"vulnerability scan {field} must be integer zero")
+        elif count > 0:
+            failures.append(f"vulnerability scan contains {severity} findings")
 
     for name in ("sbom", "provenance"):
         check = checks.get(name) or {}
@@ -385,6 +390,9 @@ def evaluate_artifact_release_evidence(
             failures.append(f"{name} artifact reference is required")
         if not re.fullmatch(r"[0-9a-f]{64}", str(check.get("sha256", ""))):
             failures.append(f"{name} sha256 digest is invalid")
+
+    if (checks.get("sbom") or {}).get("subject_image") != image:
+        failures.append("sbom subject image does not match release image")
 
     signature = checks.get("signature") or {}
     if not str(signature.get("identity", "")).strip():

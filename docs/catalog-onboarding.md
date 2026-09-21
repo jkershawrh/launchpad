@@ -140,8 +140,10 @@ revision to one component-specific image digest, architecture list, builder
 identity, vulnerability result, SBOM, signature, provenance, license decision,
 and retention proof. `scripts/validate_artifact_release.py` fails closed on a
 missing or inconsistent field, rejects inline credentials, and requires the
-signature subject to match the release image and the provenance subject,
-source repository/revision, and builder identity to match the release receipt.
+vulnerability scan, SBOM, signature, and provenance subjects to match the
+release image. The provenance source repository/revision and builder identity
+must match the release receipt. Missing or non-integer critical/high scan
+counts are not treated as zero.
 This local gate checks declared bindings; it does not cryptographically verify
 the signature or provenance artifact. It
 does not claim that the Quay organization, signing identity, or evidence

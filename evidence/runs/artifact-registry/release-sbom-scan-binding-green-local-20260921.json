@@ -1,0 +1,25 @@
+{
+  "evidence_id": "artifact-release-sbom-scan-binding-green-local-20260921",
+  "generated_at": "2026-09-21T12:55:14Z",
+  "stage": "GREEN-local",
+  "task_ids": ["LP-T017"],
+  "red": {
+    "test": "backend/tests/test_artifact_release_evidence.py",
+    "result": "2 failed, 8 passed: receipts with mismatched or absent SBOM/scan subjects and missing or string scan counts were incorrectly eligible"
+  },
+  "green": {
+    "focused_tests": "27 passed",
+    "backend_regression": "2119 passed, 27 skipped, 13 deselected",
+    "contract": "contracts/artifact-release-evidence-v1.yaml"
+  },
+  "enforced_bindings": [
+    "SBOM subject image equals release image digest",
+    "vulnerability scan subject image equals release image digest",
+    "critical and high finding counts are explicit integer zero"
+  ],
+  "limitations": [
+    "This offline gate checks declared receipt consistency, not the authenticity of SBOM or scan artifacts.",
+    "Authentic registry publication, signing, scanning, and exact-digest destination pulls remain unproven.",
+    "No registry, cluster, catalog, or retained workshop was changed."
+  ]
+}
