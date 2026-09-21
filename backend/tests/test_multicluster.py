@@ -1,8 +1,10 @@
+import re
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
+import yaml
 from app.adapters.openshift.client_factory import ClusterClientFactory
 from app.adapters.openshift.showroom_gitops import ShowroomSeat, build_showroom_application
 from app.domain.clusters import ClusterTarget
@@ -481,6 +483,34 @@ def test_arena_overlay_enables_brutus_for_supervised_public_pilot():
         assert targets[cluster_id]["credential_secret"].startswith(
             "partner-ai-launchpad/launchpad-"
         )
+
+
+def test_three_pilot_catalogs_match_rendered_arena_target_contract():
+    root = Path(__file__).resolve().parents[2]
+    document = yaml.safe_load(
+        (root / "deploy/launchpad/overlays/arena/arena-clusters.yaml").read_text()
+    )
+    runtime = yaml.safe_load(document["data"]["clusters.yaml"])
+    targets = {item["cluster_id"]: item for item in runtime["clusters"]}
+    pilot_ids = (
+        "intel-llm-cpu-serving",
+        "intel-xeon6-agent-201",
+        "multi-agent-quickstart",
+    )
+
+    for catalog_id in pilot_ids:
+        item = yaml.safe_load(
+            (root / "catalog" / catalog_id / "catalog-item.yaml").read_text()
+        )
+        metadata = item["metadata"]
+        target = targets[metadata["workshop_cluster_ref"]]
+
+        assert target.get("enabled", True) is True, catalog_id
+        assert set(item["required_capabilities"]).issubset(target["capabilities"]), catalog_id
+        assert set(metadata["required_models"]).issubset(target["model_endpoints"]), catalog_id
+        assert metadata["certification_stage"] == "thirty-seat-certified", catalog_id
+        assert metadata["max_workshop_seats"] == 30, catalog_id
+        assert re.fullmatch(r"[0-9a-f]{40}", metadata["showroom_content_ref"]), catalog_id
 
 
 def test_active_ai_sandbox_has_an_eligible_cluster():

@@ -51,6 +51,36 @@ def test_classification_keeps_evidence_and_source_distinct():
     assert module.classify("contracts/example.yaml") == "contract"
 
 
+def test_dependency_flags_distinguish_runtime_sources_from_legacy_automation():
+    module = load_module()
+
+    assert module._dependency_flags(
+        "deploy/launchpad/overlays/arena/argocd-application.yaml",
+        "repoURL: https://github.com/rhpds/launchpad.git\n",
+    ) == ["rhpds-git-dependency"]
+    assert module._dependency_flags(
+        "config/clusters.yaml",
+        "image: quay.io/rhpds/git-cloner@sha256:abc\n",
+    ) == ["rhpds-image-dependency"]
+    assert module._dependency_flags(
+        "deploy/agnosticv/example/common.yaml",
+        "role: agnosticd.showroom.ocp4_workload_showroom\n",
+    ) == ["agnostic-automation-dependency"]
+    assert module._dependency_flags(
+        "content-agentops-observability/supplemental-ui/partials/head-meta.hbs",
+        "https://cdn.jsdelivr.net/gh/rhpds/ocp-zt-tenant-showroom@main/site.css",
+    ) == ["rhpds-git-dependency"]
+
+
+def test_inventory_reports_dependency_counts_without_copying_values():
+    module = load_module()
+    inventory = module.build_inventory()
+
+    assert inventory["summary"]["dependency_flag_counts"]["rhpds-git-dependency"] > 0
+    assert any(record["dependency_flags"] for record in inventory["records"])
+    assert "Red Hat-hosted and RHDP dependency review" in module.render_markdown(inventory)
+
+
 def test_generated_report_contains_no_yaml_values():
     module = load_module()
     inventory = module.build_inventory()

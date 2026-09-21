@@ -14,11 +14,11 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **385**
-- Owner assignment still required: **385**
-- Preserved pending owner review: **385**
-- No repository reference detected: **173**
-- Base source commit: `f3d8cd930f1f341c94e07fd006ca6d11ca25b2d0`
+- Tracked YAML/YML files: **433**
+- Owner assignment still required: **433**
+- Preserved pending owner review: **433**
+- No repository reference detected: **176**
+- Base source commit: `47d1debab5bdef6e7b21f5d568831903467dd53d`
 - Source state: **working-tree**; tracked changes present:
   **true**
 
@@ -26,18 +26,18 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 | Classification | Files |
 |---|---:|
-| `catalog-source` | 11 |
-| `ci` | 2 |
-| `configuration` | 3 |
+| `catalog-source` | 12 |
+| `ci` | 3 |
+| `configuration` | 4 |
 | `content-source` | 18 |
-| `contract` | 14 |
+| `contract` | 42 |
 | `demo-source` | 110 |
-| `deployment-source` | 154 |
+| `deployment-source` | 168 |
 | `deployment-template` | 11 |
 | `evidence` | 22 |
 | `fixture` | 20 |
-| `generated-intake` | 4 |
-| `repository-configuration` | 6 |
+| `generated-intake` | 5 |
+| `repository-configuration` | 8 |
 | `tenant-source` | 10 |
 
 ## Review flags
@@ -47,11 +47,28 @@ example, a domain contract may legitimately contain a `status` field.
 
 | Flag | Files |
 |---|---:|
-| `environment-specific` | 110 |
+| `environment-specific` | 125 |
 | `mutable-latest-image` | 19 |
 | `possible-cluster-export-metadata` | 1 |
 | `secret-object-review-required` | 6 |
-| `status-field-review-required` | 37 |
+| `status-field-review-required` | 59 |
+
+## Red Hat-hosted and RHDP dependency review
+
+These counts identify YAML files with explicit external Git, image, or
+automation references. They do not expose URL values and do not imply that a
+reference should be removed. The approved RHPDS Launchpad repository and
+Showroom content may remain; use the flags to prove portability and identify
+hidden RHDP/AgnosticD requirements. Inspect the machine-readable records and
+prove each active consumer before changing it.
+
+| Dependency | Files |
+|---|---:|
+| `agnostic-automation-dependency` | 29 |
+| `redhat-gpte-image-dependency` | 9 |
+| `rhdp-service-dependency` | 2 |
+| `rhpds-git-dependency` | 35 |
+| `rhpds-image-dependency` | 14 |
 
 ## Priority review queues
 

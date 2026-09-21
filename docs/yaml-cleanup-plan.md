@@ -8,9 +8,8 @@ one cleanup target. This plan is planning authority only: it does not authorize
 deletion, credential rotation, catalog activation, GitOps sync, deployment, or
 reclaim.
 
-The repository currently contains **383 tracked YAML/YML files**. The largest
-groups are `deploy/` (165), `demos/` (110), fixtures (20), evidence (18),
-contracts (12), and catalog definitions (11). Cleanup must distinguish reusable
+The current count and classifications are generated in
+[`yaml-inventory-v1.md`](yaml-inventory-v1.md). Cleanup must distinguish reusable
 source, environment overlays, test fixtures, historical evidence, and obsolete
 material before changing any file.
 
@@ -45,21 +44,123 @@ All records remain `preserve-pending-owner-review`. The inventory does not
 complete YC-01 because owner assignment, external consumer confirmation, and
 the approved Intel path scope remain outstanding.
 
-Initial read-only results at the working-tree snapshot:
+Initial read-only results are recorded in the generated inventory. At the
+September 21 working-tree snapshot:
 
-- 383 tracked YAML/YML files were inventoried; 173 have no repository reference
+- 433 tracked YAML/YML files were inventoried; 176 have no repository reference
   detected and therefore require external-consumer review rather than deletion.
-- All 14 tracked Kustomize roots under `deploy/` rendered locally without
-  changing a cluster.
+- The earlier 14 tracked Kustomize roots under `deploy/` rendered locally
+  without changing a cluster; newly added roots require the same check.
 - Six source files contain Secret objects requiring classification. The full
   repository gitleaks scan passed, but that does not establish whether every
   template value is appropriate for an Intel handoff.
 - Nineteen source files contain a mutable `latest` image reference. The Arena
   overlay currently renders two `ose-oauth-proxy:latest` references; these are
   pinning candidates, not authorization to change the running proxy.
-- One Helm template contains possible cluster-export metadata and 36 documents
+- One Helm template contains possible cluster-export metadata and 59 documents
   contain a `status` field. Each requires semantic review because these may be
   legitimate application fields rather than Kubernetes runtime residue.
+
+### Operational decoupling and YAML-content review
+
+The inventory now flags explicit RHPDS Git, RHPDS and redhat-gpte image,
+RHDP service, and Agnostic automation references **without copying values**.
+The current counts are in the generated inventory. These are different kinds
+of dependency, not policy violations. Launchpad remains a Red Hat × Intel
+joint venture; its `rhpds/launchpad` host location and current Showroom content
+are approved to remain. Decoupling here means removing hidden requirements
+for RHDP/AgnosticD control-plane services, personal credentials, and
+undocumented cluster-specific state—not stripping legitimate Red Hat source,
+branding, or content. Do not use a blind search-and-replace:
+
+1. **GitOps source:** The Arena Argo CD Application's `rhpds/launchpad` source
+   is an approved source location. Keep it while verifying that a fresh
+   control-plane cluster can consume a pinned revision with documented access
+   and rollback. Do not change `repoURL`, revision, path, or sync policy as a
+   cosmetic cleanup.
+2. **Showroom content:** Current RHPDS-hosted catalog and Antora content may
+   remain. Check that every content reference is immutable or otherwise
+   reproducible, reachable from each execution cluster, and covered by the
+   participant-journey test. The OpenShift provisioner's fallback and
+   supplemental UI CSS/JavaScript are part of this dependency map; they are
+   not automatic removal targets.
+3. **Runtime images:** Pinned RHPDS and redhat-gpte images may remain when
+   ownership, digest, provenance, and pull access are documented and tested
+   on each eligible cluster. An optional mirror is a resiliency decision,
+   not a prerequisite to remove Red Hat references.
+4. **Legacy integration:** `deploy/agnosticv/` and RHDP adapter material are
+   retained as historical or optional integration until external consumers
+   and current code paths are proved absent. Launchpad's direct OpenShift
+   delivery does not need AgnosticD to provision its current labs.
+
+For each included YAML file, review the actual API kind/schema, image and
+source URLs, Secret references, RBAC scope, Service/Route exposure, storage,
+resource requests, selectors, labels, cleanup ownership, and cluster-specific
+values. Render all affected Kustomize and Helm inputs and compare objects
+before and after a proposed edit. Static and CI checks run continuously;
+participant journeys and live-cluster proof remain separate release gates.
+No active GitOps source, pinned pilot content, or running lab is changed by
+this inventory work.
+
+### Focused pilot YAML review — September 21
+
+This first pass covers the Arena control-plane overlay, cluster-target
+definitions, and the three September pilot catalogs. It is source review,
+not a claim that the checked-in files exactly match a running cluster.
+
+- **Keep — approved Git and Showroom sources.** The Arena Argo CD Application
+  declares `rhpds/launchpad` and the catalog entries pin Showroom content to
+  commit IDs. These are legitimate joint-venture sources. The Application
+  file is not included in the Arena Kustomize resource list, so confirm its
+  external/live consumer before changing or retiring it.
+- **Keep with documented precedence — cluster registry.**
+  `config/clusters.yaml` is fail-closed for remote targets; the rendered Arena
+  ConfigMap explicitly enables Brutus and Flightpath for supervised pilot
+  orders. An existing contract test asserts this divergence. Treat the
+  rendered ConfigMap as the deployment input and the source file as a safe
+  default; do not mechanically synchronize the `enabled` flags.
+- **Keep — pilot catalog placement.** Serve LLMs and Multi-Agent target Arena;
+  Build an AI Agent targets Brutus. All three declare 30-seat certification
+  and required models. Their certification contracts validate locally. A
+  backend contract test now checks each catalog against the Arena-rendered
+  target's enabled state, capabilities, models, seat ceiling, and pinned
+  Showroom revision. These assignments are pilot constraints, not a general
+  placement policy or proof of live capacity.
+- **Review before a portable release — image references.** The rendered Arena
+  overlay pins Launchpad application images by digest, but also contains
+  `ose-oauth-proxy:latest`, `postgres:16-alpine`, and a version-tagged
+  `oauth2-proxy`. Record exact tested digests and pull entitlement before
+  promoting an immutable portable bundle; do not retag active pilot pods.
+- **Review least privilege — RBAC.** The base `launchpad-provisioner`
+  ClusterRole can create/delete namespaces and manage several namespaced
+  resource kinds cluster-wide. Some scope is necessary for self-service
+  provisioning, but the role and its ClusterRoleBinding require a separate
+  privilege/abuse-case review before a production claim. The remote
+  `launchpad-remote-provisioner` also has cluster-wide Secret and workload
+  permissions. `YAML-RBAC-001` tracks separating namespace bootstrap from
+  seat-resource management, binding the latter only in owned namespaces,
+  and enforcing an admission boundary. Flightpath's separate bootstrap and
+  seat roles provide a design reference, not proof that the Arena/Brutus
+  path has already adopted that boundary. Do not narrow a live role until
+  provisioning, validation, manual and TTL reclaim, and failure recovery pass
+  against the proposed role set.
+- **Keep — generated-secret boundary.** The Arena overlay deletes base
+  placeholder Secret objects from the rendered manifests. Continue to test
+  that a clean render never emits deployable placeholder credentials and
+  that externally supplied Secrets are documented and recoverable.
+- **Guarded now — worst-case privilege and placeholder regressions.** A
+  non-live backend test rejects wildcard RBAC grants or `cluster-admin`
+  bindings in the checked-in Arena and remote provisioner manifests, and
+  rejects Secret objects in the rendered Arena overlay. This does **not**
+  establish least privilege; `YAML-RBAC-001` remains open.
+- **Normalize later — Kustomize syntax.** All 16 tracked deployment roots
+  rendered locally, but the base `commonLabels` key emits a deprecation
+  warning. Convert it only with a rendered selector/label diff because
+  changing common-label behavior could affect existing resources.
+
+Next proof batch: capture object-level rendered diffs and consumer evidence
+for any proposed source change, run the existing catalog and backend contract
+tests, then use a disposable certification target for behavior changes.
 
 ## Work packages
 

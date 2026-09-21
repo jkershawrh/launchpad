@@ -73,6 +73,11 @@ jobs:
             --output "${{ runner.temp }}/audit-integrity-retention.json"
           python scripts/generate_product_roadmap_dashboard.py --check
 
+      - name: Validate YAML source inventory freshness
+        run: |
+          python -m pytest scripts/tests/test_inventory_yaml_sources.py -q
+          python scripts/inventory_yaml_sources.py --check
+
       - name: Unit tests
         id: unit_tests
         env:

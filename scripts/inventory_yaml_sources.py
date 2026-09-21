@@ -139,6 +139,28 @@ def _risk_flags(path: str, text: str, kinds: list[str]) -> list[str]:
     return flags
 
 
+def _dependency_flags(path: str, text: str) -> list[str]:
+    """Classify explicit RHDP/RHPDS dependencies without recording their values.
+
+    These are review signals, not permission to replace an image or source URL.
+    A pinned upstream input may still be required by an active workload.
+    """
+
+    del path
+    flags: list[str] = []
+    if re.search(r"(?:github\.com|raw\.githubusercontent\.com)/rhpds/|/gh/rhpds/", text, re.IGNORECASE):
+        flags.append("rhpds-git-dependency")
+    if re.search(r"quay\.io/rhpds/", text, re.IGNORECASE):
+        flags.append("rhpds-image-dependency")
+    if re.search(r"quay\.io/redhat-gpte/", text, re.IGNORECASE):
+        flags.append("redhat-gpte-image-dependency")
+    if re.search(r"\bagnostic[vd]\b|\bagnosticd\.", text, re.IGNORECASE):
+        flags.append("agnostic-automation-dependency")
+    if re.search(r"\bdemo\.redhat\.com\b", text, re.IGNORECASE):
+        flags.append("rhdp-service-dependency")
+    return flags
+
+
 def build_inventory(root: Path = ROOT) -> dict[str, Any]:
     del root  # The repository root is fixed deliberately for safe reproducibility.
     all_tracked = tracked_files()
@@ -171,12 +193,16 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
                 "referenced_by": consumers[path],
                 "reference_count": len(consumers[path]),
                 "risk_flags": _risk_flags(path, text, kinds),
+                "dependency_flags": _dependency_flags(path, text),
                 "owner": "unassigned",
                 "proposed_disposition": "preserve-pending-owner-review",
             }
         )
     classification_counts = Counter(record["classification"] for record in records)
     risk_counts = Counter(flag for record in records for flag in record["risk_flags"])
+    dependency_counts = Counter(
+        flag for record in records for flag in record["dependency_flags"]
+    )
     tracked_changes_present = bool(_git("status", "--porcelain", "--untracked-files=no").strip())
     return {
         "schema_version": 1,
@@ -200,6 +226,7 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
             ),
             "classification_counts": dict(sorted(classification_counts.items())),
             "risk_flag_counts": dict(sorted(risk_counts.items())),
+            "dependency_flag_counts": dict(sorted(dependency_counts.items())),
         },
         "records": records,
     }
@@ -214,6 +241,10 @@ def render_markdown(inventory: dict[str, Any]) -> str:
     risks = "\n".join(
         f"| `{name}` | {count} |"
         for name, count in summary["risk_flag_counts"].items()
+    ) or "| None detected | 0 |"
+    dependencies = "\n".join(
+        f"| `{name}` | {count} |"
+        for name, count in summary["dependency_flag_counts"].items()
     ) or "| None detected | 0 |"
     flagged_paths = {
         flag: [record["path"] for record in inventory["records"] if flag in record["risk_flags"]]
@@ -266,6 +297,19 @@ example, a domain contract may legitimately contain a `status` field.
 | Flag | Files |
 |---|---:|
 {risks}
+
+## Red Hat-hosted and RHDP dependency review
+
+These counts identify YAML files with explicit external Git, image, or
+automation references. They do not expose URL values and do not imply that a
+reference should be removed. The approved RHPDS Launchpad repository and
+Showroom content may remain; use the flags to prove portability and identify
+hidden RHDP/AgnosticD requirements. Inspect the machine-readable records and
+prove each active consumer before changing it.
+
+| Dependency | Files |
+|---|---:|
+{dependencies}
 
 ## Priority review queues
 

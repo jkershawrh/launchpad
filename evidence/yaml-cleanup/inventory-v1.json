@@ -4,26 +4,32 @@
     {
       "area": ".github",
       "classification": "ci",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
       "path": ".github/workflows/ci.yml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 6,
+      "reference_count": 10,
       "referenced_by": [
         "admin/public/roadmap/index.html",
+        "backend/tests/test_artifact_registry_policy.py",
         "backend/tests/test_catalog_supply_chain.py",
+        "contracts/security-threat-model-v1.yaml",
         "docs/product-roadmap-dashboard.html",
         "docs/product-roadmap-status.json",
         "evidence/runs/pilot-h1/PILOT-FEAT-001-red.xml",
-        "scripts/pre-commit-secret-scan.sh"
+        "evidence/runs/security-threat-model/report.json",
+        "scripts/pre-commit-secret-scan.sh",
+        "scripts/tests/test_write_ci_test_receipt.py"
       ],
       "risk_flags": [],
-      "sha256": "6252769822d4cb5c44b09fb88de4c56ae02886be64f439500b433cf0c6f31d41"
+      "sha256": "5dc41e47e1da333d60221e6322f245c7f61fd3b1ae819ea1c2259e3b911784c6"
     },
     {
       "area": ".github",
       "classification": "ci",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "flightpath"
@@ -40,8 +46,23 @@
       "sha256": "edb764b0485734fd1a6c5368ee93205df94f6bbcc5080e8b83fb51735d59d628"
     },
     {
+      "area": ".github",
+      "classification": "ci",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": ".github/workflows/vef-report.yml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [],
+      "sha256": "60fbdc45541047b7fccb206754e64ab49fe057f8ce84e085446d2461db3ccd94"
+    },
+    {
       "area": ".pre-commit-config.yaml",
       "classification": "repository-configuration",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -53,8 +74,23 @@
       "sha256": "cd2b67225e81384418a45a619c31c1fb687be51d991b68a7a43346b20e3905c6"
     },
     {
+      "area": ".vef",
+      "classification": "repository-configuration",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": ".vef/inspect.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [],
+      "sha256": "0f2e94d9ff4c1e77c8854357d36d763e1723f719e0e194d90daa6cfaf03596fd"
+    },
+    {
       "area": "backend",
       "classification": "repository-configuration",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -68,6 +104,7 @@
     {
       "area": "backend",
       "classification": "repository-configuration",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -81,6 +118,7 @@
     {
       "area": "backend",
       "classification": "repository-configuration",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -94,6 +132,10 @@
     {
       "area": "catalog-onboarding",
       "classification": "generated-intake",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -117,6 +159,28 @@
     {
       "area": "catalog-onboarding",
       "classification": "generated-intake",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "catalog-onboarding/hybrid-fraud-detection.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 2,
+      "referenced_by": [
+        "catalog/hybrid-fraud-detection/catalog-item.yaml",
+        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "b1f6b134ae30aec9bb0b6779d8673dc245cbdc6f8b14f3dae0db6afeff51e367"
+    },
+    {
+      "area": "catalog-onboarding",
+      "classification": "generated-intake",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -140,6 +204,9 @@
     {
       "area": "catalog-onboarding",
       "classification": "generated-intake",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "arena",
         "brutus"
@@ -167,6 +234,9 @@
     {
       "area": "catalog-onboarding",
       "classification": "generated-intake",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -210,6 +280,10 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -233,6 +307,7 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -251,6 +326,7 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -266,6 +342,9 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -281,6 +360,27 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "catalog/hybrid-fraud-detection/catalog-item.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "999eb8bb9a27f3710844edca545e0e59a3eef87b6cfd27911f5297eba69750a2"
+    },
+    {
+      "area": "catalog",
+      "classification": "catalog-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -313,6 +413,9 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -333,6 +436,9 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "brutus"
       ],
@@ -358,6 +464,9 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -381,6 +490,9 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "oberon"
       ],
@@ -399,6 +511,7 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -414,6 +527,7 @@
     {
       "area": "catalog",
       "classification": "catalog-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -429,6 +543,7 @@
     {
       "area": "certification",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -454,6 +569,7 @@
     {
       "area": "certification",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "brutus"
       ],
@@ -482,6 +598,7 @@
     {
       "area": "certification",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -527,6 +644,7 @@
     {
       "area": "certification",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConvergenceMatrix"
@@ -549,14 +667,51 @@
     {
       "area": "config",
       "classification": "configuration",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
+      "environment_markers": [
+        "arena",
+        "brutus",
+        "flightpath",
+        "oberon"
+      ],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "config/artifact-registry-policy.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 9,
+      "referenced_by": [
+        "backend/tests/test_artifact_registry_policy.py",
+        "backend/tests/test_artifact_release_evidence.py",
+        "backend/tests/test_event_promoted_release_source.py",
+        "contracts/security-threat-model-v1.yaml",
+        "docs/catalog-onboarding.md",
+        "docs/event-promoted-release-source.md",
+        "evidence/runs/security-threat-model/report.json",
+        "scripts/validate_artifact_registry.py",
+        "scripts/validate_artifact_release.py"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "82cb643ba7804dd0021442cb382be28be7fcc5203ffb776da9f75458be09b245"
+    },
+    {
+      "area": "config",
+      "classification": "configuration",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
       "path": "config/catalog-artifact-policy.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 7,
+      "reference_count": 8,
       "referenced_by": [
         "admin/public/roadmap/index.html",
+        "backend/tests/test_artifact_prepull.py",
         "backend/tests/test_catalog_supply_chain.py",
         "contracts/delivery-streams-v1.yaml",
         "docs/product-roadmap-dashboard.html",
@@ -570,6 +725,7 @@
     {
       "area": "config",
       "classification": "configuration",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -590,6 +746,9 @@
     {
       "area": "config",
       "classification": "configuration",
+      "dependency_flags": [
+        "rhpds-image-dependency"
+      ],
       "environment_markers": [
         "arena",
         "brutus",
@@ -600,7 +759,7 @@
       "owner": "unassigned",
       "path": "config/clusters.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 9,
+      "reference_count": 11,
       "referenced_by": [
         "backend/tests/test_agentops_ephemeral_storage.py",
         "backend/tests/test_arena_shared_mlflow.py",
@@ -610,7 +769,9 @@
         "deploy/ecosystem/README.md",
         "deploy/ecosystem/playbooks/register-execution-cluster.yml",
         "deploy/multicluster/README.md",
-        "docs/ecosystem-architecture-roadmap.md"
+        "docs/ecosystem-architecture-roadmap.md",
+        "docs/yaml-cleanup-plan.md",
+        "scripts/tests/test_inventory_yaml_sources.py"
       ],
       "risk_flags": [
         "environment-specific"
@@ -620,6 +781,7 @@
     {
       "area": "content-agentops-observability",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -633,6 +795,7 @@
     {
       "area": "content-intel-llm-cpu-serving",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -648,6 +811,9 @@
     {
       "area": "content-intel-llm-tool-calling",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -664,6 +830,7 @@
     {
       "area": "content-intel-xeon6-agent-201",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -679,6 +846,7 @@
     {
       "area": "content-intel-xeon6-agent-201",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap"
@@ -700,6 +868,9 @@
     {
       "area": "content-intel-xeon6-agent-201",
       "classification": "content-source",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -725,6 +896,7 @@
     {
       "area": "content-intel-xeon6-agent-201",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Route",
@@ -743,6 +915,9 @@
     {
       "area": "content-intel-xeon6-agent-201",
       "classification": "content-source",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -763,6 +938,7 @@
     {
       "area": "content-multi-agent-quickstart",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -776,6 +952,7 @@
     {
       "area": "content-operators",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -789,6 +966,7 @@
     {
       "area": "content",
       "classification": "content-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -804,6 +982,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -821,6 +1000,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -839,6 +1019,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "AIControlPlaneGatewayContract"
@@ -856,6 +1037,266 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/artifact-destination-qualification-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "docs/catalog-onboarding.md"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "149514382b66f8eabc10c645fb320febdc84e4d5d3eb7f5dd29fc1281e848a34"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/artifact-release-evidence-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "docs/catalog-onboarding.md",
+        "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json",
+        "evidence/runs/artifact-registry/release-sbom-scan-binding-green-local-20260921.json",
+        "evidence/runs/artifact-registry/release-subject-binding-green-local-20260921.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "1a30c95dfab4f26d0eceea0e50bd492540b8ba63e2fff148b937e0405bb38041"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "LaunchpadAuditIntegrityRetentionPolicy"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/audit-integrity-retention-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 2,
+      "referenced_by": [
+        "docs/audit-integrity-retention.md",
+        "evidence/runs/audit-integrity-retention/evidence.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "85e957552f3cc1ad194e7b1bf4ebb06a1167d130ef46cc3c6767f49d5d7d7217"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/capacity-admission-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "backend/tests/test_capacity_admission_contract.py"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "f3d5ca39118fdb52a0aa48d26a8fcfac68f7b2ab87de6943e347f712bbd1d686"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "LaunchpadCatalogIntakeDiscoveryBridge"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-discovery-bridge-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 2,
+      "referenced_by": [
+        "backend/tests/test_catalog_intake_review_journey.py",
+        "evidence/runs/catalog-intake-discovery-bridge/manifest.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "7561478130bf91bd216edd0941607da78aa7190995a0d0e862b9808133cf5b80"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [
+        "arena"
+      ],
+      "kinds": [
+        "LaunchpadCatalogIntakeDiscoveryWorker"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-discovery-worker-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "backend/tests/test_catalog_intake_discovery_job.py",
+        "docs/catalog-intake-worker-safety.md",
+        "evidence/runs/catalog-intake-discovery-worker/manifest.json",
+        "evidence/runs/catalog-intake-faults-arena-live-20260920.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required",
+        "environment-specific"
+      ],
+      "sha256": "197c6b54055723a3df89ed1e17d8c8c13faccc9498add58bfae4b5ebf4d86f33"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-pipeline-v1.1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 5,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_catalog_intake_pipeline_contract_alignment.py",
+        "docs/catalog-intake-pipeline-contract.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [],
+      "sha256": "73c660694a7374f1776efa4c18a20ca0fe2681d5a0b0e24ad4d3358b4e0152ea"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-pipeline-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/runs/catalog-intake-pipeline/manifest.json"
+      ],
+      "risk_flags": [],
+      "sha256": "5b4bc80b3c70cfa964cdd4378ab08bd06749e5e23b7d72cdf28438f56258cb2e"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
+      "environment_markers": [],
+      "kinds": [
+        "LaunchpadCatalogIntakeQualityPolicy"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-quality-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 7,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_catalog_intake_quality.py",
+        "docs/catalog-onboarding.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json",
+        "evidence/runs/admin-intake-quality-ui/manifest.json",
+        "evidence/runs/catalog-intake-quality/manifest.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "63b9025543df1169525bc99f13c5f47801904c7f2192f1297f21648430fe8c40"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "CatalogIntakeRenderedOutputReview"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-rendered-output-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "backend/tests/test_catalog_intake_render_review.py",
+        "docs/catalog-intake-pipeline-contract.md",
+        "evidence/runs/catalog-intake-render-network-green-local-20260921.json",
+        "evidence/runs/catalog-intake-render-structure-green-local-20260921.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "7e2f9c978a7d8fa4e42020cb6298055c5e533edd5455acfa9854fd3a73db157d"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "LaunchpadCatalogIntakeReview"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-review-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 2,
+      "referenced_by": [
+        "backend/tests/test_catalog_intake_review_journey.py",
+        "evidence/runs/catalog-intake-review-journey/manifest.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "0f0000fc83786dcc23af9e07b3a240bc3b83aca9aef2184baf1deb4250f1b42d"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [
+        "arena"
+      ],
+      "kinds": [
+        "LaunchpadCatalogIntakeWorkerSafetyPolicy"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/catalog-intake-worker-safety-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "docs/catalog-intake-worker-safety.md",
+        "evidence/runs/catalog-intake-faults-arena-live-20260920.json",
+        "evidence/runs/catalog-intake-worker-safety/evidence.json",
+        "evidence/runs/catalog-intake-worker-safety/report.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required",
+        "environment-specific"
+      ],
+      "sha256": "94919b80014813227c215bf6112d9df692351561bff8b9f27385a55b68922ba7"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "DataAiGovernanceContract"
@@ -877,6 +1318,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "flightpath"
@@ -903,6 +1345,229 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-admission-convergence-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/event-admission-convergence.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "3dddcd4950ceb8536c8659e5f1005ac3a1fc28a17ee4cf4b0354365e0374dc7b"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-admission-forecast-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_event_admission_forecast.py",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "9880e2398e8f8cb9e0b492afd07e4325100eadd5c941926daf4c827d7f60bca5"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-artifact-health-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "356cc6a91a9f81aa07794d02821e9c5b707350252e52a1270f939d8c46818353"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-artifact-prepull-attestation-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [],
+      "sha256": "7f4a5a0f442e96e4ee2004402a8ad78575ed38d769f18d6da66f06bd10d3eade"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-artifact-prepull-evidence-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/event-artifact-prepull-evidence.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "c81648d34e314fe7d5c3bf49e7855ae49baaa984085818220503c35fe30eed80"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-artifact-prepull-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/catalog-onboarding.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "791cf2df73bf6f82550b4367067d191109b5b01e1900cd61ec195e869f7743aa"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-artifact-requirements-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_event_artifact_requirements.py",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "40bbb822ccea4895048f7c7dca27faa18a2e19bfa881130c93bc14cb8f8067b6"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-capacity-reconciliation-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "backend/tests/test_september_17_capacity_reconciliation.py"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "2f7f89c23219ecc54521de99c16f5004c7f735e07bc480d55068c7d60d92c9e3"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-eligible-node-source-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [],
+      "sha256": "0a655c041592f655eeec6fe18e67ca8044e1d6382401c8bdd59839ec575d2702"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "event-inflight-capacity"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/event-inflight-capacity-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 4,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_event_inflight_capacity.py",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [],
+      "sha256": "bba78c9cd38ef5ec1f0011d65cf0ac0b07972f74b49dfa5a18b8d4fd85328787"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [
+        "arena"
+      ],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-inflight-provider-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "d213a17ded37cfcdbf095028ac4219cbbf8b6405140b7e0f9a9883b910e3c660"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -917,11 +1582,94 @@
         "docs/product-roadmap-status.json"
       ],
       "risk_flags": [],
-      "sha256": "3208dbfd88267ad9c14ebff69eab09461b6028cdf4a00c8575d7559d5a789a8c"
+      "sha256": "3732f1335c0c0124bb2bfa1646a7c0fc0a5e5b363fb2fdd32854cfea42d64542"
     },
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [
+        "arena"
+      ],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-model-health-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 5,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_event_model_health.py",
+        "docs/event-capacity-matrix.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "6fc7a79f33096a64bdd130d7b57eb6230ebad3eee3235003591ade8dfe73bc4c"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-model-slot-policy-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [],
+      "sha256": "3884c33f894bc1f74c8217e209810a5556338020602cef0f01ec5a19a8554b89"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-orchestration-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "bca5066db83833c4fd52db7fcc3a2183e2fa4f7cdb655893ca75f5a1b477e849"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "contracts/event-order-schedule-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "backend/tests/test_event_order_schedule.py",
+        "docs/event-order-schedule.md",
+        "evidence/runs/event-order-schedule-green-local-20260921.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "8480454a053a28b79762884be1a983cda041e602ba0b54399070e8eb0ef09eef"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -941,6 +1689,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "GtmValueAttributionContract"
@@ -962,6 +1711,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "OrganizationalReadinessContract"
@@ -983,6 +1733,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "OssDistributionContract"
@@ -1004,6 +1755,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ProductionReadinessContract"
@@ -1025,14 +1777,18 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
       "path": "contracts/public-access-v1.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 3,
+      "reference_count": 6,
       "referenced_by": [
+        "admin/public/roadmap/index.html",
         "docs/PUBLIC_ACCESS.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json",
         "evidence/public-access/green-local-arena-console-fix-2026-09-04.json",
         "evidence/public-access/green-local.json"
       ],
@@ -1042,6 +1798,7 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1058,6 +1815,31 @@
     {
       "area": "contracts",
       "classification": "contract",
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "LaunchpadSecurityThreatModel"
+      ],
+      "owner": "unassigned",
+      "path": "contracts/security-threat-model-v1.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 2,
+      "referenced_by": [
+        "docs/security-threat-model.md",
+        "evidence/runs/security-threat-model/evidence.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required",
+        "environment-specific"
+      ],
+      "sha256": "a17828ac196a272e41e92f2034ecb505aa1543227aab89de7eff846ac060ef4c"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "SreOperatingModel"
@@ -1079,6 +1861,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1094,6 +1877,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1107,6 +1891,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1120,6 +1905,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1133,6 +1919,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1146,6 +1933,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1159,6 +1947,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1172,6 +1961,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1185,6 +1975,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1198,6 +1989,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1211,6 +2003,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1224,6 +2017,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1237,6 +2031,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1250,6 +2045,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1263,6 +2059,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1276,6 +2073,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1289,6 +2087,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1302,6 +2101,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1315,6 +2115,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1328,6 +2129,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1341,6 +2143,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1354,6 +2157,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1367,6 +2171,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -1380,6 +2185,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap"
@@ -1397,6 +2203,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -1416,6 +2223,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -1433,6 +2241,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -1452,6 +2261,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap"
@@ -1467,6 +2277,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -1482,6 +2293,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -1499,6 +2311,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -1518,6 +2331,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "CronJob",
@@ -1536,6 +2350,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -1553,6 +2368,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PersistentVolumeClaim"
@@ -1570,6 +2386,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Route"
@@ -1587,6 +2404,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Secret"
@@ -1604,6 +2422,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service"
@@ -1621,6 +2440,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "InferenceService"
@@ -1639,6 +2459,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -1656,6 +2477,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PersistentVolumeClaim"
@@ -1673,6 +2495,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -1691,6 +2514,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -1709,6 +2533,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ServingRuntime"
@@ -1727,6 +2552,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -1746,6 +2572,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -1761,6 +2588,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -1778,6 +2606,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -1795,6 +2624,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PersistentVolumeClaim"
@@ -1812,6 +2642,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Secret"
@@ -1831,6 +2662,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service"
@@ -1848,6 +2680,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -1867,6 +2700,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "HorizontalPodAutoscaler"
@@ -1884,6 +2718,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -1899,6 +2734,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -1916,6 +2752,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -1933,6 +2770,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PodDisruptionBudget"
@@ -1950,6 +2788,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Route"
@@ -1967,6 +2806,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service"
@@ -1984,6 +2824,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "InferenceService"
@@ -2002,6 +2843,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -2019,6 +2861,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PersistentVolumeClaim"
@@ -2036,6 +2879,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -2054,6 +2898,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -2072,6 +2917,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ServingRuntime"
@@ -2090,6 +2936,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Application"
@@ -2105,6 +2952,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -2120,6 +2968,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ServiceMonitor"
@@ -2138,6 +2987,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "InferenceService"
@@ -2155,6 +3005,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -2170,6 +3021,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PersistentVolumeClaim"
@@ -2187,6 +3039,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -2204,6 +3057,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -2221,6 +3075,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ServingRuntime"
@@ -2240,6 +3095,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Pipeline"
@@ -2259,6 +3115,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PipelineRun"
@@ -2276,6 +3133,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -2291,6 +3149,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "LimitRange"
@@ -2308,6 +3167,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -2325,6 +3185,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -2342,6 +3203,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ResourceQuota"
@@ -2359,6 +3221,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2375,6 +3238,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2393,6 +3257,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2412,6 +3277,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2425,6 +3291,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2438,6 +3305,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2451,6 +3319,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2464,6 +3333,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2477,6 +3347,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2492,6 +3363,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2505,6 +3377,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2518,6 +3391,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2531,6 +3405,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2544,6 +3419,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2557,6 +3433,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2570,6 +3447,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2583,6 +3461,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2596,6 +3475,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2609,6 +3489,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2622,6 +3503,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2635,6 +3517,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2648,6 +3531,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2661,6 +3545,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2674,6 +3559,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2687,6 +3573,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2700,6 +3587,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2713,6 +3601,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2726,6 +3615,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2739,6 +3629,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2752,6 +3643,7 @@
     {
       "area": "demos",
       "classification": "demo-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2780,6 +3672,7 @@
     {
       "area": "deploy/agnosticv/account.yaml",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2793,6 +3686,11 @@
     {
       "area": "deploy/agnosticv/launchpad-agent-swarm-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2808,6 +3706,7 @@
     {
       "area": "deploy/agnosticv/launchpad-agent-swarm-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2821,6 +3720,9 @@
     {
       "area": "deploy/agnosticv/launchpad-agent-swarm-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2834,6 +3736,11 @@
     {
       "area": "deploy/agnosticv/launchpad-aiops-copilot-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2849,6 +3756,7 @@
     {
       "area": "deploy/agnosticv/launchpad-aiops-copilot-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2862,6 +3770,9 @@
     {
       "area": "deploy/agnosticv/launchpad-aiops-copilot-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2875,6 +3786,10 @@
     {
       "area": "deploy/agnosticv/launchpad-cluster",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2890,6 +3805,7 @@
     {
       "area": "deploy/agnosticv/launchpad-cluster",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2903,6 +3819,9 @@
     {
       "area": "deploy/agnosticv/launchpad-cluster",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2916,6 +3835,11 @@
     {
       "area": "deploy/agnosticv/launchpad-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2931,6 +3855,7 @@
     {
       "area": "deploy/agnosticv/launchpad-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2944,6 +3869,9 @@
     {
       "area": "deploy/agnosticv/launchpad-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2957,6 +3885,11 @@
     {
       "area": "deploy/agnosticv/launchpad-enterprise-rag-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2972,6 +3905,7 @@
     {
       "area": "deploy/agnosticv/launchpad-enterprise-rag-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2985,6 +3919,9 @@
     {
       "area": "deploy/agnosticv/launchpad-enterprise-rag-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -2998,6 +3935,11 @@
     {
       "area": "deploy/agnosticv/launchpad-governed-agent-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3013,6 +3955,7 @@
     {
       "area": "deploy/agnosticv/launchpad-governed-agent-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3026,6 +3969,9 @@
     {
       "area": "deploy/agnosticv/launchpad-governed-agent-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3039,6 +3985,11 @@
     {
       "area": "deploy/agnosticv/launchpad-inference-overdrive-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3054,6 +4005,7 @@
     {
       "area": "deploy/agnosticv/launchpad-inference-overdrive-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3067,6 +4019,9 @@
     {
       "area": "deploy/agnosticv/launchpad-inference-overdrive-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3080,6 +4035,11 @@
     {
       "area": "deploy/agnosticv/launchpad-recovery-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3095,6 +4055,7 @@
     {
       "area": "deploy/agnosticv/launchpad-recovery-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3108,6 +4069,9 @@
     {
       "area": "deploy/agnosticv/launchpad-recovery-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3121,6 +4085,11 @@
     {
       "area": "deploy/agnosticv/launchpad-replay-comparison-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3136,6 +4105,7 @@
     {
       "area": "deploy/agnosticv/launchpad-replay-comparison-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3149,6 +4119,9 @@
     {
       "area": "deploy/agnosticv/launchpad-replay-comparison-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3162,6 +4135,11 @@
     {
       "area": "deploy/agnosticv/launchpad-research-agent-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3177,6 +4155,7 @@
     {
       "area": "deploy/agnosticv/launchpad-research-agent-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3190,6 +4169,9 @@
     {
       "area": "deploy/agnosticv/launchpad-research-agent-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3203,6 +4185,11 @@
     {
       "area": "deploy/agnosticv/launchpad-training-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3218,6 +4205,7 @@
     {
       "area": "deploy/agnosticv/launchpad-training-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3231,6 +4219,9 @@
     {
       "area": "deploy/agnosticv/launchpad-training-demo-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3244,6 +4235,11 @@
     {
       "area": "deploy/agnosticv/launchpad-workload-generator-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3259,6 +4255,7 @@
     {
       "area": "deploy/agnosticv/launchpad-workload-generator-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3272,6 +4269,9 @@
     {
       "area": "deploy/agnosticv/launchpad-workload-generator-tenant",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3285,6 +4285,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "infra01"
       ],
@@ -3302,6 +4303,9 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -3321,6 +4325,9 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3336,6 +4343,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "brutus"
@@ -3356,6 +4364,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3371,6 +4380,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -3391,6 +4401,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3407,6 +4418,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3423,6 +4435,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3439,6 +4452,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -3455,6 +4469,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -3477,6 +4492,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -3496,6 +4512,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service"
@@ -3513,6 +4530,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -3533,6 +4551,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service"
@@ -3550,6 +4569,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap"
@@ -3568,6 +4588,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -3588,6 +4609,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "CronJob"
@@ -3607,6 +4629,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -3626,6 +4649,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace"
@@ -3643,6 +4667,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -3660,6 +4685,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Secret",
@@ -3680,6 +4706,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -3699,6 +4726,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service"
@@ -3716,6 +4744,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment"
@@ -3734,6 +4763,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "PersistentVolumeClaim"
@@ -3751,6 +4781,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service"
@@ -3768,6 +4799,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -3789,6 +4821,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ClusterRole",
@@ -3809,6 +4842,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Route"
@@ -3826,6 +4860,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Secret"
@@ -3846,6 +4881,99 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "BuildConfig",
+        "ImageStream"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/catalog-intake-cert/build.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/catalog-intake-cert/kustomization.yaml"
+      ],
+      "risk_flags": [],
+      "sha256": "046af9d43b7b4e62aa00410a234b25e1ad5a8e06522a1a0d260f755d0fd79678"
+    },
+    {
+      "area": "deploy",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "Kustomization"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/catalog-intake-cert/kustomization.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [],
+      "sha256": "81c4540a2575971d5555b0740526e6b7189a56e425cf1936f6a7fa9271009f07"
+    },
+    {
+      "area": "deploy",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "Namespace"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/catalog-intake-cert/namespace.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/catalog-intake-cert/kustomization.yaml"
+      ],
+      "risk_flags": [],
+      "sha256": "c4a7bd9a21fefedb28746221f5552df3cce1c54e6bc9dc9d56236164a5465122"
+    },
+    {
+      "area": "deploy",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "NetworkPolicy"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/catalog-intake-cert/network-policy.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 3,
+      "referenced_by": [
+        "contracts/catalog-intake-worker-safety-v1.yaml",
+        "deploy/launchpad/catalog-intake-cert/kustomization.yaml",
+        "evidence/runs/catalog-intake-worker-safety/evidence.json"
+      ],
+      "risk_flags": [],
+      "sha256": "486a6303005ac4cf26ae2b39db6485dcc1661eca7089ca6a17939c84b21cf662"
+    },
+    {
+      "area": "deploy",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "Deployment",
+        "Service"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/catalog-intake-cert/proxy.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/catalog-intake-cert/kustomization.yaml"
+      ],
+      "risk_flags": [],
+      "sha256": "e49ce2d8931ea302feea401649b7d7d91e9bf477e698dd9a080de8f6b7dfda35"
+    },
+    {
+      "area": "deploy",
+      "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -3863,6 +4991,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -3885,6 +5014,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ServiceMonitor"
@@ -3903,6 +5033,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-argocd",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -3922,6 +5053,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-argocd",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -3945,6 +5077,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-ha-pilot",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -3966,6 +5099,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-ha-pilot",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -3987,6 +5121,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-ha-pilot",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4008,6 +5143,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-ha-pilot",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4029,6 +5165,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-ha-pilot",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4050,6 +5187,7 @@
     {
       "area": "deploy/launchpad/overlays/arena-ha-pilot",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4071,6 +5209,9 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-image-dependency"
+      ],
       "environment_markers": [
         "arena",
         "brutus",
@@ -4101,6 +5242,9 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -4110,8 +5254,10 @@
       "owner": "unassigned",
       "path": "deploy/launchpad/overlays/arena/argocd-application.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "scripts/tests/test_inventory_yaml_sources.py"
+      ],
       "risk_flags": [
         "environment-specific"
       ],
@@ -4120,6 +5266,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4140,6 +5287,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4159,6 +5307,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4181,6 +5330,9 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -4211,6 +5363,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4232,6 +5385,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4253,6 +5407,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4272,6 +5427,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4295,6 +5451,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4314,6 +5471,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4336,6 +5494,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4355,6 +5514,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4376,6 +5536,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4397,6 +5558,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4418,6 +5580,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4439,6 +5602,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4461,6 +5625,7 @@
     {
       "area": "deploy/launchpad/overlays/arena",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -4483,6 +5648,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr-gitops",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "brutus",
@@ -4509,6 +5675,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr-gitops",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -4528,6 +5695,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr-gitops",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -4547,6 +5715,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr-gitops",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -4570,6 +5739,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "brutus",
@@ -4593,6 +5763,9 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
       "environment_markers": [
         "flightpath"
       ],
@@ -4614,6 +5787,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -4635,6 +5809,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -4656,6 +5831,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -4678,6 +5854,7 @@
     {
       "area": "deploy/launchpad/overlays/flightpath-dr",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -4697,8 +5874,219 @@
       "sha256": "c86991a3f44bc5748e7e8e0a12b77d7854f096c65a8486f6b0f27c0b68a9474f"
     },
     {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Deployment",
+        "PodDisruptionBudget",
+        "Service",
+        "ServiceAccount"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/backend.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "d4af9c031e73f1bd7ca183458d4aacf72c146f2d128fab6e1df6260d5dde87df"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "ConfigMap"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/configmap.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "b4dea9d8cb686d4cb1049bbaa85449ce31b245c5c8878c3f39a11da5d8135afd"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Job"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/keycloak-schema-job.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "02e9e884fb9d0357820757e3b147a9ff585a8b134cba87a70766507fdc6d0389"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Deployment",
+        "PodDisruptionBudget",
+        "Service",
+        "ServiceAccount"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/keycloak.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "2f4394947001981b61479adc03ddf83264cb0144d3c8d9ad2f5c29761c5615d7"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Kustomization"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "a6ad4861118cb823cb0e1e4e1ea64b6563e26658a69b876a326ed5c6fce129dc"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Job"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/migration-job.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "5034127bc7c8ded0064c9254073c4cc4f440c50003cfd22aeb96f15ce22223b2"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Namespace"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/namespace.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "ba772ef573f130ca0b8095a84b1cdcf589615f748a3b84e05592d5d62813f95c"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "NetworkPolicy"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/network-policy.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "262ec96909927875c9f80eb87cab3315f5482b998c2bbd96d4aa2d2e0070740a"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-stage",
+      "classification": "deployment-source",
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Deployment",
+        "PersistentVolumeClaim",
+        "Service"
+      ],
+      "owner": "unassigned",
+      "path": "deploy/launchpad/overlays/flightpath-stage/postgres.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-stage/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "b81dd7f0dff1bf05c617e04978729badebf58359da95fe41a7d79d296b3dac2a"
+    },
+    {
       "area": "deploy/launchpad/overlays/infra01",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "infra01"
       ],
@@ -4718,6 +6106,9 @@
     {
       "area": "deploy/launchpad/overlays/infra01",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhdp-service-dependency"
+      ],
       "environment_markers": [
         "infra01"
       ],
@@ -4739,6 +6130,9 @@
     {
       "area": "deploy/launchpad/overlays/infra01",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhdp-service-dependency"
+      ],
       "environment_markers": [
         "infra01"
       ],
@@ -4760,6 +6154,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon-argocd",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4779,6 +6174,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon-argocd",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4803,6 +6199,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon-public",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4825,6 +6222,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon-public",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4846,6 +6244,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon-public",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4867,6 +6266,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4886,6 +6286,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4908,6 +6309,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4930,6 +6332,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4950,6 +6353,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4972,6 +6376,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -4991,6 +6396,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -5012,6 +6418,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -5033,6 +6440,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -5055,6 +6463,7 @@
     {
       "area": "deploy/launchpad/overlays/oberon",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -5076,6 +6485,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "BuildConfig",
@@ -5094,6 +6504,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -5113,6 +6524,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Keycloak"
@@ -5132,6 +6544,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -5153,6 +6566,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "OAuth"
@@ -5170,6 +6584,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Namespace",
@@ -5189,6 +6604,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5211,6 +6627,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "oberon"
@@ -5241,6 +6658,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5263,6 +6681,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5285,6 +6704,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5311,6 +6731,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5334,6 +6755,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5363,6 +6785,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5390,6 +6813,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5411,6 +6835,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "brutus",
@@ -5425,8 +6850,9 @@
       "owner": "unassigned",
       "path": "deploy/multicluster/arena-rbac.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 3,
+      "reference_count": 4,
       "referenced_by": [
+        "backend/tests/test_rbac_source_boundaries.py",
         "backend/tests/test_seat_resource_metrics.py",
         "deploy/ecosystem/group_vars/all.example.yml",
         "deploy/multicluster/README.md"
@@ -5439,6 +6865,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5461,6 +6888,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5487,6 +6915,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "flightpath"
@@ -5502,9 +6931,10 @@
       "owner": "unassigned",
       "path": "deploy/multicluster/flightpath-remote-rbac.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 5,
+      "reference_count": 6,
       "referenced_by": [
         "backend/tests/test_ha_dr_manifests.py",
+        "backend/tests/test_rbac_source_boundaries.py",
         "deploy/multicluster/README.md",
         "docs/control-plane-dr-roadmap.md",
         "docs/flightpath-dr-runbook.md",
@@ -5518,6 +6948,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ClusterIssuer"
@@ -5535,6 +6966,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5556,6 +6988,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5577,6 +7010,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5603,6 +7037,7 @@
     {
       "area": "deploy",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Kustomization"
@@ -5621,6 +7056,9 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -5636,6 +7074,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap"
@@ -5651,6 +7090,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Service",
@@ -5667,6 +7107,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap",
@@ -5683,6 +7124,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap",
@@ -5703,6 +7145,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -5721,6 +7164,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ServiceMonitor"
@@ -5736,6 +7180,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -5753,6 +7198,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -5768,6 +7214,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -5785,6 +7232,7 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Role",
@@ -5802,6 +7250,9 @@
     {
       "area": "deploy/workloads/agentops-seat",
       "classification": "deployment-source",
+      "dependency_flags": [
+        "redhat-gpte-image-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -5818,6 +7269,7 @@
     {
       "area": "deploy/workloads/multi-agent-seat",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -5831,6 +7283,7 @@
     {
       "area": "deploy/workloads/multi-agent-seat",
       "classification": "deployment-template",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -5850,6 +7303,7 @@
     {
       "area": "deploy/workloads/multi-agent-seat",
       "classification": "deployment-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -5863,6 +7317,7 @@
     {
       "area": "docker-compose.yml",
       "classification": "repository-configuration",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -5878,6 +7333,9 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [
+        "agnostic-automation-dependency"
+      ],
       "environment_markers": [
         "arena"
       ],
@@ -5896,6 +7354,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5913,6 +7372,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5930,6 +7390,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5949,6 +7410,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -5966,6 +7428,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "brutus"
@@ -5984,6 +7447,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -6003,6 +7467,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -6023,6 +7488,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6036,6 +7502,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6049,6 +7516,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6065,6 +7533,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "oberon"
       ],
@@ -6084,6 +7553,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -6103,6 +7573,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -6122,6 +7593,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -6141,6 +7613,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena"
       ],
@@ -6162,6 +7635,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [
         "arena",
         "brutus"
@@ -6183,6 +7657,7 @@
     {
       "area": "evidence",
       "classification": "evidence",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6197,8 +7672,26 @@
       "sha256": "a05c59df206a843b36dba39878dbdc584b6dc42f114111f83a05a82ad8bd46f7"
     },
     {
+      "area": "examples",
+      "classification": "repository-configuration",
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "unassigned",
+      "path": "examples/vef-launchpad-pilot-intake.yaml",
+      "proposed_disposition": "preserve-pending-owner-review",
+      "reference_count": 2,
+      "referenced_by": [
+        "README.md",
+        "docs/vef-pilot.md"
+      ],
+      "risk_flags": [],
+      "sha256": "299e4c336c15881943d70555ae47d8ee1f18750421f9740a89253675a2200efd"
+    },
+    {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6212,6 +7705,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6225,6 +7719,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6240,6 +7735,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6255,6 +7751,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6270,6 +7767,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [
         "flightpath"
       ],
@@ -6279,11 +7777,16 @@
       "owner": "unassigned",
       "path": "fixtures/events/september-17-2026.yaml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 3,
+      "reference_count": 8,
       "referenced_by": [
         "admin/public/roadmap/index.html",
+        "backend/tests/test_event_capacity_forecast.py",
+        "backend/tests/test_event_order_schedule.py",
+        "backend/tests/test_september_17_capacity_reconciliation.py",
         "docs/product-roadmap-dashboard.html",
-        "docs/product-roadmap-status.json"
+        "docs/product-roadmap-status.json",
+        "evidence/runs/event-capacity-reconciliation/manifest.json",
+        "evidence/runs/event-capacity-reconciliation/red-approval-local.xml"
       ],
       "risk_flags": [
         "status-field-review-required",
@@ -6294,6 +7797,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6307,6 +7811,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6320,6 +7825,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6333,6 +7839,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6346,6 +7853,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6359,6 +7867,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6372,6 +7881,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6385,6 +7895,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6398,6 +7909,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6411,6 +7923,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6424,6 +7937,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6439,6 +7953,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6454,6 +7969,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6469,6 +7985,7 @@
     {
       "area": "fixtures",
       "classification": "fixture",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6484,6 +8001,9 @@
     {
       "area": "site-agentops-observability.yml",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6503,6 +8023,9 @@
     {
       "area": "site-intel-llm-cpu-serving.yml",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6522,6 +8045,9 @@
     {
       "area": "site-intel-llm-tool-calling.yml",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6538,6 +8064,9 @@
     {
       "area": "site-intel-xeon6-agent-201.yml",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6557,6 +8086,9 @@
     {
       "area": "site-multi-agent-quickstart.yml",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6576,6 +8108,9 @@
     {
       "area": "site-openshift-operators.yml",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6592,20 +8127,28 @@
     {
       "area": "site.yml",
       "classification": "content-source",
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
       "path": "site.yml",
       "proposed_disposition": "preserve-pending-owner-review",
-      "reference_count": 8,
+      "reference_count": 13,
       "referenced_by": [
         "backend/app/adapters/openshift/provisioning.py",
         "backend/app/adapters/openshift/showroom_gitops.py",
         "backend/app/services/catalog_onboarding.py",
+        "backend/tests/test_catalog_intake_discovery_worker.py",
+        "backend/tests/test_catalog_intake_quality.py",
+        "backend/tests/test_catalog_intake_review_journey.py",
         "backend/tests/test_catalog_onboarding.py",
         "backend/tests/test_catalog_onboarding_cli.py",
         "backend/tests/test_showroom_content_package.py",
+        "catalog-onboarding/hybrid-fraud-detection.yaml",
         "catalog/guided-rag-on-xeon/catalog-item.yaml",
+        "catalog/hybrid-fraud-detection/catalog-item.yaml",
         "package.json"
       ],
       "risk_flags": [],
@@ -6614,6 +8157,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6627,6 +8171,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConfigMap"
@@ -6642,6 +8187,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -6658,6 +8204,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -6676,6 +8223,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Secret"
@@ -6693,6 +8241,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "NetworkPolicy"
@@ -6708,6 +8257,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Deployment",
@@ -6725,6 +8275,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Secret"
@@ -6742,6 +8293,7 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "Route"
@@ -6757,6 +8309,9 @@
     {
       "area": "tenant",
       "classification": "tenant-source",
+      "dependency_flags": [
+        "rhpds-image-dependency"
+      ],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6772,6 +8327,7 @@
     {
       "area": "ui-config.yml",
       "classification": "repository-configuration",
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [],
       "owner": "unassigned",
@@ -6792,35 +8348,42 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "f3d8cd930f1f341c94e07fd006ca6d11ca25b2d0",
+  "source_commit": "47d1debab5bdef6e7b21f5d568831903467dd53d",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
-      "catalog-source": 11,
-      "ci": 2,
-      "configuration": 3,
+      "catalog-source": 12,
+      "ci": 3,
+      "configuration": 4,
       "content-source": 18,
-      "contract": 14,
+      "contract": 42,
       "demo-source": 110,
-      "deployment-source": 154,
+      "deployment-source": 168,
       "deployment-template": 11,
       "evidence": 22,
       "fixture": 20,
-      "generated-intake": 4,
-      "repository-configuration": 6,
+      "generated-intake": 5,
+      "repository-configuration": 8,
       "tenant-source": 10
     },
-    "files_without_detected_repository_reference": 173,
-    "preserved_pending_review": 385,
+    "dependency_flag_counts": {
+      "agnostic-automation-dependency": 29,
+      "redhat-gpte-image-dependency": 9,
+      "rhdp-service-dependency": 2,
+      "rhpds-git-dependency": 35,
+      "rhpds-image-dependency": 14
+    },
+    "files_without_detected_repository_reference": 176,
+    "preserved_pending_review": 433,
     "risk_flag_counts": {
-      "environment-specific": 110,
+      "environment-specific": 125,
       "mutable-latest-image": 19,
       "possible-cluster-export-metadata": 1,
       "secret-object-review-required": 6,
-      "status-field-review-required": 37
+      "status-field-review-required": 59
     },
-    "tracked_yaml_files": 385,
-    "unassigned_owners": 385
+    "tracked_yaml_files": 433,
+    "unassigned_owners": 433
   },
   "tracked_changes_present": true
 }
