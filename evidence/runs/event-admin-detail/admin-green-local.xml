@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="1" failures="0" errors="0" time="0.109112792">
+    <testsuite name="src/pages/EventDetail.test.tsx" timestamp="2026-09-21T05:14:44.206Z" hostname="jkershaw-mac" tests="1" failures="0" errors="0" skipped="0" time="0.109112792">
+        <testcase classname="src/pages/EventDetail.test.tsx" name="EventDetail &gt; unifies readiness, access, placement, support, and evidence without lifecycle controls" time="0.108521875">
+        </testcase>
+    </testsuite>
+</testsuites>

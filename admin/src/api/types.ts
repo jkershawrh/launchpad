@@ -517,3 +517,41 @@ export interface EventRecord {
   capacity_preview: EventCapacityPreview;
   created_at: string;
 }
+
+export interface EventWorkshopStatusItem {
+  reservation_id: string;
+  cohort_id: string;
+  lab_ref: string;
+  catalog_id: string;
+  catalog_release: string;
+  cluster_ref: string;
+  seats: number;
+  reservation_status: 'held' | 'consumed' | 'released' | 'expired';
+  workshop_id?: string | null;
+  workshop_status?: string | null;
+  lifecycle_job_id?: string | null;
+  lifecycle_job_status?: string | null;
+  ready_seats: number;
+  failed_seats: number;
+  reclaimed_seats: number;
+  public_access_state: 'not_required' | 'pending_activation' | 'active' | 'disabled';
+  public_url?: string | null;
+}
+
+export interface EventStatusResult {
+  event_id: string;
+  state: 'approved' | 'reserved' | 'progressing' | 'awaiting_public_access' | 'ready' | 'cleanup_evidence_pending' | 'released' | 'attention_required';
+  reservation_complete: boolean;
+  summary: {
+    reservations: number;
+    workshops: number;
+    lifecycle_jobs: number;
+    seats: number;
+    ready_seats: number;
+    failed_seats: number;
+    reclaimed_seats: number;
+    public_workshops_active: number;
+  };
+  workshops: EventWorkshopStatusItem[];
+  observed_at: string;
+}

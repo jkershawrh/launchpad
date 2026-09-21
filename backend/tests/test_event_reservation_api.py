@@ -217,6 +217,30 @@ def test_non_admin_cannot_list_approved_events():
     assert response.status_code == 403
 
 
+def test_admin_reads_one_approved_event_without_lifecycle_side_effects():
+    _supply_value, _event_store, ledger = _overrides()
+    try:
+        response = TestClient(app).get("/api/v1/events/event-a")
+        missing = TestClient(app).get("/api/v1/events/missing")
+    finally:
+        _clear_overrides()
+
+    assert response.status_code == 200
+    assert response.json()["manifest"]["event_id"] == "event-a"
+    assert missing.status_code == 404
+    assert ledger.list_active(now=NOW) == []
+
+
+def test_non_admin_cannot_read_one_approved_event():
+    _overrides(admin=False)
+    try:
+        response = TestClient(app).get("/api/v1/events/event-a")
+    finally:
+        _clear_overrides()
+
+    assert response.status_code == 403
+
+
 def test_release_requires_positive_cleanup_evidence_and_is_idempotent():
     supply, event_store, _ledger = _overrides()
     event_store.create(_record("event-b", supply))

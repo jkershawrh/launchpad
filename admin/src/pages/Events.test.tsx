@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { api } from '../api/client';
 import type { EventRecord } from '../api/types';
@@ -65,7 +66,7 @@ describe('Events', () => {
   it('shows approved event demand and placement evidence without lifecycle controls', async () => {
     vi.spyOn(api, 'listEvents').mockResolvedValue([event]);
 
-    render(<Events />);
+    render(<MemoryRouter><Events /></MemoryRouter>);
 
     expect(await screen.findByRole('heading', { name: 'Events' })).toBeInTheDocument();
     expect(screen.getByText('Intel Field Day')).toBeInTheDocument();
@@ -80,7 +81,7 @@ describe('Events', () => {
   it('explains the empty approved-event state', async () => {
     vi.spyOn(api, 'listEvents').mockResolvedValue([]);
 
-    render(<Events />);
+    render(<MemoryRouter><Events /></MemoryRouter>);
 
     expect(await screen.findByText('No approved events yet')).toBeInTheDocument();
   });

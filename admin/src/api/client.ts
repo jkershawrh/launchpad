@@ -23,6 +23,7 @@ import type {
   CatalogIntakeSubmission,
   CatalogIntakePipelineView,
   EventRecord,
+  EventStatusResult,
 } from './types';
 
 const BASE = '/api';
@@ -126,6 +127,8 @@ export const api = {
 
   // Approved event demand (read-only admin visibility)
   listEvents: () => request<EventRecord[]>('/v1/events'),
+  getEvent: (id: string) => request<EventRecord>(`/v1/events/${encodeURIComponent(id)}`),
+  getEventStatus: (id: string) => request<EventStatusResult>(`/v1/events/${encodeURIComponent(id)}/status`),
 
   // Intelligence / Feedback
   getFeedbackSummary: () =>

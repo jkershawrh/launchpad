@@ -63,6 +63,23 @@ def list_approved_events(
 
 
 @router.get(
+    "/{event_id}",
+    response_model=EventRecord,
+    dependencies=[Depends(require_admin)],
+)
+def get_approved_event(
+    event_id: str,
+    store: Annotated[EventManifestStore, Depends(get_event_manifest_store)],
+) -> EventRecord:
+    """Read one approved event manifest without changing lifecycle state."""
+
+    record = store.get(event_id)
+    if record is None:
+        raise HTTPException(404, f"Approved event {event_id} was not found")
+    return record
+
+
+@router.get(
     "/{event_id}/status",
     response_model=EventStatusResult,
     dependencies=[Depends(require_admin)],

@@ -13,6 +13,7 @@ import CatalogIntakes from './pages/CatalogIntakes';
 import CatalogIntakeDetail from './pages/CatalogIntakeDetail';
 import NewCatalogIntake from './pages/NewCatalogIntake';
 import Events from './pages/Events';
+import EventDetail from './pages/EventDetail';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/analytics" element={<ProvisioningAnalytics />} />
           <Route path="/observability" element={<Observability />} />
           <Route path="/events" element={<Events />} />
+          <Route path="/events/:eventId" element={<EventDetail />} />
         </Route>
       </Routes>
     </BrowserRouter>

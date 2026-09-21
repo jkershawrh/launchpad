@@ -496,10 +496,15 @@
         "evidence/runs/event-public-claim-postgres/green-integration.xml",
         "evidence/runs/event-public-claim-postgres/manifest.json",
         "evidence/runs/event-public-claim-postgres/red-local.xml",
+        "evidence/runs/event-admin-detail/admin-green-local.xml",
+        "evidence/runs/event-admin-detail/backend-green-local.xml",
+        "evidence/runs/event-admin-detail/red-local.json",
         "evidence/runs/event-status-reconciliation/green-local.xml",
-        "evidence/runs/event-status-reconciliation/red-local.xml"
+        "evidence/runs/event-status-reconciliation/red-local.xml",
+        "admin/src/pages/EventDetail.test.tsx",
+        "admin/src/pages/EventDetail.tsx"
       ],
-      "note": "Disposable PostgreSQL 16 integration now proves two independent API replicas atomically claim distinct seats, a reconstructed service validates both hashed sessions, and persistence failures fail closed instead of returning phantom claims. The existing public-access API contract remains compatible. Overall state remains green-local because the external Keycloak/OIDC browser journey, namespace RBAC, and live 1-, 5-, and certified-seat claim bursts remain open."
+      "note": "Disposable PostgreSQL 16 integration now proves two independent API replicas atomically claim distinct seats, a reconstructed service validates both hashed sessions, and persistence failures fail closed instead of returning phantom claims. The existing public-access API contract remains compatible. The read-only admin event detail now joins readiness, persisted placement, workshop lifecycle, public-access state, failed-seat support signals, and capacity/fleet evidence without exposing lifecycle mutation controls. Overall state remains green-local because the external Keycloak/OIDC browser journey, namespace RBAC, and live 1-, 5-, and certified-seat claim bursts remain open."
     },
     "LP-T024": {
       "state": "green-integration",

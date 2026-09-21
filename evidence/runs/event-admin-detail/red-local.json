@@ -1,0 +1,23 @@
+{
+  "schema_version": "launchpad.redhat.com/red-green-evidence/v1",
+  "evidence_id": "event-admin-detail-red-local-20260921",
+  "stage": "red-local",
+  "requirements": [
+    "An administrator can read one approved event without changing lifecycle state.",
+    "The event detail view joins readiness, placement, access, support, and capacity evidence.",
+    "The detail view contains no launch, reservation, activation, or reclaim controls."
+  ],
+  "observations": [
+    {
+      "component": "backend",
+      "result": "failed-as-expected",
+      "detail": "GET /api/v1/events/{event_id} returned 404 because no single-event read contract existed."
+    },
+    {
+      "component": "admin",
+      "result": "failed-as-expected",
+      "detail": "The component suite could not resolve EventDetail because the event operations view did not exist."
+    }
+  ],
+  "live_mutation": false
+}

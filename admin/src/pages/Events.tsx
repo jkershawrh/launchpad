@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import type { EventRecord } from '../api/types';
 
@@ -52,7 +53,7 @@ export default function Events() {
               <article key={manifest.event_id} className="overflow-hidden rounded border border-[#333] bg-[#212121]">
                 <div className="flex flex-col justify-between gap-4 border-b border-[#333] p-5 md:flex-row md:items-start">
                   <div>
-                    <h2 className="text-xl font-semibold text-white">{manifest.name}</h2>
+                    <h2 className="text-xl font-semibold text-white"><Link className="hover:text-[#58A6E7] hover:underline" to={`/events/${encodeURIComponent(manifest.event_id)}`}>{manifest.name}</Link></h2>
                     <p className="mt-1 font-mono text-xs text-[#A3A3A3]">{manifest.event_id}</p>
                   </div>
                   <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold ${capacity.eligible ? 'border-[#3E8635] bg-[#18341C] text-[#92D400]' : 'border-[#C9190B] bg-[#2B1717] text-[#FF8D85]'}`}>
@@ -72,7 +73,7 @@ export default function Events() {
                   <section><h3 className="text-sm font-semibold text-white">Labs</h3><div className="mt-3 space-y-2">{manifest.labs.map((lab) => <div key={lab.lab_ref} className="rounded border border-[#444] bg-[#181818] px-3 py-2"><p className="text-sm font-semibold text-white">{lab.catalog_id}</p><p className="font-mono text-xs text-[#A3A3A3]">{lab.catalog_release}</p></div>)}</div></section>
                   <section><h3 className="text-sm font-semibold text-white">Governance</h3><dl className="mt-3 space-y-2 text-sm"><div><dt className="text-[#A3A3A3]">Exposure</dt><dd className="text-white">{manifest.exposure_policy.replaceAll('_', ' ')}</dd></div><div><dt className="text-[#A3A3A3]">Owner</dt><dd className="text-white">{manifest.owner}</dd></div><div><dt className="text-[#A3A3A3]">Capacity evidence</dt><dd className="font-mono text-xs text-white">{capacity.matrix_id}</dd></div><div><dt className="text-[#A3A3A3]">Approved</dt><dd className="text-white">{new Date(event.created_at).toLocaleString()}</dd></div></dl></section>
                 </div>
-                <p className="border-t border-[#333] px-5 py-3 text-xs text-[#A3A3A3]">{capacity.explanation}</p>
+                <div className="flex items-center justify-between gap-4 border-t border-[#333] px-5 py-3 text-xs text-[#A3A3A3]"><span>{capacity.explanation}</span><Link className="shrink-0 font-semibold text-[#58A6E7] hover:underline" to={`/events/${encodeURIComponent(manifest.event_id)}`}>View event</Link></div>
               </article>
             );
           })}
