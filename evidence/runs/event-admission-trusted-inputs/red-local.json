@@ -1,0 +1,12 @@
+{
+  "gate": "event-admission-trusted-inputs",
+  "phase": "RED-local",
+  "tests": [
+    "backend/tests/test_event_promoted_release_source.py",
+    "backend/tests/test_event_eligible_node_source.py",
+    "backend/tests/test_event_inflight_capacity_collector.py",
+    "backend/tests/test_event_reservation_guard.py"
+  ],
+  "initial_failure": "new trusted-source modules were absent and ReservationGuard was not accepted by the ledger",
+  "scope": "local component and transaction-seam proof only; no live admission wiring"
+}

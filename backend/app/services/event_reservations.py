@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from threading import Lock
 
@@ -25,6 +26,12 @@ class EventReservationConflictError(RuntimeError):
 
 class EventReservationUnavailableError(RuntimeError):
     """The requested aggregate hold cannot fit certified remaining capacity."""
+
+
+ReservationGuard = Callable[
+    [list[EventCapacityReservation], list[EventCapacityReservation], datetime],
+    None,
+]
 
 
 def build_event_reservation_plan(
@@ -167,10 +174,13 @@ class EventReservationLedger:
         supply: EventCapacitySupply,
         *,
         now: datetime | None = None,
+        guard: ReservationGuard | None = None,
     ) -> list[EventCapacityReservation]:
         current = now or datetime.now(UTC)
         _require_supply_identity(plan, supply)
         if self._db:
+            if guard is not None:
+                return self._db.reserve(plan, supply, now=current, guard=guard)
             return self._db.reserve(plan, supply, now=current)
 
         with self._lock:
@@ -194,6 +204,8 @@ class EventReservationLedger:
                 if item.status in {"held", "consumed", "expired"}
             ]
             _assert_capacity_available(plan.reservations, active, supply)
+            if guard is not None:
+                guard(plan.reservations, active, current)
             for item in plan.reservations:
                 self._records[item.reservation_id] = item.model_copy(deep=True)
             return [item.model_copy(deep=True) for item in plan.reservations]

@@ -584,6 +584,7 @@ class PostgresEventReservationStore:
         supply: EventCapacitySupply,
         *,
         now,
+        guard=None,
     ) -> list[EventCapacityReservation]:
         from app.services.event_reservations import (
             EventReservationConflictError,
@@ -651,6 +652,8 @@ class PostgresEventReservationStore:
                     for row in cur.fetchall()
                 ]
                 _assert_capacity_available(plan.reservations, active, supply)
+                if guard is not None:
+                    guard(plan.reservations, active, now)
 
                 for item in plan.reservations:
                     resources = item.resources

@@ -1,0 +1,30 @@
+schema_version: launchpad.redhat.com/event-eligible-node-source/v1
+purpose: Resolve current exact node IDs for artifact cold-pull requirements.
+inputs:
+  cluster_id: persisted approved allocation cluster
+  catalog_id: persisted approved allocation catalog
+  catalog_release: persisted approved allocation release
+  placement_policy: authenticated promoted-release scheduling contract
+  node_inventory: authenticated Kubernetes list_node from the selected cluster
+output:
+  type: TrustedEligibleNodes
+  identity: [cluster_id, catalog_id, catalog_release]
+  node_ids: sorted distinct Kubernetes node names
+  observed_at: timezone-aware time after list_node completes
+policy:
+  architecture: required, matches both kubernetes.io/arch and node status
+  node_selector: exact label equality
+  required_affinity_terms: OR of nonempty terms, AND of supported expressions
+  taints: reject untolerated NoSchedule and NoExecute
+  node_state: reject cordoned, not Ready, pressure, and control-plane nodes
+  ready_dwell: optional minimum seconds since Ready transition
+  inventory: require complete list and resourceVersion
+  freshness: downstream requirement builder rejects observations older than 300 seconds
+security:
+  forbidden_sources: [request_body, runtime_health_snapshot, unpromoted_catalog_edit]
+  read_only: true
+  on_failure: fail_closed
+limitations:
+  - The promoted placement source must certify that its policy covers every pod and image in the release.
+  - Additional scheduler rules or topology constraints must be represented before this adapter may be enabled for that release.
+  - Scheduler fit and resource headroom remain separate admission checks; node eligibility alone does not promise a pod will schedule.

@@ -1,0 +1,31 @@
+# In-flight capacity collector boundary
+
+This iteration defines a local-only, testable collector contract. It does **not**
+query any cluster, write live evidence, or change admission. The CLI exits 2
+without writing a snapshot. The test fake proves that an explicitly selected
+`ClusterTarget`, a complete namespace roster and pod request inventory, node
+allocatable, model-slot accounting, and persisted reservation/workshop/seat
+identities can produce the existing provider's versioned snapshot.
+
+The observer must use read-only credentials bound to the selected target. It
+must enumerate **all** namespaces and pods, not only Launchpad namespaces.
+Each pod's effective request includes ordinary containers, init-container
+maximums, and pod overhead. Pending pods remain capacity-bearing. Model slots
+must come from an explicit, complete source; zero cannot mean “unknown.” The
+collector refuses missing, duplicate, stale, or cross-cluster inventory and
+never emits `accounting_complete: true` for a partial scan. Snapshot writing
+is atomic, private (`0600`), and validated by the production file provider.
+Any namespace carrying a Launchpad workshop ID without a matching active
+reservation is treated as ambiguous ownership, not as an external workload;
+the whole collection is blocked without replacing the previous snapshot.
+
+Current blocker: the existing workshop namespace labels include workshop ID,
+but do not consistently carry event reservation ID and seat ID. A future
+persisted-workshop adapter must provide the exact seat IDs and the provisioning
+path must label each seat namespace with all three IDs before a live collector
+can safely publish evidence. The CLI intentionally has no fixture mode that
+could accidentally mint trusted-looking runtime evidence.
+
+This evidence alone is not an admission lock. The reservation transaction
+must recheck fresh evidence and active holds atomically before new orders use
+it as an authoritative gate.
