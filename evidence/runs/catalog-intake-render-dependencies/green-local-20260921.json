@@ -1,0 +1,28 @@
+{
+  "evidence_id": "LP-T099-RENDER-DEPENDENCIES-20260921",
+  "scope": "Static review of immutable Quickstart source only; no Helm/Kustomize rendering, dependency fetching, cluster mutation, or catalog promotion",
+  "requirement": "External package render inputs and unparseable package metadata must block catalog activation pending isolated rendered-output and target review",
+  "red": {
+    "test": "test_external_render_dependencies_are_review_blockers_not_fetched",
+    "result": "failed: external_render_dependencies inventory absent"
+  },
+  "green": {
+    "focused_command": "PYTHONPATH=backend:. .venv/bin/pytest -q backend/tests/test_catalog_intake_quality.py backend/tests/test_catalog_onboarding.py --tb=short --disable-warnings",
+    "focused_result": "37 passed",
+    "regression_command": "PYTHONPATH=backend:. .venv/bin/pytest -q backend/tests -m 'not local' --disable-warnings --tb=short",
+    "regression_result": "2103 passed, 27 skipped, 13 deselected"
+  },
+  "coverage": [
+    "Helm chart repository dependency",
+    "Kustomize remote resource/base/component",
+    "Unparsed Helm/Kustomize package metadata",
+    "Escaping file:// chart dependency is unresolved",
+    "Local packaged dependency does not count as an external fetch",
+    "Finding contains stable code and count, not source URLs",
+    "Generated catalog remains blocked draft, internal-only, and one-seat"
+  ],
+  "limitations": [
+    "Remote dependency references are not pinned or fetched by this static check",
+    "Isolated render, exact output inventory, dependency provenance, target compatibility, and live proof remain open"
+  ]
+}

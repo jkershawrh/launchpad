@@ -58,6 +58,8 @@ checks:
       - privileged workload behavior
       - unparsed manifests
       - fixed ingress hosts or externally exposed Services
+      - external Helm or Kustomize render dependencies
+      - unparsed Helm or Kustomize package metadata
     target_support_inferred: false
     finding_payload: stable code and evidence count only; no Secret or model value
     admission_authority: none

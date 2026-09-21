@@ -409,12 +409,82 @@ def _network_exposure_inventory(
         )
 
 
+def _remote_render_reference(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    reference = value.strip().lower()
+    return reference.startswith((
+        "http://", "https://", "ssh://", "git::", "git@", "oci://",
+        "github.com/", "gitlab.com/", "bitbucket.org/",
+    ))
+
+
+def _unresolved_chart_repository(value: Any) -> bool:
+    if not isinstance(value, str) or not value.strip():
+        return True
+    reference = value.strip()
+    if not reference.startswith("file://"):
+        return True
+    local_path = reference.removeprefix("file://")
+    return not local_path or PurePath(local_path).is_absolute() or ".." in PurePath(local_path).parts
+
+
+def _render_dependency_inventory(
+    document: Any,
+    path: str,
+    package_kind: str,
+    inventory: dict[str, list[Any]],
+) -> None:
+    """Record remote render inputs without copying their URLs or fetching them."""
+    if not isinstance(document, dict):
+        inventory["unparsed_packages"].append(path)
+        return
+    if package_kind == "helm":
+        groups = (("dependencies", document.get("dependencies") or []),)
+    else:
+        groups = tuple(
+            (field, document.get(field) or [])
+            for field in ("resources", "bases", "components", "helmCharts")
+        )
+    for field, entries in groups:
+        if not isinstance(entries, list):
+            inventory["unparsed_packages"].append(path)
+            continue
+        for index, entry in enumerate(entries):
+            if package_kind == "helm":
+                if not isinstance(entry, dict):
+                    inventory["unparsed_packages"].append(path)
+                    continue
+                remote = _unresolved_chart_repository(entry.get("repository"))
+            elif field == "helmCharts":
+                if not isinstance(entry, dict):
+                    inventory["unparsed_packages"].append(path)
+                    continue
+                remote = _unresolved_chart_repository(entry.get("repo"))
+            else:
+                if not isinstance(entry, str):
+                    inventory["unparsed_packages"].append(path)
+                    continue
+                remote = _remote_render_reference(entry)
+            if remote:
+                _append_unique(
+                    inventory["external_render_dependencies"],
+                    {
+                        "entry": index,
+                        "field": field,
+                        "path": path,
+                        "source": package_kind,
+                    },
+                )
+
+
 def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
     """Return review-only facts without copying Secret payloads or granting support."""
     inventory: dict[str, list[Any]] = {
         "cluster_scoped_resources": [],
         "cleanup_candidates": [],
         "containerfiles": [],
+        "external_render_dependencies": [],
         "images": [],
         "manifest_resources": [],
         "models": [],
@@ -429,6 +499,7 @@ def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
         "storage": [],
         "resource_envelopes": [],
         "unparsed_manifests": [],
+        "unparsed_packages": [],
     }
 
     for path in sorted(root.rglob("*")):
@@ -461,6 +532,18 @@ def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
             text = path.read_text()
         except (OSError, UnicodeDecodeError):
             continue
+        package_kind = (
+            "helm" if path.name == "Chart.yaml"
+            else "kustomize" if path.name.lower() in {"kustomization.yaml", "kustomization.yml"}
+            else None
+        )
+        if package_kind:
+            try:
+                package = yaml.safe_load(text)
+            except yaml.YAMLError:
+                inventory["unparsed_packages"].append(relative)
+            else:
+                _render_dependency_inventory(package, relative, package_kind, inventory)
         if not re.search(r"(?m)^\s*apiVersion:\s*\S+", text) or not re.search(
             r"(?m)^\s*kind:\s*\S+", text
         ):
@@ -501,6 +584,7 @@ def _discover_repository_inventory(root: Path) -> dict[str, list[Any]]:
             _storage_inventory(document, relative, inventory)
             _network_exposure_inventory(document, relative, inventory)
 
+    inventory["unparsed_packages"] = sorted(set(inventory["unparsed_packages"]))
     for key, values in inventory.items():
         inventory[key] = sorted(
             values,
@@ -593,6 +677,10 @@ def _requirement_review(
         add("manifest-unparsed", len(inventory["unparsed_manifests"]))
     if inventory.get("network_exposure"):
         add("network-exposure-unresolved", len(inventory["network_exposure"]))
+    if inventory.get("external_render_dependencies"):
+        add("render-dependency-unresolved", len(inventory["external_render_dependencies"]))
+    if inventory.get("unparsed_packages"):
+        add("render-package-unparsed", len(set(inventory["unparsed_packages"])))
     return {
         "status": "blocked" if findings else "review-required",
         "resolution_authority": "human-and-cluster-evidence",

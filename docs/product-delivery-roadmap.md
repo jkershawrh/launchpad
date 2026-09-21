@@ -398,7 +398,9 @@ repository and receive a safe, reviewable, certified catalog draft.**
   exposure, a one-seat ceiling, immutable matching sources, unchanged
   inventory, and unresolved blockers. Fixed ingress hosts, externally exposed
   Services, and malformed network specs now raise review-only network findings;
-  rendered-template and target-network proof remain open.
+  external Helm/Kustomize render dependencies and malformed package metadata
+  also raise review-only findings without fetching source. Isolated rendered
+  output and target-network proof remain open.
 - `LP-T100` Run source, content, artifact, security, model, one-seat lifecycle,
   restart, and zero-residue reclaim gates without editing a live catalog.
   **GREEN-live-partial (worker-safety contract):** a versioned fail-closed boundary now

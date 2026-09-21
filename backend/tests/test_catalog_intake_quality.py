@@ -343,6 +343,134 @@ spec: []
     }
 
 
+def test_external_render_dependencies_are_review_blockers_not_fetched(
+    tmp_path: Path,
+) -> None:
+    source = _quality_source(tmp_path)
+    (source / "deploy/chart/Chart.yaml").write_text(
+        """apiVersion: v2
+name: support-assistant
+version: 0.1.0
+dependencies:
+  - name: remote-db
+    version: 1.2.3
+    repository: https://charts.example.test/library
+  - name: local-helper
+    version: 1.0.0
+    repository: file://charts/local-helper
+""",
+        encoding="utf-8",
+    )
+    overlay = source / "deploy/overlay"
+    overlay.mkdir()
+    (overlay / "kustomization.yaml").write_text(
+        """apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - github.com/example/base//deploy?ref=main
+  - ../local-base
+bases:
+  - https://github.com/example/legacy-base//deploy?ref=release
+components:
+  - ssh://git@example.test/component
+helmCharts:
+  - name: remote-metrics
+    repo: https://charts.example.test/metrics
+""",
+        encoding="utf-8",
+    )
+
+    intake, report = discover_quickstart_repo(
+        source,
+        repo_url="https://github.com/example/support-assistant.git",
+        revision="a" * 40,
+        catalog_id="support-assistant",
+        display_name="Support Assistant",
+    )
+
+    dependencies = report["inventory"]["external_render_dependencies"]
+    assert len(dependencies) == 5
+    assert {item["source"] for item in dependencies} == {"helm", "kustomize"}
+    finding = next(
+        item for item in intake["quality"]["requirement_review"]["findings"]
+        if item["code"] == "render-dependency-unresolved"
+    )
+    assert finding["evidence_count"] == 5
+    assert "charts.example.test" not in str(finding)
+    assert "github.com/example/base" not in str(finding)
+    assert intake["quality"]["gate"]["status"] == "blocked"
+    assert build_catalog_draft_from_receipt(report)["status"] == "draft"
+
+
+def test_unparsed_render_package_fails_closed(tmp_path: Path) -> None:
+    source = _quality_source(tmp_path)
+    (source / "deploy/chart/Chart.yaml").write_text(
+        "apiVersion: v2\nname: support-assistant\nversion: 0.1.0\n"
+        "dependencies: not-a-list\n",
+        encoding="utf-8",
+    )
+
+    intake, report = discover_quickstart_repo(
+        source,
+        repo_url="https://github.com/example/support-assistant.git",
+        revision="a" * 40,
+        catalog_id="support-assistant",
+        display_name="Support Assistant",
+    )
+
+    assert report["inventory"]["unparsed_packages"] == ["deploy/chart/Chart.yaml"]
+    assert any(
+        finding["code"] == "render-package-unparsed"
+        for finding in intake["quality"]["requirement_review"]["findings"]
+    )
+    assert intake["quality"]["gate"]["status"] == "blocked"
+
+
+def test_render_dependency_cannot_escape_source_or_hide_in_bad_entry(
+    tmp_path: Path,
+) -> None:
+    source = _quality_source(tmp_path)
+    (source / "deploy/chart/Chart.yaml").write_text(
+        """apiVersion: v2
+name: support-assistant
+version: 0.1.0
+dependencies:
+  - name: escape
+    version: 1.0.0
+    repository: file://../../outside
+""",
+        encoding="utf-8",
+    )
+    overlay = source / "deploy/overlay"
+    overlay.mkdir()
+    (overlay / "kustomization.yaml").write_text(
+        "apiVersion: kustomize.config.k8s.io/v1beta1\n"
+        "kind: Kustomization\nresources: [123]\n",
+        encoding="utf-8",
+    )
+
+    intake, report = discover_quickstart_repo(
+        source,
+        repo_url="https://github.com/example/support-assistant.git",
+        revision="a" * 40,
+        catalog_id="support-assistant",
+        display_name="Support Assistant",
+    )
+
+    assert report["inventory"]["external_render_dependencies"] == [
+        {
+            "entry": 0,
+            "field": "dependencies",
+            "path": "deploy/chart/Chart.yaml",
+            "source": "helm",
+        }
+    ]
+    assert report["inventory"]["unparsed_packages"] == [
+        "deploy/overlay/kustomization.yaml"
+    ]
+    assert intake["quality"]["gate"]["status"] == "blocked"
+
+
 def test_repository_discovery_blocks_missing_quickstart_quality_artifacts(
     tmp_path: Path,
 ) -> None:
@@ -385,6 +513,9 @@ def test_quality_contract_keeps_rhdp_delivery_and_live_mutation_outside_scope() 
     assert contract["execution"]["untrusted_source_runs_on_host"] is False
     assert contract["portfolio_overlap"]["mutable_live_org_scan_allowed"] is False
     assert "fixed ingress hosts or externally exposed Services" in (
+        contract["checks"]["requirement_review"]["source_signals"]
+    )
+    assert "external Helm or Kustomize render dependencies" in (
         contract["checks"]["requirement_review"]["source_signals"]
     )
 
