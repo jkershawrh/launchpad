@@ -1,0 +1,184 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/hybrid-fraud-detection.yaml
+catalog:
+  catalog_item_id: hybrid-fraud-detection
+  display_name: Hybrid Fraud Detection on Intel Xeon
+  description: Repository-discovered onboarding draft for Hybrid Fraud Detection on
+    Intel Xeon.
+  category: guided_build
+  version: 0.1.0
+  status: draft
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
+    revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
+    playbook: ''
+    start_path: .
+    source_kind: quickstart-readme
+    content_path: README.md
+  workload:
+    repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
+    revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
+    deploy_path: chart
+runtime:
+  deployment_type: helm
+  required_capabilities:
+  - openshift
+  - showroom
+  required_models: []
+  seat_resources:
+    cpu_millicores: 0
+    memory_mib: 0
+    pods: 0
+    storage_gib: 0
+  tabs:
+  - id: terminal
+    title: Terminal
+  allowed_exposure_policies:
+  - internal
+certification:
+  stage: repository-discovery
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  - 5
+  - 25
+  activation_blockers:
+  - Replace zero resource placeholders with measured per-seat resource measurements.
+  - Review required capabilities, models, participant tabs, routes, identity, and
+    runtime Secret sources.
+  - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
+    before activation.
+  - Resolve every repository discovery warning before activation.
+  - Review every mutable container image and replace it with an approved immutable
+    digest.
+  - Review every unparsed manifest; templating or invalid YAML prevents complete static
+    discovery.
+  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
+quality:
+  schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+  business_solution:
+    status: review-required
+    readme_present: true
+    title: Build a hybrid fraud-scoring demo with explainable AI
+    action_oriented_title: true
+    required_sections_present: false
+    missing_sections:
+    - architecture
+    business_language_present: true
+    human_review_required: true
+  artifacts:
+    validation_matrix:
+      path: tests/validation_matrix.yaml
+      status: invalid
+      entry_count: 0
+    claim_registry:
+      path: tests/claim_registry.yaml
+      status: present-valid
+      entry_count: 1
+    benchmark_rubric:
+      path: tests/benchmark_rubric.yaml
+      status: invalid
+      entry_count: 0
+    publication_test:
+      path: tests/publication/test_readme.py
+      status: present
+    makefile:
+      path: Makefile
+      status: present
+    ci_workflows:
+      path: .github/workflows
+      status: present
+  showroom:
+    page_count: 0
+    hands_on_module_count: 0
+    execute_block_count: 0
+    see_section_count: 0
+    verification_section_count: 0
+    key_takeaway_count: 0
+    thin_modules: []
+  capacity_proposal:
+    status: review-required
+    inference_mode: remote-endpoint
+    framework_signals:
+    - gradio
+    - openai
+    declared_models: []
+    explicit_resource_envelopes: 0
+    measurement_required_before_placement: true
+  security_summary:
+    status: review-required
+    mutable_image_count: 2
+    cluster_scoped_resource_count: 0
+    privileged_finding_count: 0
+    secret_manifest_count: 0
+    unparsed_manifest_count: 3
+    secret_values_included: false
+  portfolio_overlap:
+    status: not-run
+    reason: A pinned versioned portfolio inventory was not supplied.
+    mutable_live_org_scan_allowed: false
+  gate:
+    status: blocked
+    blocking_findings:
+    - 'README is missing required sections: architecture'
+    - tests/validation_matrix.yaml is missing or invalid
+    - tests/benchmark_rubric.yaml is missing or invalid
+    - No hands-on Showroom module was discovered
+  authority:
+    mode: analysis-only
+    may_modify_source: false
+    may_publish_catalog: false
+    may_provision: false
+    may_certify: false
+discovery:
+  source: quickstart-repository
+  inventory:
+    cluster_scoped_resources: []
+    cleanup_candidates:
+    - &id001
+      api_version: v1
+      kind: Pod
+      name: '{{ .Release.Name }}-test-scorer'
+      path: chart/templates/test-scorer.yaml
+    containerfiles:
+    - src/Containerfile
+    images:
+    - path: chart/templates/test-scorer.yaml
+      reference: registry.access.redhat.com/ubi9/ubi-minimal:9.6
+      source: manifest
+    - path: src/Containerfile
+      reference: registry.access.redhat.com/ubi9/python-311:latest
+      source: containerfile
+    manifest_resources:
+    - *id001
+    models: []
+    mutable_images:
+    - path: chart/templates/test-scorer.yaml
+      reference: registry.access.redhat.com/ubi9/ubi-minimal:9.6
+      source: manifest
+    - path: src/Containerfile
+      reference: registry.access.redhat.com/ubi9/python-311:latest
+      source: containerfile
+    operators: []
+    ports: []
+    privileged_findings: []
+    routes: []
+    secret_manifests: []
+    secret_references: []
+    storage: []
+    resource_envelopes: []
+    unparsed_manifests:
+    - chart/templates/deployment.yaml
+    - chart/templates/route.yaml
+    - chart/templates/service.yaml
+  warnings:
+  - README-first Quickstart content was discovered; Showroom conversion and review
+    are required before activation.
+  errors: []
+  provisional_fields:
+  - catalog.description
+  - runtime.required_capabilities
+  - runtime.required_models
+  - runtime.seat_resources
+  - runtime.tabs

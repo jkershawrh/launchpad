@@ -1,0 +1,85 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-candidate-evidence/v1",
+  "run_id": "catalog-intake-hybrid-fraud-green-local-20260921",
+  "recorded_at": "2026-09-21T04:14:18Z",
+  "result": "GREEN-local",
+  "requirements": [
+    "LP-T097",
+    "LP-T098",
+    "LP-T099"
+  ],
+  "launchpad_revision": "c3a2c062ac20ea9b7008e753e344cba1eccad3ea",
+  "source": {
+    "repository_url": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+    "revision": "eb85ce0014cb958244b865da8ca3b5e62cfcab0d",
+    "catalog_item_id": "hybrid-fraud-detection",
+    "source_kind": "quickstart-readme",
+    "deployment_type": "helm"
+  },
+  "checks": {
+    "immutable_remote_checkout": "pass",
+    "credential_free_static_discovery": "pass",
+    "repository_discovery": "pass",
+    "intake_contract": "pass",
+    "workload_structure": "pass",
+    "readme_source_structure": "pass",
+    "catalog_drift": "pass",
+    "deterministic_draft": "pass",
+    "focused_regression_tests": {
+      "result": "pass",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {
+    "onboarding_contract": {
+      "path": "catalog-onboarding/hybrid-fraud-detection.yaml",
+      "sha256": "1de1fe07f6153ee3ce7ac0f4d4c4a808ed090df24617657748da493f6a2d3354"
+    },
+    "catalog_draft": {
+      "path": "catalog/hybrid-fraud-detection/catalog-item.yaml",
+      "sha256": "88776ae0661bd02e6175c125a267d9f59909d27356ab2cdafa108a093f9e6d3a"
+    },
+    "discovery_receipt": {
+      "retained_in_git": false,
+      "sha256": "5c5cd3861f24e16d1a514c2162d3766451b9618062626c539dc48a2106ff55ad"
+    },
+    "validation_receipt": {
+      "retained_in_git": false,
+      "sha256": "e8cbf923ca7bcdc76003f540ca2edbedff606a50ac2b14523958a353d52c9ab8"
+    }
+  },
+  "fail_closed_result": {
+    "catalog_status": "draft",
+    "orderable": false,
+    "exposure_policies": [
+      "internal"
+    ],
+    "maximum_seats": 1,
+    "showroom_ready": false,
+    "promotion_eligible": false,
+    "activation_status": "blocked"
+  },
+  "discovered_blockers": [
+    "Showroom conversion and participant journey are not present.",
+    "Per-seat resource values are unmeasured placeholders.",
+    "Required model, route, tab, identity, and runtime Secret contracts need review.",
+    "Mutable image references require immutable approved digests.",
+    "Templated Helm manifests require rendered review.",
+    "The Quickstart validation matrix and benchmark rubric do not match the Launchpad intake quality schema.",
+    "The source repository's latest CI run has a lint failure.",
+    "One-seat, five-seat, and intended-scale live certification have not run."
+  ],
+  "mutations": {
+    "live_catalog": false,
+    "clusters": false,
+    "workshops": false,
+    "routes": false,
+    "credentials": false,
+    "source_repository": false
+  },
+  "release": {
+    "eligible": false,
+    "next_gate": "Correct the source-owned Quickstart contract, build the Showroom journey, pin deployable images, and repeat discovery at a new immutable revision."
+  }
+}

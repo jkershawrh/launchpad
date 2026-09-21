@@ -1,0 +1,166 @@
+catalog_item_id: hybrid-fraud-detection
+display_name: Hybrid Fraud Detection on Intel Xeon
+description: Repository-discovered onboarding draft for Hybrid Fraud Detection on
+  Intel Xeon.
+category: guided_build
+version: 0.1.0
+status: draft
+required_capabilities:
+- openshift
+- showroom
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: 4h
+provisioner_refs:
+- helm-workload
+- showroom
+validation_refs:
+- pod-ready
+- route-accessible
+- inference-health
+- agentops-journey
+observability_profile: agentops-full-stack
+supported_branding:
+- redhat-intel-default
+- intel-internal
+metadata:
+  showroom: false
+  showroom_content_source_kind: quickstart-readme
+  showroom_content_path: README.md
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/hybrid-fraud-detection.yaml
+  certification_stage: repository-discovery
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  - 5
+  - 25
+  activation_blockers:
+  - Replace zero resource placeholders with measured per-seat resource measurements.
+  - Review required capabilities, models, participant tabs, routes, identity, and
+    runtime Secret sources.
+  - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
+    before activation.
+  - Resolve every repository discovery warning before activation.
+  - Review every mutable container image and replace it with an approved immutable
+    digest.
+  - Review every unparsed manifest; templating or invalid YAML prevents complete static
+    discovery.
+  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
+  allowed_exposure_policies:
+  - internal
+  showroom_journey: hybrid-fraud-detection
+  showroom_title: Hybrid Fraud Detection on Intel Xeon
+  namespace_slug: hybrid-fraud-detection
+  showroom_terminal_storage: true
+  showroom_tabs:
+  - id: terminal
+    title: Terminal
+  required_models: []
+  inference_endpoint: litellm
+  seat_cpu_millicores: 0
+  seat_memory_mib: 0
+  seat_pods: 0
+  seat_storage_gib: 0
+  workshop_provision_concurrency: 5
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 900
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
+  workload_revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: chart
+  workload_source_kind: chart
+  workload_gitops_ready: false
+  workload_release_name: hybrid-fraud-detection
+  workload_helm_values: {}
+  workload_ignore_differences: []
+  workload_runtime_secret_name: ''
+  workload_runtime_secret_sources: {}
+  workload_runtime_secret_value_path: ''
+  workload_identity_value_path: ''
+  workload_routes: {}
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
+  source_content_revision: eb85ce0014cb958244b865da8ca3b5e62cfcab0d
+  source_references: {}
+  intake_quality:
+    artifacts:
+      benchmark_rubric:
+        entry_count: 0
+        path: tests/benchmark_rubric.yaml
+        status: invalid
+      ci_workflows:
+        path: .github/workflows
+        status: present
+      claim_registry:
+        entry_count: 1
+        path: tests/claim_registry.yaml
+        status: present-valid
+      makefile:
+        path: Makefile
+        status: present
+      publication_test:
+        path: tests/publication/test_readme.py
+        status: present
+      validation_matrix:
+        entry_count: 0
+        path: tests/validation_matrix.yaml
+        status: invalid
+    authority:
+      may_certify: false
+      may_modify_source: false
+      may_provision: false
+      may_publish_catalog: false
+      mode: analysis-only
+    business_solution:
+      action_oriented_title: true
+      business_language_present: true
+      human_review_required: true
+      missing_sections:
+      - architecture
+      readme_present: true
+      required_sections_present: false
+      status: review-required
+      title: Build a hybrid fraud-scoring demo with explainable AI
+    capacity_proposal:
+      declared_models: []
+      explicit_resource_envelopes: 0
+      framework_signals:
+      - gradio
+      - openai
+      inference_mode: remote-endpoint
+      measurement_required_before_placement: true
+      status: review-required
+    gate:
+      blocking_findings:
+      - 'README is missing required sections: architecture'
+      - tests/validation_matrix.yaml is missing or invalid
+      - tests/benchmark_rubric.yaml is missing or invalid
+      - No hands-on Showroom module was discovered
+      status: blocked
+    portfolio_overlap:
+      mutable_live_org_scan_allowed: false
+      reason: A pinned versioned portfolio inventory was not supplied.
+      status: not-run
+    schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+    security_summary:
+      cluster_scoped_resource_count: 0
+      mutable_image_count: 2
+      privileged_finding_count: 0
+      secret_manifest_count: 0
+      secret_values_included: false
+      status: review-required
+      unparsed_manifest_count: 3
+    showroom:
+      execute_block_count: 0
+      hands_on_module_count: 0
+      key_takeaway_count: 0
+      page_count: 0
+      see_section_count: 0
+      thin_modules: []
+      verification_section_count: 0

@@ -421,6 +421,25 @@ to 25 internal Arena seats while durable image supply, public access, and the
 optional Track 3 runtime integrations remain fail-closed. See
 [multi-agent-quickstart-import.md](multi-agent-quickstart-import.md).
 
+## Hybrid fraud detection intake proof
+
+`hybrid-fraud-detection` is the first genuinely new README-first Quickstart
+exercised through the generic intake path. The source is pinned to
+`jkershawrh/hybrid-fraud-detection` at
+`eb85ce0014cb958244b865da8ca3b5e62cfcab0d`. Credential-free discovery from a
+temporary checkout passed, found the Helm workload, generated a deterministic
+review contract and catalog preview, and validated both source revisions
+without executing repository code.
+
+The result is deliberately not orderable: it remains `draft`, internal-only,
+limited to one seat, and marked `showroom: false`. Discovery identified the
+missing Showroom journey, unmeasured capacity, mutable images, rendered-Helm
+review, source quality-schema differences, model/runtime integration, and
+1/5/intended-scale certification as activation work. No live catalog,
+workshop, route, cluster, credential, or source repository was changed. The
+sanitized proof is retained in
+`evidence/runs/catalog-intake-hybrid-fraud/green-local.json`.
+
 ## AgentOps intake status
 
 The detailed RHDP topology and Launchpad adaptation decisions are recorded in
