@@ -39,12 +39,39 @@ from app.adapters.openshift.workload_gitops import (
     build_runtime_secret,
     build_workload_application,
 )
+from app.domain.clusters import ClusterTarget
 from app.domain.event_namespace_identity import event_namespace_labels
 from app.domain.models import CatalogItem, LabRequest, ProvisioningPlan, ProvisioningStep
 
 _CONTAINER_DEMOS = Path("/opt/demos-deploy/cluster")
 _LOCAL_DEMOS = Path(__file__).resolve().parents[5] / "demos" / "deploy" / "cluster"
 DEMO_DEPLOY_ROOT = _CONTAINER_DEMOS if _CONTAINER_DEMOS.exists() else _LOCAL_DEMOS
+
+DEFAULT_DEMO_FRONTEND_IMAGE = (
+    "image-registry.openshift-image-registry.svc:5000/"
+    "partner-ai-launchpad/inference-frontend:latest"
+)
+DEFAULT_DEMO_GATEWAY_IMAGE = (
+    "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-gateway:latest"
+)
+
+
+def _gitops_destination_server(target: ClusterTarget | None) -> str:
+    """Use Argo CD's in-cluster identity for its own local cluster."""
+    if target is None or target.local:
+        return "https://kubernetes.default.svc"
+    return target.api_url
+
+
+def _demo_frontend_image() -> str:
+    """Return the execution-cluster-specific demo image source."""
+    return os.environ.get("DEMO_FRONTEND_IMAGE", DEFAULT_DEMO_FRONTEND_IMAGE)
+
+
+def _demo_gateway_image() -> str:
+    """Return the execution-cluster-specific gateway image source."""
+    return os.environ.get("DEMO_GATEWAY_IMAGE", DEFAULT_DEMO_GATEWAY_IMAGE)
+
 
 WAIT_TIMEOUT = 300  # seconds
 POLL_INTERVAL = 5
@@ -161,8 +188,13 @@ class OpenShiftProvisioningAdapter:
                 "workshop_id": request.metadata.get("workshop_id", request.request_id),
                 "seat_id": request.metadata.get("seat_id", request.request_id),
                 **(
-                    {"event_reservation_id": event_labels["launchpad.redhat.com/event-reservation-id"]}
-                    if event_labels else {}
+                    {
+                        "event_reservation_id": event_labels[
+                            "launchpad.redhat.com/event-reservation-id"
+                        ]
+                    }
+                    if event_labels
+                    else {}
                 ),
                 "participant_id": request.metadata.get("participant_id", request.requester_id),
                 "exposure_policy": request.exposure_policy.value,
@@ -188,9 +220,7 @@ class OpenShiftProvisioningAdapter:
                 "workload_deploy_path": meta.get("workload_deploy_path", ""),
                 "workload_release_name": meta.get("workload_release_name", "workload"),
                 "workload_helm_values": meta.get("workload_helm_values", {}),
-                "workload_ignore_differences": meta.get(
-                    "workload_ignore_differences", []
-                ),
+                "workload_ignore_differences": meta.get("workload_ignore_differences", []),
                 "workload_runtime_secret_name": meta.get("workload_runtime_secret_name", ""),
                 "workload_runtime_secret_sources": meta.get("workload_runtime_secret_sources", {}),
                 "workload_runtime_secret_value_path": meta.get(
@@ -243,15 +273,7 @@ class OpenShiftProvisioningAdapter:
 
         # --- Step 1: Ensure tenant gateway exists ---
         if not operator_workshop:
-            with self._gateway_bootstrap_lock:
-                gw_existed = self._namespace_exists(gw_namespace)
-                if not gw_existed:
-                    self._create_namespace(gw_namespace)
-                    self._grant_remote_control_plane_access(gw_namespace)
-                    self._ensure_image_pull_access(gw_namespace, res)
-                    self._create_demo_secrets(gw_namespace, session_maas_key)
-                    self._apply_kustomize(str(DEMO_DEPLOY_ROOT), gw_namespace)
-                    self._wait_for_deployments(gw_namespace, deployments={"postgres", "gateway"})
+            self._ensure_tenant_gateway(gw_namespace, res, session_maas_key)
 
         # --- Step 2: Create demo namespace ---
         self._create_namespace(
@@ -340,9 +362,7 @@ class OpenShiftProvisioningAdapter:
                     session_id=str(res.get("session_id", plan.request_id)),
                     tenant_id=tenant_id,
                     cluster_id=plan.target_cluster or "oberon",
-                    destination_server=(
-                        self._target.api_url if self._target else "https://kubernetes.default.svc"
-                    ),
+                    destination_server=_gitops_destination_server(self._target),
                     repo_url=str(res.get("workload_repo", "")),
                     revision=str(res.get("workload_revision", "")),
                     deploy_path=str(res.get("workload_deploy_path", "")),
@@ -353,9 +373,7 @@ class OpenShiftProvisioningAdapter:
                         res.get("workload_runtime_secret_value_path", "")
                     ),
                     identity_value_path=str(res.get("workload_identity_value_path", "")),
-                    ignore_differences=tuple(
-                        res.get("workload_ignore_differences", [])
-                    ),
+                    ignore_differences=tuple(res.get("workload_ignore_differences", [])),
                 ),
                 argocd_namespace=os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd"),
                 argocd_project=os.environ.get("SHOWROOM_ARGOCD_PROJECT", "default"),
@@ -418,9 +436,7 @@ class OpenShiftProvisioningAdapter:
                     console_url=(
                         f"{console_url}/k8s/ns/{demo_namespace}/core~v1~Pod" if console_url else ""
                     ),
-                    destination_server=self._target.api_url
-                    if self._target
-                    else "https://kubernetes.default.svc",
+                    destination_server=_gitops_destination_server(self._target),
                     storage_class=self._target.storage_class if self._target else "nfs-storage",
                     cluster_id=self._target.cluster_id if self._target else "oberon",
                     cluster_display_name=(
@@ -433,9 +449,7 @@ class OpenShiftProvisioningAdapter:
                     content_playbook=str(res.get("showroom_content_playbook", "site.yml")),
                     journey=str(res.get("showroom_journey", "guided-rag")),
                     content_only=bool(res.get("content_only", False)),
-                    terminal_storage_enabled=bool(
-                        res.get("showroom_terminal_storage", True)
-                    ),
+                    terminal_storage_enabled=bool(res.get("showroom_terminal_storage", True)),
                     terminal_image=str(
                         res.get("showroom_support_images", {}).get(
                             "showroom_terminal", SHOWROOM_TERMINAL_IMAGE
@@ -578,11 +592,9 @@ http {{
             if e.status != 409:
                 pass
 
-        FRONTEND_IMAGE = "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/inference-frontend:latest"
-
         container = client.V1Container(
             name="frontend",
-            image=FRONTEND_IMAGE,
+            image=_demo_frontend_image(),
             ports=[client.V1ContainerPort(container_port=8080)],
             volume_mounts=[
                 client.V1VolumeMount(
@@ -878,16 +890,10 @@ http {{
         cluster_id: str,
     ) -> None:
         """Copy the control-plane trust bundle into one model-consuming seat."""
-        source_namespace = os.environ.get(
-            "MODEL_CA_BUNDLE_NAMESPACE", "partner-ai-launchpad"
-        )
-        source_name = os.environ.get(
-            "MODEL_CA_BUNDLE_CONFIGMAP", "launchpad-cluster-ca-bundle"
-        )
+        source_namespace = os.environ.get("MODEL_CA_BUNDLE_NAMESPACE", "partner-ai-launchpad")
+        source_name = os.environ.get("MODEL_CA_BUNDLE_CONFIGMAP", "launchpad-cluster-ca-bundle")
         try:
-            source = self._control_core_v1.read_namespaced_config_map(
-                source_name, source_namespace
-            )
+            source = self._control_core_v1.read_namespaced_config_map(source_name, source_namespace)
         except ApiException as exc:
             raise ValueError(
                 f"Model CA bundle ConfigMap '{source_namespace}/{source_name}' is unavailable"
@@ -927,14 +933,10 @@ http {{
                 "launchpad-model-ca-bundle", namespace
             )
             metadata = (
-                existing.get("metadata", {})
-                if isinstance(existing, dict)
-                else existing.metadata
+                existing.get("metadata", {}) if isinstance(existing, dict) else existing.metadata
             )
             existing_labels = (
-                metadata.get("labels", {})
-                if isinstance(metadata, dict)
-                else metadata.labels or {}
+                metadata.get("labels", {}) if isinstance(metadata, dict) else metadata.labels or {}
             )
             if (
                 existing_labels.get("app.kubernetes.io/managed-by") != "launchpad"
@@ -943,9 +945,7 @@ http {{
                 or existing_labels.get("launchpad.redhat.com/seat-id")
                 != labels["launchpad.redhat.com/seat-id"]
             ):
-                raise ValueError(
-                    "Model CA bundle ConfigMap is owned by another seat"
-                ) from exc
+                raise ValueError("Model CA bundle ConfigMap is owned by another seat") from exc
             self._core_v1.patch_namespaced_config_map(
                 "launchpad-model-ca-bundle", namespace, body=body
             )
@@ -1058,9 +1058,7 @@ http {{
         timeout = int(os.environ.get("SHOWROOM_ROUTE_TIMEOUT", "600"))
         deadline = time.time() + timeout
         tls_verify: bool | str = (
-            os.environ.get("REQUESTS_CA_BUNDLE")
-            or os.environ.get("SSL_CERT_FILE")
-            or True
+            os.environ.get("REQUESTS_CA_BUNDLE") or os.environ.get("SSL_CERT_FILE") or True
         )
         routes: dict[str, str] = {}
         while time.time() < deadline:
@@ -1201,14 +1199,11 @@ http {{
                 ],
             )
             try:
-                self._rbac_v1.create_namespaced_role_binding(
-                    namespace=namespace, body=body
-                )
+                self._rbac_v1.create_namespaced_role_binding(namespace=namespace, body=body)
             except ApiException as exc:
                 if exc.status != 409:
                     raise ValueError(
-                        f"Failed to bind remote control-plane access in "
-                        f"'{namespace}': {exc.reason}"
+                        f"Failed to bind remote control-plane access in '{namespace}': {exc.reason}"
                     ) from exc
 
     def _grant_participant_access(
@@ -1295,6 +1290,7 @@ http {{
                 "MAAS_SESSION_KEY": session_maas_key,
             },
         )
+
         try:
             self._core_v1.create_namespaced_secret(namespace, secret)
         except ApiException as exc:
@@ -1316,6 +1312,30 @@ http {{
             if exc.status != 409:
                 pass
 
+    def _ensure_tenant_gateway(
+        self,
+        namespace: str,
+        resources: dict,
+        session_maas_key: str,
+    ) -> None:
+        """Create or reconcile the shared tenant gateway idempotently."""
+        with self._gateway_bootstrap_lock:
+            existed = self._namespace_exists(namespace)
+            if not existed:
+                self._create_namespace(namespace)
+                self._grant_remote_control_plane_access(namespace)
+                self._create_demo_secrets(namespace, session_maas_key)
+
+            # Image access and manifests are deliberately reconciled on every
+            # request. A retry or a promoted image digest must repair an
+            # existing tenant gateway instead of preserving its first state.
+            self._ensure_image_pull_access(namespace, resources)
+            self._apply_kustomize(str(DEMO_DEPLOY_ROOT), namespace)
+            self._wait_for_deployments(
+                namespace,
+                deployments={"postgres", "gateway"},
+            )
+
     def _select_workshop_node_name(self, request: LabRequest, metadata: dict) -> str:
         """Shard a workshop by seat while rejecting unstable or saturated workers.
 
@@ -1326,9 +1346,7 @@ http {{
         if not metadata.get("workshop_node_spread", False):
             return ""
 
-        min_ready_seconds = max(
-            0, int(metadata.get("workshop_node_min_ready_seconds", 900))
-        )
+        min_ready_seconds = max(0, int(metadata.get("workshop_node_min_ready_seconds", 900)))
         protected_pods = max(
             1,
             int(metadata.get("seat_pods", 1))
@@ -1337,9 +1355,7 @@ http {{
         )
         required_labels = {
             str(key): str(value)
-            for key, value in (
-                metadata.get("workshop_node_required_labels", {}) or {}
-            ).items()
+            for key, value in (metadata.get("workshop_node_required_labels", {}) or {}).items()
         }
         active_by_node: dict[str, int] = {}
         for pod in self._core_v1.list_pod_for_all_namespaces().items:
@@ -1381,10 +1397,7 @@ http {{
             ):
                 continue
             transition = getattr(ready, "last_transition_time", None)
-            if (
-                transition is not None
-                and time.time() - transition.timestamp() < min_ready_seconds
-            ):
+            if transition is not None and time.time() - transition.timestamp() < min_ready_seconds:
                 continue
 
             allocatable = getattr(status, "allocatable", None) or {}
@@ -1414,9 +1427,7 @@ http {{
             "pod-security.kubernetes.io/enforce": "restricted",
             "pod-security.kubernetes.io/warn": "restricted",
         }
-        control_plane_id = os.environ.get(
-            "LAUNCHPAD_CONTROL_PLANE_ID", ""
-        ).strip()
+        control_plane_id = os.environ.get("LAUNCHPAD_CONTROL_PLANE_ID", "").strip()
         if control_plane_id:
             labels["launchpad.redhat.com/control-plane-id"] = control_plane_id
         if extra_labels:
@@ -1554,6 +1565,7 @@ http {{
                 cleaned,
                 os.environ.get("DEMO_STORAGE_CLASS") or os.environ.get("SANDBOX_STORAGE_CLASS", ""),
             )
+            cleaned = self._inject_execution_images(cleaned)
             result = subprocess.run(
                 [kubectl, "apply", "-f", "-", "-n", namespace],
                 input=cleaned,
@@ -1580,6 +1592,27 @@ http {{
             if not spec.get("storageClassName"):
                 spec["storageClassName"] = storage_class
                 changed = True
+        return yaml.safe_dump_all(documents, sort_keys=False) if changed else content
+
+    @staticmethod
+    def _inject_execution_images(content: str) -> str:
+        """Replace control-cluster registry references with portable images."""
+        replacements = {
+            DEFAULT_DEMO_FRONTEND_IMAGE: _demo_frontend_image(),
+            DEFAULT_DEMO_GATEWAY_IMAGE: _demo_gateway_image(),
+        }
+        documents = list(yaml.safe_load_all(content))
+        changed = False
+        for document in documents:
+            if not isinstance(document, dict):
+                continue
+            pod_spec = document.get("spec", {}).get("template", {}).get("spec", {})
+            for key in ("initContainers", "containers"):
+                for container in pod_spec.get(key, []) or []:
+                    replacement = replacements.get(container.get("image"))
+                    if replacement:
+                        container["image"] = replacement
+                        changed = True
         return yaml.safe_dump_all(documents, sort_keys=False) if changed else content
 
     def _wait_for_deployments(
