@@ -36,6 +36,10 @@ spec:
               mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: candidate-hybrid-fraud-catalog
+              mountPath: /opt/catalog/hybrid-fraud-detection/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-targets
           configMap:
@@ -53,6 +57,9 @@ spec:
         - name: candidate-multi-agent-catalog
           configMap:
             name: flightpath-candidate-multi-agent-catalog
+        - name: candidate-hybrid-fraud-catalog
+          configMap:
+            name: flightpath-candidate-hybrid-fraud-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -84,6 +91,10 @@ spec:
               mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: candidate-hybrid-fraud-catalog
+              mountPath: /opt/catalog/hybrid-fraud-detection/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-ca-bundle
           configMap:
@@ -98,6 +109,9 @@ spec:
         - name: candidate-multi-agent-catalog
           configMap:
             name: flightpath-candidate-multi-agent-catalog
+        - name: candidate-hybrid-fraud-catalog
+          configMap:
+            name: flightpath-candidate-hybrid-fraud-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment

@@ -19,6 +19,9 @@ configMapGenerator:
   - name: flightpath-candidate-multi-agent-catalog
     files:
       - catalog-item.yaml=multi-agent-quickstart.catalog-item.yaml
+  - name: flightpath-candidate-hybrid-fraud-catalog
+    files:
+      - catalog-item.yaml=hybrid-fraud-detection.catalog-item.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

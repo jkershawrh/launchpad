@@ -334,6 +334,39 @@ def test_candidate_isolates_multi_agent_on_flightpath() -> None:
         } in container["volumeMounts"]
 
 
+def test_candidate_isolates_hybrid_fraud_on_flightpath() -> None:
+    documents = _render()
+    catalog = yaml.safe_load(
+        _one(documents, "ConfigMap", "flightpath-candidate-hybrid-fraud-catalog")["data"][
+            "catalog-item.yaml"
+        ]
+    )
+    metadata = catalog["metadata"]
+    assert catalog["status"] == "active"
+    assert metadata["workshop_cluster_ref"] == "flightpath"
+    assert metadata["certification_stage"] == "one-seat-candidate"
+    assert metadata["max_workshop_seats"] == 1
+    assert metadata["inference_endpoint"] == "direct_vllm_candidate"
+    assert metadata["seat_cpu_millicores"] == 700
+    assert metadata["seat_memory_mib"] == 1280
+    assert metadata["seat_pods"] == 2
+    assert metadata["workload_routes"]["ui"] == "hybrid-fraud-detection-ui"
+
+    for deployment_name, container_name in (
+        ("backend", "backend"),
+        ("lifecycle-worker", "lifecycle-worker"),
+    ):
+        deployment = _one(documents, "Deployment", deployment_name)
+        pod_spec = deployment["spec"]["template"]["spec"]
+        container = next(item for item in pod_spec["containers"] if item["name"] == container_name)
+        assert {
+            "name": "candidate-hybrid-fraud-catalog",
+            "mountPath": "/opt/catalog/hybrid-fraud-detection/catalog-item.yaml",
+            "subPath": "catalog-item.yaml",
+            "readOnly": True,
+        } in container["volumeMounts"]
+
+
 def test_bootstrap_holds_application_workloads_until_migration_is_green() -> None:
     documents = _render_bootstrap()
     for name in ("backend", "lifecycle-worker", "partner-portal", "admin"):
