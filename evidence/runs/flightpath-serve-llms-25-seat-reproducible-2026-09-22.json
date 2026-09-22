@@ -1,0 +1,120 @@
+{
+  "evidence_id": "EDD-FLIGHTPATH-SERVE-LLMS-25-REPRODUCIBLE-20260922",
+  "recorded_at": "2026-09-22T22:22:30Z",
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "catalog_item": "intel-llm-cpu-serving",
+    "candidate_catalog_version": "1.0.12-flightpath.1",
+    "exposure_policy": "internal",
+    "seat_count": 25,
+    "retained_pilot_namespaces_observed": 180,
+    "retained_pilot_workloads_mutated": false
+  },
+  "artifacts": {
+    "backend_source_commit": "2d29c48",
+    "overlay_pin_commit": "5d34cea",
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:b65773f81f400cbf71f1c6e104a246e2d798bdfe3e333bf2879393beef8c4ac1",
+    "showroom_content_commit": "9526ede61b5c31949f3a1bedd133b5a17e554178",
+    "granite_8b_revision": "610d8c6ee9c84ce51f6dfd7bc5c0215d95d49695",
+    "granite_2b_revision": "de37a2ed8ca9d5998813abd8e379b6a5d1aee87c",
+    "model_runtime_image": "registry.redhat.io/rhaii/vllm-cpu-rhel9@sha256:cf6577f6d526561651df5390aad916c53820a18a1659e3fb39c1c5a62aef0e3c"
+  },
+  "red_green": {
+    "red": {
+      "workshop_id": "5bc13a4b-a70a-4d05-8b1a-28a2ec9c5177",
+      "finding": "A clean image exposed that local Argo CD Applications were targeting the external Flightpath API URL, which was not registered in Argo CD.",
+      "observed_condition": "Application destination https://api.flightpath.fm2aihpcsed.com:6443 reported cluster not found.",
+      "response": "Provisioning was cancelled and bulk reclaimed before retrying.",
+      "cleanup": {
+        "reclaimed_seats": 25,
+        "remaining_namespaces": 0,
+        "remaining_applications": 0,
+        "remaining_persistent_volumes": 0
+      }
+    },
+    "green": {
+      "contract": "Local execution targets use https://kubernetes.default.svc; remote targets retain their registered API URL.",
+      "test": "backend/tests/test_local_gitops_destination.py",
+      "local_argocd_destinations": "25/25",
+      "focused_regression_suite": "73 passed"
+    }
+  },
+  "capacity_admission": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "eligible_worker_nodes": 3,
+    "headroom_percent": 20.0,
+    "calculated_max_seats": 67,
+    "requested": {
+      "seats": 25,
+      "cpu_millicores": 16625,
+      "memory_mib": 37200,
+      "pods": 50
+    },
+    "provisioning_concurrency": 5
+  },
+  "workshop": {
+    "workshop_id": "249025db-fd07-49f8-ae62-e14fe4383ed6",
+    "cluster_ref": "flightpath",
+    "created_at": "2026-09-22T22:17:52.109421Z",
+    "first_seat_ready_at": "2026-09-22T22:18:37.919239Z",
+    "last_seat_ready_at": "2026-09-22T22:21:27.737421Z",
+    "workshop_ready_observed_at": "2026-09-22T22:21:39Z",
+    "provision_to_workshop_ready_seconds": 226.9,
+    "ready_seats": 25,
+    "failed_seats": 0,
+    "worker_distribution": {
+      "fp1.fm2aihpcsed.com": 9,
+      "fp2.fm2aihpcsed.com": 8,
+      "fp3.fm2aihpcsed.com": 8
+    }
+  },
+  "participant_facing_validation": {
+    "anythingllm_deployments_ready": "25/25",
+    "persistent_volume_claims_bound_to_ocs_storagecluster_ceph_rbd": "25/25",
+    "showroom_content_commit_pinned": "25/25",
+    "showroom_storage_class_rendered": "25/25",
+    "trusted_tls_route_matrix": {
+      "showroom": "25/25 HTTP 200",
+      "guide": "25/25 HTTP 200",
+      "terminal": "25/25 HTTP 200",
+      "rag_health": "25/25 HTTP 200",
+      "total": "100/100 HTTP 200"
+    },
+    "simultaneous_full_rag_journeys": {
+      "successful": 25,
+      "attempted": 25,
+      "workspace_creation": "25/25",
+      "document_ingest_and_embedding": "25/25",
+      "grounded_answers": "25/25",
+      "http_200": "25/25",
+      "latency_seconds": {
+        "minimum": 2.442640,
+        "maximum": 4.049646,
+        "mean": 3.337231
+      }
+    }
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "reclaimed_seats": 25,
+    "failed_reclaims": 0,
+    "remaining_workshop_namespaces": 0,
+    "remaining_argocd_applications": 0,
+    "remaining_workshop_persistent_volumes": 0,
+    "remaining_candidate_seat_namespaces": 0,
+    "retained_pilot_namespaces": 180,
+    "retained_pilot_workloads_untouched": true
+  },
+  "post_run_health": {
+    "active_control_plane_deployments_ready": "5/5",
+    "candidate_model_deployments_ready": "2/2"
+  },
+  "release_boundary": {
+    "internal_flightpath_serve_llms_25_seat": "green",
+    "public_access": "not tested",
+    "model_runtime_high_availability": "not certified",
+    "governed_maas_praxis": "deferred"
+  }
+}
