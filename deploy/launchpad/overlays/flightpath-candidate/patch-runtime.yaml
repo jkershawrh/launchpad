@@ -28,6 +28,10 @@ spec:
               mountPath: /opt/catalog/intel-llm-cpu-serving/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: candidate-agent-201-catalog
+              mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-targets
           configMap:
@@ -39,6 +43,9 @@ spec:
         - name: candidate-serve-llms-catalog
           configMap:
             name: flightpath-candidate-serve-llms-catalog
+        - name: candidate-agent-201-catalog
+          configMap:
+            name: flightpath-candidate-agent-201-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -62,6 +69,10 @@ spec:
               mountPath: /opt/catalog/intel-llm-cpu-serving/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: candidate-agent-201-catalog
+              mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-ca-bundle
           configMap:
@@ -70,6 +81,9 @@ spec:
         - name: candidate-serve-llms-catalog
           configMap:
             name: flightpath-candidate-serve-llms-catalog
+        - name: candidate-agent-201-catalog
+          configMap:
+            name: flightpath-candidate-agent-201-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment

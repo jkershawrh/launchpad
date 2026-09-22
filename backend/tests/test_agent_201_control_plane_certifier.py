@@ -30,6 +30,10 @@ def test_remote_certifier_runs_the_documented_agent_201_journey():
     ):
         assert expected in source
 
+    assert "https://raw.githubusercontent.com/jkershawrh/launchpad/" in source
+    assert "9526ede61b5c31949f3a1bedd133b5a17e554178/" in source
+    assert "content-intel-xeon6-agent-201/manifests" in source
+
 
 def test_remote_certifier_proves_participant_scope_and_sanitizes_evidence():
     source = DRIVER.read_text()

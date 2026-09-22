@@ -256,6 +256,40 @@ def test_candidate_pins_the_certified_flightpath_showroom_content() -> None:
         }
 
 
+def test_candidate_isolates_agent_201_on_flightpath() -> None:
+    documents = _render()
+    catalog = yaml.safe_load(
+        _one(documents, "ConfigMap", "flightpath-candidate-agent-201-catalog")["data"][
+            "catalog-item.yaml"
+        ]
+    )
+    metadata = catalog["metadata"]
+    assert catalog["catalog_item_id"] == "intel-xeon6-agent-201"
+    assert metadata["workshop_cluster_ref"] == "flightpath"
+    assert metadata["certification_stage"] == "one-seat-candidate"
+    assert metadata["showroom_content_repo_url"] == (
+        "https://github.com/jkershawrh/launchpad.git"
+    )
+    assert metadata["showroom_content_ref"] == (
+        "9526ede61b5c31949f3a1bedd133b5a17e554178"
+    )
+    assert metadata["inference_endpoint"] == "direct_vllm_candidate"
+
+    for deployment_name, container_name in (
+        ("backend", "backend"),
+        ("lifecycle-worker", "lifecycle-worker"),
+    ):
+        deployment = _one(documents, "Deployment", deployment_name)
+        pod_spec = deployment["spec"]["template"]["spec"]
+        container = next(item for item in pod_spec["containers"] if item["name"] == container_name)
+        assert {
+            "name": "candidate-agent-201-catalog",
+            "mountPath": "/opt/catalog/intel-xeon6-agent-201/catalog-item.yaml",
+            "subPath": "catalog-item.yaml",
+            "readOnly": True,
+        } in container["volumeMounts"]
+
+
 def test_bootstrap_holds_application_workloads_until_migration_is_green() -> None:
     documents = _render_bootstrap()
     for name in ("backend", "lifecycle-worker", "partner-portal", "admin"):

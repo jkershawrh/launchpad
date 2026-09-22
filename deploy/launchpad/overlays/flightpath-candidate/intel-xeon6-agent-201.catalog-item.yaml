@@ -1,0 +1,64 @@
+catalog_item_id: intel-xeon6-agent-201
+display_name: "Intel Xeon 6 201: Building an AI Agent"
+description: "Build and tune a namespace-isolated AI solution advisor with LangGraph, MCP tools, and shared Intel Xeon inference."
+category: guided_build
+version: "1.0.8-flightpath.1"
+status: active
+required_capabilities:
+  - openshift
+  - showroom
+  - model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: standard
+default_ttl: "4h"
+provisioner_refs:
+  - openshift-provisioner
+  - showroom
+validation_refs:
+  - pod-ready
+  - route-accessible
+  - inference-health
+supported_branding:
+  - redhat-intel-default
+  - intel-internal
+metadata:
+  showroom: true
+  operator_workshop: true
+  content_only: true
+  workshop_cluster_ref: flightpath
+  certification_stage: one-seat-candidate
+  max_workshop_seats: 30
+  promotion_sequence:
+    - 1
+    - 5
+    - 25
+    - 30
+  onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
+  certification_proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
+  showroom_journey: intel-xeon6-agent-201
+  showroom_title: "Intel Xeon 6 201: Building an AI Agent"
+  workspace_route_name: app
+  workspace_title: "Solution Architect"
+  showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
+  showroom_content_ref: "9526ede61b5c31949f3a1bedd133b5a17e554178"
+  showroom_content_playbook: "site-intel-xeon6-agent-201.yml"
+  required_models:
+    - granite-3.2-8b-tools
+  inference_endpoint: direct_vllm_candidate
+  maas_rpm_limit: 60
+  seat_cpu_millicores: 415
+  seat_memory_mib: 912
+  seat_pods: 3
+  workshop_node_spread: true
+  workshop_node_min_ready_seconds: 900
+  source_content_repo: "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
+  source_content_revision: "d5cd98c1bc9eddf3327f136cb7114eef551bf9a6"
+  workload_repo: "https://github.com/rhpds/triforce.git"
+  workload_revision: "201-v1.0.0"
+  showroom_steps:
+    - title: "Understand the agent"
+      description: "Trace the model, LangGraph workflow, MCP tools, and OpenShift trust boundaries."
+    - title: "Deploy the tools and agent"
+      description: "Create the lightweight solution stack in your assigned namespace."
+    - title: "Test and tune"
+      description: "Generate a solution brief, inspect tool calls, and tune the prompt."

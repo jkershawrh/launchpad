@@ -35,8 +35,9 @@ warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
 
 CONTENT_BASE = (
-    "https://raw.githubusercontent.com/rhpds/launchpad/"
-    "intel-guided-content-v1.0.14/content-intel-xeon6-agent-201/manifests"
+    "https://raw.githubusercontent.com/jkershawrh/launchpad/"
+    "9526ede61b5c31949f3a1bedd133b5a17e554178/"
+    "content-intel-xeon6-agent-201/manifests"
 )
 EXPECTED_TOOLS = {
     "intel_hardware_lookup",
