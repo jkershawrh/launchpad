@@ -350,7 +350,9 @@ def test_candidate_isolates_hybrid_fraud_on_flightpath() -> None:
     assert metadata["seat_cpu_millicores"] == 700
     assert metadata["seat_memory_mib"] == 1280
     assert metadata["seat_pods"] == 2
-    assert metadata["workload_routes"]["ui"] == "hybrid-fraud-detection-ui"
+    assert metadata["namespace_slug"] == "fraud"
+    assert metadata["workload_release_name"] == "fraud"
+    assert metadata["workload_routes"] == {"ui": "fraud-ui", "scorer": "fraud-scorer"}
 
     for deployment_name, container_name in (
         ("backend", "backend"),
