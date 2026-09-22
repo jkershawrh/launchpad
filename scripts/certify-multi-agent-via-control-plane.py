@@ -34,8 +34,8 @@ EXPECTED_SECRET_KEYS = [
     "MODEL_NAME",
 ]
 SHOWROOM_PAGES = {
-    "/www/modules/index.html": "One Lab, Three Tracks",
-    "/www/modules/track-1-local.html": "Track 1: Run Locally",
+    "/www/modules/index.html": "One Lab, One Guided Journey",
+    "/www/modules/track-1-local.html": "Track 1: Understand the Application Pattern",
     "/www/modules/track-2-openshift.html": "Track 2: Build and Operate on OpenShift",
     "/www/modules/track-3-blueprint.html": "Track 3: Advanced Blueprint Alignment",
 }

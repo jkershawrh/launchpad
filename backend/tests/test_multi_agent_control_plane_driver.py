@@ -46,6 +46,9 @@ def test_remote_multi_agent_driver_proves_every_participant_component():
     ):
         assert proof in source
 
+    assert "One Lab, One Guided Journey" in source
+    assert "Track 1: Understand the Application Pattern" in source
+
 
 def test_remote_multi_agent_driver_is_cluster_pinned_and_secret_safe():
     source = DRIVER.read_text()
