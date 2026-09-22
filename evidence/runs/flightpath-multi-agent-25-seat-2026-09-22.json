@@ -1,0 +1,47 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-catalog-certification/v1",
+  "catalog_item_id": "multi-agent-quickstart",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "contains_plaintext_credentials": false,
+  "gates": {
+    "one_seat": {
+      "workshop_id": "f4a6b88a-1aaf-4dc5-bb98-38c9ea836ff3",
+      "passed": 1,
+      "duration_seconds": 56.387,
+      "reclaim_namespaces_remaining": 0
+    },
+    "five_seat": {
+      "workshop_id": "b6708e57-bb65-4f54-b184-318d0991537b",
+      "passed": 5,
+      "failures": 0,
+      "duration_seconds": 64.746,
+      "reclaim_namespaces_remaining": 0
+    },
+    "twenty_five_seat": {
+      "workshop_id": "809981ad-0da2-437b-87ab-592abff9746e",
+      "passed": 25,
+      "failures": 0,
+      "duration_seconds": 110.523,
+      "authorization_passed": 25,
+      "showroom_page_sets_passed": 25,
+      "argocd_synced": 25,
+      "guardrails_passed": true,
+      "semantic_routing_passed": true,
+      "bulk_reclaim_status": "completed",
+      "reclaim_namespaces_remaining": 0,
+      "reclaim_applications_remaining": 0
+    }
+  },
+  "red_green": [
+    {
+      "red": "The certifier hardcoded Arena and required two seats for a denial proof.",
+      "green": "The configured control cluster and a safe fallback namespace now support a true one-seat gate."
+    },
+    {
+      "red": "Two Showroom evidence markers used retired wording.",
+      "green": "Markers now match the immutable guided-journey content."
+    }
+  ],
+  "result": "passed"
+}
