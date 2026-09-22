@@ -155,6 +155,12 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
         for rule in candidate_role["rules"]
     )
     assert any(
+        rule["apiGroups"] == [""]
+        and rule["resources"] == ["pods/log"]
+        and rule["verbs"] == ["get"]
+        for rule in candidate_role["rules"]
+    )
+    assert any(
         rule["resources"] == ["clusterroles"]
         and "launchpad-flightpath-argocd-seat-manager" in rule["resourceNames"]
         and rule["verbs"] == ["bind"]
