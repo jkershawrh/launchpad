@@ -98,6 +98,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: anythingllm-storage
 spec:
+  storageClassName: {storage_class}
   accessModes:
     - ReadWriteOnce
   resources:
@@ -121,6 +122,8 @@ spec:
       labels:
         app: anythingllm
     spec:
+      securityContext:
+        hostUsers: false
       containers:
         - name: anythingllm
           image: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613
