@@ -21,7 +21,7 @@ spec:
         - name: launchpad-registry-pull
       containers:
         - name: migrate
-          image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:c7496bfac2a7eba61eca01b141907b5f2d5d614672339d4657b7f300e0ff72bb
+          image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:60f05b475819b9a80bff205be7e50f6fae398a2a13e17d0168fa330eb78d6ae2
           imagePullPolicy: IfNotPresent
           command: [python, -c]
           args:
