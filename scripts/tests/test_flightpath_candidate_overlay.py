@@ -376,6 +376,9 @@ def test_candidate_maas_enforces_virtual_keys_without_publishing_secrets() -> No
     gateway = _one(documents, "Deployment", "launchpad-candidate-maas")
     assert gateway["spec"]["replicas"] == 1
     pod_spec = gateway["spec"]["template"]["spec"]
+    assert gateway["spec"]["template"]["metadata"]["labels"][
+        "app.kubernetes.io/managed-by"
+    ] == "kustomize"
     container = pod_spec["containers"][0]
     assert container["image"] == (
         "ghcr.io/berriai/litellm@sha256:"
