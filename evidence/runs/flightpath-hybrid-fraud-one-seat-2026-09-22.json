@@ -1,0 +1,85 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-catalog-certification/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "certification_stage": "one-seat-candidate",
+  "source_repository": "https://github.com/jkershawrh/hybrid-fraud-detection",
+  "source_commit": "00f07a8265579efd77964b390d65368999a1523a",
+  "workload_image_digest": "sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0",
+  "contains_plaintext_credentials": false,
+  "local_gates": {
+    "source_tests_passed": 62,
+    "source_tests_failed": 0,
+    "helm_lint": "passed",
+    "helm_render_with_secret_backed_model_configuration": "passed"
+  },
+  "red_green": {
+    "red": {
+      "workshop_id": "8c290ad1-546c-4c43-925c-8024ac5154d2",
+      "cause": "Generated Route hosts exceeded the OpenShift 63-character DNS label limit.",
+      "reclaim_namespaces_remaining": 0,
+      "reclaim_applications_remaining": 0
+    },
+    "green": {
+      "change": "The isolated Flightpath candidate now uses the short fraud namespace slug, release name, and route names.",
+      "launchpad_commit": "6d0c92c",
+      "regression_test": "scripts/tests/test_flightpath_candidate_overlay.py"
+    }
+  },
+  "gates": {
+    "one_seat": {
+      "workshop_id": "3551ee51-708d-4191-8455-a3b842e6e816",
+      "session_id": "f125ac33-9265-479d-8ca4-3a6f8cfd0691",
+      "provisioned": 1,
+      "failures": 0,
+      "health_http": 200,
+      "readiness_http": 200,
+      "workspace_http": 200,
+      "showroom_http": 200,
+      "live_score": {
+        "passed": true,
+        "risk_score": 89.0,
+        "risk_level": "critical",
+        "rule_score": 85,
+        "llm_score": 95,
+        "llm_skipped": false,
+        "latency_ms": 519.15,
+        "model": "granite-3.2-8b-tools",
+        "upstream_http": 200
+      },
+      "runtime_secret_contract": {
+        "keys": [
+          "api-key",
+          "endpoint",
+          "name"
+        ],
+        "all_values_nonempty": true
+      },
+      "authorization": {
+        "own_namespace_create_deployments": "yes",
+        "control_namespace_get_pods": "no",
+        "list_nodes": "no"
+      },
+      "observed_usage": {
+        "workload_cpu_millicores": 61,
+        "workload_memory_mib": 154,
+        "showroom_cpu_millicores": 5,
+        "showroom_memory_mib": 71
+      },
+      "bulk_reclaim_status": "completed",
+      "reclaim_namespaces_remaining": 0,
+      "reclaim_applications_remaining": 0
+    }
+  },
+  "promotion_blockers": [
+    {
+      "id": "FRAUD-MAAS-KEY-ENFORCEMENT",
+      "severity": "critical",
+      "description": "The direct candidate vLLM endpoint accepted the injected credential, but per-seat credential enforcement and revocation were not proven.",
+      "required_before_next_gate": "Route inference through the isolated Launchpad MaaS/key-enforcing path and prove valid-seat, invalid-seat, cross-seat, rotation, and reclaim revocation behavior."
+    }
+  ],
+  "next_gate": "blocked-before-five-seat",
+  "result": "one-seat-passed-with-promotion-blocker"
+}
