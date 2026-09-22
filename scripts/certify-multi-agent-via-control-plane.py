@@ -539,14 +539,17 @@ def main() -> int:
     }
     try:
         clients = service._target_clients(args.cluster_id)
-        control_clients = service._target_clients("arena")
+        control_cluster_id = os.environ.get(
+            "LAUNCHPAD_CONTROL_CLUSTER_REF", args.cluster_id
+        )
+        control_clients = service._target_clients(control_cluster_id)
         if clients is None or control_clients is None:
             raise RuntimeError("target-client-unavailable")
         targets = _load_targets(args, clients)
         if args.seat_limit > 0:
             targets = targets[: args.seat_limit]
-        if len(targets) < 2:
-            raise RuntimeError("cross-namespace-proof-requires-two-seats")
+        if not targets:
+            raise RuntimeError("workshop-has-no-seats")
         if args.deep_seat not in {target.seat_number for target in targets}:
             raise RuntimeError("deep-seat-not-found")
         evidence["seat_count"] = len(targets)
@@ -566,7 +569,12 @@ def main() -> int:
 
         def authorization(target: SeatTarget) -> dict[str, Any]:
             cross_namespace = next(
-                namespace for namespace in namespaces if namespace != target.namespace
+                (
+                    namespace
+                    for namespace in namespaces
+                    if namespace != target.namespace
+                ),
+                os.environ.get("CERTIFICATION_CROSS_NAMESPACE", "default"),
             )
             return _authorization_probe(
                 clients, target, args.workshop_id, cross_namespace

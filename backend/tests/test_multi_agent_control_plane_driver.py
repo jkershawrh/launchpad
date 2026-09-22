@@ -69,6 +69,15 @@ def test_remote_multi_agent_driver_runs_a_bounded_concurrent_wave():
     assert '"passed"' in source
 
 
+def test_remote_multi_agent_driver_supports_local_control_plane_and_one_seat_gate():
+    source = DRIVER.read_text()
+
+    assert '"LAUNCHPAD_CONTROL_CLUSTER_REF", args.cluster_id' in source
+    assert 'os.environ.get("CERTIFICATION_CROSS_NAMESPACE", "default")' in source
+    assert "if not targets:" in source
+    assert "if len(targets) < 2:" not in source
+
+
 def test_remote_multi_agent_driver_parses_kubernetes_python_dict_log_shape():
     module = _driver_module()
 
