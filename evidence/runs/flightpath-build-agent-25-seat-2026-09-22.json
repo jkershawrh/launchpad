@@ -1,0 +1,70 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-catalog-certification/v1",
+  "catalog_item_id": "intel-xeon6-agent-201",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "source_commit": "0da192e327169302d99e48e3b3ceebb796c3e988",
+  "showroom_content_commit": "9526ede61b5c31949f3a1bedd133b5a17e554178",
+  "backend_image_digest": "sha256:b65773f81f400cbf71f1c6e104a246e2d798bdfe3e333bf2879393beef8c4ac1",
+  "contains_plaintext_credentials": false,
+  "red_green": {
+    "red": {
+      "stage": "five-seat-evidence-collection",
+      "cause": "The candidate provisioner could create scoped proof pods but could not read their logs.",
+      "failed_seats": 5,
+      "workshop_id": "3379971d-6b28-482b-b0bc-7c5f3efce42c"
+    },
+    "green": {
+      "change": "Added get-only pods/log permission to the isolated Flightpath candidate provisioner.",
+      "regression_test": "scripts/tests/test_flightpath_candidate_overlay.py::test_candidate_is_isolated_and_fail_closed"
+    }
+  },
+  "gates": {
+    "one_seat": {
+      "workshop_id": "c3376011-4ae8-4dec-9a08-f75b9a9947b1",
+      "provisioned": 1,
+      "journeys_passed": 1,
+      "agent_http": 200,
+      "duration_seconds": 38.27366,
+      "reclaim_namespaces_remaining": 0,
+      "reclaim_applications_remaining": 0
+    },
+    "five_seat": {
+      "workshop_id": "3379971d-6b28-482b-b0bc-7c5f3efce42c",
+      "provisioned": 5,
+      "setup_passed": 5,
+      "journeys_passed": 5,
+      "journeys_failed": 0,
+      "duration_seconds": 74.438,
+      "raw_proof_sha256": "a45a9341c128238fa1adfd1a457950eff83ccc38487fe93c89b6c49277f1aae2",
+      "reclaim_namespaces_remaining": 0
+    },
+    "twenty_five_seat": {
+      "workshop_id": "dc554165-8c3e-4bf6-b126-3a6d086ffeec",
+      "provisioned": 25,
+      "setup_passed": 25,
+      "journeys_passed": 25,
+      "journeys_failed": 0,
+      "duration_seconds": 171.544,
+      "route_count": 100,
+      "ready_solution_deployments": 50,
+      "argocd_applications_synced": 25,
+      "argocd_applications_healthy": 25,
+      "showroom_seat_distribution": {
+        "fp1.fm2aihpcsed.com": 9,
+        "fp2.fm2aihpcsed.com": 8,
+        "fp3.fm2aihpcsed.com": 8
+      },
+      "authorization": {
+        "own_namespace_edit": "25/25",
+        "cross_namespace_read_denied": "25/25",
+        "node_list_denied": "25/25"
+      },
+      "raw_proof_sha256": "f2b395badafe7e89f59b975e339ecc7d1b67263a9d2eb84819ca86f53b016187",
+      "bulk_reclaim_status": "completed",
+      "reclaim_namespaces_remaining": 0,
+      "reclaim_applications_remaining": 0
+    }
+  },
+  "result": "passed"
+}
