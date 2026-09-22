@@ -16,6 +16,7 @@ spec:
         launchpad.redhat.com/solution-stack: agent-201
     spec:
       securityContext:
+        hostUsers: false
         runAsNonRoot: true
       initContainers:
         - name: prepare-solution-agent

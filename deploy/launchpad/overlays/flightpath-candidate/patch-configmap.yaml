@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-config
+data:
+  LAUNCHPAD_MODE: "openshift"
+  CATALOG_DIR: "/opt/catalog"
+  CLUSTER_TARGETS_FILE: "/etc/launchpad/clusters.yaml"
+  LAUNCHPAD_CONTROL_CLUSTER_REF: "flightpath"
+  LAUNCHPAD_CONTROL_PLANE_ID: "flightpath-candidate"
+  LAUNCHPAD_CONTROL_PLANE_ROLE: "active"
+  LIFECYCLE_HA_ENABLED: "true"
+  WORKSHOP_AUTO_RECOVERY: "false"
+  SMART_PLACEMENT_ENABLED: "false"
+  PUBLIC_ACCESS_ENABLED: "false"
+  PUBLIC_LABS_DOMAIN: ""
+  PUBLIC_LABS_SHARED_PATH_MODE: "false"
+  ORPHAN_CLEANUP_ENABLED: "false"
+  SERIALIZE_WORKSHOP_PROVISIONING: "true"
+  KAFKA_BOOTSTRAP_SERVERS: ""
+  SHOWROOM_ARGOCD_NAMESPACE: "openshift-gitops"
+  SHOWROOM_ARGOCD_PROJECT: "default"
+  REMOTE_CONTROL_PLANE_SERVICE_ACCOUNT_NAMESPACE: "openshift-gitops"
+  REMOTE_ARGOCD_SERVICE_ACCOUNT: "openshift-gitops-argocd-application-controller"
+  MODEL_CA_BUNDLE_NAMESPACE: "launchpad-flightpath-candidate"
+  OPENSHIFT_INGRESS_DOMAIN: "apps.flightpath.fm2aihpcsed.com"
+  OPENSHIFT_CONSOLE_URL: "https://console-openshift-console.apps.flightpath.fm2aihpcsed.com"
+  SANDBOX_STORAGE_CLASS: "ocs-storagecluster-ceph-rbd"
+  DEMO_FRONTEND_IMAGE: "quay.io/redhat-gpte/intel-inference-frontend@sha256:1243f4eef89dc151a2247f509d32c97db3ca9ede3d554032c17a349d49956ba3"
+  DEMO_GATEWAY_IMAGE: "quay.io/redhat-gpte/intel-inference-gateway@sha256:5fe683a15fdc98c4c1dde6f0055138f9ff7f39fc39d8c15b31cce0ce56ae5a51"
+  CORS_ORIGINS: "https://launchpad-candidate.apps.flightpath.fm2aihpcsed.com,https://launchpad-admin-candidate.apps.flightpath.fm2aihpcsed.com,https://launchpad-api-candidate.apps.flightpath.fm2aihpcsed.com"
+  TRUSTED_OAUTH_HOSTS: "launchpad-candidate.apps.flightpath.fm2aihpcsed.com,launchpad-admin-candidate.apps.flightpath.fm2aihpcsed.com,launchpad-api-candidate.apps.flightpath.fm2aihpcsed.com"

@@ -1,0 +1,6 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-migrate-flightpath-candidate-34f8435
+spec:
+  suspend: true

@@ -1,0 +1,129 @@
+{
+  "evidence_id": "FLIGHTPATH-SERVE-LLMS-FIVE-SEAT-20260922",
+  "generated_at": "2026-09-22T21:42:59Z",
+  "source_commit": "34f8435",
+  "source_state": {
+    "working_tree": "dirty",
+    "build_scope": "complete backend source, catalog, configuration, and deployment tree present at build time"
+  },
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "catalog_item": "intel-llm-cpu-serving",
+    "catalog_version": "1.0.12",
+    "exposure_policy": "internal",
+    "seat_count": 5,
+    "live_workshops_mutated": false,
+    "retained_pilot_namespaces_observed": 180
+  },
+  "immutable_candidate": {
+    "tag": "quay.io/rh-ee-jkershaw/launchpad-backend:flightpath-candidate-20260922-storageclass",
+    "registry_digest": "sha256:f90bed4965c86dd4470a4c03d967ad53d66d349b211c0b06cde9dc3c83299ec5",
+    "image_config_digest": "sha256:fbf5b8e779b976d9d1c91f925d99b2d5f836657659d9bb84e4cb34ba8257c822",
+    "platform": "linux/amd64",
+    "deployed_ready_replicas": 1,
+    "api_ca_embedded": true,
+    "api_tls_bypass_persisted": false
+  },
+  "capacity_admission": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "placement_reason": "single-cluster placement",
+    "calculated_seat_capacity": 67,
+    "eligible_nodes": 3,
+    "required_headroom_percent": 20.0,
+    "requested": {
+      "seats": 5,
+      "cpu_millicores": 3325,
+      "memory_mib": 7440,
+      "pods": 10
+    }
+  },
+  "workshop": {
+    "workshop_id": "70b8e253-dfd4-4a99-8463-cadcf4af7a80",
+    "cluster_ref": "flightpath",
+    "created_at": "2026-09-22T21:38:01.485129Z",
+    "all_seats_ready_at": "2026-09-22T21:38:59.047182Z",
+    "provision_to_all_ready_seconds": 57.562,
+    "ready_seats": 5,
+    "failed_seats": 0,
+    "session_ids": [
+      "df7c63aa-686b-4245-aee2-45e01f8d6638",
+      "318d96b8-cffc-4061-9797-a3364f317398",
+      "2d2ab76f-ee4c-4bb5-8cfc-3e596b92e1e7",
+      "ad48f58b-2d55-44d8-9d12-2deae4341d00",
+      "637c3a7e-db0d-46e8-874d-a5a75c018ddb"
+    ],
+    "worker_distribution": {
+      "fp1.fm2aihpcsed.com": 2,
+      "fp2.fm2aihpcsed.com": 2,
+      "fp3.fm2aihpcsed.com": 1
+    }
+  },
+  "participant_runtime_contract": {
+    "showroom_ready": "5/5",
+    "anythingllm_ready": "5/5",
+    "storage_class_in_user_data": "ocs-storagecluster-ceph-rbd",
+    "storage_class_on_pvc": "ocs-storagecluster-ceph-rbd",
+    "storage_contract_matches": "5/5",
+    "model": "granite-3.2-8b-tools",
+    "route_tls_verified_through_cluster_ca": true,
+    "route_results": {
+      "showroom_http_200": "5/5",
+      "guide_http_200": "5/5",
+      "terminal_http_200": "5/5",
+      "rag_ping_http_200": "5/5"
+    }
+  },
+  "concurrent_functional_proof": {
+    "execution": "five participant RAG journeys started concurrently",
+    "workspace_created": "5/5",
+    "document_ingested": "5/5",
+    "document_embedded": "5/5",
+    "grounded_answer_verified": "5/5",
+    "http_200": "5/5",
+    "latency_seconds": [2.566401, 2.538089, 2.484436, 2.294661, 2.581109],
+    "minimum_seconds": 2.294661,
+    "maximum_seconds": 2.581109
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "reclaimed_seats": 5,
+    "failed_reclaims": 0,
+    "remaining_seat_namespaces": 0,
+    "remaining_argocd_applications": 0,
+    "remaining_workshop_persistent_volumes": 0,
+    "remaining_candidate_seat_namespaces": 0,
+    "retained_pilot_namespaces": 180,
+    "live_workshops_untouched": true
+  },
+  "tests": {
+    "focused_contract_and_content_suite": {
+      "result": "pass",
+      "passed": 67,
+      "failed": 0
+    },
+    "five_seat_live_functional": {
+      "result": "pass",
+      "passed": 5,
+      "failed": 0
+    },
+    "five_seat_live_cleanup": {
+      "result": "pass",
+      "passed": 5,
+      "failed": 0
+    }
+  },
+  "promotion_gates": {
+    "immutable_candidate_deployment": "green",
+    "five_seat_capacity_admission": "green",
+    "five_seat_provisioning": "green",
+    "five_seat_concurrent_rag": "green",
+    "five_seat_reclaim": "green",
+    "twenty_five_seat_workshop": "not-yet-certified",
+    "public_access": "disabled-not-tested",
+    "model_runtime_ha": "not-yet-certified",
+    "governed_maas_control_plane": "deferred"
+  },
+  "overall_result": "GREEN-live for the immutable Flightpath five-seat Serve LLMs gate; AMBER for complete migration pending 25-seat, public access, and model HA certification"
+}

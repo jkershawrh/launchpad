@@ -1,0 +1,119 @@
+{
+  "evidence_id": "FLIGHTPATH-SERVE-LLMS-25-SEAT-20260922",
+  "generated_at": "2026-09-22T21:58:50Z",
+  "platform_source_commit": "34f84352f492d92ed83ba0a2958552c5d305fa9f",
+  "showroom_content_commit": "9526ede61b5c31949f3a1bedd133b5a17e554178",
+  "showroom_content_branch": "fork/codex/flightpath-content-20260922",
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "catalog_item": "intel-llm-cpu-serving",
+    "candidate_catalog_version": "1.0.12-flightpath.1",
+    "exposure_policy": "internal",
+    "seat_count": 25,
+    "live_workshops_mutated": false,
+    "retained_pilot_namespaces_observed": 180
+  },
+  "immutable_artifacts": {
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:f90bed4965c86dd4470a4c03d967ad53d66d349b211c0b06cde9dc3c83299ec5",
+    "backend_platform": "linux/amd64",
+    "showroom_repo": "https://github.com/jkershawrh/launchpad.git",
+    "showroom_ref": "9526ede61b5c31949f3a1bedd133b5a17e554178",
+    "candidate_catalog_override": "flightpath-candidate-serve-llms-catalog",
+    "production_catalog_mutated": false
+  },
+  "capacity_admission": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "placement_reason": "single-cluster placement",
+    "calculated_seat_capacity": 67,
+    "eligible_nodes": 3,
+    "required_headroom_percent": 20.0,
+    "requested": {
+      "seats": 25,
+      "cpu_millicores": 16625,
+      "memory_mib": 37200,
+      "pods": 50
+    },
+    "transient_provisioning_concurrency": 5
+  },
+  "workshop": {
+    "workshop_id": "c6ee7bf4-dbb5-43ae-9e9e-6422b3675b77",
+    "cluster_ref": "flightpath",
+    "created_at": "2026-09-22T21:49:06.800234Z",
+    "first_seat_ready_at": "2026-09-22T21:49:50.887870Z",
+    "all_seats_ready_at": "2026-09-22T21:52:35.000637Z",
+    "provision_to_all_ready_seconds": 208.200,
+    "ready_seats": 25,
+    "failed_seats": 0,
+    "readiness_failures": {},
+    "worker_distribution": {
+      "fp1.fm2aihpcsed.com": 9,
+      "fp2.fm2aihpcsed.com": 8,
+      "fp3.fm2aihpcsed.com": 8
+    }
+  },
+  "participant_runtime_contract": {
+    "showroom_ready": "25/25",
+    "anythingllm_ready": "25/25",
+    "persistent_volumes_bound": "25/25",
+    "storage_class": "ocs-storagecluster-ceph-rbd",
+    "storage_class_matches": "25/25",
+    "showroom_content_ref_matches": "25/25",
+    "rendered_storage_class_instruction_verified": true,
+    "rendered_restricted_v3_instruction_verified": true,
+    "route_tls_verified_through_cluster_ca": true,
+    "route_checks": {
+      "total": 100,
+      "http_200": 100,
+      "showroom": "25/25",
+      "guide": "25/25",
+      "terminal": "25/25",
+      "rag_ping": "25/25"
+    }
+  },
+  "concurrent_functional_proof": {
+    "execution": "all 25 participant RAG journeys started concurrently",
+    "workspace_created": "25/25",
+    "document_ingested": "25/25",
+    "document_embedded": "25/25",
+    "grounded_answer_verified": "25/25",
+    "http_200": "25/25",
+    "minimum_latency_seconds": 2.884889,
+    "maximum_latency_seconds": 5.405858,
+    "mean_latency_seconds": 4.197835,
+    "duplicate_seat_assignments": 0
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "reclaimed_seats": 25,
+    "failed_reclaims": 0,
+    "remaining_seat_namespaces": 0,
+    "remaining_argocd_applications": 0,
+    "remaining_workshop_persistent_volumes": 0,
+    "remaining_candidate_seat_namespaces": 0,
+    "retained_pilot_namespaces": 180,
+    "live_workshops_untouched": true
+  },
+  "tests": {
+    "candidate_overlay_contract": {"result": "pass", "passed": 5, "failed": 0},
+    "focused_platform_content_suite": {"result": "pass", "passed": 68, "failed": 0},
+    "live_25_seat_provisioning": {"result": "pass", "passed": 25, "failed": 0},
+    "live_25_seat_concurrent_rag": {"result": "pass", "passed": 25, "failed": 0},
+    "live_25_seat_route_matrix": {"result": "pass", "passed": 100, "failed": 0},
+    "live_25_seat_cleanup": {"result": "pass", "passed": 25, "failed": 0}
+  },
+  "promotion_gates": {
+    "immutable_candidate_deployment": "green",
+    "participant_content_automation_convergence": "green",
+    "five_seat_workshop": "green",
+    "twenty_five_seat_workshop": "green",
+    "twenty_five_seat_concurrent_rag": "green",
+    "twenty_five_seat_bulk_reclaim": "green",
+    "public_access": "disabled-not-tested",
+    "model_runtime_ha": "not-yet-certified",
+    "three_catalog_25_seat_matrix": "not-yet-certified",
+    "governed_maas_control_plane": "deferred"
+  },
+  "overall_result": "GREEN-live for the immutable internal 25-seat Serve LLMs workshop on Flightpath; AMBER for complete migration pending the remaining catalog matrix, public access, and model HA"
+}

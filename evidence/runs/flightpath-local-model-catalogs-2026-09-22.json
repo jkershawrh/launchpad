@@ -1,0 +1,164 @@
+{
+  "evidence_id": "FLIGHTPATH-LOCAL-MODEL-CATALOGS-20260922",
+  "generated_at": "2026-09-22T20:47:56Z",
+  "source_commit": "34f8435",
+  "source_state": {
+    "working_tree": "dirty",
+    "build_scope": "Flightpath candidate application images were built from the complete working tree present at migration time; subsequent portability fixes remain source-only until the next immutable build",
+    "arena_version_relationship": "Flightpath candidate application images are newer than the Arena pinned deployment"
+  },
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "model_namespace": "launchpad-model-candidate",
+    "execution_cluster": "flightpath",
+    "exposure_policy": "internal",
+    "live_workshops_mutated": false,
+    "retained_pilot_namespaces_observed": 180
+  },
+  "model_runtime": {
+    "image": "registry.redhat.io/rhaii/vllm-cpu-rhel9@sha256:cf6577f6d526561651df5390aad916c53820a18a1659e3fb39c1c5a62aef0e3c",
+    "public_routes": 0,
+    "shared_cache_pvc": "flightpath-model-cache",
+    "shared_cache_storage": "40Gi",
+    "models": [
+      {
+        "served_name": "granite-3.2-8b-tools",
+        "source": "ibm-granite/granite-3.2-8b-instruct",
+        "revision": "610d8c6ee9c84ce51f6dfd7bc5c0215d95d49695",
+        "cpu_request": "78",
+        "memory_request": "64Gi",
+        "ready_replicas": 1,
+        "health_http_status": 200,
+        "models_http_status": 200,
+        "deterministic_completion": "flightpath-local-ok"
+      },
+      {
+        "served_name": "granite-2b-cpu",
+        "source": "ibm-granite/granite-3.2-2b-instruct",
+        "revision": "de37a2ed8ca9d5998813abd8e379b6a5d1aee87c",
+        "cpu_request": "32",
+        "memory_request": "24Gi",
+        "ready_replicas": 1,
+        "health_http_status": 200,
+        "models_http_status": 200,
+        "deterministic_completion": "flightpath-2b-ok"
+      }
+    ]
+  },
+  "catalog_lifecycle_proofs": {
+    "build_agent": {
+      "catalog_item": "intel-xeon6-agent-201",
+      "request_id": "6bfc75b0-2fdd-48b7-8b33-cc9c10bd2f5c",
+      "session_id": "b6bbb071-44ef-4c1b-bdff-c6f53ca91533",
+      "namespace": "launchpad-flightpath-candida-intel-xeon6-agent-6bfc75",
+      "provision_to_ready_seconds": 35.5,
+      "showroom_containers_ready": "3/3",
+      "solution_agent_containers_ready": "2/2",
+      "solution_ui_containers_ready": "1/1",
+      "model_backed_advisor_http_status": 200,
+      "advisor_brief_characters": 1808,
+      "inference_log_entries": 5,
+      "mcp_tools": [
+        "intel_hardware_lookup",
+        "openshift_capabilities",
+        "reference_architectures"
+      ],
+      "showroom_http_status": 200,
+      "guide_http_status": 200,
+      "terminal_http_status": 200,
+      "workspace_http_status": 200,
+      "reclaim_status": "reclaimed",
+      "seat_namespace_deleted": true,
+      "argocd_application_deleted": true
+    },
+    "multi_agent": {
+      "catalog_item": "multi-agent-quickstart",
+      "request_id": "a56e3e2e-64be-4bf7-b785-5818c65da54e",
+      "session_id": "be079b41-ad3d-4dab-8dac-b34d5bebca0e",
+      "namespace": "launchpad-flightpath-candida-multi-agent-a56e3e",
+      "provision_to_ready_seconds": 40.5,
+      "workload_containers_ready": "7/7",
+      "showroom_containers_ready": "4/4",
+      "workflow_http_status": 200,
+      "workflow_steps": 3,
+      "workflow_agents": ["research", "analyst", "executor"],
+      "workflow_latency_ms": 18906.63,
+      "mcp_tools": ["lookup_record", "search_knowledge_base", "create_task"],
+      "mcp_call_http_status": 200,
+      "guardrail_http_status": 200,
+      "guardrail_blocked_agents": ["research", "analyst", "executor"],
+      "guardrail_latency_ms": 59.92,
+      "workspace_http_status": 200,
+      "showroom_http_status": 200,
+      "guide_http_status": 200,
+      "terminal_http_status": 200,
+      "reclaim_status": "reclaimed",
+      "seat_namespace_deleted": true,
+      "argocd_application_deleted": true
+    },
+    "serve_llms": {
+      "catalog_item": "intel-llm-cpu-serving",
+      "catalog_version": "1.0.12",
+      "request_id": "e40c0137-cc44-4dc9-98cf-9d2614e80059",
+      "session_id": "f7af8e21-200e-41e9-878a-2c1bba8889b3",
+      "namespace": "launchpad-flightpath-candida-intel-llm-cpu-serv-e40c01",
+      "provision_to_ready_seconds": 30.486,
+      "requested_models": ["granite-3.2-8b-tools", "granite-2b-cpu"],
+      "showroom_containers_ready": "3/3",
+      "anythingllm_containers_ready": "1/1",
+      "persistent_storage_class": "ocs-storagecluster-ceph-rbd",
+      "showroom_http_status": 200,
+      "guide_http_status": 200,
+      "terminal_http_status": 200,
+      "ui_config_http_status": 200,
+      "rag_ping_http_status": 200,
+      "rag_workspace_created": true,
+      "rag_document_ingested": true,
+      "rag_document_embedded": true,
+      "grounded_answer_verified": true,
+      "rag_chat_http_status": 200,
+      "rag_chat_latency_seconds": 2.304425,
+      "reclaim_status": "reclaimed",
+      "seat_namespace_deleted": true,
+      "argocd_application_deleted": true
+    }
+  },
+  "portability_defects_converted_to_regression_contracts": [
+    {
+      "defect": "restricted-v3 clusters require user namespaces for participant workload pods",
+      "red": "Serve LLMs workbench manifest omitted hostUsers=false",
+      "green": "Showroom content and deterministic seat certifier now set hostUsers=false"
+    },
+    {
+      "defect": "Flightpath has no default StorageClass",
+      "red": "AnythingLLM PVC remained Pending with no storageClassName",
+      "green": "Showroom user data now carries the selected cluster storage class and the lab PVC consumes it"
+    }
+  ],
+  "tests": {
+    "flightpath_model_candidate": {"result": "pass", "passed": 5, "failed": 0},
+    "flightpath_candidate_overlay_combined": {"result": "pass", "passed": 9, "failed": 0},
+    "serve_llms_portability_focused": {"result": "pass", "passed": 4, "failed": 0},
+    "live_functional_catalogs": {"result": "pass", "passed": 3, "failed": 0}
+  },
+  "cleanup": {
+    "remaining_candidate_seat_namespaces": 0,
+    "remaining_candidate_applications": 0,
+    "model_candidate_services_retained": true,
+    "model_candidate_services_reason": "retained for continued isolated migration certification",
+    "live_workshops_untouched": true
+  },
+  "promotion_gates": {
+    "internal_platform_lifecycle": "green",
+    "trusted_internal_cluster_ca": "green",
+    "local_model_runtime": "green-one-replica-candidate",
+    "build_agent_one_seat": "green-live",
+    "multi_agent_one_seat": "green-live",
+    "serve_llms_one_seat": "green-live",
+    "public_access": "disabled-not-tested",
+    "multi_seat_workshops": "not-yet-certified",
+    "model_runtime_ha": "not-yet-certified",
+    "governed_maas_control_plane": "deferred"
+  },
+  "overall_result": "GREEN-live for isolated internal one-seat lifecycle across all three pilot catalogs on Flightpath; AMBER for complete migration pending multi-seat, public access, and HA certification"
+}

@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: launchpad-flightpath-candidate
+
+resources:
+  - ../../base
+  - candidate-clusters.yaml
+  - candidate-rbac.yaml
+  - migration-job.yaml
+
+configMapGenerator:
+  - name: flightpath-candidate-serve-llms-catalog
+    files:
+      - catalog-item.yaml=intel-llm-cpu-serving.catalog-item.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+images:
+  - name: backend
+    newName: quay.io/rh-ee-jkershaw/launchpad-backend
+    digest: sha256:f90bed4965c86dd4470a4c03d967ad53d66d349b211c0b06cde9dc3c83299ec5
+  - name: partner-portal
+    newName: quay.io/rh-ee-jkershaw/launchpad-portal
+    digest: sha256:84358765ab9c78258fbba8ddb50791dcff69578b7c2fc6a822758d25c4b7f71d
+  - name: admin
+    newName: quay.io/rh-ee-jkershaw/launchpad-admin
+    digest: sha256:b599a1d7b75005c55ce32fbe51db86d1aa3e8c0946260d0310dfa700f55acb29
+  - name: postgres
+    newName: docker.io/library/postgres
+    digest: sha256:075f7ba66bc9b3ce7d6b8b635208ff61cd7cf1a67d71ec530eec5d7ae0cbe571
+  - name: registry.redhat.io/openshift4/ose-oauth-proxy
+    newName: registry.redhat.io/openshift4/ose-oauth-proxy
+    digest: sha256:e68637bc28cd2e0820d75650ed3019b64247d9b2760e455bf6c1af7d5d66b7af
+  - name: quay.io/oauth2-proxy/oauth2-proxy
+    newName: quay.io/oauth2-proxy/oauth2-proxy
+    digest: sha256:786bed0f000c0f8a7b31619244ebab02406a8856a4faf3f5fb1df61fbd6c30ed
+
+patches:
+  - path: patch-configmap.yaml
+  - path: patch-routes.yaml
+  - path: patch-postgres-pvc.yaml
+  - path: patch-generated-secrets.yaml
+  - path: patch-remove-shared-rbac.yaml
+  - path: patch-runtime.yaml
+
+labels:
+  - pairs:
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/part-of: partner-ai-launchpad
+      launchpad.redhat.com/environment: flightpath-candidate
+    includeSelectors: false

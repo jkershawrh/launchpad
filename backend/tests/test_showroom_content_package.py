@@ -258,6 +258,9 @@ def test_agent_content_uses_launchpad_safe_workload_manifests():
     for filename in ("solution-agent.yaml", "solution-ui.yaml"):
         resources = list(yaml.safe_load_all((content_root / "manifests" / filename).read_text()))
         deployment = next(resource for resource in resources if resource["kind"] == "Deployment")
+        assert deployment["spec"]["template"]["spec"]["securityContext"][
+            "hostUsers"
+        ] is False
         assert all(
             "@sha256:" in container["image"]
             for container in deployment["spec"]["template"]["spec"]["containers"]
@@ -531,6 +534,7 @@ def test_cpu_serving_uses_pinned_openshift_compatible_workbench_image():
     assert "NODE_TLS_REJECT_UNAUTHORIZED" not in page
     assert catalog["metadata"]["seat_storage_gib"] == 2
     assert 'kind: "PersistentVolumeClaim"' in certifier
+    assert 'storageClassName: $storage_class' in certifier
     assert 'claimName: "anythingllm-storage"' in certifier
     assert 'mountPath: "/tmp/anythingllm-storage"' in certifier
     assert 'name: "NODE_EXTRA_CA_CERTS"' in certifier
@@ -590,6 +594,24 @@ def test_cpu_serving_workbench_request_matches_the_certified_seat_envelope():
         "20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613"
         in seat_driver
     )
+
+
+def test_cpu_serving_workbench_supports_restricted_v3_user_namespaces():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+    seat_driver = (ROOT / "scripts/certify-cpu-serving-seat.sh").read_text()
+
+    assert "hostUsers: false" in page
+    assert 'hostUsers: false' in seat_driver
+
+
+def test_cpu_serving_workbench_uses_the_selected_cluster_storage_class():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+
+    assert "storageClassName: {storage_class}" in page
 
 
 def test_cpu_serving_rollout_failure_prints_participant_actionable_diagnostics():

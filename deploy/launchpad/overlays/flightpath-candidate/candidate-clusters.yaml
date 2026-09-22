@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-cluster-targets
+data:
+  clusters.yaml: |
+    clusters:
+      - cluster_id: flightpath
+        display_name: Flightpath Candidate Execution
+        api_url: https://api.flightpath.fm2aihpcsed.com:6443
+        ingress_domain: apps.flightpath.fm2aihpcsed.com
+        console_url: https://console-openshift-console.apps.flightpath.fm2aihpcsed.com
+        storage_class: ocs-storagecluster-ceph-rbd
+        local: true
+        priority: 1
+        enabled: true
+        public_access_enabled: false
+        image_references:
+          showroom_git_cloner: quay.io/rh-ee-jkershaw/launchpad-showroom-git-cloner@sha256:2dbcdc5955c5ece1b3bc88c26f85f18122eb317624e1cda160f9d347754d2cc5
+          showroom_terminal: quay.io/rh-ee-jkershaw/launchpad-showroom-terminal@sha256:324dc5c4201f0da030a572dab389bc8cfdc2f66e800dff3fcee824b7e795daae
+        capabilities: [cpu, openshift, operators, showroom, model_endpoint]
+        model_endpoints:
+          granite-2b-cpu: http://vllm-granite-2b-cpu.launchpad-model-candidate.svc:8080/v1
+          granite-3.2-8b-tools: http://vllm-granite-3-2-8b-tools.launchpad-model-candidate.svc:8080/v1

@@ -15,6 +15,7 @@ spec:
         app: solution-ui
     spec:
       securityContext:
+        hostUsers: false
         runAsNonRoot: true
       containers:
         - name: solution-ui

@@ -243,6 +243,7 @@ def test_content_lab_receives_launchpad_runtime_values_and_named_workspace_tab()
     assert "litellm_api_key" not in user_data
     assert "sk-seat-1" not in app["spec"]["source"]["helm"]["values"]
     assert user_data["maas_model"] == "granite-2b-cpu"
+    assert user_data["storage_class"] == "nfs-storage"
     assert values["terminal"]["storage"]["setup"] == "false"
 
 

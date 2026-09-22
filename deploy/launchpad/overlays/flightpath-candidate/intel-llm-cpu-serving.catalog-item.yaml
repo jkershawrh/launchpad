@@ -1,0 +1,70 @@
+catalog_item_id: intel-llm-cpu-serving
+display_name: "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs"
+description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
+category: guided_build
+version: "1.0.12-flightpath.1"
+status: active
+required_capabilities:
+  - openshift
+  - showroom
+  - model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: standard
+default_ttl: "4h"
+provisioner_refs:
+  - openshift-provisioner
+  - showroom
+validation_refs:
+  - pod-ready
+  - route-accessible
+  - inference-health
+supported_branding:
+  - redhat-intel-default
+  - intel-internal
+metadata:
+  showroom: true
+  operator_workshop: true
+  content_only: true
+  workshop_cluster_ref: flightpath
+  certification_stage: five-seat-candidate
+  max_workshop_seats: 30
+  promotion_sequence:
+    - 1
+    - 5
+    - 25
+    - 30
+  onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
+  certification_proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
+  showroom_journey: intel-llm-cpu-serving
+  showroom_title: "Serve LLMs on Intel Xeon CPUs"
+  workspace_route_name: rag
+  workspace_title: "RAG Assistant"
+  showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
+  showroom_content_ref: "9526ede61b5c31949f3a1bedd133b5a17e554178"
+  showroom_content_playbook: "site-intel-llm-cpu-serving.yml"
+  required_models:
+    - granite-3.2-8b-tools
+    - granite-2b-cpu
+  required_model_capabilities:
+    - chat
+    - streaming
+    - tool_calling
+  inference_endpoint: direct_vllm_candidate
+  maas_rpm_limit: 60
+  seat_cpu_millicores: 665
+  seat_memory_mib: 1488
+  seat_pods: 2
+  seat_storage_gib: 2
+  workshop_node_spread: true
+  workshop_node_min_ready_seconds: 900
+  source_content_repo: "https://github.com/rhpds/showroom-intel-llm-cpu-serving.git"
+  source_content_revision: "ca1b9af736d1b5dfa80e76c0a1bd6c4638d3eaef"
+  workload_repo: "https://github.com/rhpds/llm-cpu-serving.git"
+  workload_revision: "88867e14b1eede7d9aa563069aa093c122a4a53a"
+  showroom_steps:
+    - title: "Understand CPU inference"
+      description: "Review how Intel Xeon acceleration and shared model serving fit together."
+    - title: "Query the model"
+      description: "Exercise the OpenAI-compatible endpoint with a scoped lab credential."
+    - title: "Build the RAG client"
+      description: "Deploy AnythingLLM, load documents, and compare grounded responses."

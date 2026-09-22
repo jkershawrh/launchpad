@@ -133,6 +133,7 @@ def build_showroom_application(
         "openshift_console_url": seat.console_url,
         "openshift_cluster_ingress_domain": seat.apps_domain,
         "cluster_display_name": seat.cluster_display_name,
+        "storage_class": seat.storage_class,
         "content_revision": seat.content_ref,
         "showroom_journey": seat.journey,
         "maas_endpoint": seat.maas_endpoint,

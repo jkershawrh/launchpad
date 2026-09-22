@@ -1,0 +1,145 @@
+{
+  "evidence_id": "FLIGHTPATH-TRUSTED-CA-SHOWROOM-20260922",
+  "generated_at": "2026-09-22T19:52:19Z",
+  "source_commit": "34f8435",
+  "source_state": {
+    "working_tree": "dirty",
+    "build_scope": "complete current working tree, including uncommitted platform and catalog changes present at build time",
+    "arena_version_relationship": "flightpath candidate is newer than the Arena pinned deployment"
+  },
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "exposure_policy": "internal",
+    "live_workshops_mutated": false,
+    "retained_pilot_namespaces_observed": {
+      "serve_llms": 60,
+      "build_agent": 60,
+      "multi_agent": 60
+    }
+  },
+  "artifacts": {
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:2b519e31c6092d3647431e1ef2d18e84bac8a7bc9362908d7f7ab746f2480ab8",
+    "portal_image": "quay.io/rh-ee-jkershaw/launchpad-portal@sha256:84358765ab9c78258fbba8ddb50791dcff69578b7c2fc6a822758d25c4b7f71d",
+    "admin_image": "quay.io/rh-ee-jkershaw/launchpad-admin@sha256:b599a1d7b75005c55ce32fbe51db86d1aa3e8c0946260d0310dfa700f55acb29",
+    "showroom_git_cloner_image": "quay.io/rh-ee-jkershaw/launchpad-showroom-git-cloner@sha256:2dbcdc5955c5ece1b3bc88c26f85f18122eb317624e1cda160f9d347754d2cc5",
+    "showroom_terminal_image": "quay.io/rh-ee-jkershaw/launchpad-showroom-terminal@sha256:324dc5c4201f0da030a572dab389bc8cfdc2f66e800dff3fcee824b7e795daae"
+  },
+  "trusted_tls": {
+    "method": "system root bundle plus openshift-config-managed/default-ingress-cert",
+    "configmap": "launchpad-cluster-ca-bundle",
+    "mount_path": "/etc/launchpad-ca/ca-bundle.crt",
+    "environment": [
+      "SSL_CERT_FILE",
+      "REQUESTS_CA_BUNDLE"
+    ],
+    "certificate_count": 148,
+    "bundle_sha256": "2e2a673e0d82153873127b159e85d4772d6a54214a6ca7014656b6e98c828ef6",
+    "tls_verification_bypass_present": false,
+    "backend_probe": {
+      "verified_tls": true,
+      "http_status": 403,
+      "interpretation": "expected OAuth-protected candidate route response"
+    }
+  },
+  "tests": {
+    "focused_ca_candidate_suite": {
+      "result": "pass",
+      "passed": 15,
+      "failed": 0
+    },
+    "focused_showroom_gitops_suite": {
+      "result": "pass",
+      "passed": 32,
+      "failed": 0
+    }
+  },
+  "verified_tls_smoke_lifecycle": {
+    "request_id": "ec8b3c3f-34f0-484a-8ec1-97a61a68e81a",
+    "session_id": "f1cf5772-7158-40c0-9887-a94bdb569dee",
+    "requested_at": "2026-09-22T19:37:15Z",
+    "ready_at": "2026-09-22T19:38:02Z",
+    "provision_to_ready_seconds": 47.6,
+    "automatic_status": "ready",
+    "pod_validation": "pass",
+    "route_validation": "pass",
+    "reclaim_status": "reclaimed",
+    "seat_namespace_deleted": true
+  },
+  "showroom_lifecycle": {
+    "catalog_item": "openshift-operators-workshop",
+    "request_id": "34ebb3b7-710b-41a7-bb16-04c83c509b01",
+    "session_id": "5a21410b-e271-4e65-b303-9a7a785e704a",
+    "namespace": "launchpad-flightpath-candida-openshift-operator-34ebb3",
+    "automatic_status": "ready",
+    "provision_to_ready_seconds": 35.5,
+    "pod_validation": "pass",
+    "route_validation": "pass",
+    "argocd_sync": "Synced",
+    "argocd_health": "Healthy",
+    "argocd_destination": "https://kubernetes.default.svc",
+    "argocd_namespace_access": "per-seat scoped RoleBinding",
+    "showroom_containers_ready": "3/3",
+    "verified_route_http_status": 200,
+    "route_shell_verified": true,
+    "antora_content_semantics_verified": true,
+    "antora_page": "/www/modules/index.html",
+    "antora_page_http_status": 200,
+    "antora_title_verified": "OpenShift AI Operator Workshop",
+    "terminal_route": "/terminal/",
+    "terminal_route_http_status": 200,
+    "ui_config_http_status": 200,
+    "ui_config_terminal_tab_verified": true,
+    "ui_config_console_tab_verified": true,
+    "terminal_browser_journey_verified": false,
+    "reclaim_status": "reclaimed",
+    "seat_namespace_deleted": true,
+    "argocd_application_deleted": true
+  },
+  "showroom_content_terminal_lifecycle": {
+    "request_id": "d5963416-3206-4eae-bf2e-42e842026624",
+    "session_id": "cc997836-c9bf-4adb-a04e-47dc0b4fad60",
+    "namespace": "launchpad-flightpath-candida-openshift-operator-d59634",
+    "automatic_status": "ready",
+    "pod_validation": "pass",
+    "route_validation": "pass",
+    "verified_tls": true,
+    "showroom_shell_http_status": 200,
+    "antora_page_http_status": 200,
+    "terminal_route_http_status": 200,
+    "ui_config_http_status": 200,
+    "reclaim_status": "reclaimed",
+    "seat_namespace_deleted": true,
+    "argocd_application_deleted": true
+  },
+  "cleanup": {
+    "remaining_candidate_seat_namespaces": 0,
+    "remaining_candidate_applications": 0,
+    "candidate_control_plane_retained": true,
+    "live_workshops_untouched": true
+  },
+  "model_dependency_inventory": {
+    "flightpath_local_launchpad_model_control_plane_found": false,
+    "candidate_model_endpoint_registered": false,
+    "candidate_behavior": "fail_closed",
+    "retained_serve_llms_endpoint_cluster": "arena",
+    "retained_serve_llms_model": "granite-2b-cpu",
+    "retained_build_agent_endpoint_cluster": "arena",
+    "retained_build_agent_model": "granite-3.2-8b-tools",
+    "retained_multi_agent_endpoint_cluster": "arena",
+    "retained_multi_agent_model": "granite-3.2-8b-tools",
+    "secret_values_recorded": false,
+    "interpretation": "existing Flightpath pilot seats execute on Flightpath but still consume Arena-hosted inference; model-backed candidate catalogs remain ineligible until a Flightpath model path is separately deployed and certified"
+  },
+  "promotion_gates": {
+    "internal_platform_lifecycle": "green",
+    "trusted_route_tls": "green",
+    "internal_showroom_lifecycle": "green",
+    "showroom_content_and_terminal_routes": "green",
+    "interactive_terminal_browser_journey": "not_yet_certified",
+    "public_access": "disabled_not_tested",
+    "model_backed_pilot_catalogs": "fail_closed_not_yet_certified",
+    "multi_seat_workshops": "not_yet_certified"
+  },
+  "overall_result": "GREEN-live for isolated internal platform and Showroom lifecycle with verified TLS; AMBER for complete migration"
+}

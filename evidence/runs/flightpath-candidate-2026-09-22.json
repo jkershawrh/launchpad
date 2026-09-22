@@ -1,0 +1,82 @@
+{
+  "evidence_id": "FLIGHTPATH-CANDIDATE-LIFECYCLE-20260922",
+  "generated_at": "2026-09-22T19:30:00Z",
+  "source_commit": "34f8435",
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "catalog_item": "smoke-test",
+    "exposure_policy": "internal",
+    "live_workshops_mutated": false
+  },
+  "artifacts": {
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:1c65cf4bec6ceb81ca3406d6d7b82a87d7ecba0728843dd067be561fa7a49136",
+    "portal_image": "quay.io/rh-ee-jkershaw/launchpad-portal@sha256:84358765ab9c78258fbba8ddb50791dcff69578b7c2fc6a822758d25c4b7f71d",
+    "admin_image": "quay.io/rh-ee-jkershaw/launchpad-admin@sha256:b599a1d7b75005c55ce32fbe51db86d1aa3e8c0946260d0310dfa700f55acb29",
+    "demo_frontend_image": "quay.io/redhat-gpte/intel-inference-frontend@sha256:1243f4eef89dc151a2247f509d32c97db3ca9ede3d554032c17a349d49956ba3",
+    "demo_gateway_image": "quay.io/redhat-gpte/intel-inference-gateway@sha256:5fe683a15fdc98c4c1dde6f0055138f9ff7f39fc39d8c15b31cce0ce56ae5a51"
+  },
+  "tests": {
+    "focused_unit_contract_overlay": {
+      "result": "pass",
+      "passed": 15,
+      "failed": 0,
+      "suites": [
+        "backend/tests/test_openshift_validation_retry.py",
+        "backend/tests/test_tenant_gateway_reconciliation.py",
+        "backend/tests/test_demo_frontend_image.py",
+        "scripts/tests/test_flightpath_candidate_overlay.py"
+      ]
+    },
+    "repository_regression_baseline": {
+      "result": "conditional_pass",
+      "passed": 2312,
+      "skipped": 29,
+      "remaining_failures": 9,
+      "remaining_failure_class": "optional local Podman stack tests unrelated to this candidate"
+    }
+  },
+  "migration": {
+    "database_migrations_applied": 10,
+    "migration_job_result": "complete",
+    "candidate_catalog_items_loaded": 12
+  },
+  "live_lifecycle": {
+    "request_id": "95dc29fd-90e0-436d-8cd2-9d33dbd42373",
+    "session_id": "eb7da9b4-9a44-42e7-a458-9262121b457c",
+    "namespace": "launchpad-flightpath-candida-smoke-test-95dc29",
+    "requested_at": "2026-09-22T19:28:11.105042Z",
+    "ready_at": "2026-09-22T19:29:03.801600Z",
+    "provision_to_ready_seconds": 52.697,
+    "automatic_status": "ready",
+    "pod_validation": "pass",
+    "route_validation": "pass",
+    "external_route_http_status": 200,
+    "external_route_response_seconds": 0.564,
+    "reclaim_status": "reclaimed",
+    "seat_namespace_deleted": true
+  },
+  "cleanup": {
+    "candidate_sessions_total": 6,
+    "candidate_sessions_reclaimed": 6,
+    "remaining_candidate_seat_namespaces": 0,
+    "remaining_candidate_gateway_namespaces": 0,
+    "candidate_control_plane_retained": true
+  },
+  "remediations_proven": [
+    "portable immutable demo and gateway images",
+    "execution-cluster image pull RBAC",
+    "existing tenant gateway reconciliation",
+    "optional Kafka disabled for isolated candidate",
+    "API-driven ready-session reclaim and namespace deletion"
+  ],
+  "promotion_gates": {
+    "functional_internal_lifecycle": "green",
+    "public_access": "not_tested_disabled",
+    "trusted_route_tls": "blocked",
+    "trusted_route_tls_detail": "Candidate validation temporarily uses OPENSHIFT_ROUTE_TLS_VERIFY=false because Flightpath presents an internally untrusted wildcard chain. Production promotion requires a trusted CA chain or an explicit mounted CA bundle.",
+    "pilot_catalog_certification": "not_started",
+    "multi_seat_workshop_certification": "not_started"
+  },
+  "overall_result": "GREEN-live internal single-seat lifecycle; AMBER for production promotion"
+}

@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      imagePullSecrets:
+        - name: launchpad-registry-pull
+      containers:
+        - name: backend
+          env:
+            - name: SSL_CERT_FILE
+              value: /etc/launchpad-ca/ca-bundle.crt
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/launchpad-ca/ca-bundle.crt
+          volumeMounts:
+            - name: cluster-targets
+              mountPath: /etc/launchpad
+              readOnly: true
+            - name: cluster-ca-bundle
+              mountPath: /etc/launchpad-ca
+              readOnly: true
+            - name: candidate-serve-llms-catalog
+              mountPath: /opt/catalog/intel-llm-cpu-serving/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+      volumes:
+        - name: cluster-targets
+          configMap:
+            name: launchpad-cluster-targets
+        - name: cluster-ca-bundle
+          configMap:
+            name: launchpad-cluster-ca-bundle
+            optional: false
+        - name: candidate-serve-llms-catalog
+          configMap:
+            name: flightpath-candidate-serve-llms-catalog
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lifecycle-worker
+spec:
+  replicas: 1
+  template:
+    spec:
+      imagePullSecrets:
+        - name: launchpad-registry-pull
+      containers:
+        - name: lifecycle-worker
+          env:
+            - name: SSL_CERT_FILE
+              value: /etc/launchpad-ca/ca-bundle.crt
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/launchpad-ca/ca-bundle.crt
+          volumeMounts:
+            - name: candidate-serve-llms-catalog
+              mountPath: /opt/catalog/intel-llm-cpu-serving/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+      volumes:
+        - name: cluster-ca-bundle
+          configMap:
+            name: launchpad-cluster-ca-bundle
+            optional: false
+        - name: candidate-serve-llms-catalog
+          configMap:
+            name: flightpath-candidate-serve-llms-catalog
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: partner-portal
+spec:
+  replicas: 1
+  template:
+    spec:
+      imagePullSecrets:
+        - name: launchpad-registry-pull
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+spec:
+  replicas: 1
+  template:
+    spec:
+      imagePullSecrets:
+        - name: launchpad-registry-pull
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: public-access-gateway
+spec:
+  replicas: 0
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: lifecycle-scheduler
+spec:
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          imagePullSecrets:
+            - name: launchpad-registry-pull

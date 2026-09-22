@@ -4,6 +4,7 @@ set -euo pipefail
 namespace="${1:?usage: certify-cpu-serving-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-cpu-serving-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
+storage_class="${LAUNCHPAD_STORAGE_CLASS:-nfs-storage}"
 
 oc() {
   command oc --kubeconfig "$KUBECONFIG" "$@"
@@ -41,6 +42,7 @@ jq -nc \
   --arg endpoint "${endpoint}/v1" \
   --arg model "$model" \
   --arg api_key "$api_key" \
+  --arg storage_class "$storage_class" \
   --arg frame_ancestor "$frame_ancestor" \
   --arg image "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:20801cca5ba1b63e5c31ee5a0e221f61cc3696fe317768913940c1dc7c274613" \
   '{
@@ -67,6 +69,7 @@ jq -nc \
         kind: "PersistentVolumeClaim",
         metadata: {name: "anythingllm-storage"},
         spec: {
+          storageClassName: $storage_class,
           accessModes: ["ReadWriteOnce"],
           resources: {requests: {storage: "2Gi"}}
         }
@@ -82,6 +85,7 @@ jq -nc \
           template: {
             metadata: {labels: {app: "anythingllm"}},
             spec: {
+              securityContext: {hostUsers: false},
               containers: [
                 {
                   name: "anythingllm",
