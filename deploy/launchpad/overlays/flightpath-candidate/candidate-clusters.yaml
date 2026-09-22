@@ -20,5 +20,5 @@ data:
           showroom_terminal: quay.io/rh-ee-jkershaw/launchpad-showroom-terminal@sha256:324dc5c4201f0da030a572dab389bc8cfdc2f66e800dff3fcee824b7e795daae
         capabilities: [cpu, openshift, operators, showroom, model_endpoint]
         model_endpoints:
-          granite-2b-cpu: http://vllm-granite-2b-cpu.launchpad-model-candidate.svc:8080/v1
-          granite-3.2-8b-tools: http://vllm-granite-3-2-8b-tools.launchpad-model-candidate.svc:8080/v1
+          granite-2b-cpu: http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1
+          granite-3.2-8b-tools: http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1

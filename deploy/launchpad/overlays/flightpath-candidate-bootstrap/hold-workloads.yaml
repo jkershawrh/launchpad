@@ -25,3 +25,10 @@ metadata:
   name: admin
 spec:
   replicas: 0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: launchpad-candidate-maas
+spec:
+  replicas: 0

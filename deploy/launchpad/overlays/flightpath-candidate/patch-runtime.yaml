@@ -17,6 +17,11 @@ spec:
               value: /etc/launchpad-ca/ca-bundle.crt
             - name: REQUESTS_CA_BUNDLE
               value: /etc/launchpad-ca/ca-bundle.crt
+            - name: LITELLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: launchpad-litellm
+                  key: LITELLM_API_KEY
           volumeMounts:
             - name: cluster-targets
               mountPath: /etc/launchpad
@@ -78,6 +83,11 @@ spec:
               value: /etc/launchpad-ca/ca-bundle.crt
             - name: REQUESTS_CA_BUNDLE
               value: /etc/launchpad-ca/ca-bundle.crt
+            - name: LITELLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: launchpad-litellm
+                  key: LITELLM_API_KEY
           volumeMounts:
             - name: candidate-serve-llms-catalog
               mountPath: /opt/catalog/intel-llm-cpu-serving/catalog-item.yaml

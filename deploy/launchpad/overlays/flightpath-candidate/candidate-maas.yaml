@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-candidate-maas-config
+data:
+  config.yaml: |
+    model_list:
+      - model_name: granite-2b-cpu
+        litellm_params:
+          model: openai/granite-2b-cpu
+          api_base: http://vllm-granite-2b-cpu.launchpad-model-candidate.svc:8080/v1
+          api_key: candidate-upstream
+      - model_name: granite-3.2-8b-tools
+        litellm_params:
+          model: openai/granite-3.2-8b-tools
+          api_base: http://vllm-granite-3-2-8b-tools.launchpad-model-candidate.svc:8080/v1
+          api_key: candidate-upstream
+    general_settings:
+      master_key: os.environ/LITELLM_API_KEY
+      database_url: os.environ/DATABASE_URL
+    litellm_settings:
+      drop_params: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: launchpad-candidate-maas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: launchpad-candidate-maas
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: launchpad-candidate-maas
+        app.kubernetes.io/part-of: partner-ai-launchpad
+        app.kubernetes.io/component: inference-gateway
+    spec:
+      containers:
+        - name: litellm
+          image: ghcr.io/berriai/litellm@sha256:9d60771c86a42ced1b918f23dd940a1ac9905ddb02a4fae779cfe1937477c9a0
+          args: ["--config", "/etc/litellm/config.yaml", "--port", "4000"]
+          envFrom:
+            - secretRef:
+                name: launchpad-litellm
+          ports:
+            - name: http
+              containerPort: 4000
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 60
+            periodSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/litellm
+              readOnly: true
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: config
+          configMap:
+            name: launchpad-candidate-maas-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: launchpad-candidate-maas
+spec:
+  selector:
+    app.kubernetes.io/name: launchpad-candidate-maas
+  ports:
+    - name: http
+      port: 4000
+      targetPort: 4000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: launchpad-candidate-maas-ingress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: launchpad-candidate-maas
+  policyTypes: ["Ingress"]
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values: ["backend", "lifecycle-worker"]
+        - namespaceSelector:
+            matchLabels:
+              launchpad.redhat.com/cluster-id: flightpath
+      ports:
+        - port: 4000
+          protocol: TCP

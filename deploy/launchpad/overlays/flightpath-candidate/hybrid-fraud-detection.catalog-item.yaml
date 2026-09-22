@@ -45,7 +45,7 @@ metadata:
   workspace_route_name: fraud-ui
   workspace_title: Fraud Scoring Workspace
   required_models: [granite-3.2-8b-tools]
-  inference_endpoint: direct_vllm_candidate
+  inference_endpoint: litellm_virtual_key_candidate
   seat_cpu_millicores: 700
   seat_memory_mib: 1280
   seat_pods: 2

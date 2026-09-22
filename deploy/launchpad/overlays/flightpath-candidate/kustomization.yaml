@@ -7,6 +7,7 @@ resources:
   - ../../base
   - candidate-clusters.yaml
   - candidate-rbac.yaml
+  - candidate-maas.yaml
   - migration-job.yaml
 
 configMapGenerator:

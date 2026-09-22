@@ -23,6 +23,8 @@ data:
   REMOTE_CONTROL_PLANE_SERVICE_ACCOUNT_NAMESPACE: "openshift-gitops"
   REMOTE_ARGOCD_SERVICE_ACCOUNT: "openshift-gitops-argocd-application-controller"
   MODEL_CA_BUNDLE_NAMESPACE: "launchpad-flightpath-candidate"
+  LITELLM_API_BASE: "http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000"
+  MAAS_KEY_PROVIDER: "litellm"
   OPENSHIFT_INGRESS_DOMAIN: "apps.flightpath.fm2aihpcsed.com"
   OPENSHIFT_CONSOLE_URL: "https://console-openshift-console.apps.flightpath.fm2aihpcsed.com"
   SANDBOX_STORAGE_CLASS: "ocs-storagecluster-ceph-rbd"

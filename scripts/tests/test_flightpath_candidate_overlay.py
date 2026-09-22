@@ -97,10 +97,10 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
     }
     assert targets[0]["model_endpoints"] == {
         "granite-2b-cpu": (
-            "http://vllm-granite-2b-cpu.launchpad-model-candidate.svc:8080/v1"
+            "http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1"
         ),
         "granite-3.2-8b-tools": (
-            "http://vllm-granite-3-2-8b-tools.launchpad-model-candidate.svc:8080/v1"
+            "http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1"
         ),
     }
 
@@ -124,6 +124,7 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
         "admin": 1,
         "backend": 1,
         "lifecycle-worker": 1,
+        "launchpad-candidate-maas": 1,
         "partner-portal": 1,
         "postgres": 1,
         "public-access-gateway": 0,
@@ -346,7 +347,7 @@ def test_candidate_isolates_hybrid_fraud_on_flightpath() -> None:
     assert metadata["workshop_cluster_ref"] == "flightpath"
     assert metadata["certification_stage"] == "one-seat-candidate"
     assert metadata["max_workshop_seats"] == 1
-    assert metadata["inference_endpoint"] == "direct_vllm_candidate"
+    assert metadata["inference_endpoint"] == "litellm_virtual_key_candidate"
     assert metadata["seat_cpu_millicores"] == 700
     assert metadata["seat_memory_mib"] == 1280
     assert metadata["seat_pods"] == 2
@@ -369,9 +370,64 @@ def test_candidate_isolates_hybrid_fraud_on_flightpath() -> None:
         } in container["volumeMounts"]
 
 
+def test_candidate_maas_enforces_virtual_keys_without_publishing_secrets() -> None:
+    documents = _render()
+
+    gateway = _one(documents, "Deployment", "launchpad-candidate-maas")
+    assert gateway["spec"]["replicas"] == 1
+    pod_spec = gateway["spec"]["template"]["spec"]
+    container = pod_spec["containers"][0]
+    assert container["image"] == (
+        "ghcr.io/berriai/litellm@sha256:"
+        "9d60771c86a42ced1b918f23dd940a1ac9905ddb02a4fae779cfe1937477c9a0"
+    )
+    assert container["envFrom"] == [{"secretRef": {"name": "launchpad-litellm"}}]
+    assert _one(documents, "Service", "launchpad-candidate-maas")["spec"]["ports"] == [
+        {"name": "http", "port": 4000, "targetPort": 4000}
+    ]
+
+    config = yaml.safe_load(
+        _one(documents, "ConfigMap", "launchpad-candidate-maas-config")["data"][
+            "config.yaml"
+        ]
+    )
+    assert config["general_settings"]["master_key"] == "os.environ/LITELLM_API_KEY"
+    assert config["general_settings"]["database_url"] == "os.environ/DATABASE_URL"
+    assert {item["model_name"] for item in config["model_list"]} == {
+        "granite-2b-cpu",
+        "granite-3.2-8b-tools",
+    }
+
+    targets = yaml.safe_load(
+        _one(documents, "ConfigMap", "launchpad-cluster-targets")["data"]["clusters.yaml"]
+    )["clusters"]
+    assert set(targets[0]["model_endpoints"].values()) == {
+        "http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1"
+    }
+
+    catalog = yaml.safe_load(
+        _one(documents, "ConfigMap", "flightpath-candidate-hybrid-fraud-catalog")["data"][
+            "catalog-item.yaml"
+        ]
+    )
+    assert catalog["metadata"]["inference_endpoint"] == "litellm_virtual_key_candidate"
+
+    policy = _one(documents, "NetworkPolicy", "launchpad-candidate-maas-ingress")
+    assert policy["spec"]["podSelector"]["matchLabels"] == {
+        "app.kubernetes.io/name": "launchpad-candidate-maas"
+    }
+    assert not [document for document in documents if document.get("kind") == "Secret"]
+
+
 def test_bootstrap_holds_application_workloads_until_migration_is_green() -> None:
     documents = _render_bootstrap()
-    for name in ("backend", "lifecycle-worker", "partner-portal", "admin"):
+    for name in (
+        "backend",
+        "lifecycle-worker",
+        "partner-portal",
+        "admin",
+        "launchpad-candidate-maas",
+    ):
         assert _one(documents, "Deployment", name)["spec"]["replicas"] == 0
     assert _one(documents, "Deployment", "postgres")["spec"]["replicas"] == 1
 
