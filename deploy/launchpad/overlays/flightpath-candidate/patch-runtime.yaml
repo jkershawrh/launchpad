@@ -32,6 +32,10 @@ spec:
               mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: candidate-multi-agent-catalog
+              mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-targets
           configMap:
@@ -46,6 +50,9 @@ spec:
         - name: candidate-agent-201-catalog
           configMap:
             name: flightpath-candidate-agent-201-catalog
+        - name: candidate-multi-agent-catalog
+          configMap:
+            name: flightpath-candidate-multi-agent-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -73,6 +80,10 @@ spec:
               mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: candidate-multi-agent-catalog
+              mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-ca-bundle
           configMap:
@@ -84,6 +95,9 @@ spec:
         - name: candidate-agent-201-catalog
           configMap:
             name: flightpath-candidate-agent-201-catalog
+        - name: candidate-multi-agent-catalog
+          configMap:
+            name: flightpath-candidate-multi-agent-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment

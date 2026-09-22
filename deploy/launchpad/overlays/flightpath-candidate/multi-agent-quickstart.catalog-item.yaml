@@ -1,0 +1,123 @@
+catalog_item_id: multi-agent-quickstart
+display_name: Build Multi-Agent AI Systems with Open Protocols
+description: Investigate a fictional service incident with specialized agents, produce an evidence-backed response package for human review, operate the workload on OpenShift, and explore its advanced blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry, guardrails, and service authentication on Intel infrastructure.
+category: guided_build
+version: 0.2.15-flightpath.1
+status: active
+required_capabilities:
+  - openshift
+  - showroom
+  - model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: 4h
+provisioner_refs:
+  - helm-workload
+  - showroom
+validation_refs:
+  - pod-ready
+  - route-accessible
+  - inference-health
+  - multi-agent-journey
+observability_profile: multi-agent-open-protocols
+supported_branding:
+  - redhat-intel-default
+  - intel-internal
+metadata:
+  showroom: true
+  operator_workshop: true
+  content_only: false
+  workshop_cluster_ref: flightpath
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/multi-agent-quickstart.yaml
+  certification_stage: one-seat-candidate
+  max_workshop_seats: 30
+  promotion_sequence: [1, 5, 25, 30]
+  activation_blockers: []
+  certification_proof_contract: certification/catalog/multi-agent-quickstart.yaml
+  allowed_exposure_policies: [internal, public_code]
+  showroom_journey: multi-agent-quickstart
+  showroom_title: Build Multi-Agent AI Systems with Open Protocols
+  namespace_slug: multi-agent
+  showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
+  showroom_content_ref: 2302acddb0e696ff72b647677049b7de529060e3
+  showroom_content_playbook: site-multi-agent-quickstart.yml
+  showroom_content_start_path: content-multi-agent-quickstart
+  showroom_terminal_storage: false
+  showroom_tabs:
+    - id: terminal
+      title: Terminal
+      source: showroom.terminal
+    - id: workspace
+      title: Multi-Agent Workspace
+      source: workload.route.ui
+    - id: openshift-console
+      title: OpenShift Console
+      source: cluster.console_url
+  required_models:
+    - granite-3.2-8b-tools
+  inference_endpoint: direct_vllm_candidate
+  seat_cpu_millicores: 1200
+  seat_memory_mib: 2048
+  seat_pods: 2
+  seat_storage_gib: 0
+  single_environment: true
+  track_count: 3
+  learning_tracks:
+    - id: track-1-local
+      title: Understand the application pattern
+      showroom_page: track-1-local.adoc
+      delivery_mode: source-guided
+      certification_status: content-present
+    - id: track-2-openshift
+      title: Build and operate on OpenShift
+      showroom_page: track-2-openshift.adoc
+      delivery_mode: live-runtime
+      certification_status: twenty-five-seat-certified
+    - id: track-3-blueprint
+      title: Advanced blueprint alignment
+      showroom_page: track-3-blueprint.adoc
+      delivery_mode: architecture-and-manifest-exploration
+      certification_status: content-present
+  workshop_provision_concurrency: 2
+  workshop_node_spread: true
+  workshop_node_min_ready_seconds: 900
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: https://github.com/jkershawrh/launchpad.git
+  workload_revision: 2302acddb0e696ff72b647677049b7de529060e3
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: deploy/workloads/multi-agent-seat
+  workload_source_kind: launchpad-seat-chart
+  workload_gitops_ready: true
+  workload_release_name: multi-agent
+  workload_helm_values:
+    image:
+      repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
+      digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+  workload_ignore_differences: []
+  workload_runtime_secret_name: multi-agent-runtime
+  workload_runtime_secret_sources:
+    MODEL_ENDPOINT:
+      source: maas_api_url
+    MODEL_API_KEY:
+      source: maas_api_key
+    MODEL_NAME:
+      source: requested_model
+    AGENT_AUTH_TOKEN:
+      source: generated_password
+      length: 48
+  workload_runtime_secret_value_path: runtime.existingSecret
+  workload_identity_value_path: identity
+  workload_routes:
+    ui: multi-agent-ui
+    orchestrator: multi-agent
+  workload_readiness: []
+  source_content_repo: https://github.com/rhpds/launchpad.git
+  source_content_revision: b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3
+  source_references:
+    original_lab:
+      repo_url: https://github.com/jkershawrh/multi-agent-quickstart.git
+      revision: 159113ab9f8df39e09e08926b51c7c32da0fc1af
+      path: .

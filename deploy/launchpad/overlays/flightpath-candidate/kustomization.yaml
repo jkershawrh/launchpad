@@ -16,6 +16,9 @@ configMapGenerator:
   - name: flightpath-candidate-agent-201-catalog
     files:
       - catalog-item.yaml=intel-xeon6-agent-201.catalog-item.yaml
+  - name: flightpath-candidate-multi-agent-catalog
+    files:
+      - catalog-item.yaml=multi-agent-quickstart.catalog-item.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

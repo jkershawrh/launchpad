@@ -296,6 +296,44 @@ def test_candidate_isolates_agent_201_on_flightpath() -> None:
         } in container["volumeMounts"]
 
 
+def test_candidate_isolates_multi_agent_on_flightpath() -> None:
+    documents = _render()
+    catalog = yaml.safe_load(
+        _one(documents, "ConfigMap", "flightpath-candidate-multi-agent-catalog")["data"][
+            "catalog-item.yaml"
+        ]
+    )
+    metadata = catalog["metadata"]
+    assert catalog["catalog_item_id"] == "multi-agent-quickstart"
+    assert metadata["workshop_cluster_ref"] == "flightpath"
+    assert metadata["certification_stage"] == "one-seat-candidate"
+    assert metadata["showroom_content_repo_url"] == (
+        "https://github.com/jkershawrh/launchpad.git"
+    )
+    assert metadata["showroom_content_ref"] == (
+        "2302acddb0e696ff72b647677049b7de529060e3"
+    )
+    assert metadata["workload_repo"] == "https://github.com/jkershawrh/launchpad.git"
+    assert metadata["workload_revision"] == (
+        "2302acddb0e696ff72b647677049b7de529060e3"
+    )
+    assert metadata["inference_endpoint"] == "direct_vllm_candidate"
+
+    for deployment_name, container_name in (
+        ("backend", "backend"),
+        ("lifecycle-worker", "lifecycle-worker"),
+    ):
+        deployment = _one(documents, "Deployment", deployment_name)
+        pod_spec = deployment["spec"]["template"]["spec"]
+        container = next(item for item in pod_spec["containers"] if item["name"] == container_name)
+        assert {
+            "name": "candidate-multi-agent-catalog",
+            "mountPath": "/opt/catalog/multi-agent-quickstart/catalog-item.yaml",
+            "subPath": "catalog-item.yaml",
+            "readOnly": True,
+        } in container["volumeMounts"]
+
+
 def test_bootstrap_holds_application_workloads_until_migration_is_green() -> None:
     documents = _render_bootstrap()
     for name in ("backend", "lifecycle-worker", "partner-portal", "admin"):
