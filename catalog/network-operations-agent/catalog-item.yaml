@@ -87,8 +87,8 @@ metadata:
   workload_release_name: network-operations-agent
   workload_helm_values:
     image:
-      repository: ghcr.io/jkershawrh/network-operations-agent
-      digest: sha256:8893ae16c3496b45a70c5292d904502fa3a81ff93df7010e300fc53d20200a6c
+      repository: quay.io/rh-ee-jkershaw/network-operations-agent
+      digest: sha256:9ff998baca7da7f663d55e6055b7bd8019a54f1d91710fd783ae8c0bd6030e0e
     route:
       enabled: true
       name: network-operations-workspace
