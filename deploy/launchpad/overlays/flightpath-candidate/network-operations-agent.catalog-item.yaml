@@ -1,0 +1,84 @@
+catalog_item_id: network-operations-agent
+display_name: Evidence-Backed Network Operations Agent
+description: Investigate a simulated telecom network alarm with an evidence-backed agent, internal MCP diagnostics, and shared CPU model inference.
+category: guided_build
+version: 0.1.0-flightpath.1
+status: active
+required_capabilities: [openshift, showroom, model_endpoint]
+default_hardware_profile: xeon-basic
+default_quota_profile: small
+default_ttl: 4h
+provisioner_refs: [helm-workload, showroom]
+validation_refs: [pod-ready, route-accessible, inference-health]
+observability_profile: agentops-full-stack
+supported_branding: [redhat-intel-default, intel-internal]
+metadata:
+  showroom: true
+  operator_workshop: true
+  content_only: false
+  workshop_cluster_ref: flightpath
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/network-operations-agent.yaml
+  certification_stage: one-seat-candidate
+  max_workshop_seats: 1
+  promotion_sequence: [1, 5, 25]
+  activation_blockers: []
+  allowed_exposure_policies: [internal]
+  showroom_journey: network-operations-agent
+  showroom_title: Evidence-Backed Network Operations Agent
+  namespace_slug: network-ops
+  showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
+  showroom_content_ref: a434608fe25fe6c5591d095680f622ea91c6f6a4
+  showroom_content_playbook: site.yml
+  showroom_content_start_path: showroom
+  showroom_terminal_storage: true
+  showroom_tabs:
+    - id: terminal
+      title: Terminal
+      source: showroom.terminal
+    - id: workspace
+      title: Network Operations Workspace
+      source: workload.route.ui
+    - id: openshift-console
+      title: OpenShift Console
+      source: cluster.console_url
+  workspace_route_name: network-operations-workspace
+  workspace_title: Network Operations Workspace
+  required_models: [granite-3.2-8b-tools]
+  inference_endpoint: litellm_virtual_key_candidate
+  seat_cpu_millicores: 100
+  seat_memory_mib: 256
+  seat_pods: 2
+  seat_storage_gib: 2
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  workload_repo: https://github.com/jkershawrh/network-operations-agent.git
+  workload_revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: chart
+  workload_source_kind: chart
+  workload_gitops_ready: true
+  workload_release_name: network-operations-agent
+  workload_helm_values:
+    image:
+      repository: ghcr.io/jkershawrh/network-operations-agent
+      digest: sha256:8893ae16c3496b45a70c5292d904502fa3a81ff93df7010e300fc53d20200a6c
+    route:
+      enabled: true
+      name: network-operations-workspace
+  workload_runtime_secret_name: network-operations-model-runtime
+  workload_runtime_secret_sources:
+    endpoint:
+      source: model_endpoint
+      model: granite-3.2-8b-tools
+    name:
+      source: requested_model
+    api-key:
+      source: maas_api_key
+  workload_runtime_secret_value_path: model.existingSecret
+  workload_identity_value_path: ""
+  workload_routes:
+    ui: network-operations-workspace
+  workload_readiness: []

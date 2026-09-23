@@ -26,7 +26,7 @@ supported_branding:
 metadata:
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
-  showroom_content_ref: 44d88253fc55c6419274cfaa61202b78688754d3
+  showroom_content_ref: a434608fe25fe6c5591d095680f622ea91c6f6a4
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -45,8 +45,6 @@ metadata:
     runtime Secret sources.
   - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
     before activation.
-  - Review every mutable container image and replace it with an approved immutable
-    digest.
   - Review every unparsed manifest; templating or invalid YAML prevents complete static
     discovery.
   - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
@@ -80,7 +78,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/network-operations-agent.git
-  workload_revision: 44d88253fc55c6419274cfaa61202b78688754d3
+  workload_revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -88,6 +86,9 @@ metadata:
   workload_gitops_ready: false
   workload_release_name: network-operations-agent
   workload_helm_values:
+    image:
+      repository: ghcr.io/jkershawrh/network-operations-agent
+      digest: sha256:8893ae16c3496b45a70c5292d904502fa3a81ff93df7010e300fc53d20200a6c
     route:
       enabled: true
       name: network-operations-workspace
@@ -106,7 +107,7 @@ metadata:
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/network-operations-agent.git
-  source_content_revision: 44d88253fc55c6419274cfaa61202b78688754d3
+  source_content_revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1
@@ -170,7 +171,7 @@ metadata:
       target_support_inferred: false
     security_summary:
       status: review-required
-      mutable_image_count: 1
+      mutable_image_count: 0
       cluster_scoped_resource_count: 0
       privileged_finding_count: 0
       secret_manifest_count: 0

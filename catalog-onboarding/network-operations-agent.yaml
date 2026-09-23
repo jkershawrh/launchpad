@@ -11,17 +11,20 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: 44d88253fc55c6419274cfaa61202b78688754d3
+    revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: 44d88253fc55c6419274cfaa61202b78688754d3
+    revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
     deploy_path: chart
 runtime:
   deployment_type: helm
   workload:
     helm_values:
+      image:
+        repository: ghcr.io/jkershawrh/network-operations-agent
+        digest: sha256:8893ae16c3496b45a70c5292d904502fa3a81ff93df7010e300fc53d20200a6c
       route:
         enabled: true
         name: network-operations-workspace
@@ -65,8 +68,6 @@ certification:
     runtime Secret sources.
   - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
     before activation.
-  - Review every mutable container image and replace it with an approved immutable
-    digest.
   - Review every unparsed manifest; templating or invalid YAML prevents complete static
     discovery.
   - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
@@ -138,7 +139,7 @@ quality:
     target_support_inferred: false
   security_summary:
     status: review-required
-    mutable_image_count: 1
+    mutable_image_count: 0
     cluster_scoped_resource_count: 0
     privileged_finding_count: 0
     secret_manifest_count: 0
@@ -169,14 +170,11 @@ discovery:
     external_render_dependencies: []
     images:
     - path: Containerfile
-      reference: registry.access.redhat.com/ubi9/python-311:latest
+      reference: registry.access.redhat.com/ubi9/python-311@sha256:a0bdb55576fc5b8d6704279307817828ef027e1065533ceba133fe9516003a6c
       source: containerfile
     manifest_resources: []
     models: []
-    mutable_images:
-    - path: Containerfile
-      reference: registry.access.redhat.com/ubi9/python-311:latest
-      source: containerfile
+    mutable_images: []
     network_exposure: []
     operators: []
     ports: []

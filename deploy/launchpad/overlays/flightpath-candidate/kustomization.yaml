@@ -22,6 +22,9 @@ configMapGenerator:
   - name: flightpath-candidate-hybrid-fraud-catalog
     files:
       - catalog-item.yaml=hybrid-fraud-detection.catalog-item.yaml
+  - name: flightpath-candidate-network-operations-catalog
+    files:
+      - catalog-item.yaml=network-operations-agent.catalog-item.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
