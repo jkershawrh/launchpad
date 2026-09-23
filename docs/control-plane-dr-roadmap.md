@@ -68,6 +68,13 @@ The following remain RED and prevent a DR claim:
   each have only one Ready replica while `gnr2` is unavailable. That is a pilot
   availability risk, not a completed HA topology.
 
+Intel confirmed on September 23 that Brutus used capacity leased from another
+lab and that its H100 was reclaimed for a customer. Brutus therefore remains
+disabled for placement and is treated as unavailable, not as a DR target.
+Historical lifecycle records and credential references remain quarantined until
+Intel confirms whether the cluster will return or should be permanently
+retired. Stale DNS is not changed without that confirmation.
+
 On September 23, an isolated Flightpath candidate first proved scheduled TTL
 reclamation for `intel-llm-cpu-serving`, which exposed an aware-versus-naive
 timestamp comparison defect. The fix was then built into immutable backend
@@ -82,6 +89,16 @@ their MaaS keys and service-account tokens, and left zero namespaces or labeled
 resources. This closes the internal three-catalog lifecycle component gate. It
 does not certify public access, participant browser journeys, production-shaped
 load, database recovery, control-plane migration, HA, or DR.
+
+The Flightpath internal requester path is application-ready: requester,
+backend, PostgreSQL, lifecycle worker, scheduler, and candidate MaaS are
+healthy; the authenticated requester proxy lists the active tenants and 11
+active catalog items; both `hybrid-fraud-detection` and
+`network-operations-agent` pass one-seat capacity admission to Flightpath; and
+the focused catalog/requester UI contract suite passes. Normal browser access
+is still blocked from a staging claim because the Flightpath wildcard route
+certificate is not publicly trusted. Trusted DNS/TLS and one authenticated
+browser order/reclaim journey remain the next gate.
 
 ## Incident decision tree
 

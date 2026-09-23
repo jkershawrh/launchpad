@@ -1,0 +1,62 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-evidence/v1",
+  "candidate_id": "launchpad-staging-20260923-03",
+  "stage": "green-integration-ui-contract",
+  "recorded_at": "2026-09-23T18:30:00Z",
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "public_access_enabled": false
+  },
+  "results": {
+    "control_plane": {
+      "status": "passed",
+      "backend": "1/1",
+      "requester": "1/1",
+      "admin": "1/1",
+      "lifecycle_worker": "1/1",
+      "postgres": "1/1",
+      "candidate_maas": "1/1",
+      "scheduler_suspended": false
+    },
+    "requester_contract": {
+      "status": "passed",
+      "active_catalog_count": 11,
+      "active_tenants": [
+        "flightpath-candidate-cert",
+        "network-ops-certification"
+      ],
+      "focused_ui_tests": 5
+    },
+    "new_catalog_admission": {
+      "status": "passed",
+      "hybrid-fraud-detection": {
+        "can_provision": true,
+        "selected_cluster": "flightpath",
+        "certified_seat_limit": 25
+      },
+      "network-operations-agent": {
+        "can_provision": true,
+        "selected_cluster": "flightpath",
+        "certified_seat_limit": 1
+      }
+    },
+    "browser_tls": {
+      "status": "blocked",
+      "reason": "Flightpath wildcard route certificate is not trusted by a normal external browser",
+      "required_action": "Install a trusted ingress certificate or assign a dedicated trusted Launchpad hostname"
+    },
+    "brutus": {
+      "status": "unavailable",
+      "placement_enabled": false,
+      "reason": "Intel confirmed leased capacity and H100 were reclaimed for a customer"
+    }
+  },
+  "boundaries": {
+    "live_workshops_mutated": false,
+    "arena_mutated": false,
+    "brutus_mutated": false,
+    "browser_order_submitted": false,
+    "promotion_claim": "Flightpath is internally orderable by contract; trusted browser TLS and one authenticated UI order remain required for staging."
+  }
+}
