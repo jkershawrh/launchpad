@@ -1,0 +1,22 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-evidence/v1",
+  "candidate_platform_revision": "4f8d68b80e4d7cbb8edae96728536d2f9d44ca26",
+  "stage": "green-local",
+  "recorded_at": "2026-09-23T02:30:00Z",
+  "results": {
+    "delivery_governance": {"status": "passed", "contracts": 15, "scenarios": 24},
+    "focused_convergence": {"status": "passed", "tests": 121},
+    "backend_non_local": {"status": "passed", "tests": 2241, "skipped": 27, "deselected": 13},
+    "script_tooling": {"status": "passed", "tests": 107},
+    "recursive_migration_guard": {"status": "passed", "tests": 32},
+    "admin": {"status": "passed", "tests": 8, "build": "passed"},
+    "requester_participant": {"status": "passed", "tests": 61, "build": "passed"},
+    "showroom_build": {"status": "passed", "warnings": "unresolved runtime attributes in generic operator content"},
+    "staged_secret_scan": {"status": "passed"},
+    "diff_integrity": {"status": "passed"}
+  },
+  "exclusions": {
+    "local_container_suite": "not executed because podman-compose is not installed on this managed workstation; it is not counted as green",
+    "live_cluster_mutation": "not authorized by this receipt"
+  }
+}

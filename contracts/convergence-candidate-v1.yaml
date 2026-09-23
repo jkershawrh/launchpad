@@ -1,0 +1,21 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: ConvergenceCandidateContract
+metadata:
+  name: launchpad-convergence-candidate
+  version: 1.0.0
+identity:
+  platform_revision: immutable-git-sha
+  catalog_releases: exact-version-and-source-revisions
+  shared_contracts: exact-registry-version
+  evidence: path-and-sha256
+promotion:
+  allowed_stages: [green-local, green-integration, green-canary, green-staging]
+  immutable_candidate: true
+  self_promotion: forbidden
+  skipped_stage: forbidden
+  unresolved_blocker: blocks-next-stage
+  live_mutation: explicit-human-approval
+required_catalogs:
+  - intel-llm-cpu-serving
+  - intel-xeon6-agent-201
+  - multi-agent-quickstart
