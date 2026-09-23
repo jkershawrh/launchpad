@@ -6,6 +6,18 @@ Launchpad database, or contact a cluster. Existing aggregate receipts remain
 the operational evidence source; private cost and validation inputs are joined
 outside the labs.
 
+VEF is Launchpad's analytics, cost-allocation, and value-evidence layer. It is
+not the operational observability system and does not replace cluster alerts.
+Operational systems produce receipts; VEF reconciles their sanitized aggregates
+into track outcomes, lifecycle performance, allocated cost, and gated value
+claims.
+
+The contract is versioned. Existing `v1alpha1` inputs continue to produce the
+original `v1alpha1` claim byte shape, without an analytics member. The analytics
+and allocation extension is `v1alpha2`; it requires the new analytics section
+and emits a `v1alpha2` claim. Consumers can therefore adopt the richer contract
+without silently changing legacy reports.
+
 ## Pilot boundary
 
 The planned boundary is 90 provisioned seats for 75 enrolled users. These are
@@ -48,6 +60,12 @@ cleanup residue, and completion of the manual requester/participant/admin
 browser walkthrough. Report each track separately before reporting an overall
 rate so one strong track cannot hide another track's failures.
 
+Every track row declares its evidence state as `unavailable`, `partial`, or
+`authoritative`. Track provisioned seats, successful journeys, failures, and
+unknown outcomes must reconcile to the pilot-wide population and safety totals.
+An activated journey must end as successful, failed, or explicitly unknown;
+missing observations are never converted to zero.
+
 ### Launchpad platform path
 
 Launchpad itself has a separate end-to-end outcome. A platform journey is
@@ -73,6 +91,29 @@ successful only when all of these stages pass:
 A ready lab alone is therefore not a successful Launchpad outcome. Report both
 `lab_journey_success` and `launchpad_lifecycle_success`; this distinguishes a
 working exercise from a platform that delivered and retired it reliably.
+
+The lifecycle analytics contract also records orders requested, seats requested,
+ready and reclaimed, provisioning and reclaim p95, human interventions, and
+residue. Lifecycle analytics are decision-grade only when this evidence is
+authoritative and residue is zero.
+
+## Cost allocation and chargeback readiness
+
+VEF separates observed cost from allocation policy. The sanitized allocation
+ledger records shared platform cost, delivery/support cost, allocated inference
+cost, unallocated cost, and the approved allocation basis. Supported bases are
+seat-hour, successful journey, workshop, and direct metering.
+
+`chargeback_ready` is false unless track and lifecycle analytics are ready, all
+cost amounts are authoritative, no cost remains unallocated, a cost-center
+mapping exists, and finance has approved the chargeback policy. This is a
+readiness statement, not an invoice. Showback may display partial or unapproved
+figures only when their evidence state and gaps remain visible.
+
+The exporter derives total allocated cost and cost per successful journey. It
+does not invent infrastructure prices, infer token cost from seats, spread an
+unknown remainder across participants, or store employee-, participant-,
+namespace-, or cluster-level allocation records.
 
 ## What the combined data can support
 
@@ -108,7 +149,7 @@ that every provisioned seat or every successful technical check created value.
 
 Keep operational receipts in the existing evidence flow. Put private financial
 inputs in `.vef-private/`; it is ignored. Create a sanitized input matching
-`schemas/vef/launchpad-pilot-input.v1alpha1.schema.json`, then run:
+`schemas/vef/launchpad-pilot-input.v1alpha2.schema.json`, then run:
 
 ```bash
 python3 scripts/vef_export_pilot.py \
@@ -124,7 +165,8 @@ a deterministic candidate claim. It rejects common raw or identifying fields.
 Claimable gross value remains zero unless all gates pass: an independent and
 matched business baseline; complete participant accounting; no unknown
 outcomes; no safety breach or cleanup residue; authoritative AI request, token,
-and inference-cost evidence; measured marginal delivery cost; and manual,
+and inference-cost evidence; authoritative track, lifecycle, and cost-allocation
+evidence; zero unallocated cost; measured marginal delivery cost; and manual,
 security, customer, finance, and privacy validation.
 
 Launchpad currently exposes AI usage as unavailable because participant model

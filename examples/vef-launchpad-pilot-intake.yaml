@@ -56,6 +56,49 @@ ai_usage:
   measurement_state: unavailable
   note: "Direct model endpoints do not currently provide authoritative per-seat spend events. Do not infer tokens or cost."
 
+analytics:
+  track_outcomes:
+    - track_id: serve-llms
+      provisioned_seats: 30
+      activated_journeys: unknown
+      successful_journeys: unknown
+      failed_journeys: unknown
+      unknown_outcomes: unknown
+      evidence_state: unavailable
+    - track_id: build-agent
+      provisioned_seats: 30
+      activated_journeys: unknown
+      successful_journeys: unknown
+      failed_journeys: unknown
+      unknown_outcomes: unknown
+      evidence_state: unavailable
+    - track_id: agent-framework
+      provisioned_seats: 30
+      activated_journeys: unknown
+      successful_journeys: unknown
+      failed_journeys: unknown
+      unknown_outcomes: unknown
+      evidence_state: unavailable
+  platform_lifecycle:
+    measurement_state: unavailable
+    orders_requested: 3
+    seats_requested: 90
+    seats_ready: unknown
+    seats_reclaimed: unknown
+    provisioning_p95_seconds: unknown
+    reclaim_p95_seconds: unknown
+    human_interventions: unknown
+    residue_count: unknown
+  cost_allocation:
+    measurement_state: unavailable
+    allocation_basis: successful_journey
+    shared_platform_cost_usd: unknown
+    delivery_cost_usd: unknown
+    allocated_inference_cost_usd: unknown
+    unallocated_cost_usd: unknown
+    cost_center_ready: false
+    chargeback_ready: false
+
 economics:
   infrastructure_cost: unknown
   inference_cost: unknown

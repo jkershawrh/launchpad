@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jkershawrh/launchpad/schemas/vef/launchpad-pilot-claim.v1alpha2.schema.json",
+  "type": "object",
+  "required": ["schema_version", "proof_state", "value_eligible", "eligibility_gaps", "analytics", "claim"],
+  "properties": {
+    "schema_version": {"const": "launchpad.vef-pilot-claim.v1alpha2"},
+    "proof_state": {"enum": ["unproven", "directional", "decision-grade"]},
+    "value_eligible": {"type": "boolean"},
+    "eligibility_gaps": {"type": "array", "items": {"type": "string"}},
+    "analytics": {
+      "type": "object",
+      "required": ["analytics_ready", "chargeback_ready", "track_outcomes", "platform_lifecycle", "cost_allocation"],
+      "properties": {
+        "analytics_ready": {"type": "boolean"},
+        "chargeback_ready": {"type": "boolean"},
+        "track_outcomes": {"type": "array", "minItems": 1},
+        "platform_lifecycle": {"type": "object"},
+        "cost_allocation": {
+          "type": "object",
+          "required": ["measurement_state", "allocation_basis", "total_allocated_cost_usd", "unallocated_cost_usd", "cost_per_successful_journey_usd"]
+        }
+      }
+    },
+    "claim": {"type": "object"}
+  }
+}
