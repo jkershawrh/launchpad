@@ -1,0 +1,55 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-candidate-access-proof/v1",
+  "cluster_ref": "flightpath",
+  "namespace": "launchpad-flightpath-candidate",
+  "observed_at": "2026-09-22",
+  "mutates_cluster": false,
+  "contains_plaintext_credentials": false,
+  "internal_service_checks": {
+    "backend_health": {"status": 200, "passed": true},
+    "requester_root": {"status": 200, "passed": true},
+    "admin_root": {"status": 200, "passed": true}
+  },
+  "deployment_checks": {
+    "backend": {"ready": 2, "expected": 2, "passed": true},
+    "partner-portal": {"ready": 2, "expected": 2, "passed": true},
+    "admin": {"ready": 2, "expected": 2, "passed": true}
+  },
+  "route_checks": {
+    "requester": {
+      "host": "launchpad-candidate.apps.flightpath.fm2aihpcsed.com",
+      "admitted": true,
+      "oauth_redirect_reference": true
+    },
+    "admin": {
+      "host": "launchpad-admin-candidate.apps.flightpath.fm2aihpcsed.com",
+      "admitted": true,
+      "oauth_redirect_reference": true
+    },
+    "api": {
+      "host": "launchpad-api-candidate.apps.flightpath.fm2aihpcsed.com",
+      "admitted": true,
+      "oauth_redirect_reference": true
+    }
+  },
+  "browser_gate": {
+    "trusted_tls": false,
+    "observed_error": "ERR_CERT_AUTHORITY_INVALID",
+    "certificate_subject": "CN=*.apps.flightpath.fm2aihpcsed.com",
+    "certificate_issuer": "CN=ingress-operator@1776985796",
+    "interpretation": "The application and OAuth boundary are reachable, but normal browsers reject the cluster-generated ingress certificate before the login journey can complete."
+  },
+  "public_access_gate": {
+    "PUBLIC_ACCESS_ENABLED": false,
+    "public_gateway_replicas": 0,
+    "passed": false,
+    "interpretation": "Public access remains intentionally disabled until Flightpath receives a trusted stable hostname or a separately certified tunnel endpoint."
+  },
+  "promotion_decision": {
+    "internal_components": "GREEN-live",
+    "requester_admin_browser_journey": "AMBER-infrastructure",
+    "public_participant_journey": "RED-not-enabled",
+    "cutover_allowed": false
+  },
+  "result": "AMBER"
+}
