@@ -1,0 +1,19 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-deployment-proof/v1",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "contains_plaintext_credentials": false,
+  "red": {
+    "condition": "Repeated steady-state kustomize apply attempted to mutate the completed database migration Job and OpenShift rejected its immutable pod template."
+  },
+  "green": {
+    "change": "Moved the one-shot migration Job into the bootstrap overlay and excluded it from the steady candidate overlay.",
+    "local_tests_passed": 10,
+    "steady_overlay_job_count": 0,
+    "bootstrap_overlay_job_count": 1,
+    "consecutive_live_applies": 2,
+    "immutable_errors": 0,
+    "apply_errors": 0
+  },
+  "result": "passed"
+}

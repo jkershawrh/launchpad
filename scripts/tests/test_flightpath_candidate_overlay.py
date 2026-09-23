@@ -204,8 +204,20 @@ def test_candidate_uses_immutable_images() -> None:
     assert all("@sha256:" in image for image in images)
 
 
-def test_candidate_has_an_explicit_database_migration_gate() -> None:
+def test_candidate_keeps_one_shot_migration_out_of_steady_state() -> None:
     documents = _render()
+    assert not [
+        document
+        for document in documents
+        if document.get("kind") == "Job"
+        and document.get("metadata", {})
+        .get("name", "")
+        .startswith("database-migrate-flightpath-candidate-")
+    ]
+
+
+def test_bootstrap_has_an_explicit_database_migration_gate() -> None:
+    documents = _render_bootstrap()
     migration = next(
         document
         for document in documents

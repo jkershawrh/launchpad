@@ -8,7 +8,6 @@ resources:
   - candidate-clusters.yaml
   - candidate-rbac.yaml
   - candidate-maas.yaml
-  - migration-job.yaml
 
 configMapGenerator:
   - name: flightpath-candidate-serve-llms-catalog
