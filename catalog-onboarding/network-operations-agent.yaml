@@ -11,12 +11,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
+    revision: 4ae303791d2b0060d0a198852f16dc6ef4ffefa4
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
+    revision: 4ae303791d2b0060d0a198852f16dc6ef4ffefa4
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -24,10 +24,10 @@ runtime:
     helm_values:
       image:
         repository: quay.io/rh-ee-jkershaw/network-operations-agent
-        digest: sha256:9ff998baca7da7f663d55e6055b7bd8019a54f1d91710fd783ae8c0bd6030e0e
+        digest: sha256:8595d9a490b6d300ca9d821249e97b5d5634239012c91decede7995f60228bbb
       route:
         enabled: true
-        name: network-operations-workspace
+        name: netops
     runtime_secret_name: network-operations-model-runtime
     runtime_secret_value_path: model.existingSecret
     runtime_secret_sources:

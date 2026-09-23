@@ -2,7 +2,7 @@ catalog_item_id: network-operations-agent
 display_name: Evidence-Backed Network Operations Agent
 description: Investigate a simulated telecom network alarm with an evidence-backed agent, internal MCP diagnostics, and shared CPU model inference.
 category: guided_build
-version: 0.1.0-flightpath.1
+version: 0.1.0-arena.1
 status: active
 required_capabilities: [openshift, showroom, model_endpoint]
 default_hardware_profile: xeon-basic
@@ -16,7 +16,7 @@ metadata:
   showroom: true
   operator_workshop: true
   content_only: false
-  workshop_cluster_ref: flightpath
+  workshop_cluster_ref: arena
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/network-operations-agent.yaml
   certification_stage: one-seat-candidate
@@ -45,7 +45,7 @@ metadata:
   workspace_route_name: netops
   workspace_title: Network Operations Workspace
   required_models: [granite-3.2-8b-tools]
-  inference_endpoint: litellm_virtual_key_candidate
+  inference_endpoint: litellm
   seat_cpu_millicores: 100
   seat_memory_mib: 256
   seat_pods: 2
@@ -71,8 +71,7 @@ metadata:
   workload_runtime_secret_name: network-operations-model-runtime
   workload_runtime_secret_sources:
     endpoint:
-      source: model_endpoint
-      model: granite-3.2-8b-tools
+      source: maas_api_url
     name:
       source: requested_model
     api-key:

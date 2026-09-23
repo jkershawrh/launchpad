@@ -26,7 +26,7 @@ supported_branding:
 metadata:
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
-  showroom_content_ref: a434608fe25fe6c5591d095680f622ea91c6f6a4
+  showroom_content_ref: 4ae303791d2b0060d0a198852f16dc6ef4ffefa4
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -78,7 +78,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/network-operations-agent.git
-  workload_revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
+  workload_revision: 4ae303791d2b0060d0a198852f16dc6ef4ffefa4
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -88,10 +88,10 @@ metadata:
   workload_helm_values:
     image:
       repository: quay.io/rh-ee-jkershaw/network-operations-agent
-      digest: sha256:9ff998baca7da7f663d55e6055b7bd8019a54f1d91710fd783ae8c0bd6030e0e
+      digest: sha256:8595d9a490b6d300ca9d821249e97b5d5634239012c91decede7995f60228bbb
     route:
       enabled: true
-      name: network-operations-workspace
+      name: netops
   workload_ignore_differences: []
   workload_runtime_secret_name: network-operations-model-runtime
   workload_runtime_secret_sources:
@@ -107,7 +107,7 @@ metadata:
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/network-operations-agent.git
-  source_content_revision: a434608fe25fe6c5591d095680f622ea91c6f6a4
+  source_content_revision: 4ae303791d2b0060d0a198852f16dc6ef4ffefa4
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1
