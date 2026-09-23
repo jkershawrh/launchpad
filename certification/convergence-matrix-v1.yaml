@@ -173,9 +173,18 @@ scenarios:
   conditional_dimensions: [public_private_boundary, legal_license, community_governance, enterprise_compatibility]
   outcome: OSS and enterprise distributions share versioned APIs and extension points, pass compatibility and upgrade tests, and retain distinct support, branding, and configuration boundaries.
 - <<: *scenario_defaults
+  id: immutable-candidate-identity
+  owner: convergence-release
+  participating_streams: [convergence-release, automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai]
+  contracts: [convergence-candidate-v1, catalog-package-v1, artifact-policy-v1, production-readiness-v1]
+  state: green-local
+  methods: {tdd: green-local, edd: green-local, cdd: green-local, bdd: green-local, cbt: green-local}
+  evidence: [evidence/runs/convergence/green-local-20260922.json]
+  outcome: One immutable platform revision is bound to exact catalog source revisions, shared contracts, hashed evidence, named blockers, and approval-gated sequential promotion.
+- <<: *scenario_defaults
   id: end-to-end-staged-release
   owner: convergence-release
   participating_streams: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, ai-control-plane-gateway, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, organizational-readiness, convergence-release]
-  contracts: [catalog-package-v1, artifact-policy-v1, event-manifest-v1, cluster-profile-v1, ai-control-plane-gateway-v1, public-access-v2, admin-observability-v1, lifecycle-evidence-v1, control-plane-recovery-v1, production-readiness-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1, organizational-readiness-v1]
+  contracts: [catalog-package-v1, artifact-policy-v1, event-manifest-v1, cluster-profile-v1, ai-control-plane-gateway-v1, public-access-v2, admin-observability-v1, lifecycle-evidence-v1, control-plane-recovery-v1, production-readiness-v1, convergence-candidate-v1, sre-operating-model-v1, data-ai-governance-v1, gtm-value-attribution-v1, organizational-readiness-v1]
   release_dimensions: [product_value, commercial_readiness, service_ownership, organizational_readiness, legal_compliance]
   outcome: One unchanged candidate advances only through earned gates and completes usability, scale, performance, operations, governance, commercial, failure, rollback, and zero-residue reclaim proof.

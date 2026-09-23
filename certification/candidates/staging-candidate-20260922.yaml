@@ -25,7 +25,7 @@ contracts:
   data_ai_governance: 1.0.0
 evidence:
   - path: evidence/runs/convergence/green-local-20260922.json
-    sha256: dce19d416ac774f85ea4190486f1e1219914c2cf224f03a0354ece4dac15480d
+    sha256: 743f5246645cfcdaebaf633651ba7e0242bc2c8afc8d2954c3227c49c0a2831a
 blockers_to_green_integration:
   - publish-and-verify-candidate-commit
   - producer-consumer-contract-suite

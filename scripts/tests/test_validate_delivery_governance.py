@@ -38,7 +38,7 @@ def test_repository_delivery_governance_is_valid():
     assert report["stream_count"] == 15
     assert report["initial_active_count"] == 4
     assert report["convergence_stream"] == "convergence-release"
-    assert report["contract_count"] == 15
+    assert report["contract_count"] == 16
     assert report["scenario_count"] >= 24
 
 

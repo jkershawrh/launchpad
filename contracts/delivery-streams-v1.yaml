@@ -96,6 +96,11 @@ contracts:
   owner: convergence-release
   path: contracts/production-readiness-v1.yaml
   consumers: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success]
+- id: convergence-candidate-v1
+  version: 1.0.0
+  owner: convergence-release
+  path: contracts/convergence-candidate-v1.yaml
+  consumers: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai]
 - id: sre-operating-model-v1
   version: 1.0.0
   owner: observability-finops
@@ -253,7 +258,7 @@ streams:
   kind: convergence
   initially_active: false
   depends_on: [automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, ai-control-plane-gateway, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai, product-gtm-customer-success, organizational-readiness]
-  owned_paths: [contracts/production-readiness-v1.yaml, certification/convergence-matrix-v1.yaml, .github/workflows/]
+  owned_paths: [contracts/production-readiness-v1.yaml, contracts/convergence-candidate-v1.yaml, certification/convergence-matrix-v1.yaml, certification/candidates/, .github/workflows/]
   entry_gate: Candidate contracts are frozen and every participating stream supplies required local evidence.
   exit_gate: The unchanged candidate earns its declared promotion stage through usable production-shaped tests and retains tested rollback evidence.
   live_mutation_policy: approval-gated
