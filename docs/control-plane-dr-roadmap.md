@@ -68,14 +68,20 @@ The following remain RED and prevent a DR claim:
   each have only one Ready replica while `gnr2` is unavailable. That is a pilot
   availability risk, not a completed HA topology.
 
-On September 23, an isolated one-seat Flightpath candidate proved scheduled
-TTL reclamation for `intel-llm-cpu-serving`: the seat reached ready, Showroom
-returned 200, the five-minute scheduler reclaimed it without a manual reclaim
-call, its MaaS key was revoked, and the namespace plus all labeled resources
-reached zero. This is component canary evidence, not public-access, migration,
-HA, or DR certification. The run also exposed an aware-versus-naive timestamp
-comparison defect; the regression fix is source-complete but must be built,
-deployed, and rerun before it can be counted as live closure.
+On September 23, an isolated Flightpath candidate first proved scheduled TTL
+reclamation for `intel-llm-cpu-serving`, which exposed an aware-versus-naive
+timestamp comparison defect. The fix was then built into immutable backend
+image digest `sha256:2bd7996ed013f2138c85c4922aee4610a1019d0f5929dc5f4a4580db04f5fc71`
+and deployed only to the candidate namespace. Candidate 03 subsequently
+provisioned one ready internal seat for each pilot catalog, returned HTTP 200
+from all three Showrooms, passed every declared pod and route validation, and
+completed live calls through both registered candidate models. A real
+five-minute scheduler cycle accepted timezone-aware expiration values,
+reclaimed all three workshop orders without a manual reclaim call, scrubbed
+their MaaS keys and service-account tokens, and left zero namespaces or labeled
+resources. This closes the internal three-catalog lifecycle component gate. It
+does not certify public access, participant browser journeys, production-shaped
+load, database recovery, control-plane migration, HA, or DR.
 
 ## Incident decision tree
 

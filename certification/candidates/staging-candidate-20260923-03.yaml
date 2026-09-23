@@ -1,0 +1,53 @@
+schema_version: launchpad.redhat.com/convergence-candidate/v1
+candidate_id: launchpad-staging-20260923-03
+current_stage: green-integration
+platform:
+  repository: https://github.com/jkershawrh/launchpad.git
+  revision: ceb39217e57acf78b0c724f95aadd286e68c9793
+  backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:2bd7996ed013f2138c85c4922aee4610a1019d0f5929dc5f4a4580db04f5fc71
+catalog_releases:
+  - catalog_id: intel-llm-cpu-serving
+    version: 1.0.11
+    showroom_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+    workload_revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
+    effective_release:
+      version: 1.0.12-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml
+      manifest_sha256: efcc5ee68bad479977e90ff728f5de3d6508444d5928b4d2e0419cfc7a1be348
+  - catalog_id: intel-xeon6-agent-201
+    version: 1.0.7
+    showroom_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+    workload_revision: 2f94711efc01384ee4c334caa1720e2962180b14
+    effective_release:
+      version: 1.0.8-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml
+      manifest_sha256: 7a6f799eddb1f970943610c8d35a885f682feea8237ca414c1b7ecef18e5f0a8
+  - catalog_id: multi-agent-quickstart
+    version: 0.2.14
+    showroom_revision: b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3
+    workload_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+    effective_release:
+      version: 0.2.15-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml
+      manifest_sha256: 1d7433a4593c2c9665a43a97ec6cd88d782ede86f495c9d660887df1e1d74900
+contracts:
+  delivery_streams: 1.0.0
+  convergence_matrix: 1.0.0
+  production_readiness: 1.0.0
+  sre_operating_model: 1.0.0
+  data_ai_governance: 1.0.0
+evidence:
+  - path: evidence/runs/convergence/flightpath-three-catalog-auto-reclaim-20260923.json
+    sha256: d9ef787fd992332c0c1f8a450e966d6cf6f64e962cf3ed6b62b8aa7d056d8c4e
+blockers_to_green_canary:
+  - exact-release-public-claim-and-participant-browser-journey-per-catalog
+  - public-identity-expiry-and-zero-residue
+blockers_to_green_staging:
+  - production-shaped-5-and-30-seat-profiles
+  - load-spike-stress-endurance-and-soak
+  - security-and-cross-tenant-negative-tests
+  - database-backup-restore-and-rollback
+approval:
+  required: true
+  approved_by: Jonathan Kershaw
+  approved_at: "2026-09-23T17:51:55Z"

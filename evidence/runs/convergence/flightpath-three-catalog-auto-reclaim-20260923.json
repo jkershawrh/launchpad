@@ -1,0 +1,96 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-evidence/v1",
+  "candidate_id": "launchpad-staging-20260923-03",
+  "stage": "green-integration",
+  "recorded_at": "2026-09-23T17:51:55Z",
+  "source": {
+    "platform_revision": "ceb3921",
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:2bd7996ed013f2138c85c4922aee4610a1019d0f5929dc5f4a4580db04f5fc71",
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath"
+  },
+  "scope": {
+    "tenant_id": "flightpath-candidate-cert",
+    "seat_count_per_catalog": 1,
+    "exposure_policy": "internal",
+    "catalogs": [
+      {
+        "catalog_id": "intel-llm-cpu-serving",
+        "workshop_id": "504dfee9-ce47-4595-a89f-d05ba9ae68c0",
+        "session_id": "d4e9e359-39d4-4c6f-9e8a-db557480cba7"
+      },
+      {
+        "catalog_id": "intel-xeon6-agent-201",
+        "workshop_id": "1b3aede4-e683-413f-8c7e-66f58bbfbc4a",
+        "session_id": "ef0c516a-de7d-473f-ba1d-1c38b97c52f8"
+      },
+      {
+        "catalog_id": "multi-agent-quickstart",
+        "workshop_id": "a3d5510b-e365-4f26-8d65-2780898f710f",
+        "session_id": "ca19f7ba-21d9-4c3b-aae7-8f37756993a3"
+      }
+    ]
+  },
+  "results": {
+    "release_tests": {
+      "status": "passed",
+      "tests": 32
+    },
+    "capacity_preview": {
+      "status": "passed",
+      "all_catalogs_eligible": true,
+      "selected_cluster": "flightpath"
+    },
+    "provisioning": {
+      "status": "passed",
+      "workshops_ready": 3,
+      "seats_ready": 3,
+      "failed_seats": 0,
+      "all_declared_validation_checks": "pass",
+      "showroom_http_statuses": [200, 200, 200],
+      "routes_admitted": 5,
+      "pod_container_readiness": ["3/3", "3/3", "7/7", "4/4"]
+    },
+    "model_execution": {
+      "status": "passed",
+      "granite-2b-cpu": "HTTP 200; READY",
+      "granite-3.2-8b-tools": "HTTP 200; READY"
+    },
+    "automatic_ttl_reclaim": {
+      "status": "passed",
+      "timezone_aware_expiration": "2026-09-23T17:44:13.434537+00:00",
+      "scheduler": "five-minute CronJob",
+      "scheduler_image_matches_backend": true,
+      "scheduler_last_successful_time": "2026-09-23T17:50:07Z",
+      "manual_reclaim_invoked": false,
+      "workshops_completed": 3,
+      "sessions_reclaimed": 3
+    },
+    "credential_cleanup": {
+      "status": "passed",
+      "maas_keys_cleared": 3,
+      "service_account_tokens_cleared": 3
+    },
+    "zero_residue": {
+      "status": "passed",
+      "namespaces": 0,
+      "deployments_services_routes_secrets_pvcs_rolebindings": 0
+    },
+    "control_plane_after_reclaim": {
+      "status": "passed",
+      "backend_ready": "1/1",
+      "lifecycle_worker_ready": "1/1",
+      "postgres_ready": "1/1",
+      "maas_ready": "1/1"
+    }
+  },
+  "boundaries": {
+    "production_workshops_mutated": false,
+    "arena_mutated": false,
+    "brutus_mutated": false,
+    "public_access_tested": false,
+    "participant_browser_journey_tested": false,
+    "database_backup_restore_tested": false,
+    "promotion_claim": "This proves isolated internal one-seat provisioning and automatic reclamation for all three pilot catalogs on the immutable Flightpath candidate."
+  }
+}
