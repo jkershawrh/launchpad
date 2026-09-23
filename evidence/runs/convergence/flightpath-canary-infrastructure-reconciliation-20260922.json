@@ -1,0 +1,59 @@
+{
+  "schema": "launchpad.redhat.com/convergence-canary-reconciliation/v1",
+  "candidate_id": "launchpad-staging-20260922-01",
+  "candidate_platform_revision": "4f8d68b80e4d7cbb8edae96728536d2f9d44ca26",
+  "recorded_at": "2026-09-23T03:35:00Z",
+  "cluster_ref": "flightpath",
+  "mutated_cluster": false,
+  "result": "GREEN-canary-infrastructure; participant public claim/resume/restart remains open",
+  "read_only_preflight": {
+    "api_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "nodes_ready": 6,
+    "nodes_schedulable": 6,
+    "worker_nodes_ready": 3,
+    "candidate_namespace": "launchpad-flightpath-candidate",
+    "candidate_long_running_workloads_ready": "6/6",
+    "candidate_workload_restarts": 0,
+    "database_migration_job": "Succeeded",
+    "static_catalog_contracts": "3/3 passed",
+    "anonymous_registry_manifest_probes": "3/3 passed",
+    "external_candidate_routes": "reachable and authentication-protected (HTTP 403 without a user session)"
+  },
+  "effective_catalog_releases": {
+    "intel-llm-cpu-serving": "1.0.12-flightpath.1",
+    "intel-xeon6-agent-201": "1.0.8-flightpath.1",
+    "multi-agent-quickstart": "0.2.15-flightpath.1"
+  },
+  "live_proof_reused": [
+    {
+      "path": "evidence/runs/flightpath-serve-llms-25-seat-reproducible-2026-09-22.json",
+      "scope": "25 simultaneous complete RAG journeys, trusted route matrix, bulk reclaim, zero residue"
+    },
+    {
+      "path": "evidence/runs/flightpath-build-agent-25-seat-2026-09-22.json",
+      "scope": "one, five, and 25-seat agent journeys, authorization isolation, bulk reclaim, zero residue"
+    },
+    {
+      "path": "evidence/runs/flightpath-multi-agent-25-seat-2026-09-22.json",
+      "scope": "one, five, and 25-seat multi-agent journeys, semantic routing, guardrails, bulk reclaim, zero residue"
+    },
+    {
+      "path": "evidence/runs/flightpath-candidate-steady-apply-2026-09-22.json",
+      "scope": "two consecutive idempotent candidate applies"
+    }
+  ],
+  "artifact_binding": {
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:b65773f81f400cbf71f1c6e104a246e2d798bdfe3e333bf2879393beef8c4ac1",
+    "portal_image": "quay.io/rh-ee-jkershaw/launchpad-portal@sha256:84358765ab9c78258fbba8ddb50791dcff69578b7c2fc6a822758d25c4b7f71d",
+    "admin_image": "quay.io/rh-ee-jkershaw/launchpad-admin@sha256:b599a1d7b75005c55ce32fbe51db86d1aa3e8c0946260d0310dfa700f55acb29",
+    "candidate_maas_image": "ghcr.io/berriai/litellm@sha256:9d60771c86a42ced1b918f23dd940a1ac9905ddb02a4fae779cfe1937477c9a0",
+    "live_images_match_candidate_overlay": true
+  },
+  "not_proven_by_this_record": [
+    "public participant claim for each catalog",
+    "participant resume after leaving the lab",
+    "participant restart recovery",
+    "green-staging load, stress, soak, security, upgrade, restore, and rollback gates"
+  ],
+  "promotion_decision": "retain green-integration until the remaining public participant canary delta is executed"
+}

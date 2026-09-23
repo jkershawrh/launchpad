@@ -35,6 +35,15 @@ def _catalog_identity(path: Path) -> dict[str, str]:
     }
 
 
+def _effective_catalog_identity(path: Path) -> dict[str, str]:
+    source = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return {
+        "version": str(source["version"]),
+        "manifest_path": str(path.relative_to(ROOT)),
+        "manifest_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+    }
+
+
 def validate(candidate: dict[str, Any], *, root: Path = ROOT) -> dict[str, Any]:
     _require(
         candidate.get("schema_version")
@@ -62,7 +71,20 @@ def validate(candidate: dict[str, Any], *, root: Path = ROOT) -> dict[str, Any]:
     _require(set(declared) == required, "candidate must bind exactly the three pilot catalogs")
     for catalog_id in sorted(required):
         actual = _catalog_identity(root / "catalog-onboarding" / f"{catalog_id}.yaml")
-        _require(declared[catalog_id] == actual, f"catalog identity drift: {catalog_id}")
+        item = declared[catalog_id]
+        source_identity = {key: item.get(key) for key in actual}
+        _require(source_identity == actual, f"catalog identity drift: {catalog_id}")
+        effective = item.get("effective_release") or {}
+        effective_path = root / effective.get("manifest_path", "missing")
+        _require(
+            effective_path.is_file(),
+            f"effective catalog manifest is missing: {catalog_id}",
+        )
+        actual_effective = _effective_catalog_identity(effective_path)
+        _require(
+            effective == actual_effective,
+            f"effective catalog identity drift: {catalog_id}",
+        )
 
     evidence = candidate.get("evidence") or []
     _require(evidence, "candidate requires evidence")

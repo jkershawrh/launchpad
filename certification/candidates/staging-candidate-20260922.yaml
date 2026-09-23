@@ -9,14 +9,26 @@ catalog_releases:
     version: 1.0.11
     showroom_revision: 5292234017bf3f538767e6b6a3c627d146fca086
     workload_revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
+    effective_release:
+      version: 1.0.12-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml
+      manifest_sha256: efcc5ee68bad479977e90ff728f5de3d6508444d5928b4d2e0419cfc7a1be348
   - catalog_id: intel-xeon6-agent-201
     version: 1.0.7
     showroom_revision: 5292234017bf3f538767e6b6a3c627d146fca086
     workload_revision: 2f94711efc01384ee4c334caa1720e2962180b14
+    effective_release:
+      version: 1.0.8-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml
+      manifest_sha256: 7a6f799eddb1f970943610c8d35a885f682feea8237ca414c1b7ecef18e5f0a8
   - catalog_id: multi-agent-quickstart
     version: 0.2.14
     showroom_revision: b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3
     workload_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+    effective_release:
+      version: 0.2.15-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml
+      manifest_sha256: 1d7433a4593c2c9665a43a97ec6cd88d782ede86f495c9d660887df1e1d74900
 contracts:
   delivery_streams: 1.0.0
   convergence_matrix: 1.0.0
@@ -28,13 +40,15 @@ evidence:
     sha256: 743f5246645cfcdaebaf633651ba7e0242bc2c8afc8d2954c3227c49c0a2831a
   - path: evidence/runs/convergence/green-integration-pending-approval-20260922.json
     sha256: 1768b829585b0d59b9f90a0826cba205fdc9f3ab0e3768b901e9d7039987a8fe
+  - path: evidence/runs/convergence/flightpath-canary-infrastructure-reconciliation-20260922.json
+    sha256: 3a673916aeb53c223fb7b4d142f23b7c98f1b4e529c389ed407c1079f356eee9
 blockers_to_green_integration:
   - publish-and-verify-candidate-commit
   - producer-consumer-contract-suite
   - isolated-complete-requester-participant-instructor-admin-journeys
 blockers_to_green_canary:
-  - one-fresh-seat-per-pilot-catalog
-  - claim-learn-execute-resume-restart-and-zero-residue-reclaim
+  - public-claim-resume-and-restart-per-pilot-catalog
+  - bind-participant-journey-evidence-to-effective-flightpath-releases
 blockers_to_green_staging:
   - production-shaped-1-5-and-30-seat-profiles
   - load-spike-stress-endurance-and-soak
