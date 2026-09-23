@@ -1,0 +1,94 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-catalog-repeatability/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "certification_stage": "twenty-five-seat-three-run-repeatability",
+  "source_commit": "00f07a8265579efd77964b390d65368999a1523a",
+  "workload_image_digest": "sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0",
+  "maas_image_digest": "sha256:9d60771c86a42ced1b918f23dd940a1ac9905ddb02a4fae779cfe1937477c9a0",
+  "contains_plaintext_credentials": false,
+  "runs": [
+    {
+      "run": 1,
+      "workshop_id": "6c0e320f-d6a1-4e8f-95c5-2e10de6c31c1",
+      "provision_duration_seconds": 973.252,
+      "provision_attempts": 1,
+      "journeys_passed": 25,
+      "journeys_failed": 0,
+      "latency_ms_min": 2287.88,
+      "latency_ms_p95": 2422.74,
+      "latency_ms_max": 2436.23,
+      "authorization_passed": 25,
+      "reclaim_duration_seconds": 99.360,
+      "reclaim_attempts": 1,
+      "keys_revoked": 25,
+      "namespaces_remaining": 0,
+      "applications_remaining": 0
+    },
+    {
+      "run": 2,
+      "workshop_id": "d7b99f8c-1daf-4060-b235-e2b51c26609a",
+      "provision_duration_seconds": 958.726,
+      "provision_attempts": 1,
+      "journeys_passed": 25,
+      "journeys_failed": 0,
+      "latency_ms_min": 2161.21,
+      "latency_ms_p95": 2243.90,
+      "latency_ms_max": 2328.35,
+      "authorization_passed": 25,
+      "reclaim_duration_seconds": 99.995,
+      "reclaim_attempts": 1,
+      "keys_revoked": 25,
+      "namespaces_remaining": 0,
+      "applications_remaining": 0
+    },
+    {
+      "run": 3,
+      "workshop_id": "dd897f4c-c7bf-4f6e-877d-c50c281fe21b",
+      "provision_duration_seconds": 977.256,
+      "provision_attempts": 1,
+      "journeys_passed": 25,
+      "journeys_failed": 0,
+      "latency_ms_min": 2533.98,
+      "latency_ms_p95": 2656.99,
+      "latency_ms_max": 2664.99,
+      "authorization_passed": 25,
+      "reclaim_duration_seconds": 100.178,
+      "reclaim_attempts": 1,
+      "keys_revoked": 25,
+      "namespaces_remaining": 0,
+      "applications_remaining": 0
+    }
+  ],
+  "aggregate": {
+    "runs_passed": 3,
+    "runs_failed": 0,
+    "seats_provisioned": 75,
+    "journeys_passed": 75,
+    "journeys_failed": 0,
+    "authorization_passed": 75,
+    "keys_issued": 75,
+    "keys_revoked": 75,
+    "average_provision_duration_seconds": 969.745,
+    "average_reclaim_duration_seconds": 99.844,
+    "final_namespaces_remaining": 0,
+    "final_applications_remaining": 0
+  },
+  "promotion_findings": [
+    {
+      "severity": "performance-debt",
+      "description": "Serialized 25-seat provisioning is reliable but averages 16.16 minutes."
+    },
+    {
+      "severity": "deployment-debt",
+      "description": "The completed database migration Job is immutable during repeated kustomize apply and needs hook or revision-safe lifecycle handling."
+    },
+    {
+      "severity": "operations-debt",
+      "description": "The candidate MaaS database and secret bootstrap must become an automated external-secret or sealed-secret workflow before promotion."
+    }
+  ],
+  "next_gate": "promotion-review",
+  "result": "passed"
+}
