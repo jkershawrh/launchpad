@@ -42,13 +42,15 @@ evidence:
     sha256: 1768b829585b0d59b9f90a0826cba205fdc9f3ab0e3768b901e9d7039987a8fe
   - path: evidence/runs/convergence/flightpath-canary-infrastructure-reconciliation-20260922.json
     sha256: 3a673916aeb53c223fb7b4d142f23b7c98f1b4e529c389ed407c1079f356eee9
+  - path: evidence/runs/convergence/flightpath-public-retained-reconciliation-20260922.json
+    sha256: a89501ec5a92707d1592f5b25b08fe579ddb1932643527578d310b282c8a1585
 blockers_to_green_integration:
   - publish-and-verify-candidate-commit
   - producer-consumer-contract-suite
   - isolated-complete-requester-participant-instructor-admin-journeys
 blockers_to_green_canary:
-  - public-claim-resume-and-restart-per-pilot-catalog
-  - bind-participant-journey-evidence-to-effective-flightpath-releases
+  - unified-exact-release-public-claim-learn-execute-resume-restart-and-reclaim-per-catalog
+  - zero-residue-after-unified-public-canaries
 blockers_to_green_staging:
   - production-shaped-1-5-and-30-seat-profiles
   - load-spike-stress-endurance-and-soak

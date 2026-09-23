@@ -1,0 +1,70 @@
+{
+  "schema": "launchpad.redhat.com/convergence-public-retained-reconciliation/v1",
+  "candidate_id": "launchpad-staging-20260922-01",
+  "recorded_at": "2026-09-23T04:10:00Z",
+  "mutated_cluster": false,
+  "privacy_boundary": "No participant email, instructor code, identity identifier, token, or credential was read or exported.",
+  "architecture": {
+    "public_origin": "https://labs.smg-helix.ai",
+    "control_plane": "arena",
+    "execution_cluster": "flightpath",
+    "identity_and_entitlements": "central Arena Keycloak and Launchpad public-access service",
+    "placement_contract": "persisted target_cluster=flightpath",
+    "new_dns_or_tunnel_required": false
+  },
+  "capacity_previews": {
+    "intel-llm-cpu-serving": {
+      "can_provision": true,
+      "selected_cluster": "flightpath",
+      "calculated_max_seats": 67,
+      "requested_seats": 1
+    },
+    "intel-xeon6-agent-201": {
+      "can_provision": true,
+      "selected_cluster": "flightpath",
+      "calculated_max_seats": 44,
+      "requested_seats": 1
+    },
+    "multi-agent-quickstart": {
+      "can_provision": true,
+      "selected_cluster": "flightpath",
+      "calculated_max_seats": 67,
+      "requested_seats": 1
+    }
+  },
+  "retained_public_workshops": [
+    {"workshop_id": "9d01773b-23b1-4cff-84e6-a0dc2f3ec2ff", "catalog_id": "intel-llm-cpu-serving", "seats": 30, "claimed": 20, "enabled": true},
+    {"workshop_id": "10e88065-23d5-4f12-97c4-4002928621bf", "catalog_id": "intel-llm-cpu-serving", "seats": 30, "claimed": 25, "enabled": true},
+    {"workshop_id": "7452eba7-fde4-4692-859c-9bd4847c6fae", "catalog_id": "intel-xeon6-agent-201", "seats": 30, "claimed": 13, "enabled": true},
+    {"workshop_id": "7e826ef7-8204-4c9a-b45d-ebae6ec43697", "catalog_id": "intel-xeon6-agent-201", "seats": 30, "claimed": 22, "enabled": true},
+    {"workshop_id": "fc3cab02-560e-45e6-90bb-735033e23d70", "catalog_id": "multi-agent-quickstart", "seats": 30, "claimed": 14, "enabled": true},
+    {"workshop_id": "984a4d3a-801f-449b-891c-d32989892ef0", "catalog_id": "multi-agent-quickstart", "seats": 30, "claimed": 18, "enabled": true}
+  ],
+  "totals": {
+    "workshops": 6,
+    "seats": 180,
+    "claimed": 112,
+    "unclaimed": 68,
+    "claim_percent": 62.2,
+    "all_access_policies_enabled": true
+  },
+  "prior_event_evidence": {
+    "path": "docs/september-17-pilot-postmortem.json",
+    "flightpath_claims_at_snapshot": 107,
+    "all_event_claims_at_snapshot": 191,
+    "post_snapshot_entitlements": 195,
+    "unique_pseudonymous_identities": 67,
+    "identities_accessing_all_three_catalogs": 47,
+    "identities_reentering_same_workshop": 12,
+    "successful_authorization_checks": 22582
+  },
+  "proof_composition": {
+    "public_claim_and_post_event_access_on_flightpath": "GREEN-live",
+    "same-workshop claim recovery": "GREEN-live",
+    "exact effective release functional journeys": "GREEN-live internal",
+    "exact effective release bulk reclaim and zero residue": "GREEN-live internal",
+    "durable participant state across process restart": "GREEN-integration PostgreSQL",
+    "unified exact-release public browser journey": "OPEN"
+  },
+  "release_decision": "Do not create duplicate canaries or restart the single-replica Arena backend. Retain green-integration until one unified public journey per exact effective release proves claim, learn, execute, resume, restart, and zero-residue reclaim."
+}
