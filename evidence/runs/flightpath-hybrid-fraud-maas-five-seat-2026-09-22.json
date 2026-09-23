@@ -1,0 +1,68 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-catalog-certification/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "certification_stage": "five-seat-candidate",
+  "launchpad_commit": "ddd4b10",
+  "source_repository": "https://github.com/jkershawrh/hybrid-fraud-detection",
+  "source_commit": "00f07a8265579efd77964b390d65368999a1523a",
+  "workload_image_digest": "sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0",
+  "maas_image_digest": "sha256:9d60771c86a42ced1b918f23dd940a1ac9905ddb02a4fae779cfe1937477c9a0",
+  "contains_plaintext_credentials": false,
+  "gate": {
+    "workshop_id": "a17f267a-669d-4b86-a3cf-b8079030f09e",
+    "requested": 5,
+    "provisioned": 5,
+    "ready": 5,
+    "failures": 0,
+    "provision_duration_seconds": 198.094,
+    "distinct_virtual_keys": 5,
+    "distinct_virtual_key_ids": 5,
+    "attribution_mode_passed": 5,
+    "concurrent_journeys": {
+      "passed": 5,
+      "failed": 0,
+      "health_http_200": 5,
+      "readiness_http_200": 5,
+      "score_http_200": 5,
+      "live_llm_calls": 5,
+      "model": "granite-3.2-8b-tools",
+      "latency_ms_min": 925.66,
+      "latency_ms_max": 999.09
+    },
+    "gitops": {
+      "applications": 10,
+      "synced": 10,
+      "healthy": 10
+    },
+    "routes": 15,
+    "showroom_seat_distribution": {
+      "fp1.fm2aihpcsed.com": 2,
+      "fp2.fm2aihpcsed.com": 2,
+      "fp3.fm2aihpcsed.com": 1
+    },
+    "authorization": {
+      "own_namespace_edit": "5/5",
+      "cross_namespace_read_denied": "5/5",
+      "node_list_denied": "5/5"
+    },
+    "reclaim": {
+      "status": "completed",
+      "duration_seconds": 33.126,
+      "sessions_reclaimed": 5,
+      "session_keys_cleared": 5,
+      "revocation_receipts": 5,
+      "revoked_keys_http_401": 5,
+      "namespaces_remaining": 0,
+      "applications_remaining": 0
+    }
+  },
+  "regression_suite": {
+    "test": "scripts/tests/test_flightpath_candidate_overlay.py",
+    "passed": 9,
+    "failed": 0
+  },
+  "next_gate": "twenty-five-seat-candidate",
+  "result": "passed"
+}
