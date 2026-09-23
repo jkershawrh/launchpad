@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from typing import List
 import os
 import time
 
@@ -27,20 +26,20 @@ class OpenShiftValidationAdapter:
             )
 
         if clients is None:
-          try:
-            config.load_incluster_config()
-          except config.ConfigException:
             try:
-                config.load_kube_config()
-            except config.ConfigException as exc:
-                raise ValueError(
-                    f"Unable to load Kubernetes configuration "
-                    f"(tried in-cluster and kubeconfig): {exc}"
-                ) from exc
+                config.load_incluster_config()
+            except config.ConfigException:
+                try:
+                    config.load_kube_config()
+                except config.ConfigException as exc:
+                    raise ValueError(
+                        f"Unable to load Kubernetes configuration "
+                        f"(tried in-cluster and kubeconfig): {exc}"
+                    ) from exc
 
-          self._core_v1 = client.CoreV1Api()
+            self._core_v1 = client.CoreV1Api()
         else:
-          self._core_v1 = clients.core
+            self._core_v1 = clients.core
         self._validation_attempts = max(
             1, int(os.environ.get("OPENSHIFT_VALIDATION_ATTEMPTS", "13"))
         )
@@ -49,8 +48,8 @@ class OpenShiftValidationAdapter:
         )
         self._sleep = time.sleep
 
-    def validate(self, session: LabSession) -> List[ValidationResult]:
-        results: List[ValidationResult] = []
+    def validate(self, session: LabSession) -> list[ValidationResult]:
+        results: list[ValidationResult] = []
         for attempt in range(self._validation_attempts):
             results = self._validate_once(session)
             transient = any(
@@ -69,8 +68,8 @@ class OpenShiftValidationAdapter:
             self._sleep(self._validation_interval)
         return results
 
-    def _validate_once(self, session: LabSession) -> List[ValidationResult]:
-        results: List[ValidationResult] = []
+    def _validate_once(self, session: LabSession) -> list[ValidationResult]:
+        results: list[ValidationResult] = []
         namespace = session.namespace
 
         if not namespace:
@@ -88,16 +87,12 @@ class OpenShiftValidationAdapter:
 
         routes = session.resources.get("routes", {})
         for route_name, route_url in routes.items():
-            results.append(
-                self._check_route_accessible(session.session_id, route_name, route_url)
-            )
+            results.append(self._check_route_accessible(session.session_id, route_name, route_url))
 
         return results
 
-    def _check_pod_status(
-        self, session_id: str, namespace: str
-    ) -> List[ValidationResult]:
-        results: List[ValidationResult] = []
+    def _check_pod_status(self, session_id: str, namespace: str) -> list[ValidationResult]:
+        results: list[ValidationResult] = []
         try:
             pod_list = self._core_v1.list_namespaced_pod(namespace)
             pods = [
@@ -120,14 +115,10 @@ class OpenShiftValidationAdapter:
             for pod in pods:
                 pod_name = pod.metadata.name
                 phase = pod.status.phase if pod.status else "Unknown"
-                container_statuses = (
-                    pod.status.container_statuses if pod.status else None
-                ) or []
+                container_statuses = (pod.status.container_statuses if pod.status else None) or []
 
                 all_ready = (
-                    all(cs.ready for cs in container_statuses)
-                    if container_statuses
-                    else False
+                    all(cs.ready for cs in container_statuses) if container_statuses else False
                 )
 
                 if phase == "Succeeded":
@@ -138,9 +129,7 @@ class OpenShiftValidationAdapter:
                     message = f"Pod {pod_name} is running and all containers ready"
                 elif phase == "Running":
                     status = ValidationResultStatus.FAIL
-                    message = (
-                        f"Pod {pod_name} is running but not all containers ready"
-                    )
+                    message = f"Pod {pod_name} is running but not all containers ready"
                 else:
                     status = ValidationResultStatus.FAIL
                     message = f"Pod {pod_name} is in phase {phase}"
@@ -165,7 +154,7 @@ class OpenShiftValidationAdapter:
                     evidence=f"{exc.status} {exc.reason}",
                 )
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - preserve validation evidence
             results.append(
                 ValidationResult(
                     session_id=session_id,
@@ -184,11 +173,14 @@ class OpenShiftValidationAdapter:
         route_name: str,
         route_url: str,
     ) -> ValidationResult:
-        tls_verify: bool | str = (
-            os.environ.get("REQUESTS_CA_BUNDLE")
-            or os.environ.get("SSL_CERT_FILE")
-            or True
-        )
+        verify_setting = os.environ.get("OPENSHIFT_ROUTE_TLS_VERIFY", "true").lower()
+        tls_verify: bool | str
+        if verify_setting in {"false", "0", "no"}:
+            tls_verify = False
+        else:
+            tls_verify = (
+                os.environ.get("REQUESTS_CA_BUNDLE") or os.environ.get("SSL_CERT_FILE") or True
+            )
         try:
             resp = httpx.get(
                 route_url,

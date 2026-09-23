@@ -1,0 +1,16 @@
+# On-prem MaaS Gateway: use the existing OpenShift router, not a pending
+# LoadBalancer Service. The OpenShift service CA signs the backend certificate.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-maas-gw-options
+  namespace: openshift-ingress
+  labels:
+    app.kubernetes.io/part-of: launchpad-maas-bootstrap
+data:
+  service: |
+    metadata:
+      annotations:
+        service.beta.openshift.io/serving-cert-secret-name: maas-gw-service-tls
+    spec:
+      type: ClusterIP

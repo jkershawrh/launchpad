@@ -1,0 +1,29 @@
+{
+  "activation_blockers": [
+    "Replace zero resource placeholders with measured per-seat resource measurements.",
+    "Review required capabilities, models, participant tabs, routes, identity, and runtime Secret sources.",
+    "Complete source, one-seat, five-seat, and twenty-five-seat certification gates before activation.",
+    "Review every unparsed manifest; templating or invalid YAML prevents complete static discovery.",
+    "Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.",
+    "Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved",
+    "Resolve Quickstart requirement with approved target evidence: manifest-unparsed"
+  ],
+  "activation_status": "blocked",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "checks": {
+    "catalog_drift": "not-run",
+    "intake_contract": "pass",
+    "showroom_build": "not-run",
+    "showroom_structure": "pass",
+    "workload_structure": "pass"
+  },
+  "errors": [],
+  "source_revisions": {
+    "showroom": "4f77a0db2ff199493be79f48b1b564e43c8d303d",
+    "workload": "4f77a0db2ff199493be79f48b1b564e43c8d303d"
+  },
+  "validation_status": "pass",
+  "warnings": [
+    "Source Showroom has no ui-config.yml; Launchpad must generate all runtime tabs"
+  ]
+}

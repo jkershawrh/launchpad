@@ -1,0 +1,88 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-candidate-review/v1",
+  "generated_at": "2026-09-21T17:17:43Z",
+  "mode": "read-only-local-discovery",
+  "pipeline_regression": {
+    "tests": "55 passed",
+    "scope": "catalog onboarding, CLI, quality, pipeline, and discovery worker"
+  },
+  "candidates": [
+    {
+      "repository": "https://github.com/jkershawrh/ai-virtual-agent",
+      "revision": "85f3f1c0f8dca4ead23e60283c1380c0ac369b9f",
+      "discovery": "pass",
+      "intake_validation": "pass",
+      "draft_deterministic": true,
+      "draft_status": "draft",
+      "exposure": ["internal"],
+      "seat_ceiling": 1,
+      "activation": "blocked",
+      "content_source": "quickstart-readme",
+      "workload_type": "helm",
+      "workload_path": "deploy/cluster/helm",
+      "inventory_counts": {
+        "images": 7,
+        "mutable_images": 7,
+        "unparsed_manifests": 9,
+        "cluster_scoped_resources": 0,
+        "privileged_findings": 0,
+        "secret_manifests": 0
+      },
+      "requirement_codes": ["manifest-unparsed", "render-dependency-unresolved"],
+      "next_review": "Confirm rendered workload, provide hands-on Showroom content and source-owned quality evidence, pin images, then measure a one-seat lifecycle."
+    },
+    {
+      "repository": "https://github.com/jkershawrh/it-self-service-agent",
+      "revision": "23c567d71f45eb303d294b4f2eaf5b2389672125",
+      "discovery": "pass",
+      "intake_validation": "pass",
+      "draft_deterministic": true,
+      "draft_status": "draft",
+      "exposure": ["internal"],
+      "seat_ceiling": 1,
+      "activation": "blocked",
+      "content_source": "quickstart-readme",
+      "workload_type": "helm",
+      "workload_path": "helm",
+      "inventory_counts": {
+        "images": 9,
+        "mutable_images": 9,
+        "unparsed_manifests": 40,
+        "cluster_scoped_resources": 0,
+        "privileged_findings": 0,
+        "secret_manifests": 0
+      },
+      "requirement_codes": ["model-endpoint-unresolved", "manifest-unparsed", "render-dependency-unresolved"],
+      "next_review": "Choose the intended Helm package and model endpoint, review rendered manifests, create hands-on Showroom content, pin images, and provide quality and one-seat evidence."
+    },
+    {
+      "repository": "https://github.com/jkershawrh/showroom-praxis-ai-gateway",
+      "revision": "b5a4e46f364d2a00a232a7b2c08c545fe2d14d0a",
+      "discovery": "pass",
+      "intake_validation": "pass",
+      "draft_deterministic": true,
+      "draft_status": "draft",
+      "exposure": ["internal"],
+      "seat_ceiling": 1,
+      "activation": "blocked",
+      "content_source": "antora",
+      "workload_type": "helm",
+      "workload_path": "automation/gitops/bootstrap-infra",
+      "inventory_counts": {
+        "images": 1,
+        "mutable_images": 1,
+        "unparsed_manifests": 2,
+        "cluster_scoped_resources": 0,
+        "privileged_findings": 0,
+        "secret_manifests": 0
+      },
+      "requirement_codes": ["model-endpoint-unresolved", "manifest-unparsed"],
+      "next_review": "Select the intended content and workload packages instead of the discovery defaults, add README and module learning checkpoints, resolve model integration and image pinning, then certify one seat."
+    }
+  ],
+  "limits": [
+    "Source content was discovered from immutable GitHub commits; no cluster resources were created.",
+    "Repository discovery and validation do not prove rendered manifests, model calls, participant journey, security review, or successful reclaim.",
+    "These drafts are not orderable and were not published to the catalog."
+  ]
+}

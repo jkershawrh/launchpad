@@ -1,0 +1,39 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-local-evidence/v1",
+  "candidate": "hybrid-fraud-detection",
+  "date": "2026-09-22",
+  "source_revision": "4f77a0db2ff199493be79f48b1b564e43c8d303d",
+  "workflow_run": "https://github.com/jkershawrh/hybrid-fraud-detection/actions/runs/35726187082",
+  "image": "ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:db529941748e9254779b2e71368751ba03b57531559fde6378a7a0ddcc563ef4",
+  "publisher_result": "success: eight prerequisites plus image push, SPDX SBOM, signature, source attestation, and signer verification",
+  "independent_local_checks": {
+    "anonymous_linux_amd64_pull": "passed using an empty authfile",
+    "oci_revision_and_source_labels": "matched the reviewed source repository and revision",
+    "application_file_hashes": "scorer.py, ui.py, and requirements.txt matched the checked-out source",
+    "readiness": "HTTP 200",
+    "scoring": "HTTP 200 in demo mode",
+    "image_app_files": ["requirements.txt", "scorer.py", "ui.py"],
+    "image_env_secret_named_keys": 0,
+    "high_confidence_secret_pattern_scan": "no matches in current tracked files or available commit history",
+    "chart_credential_handling": "model API key is referenced from a runtime Kubernetes Secret; no value is baked into the image"
+  },
+  "public_visibility": "observed anonymously pullable; no visibility change performed",
+  "limitations": [
+    "Pattern scans cannot prove the absence of every possible secret or sensitive business datum.",
+    "The image's upstream UBI base and all transitive dependencies were not independently audited in this review.",
+    "A successful public local pull is not an Arena cluster cold-pull certification.",
+    "The Launchpad draft intake was subsequently re-scaffolded to this revision with a digest override, but remains non-orderable and locally reviewed only."
+  ],
+  "draft_intake_local_review": {
+    "source_revision": "4f77a0db2ff199493be79f48b1b564e43c8d303d",
+    "image_override_applied": true,
+    "helm_values_sha256": "sha256:781734512009ee3bfa28642f74f57a27be3b074d87d82427e364f0106cd2ed5d",
+    "manifest_sha256": "sha256:2856958df47d2d76692c096cff25740f0707ce00cf01f632c33a7b050feeb343",
+    "offline_render": "review-ready-local: five resources, three immutable images, zero findings",
+    "intake_validation": "passed with activation_status blocked",
+    "release_eligible": false
+  },
+  "arena_cold_pull": "not run; active CLI context was not Arena and was not switched",
+  "live_lab_change": false,
+  "release_eligible": false
+}

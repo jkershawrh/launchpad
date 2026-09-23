@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-21T16:18:10Z",
+  "scope": "Interim retained-workshop evidence validation; no live mutation",
+  "red": {
+    "test": "backend/tests/test_retained_inventory_evidence.py",
+    "result": "ModuleNotFoundError: app.services.retained_inventory_evidence",
+    "intent": "A validator must reject inconsistent totals, expired retention, duplicate workshops, unexpected private fields, and cluster drift"
+  },
+  "green": {
+    "targeted_tests": "11 passed",
+    "reclaim_regression_tests": "56 passed",
+    "lint": "All checks passed"
+  },
+  "live_exact_match": {
+    "state": "partial",
+    "checked_at": "2026-09-21T16:34:25Z",
+    "arena_and_flightpath": {
+      "expected_sessions": 240,
+      "observed_namespaces": 240,
+      "exact_session_namespace_matches": 240,
+      "missing": 0,
+      "unexpected": 0
+    },
+    "brutus": {
+      "sessions_unverified": 30,
+      "reason": "Kubernetes API and Console connections to 192.168.1.75 were refused from this machine; the Launchpad control-plane preflight independently reported its Brutus Kubernetes API connection refused"
+    },
+    "previously_verified": "The interim 2026-09-21 snapshot count-balanced 270 persisted sessions with 270 workshop-labeled namespaces across all three clusters",
+    "not_claimed": "Exact per-session matching on Brutus, authoritative completeness, route health, T-30 readiness, or reclaim authorization"
+  }
+}

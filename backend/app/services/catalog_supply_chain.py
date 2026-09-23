@@ -64,6 +64,33 @@ REQUIRED_RELEASE_CHECKS = {
 _INLINE_CREDENTIAL_KEYS = {"auth", "password", "private_key", "secret", "token"}
 
 
+class _DuplicateAwareSafeLoader(yaml.SafeLoader):
+    """Retain a fail-closed signal instead of silently using the last YAML key."""
+
+    def __init__(self, stream: str) -> None:
+        super().__init__(stream)
+        self.has_duplicate_keys = False
+
+    def construct_mapping(self, node: yaml.MappingNode, deep: bool = False) -> dict:
+        self.flatten_mapping(node)
+        mapping: dict[Any, Any] = {}
+        for key_node, value_node in node.value:
+            key = self.construct_object(key_node, deep=deep)
+            if key in mapping:
+                self.has_duplicate_keys = True
+            mapping[key] = self.construct_object(value_node, deep=deep)
+        return mapping
+
+
+def _load_yaml_with_duplicate_detection(path: Path | str) -> tuple[Any, bool]:
+    loader = _DuplicateAwareSafeLoader(Path(path).read_text())
+    try:
+        payload = loader.get_single_data()
+        return payload, loader.has_duplicate_keys
+    finally:
+        loader.dispose()
+
+
 def _aware_timestamp(value: Any) -> datetime | None:
     if not isinstance(value, str) or "T" not in value:
         return None
@@ -126,12 +153,14 @@ def build_registry_policy_report(policy_path: Path | str) -> dict[str, Any]:
     destination cold pulls require separate integration/live evidence.
     """
     path = Path(policy_path)
-    payload = yaml.safe_load(path.read_text())
+    payload, duplicate_keys = _load_yaml_with_duplicate_detection(path)
     if not isinstance(payload, dict):
         raise TypeError("artifact registry policy must be a YAML mapping")
 
     violations: list[str] = []
     gaps: list[str] = []
+    if duplicate_keys:
+        violations.append("duplicate YAML mapping key is prohibited")
     if payload.get("api_version") != REGISTRY_POLICY_VERSION:
         violations.append(f"api_version must be {REGISTRY_POLICY_VERSION}")
 
@@ -249,12 +278,14 @@ def evaluate_destination_qualification(
     contract. Credential values are prohibited from the receipt.
     """
 
-    policy = yaml.safe_load(Path(policy_path).read_text())
-    receipt = yaml.safe_load(Path(receipt_path).read_text())
+    policy, policy_duplicate_keys = _load_yaml_with_duplicate_detection(policy_path)
+    receipt, duplicate_keys = _load_yaml_with_duplicate_detection(receipt_path)
     if not isinstance(policy, dict) or not isinstance(receipt, dict):
         raise TypeError("registry policy and destination receipt must be mappings")
 
     failures: list[str] = []
+    if policy_duplicate_keys or duplicate_keys:
+        failures.append("duplicate YAML mapping key is prohibited")
     if receipt.get("schema_version") != DESTINATION_QUALIFICATION_VERSION:
         failures.append(f"schema_version must be {DESTINATION_QUALIFICATION_VERSION}")
 
@@ -325,12 +356,14 @@ def evaluate_artifact_release_evidence(
     destination pulls still need authentic integration or live evidence.
     """
 
-    policy = yaml.safe_load(Path(policy_path).read_text())
-    receipt = yaml.safe_load(Path(receipt_path).read_text())
+    policy, policy_duplicate_keys = _load_yaml_with_duplicate_detection(policy_path)
+    receipt, duplicate_keys = _load_yaml_with_duplicate_detection(receipt_path)
     if not isinstance(policy, dict) or not isinstance(receipt, dict):
         raise TypeError("registry policy and release evidence must be mappings")
 
     failures: list[str] = []
+    if policy_duplicate_keys or duplicate_keys:
+        failures.append("duplicate YAML mapping key is prohibited")
     if receipt.get("schema_version") != ARTIFACT_RELEASE_EVIDENCE_VERSION:
         failures.append(f"schema_version must be {ARTIFACT_RELEASE_EVIDENCE_VERSION}")
 

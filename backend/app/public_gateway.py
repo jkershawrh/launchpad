@@ -70,24 +70,27 @@ async def _resolve(request: Request) -> dict:
     username = _username(request)
     cookie = request.cookies.get("launchpad_access", "")
     public_path = _public_order_prefix(request)
-    async with httpx.AsyncClient(timeout=10) as client:
-        if username:
-            result = await client.get(
-                f"{BACKEND}/public-access/private/resolve-identity",
-                params={
-                    "host": _host(request),
-                    "username": username,
-                    "public_path": public_path,
-                },
-                headers={"X-Access-Broker-Key": BROKER_KEY},
-            )
-        else:
-            result = await client.get(
-                f"{BACKEND}/public-access/private/resolve",
-                params={"host": _host(request), "public_path": public_path},
-                headers={"X-Access-Broker-Key": BROKER_KEY},
-                cookies={"launchpad_access": cookie},
-            )
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            if username:
+                result = await client.get(
+                    f"{BACKEND}/public-access/private/resolve-identity",
+                    params={
+                        "host": _host(request),
+                        "username": username,
+                        "public_path": public_path,
+                    },
+                    headers={"X-Access-Broker-Key": BROKER_KEY},
+                )
+            else:
+                result = await client.get(
+                    f"{BACKEND}/public-access/private/resolve",
+                    params={"host": _host(request), "public_path": public_path},
+                    headers={"X-Access-Broker-Key": BROKER_KEY},
+                    cookies={"launchpad_access": cookie},
+                )
+    except httpx.RequestError as exc:
+        raise HTTPException(503, "Access service unavailable") from exc
     if result.status_code != 200:
         raise HTTPException(result.status_code, "Access denied")
     return result.json()
@@ -343,14 +346,17 @@ def _page(body: str) -> HTMLResponse:
 
 
 async def _labs_for(username: str) -> list[dict]:
-    async with httpx.AsyncClient(timeout=10) as client:
-        response = await client.get(
-            f"{BACKEND}/public-access/private/identity-entitlements",
-            params={"username": username},
-            headers={"X-Access-Broker-Key": BROKER_KEY},
-        )
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.get(
+                f"{BACKEND}/public-access/private/identity-entitlements",
+                params={"username": username},
+                headers={"X-Access-Broker-Key": BROKER_KEY},
+            )
+    except httpx.RequestError as exc:
+        raise HTTPException(503, "Access service unavailable") from exc
     if response.status_code != 200:
-        return []
+        raise HTTPException(503, "Access service unavailable")
     return response.json().get("labs", [])
 
 
@@ -381,7 +387,9 @@ async def home(request: Request, order_ref: str = ""):
     proxy_prefix = _public_order_prefix(request)
     try:
         target = await _resolve(request)
-    except HTTPException:
+    except HTTPException as exc:
+        if exc.status_code not in {403, 404}:
+            raise
         if username:
             return _page(
                 "<h1>Add this lab</h1><p>You are already signed in. Enter only this lab's instructor code.</p>"

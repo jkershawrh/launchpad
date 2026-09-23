@@ -26,7 +26,7 @@ supported_branding:
 metadata:
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  showroom_content_ref: aa5c4e1c686bbecd70b17f4c4e27d26f033966e4
+  showroom_content_ref: 00f07a8265579efd77964b390d65368999a1523a
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -45,10 +45,15 @@ metadata:
     runtime Secret sources.
   - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
     before activation.
-  - Review every mutable container image and replace it with an approved immutable
-    digest.
   - Review every unparsed manifest; templating or invalid YAML prevents complete static
     discovery.
+  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
+  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
+  - 'Resolve Quickstart requirement with approved target evidence: manifest-unparsed'
+  - Prove that the target model gateway enforces the generated per-seat key; the direct
+    internal Granite route used by the chart canary did not prove this.
+  - Preserve the Launchpad-managed namespace label needed by Arena model ingress policy
+    and prove seat-scoped access during a full lifecycle run.
   allowed_exposure_policies:
   - internal
   showroom_journey: hybrid-fraud-detection
@@ -58,7 +63,8 @@ metadata:
   showroom_tabs:
   - id: terminal
     title: Terminal
-  required_models: []
+  required_models:
+  - granite-3.2-8b-tools
   inference_endpoint: litellm
   seat_cpu_millicores: 0
   seat_memory_mib: 0
@@ -70,93 +76,115 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  workload_revision: aa5c4e1c686bbecd70b17f4c4e27d26f033966e4
+  workload_revision: 00f07a8265579efd77964b390d65368999a1523a
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
   workload_source_kind: chart
   workload_gitops_ready: false
   workload_release_name: hybrid-fraud-detection
-  workload_helm_values: {}
+  workload_helm_values:
+    app:
+      image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0
+    model:
+      endpointFromSecret: true
   workload_ignore_differences: []
-  workload_runtime_secret_name: ''
-  workload_runtime_secret_sources: {}
-  workload_runtime_secret_value_path: ''
+  workload_runtime_secret_name: fraud-model-runtime
+  workload_runtime_secret_sources:
+    endpoint:
+      source: model_endpoint
+      model: granite-3.2-8b-tools
+    name:
+      source: requested_model
+    api-key:
+      source: maas_api_key
+  workload_runtime_secret_value_path: model.existingSecret
   workload_identity_value_path: ''
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  source_content_revision: aa5c4e1c686bbecd70b17f4c4e27d26f033966e4
+  source_content_revision: 00f07a8265579efd77964b390d65368999a1523a
   source_references: {}
   intake_quality:
+    schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+    business_solution:
+      status: review-required
+      readme_present: true
+      title: Build a hybrid fraud-scoring demo with explainable AI
+      action_oriented_title: true
+      required_sections_present: true
+      missing_sections: []
+      business_language_present: true
+      human_review_required: true
     artifacts:
-      benchmark_rubric:
-        entry_count: 5
-        path: tests/benchmark_rubric.yaml
+      validation_matrix:
+        path: tests/validation_matrix.yaml
         status: present-valid
-      ci_workflows:
-        path: .github/workflows
-        status: present
+        entry_count: 7
       claim_registry:
-        entry_count: 1
         path: tests/claim_registry.yaml
         status: present-valid
-      makefile:
-        path: Makefile
-        status: present
+        entry_count: 1
+      benchmark_rubric:
+        path: tests/benchmark_rubric.yaml
+        status: present-valid
+        entry_count: 5
       publication_test:
         path: tests/publication/test_readme.py
         status: present
-      validation_matrix:
-        entry_count: 7
-        path: tests/validation_matrix.yaml
-        status: present-valid
-    authority:
-      may_certify: false
-      may_modify_source: false
-      may_provision: false
-      may_publish_catalog: false
-      mode: analysis-only
-    business_solution:
-      action_oriented_title: true
-      business_language_present: true
-      human_review_required: true
-      missing_sections: []
-      readme_present: true
-      required_sections_present: true
-      status: review-required
-      title: Build a hybrid fraud-scoring demo with explainable AI
+      makefile:
+        path: Makefile
+        status: present
+      ci_workflows:
+        path: .github/workflows
+        status: present
+    showroom:
+      page_count: 3
+      hands_on_module_count: 1
+      execute_block_count: 7
+      see_section_count: 1
+      verification_section_count: 1
+      key_takeaway_count: 1
+      thin_modules: []
     capacity_proposal:
-      declared_models: []
-      explicit_resource_envelopes: 0
+      status: review-required
+      inference_mode: remote-endpoint
       framework_signals:
       - gradio
       - openai
       - react
-      inference_mode: remote-endpoint
+      declared_models: []
+      explicit_resource_envelopes: 0
       measurement_required_before_placement: true
-      status: review-required
-    gate:
-      blocking_findings: []
-      status: review-required
-    portfolio_overlap:
-      mutable_live_org_scan_allowed: false
-      reason: A pinned versioned portfolio inventory was not supplied.
-      status: not-run
-    schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+    requirement_review:
+      status: blocked
+      resolution_authority: human-and-cluster-evidence
+      findings:
+      - code: model-endpoint-unresolved
+        evidence_count: 0
+      - code: manifest-unparsed
+        evidence_count: 4
+      target_support_inferred: false
     security_summary:
+      status: review-required
+      mutable_image_count: 0
       cluster_scoped_resource_count: 0
-      mutable_image_count: 2
       privileged_finding_count: 0
       secret_manifest_count: 0
-      secret_values_included: false
-      status: review-required
       unparsed_manifest_count: 4
-    showroom:
-      execute_block_count: 7
-      hands_on_module_count: 1
-      key_takeaway_count: 1
-      page_count: 3
-      see_section_count: 1
-      thin_modules: []
-      verification_section_count: 1
+      secret_values_included: false
+    portfolio_overlap:
+      status: not-run
+      reason: A pinned versioned portfolio inventory was not supplied.
+      mutable_live_org_scan_allowed: false
+    gate:
+      status: blocked
+      blocking_findings:
+      - 'Unresolved Quickstart requirement: model-endpoint-unresolved'
+      - 'Unresolved Quickstart requirement: manifest-unparsed'
+    authority:
+      mode: analysis-only
+      may_modify_source: false
+      may_publish_catalog: false
+      may_provision: false
+      may_certify: false

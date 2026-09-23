@@ -1,0 +1,14 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-arena-pull-probe/v1",
+  "cluster": "arena",
+  "image": "ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:db529941748e9254779b2e71368751ba03b57531559fde6378a7a0ddcc563ef4",
+  "status": "blocked",
+  "findings": ["arena-auth-unavailable"],
+  "namespace": null,
+  "cleanup": "not-needed",
+  "release_eligible": false,
+  "local_probe_tests": "6 passed",
+  "relevant_regression_tests": "75 passed",
+  "current_context_changed": false,
+  "cluster_resources_created": false
+}

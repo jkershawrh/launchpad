@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-21T16:08:49Z",
+  "purpose": "Read-only interim inventory of the nine retained September 17 pilot workshops",
+  "not_a_reclaim_authorization": true,
+  "sources": [
+    "Launchpad PostgreSQL workshop, session, and participant-entitlement records",
+    "Namespace labels read independently from Arena, Brutus, and Flightpath Kubernetes APIs"
+  ],
+  "summary": {
+    "workshops_ready": 9,
+    "sessions_ready": 270,
+    "active_entitlements": 196,
+    "unclaimed_seats": 74,
+    "labeled_namespaces_present": 270,
+    "clusters": {
+      "arena": { "sessions_ready": 60, "labeled_namespaces_present": 60 },
+      "brutus": { "sessions_ready": 30, "labeled_namespaces_present": 30 },
+      "flightpath": { "sessions_ready": 180, "labeled_namespaces_present": 180 }
+    }
+  },
+  "workshops": [
+    { "workshop_id": "d6071355-6c9f-4996-96cd-e4f97750b8f7", "cluster_ref": "arena", "catalog": "Serve LLMs", "sessions_ready": 30, "active_entitlements": 30, "expires_at": "2026-09-23T03:22:14.847183Z" },
+    { "workshop_id": "4876c3c0-9c56-41f6-a335-c6ba0c6f15a9", "cluster_ref": "brutus", "catalog": "Building an AI Agent", "sessions_ready": 30, "active_entitlements": 30, "expires_at": "2026-09-23T03:29:19.517979Z" },
+    { "workshop_id": "7efa1c81-c9db-409e-8b88-1630636b04e5", "cluster_ref": "arena", "catalog": "Multi-Agent", "sessions_ready": 30, "active_entitlements": 24, "expires_at": "2026-09-23T03:33:30.986615Z" },
+    { "workshop_id": "9d01773b-23b1-4cff-84e6-a0dc2f3ec2ff", "cluster_ref": "flightpath", "catalog": "Serve LLMs", "sessions_ready": 30, "active_entitlements": 20, "expires_at": "2026-09-24T16:36:03.707994Z" },
+    { "workshop_id": "7452eba7-fde4-4692-859c-9bd4847c6fae", "cluster_ref": "flightpath", "catalog": "Building an AI Agent", "sessions_ready": 30, "active_entitlements": 13, "expires_at": "2026-09-24T16:40:49.310215Z" },
+    { "workshop_id": "10e88065-23d5-4f12-97c4-4002928621bf", "cluster_ref": "flightpath", "catalog": "Serve LLMs", "sessions_ready": 30, "active_entitlements": 25, "expires_at": "2026-09-24T17:00:54.244063Z" },
+    { "workshop_id": "7e826ef7-8204-4c9a-b45d-ebae6ec43697", "cluster_ref": "flightpath", "catalog": "Building an AI Agent", "sessions_ready": 30, "active_entitlements": 22, "expires_at": "2026-09-24T17:04:53.094709Z" },
+    { "workshop_id": "fc3cab02-560e-45e6-90bb-735033e23d70", "cluster_ref": "flightpath", "catalog": "Multi-Agent", "sessions_ready": 30, "active_entitlements": 14, "expires_at": "2026-09-24T17:08:51.000351Z" },
+    { "workshop_id": "984a4d3a-801f-449b-891c-d32989892ef0", "cluster_ref": "flightpath", "catalog": "Multi-Agent", "sessions_ready": 30, "active_entitlements": 18, "expires_at": "2026-09-24T17:20:28.472798Z" }
+  ],
+  "limitations": [
+    "Namespace count proves presence, not that every participant journey or route currently works.",
+    "This is not the required fresh T-30 pre-reclaim snapshot or zero-residue proof.",
+    "No namespace, access policy, entitlement, or workshop was modified."
+  ]
+}

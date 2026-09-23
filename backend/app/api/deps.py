@@ -142,13 +142,34 @@ def create_provisioning_service() -> ProvisioningService:
             )
 
         maas_key_broker = None
+        maas_key_provider = os.environ.get("MAAS_KEY_PROVIDER", "litellm").lower()
         litellm_master_key = os.environ.get("LITELLM_API_KEY", "")
-        if litellm_base and litellm_master_key:
+        if maas_key_provider == "rhoai":
+            from app.adapters.openshift.maas_keys import RHOAIMaaSKeyBroker
+
+            rhoai_auth_token = os.environ.get("RHOAI_MAAS_AUTH_TOKEN", "")
+            maas_key_broker = RHOAIMaaSKeyBroker(
+                api_base=os.environ.get("RHOAI_MAAS_API_BASE", ""),
+                subscription=os.environ.get("RHOAI_MAAS_SUBSCRIPTION", ""),
+                auth_token=rhoai_auth_token,
+                auth_token_file=os.environ.get(
+                    "RHOAI_MAAS_AUTH_TOKEN_FILE",
+                    (
+                        ""
+                        if rhoai_auth_token
+                        else "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                    ),
+                ),
+                verify=os.environ.get("RHOAI_MAAS_CA_BUNDLE", "") or True,
+            )
+        elif maas_key_provider == "litellm" and litellm_base and litellm_master_key:
             from app.adapters.openshift.maas_keys import LiteLLMVirtualKeyBroker
             maas_key_broker = LiteLLMVirtualKeyBroker(
                 api_base=litellm_base,
                 master_key=litellm_master_key,
             )
+        elif maas_key_provider != "litellm":
+            raise ValueError(f"Unsupported MaaS key provider: {maas_key_provider}")
 
         classifier = None
         if os.environ.get("WORKLOAD_PROFILING_ENABLED", "false").lower() == "true":

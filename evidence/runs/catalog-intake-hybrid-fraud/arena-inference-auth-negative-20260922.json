@@ -1,0 +1,25 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-model-auth-negative/v1",
+  "evidence_id": "HF-1SEAT-MODEL-AUTH-002",
+  "observed_at_utc": "2026-09-22T15:44:03Z",
+  "cluster": "arena",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "namespace": "launchpad-intake-auth-chat-20260922",
+  "namespace_uid": "94babc65-aac3-45ee-b091-f13cb9df1ea2",
+  "probe_image": "ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0",
+  "target_model": "granite-3.2-8b-tools",
+  "target_source": "config/clusters.yaml:arena.model_endpoints",
+  "request_path": "/v1/chat/completions",
+  "max_output_tokens_per_request": 1,
+  "probe_statuses": {
+    "without_authorization": 200,
+    "invalid_bearer_token": 200
+  },
+  "model_key_enforcement": "failed",
+  "one_seat_status": "RED",
+  "cleanup": "passed",
+  "namespace_absent_after_cleanup": true,
+  "probe_modified_global_context": false,
+  "release_eligible": false,
+  "scope": "Negative inference authorization probe only; no participant identity or full seat was provisioned."
+}

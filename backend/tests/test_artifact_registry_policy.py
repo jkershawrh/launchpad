@@ -63,6 +63,16 @@ def test_registry_contract_requires_safe_retention_and_scoped_credentials(
     assert "pull-only" in joined
 
 
+def test_registry_contract_rejects_ambiguous_policy_yaml(tmp_path: Path) -> None:
+    path = tmp_path / "policy.yaml"
+    path.write_text(POLICY.read_text() + "\nretention:\n  minimum_rollback_releases: 3\n")
+
+    report = build_registry_policy_report(path)
+
+    assert report["release_eligible"] is False
+    assert "duplicate YAML mapping key is prohibited" in report["contract_violations"]
+
+
 def test_ci_and_local_gate_validate_registry_contract() -> None:
     workflow = (ROOT / ".github/workflows/ci.yml").read_text()
     makefile = (ROOT / "Makefile").read_text()
@@ -173,3 +183,17 @@ def test_destination_receipt_rejects_inline_credentials(tmp_path: Path) -> None:
 
     assert report["eligible"] is False
     assert any("inline credential field" in item for item in report["failures"])
+
+
+def test_destination_receipt_rejects_duplicate_check_status(tmp_path: Path) -> None:
+    receipt = _write_receipt(tmp_path, _destination_receipt())
+    receipt.write_text(receipt.read_text().replace(
+        "  cold_pull:\n    status: passed\n",
+        "  cold_pull:\n    status: failed\n    status: passed\n",
+        1,
+    ))
+
+    report = evaluate_destination_qualification(POLICY, receipt)
+
+    assert report["eligible"] is False
+    assert "duplicate YAML mapping key is prohibited" in report["failures"]

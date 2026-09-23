@@ -1,0 +1,16 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-candidate-policy-evidence/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cluster": "arena",
+  "status": "GREEN-local-candidate",
+  "findings": [],
+  "release_eligible": false,
+  "exact_image_only": true,
+  "internal_only": true,
+  "max_workshop_seats": 1,
+  "policy_path": "config/catalog-intake-candidate-policy.yaml",
+  "pull_receipt_sha256": "d1e820ca9f27174c98fa5488d2d1d8e37d096cf67992c988b782189e14ffb16d",
+  "focused_tests": "45 passed",
+  "new_files_lint": "passed",
+  "global_registry_policy_changed": false
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-candidate-publisher/v1",
+  "observed_at": "2026-09-22T10:59:45Z",
+  "repository": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+  "branch": "codex/hybrid-fraud-immutable-images",
+  "revision": "1c8c9deac2d43e3399bbcc384e6cae278716f024",
+  "target_repository": "quay.io/redhat-gpte/hybrid-fraud-detection",
+  "red_green": {
+    "red": "A source publication test failed before the manual candidate publisher existed.",
+    "green_local": "58 source tests, actionlint, Ruff, and Git diff checks passed with the gated publisher definition.",
+    "green_ci_no_publish": "https://github.com/jkershawrh/hybrid-fraud-detection/actions/runs/35718875208"
+  },
+  "dry_run": {
+    "conclusion": "success",
+    "head_sha": "1c8c9deac2d43e3399bbcc384e6cae278716f024",
+    "ordinary_jobs_succeeded": 8,
+    "publish_job_conclusion": "skipped",
+    "publish_candidate_input": false,
+    "image_pushed": false,
+    "signature_created": false,
+    "sbom_attached": false
+  },
+  "publisher_contract": {
+    "trigger": "manual workflow_dispatch only for the candidate job",
+    "branch": "refs/heads/codex/hybrid-fraud-immutable-images",
+    "source_gate": "provided full source SHA must equal the dispatched GitHub SHA",
+    "credential_gate": "redhat-gpte robot identity and token from protected GitHub environment",
+    "tag": "unique intake-<sha>-<run>-<attempt> candidate; no latest mutation",
+    "artifact": "linux/amd64 image digest with keyless GitHub OIDC signature, SPDX SBOM attestation, source-identity attestation, and exact workflow-identity verification",
+    "activation": "none; signed candidate remains non-orderable until Launchpad separately verifies and certifies it"
+  },
+  "open_gates": [
+    "Configure the intake-candidate-publish environment with reviewer protection and a robot scoped to this Quay repository; neither is configured or tested here.",
+    "Run the enabled publisher and verify actual Quay push, signature, SBOM, source attestation, and cold pull by immutable digest.",
+    "Pin the pushed image digest as a separately reviewed Helm app.image override bound to this source revision and trusted render; do not commit it back into the same source commit.",
+    "Measure runtime resources and complete one-seat user journey and cleanup certification before catalog activation."
+  ],
+  "authority": {
+    "catalog_modified": false,
+    "image_pushed": false,
+    "live_resources_changed": false,
+    "may_publish_catalog": false,
+    "may_certify": false
+  }
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T10:59:07Z",
+  "updated_at": "2026-09-23T03:10:00Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -221,9 +221,17 @@
         "docs/reclaim-inventory-collector-local.md",
         "backend/app/services/reclaim_paginated_source.py",
         "backend/tests/test_reclaim_paginated_source.py",
-        "docs/reclaim-paginated-source-contract.md"
+        "docs/reclaim-paginated-source-contract.md",
+        "evidence/runs/pilot-closeout/retained-workshops-20260921.json",
+        "backend/app/services/retained_inventory_evidence.py",
+        "backend/tests/test_retained_inventory_evidence.py",
+        "evidence/runs/pilot-closeout/retained-evidence-validation-20260921.json",
+        "backend/app/services/reclaim_live_source.py",
+        "backend/tests/test_reclaim_live_source.py",
+        "evidence/runs/pilot-closeout/reclaim-live-source-local-20260921.json",
+        "evidence/runs/staging-convergence/local-streams-20260921.json"
       ],
-      "note": "The September 17 session records and namespaces were reconciled read-only across the active fleet. Local-only collector and paginated-source adapters now check supplied workshop, session, namespace, and reservation balance across every registered cluster, with pinned source identity, revision, cursor, count, and freshness checks. No live provider is connected; self-reported counts cannot establish authoritative completeness or authorize reclaim. Tuesday's fresh T-30 inventory remains open."
+      "note": "The September 21 interim refresh count-balanced nine retained workshops and 270 ready sessions against 270 workshop-labeled namespaces; 196 entitlements were active. Exact read-only matching passed for all 240 Arena and Flightpath seats. Brutus's 30 remain unverified because its API refused connections from both operator and control plane. The new local-only source reads a PostgreSQL repeatable-read, read-only roster and twice scans paginated namespaces through target-specific clients, emitting no partial inventory on failure; its focused and regression tests pass. It is not wired to any scheduler, API, or reclaim action and has not passed a live whole-fleet run. Independent T-30 resource/entitlement/orphan evidence and approval remain required after retention expires."
     },
     "LP-T070": {
       "state": "green-local",
@@ -235,9 +243,10 @@
         "docs/active-seat-inventory-20260917.md",
         "backend/app/services/reclaim_readiness.py",
         "backend/tests/test_reclaim_readiness.py",
-        "docs/reclaim-readiness-local-contract.md"
+        "docs/reclaim-readiness-local-contract.md",
+        "evidence/runs/pilot-closeout/retained-workshops-20260921.json"
       ],
-      "note": "The September 17 claims, expiry, readiness, routes, restarts, models, and resource counts were captured. The new local balance check is not a fresh inventory, reclaim authorization, or zero-residue proof; the approved lifecycle test remains open."
+      "note": "The September 17 claims, expiry, readiness, routes, restarts, models, and resource counts were captured. The September 21 interim refresh recorded 196 active entitlements and current persisted expiration timestamps without modifying retained labs. The local balance check and interim refresh are not a fresh T-30 inventory, reclaim authorization, or zero-residue proof; the approved lifecycle test remains open."
     },
     "LP-T084": {
       "state": "green-local",
@@ -288,9 +297,10 @@
         "evidence/runs/pilot-h0/PILOT-BUG-001-green-local.xml",
         "evidence/runs/pilot-h0/PILOT-BUG-001-red.xml",
         "evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json",
-        "scripts/validate_catalog_artifacts.py"
+        "scripts/validate_catalog_artifacts.py",
+        "evidence/runs/artifact-registry/duplicate-yaml-keys-green-local-20260921.json"
       ],
-      "note": "A fail-closed policy now covers the three pilot catalogs, immutable Showroom commits, and five digest-pinned images. Mutable tags, unapproved repositories, missing artifacts, and execution-cluster-local registries are rejected. Signing, SBOMs, organization-owned registry transfer, cross-cluster cold pulls, fresh-seat BDD, and GREEN-live proof remain open; retained workshops were not changed."
+      "note": "A fail-closed policy now covers the three pilot catalogs, immutable Showroom commits, and five digest-pinned images. Mutable tags, unapproved repositories, missing artifacts, execution-cluster-local registries, and duplicate YAML keys (including nested keys) are rejected. Signing, SBOMs, organization-owned registry transfer, cross-cluster cold pulls, fresh-seat BDD, and GREEN-live proof remain open; retained workshops were not changed."
     },
     "LP-T017": {
       "state": "green-local",
@@ -660,9 +670,11 @@
         "evidence/runs/flightpath-stage/keycloak-ha.json",
         "evidence/runs/flightpath-stage/postgres-ha.xml",
         "evidence/runs/public-access-atomic-activation/green-local.xml",
-        "evidence/runs/public-access-atomic-rotation/green-local.xml"
+        "evidence/runs/public-access-atomic-rotation/green-local.xml",
+        "backend/tests/test_public_gateway_availability_contract.py",
+        "docs/participant-access-availability-contract.md"
       ],
-      "note": "Flightpath isolated stage now proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. No public Route, production tunnel token, execution-cluster credential, lifecycle worker, or live workshop was touched. This remains GREEN-integration: realm/client/browser and namespace-RBAC journeys, a dedicated staging connector, PostgreSQL HA, external load, live failover, and soak remain open."
+      "note": "Flightpath isolated stage now proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. A new GREEN-local participant gateway contract returns retryable 503 on upstream transport failure rather than a false empty-labs state; it does not constitute a deployed browser pass. No public Route, production tunnel token, execution-cluster credential, lifecycle worker, or live workshop was touched. This remains GREEN-integration: realm/client/browser and namespace-RBAC journeys, a dedicated staging connector, PostgreSQL HA, external load, live failover, and soak remain open."
     },
     "LP-T018": {
       "state": "green-local",
@@ -761,11 +773,12 @@
       "evidence": [
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
         "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
+        "evidence/runs/catalog-intake-candidates/jkershawrh-readonly-20260921.json",
         "evidence/runs/catalog-intake-quality/manifest.json",
         "evidence/runs/catalog-intake-readme-source/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json"
       ],
-      "note": "A real Quickstart now deterministically produces a reviewable onboarding contract and catalog preview with immutable source identity, quality findings, static inventory, and unresolved activation blockers. Hybrid fraud detection now supplies valid Showroom, validation-matrix, benchmark-rubric, Helm UI, and source proof artifacts without creating an orderable catalog or mutating a cluster; runtime integration and certification remain open."
+      "note": "A real Quickstart now deterministically produces a reviewable onboarding contract and catalog preview with immutable source identity, quality findings, static inventory, and unresolved activation blockers. Three additional pinned jkershawrh sources (AI Virtual Agent, IT Self-Service Agent, and Praxis AI Gateway Showroom) each passed local discovery and intake validation and generated the same non-orderable draft on repeat. All three remain blocked on source quality, mutable images, rendered workload and runtime requirements; no live catalog or cluster changed. Hybrid fraud detection source proof exists separately; runtime integration and certification remain open."
     },
     "LP-T099": {
       "state": "green-local",
@@ -779,13 +792,25 @@
       "evidence": [
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
         "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
+        "evidence/runs/catalog-intake-candidates/jkershawrh-readonly-20260921.json",
         "evidence/runs/catalog-intake-network-requirements/green-local-20260921.json",
         "evidence/runs/catalog-intake-render-network-green-local-20260921.json",
         "evidence/runs/catalog-intake-render-dependencies/green-local-20260921.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/rendered-offline-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/image-digest-candidates-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/source-bound-local-build-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/candidate-publisher-gated-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/image-override-green-local-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/arena-maas-candidate-model-green-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/launchpad-rhoai-maas-broker-green-local-20260922.json",
+        "scripts/review_catalog_render_offline.py",
+        "scripts/tests/test_review_catalog_render_offline.py",
+        "docs/catalog-intake-offline-render-review.md",
+        "backend/tests/test_catalog_intake_render_review.py",
         "contracts/catalog-intake-quality-v1.yaml",
         "backend/tests/test_catalog_intake_quality.py"
       ],
-      "note": "The hybrid fraud detection proof confirms that a corrected external Quickstart with a buildable Showroom is still enforced as draft, internal-only, one-seat, and blocked from activation. Static requirement review blocks unresolved inference mode, model endpoint, operator, storage, cluster-scope, privileged workload, unparsed-manifest, external-network, and external render-dependency needs rather than inferring target-cluster support. Network and render findings use stable codes and counts without copying hostnames or repository URLs. Mutable images, unmeasured resources, isolated rendered-output review, model/identity/secret integration, and live certification remain explicit gates."
+      "note": "The hybrid fraud detection proof and three additional pinned jkershawrh Quickstart candidates confirm that generated entries remain draft, internal-only, one-seat, and blocked from activation. Static requirement review blocks unresolved inference mode, model endpoint, operator, storage, cluster-scope, privileged workload, unparsed-manifest, external-network, and external render-dependency needs rather than inferring target-cluster support. A repeatable local preflight requires the pinned clean checkout, strict Helm lint and render, and emits coded findings and hashes without raw manifests or secrets. Registry inspection rejected the existing app digest because its OCI revision label differs from the pinned intake source. The source branch pins Red Hat base/test images; a local linux/amd64 app build passed readiness and scoring smoke tests. A manual-only Quay publisher requires exact SHA, scoped robot environment, eight preceding CI jobs, unique tag, SBOM, GitHub OIDC signature and source attestation, and exact-signer verification. A disabled-publish dispatch passed all eight jobs and skipped the publisher. A narrow local image override preflight is GREEN: it accepts only a digest-pinned Helm app.image, hashes it, requires that image in the rendered manifest, and denies extra values or mutable tags. Arena now also has a candidate-scoped MaaS publication of the existing five-replica Granite backend with real discovery and inference, missing/invalid/revoked/expired credential denial, and a measured Limitador usage delta. It created no model workload, did not cut over a live route, and did not restart the cluster. A disabled-by-default Launchpad RHOAI MaaS broker is GREEN locally across 53 key-lifecycle, cleanup, and response-security tests and GREEN-integration against one disposable candidate key: issue, candidate-only discovery, revoke, and stored revoked status all passed without recording plaintext. It requires TLS verification and supports a mounted CA bundle, is not deployed, and leaves LiteLLM as the default. This does not promote the item: candidate endpoint selection, Launchpad service-account authorization, live seat issuance/reclaim, source-bound live rendering, the complete participant journey, zero-residue evidence, the enabled trusted publisher, and full live certification remain explicit gates."
     },
     "LP-T104": {
       "state": "green-local",
@@ -895,6 +920,172 @@
         "admin/src/pages/CatalogIntakes.test.tsx"
       ],
       "note": "Admin Intake conditionally exposes source approval and discovery only when prerequisites pass, renders execution state and the versioned Quickstart quality profile, and now displays each certification gate's evidence requirements and blockers. A generated draft with no static findings still explains why artifact/security review is blocked. Certification, publication, provisioning, and live mutation remain disabled; historical v1.0 evidence remains unchanged."
+    },
+    "LP-T182": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "scripts/validate_permanent_home_intake.py",
+        "scripts/tests/test_permanent_home_intake.py",
+        "docs/permanent-home-intake-contract.md",
+        "evidence/runs/staging-convergence/local-streams-20260921.json"
+      ],
+      "note": "Only the fail-closed offline prerequisite contract is GREEN-local. It requires complete signed intake evidence for 13 categories and an immutable release digest, emits no submitted secrets, and never authorizes cutover. No permanent-home candidate has been accepted, bootstrapped, restored, or cut over; the full LP-T182 task remains open for live proof."
+    },
+    "LP-T014": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "red",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/catalog-intake-rendered-output-v2.yaml",
+        "contracts/catalog-intake-render-attestation-v1.yaml",
+        "backend/app/services/catalog_intake_render_attestation.py",
+        "backend/tests/test_catalog_intake_render_attestation.py",
+        "scripts/check_catalog_intake_candidate.py"
+      ],
+      "note": "The catalog-intake slice now binds exact source, Helm values, manifest, renderer image, and persisted review hashes to an externally keyed authenticated producer claim. Tampering, unknown producers, weak keys, mismatched bindings, and unverified isolation fail closed. This is only GREEN-local contract/component proof: no trusted renderer identity or key is provisioned, no authentic candidate receipt exists, and the broader task still requires build, scan, SBOM, image/content signing, provenance, and live verification."
+    },
+    "LP-T060": {
+      "state": "red",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "red",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/vef-aggregate-receipt-v1.yaml",
+        "backend/app/services/vef_telemetry_aggregation.py",
+        "backend/tests/test_vef_telemetry_aggregation.py"
+      ],
+      "note": "VEF can ingest and reconcile sanitized aggregate lifecycle, usage, and cost receipts, but Launchpad does not yet meter authoritative consumed CPU, memory, storage, network, artifact, public-edge, or per-model usage. The task remains RED; the new work establishes only the fail-closed receiving contract."
+    },
+    "LP-T061": {
+      "state": "red",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "red",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "schemas/vef/launchpad-pilot-input.v1alpha2.schema.json",
+        "schemas/vef/launchpad-pilot-claim.v1alpha2.schema.json",
+        "scripts/vef_export_pilot.py",
+        "backend/tests/test_vef_pilot.py",
+        "docs/vef-pilot.md"
+      ],
+      "note": "VEF v1alpha2 now separates shared platform, delivery, allocated inference, and unallocated cost and fails closed on unknown allocation, missing cost-center mapping, or absent finance approval. No approved rate card, budget, quota, cost-center mapping, invoice reconciliation, or chargeback policy exists, so the task remains RED."
+    },
+    "LP-T074": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/vef-receipt-ledger-v1.yaml",
+        "backend/app/services/vef_receipt_ledger.py",
+        "backend/tests/test_vef_receipt_ledger.py"
+      ],
+      "note": "A local SQLite component proves atomic complete-batch persistence, exact idempotent replay, conflicting-replay rejection, and externally keyed tamper-evident chaining for sanitized VEF receipts. It is not the required production outbox: multi-replica fencing, PostgreSQL, publisher receipts, cursors, retries, dead-letter handling, retention, restore, and failure injection remain open."
+    },
+    "LP-T133": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/vef-aggregate-receipt-v1.yaml",
+        "contracts/vef-receipt-ledger-v1.yaml",
+        "backend/app/services/vef_telemetry_aggregation.py",
+        "backend/app/services/vef_receipt_ledger.py"
+      ],
+      "note": "VEF now has versioned aggregate receipt types, exact field bounds, explicit unknown/partial/authoritative states, outcome reconciliation, duplicate detection, and tamper-evident local persistence. Authentic producer lineage, freshness windows, data-quality SLOs, schema registry compatibility, backfill controls, and production monitoring remain open."
+    },
+    "LP-T139": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/app/services/vef_telemetry_aggregation.py",
+        "backend/tests/test_vef_telemetry_aggregation.py",
+        "scripts/vef_export_pilot.py",
+        "backend/tests/test_vef_pilot.py",
+        "docs/vef-pilot.md"
+      ],
+      "note": "The VEF boundary rejects prompts, responses, email, participant identifiers, namespaces, clusters, credentials, secrets, and API keys and persists no incomplete or sensitive batch. This is GREEN-local only for VEF; platform-wide prevention, uploaded-document controls, trace/log scanning, retention/deletion, and live privacy testing remain open."
+    },
+    "LP-T013": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "docs/catalog-onboarding.md",
+        "catalog-onboarding/intel-llm-cpu-serving.yaml",
+        "backend/tests/test_catalog_onboarding.py",
+        "backend/tests/test_catalog_onboarding_cli.py"
+      ],
+      "note": "The repository-owned catalog package contract defines immutable workload and Showroom sources, deployment manifests and class, image digests, model/capability requirements, participant journeys, resource envelopes, cleanup scope, certification ceilings, and supported-target evidence. Local schema and rendering tests enforce it. This closes the contract-definition task locally; promotion of a new package through the full pipeline remains open under LP-T015 and the LP-S004 gate."
+    },
+    "LP-T108": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "docs/permanent-home-intake-contract.md",
+        "scripts/validate_permanent_home_intake.py",
+        "scripts/tests/test_validate_permanent_home_intake.py"
+      ],
+      "note": "The fail-closed permanent-home intake contract defines portable prerequisites for hardware/failure domains, OpenShift, storage, registry, DNS/TLS, ingress/egress, identity, secrets, backup/restore, observability, ownership/support, and execution connectivity without granting an execution cluster control-plane authority. This closes prerequisite definition locally; bootstrap, restore, migration, fencing, cutover, rollback, and live qualification remain open under LP-T109 through LP-T113."
+    },
+    "LP-T174": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "red",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [
+        "contracts/ai-control-plane-gateway-v1.yaml",
+        "contracts/delivery-streams-v1.yaml"
+      ],
+      "note": "The versioned AI gateway contract defines scoped attribution and credentials, OpenAI-compatible chat/responses plus embeddings/reranking/tools/streaming, timeout/retry/idempotency/circuit-breaker/error behavior, and audit/telemetry fields. This is contract-only closure: provider/consumer tests, an implemented gateway, credential brokering, routing, security, load, failure, recovery, and rollback evidence remain open."
     },
     "LP-T100": {
       "state": "green-integration",

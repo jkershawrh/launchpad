@@ -275,3 +275,39 @@ def test_release_evidence_cli_emits_machine_readable_gate(tmp_path: Path) -> Non
     payload = yaml.safe_load(output.read_text())
     assert payload["eligible"] is True
     assert payload["status"] == "GREEN-local"
+
+
+def test_release_evidence_rejects_duplicate_yaml_keys(tmp_path: Path) -> None:
+    receipt = _write(tmp_path, _receipt())
+    receipt.write_text(receipt.read_text().replace(
+        "component: backend\n", "component: portal\ncomponent: backend\n", 1
+    ))
+
+    report = evaluate_artifact_release_evidence(POLICY, receipt)
+
+    assert report["eligible"] is False
+    assert "duplicate YAML mapping key is prohibited" in report["failures"]
+
+
+def test_release_evidence_rejects_nested_duplicate_yaml_keys(tmp_path: Path) -> None:
+    receipt = _write(tmp_path, _receipt())
+    receipt.write_text(receipt.read_text().replace(
+        "  signature:\n    status: passed\n",
+        "  signature:\n    status: failed\n    status: passed\n",
+        1,
+    ))
+
+    report = evaluate_artifact_release_evidence(POLICY, receipt)
+
+    assert report["eligible"] is False
+    assert "duplicate YAML mapping key is prohibited" in report["failures"]
+
+
+def test_release_evidence_rejects_ambiguous_policy_yaml(tmp_path: Path) -> None:
+    policy = tmp_path / "policy.yaml"
+    policy.write_text(POLICY.read_text() + "\nretention:\n  minimum_rollback_releases: 3\n  superseded_release_days: 365\n")
+
+    report = evaluate_artifact_release_evidence(policy, _write(tmp_path, _receipt()))
+
+    assert report["eligible"] is False
+    assert "duplicate YAML mapping key is prohibited" in report["failures"]

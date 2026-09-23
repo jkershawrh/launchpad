@@ -1,0 +1,15 @@
+# Existing community Authorino 0.16.0 has no Authorino/AuthConfig instances.
+# Stage its supported Red Hat channel with manual plan approval so that the
+# RHCL resolver can be inspected before any operator replacement.
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: authorino-operator
+  namespace: openshift-operators
+spec:
+  channel: stable
+  installPlanApproval: Manual
+  name: authorino-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: authorino-operator.v1.4.3

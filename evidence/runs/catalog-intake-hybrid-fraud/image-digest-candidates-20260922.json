@@ -1,0 +1,55 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-image-digest-candidates/v1",
+  "observed_at": "2026-09-22T02:07:18Z",
+  "oci_config_observed_at": "2026-09-22T02:17:22Z",
+  "source_revision": "aa5c4e1c686bbecd70b17f4c4e27d26f033966e4",
+  "purpose": "Review-only registry observations; the app digest is rejected for this pinned intake because its OCI source label does not match. A separate local source-bound image was built but not pushed; see source-bound-local-build-20260922.json.",
+  "observations": [
+    {
+      "source_path": "chart/values.yaml",
+      "current_reference": "quay.io/redhat-gpte/hybrid-fraud-detection:latest",
+      "candidate_reference": "quay.io/redhat-gpte/hybrid-fraud-detection@sha256:379061a5f7d4ae7d1626ab020b57198711217a6093a1f9e8e34bf627b5169961",
+      "registry_content_type": "application/vnd.oci.image.manifest.v1+json",
+      "registry_status": 200,
+      "oci_config_digest": "sha256:94ddfbb23c42ff7364d42e4eb25299c8d9b09435da374da5fe2472f61a405557",
+      "oci_config_os": "linux",
+      "oci_config_architecture": "amd64",
+      "oci_source_revision_label": "89918198240021deb8f4c984f61f6012f0d0b535",
+      "source_revision_matches_intake": false,
+      "status": "rejected-for-current-intake",
+      "notes": "The image is a single-platform linux/amd64 manifest. Its OCI revision and vcs-ref labels both report 89918198240021deb8f4c984f61f6012f0d0b535, not the intake's aa5c4e1c686bbecd70b17f4c4e27d26f033966e4. Labels are observations, not signed provenance; the mismatch is sufficient to reject this candidate."
+    },
+    {
+      "source_path": "chart/templates/test-scorer.yaml",
+      "current_reference": "registry.access.redhat.com/ubi9/ubi-minimal:9.6",
+      "candidate_reference": "registry.access.redhat.com/ubi9/ubi-minimal@sha256:34880b64c07f28f64d95737f82f891516de9a3b43583f39970f7bf8e4cfa48b7",
+      "registry_content_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+      "registry_status": 200,
+      "linux_amd64_child_digest": "sha256:d1bad2a2790eac1651e57e78159a81b72ddfa7b836936b26cf51e09744bf1c2d"
+    },
+    {
+      "source_path": "src/Containerfile",
+      "current_reference": "registry.access.redhat.com/ubi9/python-311:latest",
+      "candidate_reference": "registry.access.redhat.com/ubi9/python-311@sha256:a0bdb55576fc5b8d6704279307817828ef027e1065533ceba133fe9516003a6c",
+      "registry_content_type": "application/vnd.docker.distribution.manifest.list.v2+json",
+      "registry_status": 200,
+      "linux_amd64_child_digest": "sha256:7b6cb58d3ff034df7b300800bd89a469d9bd2f739d43250d76b9c9e805307ab5"
+    }
+  ],
+  "required_before_promotion": [
+    "Build and publish a new app image from the newly reviewed source revision; verify its architecture and signed source-to-image provenance. The observed app digest is not acceptable for this intake.",
+    "Change the source chart and Containerfile, then re-pin intake to the resulting source commit and repeat discovery, lint, render, and security review.",
+    "Use a trusted isolated render and signed artifact/SBOM evidence; verify cold pull on the chosen cluster before live certification."
+  ],
+  "authority": {
+    "source_patch_draft_local": false,
+    "source_branch_commit": "f55486c8595c39a97f58205887fbfa72aad94d9d",
+    "source_branch_head_after_publisher_workflow": "1c8c9deac2d43e3399bbcc384e6cae278716f024",
+    "source_branch_pushed": true,
+    "pinned_source_revision_unchanged": true,
+    "catalog_modified": false,
+    "live_resources_changed": false,
+    "may_publish_catalog": false,
+    "may_certify": false
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-maas-candidate-evidence/v1",
+  "evidence_id": "HF-MAAS-CANDIDATE-MODEL-GREEN-20260922",
+  "recorded_at": "2026-09-22T17:36:01Z",
+  "repository_commit": "34f84352f492d92ed83ba0a2958552c5d305fa9f",
+  "cluster": "arena",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "scope": "candidate-model-path",
+  "status": "GREEN-candidate-model-path",
+  "release_eligible": false,
+  "cluster_restart_performed": false,
+  "live_route_cutover_performed": false,
+  "model_workload_created": false,
+  "model_backend": {
+    "deployment": "fleet-llm-d/vllm-granite-3-2-8b-tools",
+    "replicas": 5,
+    "ready_replicas": 5,
+    "available_replicas": 5,
+    "image": "registry.redhat.io/rhaii/vllm-cpu-rhel9@sha256:cf6577f6d526561651df5390aad916c53820a18a1659e3fb39c1c5a62aef0e3c",
+    "target_model": "granite-3.2-8b-tools"
+  },
+  "maas_resources": {
+    "namespace": "launchpad-maas-candidates",
+    "model_ref": "granite-3-2-8b-tools-candidate",
+    "model_ref_uid": "419f982d-1838-45da-a274-78336d232e70",
+    "model_ref_phase": "Ready",
+    "subscription": "hybrid-fraud-candidate",
+    "subscription_uid": "36fa2b1c-6e91-45ba-bd87-e19afaa228d7",
+    "subscription_phase": "Active",
+    "authorization_policy": "hybrid-fraud-candidate",
+    "service_identity": "system:serviceaccount:launchpad-maas-candidates:hybrid-fraud-candidate",
+    "token_limit": {
+      "limit": 120000,
+      "window": "1h"
+    }
+  },
+  "api_key": {
+    "stored_as_secret": "launchpad-maas-candidates/hybrid-fraud-maas-api-key",
+    "plaintext_recorded": false,
+    "replacement_key_installed_after_revocation_proof": true,
+    "expires_at": "2026-09-22T18:33:10Z"
+  },
+  "proof": {
+    "manifest_contract_tests": {
+      "status": "passed",
+      "tests": 4
+    },
+    "model_discovery_http": 200,
+    "model_discovery_ids": [
+      "granite-3-2-8b-tools-candidate"
+    ],
+    "authorized_inference_http": 200,
+    "authorized_inference_expected_content": "candidate-maas-ok",
+    "authorized_inference_observed_content": "candidate-maas-ok",
+    "missing_auth_http": 401,
+    "invalid_auth_http": 403,
+    "revocation": {
+      "delete_http": 200,
+      "denial_http": 403,
+      "denial_observed_after_seconds": 90,
+      "expected_security_outcome": "denied",
+      "contract_note": "The installed gateway denied the revoked key with 403 rather than the 401 documented for the MaaS API. No revoked request was authorized."
+    },
+    "expiration": {
+      "key_lifetime": "1m",
+      "initial_models_http": 200,
+      "denial_http": 403,
+      "denial_observed_after_seconds": 60,
+      "expected_security_outcome": "denied"
+    },
+    "usage_accounting": {
+      "inference_http": 200,
+      "expected_content": "usage-accounting-ok",
+      "observed_content": "usage-accounting-ok",
+      "backend_model": "granite-3.2-8b-tools",
+      "model_reported_usage": {
+        "prompt_tokens": 17,
+        "completion_tokens": 6,
+        "total_tokens": 23
+      },
+      "limitador_namespace": "launchpad-maas-candidates/granite-3-2-8b-tools-candidate",
+      "authorized_hits_before": 25,
+      "authorized_hits_after": 48,
+      "authorized_calls_before": 4,
+      "authorized_calls_after": 5
+    }
+  },
+  "tls": {
+    "upstream_host": "vllm-granite-3-2-8b-tools-fleet-llm-d.apps.arena.fm2aihpcsed.com",
+    "verification_disabled": false,
+    "trust_secret": "openshift-ingress/granite-candidate-arena-ingress-ca",
+    "trust_scope": "MaaS gateway namespace and exact candidate upstream host",
+    "certificate_not_after": "2028-07-15T03:18:07Z"
+  },
+  "artifact_hashes": {
+    "config/maas/arena-granite-candidate.yaml": "ad8b0fdae624bad5340bcabecd5a3478281f660ff34193798846ace74342982f",
+    "scripts/tests/test_arena_granite_maas_candidate_manifest.py": "3b525ef84352d5f97d5337eaffef825925c9560a9ebac538b0e15063ef09cac4"
+  },
+  "remaining_release_gates": [
+    "launchpad-seat-key-issuance-and-revocation",
+    "source-bound-live-render",
+    "full-one-seat-participant-journey",
+    "reclaim-and-zero-residue"
+  ]
+}

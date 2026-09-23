@@ -1,0 +1,42 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-chart-canary/v1",
+  "observed_at_utc": "2026-09-22T14:26:10Z",
+  "cluster": "arena",
+  "namespace": "launchpad-intake-fraud-20260922",
+  "source_revision": "4f77a0db2ff199493be79f48b1b564e43c8d303d",
+  "image": "ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:db529941748e9254779b2e71368751ba03b57531559fde6378a7a0ddcc563ef4",
+  "status": "passed-chart-canary",
+  "release_eligible": false,
+  "simulation": {
+    "two_containers_ready": true,
+    "ui_route_http_status": 200,
+    "rule_only_request_skipped_model": true,
+    "ambiguous_request_used_simulator": true
+  },
+  "live_model": {
+    "model": "granite-3.2-8b-tools",
+    "initial_internal_connection": "timed-out-without-launchpad-namespace-label",
+    "namespace_policy_label_required": "app.kubernetes.io/managed-by=launchpad",
+    "readiness_mode": "live",
+    "ambiguous_request_model_called": true,
+    "ambiguous_request_llm_failures": 0,
+    "ambiguous_request_latency_ms": 1034.74
+  },
+  "chart_resources": {
+    "pod_count": 1,
+    "requests": {"cpu_millicores": 350, "memory_mib": 512},
+    "limits": {"cpu_millicores": 1500, "memory_mib": 1024},
+    "observed_snapshot": {"cpu_millicores": 52, "memory_mib": 150},
+    "snapshot_is_capacity_measurement": false
+  },
+  "limitations": [
+    "No Launchpad Showroom, participant identity, or namespace RBAC journey was exercised.",
+    "A single resource snapshot does not establish a full-seat envelope or concurrency limit.",
+    "The direct internal model route was tested without a per-seat model key; authorization design remains open.",
+    "The internal routes were probed with TLS verification disabled; trusted-route certification remains open.",
+    "The Helm upgrade timed out while policy initially blocked model access; the rollout became ready after the intended namespace label was applied."
+  ],
+  "cleanup": "passed",
+  "namespace_absent_after_cleanup": true,
+  "global_context_changed": false
+}

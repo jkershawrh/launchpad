@@ -4,7 +4,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "deploy/models/flightpath-candidate/granite-3.2-8b-tools.yaml"
 SMALL_MANIFEST = ROOT / "deploy/models/flightpath-candidate/granite-2b-cpu.yaml"
@@ -116,16 +115,18 @@ def test_candidate_is_private_and_registers_only_the_certified_models():
     )
     target = yaml.safe_load(registry["data"]["clusters.yaml"])["clusters"][0]
     assert "model_endpoint" in target["capabilities"]
+    candidate_gateway = (
+        "http://launchpad-candidate-maas."
+        "launchpad-flightpath-candidate.svc:4000/v1"
+    )
     assert target["model_endpoints"] == {
-        "granite-2b-cpu": (
-            "http://vllm-granite-2b-cpu."
-            "launchpad-model-candidate.svc:8080/v1"
-        ),
-        "granite-3.2-8b-tools": (
-            "http://vllm-granite-3-2-8b-tools."
-            "launchpad-model-candidate.svc:8080/v1"
-        )
+        "granite-2b-cpu": candidate_gateway,
+        "granite-3.2-8b-tools": candidate_gateway,
     }
+    # Catalogs receive only the governed MaaS boundary. Direct provider
+    # endpoints and upstream credentials remain private to the gateway.
+    assert "launchpad-model-candidate.svc" not in registry["data"]["clusters.yaml"]
+    assert "api_key" not in target
 
 
 def test_candidate_kustomization_contains_only_candidate_resources():

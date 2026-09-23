@@ -1,0 +1,19 @@
+{
+  "schema_version": "launchpad.redhat.com/hybrid-fraud-maas-preflight/v1",
+  "cluster": "arena",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "status": "RED",
+  "findings": [
+    "maas-authorino-instance-missing",
+    "maas-component-disabled",
+    "maas-connectivity-link-subscription-missing",
+    "maas-infra-namespace-unresolved",
+    "maas-kuadrant-instance-not-ready",
+    "maas-kuadrant-operator-missing",
+    "maas-tenant-not-ready"
+  ],
+  "mutation_performed": false,
+  "release_eligible": false,
+  "observed_date": "2026-09-22",
+  "notes": "Read-only Arena preflight. OpenShift AI Operator 3.5.1 and Authorino Operator 0.16.0 are installed, but modelsAsService is Removed. No Red Hat Connectivity Link subscription or Kuadrant CRD is installed; only a community Kuadrant Operator package was visible in OperatorHub. The old Tenant error names the pre-3.5 database namespace; MaasTenantConfig is unavailable, so the correct infrastructure namespace could not be resolved and no Secret was read."
+}

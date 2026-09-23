@@ -1,0 +1,21 @@
+{
+  "schema_version": "launchpad.redhat.com/hybrid-fraud-maas-preflight/v1",
+  "evidence_id": "HF-1SEAT-MAAS-PREREQ-001",
+  "observed_at_utc": "2026-09-22T16:18:49Z",
+  "cluster": "arena",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "status": "RED",
+  "findings": [
+    "maas-api-unavailable",
+    "maas-authorino-instance-missing",
+    "maas-database-secret-missing",
+    "maas-tenant-not-ready"
+  ],
+  "tenant_phase": "Failed",
+  "installed_model_reference_kinds": ["LLMInferenceService", "ExternalModel"],
+  "existing_granite_backend_kind": "Deployment",
+  "candidate_configuration_applied": false,
+  "mutation_performed": false,
+  "release_eligible": false,
+  "source": "read-only isolated Arena kubeconfig and installed MaaS CRD schema"
+}

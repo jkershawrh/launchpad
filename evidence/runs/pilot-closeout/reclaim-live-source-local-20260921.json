@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-21T16:52:09Z",
+  "scope": "Local-only read-only reclaim inventory source; no live deployment or reclaim",
+  "red": [
+    {
+      "test": "backend/tests/test_reclaim_live_source.py",
+      "result": "ModuleNotFoundError: app.services.reclaim_live_source",
+      "intent": "A persisted read-only roster must match cluster-specific namespace ownership"
+    },
+    {
+      "test": "test_unrelated_individual_lab_does_not_block_workshop_inventory",
+      "result": "Failed: unrelated individual lab was incorrectly treated as an in-scope workshop namespace"
+    }
+  ],
+  "green_local": {
+    "targeted_tests": "10 passed",
+    "reclaim_regression_tests": "69 passed",
+    "lint": "All checks passed",
+    "proof": [
+      "One PostgreSQL REPEATABLE READ READ ONLY roster transaction",
+      "Cluster-specific namespace pagination and two-scan drift check",
+      "Exact session and workshop ownership comparison through the existing balance validator",
+      "Generic error and no partial inventory on source failure",
+      "No credentials or participant email fields in the normalized output"
+    ]
+  },
+  "open": [
+    "Live complete-fleet source run when Brutus and every registered target are reachable",
+    "Independent T-30 resource, entitlement, audit, and orphan inventory",
+    "Approval, lifecycle observation, and zero-residue proof after retention expiry"
+  ]
+}

@@ -1,6 +1,5 @@
-from unittest.mock import Mock
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from app.adapters.openshift.validation import OpenShiftValidationAdapter
 from app.domain.enums import ValidationResultStatus
@@ -8,9 +7,7 @@ from app.domain.models import LabSession, ValidationResult
 
 
 def _result(status: ValidationResultStatus, message: str) -> ValidationResult:
-    return ValidationResult(
-        session_id="s1", check_name="readiness", result=status, message=message
-    )
+    return ValidationResult(session_id="s1", check_name="readiness", result=status, message=message)
 
 
 def _session() -> LabSession:
@@ -22,11 +19,13 @@ def test_retries_transient_startup_failures_until_ready():
     adapter._sleep = Mock()
     adapter._validation_attempts = 3
     adapter._validation_interval = 0
-    adapter._validate_once = Mock(side_effect=[
-        [_result(ValidationResultStatus.FAIL, "Pod showroom is in phase Pending")],
-        [_result(ValidationResultStatus.FAIL, "Route showroom returned 503")],
-        [_result(ValidationResultStatus.PASS, "Route showroom returned 200")],
-    ])
+    adapter._validate_once = Mock(
+        side_effect=[
+            [_result(ValidationResultStatus.FAIL, "Pod showroom is in phase Pending")],
+            [_result(ValidationResultStatus.FAIL, "Route showroom returned 503")],
+            [_result(ValidationResultStatus.PASS, "Route showroom returned 200")],
+        ]
+    )
 
     results = adapter.validate(_session())
 
@@ -39,9 +38,9 @@ def test_does_not_retry_non_transient_validation_failure():
     adapter._sleep = Mock()
     adapter._validation_attempts = 3
     adapter._validation_interval = 0
-    adapter._validate_once = Mock(return_value=[
-        _result(ValidationResultStatus.FAIL, "Pod worker is in phase Failed")
-    ])
+    adapter._validate_once = Mock(
+        return_value=[_result(ValidationResultStatus.FAIL, "Pod worker is in phase Failed")]
+    )
 
     results = adapter.validate(_session())
 
@@ -98,10 +97,16 @@ def test_running_unready_pod_is_a_transient_failure():
     adapter._sleep = Mock()
     adapter._validation_attempts = 2
     adapter._validation_interval = 0
-    adapter._validate_once = Mock(side_effect=[
-        [_result(ValidationResultStatus.FAIL, "Pod api is running but not all containers ready")],
-        [_result(ValidationResultStatus.PASS, "Pod api is running and all containers ready")],
-    ])
+    adapter._validate_once = Mock(
+        side_effect=[
+            [
+                _result(
+                    ValidationResultStatus.FAIL, "Pod api is running but not all containers ready"
+                )
+            ],
+            [_result(ValidationResultStatus.PASS, "Pod api is running and all containers ready")],
+        ]
+    )
 
     results = adapter.validate(_session())
 
@@ -136,9 +141,7 @@ def test_route_validation_uses_configured_ca_bundle():
         patch("app.adapters.openshift.validation.httpx.get") as request,
     ):
         request.return_value.status_code = 200
-        result = adapter._check_route_accessible(
-            "s1", "showroom", "https://showroom.example.test"
-        )
+        result = adapter._check_route_accessible("s1", "showroom", "https://showroom.example.test")
 
     assert result.result == ValidationResultStatus.PASS
     request.assert_called_once_with(
@@ -146,4 +149,30 @@ def test_route_validation_uses_configured_ca_bundle():
         timeout=10,
         follow_redirects=True,
         verify="/etc/launchpad-ca/ca-bundle.crt",
+    )
+
+
+def test_route_validation_can_explicitly_disable_tls_verification_for_candidate():
+    adapter = OpenShiftValidationAdapter.__new__(OpenShiftValidationAdapter)
+
+    with (
+        patch.dict(
+            "os.environ",
+            {
+                "OPENSHIFT_ROUTE_TLS_VERIFY": "false",
+                "REQUESTS_CA_BUNDLE": "",
+                "SSL_CERT_FILE": "",
+            },
+        ),
+        patch("app.adapters.openshift.validation.httpx.get") as request,
+    ):
+        request.return_value.status_code = 200
+        result = adapter._check_route_accessible("s1", "demo", "https://demo.example.test")
+
+    assert result.result == ValidationResultStatus.PASS
+    request.assert_called_once_with(
+        "https://demo.example.test",
+        timeout=10,
+        follow_redirects=True,
+        verify=False,
     )

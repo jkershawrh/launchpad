@@ -2,7 +2,10 @@ from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
-from app.adapters.openshift.maas_keys import LiteLLMVirtualKeyBroker
+from app.adapters.openshift.maas_keys import (
+    LiteLLMVirtualKeyBroker,
+    RHOAIMaaSKeyBroker,
+)
 from app.domain.enums import CatalogCategory
 from app.domain.models import LabRequest, MaaSKeyRevocationReceipt
 from app.services.provisioning import ProvisioningService
@@ -74,6 +77,206 @@ def test_virtual_key_can_be_revoked_by_non_secret_alias():
     assert receipt is not None
     assert receipt.key_id == "token-1"
     assert receipt.confirmation_id == "request-alias-123"
+
+
+def test_rhoai_maas_key_is_subscription_bound_and_secret_free():
+    response = MagicMock()
+    response.json.return_value = {"key": "sk-oai-secret", "id": "maas-key-1"}
+    with patch("httpx.post", return_value=response) as post:
+        broker = RHOAIMaaSKeyBroker(
+            "https://maas.example.test",
+            "hybrid-fraud-candidate",
+            auth_token="control-token",
+        )
+        result = broker.create_key(
+            alias="launchpad-session-1",
+            duration="4h",
+            models=["granite-candidate"],
+            rpm_limit=60,
+            metadata={"session_id": "session-1", "tenant_id": "tenant-a"},
+        )
+
+    assert result.key == "sk-oai-secret"
+    assert result.key_id == "maas-key-1"
+    request = post.call_args
+    assert request.args[0] == "https://maas.example.test/maas-api/v1/api-keys"
+    assert request.kwargs["headers"]["Authorization"] == "Bearer control-token"
+    assert request.kwargs["json"] == {
+        "name": "launchpad-session-1",
+        "description": "Launchpad session session-1",
+        "expiresIn": "4h",
+        "subscription": "hybrid-fraud-candidate",
+    }
+    assert "models" not in request.kwargs["json"]
+    assert "rpm_limit" not in request.kwargs["json"]
+
+
+def test_rhoai_maas_key_uses_fresh_mounted_token(tmp_path):
+    token_file = tmp_path / "token"
+    token_file.write_text("first-token", encoding="utf-8")
+    broker = RHOAIMaaSKeyBroker(
+        "https://maas.example.test/maas-api",
+        "hybrid-fraud-candidate",
+        auth_token_file=str(token_file),
+    )
+    assert broker._headers["Authorization"] == "Bearer first-token"
+
+    token_file.write_text("rotated-token", encoding="utf-8")
+    assert broker._headers["Authorization"] == "Bearer rotated-token"
+
+
+def test_rhoai_maas_requires_tls_verification_and_accepts_ca_bundle():
+    with pytest.raises(ValueError, match="cannot disable TLS verification"):
+        RHOAIMaaSKeyBroker(
+            "https://maas.example.test",
+            "hybrid-fraud-candidate",
+            auth_token="control-token",
+            verify=False,
+        )
+
+    response = MagicMock()
+    response.json.return_value = {"key": "sk-oai-secret", "id": "maas-key-1"}
+    with patch("httpx.post", return_value=response) as post:
+        broker = RHOAIMaaSKeyBroker(
+            "https://maas.example.test",
+            "hybrid-fraud-candidate",
+            auth_token="control-token",
+            verify="/var/run/secrets/maas-ca/ca.crt",
+        )
+        broker.create_key(
+            alias="launchpad-session-1",
+            duration="4h",
+            models=["granite-candidate"],
+            rpm_limit=60,
+            metadata={},
+        )
+
+    assert post.call_args.kwargs["verify"] == "/var/run/secrets/maas-ca/ca.crt"
+
+
+def test_rhoai_maas_key_revokes_by_server_id():
+    response = MagicMock()
+    response.headers = {"x-request-id": "maas-revoke-1"}
+    with patch("httpx.delete", return_value=response) as delete:
+        broker = RHOAIMaaSKeyBroker(
+            "https://maas.example.test",
+            "hybrid-fraud-candidate",
+            auth_token="control-token",
+        )
+        receipt = broker.revoke_key("sk-oai-secret", key_id="maas-key-1")
+
+    assert delete.call_args.args[0].endswith("/maas-api/v1/api-keys/maas-key-1")
+    response.raise_for_status.assert_called_once()
+    assert receipt is not None
+    assert receipt.provider == "rhoai-maas"
+    assert receipt.key_id == "maas-key-1"
+    assert receipt.confirmation_id == "maas-revoke-1"
+    assert "sk-oai-secret" not in receipt.model_dump_json()
+
+
+def test_rhoai_maas_alias_recovery_matches_alias_and_id_before_delete():
+    search = MagicMock()
+    search.json.return_value = {
+        "data": [
+            {
+                "id": "wrong-id",
+                "name": "launchpad-session-1",
+                "status": "active",
+            },
+            {
+                "id": "maas-key-1",
+                "name": "launchpad-session-1",
+                "status": "active",
+            },
+        ]
+    }
+    deleted = MagicMock()
+    deleted.headers = {}
+    with (
+        patch("httpx.post", return_value=search) as post,
+        patch("httpx.delete", return_value=deleted) as delete,
+    ):
+        broker = RHOAIMaaSKeyBroker(
+            "https://maas.example.test",
+            "hybrid-fraud-candidate",
+            auth_token="control-token",
+        )
+        receipt = broker.revoke_key_by_alias(
+            "launchpad-session-1", key_id="maas-key-1"
+        )
+
+    assert post.call_args.args[0].endswith("/maas-api/v1/api-keys/search")
+    assert post.call_args.kwargs["json"] == {
+        "filters": {"includeEphemeral": True}
+    }
+    assert delete.call_args.args[0].endswith("/maas-api/v1/api-keys/maas-key-1")
+    assert receipt is not None
+    assert receipt.key_id == "maas-key-1"
+
+
+def test_rhoai_maas_alias_recovery_is_idempotent_for_revoked_key():
+    search = MagicMock()
+    search.json.return_value = {
+        "data": [
+            {
+                "id": "maas-key-1",
+                "name": "launchpad-session-1",
+                "status": "revoked",
+            }
+        ]
+    }
+    with (
+        patch("httpx.post", return_value=search),
+        patch("httpx.delete") as delete,
+    ):
+        broker = RHOAIMaaSKeyBroker(
+            "https://maas.example.test",
+            "hybrid-fraud-candidate",
+            auth_token="control-token",
+        )
+        receipt = broker.revoke_key_by_alias(
+            "launchpad-session-1", key_id="maas-key-1"
+        )
+
+    delete.assert_not_called()
+    assert receipt is not None
+    assert receipt.confirmation_id == "already-revoked"
+
+
+def test_rhoai_maas_alias_recovery_fails_closed_on_mismatch():
+    search = MagicMock()
+    search.json.return_value = {
+        "data": [
+            {
+                "id": "different-key",
+                "name": "launchpad-session-1",
+                "status": "active",
+            }
+        ]
+    }
+    with patch("httpx.post", return_value=search):
+        broker = RHOAIMaaSKeyBroker(
+            "https://maas.example.test",
+            "hybrid-fraud-candidate",
+            auth_token="control-token",
+        )
+        with pytest.raises(ValueError, match="did not resolve uniquely"):
+            broker.revoke_key_by_alias(
+                "launchpad-session-1", key_id="maas-key-1"
+            )
+
+
+def test_provisioning_records_rhoai_maas_attribution_mode():
+    broker = MagicMock()
+    broker.attribution_mode = "rhoai_maas_api_key"
+    broker.create_key.return_value.key = "sk-oai-seat"
+    broker.create_key.return_value.key_id = "maas-key-seat"
+    service = ProvisioningService(maas_key_broker=broker)
+
+    request = service.submit_request(_request())
+    session = service.provision(request.request_id)
+
+    assert session.metadata["inference_attribution"] == "rhoai_maas_api_key"
 
 
 def _request():

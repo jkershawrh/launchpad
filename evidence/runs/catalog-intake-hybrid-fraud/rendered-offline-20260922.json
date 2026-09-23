@@ -1,0 +1,61 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-offline-render-review/v1",
+  "generated_at": "2026-09-22T01:51:29Z",
+  "stage": "GREEN-local-partial",
+  "repository": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+  "revision": "aa5c4e1c686bbecd70b17f4c4e27d26f033966e4",
+  "package": "chart",
+  "red_green": {
+    "red": "The new shell-variable regression failed before the checker change: valid ${base_url} inside a container test command was reported as template-unresolved.",
+    "green": "The focused render, quality, pipeline, and onboarding suite passed 69 tests. Simple shell variables are allowed only in container command/args list items; unresolved substitutions elsewhere remain blocked."
+  },
+  "helm_lint_strict": "pass; icon recommendation only",
+  "repeatable_preflight": {
+    "command": ".venv/bin/python scripts/review_catalog_render_offline.py catalog-onboarding/hybrid-fraud-detection.yaml /Users/jkershaw/Documents/hybrid-fraud-detection",
+    "source_checkout_clean_at_pinned_revision": true,
+    "status": "blocked",
+    "exit_code": 2,
+    "findings": ["mutable-or-invalid-image"],
+    "resource_count": 5,
+    "image_count": 3,
+    "manifest_sha256": "sha256:4c4d9d1a32ccb41c0492edf8298d438a3d5056009f0c2488ae6f2382f8b660ac",
+    "tests": "Four new tests failed before implementation and passed after implementation; this is local preflight evidence, not a trusted release receipt."
+  },
+  "renders": [
+    {
+      "mode": "default-demo",
+      "manifest_sha256": "sha256:2da64a9610dbcc69522eec79cb3bb73059a773c2fd780390b4c3ae91e117f27b",
+      "bytes": 4484,
+      "resource_count": 5,
+      "kinds": {"Service": 1, "Deployment": 1, "Route": 2, "Pod": 1},
+      "render_findings": ["mutable-or-invalid-image"]
+    },
+    {
+      "mode": "example-remote-model",
+      "manifest_sha256": "sha256:7c287ca26a2b9cea1a333953a0809a2c06280dfb7f8f6711075d3b09c3bc931f",
+      "bytes": 4748,
+      "resource_count": 5,
+      "kinds": {"Service": 1, "Deployment": 1, "Route": 2, "Pod": 1},
+      "render_findings": ["mutable-or-invalid-image"],
+      "model_secret_reference_present": true,
+      "note": "The endpoint and Secret name were inert example values; no model call or cluster Secret was used."
+    }
+  ],
+  "observations": [
+    "No fixed Route host, cluster-scoped resource, privileged workload, or rendered Secret was detected in these local renders.",
+    "The Deployment renders scorer and UI containers; the test Pod is a separate Helm hook resource.",
+    "Deployment requests total 350m CPU and 512Mi memory in the default render, excluding the test Pod and cluster overhead; this is not measured per-seat capacity."
+  ],
+  "open_gates": [
+    "Build and publish a source-bound app image, then pin the scorer/UI and test images and build base to approved immutable digests. The observed app digest was rejected because its OCI revision label differs from the pinned intake; see image-digest-candidates-20260922.json.",
+    "Run the exact source and values through an isolated trusted renderer and bind its signed receipt to discovery identity and manifest digest.",
+    "Select and certify the real model endpoint, runtime Secret source, ingress policy, and participant routes.",
+    "Measure one-seat CPU, memory, storage, model behavior, Showroom journey, restart, and zero-residue reclaim before any catalog activation."
+  ],
+  "authority": {
+    "may_publish_catalog": false,
+    "may_provision": false,
+    "may_certify": false,
+    "live_resources_changed": false
+  }
+}

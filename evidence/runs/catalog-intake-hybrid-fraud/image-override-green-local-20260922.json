@@ -1,0 +1,35 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-image-override-preflight/v1",
+  "observed_at": "2026-09-22T11:06:38Z",
+  "stage": "GREEN-local",
+  "scope": "Read-only offline Helm render review; no candidate image digest was accepted or deployed.",
+  "red_green": {
+    "red": "Three new tests failed before implementation: no override binding or digest report, unsafe/extra Helm values were not rejected, and Helm ignoring the requested image was accepted.",
+    "green": "Eight focused reviewer tests and 77 onboarding/render/quality/pipeline tests passed; Ruff check, format, and git diff checks passed."
+  },
+  "contract": {
+    "source": "The local checkout must be clean at the exact intake-pinned Git revision.",
+    "values": "Only runtime.workload.helm_values.app.image may be supplied; it must be an immutable sha256 image reference safe for one --set-string argument.",
+    "binding": "The canonical Helm override SHA-256 and rendered manifest SHA-256 are recorded, and the exact image must appear in a rendered image field.",
+    "denials": [
+      "mutable-or-invalid-image",
+      "helm-values-unsupported-or-unsafe",
+      "image-override-not-rendered",
+      "source-revision-mismatch",
+      "source-dirty"
+    ],
+    "output": "Stable findings, counts, and hashes only; no raw manifest, image reference, secret, or provider output."
+  },
+  "limitations": [
+    "This is a developer preflight, not a trusted isolated renderer or signed receipt.",
+    "No pushed image digest exists from the new source; the Quay candidate publisher was only tested with publication disabled.",
+    "Signature, SBOM, source provenance, registry pull, model endpoint, identity, route, capacity, and reclaim are not certified."
+  ],
+  "authority": {
+    "catalog_modified": false,
+    "image_pushed": false,
+    "live_resources_changed": false,
+    "may_publish_catalog": false,
+    "may_certify": false
+  }
+}

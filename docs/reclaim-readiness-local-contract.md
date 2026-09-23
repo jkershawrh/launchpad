@@ -87,8 +87,10 @@ completeness declarations. Provisioned seats count whether claimed or not.
 
 ## Evidence and limits
 
-The [September 17 inventory](active-seat-inventory-20260917.md) is historical
-and cannot be re-used as Tuesday's fresh snapshot. Its nine short workshop
+The [September 17 inventory](active-seat-inventory-20260917.md) and the
+[September 21 interim refresh](../evidence/runs/pilot-closeout/retained-workshops-20260921.json)
+are historical and cannot be re-used as the fresh T-30 snapshot at an approved
+post-expiry reclaim window. The older inventory's nine short workshop
 IDs and summary counts are insufficient to construct this JSON. A trusted
 read-only collector, scoped to the entire retained estate and every persisted
 cluster, must supply full IDs and prove its four completeness declarations.

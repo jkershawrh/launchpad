@@ -1,0 +1,413 @@
+{
+  "catalog_item_id": "hybrid-fraud-detection",
+  "discovery_status": "pass",
+  "draft_intake": {
+    "api_version": "launchpad.redhat.com/v1alpha1",
+    "catalog": {
+      "catalog_item_id": "hybrid-fraud-detection",
+      "category": "guided_build",
+      "description": "Repository-discovered onboarding draft for Hybrid Fraud Detection on Intel Xeon.",
+      "display_name": "Hybrid Fraud Detection on Intel Xeon",
+      "status": "draft",
+      "version": "0.1.0"
+    },
+    "certification": {
+      "activation_blockers": [
+        "Replace zero resource placeholders with measured per-seat resource measurements.",
+        "Review required capabilities, models, participant tabs, routes, identity, and runtime Secret sources.",
+        "Complete source, one-seat, five-seat, and twenty-five-seat certification gates before activation.",
+        "Review every unparsed manifest; templating or invalid YAML prevents complete static discovery.",
+        "Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.",
+        "Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved",
+        "Resolve Quickstart requirement with approved target evidence: manifest-unparsed"
+      ],
+      "max_workshop_seats": 1,
+      "promotion_sequence": [
+        1,
+        5,
+        25
+      ],
+      "stage": "repository-discovery"
+    },
+    "discovery": {
+      "errors": [],
+      "inventory": {
+        "cleanup_candidates": [
+          {
+            "api_version": "v1",
+            "kind": "Pod",
+            "name": "{{ .Release.Name }}-test-scorer",
+            "path": "chart/templates/test-scorer.yaml"
+          }
+        ],
+        "cluster_scoped_resources": [],
+        "containerfiles": [
+          "src/Containerfile"
+        ],
+        "external_render_dependencies": [],
+        "images": [
+          {
+            "path": "chart/templates/test-scorer.yaml",
+            "reference": "registry.access.redhat.com/ubi9/ubi-minimal@sha256:34880b64c07f28f64d95737f82f891516de9a3b43583f39970f7bf8e4cfa48b7",
+            "source": "manifest"
+          },
+          {
+            "path": "src/Containerfile",
+            "reference": "registry.access.redhat.com/ubi9/python-311@sha256:a0bdb55576fc5b8d6704279307817828ef027e1065533ceba133fe9516003a6c",
+            "source": "containerfile"
+          }
+        ],
+        "manifest_resources": [
+          {
+            "api_version": "v1",
+            "kind": "Pod",
+            "name": "{{ .Release.Name }}-test-scorer",
+            "path": "chart/templates/test-scorer.yaml"
+          }
+        ],
+        "models": [],
+        "mutable_images": [],
+        "network_exposure": [],
+        "operators": [],
+        "ports": [],
+        "privileged_findings": [],
+        "resource_envelopes": [],
+        "routes": [],
+        "secret_manifests": [],
+        "secret_references": [],
+        "storage": [],
+        "unparsed_manifests": [
+          "chart/templates/deployment.yaml",
+          "chart/templates/route-ui.yaml",
+          "chart/templates/route.yaml",
+          "chart/templates/service.yaml"
+        ],
+        "unparsed_packages": []
+      },
+      "provisional_fields": [
+        "catalog.description",
+        "runtime.required_capabilities",
+        "runtime.required_models",
+        "runtime.seat_resources",
+        "runtime.tabs"
+      ],
+      "source": "quickstart-repository",
+      "warnings": []
+    },
+    "onboarding_contract": "catalog-onboarding/hybrid-fraud-detection.yaml",
+    "quality": {
+      "artifacts": {
+        "benchmark_rubric": {
+          "entry_count": 5,
+          "path": "tests/benchmark_rubric.yaml",
+          "status": "present-valid"
+        },
+        "ci_workflows": {
+          "path": ".github/workflows",
+          "status": "present"
+        },
+        "claim_registry": {
+          "entry_count": 1,
+          "path": "tests/claim_registry.yaml",
+          "status": "present-valid"
+        },
+        "makefile": {
+          "path": "Makefile",
+          "status": "present"
+        },
+        "publication_test": {
+          "path": "tests/publication/test_readme.py",
+          "status": "present"
+        },
+        "validation_matrix": {
+          "entry_count": 7,
+          "path": "tests/validation_matrix.yaml",
+          "status": "present-valid"
+        }
+      },
+      "authority": {
+        "may_certify": false,
+        "may_modify_source": false,
+        "may_provision": false,
+        "may_publish_catalog": false,
+        "mode": "analysis-only"
+      },
+      "business_solution": {
+        "action_oriented_title": true,
+        "business_language_present": true,
+        "human_review_required": true,
+        "missing_sections": [],
+        "readme_present": true,
+        "required_sections_present": true,
+        "status": "review-required",
+        "title": "Build a hybrid fraud-scoring demo with explainable AI"
+      },
+      "capacity_proposal": {
+        "declared_models": [],
+        "explicit_resource_envelopes": 0,
+        "framework_signals": [
+          "gradio",
+          "openai",
+          "react"
+        ],
+        "inference_mode": "remote-endpoint",
+        "measurement_required_before_placement": true,
+        "status": "review-required"
+      },
+      "gate": {
+        "blocking_findings": [
+          "Unresolved Quickstart requirement: model-endpoint-unresolved",
+          "Unresolved Quickstart requirement: manifest-unparsed"
+        ],
+        "status": "blocked"
+      },
+      "portfolio_overlap": {
+        "mutable_live_org_scan_allowed": false,
+        "reason": "A pinned versioned portfolio inventory was not supplied.",
+        "status": "not-run"
+      },
+      "requirement_review": {
+        "findings": [
+          {
+            "code": "model-endpoint-unresolved",
+            "evidence_count": 0
+          },
+          {
+            "code": "manifest-unparsed",
+            "evidence_count": 4
+          }
+        ],
+        "resolution_authority": "human-and-cluster-evidence",
+        "status": "blocked",
+        "target_support_inferred": false
+      },
+      "schema_version": "launchpad.redhat.com/catalog-intake-quality/v1",
+      "security_summary": {
+        "cluster_scoped_resource_count": 0,
+        "mutable_image_count": 0,
+        "privileged_finding_count": 0,
+        "secret_manifest_count": 0,
+        "secret_values_included": false,
+        "status": "review-required",
+        "unparsed_manifest_count": 4
+      },
+      "showroom": {
+        "execute_block_count": 7,
+        "hands_on_module_count": 1,
+        "key_takeaway_count": 1,
+        "page_count": 3,
+        "see_section_count": 1,
+        "thin_modules": [],
+        "verification_section_count": 1
+      }
+    },
+    "runtime": {
+      "allowed_exposure_policies": [
+        "internal"
+      ],
+      "deployment_type": "helm",
+      "required_capabilities": [
+        "openshift",
+        "showroom"
+      ],
+      "required_models": [],
+      "seat_resources": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0,
+        "storage_gib": 0
+      },
+      "tabs": [
+        {
+          "id": "terminal",
+          "title": "Terminal"
+        }
+      ]
+    },
+    "sources": {
+      "showroom": {
+        "playbook": "site.yml",
+        "repo_url": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+        "revision": "4f77a0db2ff199493be79f48b1b564e43c8d303d",
+        "start_path": "showroom"
+      },
+      "workload": {
+        "deploy_path": "chart",
+        "repo_url": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+        "revision": "4f77a0db2ff199493be79f48b1b564e43c8d303d"
+      }
+    }
+  },
+  "errors": [],
+  "inventory": {
+    "cleanup_candidates": [
+      {
+        "api_version": "v1",
+        "kind": "Pod",
+        "name": "{{ .Release.Name }}-test-scorer",
+        "path": "chart/templates/test-scorer.yaml"
+      }
+    ],
+    "cluster_scoped_resources": [],
+    "containerfiles": [
+      "src/Containerfile"
+    ],
+    "external_render_dependencies": [],
+    "images": [
+      {
+        "path": "chart/templates/test-scorer.yaml",
+        "reference": "registry.access.redhat.com/ubi9/ubi-minimal@sha256:34880b64c07f28f64d95737f82f891516de9a3b43583f39970f7bf8e4cfa48b7",
+        "source": "manifest"
+      },
+      {
+        "path": "src/Containerfile",
+        "reference": "registry.access.redhat.com/ubi9/python-311@sha256:a0bdb55576fc5b8d6704279307817828ef027e1065533ceba133fe9516003a6c",
+        "source": "containerfile"
+      }
+    ],
+    "manifest_resources": [
+      {
+        "api_version": "v1",
+        "kind": "Pod",
+        "name": "{{ .Release.Name }}-test-scorer",
+        "path": "chart/templates/test-scorer.yaml"
+      }
+    ],
+    "models": [],
+    "mutable_images": [],
+    "network_exposure": [],
+    "operators": [],
+    "ports": [],
+    "privileged_findings": [],
+    "resource_envelopes": [],
+    "routes": [],
+    "secret_manifests": [],
+    "secret_references": [],
+    "storage": [],
+    "unparsed_manifests": [
+      "chart/templates/deployment.yaml",
+      "chart/templates/route-ui.yaml",
+      "chart/templates/route.yaml",
+      "chart/templates/service.yaml"
+    ],
+    "unparsed_packages": []
+  },
+  "quality": {
+    "artifacts": {
+      "benchmark_rubric": {
+        "entry_count": 5,
+        "path": "tests/benchmark_rubric.yaml",
+        "status": "present-valid"
+      },
+      "ci_workflows": {
+        "path": ".github/workflows",
+        "status": "present"
+      },
+      "claim_registry": {
+        "entry_count": 1,
+        "path": "tests/claim_registry.yaml",
+        "status": "present-valid"
+      },
+      "makefile": {
+        "path": "Makefile",
+        "status": "present"
+      },
+      "publication_test": {
+        "path": "tests/publication/test_readme.py",
+        "status": "present"
+      },
+      "validation_matrix": {
+        "entry_count": 7,
+        "path": "tests/validation_matrix.yaml",
+        "status": "present-valid"
+      }
+    },
+    "authority": {
+      "may_certify": false,
+      "may_modify_source": false,
+      "may_provision": false,
+      "may_publish_catalog": false,
+      "mode": "analysis-only"
+    },
+    "business_solution": {
+      "action_oriented_title": true,
+      "business_language_present": true,
+      "human_review_required": true,
+      "missing_sections": [],
+      "readme_present": true,
+      "required_sections_present": true,
+      "status": "review-required",
+      "title": "Build a hybrid fraud-scoring demo with explainable AI"
+    },
+    "capacity_proposal": {
+      "declared_models": [],
+      "explicit_resource_envelopes": 0,
+      "framework_signals": [
+        "gradio",
+        "openai",
+        "react"
+      ],
+      "inference_mode": "remote-endpoint",
+      "measurement_required_before_placement": true,
+      "status": "review-required"
+    },
+    "gate": {
+      "blocking_findings": [
+        "Unresolved Quickstart requirement: model-endpoint-unresolved",
+        "Unresolved Quickstart requirement: manifest-unparsed"
+      ],
+      "status": "blocked"
+    },
+    "portfolio_overlap": {
+      "mutable_live_org_scan_allowed": false,
+      "reason": "A pinned versioned portfolio inventory was not supplied.",
+      "status": "not-run"
+    },
+    "requirement_review": {
+      "findings": [
+        {
+          "code": "model-endpoint-unresolved",
+          "evidence_count": 0
+        },
+        {
+          "code": "manifest-unparsed",
+          "evidence_count": 4
+        }
+      ],
+      "resolution_authority": "human-and-cluster-evidence",
+      "status": "blocked",
+      "target_support_inferred": false
+    },
+    "schema_version": "launchpad.redhat.com/catalog-intake-quality/v1",
+    "security_summary": {
+      "cluster_scoped_resource_count": 0,
+      "mutable_image_count": 0,
+      "privileged_finding_count": 0,
+      "secret_manifest_count": 0,
+      "secret_values_included": false,
+      "status": "review-required",
+      "unparsed_manifest_count": 4
+    },
+    "showroom": {
+      "execute_block_count": 7,
+      "hands_on_module_count": 1,
+      "key_takeaway_count": 1,
+      "page_count": 3,
+      "see_section_count": 1,
+      "thin_modules": [],
+      "verification_section_count": 1
+    }
+  },
+  "repo_url": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+  "revision": "4f77a0db2ff199493be79f48b1b564e43c8d303d",
+  "schema": "launchpad.redhat.com/catalog-discovery-receipt/v1",
+  "showroom": {
+    "playbook": "site.yml",
+    "start_path": "showroom"
+  },
+  "warnings": [],
+  "workload": {
+    "deploy_path": "chart",
+    "deployment_type": "helm"
+  }
+}

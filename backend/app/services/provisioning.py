@@ -826,7 +826,14 @@ class ProvisioningService:
                 **(prepared_session.metadata if prepared_session else {}),
                 "requested_models": selected_models,
                 "inference_attribution": (
-                    "litellm_virtual_key"
+                    (
+                        self.maas_key_broker.attribution_mode
+                        if isinstance(
+                            getattr(self.maas_key_broker, "attribution_mode", None),
+                            str,
+                        )
+                        else "litellm_virtual_key"
+                    )
                     if maas_key_id
                     else "direct_endpoint_unattributed"
                 ),

@@ -4,9 +4,10 @@
 
 The product roadmap is broad enough to describe the intended product, but the
 proof ledger is incomplete. The Markdown roadmap contains 182 tasks across 29
-epics and 35 stories. After this review, 55 tasks have explicit status records:
-47 GREEN-local, five GREEN-integration, and three RED. The remaining 127 tasks
-have no explicit status entry and must be treated as RED/untracked.
+epics and 35 stories. After the evidence reconciliation, 58 tasks have explicit
+status records: 50 GREEN-local, five GREEN-integration, and three RED. The
+remaining 124 tasks have no explicit status entry and must be treated as
+RED/untracked.
 
 Six task records can be updated from evidence already present:
 
@@ -16,6 +17,63 @@ Six task records can be updated from evidence already present:
 - `LP-T074`: GREEN-local for atomic local persistence, replay, and tamper detection; the production outbox remains open.
 - `LP-T133`: GREEN-local for versioned VEF telemetry fields, completeness rules, and local integrity.
 - `LP-T139`: GREEN-local for VEF sensitive-field rejection; platform-wide privacy enforcement remains open.
+
+A second pass over the previously untracked work found only three additional
+task deliverables whose exact local acceptance statement is already satisfied:
+
+- `LP-T013`: GREEN-local; the Git-owned catalog package contract and validation
+  cover immutable sources, Showroom/workload packaging, images, models,
+  journeys, resources, cleanup, deployment class, and supported-target proof.
+- `LP-T108`: GREEN-local; the fail-closed permanent-home intake contract covers
+  every named portable prerequisite without granting cutover authority.
+- `LP-T174`: GREEN-local; the versioned AI gateway contract covers attribution,
+  interfaces, streaming, timeout/retry/idempotency/error behavior, and audit
+  fields. It is contract closure only, not a working gateway.
+
+These states mean **the stated task has local proof**, not that its parent story
+or product capability is complete. Promotion, live use, and production gates
+remain red unless separately evidenced.
+
+## Reconciliation method and rejected closure candidates
+
+The review compared each previously untracked task's actual verb and scope with
+repository code, contracts, tests, receipts, and explicit statements of known
+gaps. Related material was not enough: a planning document, an API shape, or a
+pod-ready observation did not close an implementation or live-certification
+task.
+
+Important false positives that remain open include:
+
+- `LP-T015` and `LP-T016`: release evidence exists, but there is no complete
+  test-to-production promotion/rollback path or consistent release identity in
+  all three user surfaces.
+- `LP-T026` through `LP-T035`: pilot HA/DR and public-edge material exists, but
+  HA PostgreSQL, fencing, repeated DR drills, connector fault proof, and the
+  long-term DNS/TLS/WAF decision are incomplete.
+- `LP-T040` and `LP-T041`: deployment classes and review guidance are described,
+  but promoted catalogs do not yet persist a fully scored decision and proof.
+- `LP-T043` through `LP-T050`: model, cluster, seat, and admin views exist in
+  slices, but authoritative inference telemetry, injected-failure diagnosis,
+  measured SLOs, alerts, and support escalation proof are incomplete.
+- `LP-T073`, `LP-T075` through `LP-T083`: the StarGate design is detailed, but
+  its own current-state assessment says the durable producer/consumer path,
+  receipts, metrics, product summary, and fault proof are pending.
+- `LP-T105`: policy documents say AI cannot create eligibility, but the older
+  recommendation path is not yet proven incapable of influencing admission;
+  this invariant therefore remains open.
+- `LP-T109` through `LP-T113`: prerequisite intake is defined, but clean
+  bootstrap, restore, migration, in-flight reconciliation, cutover/fencing,
+  rollback, and reclaim certification have not been demonstrated.
+- `LP-T121` through `LP-T127`: individual pilot and component tests are not the
+  required unchanged-candidate production-shaped suite and three consecutive
+  certifications.
+- `LP-T129` through `LP-T135`: the SRE operating-model contract names the work;
+  continuous synthetics, actionable alerting, incident operations, staffed
+  ownership, and game-day proof are not complete.
+- FinOps, governance, GTM, organizational-readiness, OSS, and repository-split
+  documents mostly define intended policy. They do not yet satisfy the tasks
+  that require enforcement, named approval, independent qualification, clean
+  public builds, or live reconciliation.
 
 No task can honestly advance to GREEN-live from this evidence. The release
 rubric remains 0/100 because live, production-shaped, repeatable proof is still
@@ -112,7 +170,7 @@ restore, and reclaim.
 
 ## Recommended convergence order
 
-1. Add explicit RED records for all 127 untracked tasks.
+1. Add explicit RED records for all 124 untracked tasks.
 2. Version the delivery model to separate VEF analytics/cost from SRE operations.
 3. Provision and authenticate the trusted intake renderer; keep promotion blocked until live certification.
 4. Implement the PostgreSQL/outbox form of the VEF ledger with fencing, replay, dead letters, retention, and restore proof.

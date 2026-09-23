@@ -1,0 +1,13 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-arena-pull-probe/v1",
+  "cluster": "arena",
+  "image": "ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:db529941748e9254779b2e71368751ba03b57531559fde6378a7a0ddcc563ef4",
+  "status": "passed",
+  "findings": [],
+  "namespace": "launchpad-image-cert-1728d890",
+  "cleanup": "passed",
+  "release_eligible": false,
+  "current_context_changed": false,
+  "namespace_absent_after_cleanup": true,
+  "check_scope": "immutable image pull, readiness endpoint, and scoring API smoke test"
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-model-runtime-progress/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "source_revision_pending_candidate": "00f07a8265579efd77964b390d65368999a1523a",
+  "source_branch": "codex/hybrid-fraud-immutable-images",
+  "candidate_publish_run": "https://github.com/jkershawrh/hybrid-fraud-detection/actions/runs/35741711285",
+  "chart_contract": "endpoint, model name, and API key from a namespaced runtime Secret; fail closed if Secret name missing",
+  "source_tests": "62 passed",
+  "launchpad_runtime_contract_tests": "9 passed",
+  "current_draft_gate": "RED",
+  "current_draft_findings": ["model-runtime-secret-missing"],
+  "current_draft_source_revision": "4f77a0db2ff199493be79f48b1b564e43c8d303d",
+  "current_draft_image_is_valid_for_new_source": false,
+  "release_eligible": false,
+  "live_labs_changed": false
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-local-image-build/v1",
+  "observed_at": "2026-09-22T02:28:39Z",
+  "repository": "https://github.com/jkershawrh/hybrid-fraud-detection.git",
+  "local_branch": "codex/hybrid-fraud-immutable-images",
+  "source_revision": "f55486c8595c39a97f58205887fbfa72aad94d9d",
+  "source_revision_pushed": true,
+  "source_branch_url": "https://github.com/jkershawrh/hybrid-fraud-detection/tree/codex/hybrid-fraud-immutable-images",
+  "source_checkout_clean": true,
+  "changes": [
+    "Pin the UBI Python build base and Helm smoke-test image to observed immutable manifest-list digests.",
+    "Add a publication test requiring those two source references to remain digest-pinned.",
+    "Leave the chart app image at its existing mutable tag until a source-bound published replacement exists."
+  ],
+  "red_green": {
+    "red": "The new publication test failed against the original mutable image references before the edit.",
+    "green": "57 source tests passed; strict Helm lint passed; Ruff and git diff checks passed."
+  },
+  "github_ci": {
+    "run_url": "https://github.com/jkershawrh/hybrid-fraud-detection/actions/runs/35717226923",
+    "head_sha": "f55486c8595c39a97f58205887fbfa72aad94d9d",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs_passed": 8,
+    "jobs_failed": 0,
+    "trigger": "workflow_dispatch on the isolated source branch",
+    "registry_publish_job_present": false,
+    "signing_job_present": false,
+    "repository_secrets_listed": 0,
+    "organization_secrets_checked": false
+  },
+  "local_build": {
+    "platform": "linux/amd64",
+    "image": "localhost/hybrid-fraud-detection:intake-f55486c",
+    "local_digest": "sha256:9a2e7a97b78cee0b13214e372debe1effc7f5bbbfc433170d8eeaf7e7f44cfc9",
+    "revision_label": "f55486c8595c39a97f58205887fbfa72aad94d9d",
+    "source_label": "https://github.com/jkershawrh/hybrid-fraud-detection",
+    "ready_probe": "GET /ready returned 200 in demo mode",
+    "score_probe": "POST /api/v1/score returned 200 for the sample transaction",
+    "published": false,
+    "signed_provenance": false,
+    "sbom_attached": false,
+    "cold_pull_tested": false,
+    "model_endpoint_tested": false,
+    "notes": "The local digest is not a registry-pullable release reference. The label was supplied at build time and is not a signed attestation. src/requirements.txt uses lower-bound package versions, so a rebuild may resolve different dependencies."
+  },
+  "open_gates": [
+    "Publish an approved app image from the reviewed source with signed source-to-image provenance and SBOM; current CI only builds and tests locally and has no registry-publish or signing job. Repository-level secrets list was empty; organization-level secrets were not checked.",
+    "Lock or otherwise record the resolved Python dependency set for a repeatable release build.",
+    "Pin the published app image as a separately reviewed Helm app.image override bound to the source revision and trusted render. Do not create a commit/digest cycle by committing the image digest back into the same source revision.",
+    "Verify a cold pull and all runtime, participant, identity, capacity, and cleanup behavior on an eligible cluster."
+  ],
+  "authority": {
+    "catalog_modified": false,
+    "image_pushed": false,
+    "live_resources_changed": false,
+    "may_publish_catalog": false,
+    "may_certify": false
+  }
+}

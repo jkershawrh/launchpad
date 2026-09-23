@@ -1,0 +1,47 @@
+# Pilot MaaS key-lifecycle database. Dedicated from Launchpad and sas-ram-db.
+# The in-cluster NFS repository is a recovery aid, not off-cluster DR.
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: launchpad-maas-db
+  namespace: postgres-operator
+  labels:
+    app.kubernetes.io/part-of: launchpad-maas-bootstrap
+spec:
+  postgresVersion: 15
+  instances:
+    - name: instance1
+      replicas: 2
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          cpu: "1"
+          memory: 2Gi
+      dataVolumeClaimSpec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs-storage
+        resources:
+          requests:
+            storage: 10Gi
+  backups:
+    pgbackrest:
+      repos:
+        - name: repo1
+          schedules:
+            full: "0 4 * * 0"
+            incremental: "0 4 * * 1-6"
+          volume:
+            volumeClaimSpec:
+              accessModes:
+                - ReadWriteOnce
+              storageClassName: nfs-storage
+              resources:
+                requests:
+                  storage: 20Gi
+  users:
+    - name: maasuser
+      databases:
+        - maasdb

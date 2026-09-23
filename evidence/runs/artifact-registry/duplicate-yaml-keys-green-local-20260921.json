@@ -1,0 +1,26 @@
+{
+  "evidence_id": "artifact-registry-duplicate-yaml-keys-green-local-20260921",
+  "generated_at": "2026-09-21T17:04:42Z",
+  "stage": "GREEN-local",
+  "base_commit": "34f84352f492d92ed83ba0a2958552c5d305fa9f",
+  "task_ids": ["LP-T017"],
+  "red": {
+    "release_receipt_tests": "2 failed, 12 passed: duplicate top-level and nested YAML keys were silently overwritten and the receipt was eligible",
+    "registry_policy_test": "1 failed: duplicate policy mapping was not explicitly rejected"
+  },
+  "green": {
+    "artifact_regression_tests": "81 passed",
+    "lint": "ruff passed",
+    "files": [
+      "backend/app/services/catalog_supply_chain.py",
+      "backend/tests/test_artifact_release_evidence.py",
+      "backend/tests/test_artifact_registry_policy.py"
+    ]
+  },
+  "contract": "Registry policy, artifact release, and destination qualification reject duplicate YAML mapping keys rather than accepting the final value silently.",
+  "limitations": [
+    "This is a local structural gate, not proof that artifact statements, signatures, or provenance are authentic.",
+    "Publisher grants, signing identity approval, vulnerability scanning, SBOM verification, retention, restore, and destination cold-pulls remain live gates.",
+    "No registry, cluster, catalog, or retained workshop was changed."
+  ]
+}

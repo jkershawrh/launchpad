@@ -1,0 +1,82 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-intake-maas-broker-evidence/v1",
+  "evidence_id": "HF-LAUNCHPAD-RHOAI-MAAS-BROKER-GREEN-LOCAL-20260922",
+  "recorded_at": "2026-09-22T17:43:49Z",
+  "repository_commit": "34f84352f492d92ed83ba0a2958552c5d305fa9f",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "status": "GREEN-integration-candidate",
+  "release_eligible": false,
+  "deployed": false,
+  "cluster_mutation_performed": false,
+  "cluster_restart_performed": false,
+  "live_lab_changed": false,
+  "default_provider_changed": false,
+  "contract": {
+    "provider": "rhoai-maas",
+    "activation": "MAAS_KEY_PROVIDER=rhoai",
+    "default": "litellm",
+    "key_issue": "POST /maas-api/v1/api-keys",
+    "key_revoke": "DELETE /maas-api/v1/api-keys/{key_id}",
+    "alias_recovery": "POST /maas-api/v1/api-keys/search then exact alias and persisted key ID match",
+    "credential_source": "rotating mounted service-account token file or explicit environment input",
+    "tls_verification_required": true,
+    "mounted_ca_bundle_supported": true,
+    "subscription_is_server_owned": true,
+    "client_model_or_rate_override_sent": false,
+    "secret_written_to_receipt": false
+  },
+  "red_green_matrix": {
+    "tdd": "GREEN-local",
+    "edd": "GREEN-local",
+    "cdd": "GREEN-local",
+    "bdd": "GREEN-local-simulated",
+    "cbt": "GREEN-local",
+    "live_adapter_candidate": "GREEN-integration",
+    "live_launchpad_seat": "RED-pending"
+  },
+  "tests": {
+    "command": ".venv/bin/python -m pytest -q backend/tests/test_maas_key_broker.py backend/tests/test_cleanup_hardening.py backend/tests/test_session_response_security.py",
+    "passed": 53,
+    "failed": 0,
+    "covered_behaviors": [
+      "subscription-bound key issue",
+      "fresh mounted token read",
+      "mandatory TLS verification and mounted CA bundle",
+      "revocation by server key ID",
+      "secret-free alias and key-ID recovery",
+      "idempotent recovery of an already-revoked key",
+      "fail-closed alias mismatch",
+      "provider-specific usage attribution",
+      "cleanup receipt enforcement",
+      "credential response redaction"
+    ]
+  },
+  "live_adapter_proof": {
+    "cluster": "arena",
+    "scope": "candidate-only disposable key",
+    "key_id_returned": true,
+    "plaintext_key_recorded": false,
+    "model_discovery_http": 200,
+    "model_discovery_ids": [
+      "granite-3-2-8b-tools-candidate"
+    ],
+    "revocation_provider": "rhoai-maas",
+    "stored_status_after_revoke": "revoked",
+    "launchpad_deployment_changed": false
+  },
+  "artifact_hashes": {
+    "backend/app/adapters/openshift/maas_keys.py": "eca1b2cda814305baa5664af0182f0c4467bf8d8aac10cd72284ef564994d41d",
+    "backend/app/api/deps.py": "2d3c2764a684bf73f9a0942127f5ef24460dc80427bf74b5f49a14e621377a9b",
+    "backend/app/services/provisioning.py": "e437e42fd9cbca5c6ab65560a69e3129c0597f2d0b6d0a87d90b27ec980230fe",
+    "backend/tests/test_maas_key_broker.py": "fb301405b3d52e9f36b222e5a9678f0cc9b2c6a5930cb5ac0770e6e686563c4f"
+  },
+  "remaining_live_gates": [
+    "candidate-model-endpoint-selection",
+    "launchpad-service-account-subscription-and-policy",
+    "mounted-token-and-ca-delivery",
+    "one-seat-key-issue-through-launchpad",
+    "one-seat-inference-attribution",
+    "reclaim-revocation-after-cache-window",
+    "zero-residue-inspection"
+  ]
+}

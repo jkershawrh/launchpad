@@ -1,0 +1,29 @@
+{
+  "schema": "launchpad.redhat.com/catalog-intake-local-evidence/v1",
+  "candidate": "hybrid-fraud-detection",
+  "date": "2026-09-22",
+  "scope": "local rendered-output receipt v2 Helm-values digest binding",
+  "red": {
+    "test_selection": "backend/tests/test_catalog_intake_render_review.py -k v2_",
+    "result": "5 failed because review_rendered_output did not accept expected_helm_values_sha256"
+  },
+  "green": {
+    "test_selection": [
+      "backend/tests/test_catalog_intake_render_review.py",
+      "backend/tests/test_catalog_onboarding.py",
+      "backend/tests/test_catalog_intake_review_journey.py",
+      "backend/tests/test_catalog_intake_pipeline_contract_alignment.py",
+      "scripts/tests/test_review_catalog_render_offline.py"
+    ],
+    "passed": 84,
+    "failed": 0,
+    "ruff_check": "passed",
+    "ruff_format_check": "passed",
+    "git_diff_check": "passed"
+  },
+  "publication": "not attempted",
+  "trusted_render": "not attempted",
+  "live_lab_change": false,
+  "release_eligible": false,
+  "remaining_gate": "Configure a protected intake-candidate-publish GitHub environment with a repository-scoped Quay robot, then run and verify the signed candidate workflow"
+}
