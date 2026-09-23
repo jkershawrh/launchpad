@@ -1,0 +1,74 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-catalog-certification/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "certification_stage": "twenty-five-seat-candidate",
+  "launchpad_commit": "3155dd2",
+  "source_repository": "https://github.com/jkershawrh/hybrid-fraud-detection",
+  "source_commit": "00f07a8265579efd77964b390d65368999a1523a",
+  "workload_image_digest": "sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0",
+  "maas_image_digest": "sha256:9d60771c86a42ced1b918f23dd940a1ac9905ddb02a4fae779cfe1937477c9a0",
+  "contains_plaintext_credentials": false,
+  "gate": {
+    "workshop_id": "6c0e320f-d6a1-4e8f-95c5-2e10de6c31c1",
+    "requested": 25,
+    "provisioned": 25,
+    "ready": 25,
+    "failures": 0,
+    "provision_duration_seconds": 973.252,
+    "serialized_provisioning": true,
+    "distinct_virtual_keys": 25,
+    "distinct_virtual_key_ids": 25,
+    "attribution_mode_passed": 25,
+    "concurrent_journeys": {
+      "passed": 25,
+      "failed": 0,
+      "health_http_200": 25,
+      "readiness_http_200": 25,
+      "score_http_200": 25,
+      "live_llm_calls": 25,
+      "model": "granite-3.2-8b-tools",
+      "latency_ms_min": 2287.88,
+      "latency_ms_p95": 2422.74,
+      "latency_ms_max": 2436.23
+    },
+    "gitops": {
+      "applications": 50,
+      "synced": 50,
+      "healthy": 50
+    },
+    "routes": 75,
+    "showroom_seat_distribution": {
+      "fp1.fm2aihpcsed.com": 9,
+      "fp2.fm2aihpcsed.com": 8,
+      "fp3.fm2aihpcsed.com": 8
+    },
+    "authorization": {
+      "own_namespace_edit": "25/25",
+      "cross_namespace_read_denied": "25/25",
+      "node_list_denied": "25/25"
+    },
+    "reclaim": {
+      "status": "completed",
+      "duration_seconds": 99.360,
+      "sessions_reclaimed": 25,
+      "session_keys_cleared": 25,
+      "revocation_receipts": 25,
+      "revoked_keys_http_401": 25,
+      "namespaces_remaining": 0,
+      "applications_remaining": 0
+    }
+  },
+  "regression_suite": {
+    "test": "scripts/tests/test_flightpath_candidate_overlay.py",
+    "passed": 9,
+    "failed": 0
+  },
+  "follow_up": [
+    "Reduce the 973-second serialized provisioning time without weakening lifecycle fencing or cleanup guarantees.",
+    "Repeat the 25-seat certification three times before general availability."
+  ],
+  "next_gate": "repeatability-and-promotion-review",
+  "result": "passed"
+}
