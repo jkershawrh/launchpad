@@ -9,7 +9,7 @@ import time
 import uuid as _uuid
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Optional
 
 from app.adapters.interfaces import ConstraintResult
@@ -3631,7 +3631,7 @@ class ProvisioningService:
         self, lifecycle_guard: Callable[[], bool] | None = None
     ) -> int:
         self._require_lifecycle_ownership(lifecycle_guard)
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         reclaimable = {"ready", "active"}
         reclaimed_count = 0
         expired = [
@@ -3639,7 +3639,12 @@ class ProvisioningService:
             for session in list(self._sessions.values())
             if session.status.value in reclaimable
             and session.expires_at is not None
-            and session.expires_at < now
+            and (
+                session.expires_at.replace(tzinfo=UTC)
+                if session.expires_at.tzinfo is None
+                else session.expires_at.astimezone(UTC)
+            )
+            < now
         ]
         workshop_expirations: dict[str, list[LabSession]] = {}
         standalone_expirations: list[LabSession] = []

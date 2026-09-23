@@ -1,0 +1,73 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-evidence/v1",
+  "candidate_id": "launchpad-staging-20260922-02",
+  "stage": "green-canary-component",
+  "recorded_at": "2026-09-23T03:36:00Z",
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "catalog_id": "intel-llm-cpu-serving",
+    "catalog_version": "1.0.12-flightpath.1",
+    "workshop_id": "9333d534-34f4-43cc-a5c7-91e4f13c5425",
+    "session_id": "97baf221-368d-491a-af4c-a57dbb5cdeb0",
+    "seat_count": 1,
+    "exposure_policy": "internal"
+  },
+  "results": {
+    "provisioning": {
+      "status": "passed",
+      "workshop_terminal_before_expiry": "ready",
+      "session_terminal_before_expiry": "ready",
+      "showroom_http_status": 200,
+      "pod_containers_ready": 3,
+      "route_admitted": true
+    },
+    "automatic_ttl_reclaim": {
+      "status": "passed",
+      "scheduler": "five-minute CronJob",
+      "manual_reclaim_invoked": false,
+      "scheduler_last_successful_time": "2026-09-23T03:35:07Z",
+      "session_status": "reclaimed",
+      "workshop_status": "completed",
+      "completed_at": "2026-09-23T03:35:06.591531",
+      "maas_key_reference_after_reclaim": null
+    },
+    "zero_residue": {
+      "status": "passed",
+      "namespaces": 0,
+      "routes": 0,
+      "role_bindings": 0,
+      "secrets": 0,
+      "services": 0,
+      "deployments": 0,
+      "pods": 0,
+      "persistent_volume_claims": 0,
+      "argocd_applications": 0
+    },
+    "control_plane_after_reclaim": {
+      "status": "passed",
+      "backend_ready": "1/1",
+      "lifecycle_worker_ready": "1/1",
+      "postgres_ready": "1/1",
+      "maas_ready": "1/1"
+    },
+    "timezone_regression": {
+      "status": "fixed-local-not-deployed",
+      "red_observation": "An aware UTC expires_at caused naive/aware comparison failure in enforce_ttl.",
+      "green_tests": 37,
+      "skipped_tests": 8,
+      "source_files": [
+        "backend/app/services/provisioning.py",
+        "backend/tests/test_cleanup_hardening.py"
+      ]
+    }
+  },
+  "boundaries": {
+    "production_workshops_mutated": false,
+    "public_access_tested": false,
+    "control_plane_cutover_tested": false,
+    "database_backup_restore_tested": false,
+    "multi_catalog_tested": false,
+    "promotion_claim": "This proves one isolated internal automatic-reclaim component canary only."
+  }
+}

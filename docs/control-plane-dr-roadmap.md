@@ -2,17 +2,24 @@
 
 ## Decision and boundary
 
-Arena remains the active pilot control plane through the September 17 event.
-Flightpath remains the passive recovery control plane and must not start a
-Launchpad writer until Arena has been hard-fenced. Arena and Brutus continue to
-execute participant workloads; Flightpath is not added to ordinary placement.
+Arena remains the active pilot control plane until the retained September 17
+workshops close and the migration gate is explicitly approved. Flightpath is
+now the selected durable transitional control-plane home. Arena becomes the
+rollback/standby site after cutover and may remain execution capacity only when
+its execution health is independently certified.
 
-After the event and three consecutive drills, Flightpath becomes the
-transitional primary control plane and Arena becomes its warm standby. This is
-a transition architecture, not the final production home. Production moves the
-same pattern to a dedicated production control-plane cluster with a separate
-recovery failure domain. Arena, Brutus, and future clusters remain replaceable
-execution capacity.
+This selection does not declare the cutover complete and does not permit two
+active writers. Flightpath must not assume the production database, public
+edge, identity issuer, GitOps ownership, ordering, or cleanup authority until
+Arena has been hard-fenced and the backup, restore, reconciliation, rollback,
+and public-access gates pass. The isolated `launchpad-flightpath-candidate`
+writer uses its own database and no public ingress; it cannot mutate the Arena
+control plane's retained workshop records.
+
+Flightpath is a transition architecture, not the final production home.
+Production moves the same pattern to a dedicated production control-plane
+cluster with a separate recovery failure domain. Arena, Brutus, Flightpath
+execution capacity, and future clusters remain replaceable execution targets.
 
 The recovery design also separates the shared AI-serving and artifact-supply
 planes. A control-plane promotion must recover model-routing policy, scoped-key
@@ -60,6 +67,15 @@ The following remain RED and prevent a DR claim:
 - the current Arena backend, PostgreSQL, lifecycle worker, and public tunnel
   each have only one Ready replica while `gnr2` is unavailable. That is a pilot
   availability risk, not a completed HA topology.
+
+On September 23, an isolated one-seat Flightpath candidate proved scheduled
+TTL reclamation for `intel-llm-cpu-serving`: the seat reached ready, Showroom
+returned 200, the five-minute scheduler reclaimed it without a manual reclaim
+call, its MaaS key was revoked, and the namespace plus all labeled resources
+reached zero. This is component canary evidence, not public-access, migration,
+HA, or DR certification. The run also exposed an aware-versus-naive timestamp
+comparison defect; the regression fix is source-complete but must be built,
+deployed, and rerun before it can be counted as live closure.
 
 ## Incident decision tree
 

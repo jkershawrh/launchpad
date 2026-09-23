@@ -2,7 +2,7 @@
 TDD: Cleanup hardening tests.
 8 fixes, all RED first, then GREEN one at a time.
 """
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock
 
 from app.domain.enums import CatalogCategory, Persistence, SessionStatus, WorkshopStatus
@@ -115,6 +115,21 @@ class TestTTLEnforcement:
 
         result = svc.get_session(expired.session_id)
         assert result.status == SessionStatus.RECLAIMED
+
+    def test_enforce_ttl_normalizes_timezone_aware_expiration(self):
+        """A restored ISO-8601 UTC timestamp must not stop the TTL worker."""
+        svc = _svc()
+        session = _provision(svc, ttl="1h")
+        validated = svc.validate_session(session.session_id)
+        activated = svc.activate_session(validated.session_id)
+        expired = activated.model_copy(
+            update={"expires_at": datetime.now(UTC) - timedelta(minutes=1)}
+        )
+        svc._sessions[expired.session_id] = expired
+
+        svc.enforce_ttl()
+
+        assert svc.get_session(expired.session_id).status == SessionStatus.RECLAIMED
 
     def test_enforce_ttl_skips_persistent(self):
         """RED: persistent session should NOT be reclaimed."""
