@@ -1,0 +1,34 @@
+schema_version: launchpad.redhat.com/catalog-intake-rendered-output/v2
+kind: CatalogIntakeRenderedOutputReview
+metadata:
+  version: 2.0.0
+  owner: catalog-onboarding-owner
+  security_owner: launchpad-security-owner
+purpose: Bind a trusted render to one approved source, exact Helm values, and exact manifest bytes without granting certification.
+input:
+  discovery_receipt: passed with verified cleanup and immutable source identity
+  expected_helm_values_sha256: sha256 digest recomputed by the trusted caller from the approved canonical Helm values; never copied from an untrusted render receipt
+  render_receipt: v1 exact fields plus helm_values_sha256; signed trusted renderer/collector provenance remains a separate required gate
+  rendered_manifest: bounded bytes; raw content is not persisted in the review report
+canonical_helm_values:
+  encoding: UTF-8 JSON with sorted keys and compact separators
+  approved_shape: '{"app":{"image":"ghcr.io/owner/repository@sha256:<64 lowercase hex>"},"model":{"endpointFromSecret":true,"existingSecret":"<Launchpad-managed runtime Secret name>"}}'
+  digest_format: 'sha256:<64 lowercase hex>'
+checks:
+  - source and approval identity match the passed discovery receipt
+  - receipt schema is v2 and has exactly the versioned fields
+  - receipt Helm values digest matches the separately approved expected digest
+  - manifest digest matches exact rendered bytes
+  - existing v1 safety, isolation, resource, image, and network checks still apply
+output:
+  status: blocked or review-ready
+  findings: stable codes only; no image reference, secret values, or raw manifests
+  release_eligible: false
+authority:
+  may_trust_requester_supplied_receipt: false
+  may_publish_catalog: false
+  review_ready_is_certified: false
+required_later:
+  - trusted isolated renderer and signed receipt collector
+  - verify image signature, provenance source revision, SBOM, architecture, and registry pullability
+  - target-cluster compatibility, one-seat journey, cleanup, and human approval gates

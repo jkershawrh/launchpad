@@ -1,0 +1,14 @@
+api_version: launchpad.redhat.com/catalog-intake-candidate-policy/v1
+scope: hybrid-fraud-detection-only
+catalog_item_id: hybrid-fraud-detection
+source_revision: 00f07a8265579efd77964b390d65368999a1523a
+image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0
+cluster: arena
+required_model: granite-3.2-8b-tools
+runtime_secret_name: fraud-model-runtime
+exposure_policy: internal
+max_workshop_seats: 1
+pull_evidence:
+  path: evidence/runs/catalog-intake-hybrid-fraud/arena-pull-probe-secret-runtime-20260922.json
+  sha256: 42c456482887c0e574245e2b4eedf907092c0b117ae9884b48f0695bf71e21d8
+release_eligible: false

@@ -17,11 +17,13 @@ from app.services.catalog_onboarding import (
 )
 
 SCHEMA_VERSION = "launchpad.redhat.com/catalog-intake-rendered-output/v1"
+OVERRIDE_SCHEMA_VERSION = "launchpad.redhat.com/catalog-intake-rendered-output/v2"
 MAX_RENDERED_BYTES = 1024 * 1024
 MAX_RESOURCES = 500
 MAX_STRUCTURE_DEPTH = 64
 MAX_STRUCTURE_NODES = 10_000
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
+SIMPLE_SHELL_VARIABLE = re.compile(r"\$\{[A-Za-z_][A-Za-z0-9_]*\}")
 RECEIPT_FIELDS = {
     "schema_version",
     "repository_url",
@@ -35,6 +37,7 @@ RECEIPT_FIELDS = {
     "workspace_removed",
     "manifest_sha256",
 }
+OVERRIDE_RECEIPT_FIELDS = RECEIPT_FIELDS | {"helm_values_sha256"}
 
 
 class _UniqueKeyLoader(yaml.SafeLoader):
@@ -87,12 +90,38 @@ def _structure_issue(value: Any) -> str | None:
     return None
 
 
+def _has_unresolved_substitution(value: Any) -> bool:
+    """Allow simple shell variables only in container command/args list items."""
+
+    stack: list[tuple[Any, tuple[str, ...]]] = [(value, ())]
+    while stack:
+        node, path = stack.pop()
+        if isinstance(node, dict):
+            for key, child in node.items():
+                if isinstance(key, str) and "${" in key:
+                    return True
+                stack.append((child, (*path, str(key))))
+        elif isinstance(node, list):
+            stack.extend((child, (*path, "[]")) for child in node)
+        elif isinstance(node, str) and "${" in node:
+            shell_argument = (
+                len(path) >= 4
+                and path[-4] in {"containers", "initContainers"}
+                and path[-3] == "[]"
+                and path[-2] in {"command", "args"}
+                and path[-1] == "[]"
+            )
+            if not shell_argument or "${" in SIMPLE_SHELL_VARIABLE.sub("", node):
+                return True
+    return False
+
+
 def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
     findings: set[str] = set()
     count = image_count = 0
     if _contains_secret(output):
         findings.add("rendered-secret-pattern")
-    if b"{{" in output or b"${" in output:
+    if b"{{" in output:
         findings.add("template-unresolved")
     try:
         documents = list(yaml.load_all(output.decode("utf-8"), Loader=_UniqueKeyLoader))
@@ -104,6 +133,8 @@ def _manifest_findings(output: bytes) -> tuple[list[str], int, int]:
         issue = _structure_issue(document)
         if issue:
             return sorted(findings | {issue}), 0, 0
+        if _has_unresolved_substitution(document):
+            findings.add("template-unresolved")
     network_inventory: dict[str, list[Any]] = {"network_exposure": []}
     for document in documents[:MAX_RESOURCES]:
         if not isinstance(document, dict):
@@ -144,10 +175,20 @@ def review_rendered_output(
     discovery: CatalogIntakeDiscoveryReceipt,
     render_receipt: Mapping[str, Any] | None,
     rendered_output: bytes | None,
+    *,
+    expected_helm_values_sha256: str | None = None,
 ) -> dict[str, Any]:
     """Review a future isolated render; never grant certification or promotion."""
     findings: set[str] = set()
     resource_count = image_count = 0
+    override_review = expected_helm_values_sha256 is not None
+    schema_version = OVERRIDE_SCHEMA_VERSION if override_review else SCHEMA_VERSION
+    receipt_fields = OVERRIDE_RECEIPT_FIELDS if override_review else RECEIPT_FIELDS
+    if override_review and (
+        not isinstance(expected_helm_values_sha256, str)
+        or not DIGEST.fullmatch(expected_helm_values_sha256)
+    ):
+        findings.add("helm-values-digest-invalid")
     if (
         discovery.status != "passed"
         or discovery.cleanup.result != "pass"
@@ -165,14 +206,18 @@ def review_rendered_output(
     elif not isinstance(render_receipt, Mapping):
         findings.add("render-receipt-invalid")
     else:
-        if set(render_receipt) != RECEIPT_FIELDS:
+        if set(render_receipt) != receipt_fields:
             findings.add(
                 "render-receipt-extra-fields"
-                if set(render_receipt) - RECEIPT_FIELDS
+                if set(render_receipt) - receipt_fields
                 else "render-receipt-incomplete"
             )
-        if render_receipt.get("schema_version") != SCHEMA_VERSION:
+        if render_receipt.get("schema_version") != schema_version:
             findings.add("render-receipt-schema-mismatch")
+        if override_review:
+            actual_hash = render_receipt.get("helm_values_sha256")
+            if not isinstance(actual_hash, str) or actual_hash != expected_helm_values_sha256:
+                findings.add("helm-values-digest-mismatch")
         expected = {
             "repository_url": discovery.repository_url,
             "revision": discovery.revision,
@@ -211,9 +256,24 @@ def review_rendered_output(
         manifest_findings, resource_count, image_count = _manifest_findings(rendered_output)
         findings.update(manifest_findings)
     return {
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": schema_version,
         "status": "blocked" if findings else "review-ready",
         "findings": sorted(findings),
+        "catalog_item_id": catalog_item_id,
+        "source_revision": discovery.revision,
+        "helm_values_sha256": (
+            render_receipt.get("helm_values_sha256")
+            if override_review and isinstance(render_receipt, Mapping)
+            else None
+        ),
+        "manifest_sha256": (
+            render_receipt.get("manifest_sha256") if isinstance(render_receipt, Mapping) else None
+        ),
+        "renderer_image_digest": (
+            render_receipt.get("renderer_image_digest")
+            if isinstance(render_receipt, Mapping)
+            else None
+        ),
         "resource_count": resource_count,
         "image_count": image_count,
         "release_eligible": False,

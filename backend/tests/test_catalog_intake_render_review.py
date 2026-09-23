@@ -97,6 +97,71 @@ def test_safe_manifest_is_review_ready_but_never_promotion_eligible() -> None:
     assert report["release_eligible"] is False
 
 
+def test_v2_render_receipt_binds_approved_helm_values_hash() -> None:
+    expected_hash = "sha256:" + "9" * 64
+    receipt = _render_receipt()
+    receipt["schema_version"] = "launchpad.redhat.com/catalog-intake-rendered-output/v2"
+    receipt["helm_values_sha256"] = expected_hash
+
+    report = review_rendered_output(
+        _discovery(), receipt, SAFE_MANIFEST, expected_helm_values_sha256=expected_hash
+    )
+
+    assert report["status"] == "review-ready"
+    assert report["schema_version"] == receipt["schema_version"]
+    assert report["catalog_item_id"] == "support-assistant"
+    assert report["source_revision"] == REVISION
+    assert report["helm_values_sha256"] == expected_hash
+    assert report["manifest_sha256"] == receipt["manifest_sha256"]
+    assert report["renderer_image_digest"] == receipt["renderer_image_digest"]
+    assert report["release_eligible"] is False
+
+
+@pytest.mark.parametrize("actual_hash", [None, "sha256:" + "8" * 64, "invalid"])
+def test_v2_render_receipt_rejects_missing_or_wrong_helm_values_hash(
+    actual_hash: str | None,
+) -> None:
+    receipt = _render_receipt()
+    receipt["schema_version"] = "launchpad.redhat.com/catalog-intake-rendered-output/v2"
+    if actual_hash is not None:
+        receipt["helm_values_sha256"] = actual_hash
+
+    report = review_rendered_output(
+        _discovery(),
+        receipt,
+        SAFE_MANIFEST,
+        expected_helm_values_sha256="sha256:" + "9" * 64,
+    )
+
+    assert report["status"] == "blocked"
+    assert "helm-values-digest-mismatch" in report["findings"]
+
+
+def test_v2_override_cannot_use_legacy_receipt() -> None:
+    report = review_rendered_output(
+        _discovery(),
+        _render_receipt(),
+        SAFE_MANIFEST,
+        expected_helm_values_sha256="sha256:" + "9" * 64,
+    )
+
+    assert report["status"] == "blocked"
+    assert "render-receipt-schema-mismatch" in report["findings"]
+
+
+def test_v2_invalid_expected_hash_fails_closed() -> None:
+    receipt = _render_receipt()
+    receipt["schema_version"] = "launchpad.redhat.com/catalog-intake-rendered-output/v2"
+    receipt["helm_values_sha256"] = "invalid"
+
+    report = review_rendered_output(
+        _discovery(), receipt, SAFE_MANIFEST, expected_helm_values_sha256="invalid"
+    )
+
+    assert report["status"] == "blocked"
+    assert "helm-values-digest-invalid" in report["findings"]
+
+
 def test_unsafe_rendered_content_is_blocked_without_echoing_values() -> None:
     leaked = "sk-test-secret-do-not-echo"
     unsafe = (
@@ -137,6 +202,41 @@ def test_render_review_rejects_unresolved_template_and_cluster_scope() -> None:
     assert "cluster-scoped-resource" in report["findings"]
 
 
+def test_render_review_allows_simple_shell_variable_in_container_command_only() -> None:
+    rendered = (
+        "apiVersion: v1\nkind: Pod\nmetadata: {name: smoke-test}\n"
+        "spec:\n  containers:\n    - name: test\n"
+        "      image: quay.io/example/test@sha256:" + "b" * 64 + "\n"
+        "      command: [/bin/sh, -c]\n"
+        "      args: ['base_url=http://127.0.0.1; curl ${base_url}/ready']\n"
+    ).encode()
+
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert report["status"] == "review-ready"
+    assert report["findings"] == []
+
+
+@pytest.mark.parametrize(
+    "manifest",
+    [
+        "apiVersion: route.openshift.io/v1\nkind: Route\nmetadata: {name: app}\nspec: {host: '${HOST}'}\n",
+        "apiVersion: v1\nkind: Pod\nmetadata: {name: app}\nspec:\n  containers:\n    - name: app\n      image: '${IMAGE}'\n",
+        "apiVersion: v1\nkind: Pod\nmetadata: {name: app}\nspec:\n  containers:\n    - name: app\n      image: quay.io/example/test@sha256:"
+        + "b" * 64
+        + "\n      command: [/bin/sh, -c]\n      args: ['echo ${VAR:-fallback}']\n",
+    ],
+)
+def test_render_review_still_rejects_substitution_outside_simple_shell_variable(
+    manifest: str,
+) -> None:
+    rendered = manifest.encode()
+
+    report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
+
+    assert "template-unresolved" in report["findings"]
+
+
 def test_render_review_rejects_external_network_exposure_without_echoing_hosts() -> None:
     hostname = "private-training.example.test"
     unsafe = f"""apiVersion: route.openshift.io/v1
@@ -164,10 +264,7 @@ spec: {{rules: [{{host: {hostname}}}]}}
 
 
 def test_render_review_rejects_malformed_network_spec() -> None:
-    unsafe = (
-        b"apiVersion: v1\nkind: Service\nmetadata: {name: malformed}\n"
-        b"spec: []\n"
-    )
+    unsafe = b"apiVersion: v1\nkind: Service\nmetadata: {name: malformed}\nspec: []\n"
 
     report = review_rendered_output(_discovery(), _render_receipt(unsafe), unsafe)
 
@@ -248,8 +345,7 @@ def test_render_review_rejects_excessive_yaml_depth() -> None:
         nested = "nested:\n" + "".join("  " + line for line in nested.splitlines(True))
     rendered = (
         "apiVersion: apps/v1\nkind: Deployment\n"
-        "metadata: {name: deep}\nspec:\n" +
-        "".join("  " + line for line in nested.splitlines(True))
+        "metadata: {name: deep}\nspec:\n" + "".join("  " + line for line in nested.splitlines(True))
     ).encode()
 
     report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
@@ -274,8 +370,7 @@ def test_render_review_allows_bounded_nonrecursive_alias() -> None:
 def test_render_review_rejects_excessive_yaml_breadth() -> None:
     fields = "".join(f"  key{index}: value\n" for index in range(10_001))
     rendered = (
-        "apiVersion: apps/v1\nkind: Deployment\n"
-        "metadata: {name: wide}\nspec:\n" + fields
+        "apiVersion: apps/v1\nkind: Deployment\nmetadata: {name: wide}\nspec:\n" + fields
     ).encode()
 
     report = review_rendered_output(_discovery(), _render_receipt(rendered), rendered)
@@ -326,3 +421,16 @@ def test_render_review_contract_does_not_authorize_host_render_or_promotion() ->
     assert any("fixed ingress hosts" in check for check in contract["checks"])
     assert contract["input"]["maximum_yaml_structure_depth"] == 64
     assert contract["input"]["maximum_yaml_structure_nodes_per_document"] == 10000
+
+
+def test_v2_contract_does_not_trust_requester_receipts_or_authorize_promotion() -> None:
+    contract = yaml.safe_load(
+        (ROOT / "contracts/catalog-intake-rendered-output-v2.yaml").read_text()
+    )
+
+    assert contract["authority"]["may_trust_requester_supplied_receipt"] is False
+    assert contract["authority"]["may_publish_catalog"] is False
+    assert contract["authority"]["review_ready_is_certified"] is False
+    assert "trusted caller" in contract["input"]["expected_helm_values_sha256"]
+    assert "endpointFromSecret" in contract["canonical_helm_values"]["approved_shape"]
+    assert "existingSecret" in contract["canonical_helm_values"]["approved_shape"]
