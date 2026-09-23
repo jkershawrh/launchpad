@@ -1,0 +1,36 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: partner-ai-launchpad
+
+resources:
+  - ../arena
+  - reliability.yaml
+
+images:
+  - name: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-backend
+    newName: quay.io/rh-ee-jkershaw/launchpad-backend
+    digest: sha256:b65773f81f400cbf71f1c6e104a246e2d798bdfe3e333bf2879393beef8c4ac1
+  - name: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-portal
+    newName: quay.io/rh-ee-jkershaw/launchpad-portal
+    digest: sha256:84358765ab9c78258fbba8ddb50791dcff69578b7c2fc6a822758d25c4b7f71d
+  - name: image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/launchpad-admin
+    newName: quay.io/rh-ee-jkershaw/launchpad-admin
+    digest: sha256:b599a1d7b75005c55ce32fbe51db86d1aa3e8c0946260d0310dfa700f55acb29
+
+patches:
+  - path: patch-config.yaml
+  - path: patch-runtime.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: backend
+    patch: |-
+      - op: remove
+        path: /metadata/annotations/launchpad.redhat.com~1ha-blocker
+
+labels:
+  - pairs:
+      launchpad.redhat.com/convergence-candidate: launchpad-staging-20260922-01
+    includeSelectors: false

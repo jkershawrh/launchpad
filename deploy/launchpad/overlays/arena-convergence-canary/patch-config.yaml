@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-config
+data:
+  LIFECYCLE_HA_ENABLED: "true"
+  LIFECYCLE_HEARTBEAT_INTERVAL_SECONDS: "15"
+  LIFECYCLE_JOB_LEASE_SECONDS: "120"
+  LIFECYCLE_POLL_INTERVAL_SECONDS: "2"
+  ORPHAN_CLEANUP_ENABLED: "false"

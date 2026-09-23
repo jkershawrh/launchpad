@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  annotations:
+    launchpad.redhat.com/ha-contract: postgres-leased-lifecycle-and-durable-public-access
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    spec:
+      imagePullSecrets:
+        - name: launchpad-registry-pull
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: backend
+      containers:
+        - name: backend
+          volumeMounts:
+            - name: convergence-intel-llm-cpu-serving-catalog
+              mountPath: /opt/catalog/intel-llm-cpu-serving/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: convergence-intel-xeon6-agent-201-catalog
+              mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: convergence-multi-agent-quickstart-catalog
+              mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+      volumes:
+        - name: convergence-intel-llm-cpu-serving-catalog
+          configMap:
+            name: convergence-intel-llm-cpu-serving-catalog
+        - name: convergence-intel-xeon6-agent-201-catalog
+          configMap:
+            name: convergence-intel-xeon6-agent-201-catalog
+        - name: convergence-multi-agent-quickstart-catalog
+          configMap:
+            name: convergence-multi-agent-quickstart-catalog
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lifecycle-worker
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+        - name: launchpad-registry-pull
+      containers:
+        - name: lifecycle-worker
+          volumeMounts:
+            - name: convergence-intel-llm-cpu-serving-catalog
+              mountPath: /opt/catalog/intel-llm-cpu-serving/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: convergence-intel-xeon6-agent-201-catalog
+              mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: convergence-multi-agent-quickstart-catalog
+              mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+      volumes:
+        - name: convergence-intel-llm-cpu-serving-catalog
+          configMap:
+            name: convergence-intel-llm-cpu-serving-catalog
+        - name: convergence-intel-xeon6-agent-201-catalog
+          configMap:
+            name: convergence-intel-xeon6-agent-201-catalog
+        - name: convergence-multi-agent-quickstart-catalog
+          configMap:
+            name: convergence-multi-agent-quickstart-catalog
