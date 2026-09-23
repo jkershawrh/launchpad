@@ -1,0 +1,36 @@
+schema_version: launchpad.redhat.com/catalog-intake-render-attestation/v1
+kind: CatalogIntakeRenderAttestation
+metadata:
+  version: 1.0.0
+  owner: catalog-onboarding-owner
+  security_owner: launchpad-security-owner
+purpose: Authenticate the exact source-bound render review produced by one trusted isolated renderer without granting catalog release authority.
+trust_boundary:
+  producer_key: Loaded from an external secret store and never committed, logged, or copied into evidence.
+  algorithm: HMAC-SHA256 for the local candidate gate; production signing identity and key rotation remain separate release requirements.
+  payload: Canonical UTF-8 JSON with sorted keys, compact separators, ASCII escaping, and the mac field excluded.
+required_bindings:
+  - catalog_item_id
+  - source_revision
+  - helm_values_sha256
+  - manifest_sha256
+  - renderer_image_digest
+  - render_review_sha256
+required_isolation_claims:
+  network_egress_denied: true
+  workspace_removed: true
+verification:
+  - Reject missing, extra, malformed, or unknown fields.
+  - Reject an unavailable or weak producer key.
+  - Reject a MAC mismatch using constant-time comparison.
+  - Reject any mismatch with separately derived expected bindings.
+  - Reject a timestamp without an explicit timezone.
+  - Emit stable finding codes without echoing keys or untrusted values.
+output:
+  status: RED or GREEN-local-authenticated
+  authenticated: boolean
+  release_eligible: false
+limitations:
+  - Authentication is not proof that the renderer runtime is deployed or correctly isolated.
+  - HMAC is appropriate for this bounded local gate but does not replace production workload identity, asymmetric signing, transparency logs, or key rotation.
+  - A valid attestation does not certify image provenance, model access, participant behavior, capacity, cleanup, or catalog activation.

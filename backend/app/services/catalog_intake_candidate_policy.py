@@ -16,6 +16,9 @@ IMAGE = re.compile(r"^ghcr\.io/[^\s@]+@sha256:[0-9a-f]{64}$")
 SOURCE = re.compile(r"^[0-9a-f]{40}$")
 DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
 RENDER_SCHEMA = "launchpad.redhat.com/catalog-intake-rendered-output/v2"
+RENDER_ATTESTATION_STATUS_SCHEMA = (
+    "launchpad.redhat.com/catalog-intake-render-attestation-status/v1"
+)
 
 
 def _get(mapping: Any, *keys: str) -> Any:
@@ -70,6 +73,7 @@ def review_candidate_admission(
     intake: dict[str, Any],
     pull_evidence: dict[str, Any],
     render_review: dict[str, Any] | None = None,
+    render_attestation: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return coded local findings; always deny release authority."""
 
@@ -166,6 +170,38 @@ def review_candidate_admission(
             render_review["renderer_image_digest"]
         ):
             findings.add("render-review-renderer-invalid")
+
+    if not isinstance(render_attestation, dict):
+        findings.add("render-attestation-missing")
+    else:
+        if render_attestation.get("schema_version") != RENDER_ATTESTATION_STATUS_SCHEMA:
+            findings.add("render-attestation-schema-mismatch")
+        if (
+            render_attestation.get("status") != "GREEN-local-authenticated"
+            or render_attestation.get("authenticated") is not True
+            or render_attestation.get("findings") != []
+        ):
+            findings.add("render-attestation-not-ready")
+        if render_attestation.get("release_eligible") is not False:
+            findings.add("render-attestation-release-state-invalid")
+        if render_attestation.get("producer_id") != policy.get("trusted_render_producer_id"):
+            findings.add("render-attestation-producer-mismatch")
+        if render_attestation.get("catalog_item_id") != catalog_id:
+            findings.add("render-attestation-catalog-mismatch")
+        if render_attestation.get("source_revision") != revision:
+            findings.add("render-attestation-source-mismatch")
+        render_reference = policy.get("render_evidence")
+        expected_review_hash = (
+            "sha256:" + render_reference.get("sha256", "")
+            if isinstance(render_reference, dict)
+            else None
+        )
+        if (
+            not isinstance(expected_review_hash, str)
+            or not DIGEST.fullmatch(expected_review_hash)
+            or render_attestation.get("render_review_sha256") != expected_review_hash
+        ):
+            findings.add("render-attestation-review-mismatch")
 
     return {
         "status": "RED" if findings else "GREEN-local-candidate",

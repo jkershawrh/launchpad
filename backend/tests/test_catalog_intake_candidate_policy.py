@@ -49,17 +49,39 @@ def _render_review(policy: dict, intake: dict) -> dict:
     }
 
 
+def _render_attestation(policy: dict) -> dict:
+    policy["trusted_render_producer_id"] = "catalog-renderer-ci"
+    policy["render_evidence"] = {"path": "evidence/render-review.json", "sha256": "c" * 64}
+    return {
+        "schema_version": "launchpad.redhat.com/catalog-intake-render-attestation-status/v1",
+        "status": "GREEN-local-authenticated",
+        "authenticated": True,
+        "producer_id": "catalog-renderer-ci",
+        "catalog_item_id": policy["catalog_item_id"],
+        "source_revision": policy["source_revision"],
+        "render_review_sha256": "sha256:" + "c" * 64,
+        "findings": [],
+        "release_eligible": False,
+    }
+
+
 def test_current_candidate_stays_blocked_without_bound_render_review():
     policy, intake, probe = _load()
     report = review_candidate_admission(policy, intake, probe)
     assert report["status"] == "RED"
-    assert report["findings"] == ["render-review-missing"]
+    assert report["findings"] == ["render-attestation-missing", "render-review-missing"]
     assert report["release_eligible"] is False
 
 
 def test_exact_v2_render_review_advances_only_to_local_candidate():
     policy, intake, probe = _load()
-    report = review_candidate_admission(policy, intake, probe, _render_review(policy, intake))
+    report = review_candidate_admission(
+        policy,
+        intake,
+        probe,
+        _render_review(policy, intake),
+        _render_attestation(policy),
+    )
 
     assert report == {
         "status": "GREEN-local-candidate",
@@ -86,7 +108,9 @@ def test_render_review_must_bind_exact_candidate_source_values_and_manifest():
     for field, value in mutations:
         render_review = _render_review(policy, intake)
         render_review[field] = value
-        report = review_candidate_admission(policy, intake, probe, render_review)
+        report = review_candidate_admission(
+            policy, intake, probe, render_review, _render_attestation(policy)
+        )
         assert report["status"] == "RED", field
         assert any(finding.startswith("render-review-") for finding in report["findings"]), field
 
@@ -94,10 +118,40 @@ def test_render_review_must_bind_exact_candidate_source_values_and_manifest():
 def test_correct_secret_contract_is_locally_reviewable_but_never_released():
     policy, intake, probe = _load()
     _bind_model_runtime(intake)
-    report = review_candidate_admission(policy, intake, probe, _render_review(policy, intake))
+    report = review_candidate_admission(
+        policy,
+        intake,
+        probe,
+        _render_review(policy, intake),
+        _render_attestation(policy),
+    )
     assert report["status"] == "GREEN-local-candidate"
     assert report["findings"] == []
     assert report["release_eligible"] is False
+
+
+def test_render_attestation_must_be_authenticated_and_exactly_bound():
+    policy, intake, probe = _load()
+    review = _render_review(policy, intake)
+    attestation = _render_attestation(policy)
+    mutations = (
+        ("status", "RED"),
+        ("authenticated", False),
+        ("producer_id", "unknown-renderer"),
+        ("catalog_item_id", "other-lab"),
+        ("source_revision", "0" * 40),
+        ("render_review_sha256", "sha256:" + "0" * 64),
+        ("release_eligible", True),
+    )
+
+    for field, value in mutations:
+        changed = deepcopy(attestation)
+        changed[field] = value
+        report = review_candidate_admission(policy, intake, probe, review, changed)
+        assert report["status"] == "RED", field
+        assert any(finding.startswith("render-attestation-") for finding in report["findings"]), (
+            field
+        )
 
 
 def test_bound_intake_passes_contract_and_resolves_runtime_secret_per_seat():
