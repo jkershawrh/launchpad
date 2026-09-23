@@ -73,7 +73,7 @@ def test_canary_overlay_binds_effective_flightpath_catalogs() -> None:
         assert any(mount.get("mountPath") == path for mount in worker["spec"]["template"]["spec"]["containers"][0]["volumeMounts"])
 
     apply_script = (OVERLAY / "apply.sh").read_text(encoding="utf-8")
-    assert 'candidate="launchpad-staging-20260922-01"' in apply_script
+    assert 'candidate="launchpad-staging-20260922-02"' in apply_script
     assert '"--confirm-candidate=$candidate"' in apply_script
     assert "api.arena.fm2aihpcsed.com" in apply_script
     for catalog_id in expected:

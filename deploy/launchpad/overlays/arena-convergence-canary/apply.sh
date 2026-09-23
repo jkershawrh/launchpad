@@ -2,7 +2,7 @@
 set -euo pipefail
 
 namespace="partner-ai-launchpad"
-candidate="launchpad-staging-20260922-01"
+candidate="launchpad-staging-20260922-02"
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
 overlay="$root/deploy/launchpad/overlays/arena-convergence-canary"
 catalog_root="$root/deploy/launchpad/overlays/flightpath-candidate"
