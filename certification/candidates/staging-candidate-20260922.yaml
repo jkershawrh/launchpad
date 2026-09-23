@@ -26,6 +26,8 @@ contracts:
 evidence:
   - path: evidence/runs/convergence/green-local-20260922.json
     sha256: 743f5246645cfcdaebaf633651ba7e0242bc2c8afc8d2954c3227c49c0a2831a
+  - path: evidence/runs/convergence/green-integration-pending-approval-20260922.json
+    sha256: 1768b829585b0d59b9f90a0826cba205fdc9f3ab0e3768b901e9d7039987a8fe
 blockers_to_green_integration:
   - publish-and-verify-candidate-commit
   - producer-consumer-contract-suite

@@ -32,7 +32,7 @@ def test_repository_candidate_binds_platform_catalogs_and_evidence() -> None:
         "stage": "green-local",
         "platform_revision": "4f8d68b80e4d7cbb8edae96728536d2f9d44ca26",
         "catalog_count": 3,
-        "evidence_count": 1,
+        "evidence_count": 2,
         "next_stage": "green-integration",
     }
 

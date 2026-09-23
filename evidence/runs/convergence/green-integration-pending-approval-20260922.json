@@ -1,0 +1,26 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-evidence/v1",
+  "candidate_platform_revision": "4f8d68b80e4d7cbb8edae96728536d2f9d44ca26",
+  "candidate_id": "launchpad-staging-20260922-01",
+  "stage": "green-integration-pending-approval",
+  "recorded_at": "2026-09-23T02:45:00Z",
+  "suite": {
+    "status": "passed",
+    "tests": 198,
+    "boundaries": [
+      "requester-api",
+      "workshop-and-instructor",
+      "participant-public-access",
+      "event-lifecycle",
+      "participant-journey",
+      "admin-operations",
+      "response-security",
+      "resource-reconciliation",
+      "evidence-bundles"
+    ]
+  },
+  "authority": {
+    "promotes_candidate": false,
+    "reason": "Named human approval is required before current_stage can advance from green-local."
+  }
+}
