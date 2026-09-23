@@ -1,0 +1,30 @@
+schema_version: launchpad.vef-aggregate-receipt.v1
+kind: VEFAggregateReceipt
+metadata:
+  version: 1.0.0
+  owner: value-evidence-owner
+  privacy_owner: launchpad-security-owner
+purpose: Feed VEF v1alpha2 with reconciled aggregate analytics and cost evidence without exporting participant content or identity data.
+receipt_kinds:
+  track_outcome: One receipt per unique track with provisioned, activated, successful, failed, and unknown counts plus evidence state.
+  platform_lifecycle: Exactly one receipt with order, seat, latency, intervention, and cleanup-residue measurements.
+  ai_usage: Exactly one receipt with requests, input tokens, output tokens, and inference cost.
+  cost_allocation: Exactly one receipt with shared, delivery, inference, and unallocated costs plus allocation and chargeback readiness.
+required_envelope_fields: [schema_version, pilot_id, receipt_id, kind, data]
+rules:
+  - Receipt IDs are immutable sha256 digests and must be unique.
+  - Every receipt in one aggregation has the same pilot ID.
+  - Activated journeys equal successful plus failed plus unknown outcomes.
+  - Activated journeys cannot exceed provisioned seats.
+  - Authoritative measurements cannot contain unknown values.
+  - Missing or duplicate singleton receipts fail closed.
+  - Raw prompts, responses, email, participant identifiers, namespaces, clusters, credentials, secrets, and API keys are prohibited.
+output:
+  status: ready only after all required receipts reconcile
+  ai_usage: launchpad.vef-pilot-input.v1alpha2 compatible
+  analytics: launchpad.vef-pilot-input.v1alpha2 compatible
+  evidence_sources: sorted receipt digests
+limitations:
+  - This is an offline aggregation boundary, not a durable event bus or authoritative storage system.
+  - It does not assign costs, verify finance approval, or infer missing usage.
+  - Receipt authenticity, lineage, persistence, replay, and data-quality monitoring remain separate production gates.

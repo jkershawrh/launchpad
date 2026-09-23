@@ -12,6 +12,15 @@ Operational systems produce receipts; VEF reconciles their sanitized aggregates
 into track outcomes, lifecycle performance, allocated cost, and gated value
 claims.
 
+The first aggregation boundary is defined by
+`contracts/vef-aggregate-receipt-v1.yaml`. It accepts only four bounded receipt
+types: track outcomes, platform lifecycle, AI usage, and cost allocation. It
+rejects participant content and identity fields, duplicate receipts, mixed
+pilot identities, unreconciled outcomes, and authoritative measurements that
+contain unknown values. Its output fits the `v1alpha2` analytics and AI-usage
+members, but it does not yet provide durable storage, replay, authenticated
+lineage, or finance approval.
+
 The contract is versioned. Existing `v1alpha1` inputs continue to produce the
 original `v1alpha1` claim byte shape, without an analytics member. The analytics
 and allocation extension is `v1alpha2`; it requires the new analytics section
