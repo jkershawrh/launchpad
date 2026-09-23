@@ -177,9 +177,9 @@ scenarios:
   owner: convergence-release
   participating_streams: [convergence-release, automated-lab-intake, artifact-supply-chain, event-orchestration, capacity-admission, participant-experience, security-identity, ha-dr-fleet, control-plane-portability, observability-finops, governed-integrations, lab-content-ai]
   contracts: [convergence-candidate-v1, catalog-package-v1, artifact-policy-v1, production-readiness-v1]
-  state: green-local
-  methods: {tdd: green-local, edd: green-local, cdd: green-local, bdd: green-local, cbt: green-local}
-  evidence: [evidence/runs/convergence/green-local-20260922.json]
+  state: green-integration
+  methods: {tdd: green-integration, edd: green-integration, cdd: green-integration, bdd: green-integration, cbt: green-integration}
+  evidence: [evidence/runs/convergence/green-local-20260922.json, evidence/runs/convergence/green-integration-pending-approval-20260922.json]
   outcome: One immutable platform revision is bound to exact catalog source revisions, shared contracts, hashed evidence, named blockers, and approval-gated sequential promotion.
 - <<: *scenario_defaults
   id: end-to-end-staged-release

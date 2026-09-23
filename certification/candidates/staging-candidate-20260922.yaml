@@ -1,6 +1,6 @@
 schema_version: launchpad.redhat.com/convergence-candidate/v1
 candidate_id: launchpad-staging-20260922-01
-current_stage: green-local
+current_stage: green-integration
 platform:
   repository: https://github.com/jkershawrh/launchpad.git
   revision: 4f8d68b80e4d7cbb8edae96728536d2f9d44ca26
@@ -42,5 +42,5 @@ blockers_to_green_staging:
   - recovery-under-load-upgrade-restore-and-rollback
 approval:
   required: true
-  approved_by: null
-  approved_at: null
+  approved_by: Jonathan Kershaw
+  approved_at: "2026-09-23T03:00:00Z"

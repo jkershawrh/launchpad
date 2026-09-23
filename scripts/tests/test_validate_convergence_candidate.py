@@ -29,11 +29,11 @@ def test_repository_candidate_binds_platform_catalogs_and_evidence() -> None:
     assert result == {
         "valid": True,
         "candidate_id": "launchpad-staging-20260922-01",
-        "stage": "green-local",
+        "stage": "green-integration",
         "platform_revision": "4f8d68b80e4d7cbb8edae96728536d2f9d44ca26",
         "catalog_count": 3,
         "evidence_count": 2,
-        "next_stage": "green-integration",
+        "next_stage": "green-canary",
     }
 
 
@@ -52,7 +52,8 @@ def test_catalog_or_evidence_drift_fails_closed() -> None:
 def test_promotion_requires_named_approval_and_next_gate_blockers() -> None:
     module = _module()
     candidate = copy.deepcopy(_candidate())
-    candidate["current_stage"] = "green-integration"
+    candidate["current_stage"] = "green-canary"
+    candidate["approval"] = {"required": True, "approved_by": None, "approved_at": None}
     with pytest.raises(ValueError, match="named approval"):
         module.validate(candidate, root=ROOT)
 
@@ -61,6 +62,6 @@ def test_promotion_requires_named_approval_and_next_gate_blockers() -> None:
         "approved_by": "release-owner",
         "approved_at": "2026-09-23T03:00:00Z",
     }
-    candidate["blockers_to_green_canary"] = []
-    with pytest.raises(ValueError, match="blockers to green-canary"):
+    candidate["blockers_to_green_staging"] = []
+    with pytest.raises(ValueError, match="blockers to green-staging"):
         module.validate(candidate, root=ROOT)
