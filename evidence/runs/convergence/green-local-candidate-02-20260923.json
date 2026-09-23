@@ -1,0 +1,50 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-evidence/v1",
+  "candidate_id": "launchpad-staging-20260922-02",
+  "candidate_platform_revision": "39517f527c03c646108c7dfe0e97487befdfdce3",
+  "stage": "green-local",
+  "recorded_at": "2026-09-23T03:05:52Z",
+  "results": {
+    "arena_rollout_guard": {
+      "status": "passed",
+      "candidate": "launchpad-staging-20260922-02",
+      "target_api": "api.arena.fm2aihpcsed.com",
+      "explicit_confirmation_required": true
+    },
+    "arena_overlay_component_tests": {
+      "status": "passed",
+      "tests": 3
+    },
+    "arena_overlay_regression_package": {
+      "status": "passed",
+      "tests": 59,
+      "skipped": 11,
+      "reason_skipped": "PostgreSQL integration database was not configured on the local workstation"
+    },
+    "rendered_resource_contract": {
+      "status": "passed",
+      "resources": 56,
+      "secret_objects": 0
+    },
+    "control_plane_ha_contract": {
+      "status": "passed",
+      "backend_replicas": 2,
+      "backend_strategy": "RollingUpdate",
+      "backend_min_available": 1,
+      "leased_lifecycle": true,
+      "orphan_cleanup_enabled": false
+    },
+    "effective_catalog_binding": {
+      "status": "passed",
+      "catalogs": 3
+    },
+    "diff_integrity": {
+      "status": "passed"
+    }
+  },
+  "exclusions": {
+    "live_cluster_mutation": "No deployment, reclaim, restart, or retained-workshop mutation is authorized by this receipt.",
+    "green_integration": "Requires the retained-workshop boundary, rollback snapshot, deployment, and deployed contract evidence.",
+    "green_canary": "Requires a unified exact-release public journey and zero-residue proof for each catalog."
+  }
+}

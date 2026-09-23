@@ -1,0 +1,57 @@
+schema_version: launchpad.redhat.com/convergence-candidate/v1
+candidate_id: launchpad-staging-20260922-02
+current_stage: green-local
+platform:
+  repository: https://github.com/jkershawrh/launchpad.git
+  revision: 39517f527c03c646108c7dfe0e97487befdfdce3
+catalog_releases:
+  - catalog_id: intel-llm-cpu-serving
+    version: 1.0.11
+    showroom_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+    workload_revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
+    effective_release:
+      version: 1.0.12-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml
+      manifest_sha256: efcc5ee68bad479977e90ff728f5de3d6508444d5928b4d2e0419cfc7a1be348
+  - catalog_id: intel-xeon6-agent-201
+    version: 1.0.7
+    showroom_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+    workload_revision: 2f94711efc01384ee4c334caa1720e2962180b14
+    effective_release:
+      version: 1.0.8-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml
+      manifest_sha256: 7a6f799eddb1f970943610c8d35a885f682feea8237ca414c1b7ecef18e5f0a8
+  - catalog_id: multi-agent-quickstart
+    version: 0.2.14
+    showroom_revision: b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3
+    workload_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+    effective_release:
+      version: 0.2.15-flightpath.1
+      manifest_path: deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml
+      manifest_sha256: 1d7433a4593c2c9665a43a97ec6cd88d782ede86f495c9d660887df1e1d74900
+contracts:
+  delivery_streams: 1.0.0
+  convergence_matrix: 1.0.0
+  production_readiness: 1.0.0
+  sre_operating_model: 1.0.0
+  data_ai_governance: 1.0.0
+evidence:
+  - path: evidence/runs/convergence/green-local-candidate-02-20260923.json
+    sha256: 876972d8bf4a15dd9ccd99df936e0acf079f1f2ff763b30a64196910d2a44d94
+blockers_to_green_integration:
+  - retained-workshop-reclaim-and-zero-residue
+  - database-backup-and-rollback-snapshot
+  - deploy-and-verify-two-replica-arena-control-plane
+  - exact-effective-catalog-contract-and-integration-suite
+blockers_to_green_canary:
+  - unified-exact-release-public-claim-learn-execute-resume-restart-and-reclaim-per-catalog
+  - zero-residue-after-unified-public-canaries
+blockers_to_green_staging:
+  - production-shaped-1-5-and-30-seat-profiles
+  - load-spike-stress-endurance-and-soak
+  - security-and-cross-tenant-negative-tests
+  - recovery-under-load-upgrade-restore-and-rollback
+approval:
+  required: true
+  approved_by: null
+  approved_at: null
