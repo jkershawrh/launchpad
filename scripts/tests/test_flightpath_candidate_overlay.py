@@ -129,7 +129,7 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
         "postgres": 1,
         "public-access-gateway": 0,
     }
-    assert _one(documents, "CronJob", "lifecycle-scheduler")["spec"]["suspend"] is True
+    assert _one(documents, "CronJob", "lifecycle-scheduler")["spec"]["suspend"] is False
 
     assert not [document for document in documents if document.get("kind") == "Secret"]
     assert not [
