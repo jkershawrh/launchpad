@@ -345,8 +345,8 @@ def test_candidate_isolates_hybrid_fraud_on_flightpath() -> None:
     metadata = catalog["metadata"]
     assert catalog["status"] == "active"
     assert metadata["workshop_cluster_ref"] == "flightpath"
-    assert metadata["certification_stage"] == "one-seat-candidate"
-    assert metadata["max_workshop_seats"] == 1
+    assert metadata["certification_stage"] == "five-seat-candidate"
+    assert metadata["max_workshop_seats"] == 5
     assert metadata["inference_endpoint"] == "litellm_virtual_key_candidate"
     assert metadata["seat_cpu_millicores"] == 700
     assert metadata["seat_memory_mib"] == 1280
