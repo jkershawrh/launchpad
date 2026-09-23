@@ -1,0 +1,29 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-maas-bootstrap-proof/v1",
+  "cluster_ref": "flightpath",
+  "namespace": "launchpad-flightpath-candidate",
+  "certified_at": "2026-09-22",
+  "contains_plaintext_credentials": false,
+  "red": {
+    "condition": "The candidate MaaS database role, database, and Kubernetes Secret were created manually and could not be reproduced safely from source."
+  },
+  "green": {
+    "change": "Added an idempotent bootstrap that generates credentials at runtime, initializes PostgreSQL, creates the Secret without printing credentials, and validates dependent rollouts.",
+    "local_tests_passed": 1,
+    "shell_syntax_valid": true,
+    "live_existing_secret_path_passed": true,
+    "secret_data_unchanged": true,
+    "secret_resource_version_unchanged": true,
+    "deployments_available": {
+      "launchpad-candidate-maas": 1,
+      "backend": 1,
+      "lifecycle-worker": 1
+    }
+  },
+  "scope": {
+    "secret_rotation_performed": false,
+    "workshops_modified": 0,
+    "candidate_certification_namespaces_modified": 0
+  },
+  "result": "passed"
+}
