@@ -1,0 +1,68 @@
+{
+  "schema": "launchpad.redhat.com/flightpath-catalog-certification/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cluster_ref": "flightpath",
+  "certified_at": "2026-09-22",
+  "certification_stage": "one-seat-maas-candidate",
+  "launchpad_commit": "14360be",
+  "source_repository": "https://github.com/jkershawrh/hybrid-fraud-detection",
+  "source_commit": "00f07a8265579efd77964b390d65368999a1523a",
+  "workload_image_digest": "sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0",
+  "maas_image_digest": "sha256:9d60771c86a42ced1b918f23dd940a1ac9905ddb02a4fae779cfe1937477c9a0",
+  "contains_plaintext_credentials": false,
+  "red_green": [
+    {
+      "red": "The direct vLLM candidate accepted an injected credential without proving per-seat enforcement or revocation.",
+      "green": "The isolated candidate now issues LiteLLM virtual keys and routes all catalog model endpoints through the key-enforcing gateway."
+    },
+    {
+      "red": "The first gateway pod could not reach PostgreSQL because its pod template lacked the label required by the database ingress policy.",
+      "green": "The digest-pinned gateway pod now carries the explicit managed-by label and the candidate overlay regression suite verifies it."
+    }
+  ],
+  "component_gate": {
+    "key_generate_http": 200,
+    "invalid_key_http": 401,
+    "valid_key_http": 200,
+    "unentitled_model_http": 403,
+    "key_delete_http": 200,
+    "revoked_key_http": 401,
+    "key_id_persisted": true
+  },
+  "lifecycle_gate": {
+    "workshop_id": "d08f5e5b-1daa-4365-b179-e47620388ec7",
+    "session_id": "3e670854-12f4-4656-a93d-24836b8310d4",
+    "provisioned": 1,
+    "ready": 1,
+    "inference_attribution": "litellm_virtual_key",
+    "maas_key_id_persisted": true,
+    "health_http": 200,
+    "readiness_http": 200,
+    "score_http": 200,
+    "score": {
+      "llm_skipped": false,
+      "model": "granite-3.2-8b-tools",
+      "latency_ms": 647.58,
+      "risk_level": "medium"
+    },
+    "upstream_chat_completion_http": 200,
+    "reclaim_status": "completed",
+    "session_status_after_reclaim": "reclaimed",
+    "session_key_cleared": true,
+    "revocation_provider": "litellm",
+    "revocation_key_id_persisted": true,
+    "revoked_session_key_http": 401,
+    "reclaim_namespaces_remaining": 0,
+    "reclaim_applications_remaining": 0
+  },
+  "regression_suite": {
+    "test": "scripts/tests/test_flightpath_candidate_overlay.py",
+    "passed": 9,
+    "failed": 0
+  },
+  "resolved_blockers": [
+    "FRAUD-MAAS-KEY-ENFORCEMENT"
+  ],
+  "next_gate": "five-seat-candidate",
+  "result": "passed"
+}
