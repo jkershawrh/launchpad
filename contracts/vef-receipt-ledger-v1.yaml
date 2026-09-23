@@ -1,0 +1,21 @@
+schema_version: launchpad.vef-receipt-ledger.v1
+kind: VEFReceiptLedger
+metadata:
+  version: 1.0.0
+  owner: value-evidence-owner
+  security_owner: launchpad-security-owner
+purpose: Provide a local durable proof of append-only, idempotent, tamper-evident storage for complete sanitized VEF receipt batches.
+write_contract:
+  transaction: A complete reconciled batch is committed atomically or not at all.
+  idempotency: Exact receipt replay is accepted without inserting another row.
+  conflict: Reusing a receipt ID with different canonical bytes fails closed and rolls back the batch.
+  integrity: Every canonical payload digest is linked to the prior record with HMAC-SHA256.
+  key_source: External secret material of at least 16 bytes; never stored in the ledger or evidence.
+read_contract:
+  - Verify the complete global chain before returning any pilot subset.
+  - Reject modified payload, digest, prior-link, or chain values.
+  - Return only receipts matching the requested pilot identity.
+production_limits:
+  - SQLite proves local semantics only; it is not the production HA evidence store.
+  - HMAC does not provide asymmetric non-repudiation or external transparency.
+  - Multi-replica fencing, PostgreSQL migration, backup/restore, retention, dead-letter handling, and disaster recovery remain open.

@@ -21,6 +21,14 @@ contain unknown values. Its output fits the `v1alpha2` analytics and AI-usage
 members, but it does not yet provide durable storage, replay, authenticated
 lineage, or finance approval.
 
+The local `VEFReceiptLedger` now proves the next persistence semantics without
+changing the live platform. It transactionally appends only a complete
+reconciled batch, treats an exact replay as idempotent, rejects a receipt ID
+reused with different bytes, and verifies an externally keyed hash chain before
+returning any pilot records. The SQLite implementation is component evidence,
+not the production store. Multi-replica fencing, PostgreSQL, backup/restore,
+retention, dead-letter handling, and DR certification remain required.
+
 The contract is versioned. Existing `v1alpha1` inputs continue to produce the
 original `v1alpha1` claim byte shape, without an analytics member. The analytics
 and allocation extension is `v1alpha2`; it requires the new analytics section
