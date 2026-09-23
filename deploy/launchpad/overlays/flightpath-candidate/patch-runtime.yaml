@@ -46,8 +46,7 @@ spec:
               subPath: catalog-item.yaml
               readOnly: true
             - name: candidate-network-operations-catalog
-              mountPath: /opt/catalog/network-operations-agent/catalog-item.yaml
-              subPath: catalog-item.yaml
+              mountPath: /opt/catalog/network-operations-agent
               readOnly: true
       volumes:
         - name: cluster-targets
@@ -113,8 +112,7 @@ spec:
               subPath: catalog-item.yaml
               readOnly: true
             - name: candidate-network-operations-catalog
-              mountPath: /opt/catalog/network-operations-agent/catalog-item.yaml
-              subPath: catalog-item.yaml
+              mountPath: /opt/catalog/network-operations-agent
               readOnly: true
       volumes:
         - name: cluster-ca-bundle
