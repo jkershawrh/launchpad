@@ -19,8 +19,8 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/hybrid-fraud-detection.yaml
-  certification_stage: five-seat-candidate
-  max_workshop_seats: 5
+  certification_stage: twenty-five-seat-candidate
+  max_workshop_seats: 25
   promotion_sequence: [1, 5, 25]
   activation_blockers: []
   allowed_exposure_policies: [internal]
