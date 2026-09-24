@@ -19,12 +19,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: 00f07a8265579efd77964b390d65368999a1523a
+    revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: 00f07a8265579efd77964b390d65368999a1523a
+    revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
     deploy_path: chart
 runtime:
   deployment_type: helm

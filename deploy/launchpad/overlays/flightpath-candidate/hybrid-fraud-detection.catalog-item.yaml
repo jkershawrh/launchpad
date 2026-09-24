@@ -28,7 +28,7 @@ metadata:
   showroom_title: Hybrid Fraud Detection on Intel Xeon
   namespace_slug: fraud
   showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  showroom_content_ref: 00f07a8265579efd77964b390d65368999a1523a
+  showroom_content_ref: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   showroom_terminal_storage: true
@@ -54,7 +54,7 @@ metadata:
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
   workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  workload_revision: 00f07a8265579efd77964b390d65368999a1523a
+  workload_revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart

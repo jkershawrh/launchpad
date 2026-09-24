@@ -33,7 +33,7 @@ metadata:
   - multi-agent-quickstart
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  showroom_content_ref: 00f07a8265579efd77964b390d65368999a1523a
+  showroom_content_ref: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -83,7 +83,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  workload_revision: 00f07a8265579efd77964b390d65368999a1523a
+  workload_revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -110,7 +110,7 @@ metadata:
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  source_content_revision: 00f07a8265579efd77964b390d65368999a1523a
+  source_content_revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1
