@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
@@ -43,6 +43,19 @@ def test_guided_catalog_item_adds_showroom_to_plan():
     assert len(plan.required_resources["showroom_steps"]) == 2
     assert plan.required_resources["demo_pages"] == "try-it"
     assert plan.required_resources["workspace_path"] == "/try-it"
+
+
+def test_demo_database_secret_uses_unpredictable_generated_password():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._core_v1 = MagicMock()
+
+    with patch("secrets.token_urlsafe", return_value="generated-random-password"):
+        adapter._create_demo_secrets("launchpad-example-seat")
+
+    postgres_secret = adapter._core_v1.create_namespaced_secret.call_args_list[1].args[1]
+    assert postgres_secret.string_data["POSTGRES_PASSWORD"] == "generated-random-password"
+    assert "generated-random-password" in postgres_secret.string_data["DATABASE_URL"]
+    assert "launchpad-example-seat" not in postgres_secret.string_data["DATABASE_URL"]
 
 
 def test_public_showroom_defers_rbac_until_the_stable_oidc_identity_claims():

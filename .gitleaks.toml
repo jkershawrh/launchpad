@@ -19,24 +19,3 @@ useDefault = true
     # credential. Keep the exception scoped to the single asset-bearing file.
     '''content-agentops-observability/supplemental-ui/partials/header-content\.hbs''',
   ]
-  regexTarget = "line"
-  regexes = [
-    '''REDACTED''',
-    '''replace-with''',
-    '''changeme''',
-    '''EXAMPLE''',
-    '''dummy''',
-    '''placeholder''',
-    '''sk-automation-workspace-setup''',
-    '''lookup\(.*password''',
-    # OAuth-proxy identity headers in unit-test fixtures. These values are
-    # synthetic user identifiers, not authentication credentials.
-    '''x-auth-request-(user|email)["']?\s*:\s*["'][a-z0-9-]+''',
-    # Kubernetes Secret object references identify an object; they do not
-    # contain the Secret value.
-    '''secretName:\s*[a-z0-9-]+''',
-    # Public/internal Keycloak endpoint constants contain hostnames only.
-    '''KEYCLOAK_(HOST|INT_ORIGIN)\s*=\s*["'](https?://)?[a-z0-9.:-]+''',
-    # Stable evidence correlation identifiers used for repeatability reports.
-    '''arena-(cpu-serving-25|cpu-five)-20260904-final''',
-  ]

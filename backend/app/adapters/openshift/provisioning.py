@@ -1275,6 +1275,7 @@ http {{
 
     def _create_demo_secrets(self, namespace: str, session_maas_key: str = "") -> None:
         import os
+        import secrets
 
         litellm_key = session_maas_key or os.environ.get("LITELLM_API_KEY", "")
         secret = client.V1Secret(
@@ -1297,13 +1298,17 @@ http {{
             if exc.status != 409:
                 pass
 
+        postgres_password = secrets.token_urlsafe(32)
         pg_secret = client.V1Secret(
             metadata=client.V1ObjectMeta(name="postgres-credentials"),
             string_data={
                 "POSTGRES_DB": "inference_platform",
                 "POSTGRES_USER": "gateway",
-                "POSTGRES_PASSWORD": f"lab-{namespace[:16]}",
-                "DATABASE_URL": f"postgresql://gateway:lab-{namespace[:16]}@postgres:5432/inference_platform",
+                "POSTGRES_PASSWORD": postgres_password,
+                "DATABASE_URL": (
+                    f"postgresql://gateway:{postgres_password}"
+                    "@postgres:5432/inference_platform"
+                ),
             },
         )
         try:
