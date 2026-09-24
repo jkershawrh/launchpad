@@ -1,5 +1,5 @@
 catalog_item_id: rag-on-xeon
-display_name: "RAG on Intel Xeon"
+display_name: "Intel AI 101: RAG on Intel Xeon"
 description: "Retrieval-augmented generation chatbot running entirely on CPU. Uses Granite 2B for generation and vector search for document retrieval."
 category: quick_start
 version: "1.0.0"
@@ -18,6 +18,13 @@ validation_refs:
 supported_branding:
   - intel-internal
 metadata:
+  learning_level: "101"
+  learning_stage: Learn
+  experience_type: foundational_rag
+  prerequisites: []
+  recommended_next_items:
+    - guided-rag-on-xeon
+    - intel-xeon6-agent-201
   deploy_method: helm
   deploy_path: demos/quickstarts/rag/deploy/helm/rag
   required_models:

@@ -2,12 +2,20 @@ api_version: launchpad.redhat.com/v1alpha1
 onboarding_contract: catalog-onboarding/hybrid-fraud-detection.yaml
 catalog:
   catalog_item_id: hybrid-fraud-detection
-  display_name: Hybrid Fraud Detection on Intel Xeon
+  display_name: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
   description: Repository-discovered onboarding draft for Hybrid Fraud Detection on
     Intel Xeon.
   category: guided_build
   version: 0.1.0
   status: draft
+learning:
+  learning_level: "201"
+  learning_stage: Build
+  experience_type: domain_solution_build
+  prerequisites:
+  - intel-llm-cpu-serving
+  recommended_next_items:
+  - multi-agent-quickstart
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git

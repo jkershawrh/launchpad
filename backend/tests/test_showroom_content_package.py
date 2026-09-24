@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 INTEL_GUIDED_LABS = [
     {
         "catalog_id": "intel-xeon6-agent-201",
-        "display_name": "Intel Xeon 6 201: Building an AI Agent",
+        "display_name": "Intel AI 201: Build an AI Agent on Intel Xeon 6",
         "playbook": "site-intel-xeon6-agent-201.yml",
         "content_path": "content-intel-xeon6-agent-201",
         "title": "Intel Xeon 6 201 — Building an AI Agent",
@@ -25,7 +25,7 @@ INTEL_GUIDED_LABS = [
     },
     {
         "catalog_id": "intel-llm-cpu-serving",
-        "display_name": "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs",
+        "display_name": "Intel AI 101: Serve LLMs on Intel Xeon CPUs",
         "playbook": "site-intel-llm-cpu-serving.yml",
         "content_path": "content-intel-llm-cpu-serving",
         "title": "Serve LLMs on Intel Xeon CPUs",
@@ -38,7 +38,7 @@ INTEL_GUIDED_LABS = [
     },
     {
         "catalog_id": "intel-llm-tool-calling",
-        "display_name": "Intel AI Quickstart: LLM Tool Calling on Intel",
+        "display_name": "Intel AI 201: LLM Tool Calling on Intel",
         "playbook": "site-intel-llm-tool-calling.yml",
         "content_path": "content-intel-llm-tool-calling",
         "title": "Enable AI Tool Calling on OpenShift",

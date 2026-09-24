@@ -1,5 +1,5 @@
 catalog_item_id: multi-agent-quickstart
-display_name: Build Multi-Agent AI Systems with Open Protocols
+display_name: 'Intel AI 301: Build Multi-Agent AI Systems with Open Protocols'
 description: Investigate a fictional service incident with specialized agents, produce
   an evidence-backed response package for human review, operate the workload on OpenShift,
   and explore its advanced blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry,
@@ -27,6 +27,14 @@ supported_branding:
 - redhat-intel-default
 - intel-internal
 metadata:
+  learning_level: "301"
+  learning_stage: Engineer
+  experience_type: system_engineering
+  prerequisites:
+  - intel-xeon6-agent-201
+  - intel-llm-tool-calling
+  recommended_next_items:
+  - agentops-observability
   showroom: true
   operator_workshop: true
   content_only: false
@@ -53,7 +61,7 @@ metadata:
   - internal
   - public_code
   showroom_journey: multi-agent-quickstart
-  showroom_title: Build Multi-Agent AI Systems with Open Protocols
+  showroom_title: 'Intel AI 301: Build Multi-Agent AI Systems with Open Protocols'
   namespace_slug: multi-agent
   showroom_content_repo_url: https://github.com/rhpds/launchpad.git
   showroom_content_ref: b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3

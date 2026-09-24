@@ -4,6 +4,15 @@ import { api } from '../api/client';
 import type { CatalogItem } from '../api/types';
 import StatusBadge from '../components/StatusBadge';
 import { catalogLaunchPath } from '../catalogNavigation';
+import {
+  LEARNING_LEVELS,
+  LEARNING_STAGE,
+  learningLevel,
+  learningStage,
+  prerequisites,
+  recommendedNextItems,
+  sortByLearningProgression,
+} from '../catalogLearning';
 import { participantCatalog } from '../catalogVisibility';
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -23,6 +32,7 @@ export default function Catalog() {
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const filter = searchParams.get('category') || 'all';
+  const levelFilter = searchParams.get('level') || 'all';
 
   useEffect(() => {
     api.listCatalog().then((data) => {
@@ -31,7 +41,17 @@ export default function Catalog() {
     });
   }, []);
 
-  const filtered = filter === 'all' ? items : items.filter((i) => i.category === filter);
+  const filtered = sortByLearningProgression(items.filter((item) => (
+    (filter === 'all' || item.category === filter) &&
+    (levelFilter === 'all' || learningLevel(item) === levelFilter)
+  )));
+
+  const updateFilter = (key: 'category' | 'level', value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (value === 'all') next.delete(key);
+    else next.set(key, value);
+    setSearchParams(next);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6">
@@ -44,7 +64,7 @@ export default function Catalog() {
         {['all', 'quick_start', 'guided_build', 'open_sandbox'].map((cat) => (
           <button
             key={cat}
-            onClick={() => setSearchParams(cat === 'all' ? {} : { category: cat })}
+            onClick={() => updateFilter('category', cat)}
             className={`px-3 py-1.5 rounded text-xs font-medium transition ${
               filter === cat
                 ? 'bg-white/15 text-white'
@@ -52,6 +72,23 @@ export default function Catalog() {
             }`}
           >
             {cat === 'all' ? 'All' : CATEGORY_LABELS[cat]}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="mr-1 text-xs font-medium uppercase tracking-wider text-[#6A6E73]">Learning level</span>
+        {['all', ...LEARNING_LEVELS].map((level) => (
+          <button
+            key={level}
+            onClick={() => updateFilter('level', level)}
+            className={`rounded px-3 py-1.5 text-xs font-medium transition ${
+              levelFilter === level
+                ? 'bg-[#0068B5] text-white'
+                : 'bg-[#212121] text-[#8A8D90] hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            {level === 'all' ? 'All levels' : `${level} · ${LEARNING_STAGE[level as keyof typeof LEARNING_STAGE]}`}
           </button>
         ))}
       </div>
@@ -72,6 +109,11 @@ export default function Catalog() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-sm font-semibold text-white">{item.display_name}</h3>
+                    {learningLevel(item) && (
+                      <span className="rounded bg-[#0068B5]/20 px-2 py-0.5 text-xs font-semibold text-[#73BCF7]">
+                        {learningLevel(item)} · {learningStage(item)}
+                      </span>
+                    )}
                     <StatusBadge status={item.category} />
                     <span className="text-xs text-[#6A6E73]">v{item.version}</span>
                   </div>
@@ -81,6 +123,16 @@ export default function Catalog() {
                       <span key={cap} className="text-xs bg-[#1a1a1a] text-[#6A6E73] px-2 py-0.5 rounded">{cap}</span>
                     ))}
                   </div>
+                  {prerequisites(item).length > 0 && (
+                    <p className="mt-3 text-xs text-[#8A8D90]">
+                      Prerequisite: {prerequisites(item).map((id) => items.find((entry) => entry.catalog_item_id === id)?.display_name || id).join(', ')}
+                    </p>
+                  )}
+                  {recommendedNextItems(item).length > 0 && (
+                    <p className="mt-1 text-xs text-[#8A8D90]">
+                      Continue with: {recommendedNextItems(item).map((id) => items.find((entry) => entry.catalog_item_id === id)?.display_name || id).join(', ')}
+                    </p>
+                  )}
                 </div>
                 <Link
                   to={catalogLaunchPath(item.category, item.catalog_item_id)}

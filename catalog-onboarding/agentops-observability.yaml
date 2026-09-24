@@ -3,7 +3,7 @@ onboarding_contract: catalog-onboarding/agentops-observability.yaml
 
 catalog:
   catalog_item_id: agentops-observability
-  display_name: "AgentOps in Production: End-to-End Observability with Red Hat AI"
+  display_name: "Intel AI 401: AgentOps and Production Observability with Red Hat AI"
   description: >-
     Investigate a production-style multi-agent mortgage application through
     OpenShift metrics and logs, Grafana dashboards, MLflow tracing and
@@ -13,6 +13,14 @@ catalog:
   supported_branding:
     - redhat-intel-default
     - intel-internal
+
+learning:
+  learning_level: "401"
+  learning_stage: Operate
+  experience_type: production_operations
+  prerequisites:
+    - multi-agent-quickstart
+  recommended_next_items: []
 
 sources:
   showroom:

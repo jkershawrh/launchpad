@@ -190,7 +190,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "03e01ba83f62b91fb9e59ac19b6d33865a72a3c16af6481a6e826912003f74a5"
+      "sha256": "ca350ac98db47c2d346c28057057ed94355af99012d0b9620047da7eab658978"
     },
     {
       "area": "catalog-onboarding",
@@ -220,7 +220,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "2d2f85325895b9871ea0b9e65d61499abb1013d2e6ad074a52deb01d296893d8"
+      "sha256": "04db055ceff14c4712f3b522331cabb4321fda48cf8cb5bc67603ae5aa1b51e6"
     },
     {
       "area": "catalog-onboarding",
@@ -252,7 +252,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "931a2ef5fc181f7eb8ef8e40e9007e884ddacb8d65563703f81c63517d3ee2a5"
+      "sha256": "dafa33b1e3468a15218a74b63e264d33a7181ac6d021f44e657c3408cb78f949"
     },
     {
       "area": "catalog-onboarding",
@@ -285,7 +285,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "4cf00d83eda26e39fc2403a5ef2b92a19a7578c9df15bab8406c102d06414157"
+      "sha256": "51bab1f1acf505bea91651b772f2bf8a234aa579027dc4e17507a9c58dc8cee1"
     },
     {
       "area": "catalog-onboarding",
@@ -334,7 +334,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "f85aa04769726f307153a16ade792954ab81eb36c9ced53f298b51502118d533"
+      "sha256": "bf67c1b532bd8c78b364d0adfdda1ed5808ba548c27bee66df12266a183149d4"
     },
     {
       "area": "catalog-onboarding",
@@ -355,7 +355,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "b70e0618178f78211dab751ff8fd3b5455d8123196b0934396ea5728a1e203bb"
+      "sha256": "ba2bdeb6fb8b7b97384f68e5c986d7d572435143adb7850639eb42adb24e3831"
     },
     {
       "area": "catalog",
@@ -384,7 +384,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "26367bb751f1feefc13332197dc2d484a01aa934cf12f09d55ed8d61bb752d14"
+      "sha256": "2127c63e624d0b97a2134a11566286036cced1f27588f1b2aeddb06a37765d43"
     },
     {
       "area": "catalog",
@@ -405,7 +405,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "bf01a97626bc03fe7015afc84d3872906f163bfe27fded13f360fc32be7f548a"
+      "sha256": "4242624c833e5bcfe9c9872277dd6e16791e7bffa94e4967eac3c220f695451a"
     },
     {
       "area": "catalog",
@@ -423,7 +423,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "18974c7da73b030c28fbf7334b14b99922e252ed66d30e7a648e154701fa514a"
+      "sha256": "8becf83e0a5ffb5045e65069bd2fadbebbaf52d4338894ccb790647b83b41a06"
     },
     {
       "area": "catalog",
@@ -443,7 +443,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "e96c7e8f7fbb39cf444cc6669b4741d722118261fb4cfb9f350eda28d3bf7012"
+      "sha256": "66e6fdf73eab4e4aa29df314f00ca23f24f237c37c3f5ce8d65bfcf180369425"
     },
     {
       "area": "catalog",
@@ -466,7 +466,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "bdb128c7936339abceecaed2002c1f54e194359d04a82659c0f64977a6bc4072"
+      "sha256": "ec917d75c7f14ffa456046f7404fa5a42380be0bee345904af3506aedb4d3cd6"
     },
     {
       "area": "catalog",
@@ -503,7 +503,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "d54a1e7d9dddc57872871e66b8af7e189af3b38767cdb254a1350af4c150d283"
+      "sha256": "0c0f171b2afb4041f2fdef8b5249140848a46dbbd01e068956fff1b9a2dc05d0"
     },
     {
       "area": "catalog",
@@ -528,7 +528,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "83a794e17fa63fd33da755b2e5058a14fa9342b457e0695568fb5e698dc407ef"
+      "sha256": "7ffd61596f17beb6cbe75b4ed7d16fdb9b03969169922ffda9460d77a9f920a8"
     },
     {
       "area": "catalog",
@@ -558,7 +558,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "8c57b6767b435dbbd3492845dbb44eabccf19650253c9957b0df797098c13500"
+      "sha256": "7f55d5d459b366941009c68b10eab2d7716cb644319b615b23baa0b081fef40b"
     },
     {
       "area": "catalog",
@@ -586,7 +586,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "6cb2ee093e98f43ecf3a6b67c01bae603594f0eb7b76f3bfa2ddee2a0777f1d8"
+      "sha256": "65a48ee4c5bf16408771b3847d7eed38214a34a885d771c8e09c677e02262b38"
     },
     {
       "area": "catalog",
@@ -604,7 +604,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "f90643f633c214c4dfa9af58d4ebf6a84fa5756e2ae736c23aa0f6eaa55716c6"
+      "sha256": "5c4ab1a08f252d750b77266496e45ac57cad6aec39984cff78f0254a6f940374"
     },
     {
       "area": "catalog",
@@ -627,7 +627,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "a5b495f49a8521cb6dfce52895be7339af852d034f82431583f4171fcee60e76"
+      "sha256": "97a3808402260f1dcf01be5964acfa4a1eb5e673410269885f99ab9b9d39b885"
     },
     {
       "area": "catalog",
@@ -645,7 +645,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "e56974e23d98e0fffc4824c36a2366b7110b9a2e607954239b42a5e0e9f52316"
+      "sha256": "32aa3c382cd1ea77e80df98679ae96963d261cb11488d5175c93aa4439eabe06"
     },
     {
       "area": "catalog",
@@ -663,7 +663,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "97e8823b77fb97b544a3c5d09f71cb55606c722d474bd36942e46a30077e7910"
+      "sha256": "df8377e6b067ccff4b73c81214f7b5b37f51266350caf5dcdf53f013f8980ee5"
     },
     {
       "area": "certification",
@@ -10341,7 +10341,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "1ef74007e3c5c3b6924a0a6ca06171901a186da1",
+  "source_commit": "5f298933209cc5b32f98f298591259b4b624bb95",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

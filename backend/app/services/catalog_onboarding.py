@@ -1154,6 +1154,7 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
     workload_contract = runtime.get("workload", {})
     references = intake.get("references", {})
     quality = intake.get("quality", {})
+    learning = intake.get("learning", {})
     capacity_metadata = {}
     track_metadata = {}
     certification_metadata = {}
@@ -1237,6 +1238,7 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "supported_branding", ["redhat-intel-default", "intel-internal"]
         ),
         "metadata": {
+            **copy.deepcopy(learning),
             **showroom_metadata,
             "operator_workshop": True,
             "content_only": False,
@@ -1346,6 +1348,33 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
     catalog_status = catalog.get("status", "draft")
     if catalog_status not in {"draft", "active"}:
         errors.append("catalog.status must be draft or active")
+
+    learning = intake.get("learning", {})
+    if learning:
+        if not isinstance(learning, dict):
+            errors.append("learning must be a mapping")
+        else:
+            levels = {
+                "001": "Explore",
+                "101": "Learn",
+                "201": "Build",
+                "301": "Engineer",
+                "401": "Operate",
+            }
+            level = str(learning.get("learning_level", "")).zfill(3)
+            if level not in levels:
+                errors.append("learning.learning_level must be 001, 101, 201, 301, or 401")
+            elif learning.get("learning_stage") != levels[level]:
+                errors.append("learning.learning_stage must match learning.learning_level")
+            if not str(learning.get("experience_type", "")).strip():
+                errors.append("learning.experience_type is required")
+            for field in ("prerequisites", "recommended_next_items"):
+                references = learning.get(field)
+                if not isinstance(references, list) or any(
+                    not isinstance(reference, str) or not CATALOG_ID.fullmatch(reference)
+                    for reference in (references if isinstance(references, list) else [])
+                ):
+                    errors.append(f"learning.{field} must be a list of catalog IDs")
 
     for source_name, source in (("showroom", showroom), ("workload", workload)):
         if not str(source.get("repo_url", "")).startswith("https://github.com/"):

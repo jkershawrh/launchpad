@@ -1,5 +1,5 @@
 catalog_item_id: ai-sandbox
-display_name: "OpenShift Developer Sandbox"
+display_name: "Intel AI 001: OpenShift Developer Sandbox"
 description: "A namespace-scoped OpenShift environment with the Red Hat web console, web terminal, browser IDE, and access to the Arena CPU model fleet."
 category: open_sandbox
 version: "1.0.0"
@@ -17,6 +17,12 @@ validation_refs:
 supported_branding:
   - intel-internal
 metadata:
+  learning_level: "001"
+  learning_stage: Explore
+  experience_type: open_exploration
+  prerequisites: []
+  recommended_next_items:
+    - intel-llm-cpu-serving
   sandbox_type: openshift_dev
   stack_level: ai_dev
   access_methods:

@@ -21,8 +21,15 @@ def test_multi_agent_quickstart_is_active_for_public_event_orders():
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
 
     assert catalog == build_catalog_item(intake)
+    assert catalog["metadata"]["learning_level"] == "301"
+    assert catalog["metadata"]["prerequisites"] == [
+        "intel-xeon6-agent-201",
+        "intel-llm-tool-calling",
+    ]
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
-    assert catalog["display_name"] == "Build Multi-Agent AI Systems with Open Protocols"
+    assert catalog["display_name"] == (
+        "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
+    )
     assert catalog["version"] == "0.2.14"
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
@@ -236,7 +243,7 @@ def test_multi_agent_journey_leads_with_a_business_workload_and_takeaway():
     index = (pages / "index.adoc").read_text()
     track_1 = (pages / TRACKS["track-1-local"]).read_text()
     conclusion = (pages / "99-conclusion.adoc").read_text()
-    guide = "\n".join((index, track_1, conclusion))
+    guide = f"{index}\n{track_1}\n{conclusion}"
 
     for phrase in (
         "fictional service incident",

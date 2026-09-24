@@ -3,7 +3,7 @@ onboarding_contract: catalog-onboarding/multi-agent-quickstart.yaml
 
 catalog:
   catalog_item_id: multi-agent-quickstart
-  display_name: "Build Multi-Agent AI Systems with Open Protocols"
+  display_name: "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
   description: >-
     Investigate a fictional service incident with specialized agents, produce
     an evidence-backed response package for human review, operate the workload
@@ -16,6 +16,16 @@ catalog:
   supported_branding:
     - redhat-intel-default
     - intel-internal
+
+learning:
+  learning_level: "301"
+  learning_stage: Engineer
+  experience_type: system_engineering
+  prerequisites:
+    - intel-xeon6-agent-201
+    - intel-llm-tool-calling
+  recommended_next_items:
+    - agentops-observability
 
 sources:
   showroom:

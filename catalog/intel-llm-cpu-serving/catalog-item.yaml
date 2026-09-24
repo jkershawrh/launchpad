@@ -1,5 +1,5 @@
 catalog_item_id: intel-llm-cpu-serving
-display_name: "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs"
+display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
 description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
 category: guided_build
 version: "1.0.12"
@@ -22,6 +22,13 @@ supported_branding:
   - redhat-intel-default
   - intel-internal
 metadata:
+  learning_level: "101"
+  learning_stage: Learn
+  experience_type: foundational_inference
+  prerequisites: []
+  recommended_next_items:
+    - intel-llm-tool-calling
+    - intel-xeon6-agent-201
   showroom: true
   operator_workshop: true
   content_only: true
@@ -36,7 +43,7 @@ metadata:
   onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
   certification_proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
   showroom_journey: intel-llm-cpu-serving
-  showroom_title: "Serve LLMs on Intel Xeon CPUs"
+  showroom_title: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"

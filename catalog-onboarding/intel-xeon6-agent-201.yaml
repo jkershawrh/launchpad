@@ -3,7 +3,7 @@ onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
 
 catalog:
   catalog_item_id: intel-xeon6-agent-201
-  display_name: "Intel Xeon 6 201: Building an AI Agent"
+  display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
   description: >-
     Build and tune a namespace-isolated AI solution advisor with LangGraph,
     MCP tools, and shared Intel Xeon inference.
@@ -13,6 +13,16 @@ catalog:
   supported_branding:
     - redhat-intel-default
     - intel-internal
+
+learning:
+  learning_level: "201"
+  learning_stage: Build
+  experience_type: solution_build
+  prerequisites:
+    - intel-llm-cpu-serving
+  recommended_next_items:
+    - multi-agent-quickstart
+    - network-operations-agent
 
 sources:
   showroom:

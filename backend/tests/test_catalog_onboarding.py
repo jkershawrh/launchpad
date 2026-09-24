@@ -24,6 +24,8 @@ def test_agentops_is_registered_as_a_fail_closed_draft():
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
 
     assert catalog == build_catalog_item(intake)
+    assert catalog["metadata"]["learning_level"] == "401"
+    assert catalog["metadata"]["learning_stage"] == "Operate"
     assert catalog["catalog_item_id"] == "agentops-observability"
     assert catalog["status"] == "draft"
     assert catalog["version"] == "0.1.4"

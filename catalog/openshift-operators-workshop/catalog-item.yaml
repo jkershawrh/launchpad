@@ -1,5 +1,5 @@
 catalog_item_id: openshift-operators-workshop
-display_name: "OpenShift AI Operator Workshop"
+display_name: "OpenShift AI 201: Operator Workshop"
 description: "A guided, seat-isolated OpenShift workshop using the web console and terminal to explore Red Hat AI, application, observability, and Intel operators on Oberon."
 category: guided_build
 version: "1.0.0"
@@ -19,6 +19,13 @@ validation_refs:
 supported_branding:
   - intel-internal
 metadata:
+  learning_level: "201"
+  learning_stage: Build
+  experience_type: platform_operations_build
+  prerequisites:
+    - ai-sandbox
+  recommended_next_items:
+    - agentops-observability
   showroom: true
   showroom_journey: openshift-operators
   operator_workshop: true
@@ -28,7 +35,7 @@ metadata:
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
   showroom_content_ref: "main"
   showroom_content_playbook: "site-openshift-operators.yml"
-  showroom_title: "Operate AI Workloads on Red Hat OpenShift"
+  showroom_title: "OpenShift AI 201: Operator Workshop"
   operator_capabilities:
     - openshift-ai
     - openshift-serverless

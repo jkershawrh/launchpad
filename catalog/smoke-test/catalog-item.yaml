@@ -16,6 +16,11 @@ validation_refs:
 supported_branding:
   - intel-internal
 metadata:
+  learning_level: "001"
+  learning_stage: Explore
+  experience_type: platform_validation
+  prerequisites: []
+  recommended_next_items: []
   deploy_method: kustomize-dir
   cpu_only: true
   smoke_test: true

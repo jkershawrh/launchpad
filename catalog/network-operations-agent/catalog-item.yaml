@@ -1,5 +1,5 @@
 catalog_item_id: network-operations-agent
-display_name: Evidence-Backed Network Operations Agent
+display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
 description: Repository-discovered onboarding draft for Evidence-Backed Network Operations
   Agent.
 category: guided_build
@@ -24,6 +24,13 @@ supported_branding:
 - redhat-intel-default
 - intel-internal
 metadata:
+  learning_level: "301"
+  learning_stage: Engineer
+  experience_type: domain_solution_engineering
+  prerequisites:
+  - intel-xeon6-agent-201
+  recommended_next_items:
+  - agentops-observability
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
   showroom_content_ref: 1f24514abf5ba49955f22c3e5034bdb425725a71
@@ -57,7 +64,7 @@ metadata:
   allowed_exposure_policies:
   - internal
   showroom_journey: network-operations-agent
-  showroom_title: Evidence-Backed Network Operations Agent
+  showroom_title: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
   namespace_slug: network-operations-agent
   showroom_terminal_storage: true
   showroom_tabs:

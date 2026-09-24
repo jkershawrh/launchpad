@@ -1,5 +1,5 @@
 catalog_item_id: hybrid-fraud-detection
-display_name: Hybrid Fraud Detection on Intel Xeon
+display_name: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
 description: Repository-discovered onboarding draft for Hybrid Fraud Detection on
   Intel Xeon.
 category: guided_build
@@ -24,6 +24,13 @@ supported_branding:
 - redhat-intel-default
 - intel-internal
 metadata:
+  learning_level: "201"
+  learning_stage: Build
+  experience_type: domain_solution_build
+  prerequisites:
+  - intel-llm-cpu-serving
+  recommended_next_items:
+  - multi-agent-quickstart
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
   showroom_content_ref: 00f07a8265579efd77964b390d65368999a1523a
@@ -57,7 +64,7 @@ metadata:
   allowed_exposure_policies:
   - internal
   showroom_journey: hybrid-fraud-detection
-  showroom_title: Hybrid Fraud Detection on Intel Xeon
+  showroom_title: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
   namespace_slug: hybrid-fraud-detection
   showroom_terminal_storage: true
   showroom_tabs:

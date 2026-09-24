@@ -3,7 +3,7 @@ onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
 
 catalog:
   catalog_item_id: intel-llm-cpu-serving
-  display_name: "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs"
+  display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
   description: >-
     Explore CPU inference through a shared model endpoint, then build and test
     a namespace-isolated RAG assistant on OpenShift.
@@ -13,6 +13,15 @@ catalog:
   supported_branding:
     - redhat-intel-default
     - intel-internal
+
+learning:
+  learning_level: "101"
+  learning_stage: Learn
+  experience_type: foundational_inference
+  prerequisites: []
+  recommended_next_items:
+    - intel-llm-tool-calling
+    - intel-xeon6-agent-201
 
 sources:
   showroom:

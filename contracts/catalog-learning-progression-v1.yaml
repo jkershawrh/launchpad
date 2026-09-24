@@ -1,0 +1,27 @@
+api_version: launchpad.redhat.com/catalog-learning-progression/v1
+levels:
+  "001":
+    name: Explore
+    description: Orientation, demonstrations, and open exploration with no prerequisite.
+  "101":
+    name: Learn
+    description: Learn one foundational capability through a guided outcome.
+  "201":
+    name: Build
+    description: Assemble and validate a working AI solution.
+  "301":
+    name: Engineer
+    description: Integrate systems, protocols, evidence, and failure controls.
+  "401":
+    name: Operate
+    description: Operate, observe, govern, and scale production-style AI systems.
+required_metadata:
+  - learning_level
+  - learning_stage
+  - experience_type
+  - prerequisites
+  - recommended_next_items
+compatibility:
+  catalog_ids_are_stable: true
+  runtime_release_versions_unchanged_by_taxonomy: true
+  absent_metadata_behavior: unclassified
