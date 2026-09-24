@@ -6446,7 +6446,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "bb4c3eaf824ecd60704b4e918ba0b9b820c96396cd1d7b25ce34e7d77ef60f50"
+      "sha256": "ea352d824b260e28d53664823d201465d871a3b36f88bc59dcdd97faa4cf6360"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -9925,7 +9925,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "3f579f1d040a66c7aa8ab32ea26d7c9e8932bac4",
+  "source_commit": "f43c2f38d4da381acc766da6f953d8d118ce815b",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -9972,5 +9972,5 @@
     "tracked_yaml_files": 450,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": true
+  "tracked_changes_present": false
 }
