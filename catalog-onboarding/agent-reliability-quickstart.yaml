@@ -1,0 +1,335 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/agent-reliability-quickstart.yaml
+catalog:
+  catalog_item_id: agent-reliability-quickstart
+  display_name: 'When Agents Fail: Reliable Agentic AI on OpenShift'
+  description: A 75-minute Red Hat and Intel guided build that teaches platform teams
+    to contain prompt injection, deny unauthorized MCP tools, and degrade safely when
+    CPU inference is unavailable.
+  category: guided_build
+  version: 0.1.0
+  status: draft
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
+    revision: 141f29c0b952240ec1343c5c119b8c041536c992
+    playbook: site.yml
+    start_path: .
+  workload:
+    repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
+    revision: 141f29c0b952240ec1343c5c119b8c041536c992
+    deploy_path: deploy/base
+runtime:
+  deployment_type: kustomize
+  required_capabilities:
+  - openshift
+  - showroom
+  - model_endpoint
+  - openshift-ai
+  - openshift-pipelines
+  - openshift-gitops
+  required_models:
+  - granite-3.2-8b-tools
+  seat_resources:
+    cpu_millicores: 150
+    memory_mib: 192
+    pods: 2
+    storage_gib: 0
+  tabs:
+  - id: terminal
+    title: Terminal
+  - id: workspace
+    title: Reliability Advisor
+  workload:
+    runtime_secret_name: model-connection
+    runtime_secret_sources:
+      endpoint:
+        source: model_endpoint
+        model: granite-3.2-8b-tools
+      model:
+        source: requested_model
+      api-key:
+        source: maas_api_key
+    runtime_secret_value_path: model-connection
+    routes:
+      workspace: agent-reliability
+  allowed_exposure_policies:
+  - internal
+certification:
+  stage: repository-discovery
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  - 5
+  - 25
+  activation_blockers:
+  - Replace zero resource placeholders with measured per-seat resource measurements.
+  - Review required capabilities, models, participant tabs, routes, identity, and
+    runtime Secret sources.
+  - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
+    before activation.
+  - Resolve every repository discovery warning before activation.
+  - Review every mutable container image and replace it with an approved immutable
+    digest.
+  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
+  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
+quality:
+  schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+  business_solution:
+    status: review-required
+    readme_present: true
+    title: Build a Reliable Agentic AI Workflow on OpenShift
+    action_oriented_title: true
+    required_sections_present: false
+    missing_sections:
+    - architecture
+    business_language_present: false
+    human_review_required: true
+  artifacts:
+    validation_matrix:
+      path: tests/validation_matrix.yaml
+      status: invalid
+      entry_count: 0
+    claim_registry:
+      path: tests/claim_registry.yaml
+      status: present-valid
+      entry_count: 4
+    benchmark_rubric:
+      path: tests/benchmark_rubric.yaml
+      status: present-valid
+      entry_count: 3
+    publication_test:
+      path: tests/publication/test_readme.py
+      status: present
+    makefile:
+      path: Makefile
+      status: present
+    ci_workflows:
+      path: .github/workflows
+      status: present
+  showroom:
+    page_count: 7
+    hands_on_module_count: 6
+    execute_block_count: 0
+    see_section_count: 0
+    verification_section_count: 0
+    key_takeaway_count: 0
+    thin_modules:
+    - modules/ROOT/pages/01-healthy-agent.adoc
+    - modules/ROOT/pages/02-safety-architecture.adoc
+    - modules/ROOT/pages/03-prompt-injection.adoc
+    - modules/ROOT/pages/04-tool-authorization.adoc
+    - modules/ROOT/pages/05-inference-disruption.adoc
+    - modules/ROOT/pages/06-prove-recover.adoc
+  capacity_proposal:
+    status: review-required
+    inference_mode: remote-endpoint
+    framework_signals:
+    - openai
+    - vllm
+    declared_models: []
+    explicit_resource_envelopes: 2
+    measurement_required_before_placement: true
+  requirement_review:
+    status: blocked
+    resolution_authority: human-and-cluster-evidence
+    findings:
+    - code: model-endpoint-unresolved
+      evidence_count: 0
+    target_support_inferred: false
+  security_summary:
+    status: review-required
+    mutable_image_count: 3
+    cluster_scoped_resource_count: 0
+    privileged_finding_count: 0
+    secret_manifest_count: 0
+    unparsed_manifest_count: 0
+    secret_values_included: false
+  portfolio_overlap:
+    status: not-run
+    reason: A pinned versioned portfolio inventory was not supplied.
+    mutable_live_org_scan_allowed: false
+  gate:
+    status: blocked
+    blocking_findings:
+    - 'README is missing required sections: architecture'
+    - tests/validation_matrix.yaml is missing or invalid
+    - One or more Showroom modules lack the What you will learn section
+    - One or more Showroom modules lack the See section
+    - One or more Showroom modules lack the Verify section
+    - One or more Showroom modules lack the Key takeaway section
+    - One or more Showroom modules lack an executable command block
+    - One or more Showroom modules are below the content-depth threshold
+    - 'Unresolved Quickstart requirement: model-endpoint-unresolved'
+  authority:
+    mode: analysis-only
+    may_modify_source: false
+    may_publish_catalog: false
+    may_provision: false
+    may_certify: false
+discovery:
+  source: quickstart-repository
+  inventory:
+    cluster_scoped_resources: []
+    cleanup_candidates:
+    - &id001
+      api_version: apps/v1
+      kind: Deployment
+      name: agent-reliability
+      path: deploy/base/deployment.yaml
+    - &id002
+      api_version: apps/v1
+      kind: Deployment
+      name: noc-evidence-mcp
+      path: deploy/base/mcp-deployment.yaml
+    - &id003
+      api_version: argoproj.io/v1alpha1
+      kind: Application
+      name: agent-reliability
+      path: deploy/gitops/application.yaml
+    - &id004
+      api_version: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization
+      name: ''
+      path: deploy/base/kustomization.yaml
+    - &id005
+      api_version: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization
+      name: ''
+      path: deploy/lab/kustomization.yaml
+    - &id006
+      api_version: networking.k8s.io/v1
+      kind: NetworkPolicy
+      name: agent-reliability-default-deny
+      path: deploy/base/networkpolicy.yaml
+    - &id007
+      api_version: route.openshift.io/v1
+      kind: Route
+      name: agent-reliability
+      path: deploy/base/route.yaml
+    - &id008
+      api_version: tekton.dev/v1
+      kind: Pipeline
+      name: agent-reliability-qualification
+      path: deploy/pipelines/reliability-pipeline.yaml
+    - &id009
+      api_version: tekton.dev/v1
+      kind: PipelineRun
+      name: ''
+      path: deploy/pipelines/pipelinerun.yaml
+    - &id010
+      api_version: v1
+      kind: ConfigMap
+      name: agent-reliability-profile
+      path: deploy/base/configmap.yaml
+    - &id011
+      api_version: v1
+      kind: ConfigMap
+      name: agent-reliability-profile
+      path: deploy/lab/lab-profile-patch.yaml
+    - &id012
+      api_version: v1
+      kind: Service
+      name: agent-reliability
+      path: deploy/base/service.yaml
+    - &id013
+      api_version: v1
+      kind: Service
+      name: noc-evidence-mcp
+      path: deploy/base/mcp-deployment.yaml
+    - &id014
+      api_version: v1
+      kind: ServiceAccount
+      name: agent-reliability
+      path: deploy/base/serviceaccount.yaml
+    containerfiles:
+    - Containerfile
+    external_render_dependencies: []
+    images:
+    - path: Containerfile
+      reference: registry.access.redhat.com/ubi9/python-312:latest
+      source: containerfile
+    - path: deploy/base/deployment.yaml
+      reference: quay.io/jkershawrh/agent-reliability-quickstart:latest
+      source: manifest
+    - path: deploy/base/mcp-deployment.yaml
+      reference: quay.io/jkershawrh/agent-reliability-quickstart:latest
+      source: manifest
+    manifest_resources:
+    - *id001
+    - *id002
+    - *id003
+    - *id004
+    - *id005
+    - *id006
+    - *id007
+    - *id008
+    - *id009
+    - *id010
+    - *id011
+    - *id012
+    - *id013
+    - *id014
+    models: []
+    mutable_images:
+    - path: Containerfile
+      reference: registry.access.redhat.com/ubi9/python-312:latest
+      source: containerfile
+    - path: deploy/base/deployment.yaml
+      reference: quay.io/jkershawrh/agent-reliability-quickstart:latest
+      source: manifest
+    - path: deploy/base/mcp-deployment.yaml
+      reference: quay.io/jkershawrh/agent-reliability-quickstart:latest
+      source: manifest
+    network_exposure: []
+    operators: []
+    ports:
+    - container: api
+      name: http
+      path: deploy/base/deployment.yaml
+      port: 8080
+      protocol: TCP
+    - container: mcp
+      name: http
+      path: deploy/base/mcp-deployment.yaml
+      port: 8080
+      protocol: TCP
+    privileged_findings: []
+    routes:
+    - host: ''
+      name: agent-reliability
+      path: deploy/base/route.yaml
+    secret_manifests: []
+    secret_references:
+    - name: model-connection
+      path: deploy/base/deployment.yaml
+      source: secretKeyRef
+    storage: []
+    resource_envelopes:
+    - container: api
+      limits:
+        cpu: '1'
+        memory: 512Mi
+      path: deploy/base/deployment.yaml
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    - container: mcp
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      path: deploy/base/mcp-deployment.yaml
+      requests:
+        cpu: 50m
+        memory: 64Mi
+    unparsed_manifests: []
+    unparsed_packages: []
+  warnings:
+  - Multiple workload packages were discovered; review the deterministic first selection.
+  errors: []
+  provisional_fields:
+  - catalog.description
+  - runtime.required_capabilities
+  - runtime.required_models
+  - runtime.seat_resources
+  - runtime.tabs
