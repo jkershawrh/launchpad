@@ -1,0 +1,68 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: RepositorySanitizationContract
+metadata:
+  name: red-hat-intel-launchpad-sanitization
+  version: 1.0.0
+  status: active
+intent:
+  distribution_target: red-hat-intel-joint-product
+  oss_extraction: false
+  objective: >-
+    Remove obsolete RHDP, AgnosticV, and historical operational coupling while
+    preserving the current Red Hat and Intel product, lab content, and
+    Flightpath deployment path.
+retained_boundaries:
+  - red-hat-intel-branding
+  - openshift
+  - openshift-ai
+  - openshift-gitops
+  - operators
+  - showroom-antora-content
+  - flightpath-control-and-execution-path
+  - current-catalog-and-intake-contracts
+  - provisioning-validation-participant-and-reclaim-journeys
+removal_classes:
+  runtime_rhdp_adapter:
+    paths: [backend/app/adapters/rhdp/]
+    identifiers: [app.adapters.rhdp, SANDBOX_API_URL, SANDBOX_LOGIN_TOKEN, provisioner_mode=rhdp]
+    disposition: remove-after-consumer-tests
+  agnostic_delivery:
+    paths: [deploy/agnosticv/]
+    identifiers: [agnosticv, agnosticd]
+    disposition: remove-after-consumer-tests
+  historical_operational_material:
+    paths: [evidence/, docs/]
+    disposition: replace-with-sanitized-release-summaries
+  rhpds_artifact_provenance:
+    identifiers: [github.com/rhpds/, quay.io/rhpds/]
+    disposition: retain-until-current-artifacts-are-mirrored-and-certified
+  personal_identifiers:
+    disposition: remove-from-source-and-generated-content
+  historical_credentials:
+    disposition: revoke-then-coordinate-history-rewrite
+stages:
+  - id: inventory
+    mutation: none
+    exit_gate: [every candidate file has a disposition, current runtime consumers are identified, live Flightpath state is unchanged]
+  - id: runtime-decoupling
+    mutation: source-only
+    exit_gate: [no production import or mode selects the RHDP adapter, OpenShift provisioning contract tests pass, Flightpath render remains deterministic]
+  - id: legacy-removal
+    mutation: source-only
+    exit_gate: [AgnosticV manifests have no tracked consumers, catalog and Showroom builds pass without AgnosticV, current catalog IDs remain stable]
+  - id: metadata-sanitation
+    mutation: source-only
+    exit_gate: [public evidence contains no seat-level or participant-level records, current deployment examples contain no live environment topology, personal identifiers are absent outside approved attribution metadata]
+  - id: release-validation
+    mutation: candidate-environment-only
+    exit_gate: [requester and admin contracts pass, one-seat create validate use and reclaim passes for every active lab class, zero-residue reconciliation passes, secret and history scans pass]
+  - id: history-remediation
+    mutation: coordinated-repository-rewrite
+    exit_gate: [all historical credentials are confirmed revoked, both public repositories have an approved rewrite window, collaborators and automation owners receive migration instructions, post-rewrite secret scan passes for every public ref]
+safety:
+  live_cluster_mutation_during_source_cleanup: forbidden
+  active_lab_mutation: forbidden
+  delete_without_consumer_inventory: forbidden
+  rewrite_history_before_credential_revocation: forbidden
+  remove_red_hat_technology_or_joint_branding: forbidden
+  rollback_requirements: [recovery tag, tracked file manifest, one reversible commit per removal class, before-and-after validation evidence]

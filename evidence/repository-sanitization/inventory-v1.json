@@ -1,0 +1,4358 @@
+{
+  "schema_version": "launchpad.redhat.com/v1alpha1",
+  "kind": "RepositorySanitizationInventory",
+  "metadata": {
+    "contract": "contracts/repository-sanitization-v1.yaml",
+    "privacy": "paths-and-counts-only-no-matched-values"
+  },
+  "summary": {
+    "tracked_files_reviewed": 2364,
+    "candidate_files": 353,
+    "categories": {
+      "operational-topology": 202,
+      "personal-identifier": 17,
+      "rhpds-artifact-provenance": 56,
+      "rhpds-reference": 152,
+      "runtime-rhdp-coupling": 16
+    },
+    "dispositions": {
+      "refactor-before-adapter-removal": 6,
+      "remove-after-deployment-consumer-tests": 53,
+      "remove-after-runtime-consumer-tests": 9,
+      "remove-with-rhdp-adapter": 1,
+      "replace-with-sanitized-summary": 102,
+      "retain": 91,
+      "retain-until-mirrored-and-certified": 44,
+      "review-and-generalize": 42,
+      "sanitize": 5
+    }
+  },
+  "records": [
+    {
+      "path": "DEPLOYMENT.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "README.md",
+      "categories": [
+        "operational-topology",
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 6,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "admin/package-lock.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 23,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "admin/package.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 2,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/.env.example",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/mock/catalog.py",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/openshift/provisioning.py",
+      "categories": [
+        "operational-topology",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 1,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/openshift/sandbox_provisioning.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/openshift/showroom_gitops.py",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/__init__.py",
+      "categories": [
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/babylon_catalog.py",
+      "categories": [
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/cleanup.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/combined_catalog.py",
+      "categories": [
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/pool.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/provisioning.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/sandbox_api.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/stargate_capacity.py",
+      "categories": [
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/adapters/rhdp/validation.py",
+      "categories": [
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-after-runtime-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/api/deps.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "refactor-before-adapter-removal",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/main.py",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/services/placement.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "refactor-before-adapter-removal",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/app/services/provisioning.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "refactor-before-adapter-removal",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/celery_app.py",
+      "categories": [
+        "personal-identifier"
+      ],
+      "disposition": "sanitize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "backend/tests/test_agentops_five_seat_functional_live_build84_evidence.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_agentops_node_spreading.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 9,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_agentops_twenty_five_capacity_evidence.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_agent_model_burst_evidence.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_embedding_serving.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 1,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_lifecycle_25_seat_workshop_ha_evidence.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_lifecycle_process_ha_evidence.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_lifecycle_workshop_ha_evidence.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_reliability_manifests.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_resilience_analysis_evidence.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_arena_shared_mlflow.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_catalog_certification.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_catalog_intake_cert_manifests.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 1,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_catalog_intake_quality.py",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_catalog_onboarding.py",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_ha_dr_manifests.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_kubeconfig_security.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "refactor-before-adapter-removal",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_lifecycle_process_ha_certifier.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_lifecycle_workshop_ha_certifier.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_multi_agent_quickstart_import.py",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_multicluster.py",
+      "categories": [
+        "operational-topology",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 11,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_public_access.py",
+      "categories": [
+        "operational-topology",
+        "personal-identifier"
+      ],
+      "disposition": "sanitize",
+      "counts": {
+        "operational_domains": 20,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "backend/tests/test_public_access_network_policy.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_public_gateway.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 17,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_public_tunnel_contract.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 20,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_remote_model_access.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_rhdp_adapters.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "remove-with-rhdp-adapter",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_september_17_exact_75_driver.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_september_17_exact_75_soak_driver.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_showroom_content_package.py",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_showroom_gitops.py",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_smart_placement.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "refactor-before-adapter-removal",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog-onboarding/agentops-observability.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog-onboarding/intel-llm-cpu-serving.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog-onboarding/intel-xeon6-agent-201.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog-onboarding/multi-agent-quickstart.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog/agentops-observability/catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog/guided-rag-on-xeon/catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog/intel-llm-cpu-serving/catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog/intel-llm-tool-calling/catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog/intel-xeon6-agent-201/catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog/multi-agent-quickstart/catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "catalog/openshift-operators-workshop/catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "certification/catalog/intel-llm-cpu-serving.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "certification/catalog/intel-xeon6-agent-201.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "certification/catalog/multi-agent-quickstart.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "certification/releases/flightpath-candidate-03/bundle.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "config/clusters-arena-cert.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "config/clusters.yaml",
+      "categories": [
+        "operational-topology",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 27,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "config/maas/arena-granite-candidate.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-agentops-observability/UPSTREAM.md",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-agentops-observability/supplemental-ui/partials/footer-scripts.hbs",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-agentops-observability/supplemental-ui/partials/head-meta.hbs",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-agentops-observability/supplemental-ui/partials/head-styles.hbs",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-agentops-observability/supplemental-ui/partials/header-content.hbs",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-intel-llm-cpu-serving/modules/ROOT/pages/08-conclusion.adoc",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-intel-llm-tool-calling/antora.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-intel-llm-tool-calling/modules/ROOT/pages/08-conclusion.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-intel-xeon6-agent-201/modules/ROOT/pages/02-deploy-tools.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content-intel-xeon6-agent-201/modules/ROOT/pages/03-wire-agent.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "content/antora.yml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "contracts/catalog-intake-quality-v1.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "demos/deploy/database/secret.yaml",
+      "categories": [
+        "personal-identifier"
+      ],
+      "disposition": "sanitize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "demos/frontend/package-lock.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 7,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "demos/frontend/package.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 1,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/account.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-agent-swarm-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-agent-swarm-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-agent-swarm-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-agent-swarm-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-aiops-copilot-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-aiops-copilot-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-aiops-copilot-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-aiops-copilot-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-cluster/cluster-config-dev.json",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-cluster/cluster-config-event.json",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-cluster/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-cluster/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-cluster/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-cluster/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-cluster/info-message-template.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-demo-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-demo-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-demo-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-demo-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-demo-tenant/info-message-template.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-enterprise-rag-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-enterprise-rag-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-enterprise-rag-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-enterprise-rag-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-governed-agent-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-governed-agent-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-governed-agent-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-governed-agent-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-inference-overdrive-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-inference-overdrive-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-inference-overdrive-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-inference-overdrive-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-recovery-demo-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-recovery-demo-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-recovery-demo-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-recovery-demo-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-replay-comparison-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-replay-comparison-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-replay-comparison-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-replay-comparison-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-research-agent-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-research-agent-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-research-agent-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-research-agent-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-training-demo-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-training-demo-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-training-demo-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-training-demo-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-workload-generator-tenant/common.yaml",
+      "categories": [
+        "personal-identifier",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-workload-generator-tenant/description.adoc",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-workload-generator-tenant/dev.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/agnosticv/launchpad-workload-generator-tenant/event.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "remove-after-deployment-consumer-tests",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/console-embed/README.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/console-embed/playbook.yml",
+      "categories": [
+        "operational-topology",
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/console-embed/requirements.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/ecosystem/README.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/ecosystem/group_vars/all.example.yml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/catalog-intake-cert/network-policy.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 2,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena-convergence-canary/apply.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/arena-clusters.yaml",
+      "categories": [
+        "operational-topology",
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 32,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/argocd-application.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/buildconfig.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/keycloak-route.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/operational-patches/ovms-granite-2b-readiness.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/operations-automation.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/patch-configmap.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 9,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/patch-routes.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/patch-runtime.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/arena/reliability.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-candidate/candidate-clusters.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-candidate/patch-configmap.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 8,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-candidate/patch-routes.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-dr/flightpath-clusters.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 9,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/flightpath-dr/patch-configmap.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/infra01/patch-configmap.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/infra01/patch-routes.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/oberon/patch-configmap.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 5,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/oberon/patch-remove-frontend.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/overlays/oberon/patch-routes.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/public-access/README.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/public-access/keycloak-flow-config.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/public-access/keycloak.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/launchpad/runbooks/intel-sep17-dayof.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/models/arena/nomic-embed-text-v1.5.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 1,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/multicluster/README.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/prod-dns/README.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/prod-dns/cluster-issuer.yaml",
+      "categories": [
+        "personal-identifier"
+      ],
+      "disposition": "sanitize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "deploy/prod-dns/wildcard-cert.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/tunnel-oncluster/README.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/tunnel-oncluster/apply.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/tunnel-oncluster/propagate.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/tunnel-oncluster/router.py",
+      "categories": [
+        "operational-topology",
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 5,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "deploy/workloads/agentops-seat/Chart.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/PLATFORM-ECOSYSTEM.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/PUBLIC_ACCESS.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 6,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/adapters.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/agentops-rhdp-gap-analysis.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/architecture.md",
+      "categories": [
+        "operational-topology",
+        "rhpds-reference"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/arena-agentops-25-seat-infrastructure-request.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/arena-maas-bootstrap.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/catalog-onboarding.md",
+      "categories": [
+        "operational-topology",
+        "rhpds-reference"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/control-plane-dr-roadmap.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/diagrams/stargate-detail.svg",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/diagrams/system-overview.svg",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/documentation-authority.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/ecosystem-architecture-roadmap.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/event-capacity-matrix.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/flightpath-dr-runbook.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/flightpath-trusted-tls-request.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 5,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/intel-sep17-demo-day-day-of-runbook.html",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 8,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/intel-sep17-demo-day-train-the-trainer-guide.html",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/launchpad-stargate-architecture.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/mvp-scope.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/oberon-workshop-readiness.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/persona-onboarding.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/pilot-issue-feature-register-20260917.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/presentations/launchpad-ecosystem-demo.md",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/product-delivery-roadmap.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/repository-hygiene.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/september-17-agentic-three-workshop-readiness.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/september-17-pilot-status-20260908.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/train-the-trainer-guide.md",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 7,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/yaml-cleanup-plan.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "docs/yaml-inventory-v1.md",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-arena-prerequisites-2026-09-04.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-five-seat-functional-live-build84-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-five-seat-red-live-build77-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-five-seat-red-live-build83-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-mlflow-postgres-live-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-onboarding-matrix-2026-09-04.yaml",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-one-seat-live-2026-09-04.json",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-pipeline-database-tls-live-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-seat-topology-refactor-live-2026-09-05.json",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/agentops-twenty-five-seat-capacity-red-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/arena-cleanup-live-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/arena-resilience-analysis-2026-09-08.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/fleet-placement-candidate-2026-09-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/public-access/green-live-arena-one-seat-2026-09-09.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/public-access/green-live-multi-agent-workflow-timeout-2026-09-11.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/public-access/green-local-arena-console-fix-2026-09-04.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 1,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/public-access/oberon-live-readiness-2026-09-01.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/public-access/red-same-origin-gateway-2026-09-09.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/arena-granite-tools-four-replica-agent201-burst-20260911.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/arena-lifecycle-25-seat-cross-node-workshop-ha-20260909T023445Z.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 27,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/arena-lifecycle-5-seat-cross-node-workshop-ha-20260909T020155Z.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 8,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/arena-lifecycle-cross-node-process-ha-20260909T011040Z.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/arena-lifecycle-process-ha-20260908.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/arena-lifecycle-process-ha-clean-20260909T003840Z.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/arena-public-console-one-seat-green-live-20260914.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/catalog-intake-hybrid-fraud/arena-maas-candidate-model-green-20260922.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/catalog-intake-quality/manifest.json",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/convergence/flightpath-canary-infrastructure-reconciliation-20260922.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/convergence/flightpath-public-retained-reconciliation-20260922.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/convergence/flightpath-staging-readonly-preflight-20260924.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/convergence/green-local-candidate-02-20260923.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/event-live-acceptance-preflight/arena-red-live-20260920.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-build-agent-25-seat-2026-09-22.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-candidate-access-preflight-2026-09-22.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-hybrid-fraud-maas-25-seat-2026-09-22.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-hybrid-fraud-maas-five-seat-2026-09-22.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-serve-llms-25-seat-2026-09-22.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-serve-llms-25-seat-reproducible-2026-09-22.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-serve-llms-five-seat-2026-09-22.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/flightpath-stage/deployment.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T225129Z-abd2b14b.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T230520Z-95664df0.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T231812Z-7b74fc11.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-llm-cpu-serving-v103-live-20260909.json",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-xeon6-agent-201-1-seat-20260916T000520Z-1af06817.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-xeon6-agent-201-1-seat-20260916T001519Z-26670833.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-xeon6-agent-201-30-seat-20260915T235759Z-e87ebbc7.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-xeon6-agent-201-30-seat-20260916T001936Z-8ac2433d.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-xeon6-agent-201-30-seat-20260916T003038Z-e516bce9.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/intel-xeon6-agent-201-30-seat-20260916T004231Z-0288d942.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-1-seat-20260916T011454Z-8ffcc999.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-1-seat-track2-learning-20260906-01.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-1-seat-track2-learning-20260906-02.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-1-seat-track2-learning-20260906-03.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-01-fault.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-01.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-02.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-03.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-04.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-05.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-06.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-25seat-20260906-07.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-v025-25seat-20260906-01.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-v025-25seat-20260906-02.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-25-seat-multi-agent-v025-25seat-20260906-03.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-30-seat-20260916T005337Z-f1e00899.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-30-seat-20260916T012105Z-72d11d92.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-30-seat-20260916T015050Z-a6cfeb8a.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-30-seat-20260916T022021Z-a3ade4ae.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/multi-agent-quickstart-5-seat-multi-agent-5seat-20260906-01.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/permanent-public-origin-claim-blocked-capacity-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/permanent-public-origin-green-live-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/permanent-public-origin-green-local-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/pilot-closeout/retained-evidence-validation-20260921.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 1,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/public-serve-v105-one-seat-green-live-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/public-tunnel-connector-failover-green-live-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 6,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/september-17-exact75-current-functional-green-resilience-red-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/september-17-exact75-run02-20260908-red.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 2,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/september-17-exact75-run03-ingress-churn-red-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/september-17-multicluster-preflight-20260908-green.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/september-17-multicluster-preflight-20260909.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/september-17-multicluster-preflight-disabled-inspection-20260907.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/september-17-three-workshop-provisioning-green-20260908.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/runs/serve-llm-runtime-resilience-20260911.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/september-17-agentic-trio-run01-red-2026-09-06.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/september-17-agentic-trio-run02-red-2026-09-06.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/september-17-agentic-trio-run02-remediation-2026-09-06.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/september-17-exact-75-live-2026-09-08.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/september-17-two-cluster-calibration-2026-09-07.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "replace-with-sanitized-summary",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "evidence/yaml-cleanup/inventory-v1.json",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "frontend/package-lock.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 23,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "frontend/package.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 2,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "frontend/src/workshopOrderContract.test.ts",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 7,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "keycloak-authenticator/src/main/resources/theme-resources/templates/launchpad-code.ftl",
+      "categories": [
+        "personal-identifier"
+      ],
+      "disposition": "sanitize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 1
+      }
+    },
+    {
+      "path": "package-lock.json",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 2,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/capture-arena-resilience.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify-arena-lifecycle-process-ha.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify-arena-lifecycle-workshop-ha.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify-arena-public-console.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify-flightpath-keycloak-ha.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify-flightpath-stage.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify-september-17-exact-75.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify_arena_candidate_pull.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify_flightpath_maas_health.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/certify_public_access.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/cluster-e2e-test.sh",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/deploy-flightpath-stage.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/flightpath-dr-preflight.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/flightpath_execution_preflight.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/inventory_yaml_sources.py",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/launchpad-dr-database.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/live-e2e-test.sh",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "refactor-before-adapter-removal",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/oberon-smoke-test.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 2,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/preflight_flightpath_tls.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/preflight_hybrid_fraud_maas.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/quick_tunnel_router.py",
+      "categories": [
+        "operational-topology",
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/setup-branch-protection.sh",
+      "categories": [
+        "rhpds-reference"
+      ],
+      "disposition": "review-and-generalize",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/soak-september-17-exact-75.sh",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/tests/test_arena_convergence_canary_overlay.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/tests/test_arena_granite_maas_candidate_manifest.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/tests/test_certify_arena_candidate_pull.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/tests/test_flightpath_candidate_overlay.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 6,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/tests/test_inventory_yaml_sources.py",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/tests/test_preflight_flightpath_tls.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 3,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/tests/test_preflight_hybrid_fraud_maas.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "scripts/validate_flightpath_promotion_bundle.py",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 1,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "site-agentops-observability.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "site-intel-llm-cpu-serving.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "site-intel-llm-tool-calling.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "site-intel-xeon6-agent-201.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "site-multi-agent-quickstart.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "site-openshift-operators.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "site.yml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "tenant/bootstrap/values.yaml",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "workshop-images/showroom-git-cloner/Containerfile",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "workshop-images/showroom-terminal/Containerfile",
+      "categories": [
+        "rhpds-artifact-provenance",
+        "rhpds-reference"
+      ],
+      "disposition": "retain-until-mirrored-and-certified",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    }
+  ]
+}

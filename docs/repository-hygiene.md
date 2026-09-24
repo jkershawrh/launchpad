@@ -10,6 +10,13 @@ Launchpad contains current runtime source, catalog and Showroom packages,
 certification evidence, and historical integration experiments. Similar names
 do not mean that files are interchangeable or safe to remove.
 
+The current sanitation effort is governed by
+[`../contracts/repository-sanitization-v1.yaml`](../contracts/repository-sanitization-v1.yaml).
+It is **not** an OSS extraction. It preserves the Red Hat and Intel joint
+product identity, Red Hat platform technology, current catalog and Showroom
+content, and the Flightpath control/execution path while removing obsolete RHDP
+and AgnosticV coupling and sanitizing historical operational material.
+
 ## Protected pilot scope
 
 Until the September pilot is complete, do not prune:
