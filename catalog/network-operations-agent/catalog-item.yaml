@@ -29,8 +29,7 @@ metadata:
   experience_type: domain_solution_engineering
   prerequisites:
   - intel-xeon6-agent-201
-  recommended_next_items:
-  - agentops-observability
+  recommended_next_items: []
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
   showroom_content_ref: 1f24514abf5ba49955f22c3e5034bdb425725a71

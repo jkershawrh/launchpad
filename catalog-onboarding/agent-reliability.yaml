@@ -15,8 +15,7 @@ learning:
   experience_type: reliability_engineering
   prerequisites:
   - intel-xeon6-agent-201
-  recommended_next_items:
-  - agentops-observability
+  recommended_next_items: []
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git

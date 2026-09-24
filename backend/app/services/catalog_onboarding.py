@@ -1346,8 +1346,8 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
         if not str(catalog.get(key, "")).strip():
             errors.append(f"catalog.{key} is required")
     catalog_status = catalog.get("status", "draft")
-    if catalog_status not in {"draft", "active"}:
-        errors.append("catalog.status must be draft or active")
+    if catalog_status not in {"draft", "active", "deprecated"}:
+        errors.append("catalog.status must be draft, active, or deprecated")
 
     learning = intake.get("learning", {})
     if learning:

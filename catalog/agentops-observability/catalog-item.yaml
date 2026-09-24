@@ -5,7 +5,7 @@ description: Investigate a production-style multi-agent mortgage application thr
   Red Hat OpenShift AI pipelines on Intel infrastructure.
 category: guided_build
 version: 0.1.4
-status: draft
+status: deprecated
 required_capabilities:
 - openshift
 - showroom

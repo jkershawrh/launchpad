@@ -10,6 +10,7 @@ catalog:
     evaluation, and Red Hat OpenShift AI pipelines on Intel infrastructure.
   category: guided_build
   version: "0.1.4"
+  status: deprecated
   supported_branding:
     - redhat-intel-default
     - intel-internal

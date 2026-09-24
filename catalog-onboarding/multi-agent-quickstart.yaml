@@ -24,8 +24,7 @@ learning:
   prerequisites:
     - intel-xeon6-agent-201
     - intel-llm-tool-calling
-  recommended_next_items:
-    - agentops-observability
+  recommended_next_items: []
 
 sources:
   showroom:

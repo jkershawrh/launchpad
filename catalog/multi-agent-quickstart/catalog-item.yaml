@@ -33,8 +33,7 @@ metadata:
   prerequisites:
   - intel-xeon6-agent-201
   - intel-llm-tool-calling
-  recommended_next_items:
-  - agentops-observability
+  recommended_next_items: []
   showroom: true
   operator_workshop: true
   content_only: false

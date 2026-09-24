@@ -24,8 +24,7 @@ metadata:
   experience_type: platform_operations_build
   prerequisites:
     - ai-sandbox
-  recommended_next_items:
-    - agentops-observability
+  recommended_next_items: []
   showroom: true
   showroom_journey: openshift-operators
   operator_workshop: true

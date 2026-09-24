@@ -19,7 +19,7 @@ INTAKE_PATH = ROOT / "catalog-onboarding/agentops-observability.yaml"
 CATALOG_PATH = ROOT / "catalog/agentops-observability/catalog-item.yaml"
 
 
-def test_agentops_is_registered_as_a_fail_closed_draft():
+def test_agentops_is_registered_as_decommissioned():
     intake = load_intake(INTAKE_PATH)
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
 
@@ -27,7 +27,7 @@ def test_agentops_is_registered_as_a_fail_closed_draft():
     assert catalog["metadata"]["learning_level"] == "401"
     assert catalog["metadata"]["learning_stage"] == "Operate"
     assert catalog["catalog_item_id"] == "agentops-observability"
-    assert catalog["status"] == "draft"
+    assert catalog["status"] == "deprecated"
     assert catalog["version"] == "0.1.4"
     assert catalog["metadata"]["certification_stage"] == "twenty-five-seat-certification"
     assert catalog["metadata"]["max_workshop_seats"] == 5
@@ -81,6 +81,8 @@ def test_agentops_is_registered_as_a_fail_closed_draft():
 def test_agentops_cannot_be_activated_while_intake_blockers_remain():
     adapter = FileCatalogAdapter(str(ROOT / "catalog"))
 
+    assert adapter.get_item("agentops-observability").status == CatalogStatus.DEPRECATED
+    assert adapter.validate_item("agentops-observability") is False
     with pytest.raises(ValueError, match="activation blocker"):
         adapter.set_status("agentops-observability", CatalogStatus.ACTIVE)
 
