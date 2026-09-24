@@ -138,6 +138,22 @@ def test_flightpath_dr_overlay_is_passive_and_contains_no_credentials() -> None:
     assert "pass" + "word:" not in overlay_text
 
 
+def test_flightpath_gitops_can_reconcile_supported_namespaced_ai_assets() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-dr")
+    role = resource(items, "ClusterRole", "launchpad-argocd-trustyai-manager")
+    permissions = {
+        (api_group, resource_name, verb)
+        for rule in role["rules"]
+        for api_group in rule["apiGroups"]
+        for resource_name in rule["resources"]
+        for verb in rule["verbs"]
+    }
+
+    assert ("trustyai.opendatahub.io", "nemoguardrails", "create") in permissions
+    assert ("tekton.dev", "pipelines", "create") in permissions
+    assert all(verb not in {"impersonate", "escalate", "bind"} for _, _, verb in permissions)
+
+
 def test_flightpath_dr_gitops_install_is_pinned_and_manually_approved() -> None:
     items = render("deploy/launchpad/overlays/flightpath-dr-gitops/operator")
     subscription = resource(
