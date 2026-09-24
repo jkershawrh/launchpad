@@ -12,12 +12,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 0f13d85162800adaa1cd7821fff417528fcb76ea
+    revision: 34325425d83fe258250f4acb9f443a297baa2f28
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 0f13d85162800adaa1cd7821fff417528fcb76ea
+    revision: 34325425d83fe258250f4acb9f443a297baa2f28
     deploy_path: chart
 runtime:
   deployment_type: helm
