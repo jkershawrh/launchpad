@@ -82,10 +82,10 @@ def _seat_request(seat_number: int) -> LabRequest:
     )
 
 
-def test_agentops_catalog_requires_seat_level_node_sharding():
+def test_decommissioned_agentops_catalog_retains_safe_node_sharding_metadata():
     item = _agentops_item()
 
-    assert item.status == CatalogStatus.DRAFT
+    assert item.status == CatalogStatus.DEPRECATED
     assert item.metadata["workshop_node_spread"] is True
     assert item.metadata["workshop_node_min_ready_seconds"] == 900
     assert item.metadata["workshop_node_headroom_pods"] == 10
