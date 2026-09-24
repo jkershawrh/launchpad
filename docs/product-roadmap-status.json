@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-23T03:10:00Z",
+  "updated_at": "2026-09-24T11:43:37Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -771,14 +771,16 @@
         "cbt": "green-local"
       },
       "evidence": [
+        "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json",
+        "evidence/runs/catalog-intake-agent-reliability/validation-9f1cb2e.json",
+        "evidence/runs/catalog-intake-candidates/jkershawrh-readonly-20260921.json",
         "evidence/runs/catalog-intake-draft-generation/green-local.json",
         "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
-        "evidence/runs/catalog-intake-candidates/jkershawrh-readonly-20260921.json",
         "evidence/runs/catalog-intake-quality/manifest.json",
         "evidence/runs/catalog-intake-readme-source/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json"
       ],
-      "note": "A real Quickstart now deterministically produces a reviewable onboarding contract and catalog preview with immutable source identity, quality findings, static inventory, and unresolved activation blockers. Three additional pinned jkershawrh sources (AI Virtual Agent, IT Self-Service Agent, and Praxis AI Gateway Showroom) each passed local discovery and intake validation and generated the same non-orderable draft on repeat. All three remain blocked on source quality, mutable images, rendered workload and runtime requirements; no live catalog or cluster changed. Hybrid fraud detection source proof exists separately; runtime integration and certification remain open."
+      "note": "The deterministic intake now covers the learning-level taxonomy and a fourth substantive candidate: Intel AI 301 Agent Reliability. The pinned source provides a seven-page Antora journey, 20 executable blocks, complete learn/see/verify/takeaway structure, immutable workload digest, measured historical resource envelope, MaaS Secret contract, and reviewable catalog output. Intake and catalog drift validation pass. The candidate remains draft, internal-only, one-seat, and blocked on target model resolution, rendered Helm review, current-revision supply-chain proof, and exact one-seat lifecycle/reclaim certification; no live catalog or workshop changed."
     },
     "LP-T099": {
       "state": "green-local",
@@ -790,27 +792,29 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "evidence/runs/catalog-intake-draft-generation/green-local.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
-        "evidence/runs/catalog-intake-candidates/jkershawrh-readonly-20260921.json",
-        "evidence/runs/catalog-intake-network-requirements/green-local-20260921.json",
-        "evidence/runs/catalog-intake-render-network-green-local-20260921.json",
-        "evidence/runs/catalog-intake-render-dependencies/green-local-20260921.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/rendered-offline-20260922.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/image-digest-candidates-20260922.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/source-bound-local-build-20260922.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/candidate-publisher-gated-20260922.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/image-override-green-local-20260922.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/arena-maas-candidate-model-green-20260922.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/launchpad-rhoai-maas-broker-green-local-20260922.json",
-        "scripts/review_catalog_render_offline.py",
-        "scripts/tests/test_review_catalog_render_offline.py",
-        "docs/catalog-intake-offline-render-review.md",
+        "backend/tests/test_catalog_intake_quality.py",
         "backend/tests/test_catalog_intake_render_review.py",
         "contracts/catalog-intake-quality-v1.yaml",
-        "backend/tests/test_catalog_intake_quality.py"
+        "docs/catalog-intake-offline-render-review.md",
+        "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json",
+        "evidence/runs/catalog-intake-agent-reliability/validation-9f1cb2e.json",
+        "evidence/runs/catalog-intake-candidates/jkershawrh-readonly-20260921.json",
+        "evidence/runs/catalog-intake-draft-generation/green-local.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/arena-maas-candidate-model-green-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/candidate-publisher-gated-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/image-digest-candidates-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/image-override-green-local-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/launchpad-rhoai-maas-broker-green-local-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/rendered-offline-20260922.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/source-bound-local-build-20260922.json",
+        "evidence/runs/catalog-intake-network-requirements/green-local-20260921.json",
+        "evidence/runs/catalog-intake-render-dependencies/green-local-20260921.json",
+        "evidence/runs/catalog-intake-render-network-green-local-20260921.json",
+        "scripts/review_catalog_render_offline.py",
+        "scripts/tests/test_review_catalog_render_offline.py"
       ],
-      "note": "The hybrid fraud detection proof and three additional pinned jkershawrh Quickstart candidates confirm that generated entries remain draft, internal-only, one-seat, and blocked from activation. Static requirement review blocks unresolved inference mode, model endpoint, operator, storage, cluster-scope, privileged workload, unparsed-manifest, external-network, and external render-dependency needs rather than inferring target-cluster support. A repeatable local preflight requires the pinned clean checkout, strict Helm lint and render, and emits coded findings and hashes without raw manifests or secrets. Registry inspection rejected the existing app digest because its OCI revision label differs from the pinned intake source. The source branch pins Red Hat base/test images; a local linux/amd64 app build passed readiness and scoring smoke tests. A manual-only Quay publisher requires exact SHA, scoped robot environment, eight preceding CI jobs, unique tag, SBOM, GitHub OIDC signature and source attestation, and exact-signer verification. A disabled-publish dispatch passed all eight jobs and skipped the publisher. A narrow local image override preflight is GREEN: it accepts only a digest-pinned Helm app.image, hashes it, requires that image in the rendered manifest, and denies extra values or mutable tags. Arena now also has a candidate-scoped MaaS publication of the existing five-replica Granite backend with real discovery and inference, missing/invalid/revoked/expired credential denial, and a measured Limitador usage delta. It created no model workload, did not cut over a live route, and did not restart the cluster. A disabled-by-default Launchpad RHOAI MaaS broker is GREEN locally across 53 key-lifecycle, cleanup, and response-security tests and GREEN-integration against one disposable candidate key: issue, candidate-only discovery, revoke, and stored revoked status all passed without recording plaintext. It requires TLS verification and supports a mounted CA bundle, is not deployed, and leaves LiteLLM as the default. This does not promote the item: candidate endpoint selection, Launchpad service-account authorization, live seat issuance/reclaim, source-bound live rendering, the complete participant journey, zero-residue evidence, the enabled trusted publisher, and full live certification remain explicit gates."
+      "note": "Fail-closed intake behavior is now proven for Agent Reliability: immutable source revisions and digest-pinned workload, draft status, internal-only exposure, one-seat ceiling, explicit model/capability contract, exact activation blockers, and no catalog drift. Historical 1/5/25 evidence is retained only as context and does not promote the corrected candidate. Static model-endpoint and unparsed Helm findings remain blocking until isolated target render and one-seat live evidence are captured."
     },
     "LP-T104": {
       "state": "green-local",
