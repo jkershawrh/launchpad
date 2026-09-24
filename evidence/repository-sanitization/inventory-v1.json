@@ -6,7 +6,7 @@
     "privacy": "paths-and-counts-only-no-matched-values"
   },
   "summary": {
-    "tracked_files_reviewed": 2368,
+    "tracked_files_reviewed": 2369,
     "candidate_files": 347,
     "categories": {
       "operational-topology": 202,
@@ -222,19 +222,6 @@
         "runtime-rhdp-coupling"
       ],
       "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/services/provisioning.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "refactor-before-adapter-removal",
       "counts": {
         "operational_domains": 0,
         "private_ips": 0,
@@ -578,6 +565,19 @@
         "runtime-rhdp-coupling"
       ],
       "disposition": "remove-with-rhdp-adapter",
+      "counts": {
+        "operational_domains": 0,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
+      "path": "backend/tests/test_runtime_mode_contract.py",
+      "categories": [
+        "rhpds-reference",
+        "runtime-rhdp-coupling"
+      ],
+      "disposition": "refactor-before-adapter-removal",
       "counts": {
         "operational_domains": 0,
         "private_ips": 0,

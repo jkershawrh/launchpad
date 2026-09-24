@@ -280,10 +280,6 @@ class ProvisioningService:
         from app.domain.enums import CatalogCategory
 
         mode = os.environ.get("LAUNCHPAD_MODE", "mock")
-        if mode == "rhdp" and catalog_item.metadata.get("provisioner_mode") == "rhdp":
-            from app.adapters.rhdp.provisioning import RHDPProvisioningAdapter
-            return RHDPProvisioningAdapter()
-
         if catalog_item.category == CatalogCategory.OPEN_SANDBOX:
             mode = os.environ.get("LAUNCHPAD_MODE", "mock")
             if mode == "openshift":
@@ -746,11 +742,11 @@ class ProvisioningService:
         if not target_pool.check_capacity(hw, qp):
             raise ValueError(f"No capacity available for hardware={hw} quota={qp}")
 
-        reserve_kwargs = {"session_id": request.request_id, "hardware_profile": hw, "quota_profile": qp}
-        if preferred_cluster:
-            from app.adapters.rhdp.pool import RHDPPoolAdapter
-            if isinstance(target_pool, RHDPPoolAdapter):
-                reserve_kwargs["preferred_cluster"] = preferred_cluster
+        reserve_kwargs = {
+            "session_id": request.request_id,
+            "hardware_profile": hw,
+            "quota_profile": qp,
+        }
         reservation = target_pool.reserve(**reserve_kwargs)
 
         ttl_str = request.ttl or catalog_item.default_ttl or "4h"

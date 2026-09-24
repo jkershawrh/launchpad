@@ -25,6 +25,14 @@ def test_service_factory_has_no_legacy_runtime_imports() -> None:
     assert "RHDPPoolAdapter" not in source
 
 
+def test_provisioning_service_has_no_legacy_runtime_imports() -> None:
+    source = (ROOT / "backend/app/services/provisioning.py").read_text()
+
+    assert 'mode == "rhdp"' not in source
+    assert "app.adapters.rhdp" not in source
+    assert "RHDPPoolAdapter" not in source
+
+
 def test_current_runtime_modes_remain_supported() -> None:
     from app.main import SUPPORTED_LAUNCHPAD_MODES
 
