@@ -12,12 +12,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 66638c95db0f8a56f80646086e1b639ce4625d1e
+    revision: f2697ad0ad54ab05159fd8bfa2520c0a282a7289
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 66638c95db0f8a56f80646086e1b639ce4625d1e
+    revision: f2697ad0ad54ab05159fd8bfa2520c0a282a7289
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -74,9 +74,7 @@ certification:
   - 1
   - 5
   - 25
-  activation_blockers:
-  - Complete an integrated Flightpath seat qualification proving RHOAI-managed NeMo decisions,
-    local fail-closed fallback, recovery, and reclaim with the pinned release.
+  activation_blockers: []
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

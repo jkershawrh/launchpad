@@ -40,16 +40,14 @@ metadata:
   - 1
   - 5
   - 25
-  activation_blockers:
-  - Complete an integrated Flightpath seat qualification proving RHOAI-managed NeMo
-    decisions, local fail-closed fallback, recovery, and reclaim with the pinned release.
+  activation_blockers: []
   allowed_exposure_policies:
   - internal
   showroom_journey: agent-reliability-quickstart
   showroom_title: 'When Agents Fail: Reliable Agentic AI on OpenShift'
   namespace_slug: agent-reliability-quickstart
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 66638c95db0f8a56f80646086e1b639ce4625d1e
+  showroom_content_ref: f2697ad0ad54ab05159fd8bfa2520c0a282a7289
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   showroom_terminal_storage: true
@@ -73,7 +71,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 66638c95db0f8a56f80646086e1b639ce4625d1e
+  workload_revision: f2697ad0ad54ab05159fd8bfa2520c0a282a7289
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -105,5 +103,5 @@ metadata:
     workspace: ar
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 66638c95db0f8a56f80646086e1b639ce4625d1e
+  source_content_revision: f2697ad0ad54ab05159fd8bfa2520c0a282a7289
   source_references: {}
