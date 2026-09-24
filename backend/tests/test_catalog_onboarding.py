@@ -75,9 +75,7 @@ def test_agentops_is_registered_as_a_fail_closed_draft():
     assert catalog["metadata"]["source_references"]["upstream_showroom"]["revision"] == (
         "f1881c61de55ebf5640c27e76469f4efe458edaf"
     )
-    assert catalog["metadata"]["source_references"]["agnosticv"]["path"] == (
-        "agd_v2/agentops-intel"
-    )
+    assert "agnosticv" not in catalog["metadata"]["source_references"]
 
 
 def test_agentops_cannot_be_activated_while_intake_blockers_remain():

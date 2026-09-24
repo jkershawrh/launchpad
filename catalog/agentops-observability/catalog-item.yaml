@@ -239,10 +239,6 @@ metadata:
       repo_url: https://github.com/rhpds/agentops-intel-showroom.git
       revision: f1881c61de55ebf5640c27e76469f4efe458edaf
       path: content
-    agnosticv:
-      repo_url: https://github.com/rhpds/agnosticv.git
-      revision: 48fc6eebedb295bddf1b915a230e5e90f89db0af
-      path: agd_v2/agentops-intel
     automation:
       repo_url: https://github.com/rhpds/agentops-in-prod-automation.git
       revision: 6ea100531ac869fa66abe69ae223d6b56dbce9a2
