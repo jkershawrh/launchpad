@@ -299,11 +299,19 @@ def delete_workshop(
 ):
     try:
         current = _authorized_workshop(workshop_id, user)
-        if current.status == WorkshopStatus.RECLAIMING:
-            return current
-        workshop = provisioning_service.queue_workshop_reclaim(workshop_id)
+        workshop = (
+            current
+            if current.status == WorkshopStatus.RECLAIMING
+            else provisioning_service.queue_workshop_reclaim(workshop_id)
+        )
         if workshop.status == WorkshopStatus.RECLAIMING:
-            if _lifecycle_ha_enabled():
+            # An order rejected before placement has no execution cluster and
+            # no resources to clean up. Finalize it synchronously instead of
+            # leaving it permanently reclaiming or trying to enqueue a
+            # cluster-scoped HA lifecycle job without a cluster_ref.
+            if not workshop.cluster_ref and not workshop.session_ids:
+                workshop = provisioning_service.reclaim_workshop(workshop_id)
+            elif _lifecycle_ha_enabled():
                 job = lifecycle_queue_service.enqueue_workshop_reclaim(workshop)
                 workshop = _record_lifecycle_job(workshop, job.job_id)
             else:

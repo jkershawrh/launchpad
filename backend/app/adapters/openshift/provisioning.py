@@ -448,6 +448,11 @@ class OpenShiftProvisioningAdapter:
                     maas_model=requested_models[0] if requested_models else "",
                     content_playbook=str(res.get("showroom_content_playbook", "site.yml")),
                     journey=str(res.get("showroom_journey", "guided-rag")),
+                    antora_name=str(
+                        res.get("showroom_antora_name")
+                        or res.get("showroom_journey", "guided-rag")
+                    ),
+                    antora_version=str(res.get("showroom_antora_version", "main")),
                     content_only=bool(res.get("content_only", False)),
                     terminal_storage_enabled=bool(res.get("showroom_terminal_storage", True)),
                     terminal_image=str(

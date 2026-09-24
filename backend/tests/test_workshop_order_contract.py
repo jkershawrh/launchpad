@@ -307,6 +307,54 @@ def test_group_reclaim_updates_every_seat():
     assert {seat["status"] for seat in completed.json()["seats"]} == {"reclaimed"}
 
 
+def test_reclaim_finalizes_unplaced_zero_session_workshop_synchronously():
+    stalled = Workshop(
+        workshop_id="unplaced-reclaim-workshop",
+        tenant_id="unplaced-reclaim-tenant",
+        catalog_item_id="agent-reliability-quickstart",
+        num_users=1,
+        status=WorkshopStatus.RECLAIMING,
+        target_cluster="flightpath",
+        cluster_ref=None,
+        seats=[
+            WorkshopSeat(
+                workshop_id="unplaced-reclaim-workshop",
+                seat_number=1,
+                participant_id="unplaced-user-1",
+                status=WorkshopSeatStatus.PENDING,
+            )
+        ],
+    )
+    completed = stalled.model_copy(
+        update={
+            "status": WorkshopStatus.COMPLETED,
+            "seats": [
+                stalled.seats[0].model_copy(
+                    update={"status": WorkshopSeatStatus.RECLAIMED}
+                )
+            ],
+        }
+    )
+
+    with (
+        patch(
+            "app.api.routers.workshops._authorized_workshop",
+            return_value=stalled,
+        ),
+        patch.object(
+            api_provisioning_service,
+            "reclaim_workshop",
+            return_value=completed,
+        ) as reclaim,
+    ):
+        response = client.delete(f"/api/v1/workshops/{stalled.workshop_id}")
+
+    assert response.status_code == 202
+    assert response.json()["status"] == "completed"
+    assert response.json()["seats"][0]["status"] == "reclaimed"
+    reclaim.assert_called_once_with(stalled.workshop_id)
+
+
 class InMemoryWorkshopStore:
     def __init__(self):
         self.items = {}

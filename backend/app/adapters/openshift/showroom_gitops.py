@@ -81,6 +81,8 @@ class ShowroomSeat:
     cluster_display_name: str = "OpenShift cluster"
     console_url: str = ""
     content_playbook: str = "site.yml"
+    antora_name: str = ""
+    antora_version: str = "main"
     ui_config_path: str = "ui-config.yml"
     journey: str = "guided-rag"
     content_only: bool = False
@@ -159,6 +161,16 @@ def build_showroom_application(
         # state persistence is unsafe there because an outer Showroom URL can
         # be restored inside one of its own frames.
         "persist_url_state": False,
+        # The Showroom shell otherwise defaults to www/modules/index.html.
+        # Quickstart repositories build Antora under their component name and
+        # version (for example www/network-operations-agent/main/index.html),
+        # so make that generated path explicit for every provisioned seat.
+        "antora": {
+            "dir": "www",
+            "name": seat.antora_name or seat.journey,
+            "version": seat.antora_version,
+            "modules": [{"name": "index", "label": "Instructions"}],
+        },
         "tabs": tabs,
     }
     values = {
