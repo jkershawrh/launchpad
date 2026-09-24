@@ -167,6 +167,27 @@
       "area": "catalog-onboarding",
       "classification": "generated-intake",
       "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "catalog-release-owner",
+      "path": "catalog-onboarding/agent-reliability.yaml",
+      "proposed_disposition": "preserve-release-input",
+      "protection_class": "catalog-release-input",
+      "reference_count": 2,
+      "referenced_by": [
+        "catalog/agent-reliability/catalog-item.yaml",
+        "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "f079fe7ccf5ec7523f046df4691e288486aae5d3e2c925fcb84c2580e5056040"
+    },
+    {
+      "area": "catalog-onboarding",
+      "classification": "generated-intake",
+      "deletion_eligible": false,
       "dependency_flags": [
         "rhpds-git-dependency",
         "agnostic-automation-dependency"
@@ -356,6 +377,24 @@
         "status-field-review-required"
       ],
       "sha256": "ba2bdeb6fb8b7b97384f68e5c986d7d572435143adb7850639eb42adb24e3831"
+    },
+    {
+      "area": "catalog",
+      "classification": "catalog-source",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "catalog-release-owner",
+      "path": "catalog/agent-reliability/catalog-item.yaml",
+      "proposed_disposition": "preserve-release-input",
+      "protection_class": "catalog-release-input",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "603774dbcdf8d6695a2984c45710df3a49f3a81464fef7d3c6b542bc812510d0"
     },
     {
       "area": "catalog",
@@ -10118,7 +10157,7 @@
       "path": "site.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 18,
+      "reference_count": 21,
       "referenced_by": [
         "backend/app/adapters/openshift/provisioning.py",
         "backend/app/adapters/openshift/showroom_gitops.py",
@@ -10129,13 +10168,16 @@
         "backend/tests/test_catalog_onboarding.py",
         "backend/tests/test_catalog_onboarding_cli.py",
         "backend/tests/test_showroom_content_package.py",
+        "catalog-onboarding/agent-reliability.yaml",
         "catalog-onboarding/hybrid-fraud-detection.yaml",
         "catalog-onboarding/network-operations-agent.yaml",
+        "catalog/agent-reliability/catalog-item.yaml",
         "catalog/guided-rag-on-xeon/catalog-item.yaml",
         "catalog/hybrid-fraud-detection/catalog-item.yaml",
         "catalog/network-operations-agent/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/hybrid-fraud-detection.catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/network-operations-agent.catalog-item.yaml",
+        "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json",
         "evidence/runs/catalog-intake-hybrid-fraud/discovery-ghcr-source-20260922.json",
         "package.json"
       ],
@@ -10359,11 +10401,11 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "9a1b9ebf03c249a5b345b86e2d9be547068473d2",
+  "source_commit": "f02f55a8c20688604f8a6da99c243f06d2910257",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
-      "catalog-source": 13,
+      "catalog-source": 14,
       "ci": 4,
       "configuration": 11,
       "content-source": 18,
@@ -10373,7 +10415,7 @@
       "deployment-template": 11,
       "evidence": 26,
       "fixture": 20,
-      "generated-intake": 6,
+      "generated-intake": 7,
       "repository-configuration": 8,
       "tenant-source": 10
     },
@@ -10385,11 +10427,11 @@
       "rhpds-git-dependency": 38,
       "rhpds-image-dependency": 14
     },
-    "files_without_detected_repository_reference": 184,
-    "preserved_pending_review": 479,
+    "files_without_detected_repository_reference": 185,
+    "preserved_pending_review": 481,
     "protection_class_counts": {
       "authoritative-contract": 48,
-      "catalog-release-input": 19,
+      "catalog-release-input": 21,
       "external-consumer-unknown": 37,
       "immutable-evidence": 26,
       "participant-content-input": 128,
@@ -10402,10 +10444,10 @@
       "mutable-latest-image": 19,
       "possible-cluster-export-metadata": 1,
       "secret-object-review-required": 6,
-      "status-field-review-required": 69
+      "status-field-review-required": 71
     },
-    "tracked_yaml_files": 479,
+    "tracked_yaml_files": 481,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": false
+  "tracked_changes_present": true
 }

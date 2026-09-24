@@ -14,20 +14,20 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **479**
+- Tracked YAML/YML files: **481**
 - Owner assignment still required: **0**
-- Preserved pending owner review: **479**
+- Preserved pending owner review: **481**
 - Deletion eligible: **0**
-- No repository reference detected: **184**
-- Base source commit: `9a1b9ebf03c249a5b345b86e2d9be547068473d2`
+- No repository reference detected: **185**
+- Base source commit: `f02f55a8c20688604f8a6da99c243f06d2910257`
 - Source state: **working-tree**; tracked changes present:
-  **false**
+  **true**
 
 ## Classification
 
 | Classification | Files |
 |---|---:|
-| `catalog-source` | 13 |
+| `catalog-source` | 14 |
 | `ci` | 4 |
 | `configuration` | 11 |
 | `content-source` | 18 |
@@ -37,7 +37,7 @@ CLI, documentation, and human consumers must be checked before disposition.
 | `deployment-template` | 11 |
 | `evidence` | 26 |
 | `fixture` | 20 |
-| `generated-intake` | 6 |
+| `generated-intake` | 7 |
 | `repository-configuration` | 8 |
 | `tenant-source` | 10 |
 
@@ -52,7 +52,7 @@ example, a domain contract may legitimately contain a `status` field.
 | `mutable-latest-image` | 19 |
 | `possible-cluster-export-metadata` | 1 |
 | `secret-object-review-required` | 6 |
-| `status-field-review-required` | 69 |
+| `status-field-review-required` | 71 |
 
 ## Red Hat-hosted and RHDP dependency review
 
@@ -80,7 +80,7 @@ review; it is not named-human acceptance.
 | Protection class | Files |
 |---|---:|
 | `authoritative-contract` | 48 |
-| `catalog-release-input` | 19 |
+| `catalog-release-input` | 21 |
 | `external-consumer-unknown` | 37 |
 | `immutable-evidence` | 26 |
 | `participant-content-input` | 128 |

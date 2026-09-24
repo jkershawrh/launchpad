@@ -38,7 +38,7 @@ metadata:
   - agentops-observability
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 88bcef3b0705ea57ca12fc686ba7ea4217abeb25
+  showroom_content_ref: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   operator_workshop: true
@@ -53,7 +53,7 @@ metadata:
   - 25
   activation_blockers:
   - Re-run the complete one-seat browser, inference, guardrail outage, and reclaim
-    journey against source revision 88bcef3b0705ea57ca12fc686ba7ea4217abeb25 and image
+    journey against source revision 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef and image
     digest sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb.
   - Treat the documented prior 1/5/25-seat certification as historical evidence; do
     not transfer its green status to this corrected source and image.
@@ -65,7 +65,6 @@ metadata:
     then prove recovery after restoration.
   - Prove idempotent reclaim, MaaS-key revocation, GitOps cleanup, namespace deletion,
     and zero residual resources for the exact candidate revision.
-  - Resolve the Showroom learning-journey findings before promotion beyond one seat.
   - Re-certify five and twenty-five seats before increasing max_workshop_seats.
   - Resolve every repository discovery warning before activation.
   - Review every unparsed manifest; templating or invalid YAML prevents complete static
@@ -99,7 +98,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 88bcef3b0705ea57ca12fc686ba7ea4217abeb25
+  workload_revision: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -131,7 +130,7 @@ metadata:
     workspace: ar
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 88bcef3b0705ea57ca12fc686ba7ea4217abeb25
+  source_content_revision: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1
@@ -169,17 +168,11 @@ metadata:
     showroom:
       page_count: 7
       hands_on_module_count: 6
-      execute_block_count: 0
-      see_section_count: 0
-      verification_section_count: 0
-      key_takeaway_count: 0
-      thin_modules:
-      - modules/ROOT/pages/01-healthy-agent.adoc
-      - modules/ROOT/pages/02-safety-architecture.adoc
-      - modules/ROOT/pages/03-prompt-injection.adoc
-      - modules/ROOT/pages/04-tool-authorization.adoc
-      - modules/ROOT/pages/05-inference-disruption.adoc
-      - modules/ROOT/pages/06-prove-recover.adoc
+      execute_block_count: 20
+      see_section_count: 6
+      verification_section_count: 6
+      key_takeaway_count: 6
+      thin_modules: []
     capacity_proposal:
       status: review-required
       inference_mode: remote-endpoint
@@ -213,12 +206,6 @@ metadata:
     gate:
       status: blocked
       blocking_findings:
-      - One or more Showroom modules lack the What you will learn section
-      - One or more Showroom modules lack the See section
-      - One or more Showroom modules lack the Verify section
-      - One or more Showroom modules lack the Key takeaway section
-      - One or more Showroom modules lack an executable command block
-      - One or more Showroom modules are below the content-depth threshold
       - 'Unresolved Quickstart requirement: model-endpoint-unresolved'
       - 'Unresolved Quickstart requirement: manifest-unparsed'
     authority:
