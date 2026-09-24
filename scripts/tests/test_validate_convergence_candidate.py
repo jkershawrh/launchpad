@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "validate_convergence_candidate.py"
 CANDIDATE = ROOT / "certification/candidates/staging-candidate-20260922.yaml"
 CANDIDATE_02 = ROOT / "certification/candidates/staging-candidate-20260922-02.yaml"
+CANDIDATE_03 = ROOT / "certification/candidates/staging-candidate-20260923-03.yaml"
 
 
 def _module():
@@ -27,6 +28,10 @@ def _candidate() -> dict:
 
 def _candidate_02() -> dict:
     return yaml.safe_load(CANDIDATE_02.read_text(encoding="utf-8"))
+
+
+def _candidate_03() -> dict:
+    return yaml.safe_load(CANDIDATE_03.read_text(encoding="utf-8"))
 
 
 def test_repository_candidate_binds_platform_catalogs_and_evidence() -> None:
@@ -52,6 +57,19 @@ def test_second_candidate_binds_safe_rollout_source_at_green_local() -> None:
         "catalog_count": 3,
         "evidence_count": 1,
         "next_stage": "green-integration",
+    }
+
+
+def test_third_candidate_binds_flightpath_lifecycle_and_requester_evidence() -> None:
+    result = _module().validate(_candidate_03(), root=ROOT)
+    assert result == {
+        "valid": True,
+        "candidate_id": "launchpad-staging-20260923-03",
+        "stage": "green-integration",
+        "platform_revision": "ceb39217e57acf78b0c724f95aadd286e68c9793",
+        "catalog_count": 3,
+        "evidence_count": 2,
+        "next_stage": "green-canary",
     }
 
 

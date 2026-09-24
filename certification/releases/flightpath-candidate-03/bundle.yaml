@@ -1,0 +1,35 @@
+schema_version: launchpad.redhat.com/staging-promotion-bundle/v1
+bundle_id: flightpath-candidate-03
+target:
+  cluster_id: flightpath
+  api_server: https://api.flightpath.fm2aihpcsed.com:6443
+  namespace: launchpad-flightpath-candidate
+  public_traffic: disabled
+promotion:
+  candidate_id: launchpad-staging-20260923-03
+  candidate_path: certification/candidates/staging-candidate-20260923-03.yaml
+  revision: ceb39217e57acf78b0c724f95aadd286e68c9793
+  overlay_path: deploy/launchpad/overlays/flightpath-candidate
+  rendered_sha256: 703cfd5c8899293ad422988386b80c089f3d5eede3f56eb4327390d24a832d48
+  backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:2bd7996ed013f2138c85c4922aee4610a1019d0f5929dc5f4a4580db04f5fc71
+rollback:
+  candidate_id: launchpad-staging-20260922-02
+  candidate_path: certification/candidates/staging-candidate-20260922-02.yaml
+  revision: 39517f527c03c646108c7dfe0e97487befdfdce3
+  overlay_path: deploy/launchpad/overlays/flightpath-candidate
+  rendered_sha256: b89c17fa0e3d5264320405c8a3db0b08539e2aff58425c01dcc129f9a1e067cf
+  backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:b65773f81f400cbf71f1c6e104a246e2d798bdfe3e333bf2879393beef8c4ac1
+  scope: application-manifests-only
+  database_restore: forbidden-without-separately-verified-compatible-backup
+render:
+  command: oc kustomize
+  kustomize_version: v5.7.1
+gates:
+  approval_required: true
+  dry_run_required: true
+  exact_api_server_required: true
+  secrets_preexist_out_of_band: true
+  public_tls_gate: blocked
+  retained_workshops_must_be_zero: true
+  database_backup_required: true
+  rollback_decision_owner_required: true

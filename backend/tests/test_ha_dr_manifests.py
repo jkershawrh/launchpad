@@ -651,3 +651,43 @@ def test_flightpath_stage_bootstrap_requires_explicit_target_and_safe_order() ->
     assert script.index("--replicas=1") < script.index("--replicas=2")
     assert "deployment/backend --timeout=10m" in script
     assert "oc delete" not in script
+
+
+def test_flightpath_candidate_provisioner_is_admission_scoped() -> None:
+    items = render("deploy/launchpad/overlays/flightpath-candidate")
+    binding = resource(
+        items, "ClusterRoleBinding", "launchpad-flightpath-candidate-provisioner"
+    )
+    policy = resource(
+        items,
+        "ValidatingAdmissionPolicy",
+        "launchpad-flightpath-candidate-namespace-boundary",
+    )
+    policy_binding = resource(
+        items,
+        "ValidatingAdmissionPolicyBinding",
+        "launchpad-flightpath-candidate-namespace-boundary",
+    )
+
+    assert binding["subjects"] == [
+        {
+            "kind": "ServiceAccount",
+            "name": "launchpad-backend",
+            "namespace": "launchpad-flightpath-candidate",
+        }
+    ]
+    assert policy["spec"]["failurePolicy"] == "Fail"
+    expression = policy["spec"]["validations"][0]["expression"]
+    assert (
+        "system:serviceaccount:launchpad-flightpath-candidate:launchpad-backend"
+        in expression
+    )
+    assert "request.namespace.startsWith('launchpad-')" in expression
+    assert "request.resource.resource == 'namespaces'" in expression
+    assert "request.resource.group == 'argoproj.io'" in expression
+    assert "request.namespace == 'openshift-gitops'" in expression
+    assert "'^(showroom|workload)-launchpad-.*$'" in expression
+    assert policy_binding["spec"] == {
+        "policyName": "launchpad-flightpath-candidate-namespace-boundary",
+        "validationActions": ["Deny"],
+    }

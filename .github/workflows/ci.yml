@@ -47,6 +47,9 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install ".[dev]"
 
+      - name: Validate secret-scan configuration
+        run: python -m pytest scripts/tests/test_gitleaks_config.py -q
+
       - name: Lint
         run: |
           cd backend

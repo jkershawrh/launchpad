@@ -8,6 +8,10 @@ now the selected durable transitional control-plane home. Arena becomes the
 rollback/standby site after cutover and may remain execution capacity only when
 its execution health is independently certified.
 
+Until that cutover is approved, Flightpath remains the passive recovery control
+plane; the isolated candidate is a separate certification writer with its own
+database and no authority over Arena's production lifecycle records.
+
 This selection does not declare the cutover complete and does not permit two
 active writers. Flightpath must not assume the production database, public
 edge, identity issuer, GitOps ownership, ordering, or cleanup authority until

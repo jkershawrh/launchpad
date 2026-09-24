@@ -39,6 +39,8 @@ contracts:
 evidence:
   - path: evidence/runs/convergence/flightpath-three-catalog-auto-reclaim-20260923.json
     sha256: d9ef787fd992332c0c1f8a450e966d6cf6f64e962cf3ed6b62b8aa7d056d8c4e
+  - path: evidence/runs/convergence/flightpath-requester-ui-readiness-20260923.json
+    sha256: 4653b815eb03edc172fc1c46cd73040023092480013f8443a40ba4171d2a3986
 blockers_to_green_canary:
   - exact-release-public-claim-and-participant-browser-journey-per-catalog
   - public-identity-expiry-and-zero-residue

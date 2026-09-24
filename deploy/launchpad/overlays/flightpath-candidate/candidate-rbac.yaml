@@ -89,3 +89,48 @@ subjects:
   - kind: ServiceAccount
     name: launchpad-backend
     namespace: launchpad-flightpath-candidate
+---
+# The candidate backend needs cluster-scoped namespace lifecycle privileges,
+# but it must never be able to use them against unrelated workloads. Keep this
+# admission boundary independent from application authorization so a stolen
+# service-account token still fails closed outside Launchpad-owned namespaces.
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: launchpad-flightpath-candidate-namespace-boundary
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    launchpad.redhat.com/environment: flightpath-candidate
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["*"]
+        apiVersions: ["*"]
+        operations: [CREATE, UPDATE, DELETE]
+        resources: ["*"]
+        scope: "*"
+  validations:
+    - expression: >-
+        request.userInfo.username !=
+        'system:serviceaccount:launchpad-flightpath-candidate:launchpad-backend'
+        || (request.resource.resource == 'namespaces'
+          ? (request.operation == 'DELETE' ? oldObject.metadata.name : object.metadata.name).startsWith('launchpad-')
+          : request.namespace.startsWith('launchpad-')
+            || (request.resource.group == 'argoproj.io'
+              && request.resource.resource == 'applications'
+              && request.namespace == 'openshift-gitops'
+              && (request.operation == 'DELETE' ? oldObject.metadata.name : object.metadata.name)
+                .matches('^(showroom|workload)-launchpad-.*$')))
+      message: Flightpath candidate writes are restricted to Launchpad-owned namespaces.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: launchpad-flightpath-candidate-namespace-boundary
+  labels:
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    launchpad.redhat.com/environment: flightpath-candidate
+spec:
+  policyName: launchpad-flightpath-candidate-namespace-boundary
+  validationActions: [Deny]
