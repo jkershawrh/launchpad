@@ -41,16 +41,15 @@ metadata:
   - 5
   - 25
   activation_blockers:
-  - Route input screening through a supported TrustyAI and NeMo Guardrails configuration.
-  - Prove a RHOAI-managed CPU model-serving path or narrow the OpenShift AI model-serving
-    claim.
+  - Complete an integrated Flightpath seat qualification proving RHOAI-managed NeMo
+    decisions, local fail-closed fallback, recovery, and reclaim with the pinned release.
   allowed_exposure_policies:
   - internal
   showroom_journey: agent-reliability-quickstart
   showroom_title: 'When Agents Fail: Reliable Agentic AI on OpenShift'
   namespace_slug: agent-reliability-quickstart
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 04f8feee58965a8b6e9397487b61db0928869a9d
+  showroom_content_ref: a13c047a2cd983ca3deed6448f65f5895089e60e
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   showroom_terminal_storage: true
@@ -66,7 +65,7 @@ metadata:
   inference_endpoint: litellm
   seat_cpu_millicores: 150
   seat_memory_mib: 192
-  seat_pods: 2
+  seat_pods: 3
   seat_storage_gib: 0
   workshop_provision_concurrency: 5
   workshop_node_spread: false
@@ -74,7 +73,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 04f8feee58965a8b6e9397487b61db0928869a9d
+  workload_revision: a13c047a2cd983ca3deed6448f65f5895089e60e
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -84,7 +83,7 @@ metadata:
   workload_helm_values:
     image:
       repository: quay.io/rh-ee-jkershaw/agent-reliability-quickstart
-      digest: sha256:ccb631bb51942c71ae02f167fb39dc6e0931d7624243890acafcdbd510a1d0ce
+      digest: sha256:90776916eee2acd6f0ea45990337cc75a04bfe19ef4f8513af1d540e3c529b13
     route:
       enabled: true
       name: agent-reliability
@@ -106,5 +105,5 @@ metadata:
     workspace: agent-reliability
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 04f8feee58965a8b6e9397487b61db0928869a9d
+  source_content_revision: a13c047a2cd983ca3deed6448f65f5895089e60e
   source_references: {}

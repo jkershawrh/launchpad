@@ -12,12 +12,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 04f8feee58965a8b6e9397487b61db0928869a9d
+    revision: a13c047a2cd983ca3deed6448f65f5895089e60e
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 04f8feee58965a8b6e9397487b61db0928869a9d
+    revision: a13c047a2cd983ca3deed6448f65f5895089e60e
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -33,7 +33,7 @@ runtime:
   seat_resources:
     cpu_millicores: 150
     memory_mib: 192
-    pods: 2
+    pods: 3
     storage_gib: 0
   tabs:
   - id: terminal
@@ -57,7 +57,7 @@ runtime:
     helm_values:
       image:
         repository: quay.io/rh-ee-jkershaw/agent-reliability-quickstart
-        digest: sha256:ccb631bb51942c71ae02f167fb39dc6e0931d7624243890acafcdbd510a1d0ce
+        digest: sha256:90776916eee2acd6f0ea45990337cc75a04bfe19ef4f8513af1d540e3c529b13
       route:
         enabled: true
         name: agent-reliability
@@ -75,8 +75,8 @@ certification:
   - 5
   - 25
   activation_blockers:
-  - Route input screening through a supported TrustyAI and NeMo Guardrails configuration.
-  - Prove a RHOAI-managed CPU model-serving path or narrow the OpenShift AI model-serving claim.
+  - Complete an integrated Flightpath seat qualification proving RHOAI-managed NeMo decisions,
+    local fail-closed fallback, recovery, and reclaim with the pinned release.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:
