@@ -30,10 +30,6 @@ supported_branding:
 - intel-internal
 metadata:
   showroom: true
-  showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 141f29c0b952240ec1343c5c119b8c041536c992
-  showroom_content_playbook: site.yml
-  showroom_content_start_path: .
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -60,6 +56,10 @@ metadata:
   showroom_journey: agent-reliability-quickstart
   showroom_title: 'When Agents Fail: Reliable Agentic AI on OpenShift'
   namespace_slug: agent-reliability-quickstart
+  showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
+  showroom_content_ref: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
+  showroom_content_playbook: site.yml
+  showroom_content_start_path: .
   showroom_terminal_storage: true
   showroom_tabs:
   - id: terminal
@@ -79,7 +79,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 141f29c0b952240ec1343c5c119b8c041536c992
+  workload_revision: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
   workload_deploy_type: kustomize
   workload_deployment_scope: seat
   workload_deploy_path: deploy/base
@@ -103,99 +103,5 @@ metadata:
     workspace: agent-reliability
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 141f29c0b952240ec1343c5c119b8c041536c992
+  source_content_revision: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
   source_references: {}
-  intake_quality:
-    schema_version: launchpad.redhat.com/catalog-intake-quality/v1
-    business_solution:
-      status: review-required
-      readme_present: true
-      title: Build a Reliable Agentic AI Workflow on OpenShift
-      action_oriented_title: true
-      required_sections_present: false
-      missing_sections:
-      - architecture
-      business_language_present: false
-      human_review_required: true
-    artifacts:
-      validation_matrix:
-        path: tests/validation_matrix.yaml
-        status: invalid
-        entry_count: 0
-      claim_registry:
-        path: tests/claim_registry.yaml
-        status: present-valid
-        entry_count: 4
-      benchmark_rubric:
-        path: tests/benchmark_rubric.yaml
-        status: present-valid
-        entry_count: 3
-      publication_test:
-        path: tests/publication/test_readme.py
-        status: present
-      makefile:
-        path: Makefile
-        status: present
-      ci_workflows:
-        path: .github/workflows
-        status: present
-    showroom:
-      page_count: 7
-      hands_on_module_count: 6
-      execute_block_count: 0
-      see_section_count: 0
-      verification_section_count: 0
-      key_takeaway_count: 0
-      thin_modules:
-      - modules/ROOT/pages/01-healthy-agent.adoc
-      - modules/ROOT/pages/02-safety-architecture.adoc
-      - modules/ROOT/pages/03-prompt-injection.adoc
-      - modules/ROOT/pages/04-tool-authorization.adoc
-      - modules/ROOT/pages/05-inference-disruption.adoc
-      - modules/ROOT/pages/06-prove-recover.adoc
-    capacity_proposal:
-      status: review-required
-      inference_mode: remote-endpoint
-      framework_signals:
-      - openai
-      - vllm
-      declared_models: []
-      explicit_resource_envelopes: 2
-      measurement_required_before_placement: true
-    requirement_review:
-      status: blocked
-      resolution_authority: human-and-cluster-evidence
-      findings:
-      - code: model-endpoint-unresolved
-        evidence_count: 0
-      target_support_inferred: false
-    security_summary:
-      status: review-required
-      mutable_image_count: 3
-      cluster_scoped_resource_count: 0
-      privileged_finding_count: 0
-      secret_manifest_count: 0
-      unparsed_manifest_count: 0
-      secret_values_included: false
-    portfolio_overlap:
-      status: not-run
-      reason: A pinned versioned portfolio inventory was not supplied.
-      mutable_live_org_scan_allowed: false
-    gate:
-      status: blocked
-      blocking_findings:
-      - 'README is missing required sections: architecture'
-      - tests/validation_matrix.yaml is missing or invalid
-      - One or more Showroom modules lack the What you will learn section
-      - One or more Showroom modules lack the See section
-      - One or more Showroom modules lack the Verify section
-      - One or more Showroom modules lack the Key takeaway section
-      - One or more Showroom modules lack an executable command block
-      - One or more Showroom modules are below the content-depth threshold
-      - 'Unresolved Quickstart requirement: model-endpoint-unresolved'
-    authority:
-      mode: analysis-only
-      may_modify_source: false
-      may_publish_catalog: false
-      may_provision: false
-      may_certify: false
