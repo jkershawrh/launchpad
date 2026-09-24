@@ -271,3 +271,9 @@ jobs:
 
       - name: Build backend
         run: docker build -t launchpad-backend:ci -f backend/Containerfile .
+
+      - name: Build requester portal
+        run: docker build -t launchpad-portal:ci -f frontend/Containerfile frontend/
+
+      - name: Build admin portal
+        run: docker build -t launchpad-admin:ci -f admin/Containerfile admin/
