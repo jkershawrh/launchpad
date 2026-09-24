@@ -68,8 +68,8 @@ runtime:
   allowed_exposure_policies:
   - internal
 certification:
-  stage: one-seat-certified
-  max_workshop_seats: 1
+  stage: five-seat-certified
+  max_workshop_seats: 5
   promotion_sequence:
   - 1
   - 5
@@ -77,7 +77,7 @@ certification:
   activation_blockers:
   - Route input screening through a supported TrustyAI and NeMo Guardrails configuration.
   - Prove a RHOAI-managed CPU model-serving path or narrow the OpenShift AI model-serving claim.
-  - Complete five-seat and twenty-five-seat capacity and tenant-isolation qualification.
+  - Complete twenty-five-seat capacity and tenant-isolation qualification.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:
