@@ -18,6 +18,12 @@ OPERATIONAL_DOMAIN = re.compile(r"\b(?:[a-z0-9-]+\.)+(?:fm2aihpcsed\.com|smg-hel
 PRIVATE_IP = re.compile(r"(?<![0-9.])(?:10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|192\.168\.)\d{1,3}\.\d{1,3}(?![0-9.])")
 EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", re.I)
 FIXTURE_EMAIL_DOMAINS = {"example.com", "example.org", "example.net", "example.test"}
+GOVERNANCE_PATHS = {
+    "contracts/repository-sanitization-v1.yaml",
+    "docs/repository-hygiene.md",
+    "scripts/audit_repository_sanitization.py",
+    "scripts/tests/test_repository_sanitization.py",
+}
 
 
 def tracked_files() -> list[str]:
@@ -59,6 +65,8 @@ def audit() -> dict[str, Any]:
     records: list[dict[str, Any]] = []
     files = tracked_files()
     for path in files:
+        if path in GOVERNANCE_PATHS or path.startswith("evidence/repository-sanitization/"):
+            continue
         text = _read_text(path)
         if text is None:
             continue

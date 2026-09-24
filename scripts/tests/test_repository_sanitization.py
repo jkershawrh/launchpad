@@ -36,9 +36,18 @@ def test_inventory_contains_paths_and_counts_but_never_matched_values() -> None:
     for record in report["records"]:
         assert set(record) == {"path", "categories", "disposition", "counts"}
         assert all(isinstance(value, int) for value in record["counts"].values())
+        assert record["path"] not in module.GOVERNANCE_PATHS
+        assert not record["path"].startswith("evidence/repository-sanitization/")
 
 
 def test_current_baseline_identifies_legacy_runtime_and_delivery_candidates() -> None:
     records = module.audit()["records"]
     assert any(record["path"].startswith("backend/app/adapters/rhdp/") and record["disposition"] == "remove-after-runtime-consumer-tests" for record in records)
     assert any(record["path"].startswith("deploy/agnosticv/") and record["disposition"] == "remove-after-deployment-consumer-tests" for record in records)
+
+
+def test_stargate_capacity_adapter_is_provider_neutral() -> None:
+    placement = (ROOT / "backend" / "app" / "services" / "placement.py").read_text()
+    assert "app.adapters.stargate.capacity" in placement
+    assert "app.adapters.rhdp.stargate_capacity" not in placement
+    assert (ROOT / "backend" / "app" / "adapters" / "stargate" / "capacity.py").is_file()

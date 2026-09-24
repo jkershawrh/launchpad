@@ -5,7 +5,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
-from app.adapters.rhdp.stargate_capacity import get_cluster_capacity
+from app.adapters.stargate.capacity import get_cluster_capacity
 from app.domain.placement import ClusterCapacity, PlacementRecommendation
 
 logger = logging.getLogger("launchpad.placement")

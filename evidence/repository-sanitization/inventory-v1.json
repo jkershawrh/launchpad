@@ -6,24 +6,24 @@
     "privacy": "paths-and-counts-only-no-matched-values"
   },
   "summary": {
-    "tracked_files_reviewed": 2364,
-    "candidate_files": 353,
+    "tracked_files_reviewed": 2368,
+    "candidate_files": 350,
     "categories": {
       "operational-topology": 202,
       "personal-identifier": 17,
       "rhpds-artifact-provenance": 56,
-      "rhpds-reference": 152,
-      "runtime-rhdp-coupling": 16
+      "rhpds-reference": 150,
+      "runtime-rhdp-coupling": 14
     },
     "dispositions": {
-      "refactor-before-adapter-removal": 6,
+      "refactor-before-adapter-removal": 5,
       "remove-after-deployment-consumer-tests": 53,
-      "remove-after-runtime-consumer-tests": 9,
+      "remove-after-runtime-consumer-tests": 8,
       "remove-with-rhdp-adapter": 1,
       "replace-with-sanitized-summary": 102,
       "retain": 91,
       "retain-until-mirrored-and-certified": 44,
-      "review-and-generalize": 42,
+      "review-and-generalize": 41,
       "sanitize": 5
     }
   },
@@ -229,18 +229,6 @@
       }
     },
     {
-      "path": "backend/app/adapters/rhdp/stargate_capacity.py",
-      "categories": [
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
       "path": "backend/app/adapters/rhdp/validation.py",
       "categories": [
         "runtime-rhdp-coupling"
@@ -271,19 +259,6 @@
         "rhpds-reference"
       ],
       "disposition": "review-and-generalize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/services/placement.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "refactor-before-adapter-removal",
       "counts": {
         "operational_domains": 0,
         "private_ips": 0,
@@ -2613,18 +2588,6 @@
     },
     {
       "path": "docs/product-delivery-roadmap.md",
-      "categories": [
-        "rhpds-reference"
-      ],
-      "disposition": "review-and-generalize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "docs/repository-hygiene.md",
       "categories": [
         "rhpds-reference"
       ],
