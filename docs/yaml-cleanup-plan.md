@@ -40,15 +40,21 @@ YC-01 discovery has begun with a generated, privacy-safe inventory:
   is the machine-readable path, hash, classification, kind, reference, and risk
   metadata.
 
-All records remain `preserve-pending-owner-review`. The inventory does not
-complete YC-01 because owner assignment, external consumer confirmation, and
-the approved Intel path scope remain outstanding.
+All records remain protected and deletion-ineligible. The inventory assigns
+role stewardship and protection classes so reviews can be routed without
+mistaking that routing for named-human approval. It does not complete YC-01
+because named owner acceptance, external consumer confirmation, and the
+approved Intel path scope remain outstanding.
 
-Initial read-only results are recorded in the generated inventory. At the
-September 21 working-tree snapshot:
+Initial read-only results are recorded in the generated inventory. Treat its
+generated summary as the authoritative count because the repository continues
+to evolve. At the current working-tree snapshot:
 
-- 433 tracked YAML/YML files were inventoried; 176 have no repository reference
+- 478 tracked YAML/YML files were inventoried; 184 have no repository reference
   detected and therefore require external-consumer review rather than deletion.
+- Zero files are deletion-eligible. Contracts, evidence, catalog inputs,
+  runtime sources, participant content, quality inputs, and legacy integrations
+  each have explicit fail-closed protection classes.
 - The earlier 14 tracked Kustomize roots under `deploy/` rendered locally
   without changing a cluster; newly added roots require the same check.
 - Six source files contain Secret objects requiring classification. The full

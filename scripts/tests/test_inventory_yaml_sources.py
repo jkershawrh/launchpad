@@ -29,11 +29,10 @@ def test_inventory_is_complete_and_fail_closed():
     assert inventory["summary"]["tracked_yaml_files"] == len(tracked_yaml)
     assert inventory["source_state"] == "working-tree"
     assert isinstance(inventory["tracked_changes_present"], bool)
-    assert all(record["owner"] == "unassigned" for record in records)
-    assert all(
-        record["proposed_disposition"] == "preserve-pending-owner-review"
-        for record in records
-    )
+    assert all(record["proposed_disposition"].startswith("preserve-") for record in records)
+    assert all(record["deletion_eligible"] is False for record in records)
+    assert inventory["summary"]["deletion_eligible"] == 0
+    assert inventory["summary"]["unassigned_owners"] == 0
     assert "No record authorizes deletion" in inventory["safety_boundary"]
     assert all(
         not module.GENERATED_REFERENCE_OUTPUTS.intersection(record["referenced_by"])
@@ -49,6 +48,31 @@ def test_classification_keeps_evidence_and_source_distinct():
     assert module.classify("deploy/workloads/example/templates/pod.yaml") == "deployment-template"
     assert module.classify("fixtures/events/example.yaml") == "fixture"
     assert module.classify("contracts/example.yaml") == "contract"
+
+
+def test_governance_protects_active_and_legacy_sources():
+    module = load_module()
+
+    assert module.governance("catalog/example/catalog-item.yaml", "catalog-source") == {
+        "owner": "catalog-release-owner",
+        "protection_class": "catalog-release-input",
+        "proposed_disposition": "preserve-release-input",
+    }
+    legacy = module.governance(
+        "deploy/agnosticv/example/common.yaml", "deployment-source"
+    )
+    assert legacy["owner"] == "legacy-integration-owner"
+    assert legacy["proposed_disposition"] == (
+        "preserve-pending-external-consumer-review"
+    )
+    repository_configuration = module.governance(
+        ".github/dependabot.yml", "repository-configuration"
+    )
+    assert repository_configuration["owner"] == "repository-maintenance-owner"
+    assert (
+        repository_configuration["protection_class"]
+        == "repository-governance-input"
+    )
 
 
 def test_dependency_flags_distinguish_runtime_sources_from_legacy_automation():
@@ -79,6 +103,7 @@ def test_inventory_reports_dependency_counts_without_copying_values():
     assert inventory["summary"]["dependency_flag_counts"]["rhpds-git-dependency"] > 0
     assert any(record["dependency_flags"] for record in inventory["records"])
     assert "Red Hat-hosted and RHDP dependency review" in module.render_markdown(inventory)
+    assert "Protection classes" in module.render_markdown(inventory)
 
 
 def test_generated_report_contains_no_yaml_values():

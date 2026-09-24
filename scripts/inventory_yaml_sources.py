@@ -80,6 +80,69 @@ def area(path: str) -> str:
     return parts[0]
 
 
+def governance(path: str, classification: str) -> dict[str, Any]:
+    """Assign role stewardship while keeping every cleanup decision fail closed."""
+
+    if classification == "contract":
+        return {
+            "owner": "contract-governance-owner",
+            "protection_class": "authoritative-contract",
+            "proposed_disposition": "preserve-authoritative",
+        }
+    if classification == "evidence":
+        return {
+            "owner": "evidence-governance-owner",
+            "protection_class": "immutable-evidence",
+            "proposed_disposition": "preserve-history",
+        }
+    if classification in {"catalog-source", "generated-intake"}:
+        return {
+            "owner": "catalog-release-owner",
+            "protection_class": "catalog-release-input",
+            "proposed_disposition": "preserve-release-input",
+        }
+    if path.startswith("deploy/agnosticv/"):
+        return {
+            "owner": "legacy-integration-owner",
+            "protection_class": "external-consumer-unknown",
+            "proposed_disposition": "preserve-pending-external-consumer-review",
+        }
+    if classification in {
+        "deployment-source",
+        "deployment-template",
+        "configuration",
+        "tenant-source",
+    }:
+        return {
+            "owner": "platform-release-owner",
+            "protection_class": "runtime-or-deployment-input",
+            "proposed_disposition": "preserve-runtime-input",
+        }
+    if classification in {"fixture", "ci"}:
+        return {
+            "owner": "quality-engineering-owner",
+            "protection_class": "test-or-delivery-input",
+            "proposed_disposition": "preserve-test-or-delivery-input",
+        }
+    if classification == "repository-configuration":
+        return {
+            "owner": "repository-maintenance-owner",
+            "protection_class": "repository-governance-input",
+            "proposed_disposition": "preserve-repository-configuration",
+        }
+    if classification in {"content-source", "demo-source"}:
+        return {
+            "owner": "experience-content-owner",
+            "protection_class": "participant-content-input",
+            "proposed_disposition": "preserve-content-input",
+        }
+    return {
+        "owner": "unassigned",
+        "protection_class": "scope-unresolved",
+        "proposed_disposition": "preserve-pending-owner-review",
+    }
+
+
 def _text_files(paths: list[str]) -> dict[str, str]:
     result: dict[str, str] = {}
     for path in paths:
@@ -177,6 +240,8 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
     for path in yaml_paths:
         text = texts.get(path, "")
         kinds = _kinds(text)
+        classification = classify(path)
+        governance_fields = governance(path, classification)
         markers = sorted(
             marker
             for marker in ENVIRONMENT_MARKERS
@@ -186,7 +251,7 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
             {
                 "path": path,
                 "sha256": hashlib.sha256((ROOT / path).read_bytes()).hexdigest(),
-                "classification": classify(path),
+                "classification": classification,
                 "area": area(path),
                 "kinds": kinds,
                 "environment_markers": markers,
@@ -194,8 +259,8 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
                 "reference_count": len(consumers[path]),
                 "risk_flags": _risk_flags(path, text, kinds),
                 "dependency_flags": _dependency_flags(path, text),
-                "owner": "unassigned",
-                "proposed_disposition": "preserve-pending-owner-review",
+                **governance_fields,
+                "deletion_eligible": False,
             }
         )
     classification_counts = Counter(record["classification"] for record in records)
@@ -203,6 +268,7 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
     dependency_counts = Counter(
         flag for record in records for flag in record["dependency_flags"]
     )
+    protection_counts = Counter(record["protection_class"] for record in records)
     tracked_changes_present = bool(_git("status", "--porcelain", "--untracked-files=no").strip())
     return {
         "schema_version": 1,
@@ -218,15 +284,17 @@ def build_inventory(root: Path = ROOT) -> dict[str, Any]:
             "tracked_yaml_files": len(records),
             "unassigned_owners": sum(record["owner"] == "unassigned" for record in records),
             "preserved_pending_review": sum(
-                record["proposed_disposition"] == "preserve-pending-owner-review"
+                record["proposed_disposition"].startswith("preserve-")
                 for record in records
             ),
+            "deletion_eligible": sum(record["deletion_eligible"] for record in records),
             "files_without_detected_repository_reference": sum(
                 record["reference_count"] == 0 for record in records
             ),
             "classification_counts": dict(sorted(classification_counts.items())),
             "risk_flag_counts": dict(sorted(risk_counts.items())),
             "dependency_flag_counts": dict(sorted(dependency_counts.items())),
+            "protection_class_counts": dict(sorted(protection_counts.items())),
         },
         "records": records,
     }
@@ -246,6 +314,10 @@ def render_markdown(inventory: dict[str, Any]) -> str:
         f"| `{name}` | {count} |"
         for name, count in summary["dependency_flag_counts"].items()
     ) or "| None detected | 0 |"
+    protections = "\n".join(
+        f"| `{name}` | {count} |"
+        for name, count in summary["protection_class_counts"].items()
+    )
     flagged_paths = {
         flag: [record["path"] for record in inventory["records"] if flag in record["risk_flags"]]
         for flag in (
@@ -278,6 +350,7 @@ CLI, documentation, and human consumers must be checked before disposition.
 - Tracked YAML/YML files: **{summary['tracked_yaml_files']}**
 - Owner assignment still required: **{summary['unassigned_owners']}**
 - Preserved pending owner review: **{summary['preserved_pending_review']}**
+- Deletion eligible: **{summary['deletion_eligible']}**
 - No repository reference detected: **{summary['files_without_detected_repository_reference']}**
 - Base source commit: `{inventory['source_commit']}`
 - Source state: **{inventory['source_state']}**; tracked changes present:
@@ -310,6 +383,16 @@ prove each active consumer before changing it.
 | Dependency | Files |
 |---|---:|
 {dependencies}
+
+## Protection classes
+
+Every tracked YAML file remains deletion-ineligible until `YAML-SCOPE-001` is
+approved and its external consumers are checked. Role ownership below routes
+review; it is not named-human acceptance.
+
+| Protection class | Files |
+|---|---:|
+{protections}
 
 ## Priority review queues
 

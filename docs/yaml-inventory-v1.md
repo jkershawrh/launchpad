@@ -14,11 +14,12 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **433**
-- Owner assignment still required: **433**
-- Preserved pending owner review: **433**
-- No repository reference detected: **176**
-- Base source commit: `66f0d42ff28cd5e2c8dd1ebe40254afbc85eba42`
+- Tracked YAML/YML files: **478**
+- Owner assignment still required: **0**
+- Preserved pending owner review: **478**
+- Deletion eligible: **0**
+- No repository reference detected: **184**
+- Base source commit: `1ef74007e3c5c3b6924a0a6ca06171901a186da1`
 - Source state: **working-tree**; tracked changes present:
   **true**
 
@@ -26,17 +27,17 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 | Classification | Files |
 |---|---:|
-| `catalog-source` | 12 |
-| `ci` | 3 |
-| `configuration` | 4 |
+| `catalog-source` | 13 |
+| `ci` | 4 |
+| `configuration` | 11 |
 | `content-source` | 18 |
-| `contract` | 42 |
+| `contract` | 47 |
 | `demo-source` | 110 |
-| `deployment-source` | 168 |
+| `deployment-source` | 194 |
 | `deployment-template` | 11 |
-| `evidence` | 22 |
+| `evidence` | 26 |
 | `fixture` | 20 |
-| `generated-intake` | 5 |
+| `generated-intake` | 6 |
 | `repository-configuration` | 8 |
 | `tenant-source` | 10 |
 
@@ -47,11 +48,11 @@ example, a domain contract may legitimately contain a `status` field.
 
 | Flag | Files |
 |---|---:|
-| `environment-specific` | 125 |
+| `environment-specific` | 164 |
 | `mutable-latest-image` | 19 |
 | `possible-cluster-export-metadata` | 1 |
 | `secret-object-review-required` | 6 |
-| `status-field-review-required` | 59 |
+| `status-field-review-required` | 69 |
 
 ## Red Hat-hosted and RHDP dependency review
 
@@ -65,10 +66,27 @@ prove each active consumer before changing it.
 | Dependency | Files |
 |---|---:|
 | `agnostic-automation-dependency` | 29 |
-| `redhat-gpte-image-dependency` | 9 |
+| `redhat-gpte-image-dependency` | 10 |
 | `rhdp-service-dependency` | 2 |
-| `rhpds-git-dependency` | 35 |
+| `rhpds-git-dependency` | 38 |
 | `rhpds-image-dependency` | 14 |
+
+## Protection classes
+
+Every tracked YAML file remains deletion-ineligible until `YAML-SCOPE-001` is
+approved and its external consumers are checked. Role ownership below routes
+review; it is not named-human acceptance.
+
+| Protection class | Files |
+|---|---:|
+| `authoritative-contract` | 47 |
+| `catalog-release-input` | 19 |
+| `external-consumer-unknown` | 37 |
+| `immutable-evidence` | 26 |
+| `participant-content-input` | 128 |
+| `repository-governance-input` | 8 |
+| `runtime-or-deployment-input` | 189 |
+| `test-or-delivery-input` | 24 |
 
 ## Priority review queues
 
