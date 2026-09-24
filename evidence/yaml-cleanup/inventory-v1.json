@@ -6605,7 +6605,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "81ffc0b1bf3dee74e947cb863f1382598f16bba37629448df1b243f8afce7fd9"
+      "sha256": "327af66d74aca76ef445aeffecb038cb94d00111a2b097fc113a160b6294f190"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -9925,7 +9925,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "9b49243a0301aa38fd703f8819fca46d965c51b8",
+  "source_commit": "26ea565b1ec72fbd879e53357a8de135c9dd54f2",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
