@@ -14,12 +14,12 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **481**
+- Tracked YAML/YML files: **446**
 - Owner assignment still required: **0**
-- Preserved pending owner review: **481**
+- Preserved pending owner review: **446**
 - Deletion eligible: **0**
-- No repository reference detected: **185**
-- Base source commit: `74472725a57986468d8361f4c726682241e365e4`
+- No repository reference detected: **136**
+- Base source commit: `af12a38a4e8c2326f0416483f3607d6608052915`
 - Source state: **working-tree**; tracked changes present:
   **true**
 
@@ -27,13 +27,13 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 | Classification | Files |
 |---|---:|
-| `catalog-source` | 14 |
+| `catalog-source` | 15 |
 | `ci` | 4 |
 | `configuration` | 11 |
 | `content-source` | 18 |
-| `contract` | 48 |
+| `contract` | 49 |
 | `demo-source` | 110 |
-| `deployment-source` | 194 |
+| `deployment-source` | 157 |
 | `deployment-template` | 11 |
 | `evidence` | 26 |
 | `fixture` | 20 |
@@ -48,11 +48,11 @@ example, a domain contract may legitimately contain a `status` field.
 
 | Flag | Files |
 |---|---:|
-| `environment-specific` | 164 |
+| `environment-specific` | 165 |
 | `mutable-latest-image` | 19 |
 | `possible-cluster-export-metadata` | 1 |
 | `secret-object-review-required` | 6 |
-| `status-field-review-required` | 71 |
+| `status-field-review-required` | 61 |
 
 ## Red Hat-hosted and RHDP dependency review
 
@@ -65,11 +65,11 @@ prove each active consumer before changing it.
 
 | Dependency | Files |
 |---|---:|
-| `agnostic-automation-dependency` | 29 |
+| `agnostic-automation-dependency` | 4 |
 | `redhat-gpte-image-dependency` | 10 |
 | `rhdp-service-dependency` | 2 |
-| `rhpds-git-dependency` | 38 |
-| `rhpds-image-dependency` | 14 |
+| `rhpds-git-dependency` | 27 |
+| `rhpds-image-dependency` | 4 |
 
 ## Protection classes
 
@@ -79,9 +79,8 @@ review; it is not named-human acceptance.
 
 | Protection class | Files |
 |---|---:|
-| `authoritative-contract` | 48 |
-| `catalog-release-input` | 21 |
-| `external-consumer-unknown` | 37 |
+| `authoritative-contract` | 49 |
+| `catalog-release-input` | 22 |
 | `immutable-evidence` | 26 |
 | `participant-content-input` | 128 |
 | `repository-governance-input` | 8 |

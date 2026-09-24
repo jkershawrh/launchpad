@@ -43,7 +43,7 @@ def test_inventory_contains_paths_and_counts_but_never_matched_values() -> None:
 def test_current_baseline_identifies_legacy_delivery_candidates() -> None:
     records = module.audit()["records"]
     assert not any(record["path"].startswith("backend/app/adapters/rhdp/") for record in records)
-    assert any(record["path"].startswith("deploy/agnosticv/") and record["disposition"] == "remove-after-deployment-consumer-tests" for record in records)
+    assert not any(record["path"].startswith("deploy/agnosticv/") for record in records)
 
 
 def test_stargate_capacity_adapter_is_provider_neutral() -> None:

@@ -183,15 +183,14 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "f079fe7ccf5ec7523f046df4691e288486aae5d3e2c925fcb84c2580e5056040"
+      "sha256": "3ce5975fecd8b84a48dcea6c145f2ac792b318515d253e2dc0864519bb27d511"
     },
     {
       "area": "catalog-onboarding",
       "classification": "generated-intake",
       "deletion_eligible": false,
       "dependency_flags": [
-        "rhpds-git-dependency",
-        "agnostic-automation-dependency"
+        "rhpds-git-dependency"
       ],
       "environment_markers": [
         "arena"
@@ -201,18 +200,20 @@
       "path": "catalog-onboarding/agentops-observability.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 5,
+      "reference_count": 6,
       "referenced_by": [
         "backend/tests/test_agentops_ephemeral_storage.py",
         "backend/tests/test_arena_shared_mlflow.py",
         "backend/tests/test_catalog_onboarding.py",
         "catalog/agentops-observability/catalog-item.yaml",
-        "evidence/agentops-onboarding-matrix-2026-09-04.yaml"
+        "evidence/agentops-onboarding-matrix-2026-09-04.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
+        "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "ca350ac98db47c2d346c28057057ed94355af99012d0b9620047da7eab658978"
+      "sha256": "3830d67154d9a3d65c96cfbd8f00115f7f76a77ba0552823222be6149ac60376"
     },
     {
       "area": "catalog-onboarding",
@@ -259,13 +260,14 @@
       "path": "catalog-onboarding/intel-llm-cpu-serving.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 8,
+      "reference_count": 9,
       "referenced_by": [
         "admin/public/roadmap/index.html",
         "catalog/intel-llm-cpu-serving/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml",
         "docs/product-roadmap-dashboard.html",
         "docs/product-roadmap-status.json",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T225129Z-abd2b14b.json",
         "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T230520Z-95664df0.json",
         "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T231812Z-7b74fc11.json"
@@ -292,10 +294,11 @@
       "path": "catalog-onboarding/intel-xeon6-agent-201.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 8,
+      "reference_count": 9,
       "referenced_by": [
         "catalog/intel-xeon6-agent-201/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/intel-xeon6-agent-201-1-seat-20260916T000520Z-1af06817.json",
         "evidence/runs/intel-xeon6-agent-201-1-seat-20260916T001519Z-26670833.json",
         "evidence/runs/intel-xeon6-agent-201-30-seat-20260915T235759Z-e87ebbc7.json",
@@ -324,7 +327,7 @@
       "path": "catalog-onboarding/multi-agent-quickstart.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 25,
+      "reference_count": 26,
       "referenced_by": [
         "backend/tests/test_catalog_certification.py",
         "backend/tests/test_multi_agent_one_seat_clean_live_evidence.py",
@@ -332,6 +335,7 @@
         "catalog/multi-agent-quickstart/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml",
         "docs/multi-agent-quickstart-import.md",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/multi-agent-quickstart-1-seat-20260916T011454Z-8ffcc999.json",
         "evidence/runs/multi-agent-quickstart-1-seat-track2-learning-20260906-01.json",
         "evidence/runs/multi-agent-quickstart-1-seat-track2-learning-20260906-02.json",
@@ -356,7 +360,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "bf67c1b532bd8c78b364d0adfdda1ed5808ba548c27bee66df12266a183149d4"
+      "sha256": "f41d49d0fd4b324d47b2cf089a3746b047de2b10d40231c7f26a568ee6f7351a"
     },
     {
       "area": "catalog-onboarding",
@@ -377,7 +381,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "ba2bdeb6fb8b7b97384f68e5c986d7d572435143adb7850639eb42adb24e3831"
+      "sha256": "e1adfd3a48124a0ae31663812ba4c49968d6c7757d8457f1c4368aa39586c72b"
     },
     {
       "area": "catalog",
@@ -395,15 +399,14 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "603774dbcdf8d6695a2984c45710df3a49f3a81464fef7d3c6b542bc812510d0"
+      "sha256": "49910cb801f06e03869dd56331382b07a338e9af61e9e6f9e289e29c3b9f2fde"
     },
     {
       "area": "catalog",
       "classification": "catalog-source",
       "deletion_eligible": false,
       "dependency_flags": [
-        "rhpds-git-dependency",
-        "agnostic-automation-dependency"
+        "rhpds-git-dependency"
       ],
       "environment_markers": [
         "arena"
@@ -413,18 +416,19 @@
       "path": "catalog/agentops-observability/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 4,
+      "reference_count": 5,
       "referenced_by": [
         "backend/tests/test_agentops_ephemeral_storage.py",
         "backend/tests/test_agentops_node_spreading.py",
         "backend/tests/test_arena_shared_mlflow.py",
-        "backend/tests/test_catalog_onboarding.py"
+        "backend/tests/test_catalog_onboarding.py",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "2127c63e624d0b97a2134a11566286036cced1f27588f1b2aeddb06a37765d43"
+      "sha256": "4b99cde86c6eff35e9e86fcd4321b56007b9b41e4c911eb72ccaec7da20b5575"
     },
     {
       "area": "catalog",
@@ -439,8 +443,10 @@
       "path": "catalog/ai-sandbox/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "catalog/kustomization.yaml"
+      ],
       "risk_flags": [
         "status-field-review-required",
         "environment-specific"
@@ -458,8 +464,10 @@
       "path": "catalog/cpu-inference-serving/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "catalog/kustomization.yaml"
+      ],
       "risk_flags": [
         "status-field-review-required"
       ],
@@ -478,8 +486,10 @@
       "path": "catalog/guided-rag-on-xeon/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "status-field-review-required"
       ],
@@ -523,7 +533,7 @@
       "path": "catalog/intel-llm-cpu-serving/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 13,
+      "reference_count": 14,
       "referenced_by": [
         "admin/public/roadmap/index.html",
         "backend/tests/test_catalog_supply_chain.py",
@@ -534,6 +544,7 @@
         "evidence/arena-staggered-three-workshops-2026-09-04.json",
         "evidence/intel-cpu-serving-five-seat-2026-09-04.json",
         "evidence/intel-guided-content-single-seat-2026-09-04.json",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json",
         "evidence/runs/pilot-h0/PILOT-BUG-002-red.xml",
         "evidence/runs/pilot-h0/PILOT-BUG-003-red.xml",
@@ -558,12 +569,14 @@
       "path": "catalog/intel-llm-tool-calling/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 4,
+      "reference_count": 6,
       "referenced_by": [
         "backend/tests/test_arena_model_serving.py",
+        "catalog/kustomization.yaml",
         "evidence/arena-staggered-three-workshops-2026-09-04.json",
         "evidence/intel-guided-content-single-seat-2026-09-04.json",
-        "evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json"
+        "evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "status-field-review-required"
@@ -585,13 +598,14 @@
       "path": "catalog/intel-xeon6-agent-201/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 6,
+      "reference_count": 7,
       "referenced_by": [
         "backend/tests/test_showroom_content_package.py",
         "config/catalog-artifact-policy.yaml",
         "evidence/arena-staggered-three-workshops-2026-09-04.json",
         "evidence/intel-agent-201-five-seat-2026-09-04.json",
         "evidence/intel-guided-content-single-seat-2026-09-04.json",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json"
       ],
       "risk_flags": [
@@ -599,6 +613,26 @@
         "environment-specific"
       ],
       "sha256": "7f55d5d459b366941009c68b10eab2d7716cb644319b615b23baa0b081fef40b"
+    },
+    {
+      "area": "catalog",
+      "classification": "catalog-source",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "Kustomization"
+      ],
+      "owner": "catalog-release-owner",
+      "path": "catalog/kustomization.yaml",
+      "proposed_disposition": "preserve-release-input",
+      "protection_class": "catalog-release-input",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+      ],
+      "risk_flags": [],
+      "sha256": "910d9af228bd95f3a189e54ab8cf75b2463925e2fc306ac11466ac9fde43beec"
     },
     {
       "area": "catalog",
@@ -615,18 +649,19 @@
       "path": "catalog/multi-agent-quickstart/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 4,
+      "reference_count": 5,
       "referenced_by": [
         "backend/tests/test_multi_agent_quickstart_import.py",
         "config/catalog-artifact-policy.yaml",
         "docs/multi-agent-quickstart-import.md",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json"
       ],
       "risk_flags": [
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "65a48ee4c5bf16408771b3847d7eed38214a34a885d771c8e09c677e02262b38"
+      "sha256": "d2dc5822d61d138309328e00e67e6404614b0cefdc9536bf6ebef0ea0ea7086a"
     },
     {
       "area": "catalog",
@@ -644,7 +679,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "5c4ab1a08f252d750b77266496e45ac57cad6aec39984cff78f0254a6f940374"
+      "sha256": "f9da6646143597e1955a23c0a3d14f3294ca049d16c1da41a56cb497b227c8e3"
     },
     {
       "area": "catalog",
@@ -661,13 +696,16 @@
       "path": "catalog/openshift-operators-workshop/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 2,
+      "referenced_by": [
+        "catalog/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "97a3808402260f1dcf01be5964acfa4a1eb5e673410269885f99ab9b9d39b885"
+      "sha256": "8085ac83a06981d22d0bdef8a5f794c1b005ae19cbf48025e4ff5bf4fce670df"
     },
     {
       "area": "catalog",
@@ -680,8 +718,10 @@
       "path": "catalog/rag-on-xeon/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "catalog/kustomization.yaml"
+      ],
       "risk_flags": [
         "status-field-review-required"
       ],
@@ -698,8 +738,10 @@
       "path": "catalog/smoke-test/catalog-item.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "catalog/kustomization.yaml"
+      ],
       "risk_flags": [
         "status-field-review-required"
       ],
@@ -789,11 +831,12 @@
       "path": "certification/catalog/intel-llm-cpu-serving.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 6,
+      "reference_count": 7,
       "referenced_by": [
         "catalog-onboarding/intel-llm-cpu-serving.yaml",
         "catalog/intel-llm-cpu-serving/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T225129Z-abd2b14b.json",
         "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T230520Z-95664df0.json",
         "evidence/runs/intel-llm-cpu-serving-30-seat-20260915T231812Z-7b74fc11.json"
@@ -818,11 +861,12 @@
       "path": "certification/catalog/intel-xeon6-agent-201.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 9,
+      "reference_count": 10,
       "referenced_by": [
         "catalog-onboarding/intel-xeon6-agent-201.yaml",
         "catalog/intel-xeon6-agent-201/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/intel-xeon6-agent-201-1-seat-20260916T000520Z-1af06817.json",
         "evidence/runs/intel-xeon6-agent-201-1-seat-20260916T001519Z-26670833.json",
         "evidence/runs/intel-xeon6-agent-201-30-seat-20260915T235759Z-e87ebbc7.json",
@@ -850,7 +894,7 @@
       "path": "certification/catalog/multi-agent-quickstart.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 26,
+      "reference_count": 27,
       "referenced_by": [
         "backend/tests/test_catalog_certification.py",
         "backend/tests/test_multi_agent_quickstart_import.py",
@@ -859,6 +903,7 @@
         "catalog/multi-agent-quickstart/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml",
         "docs/multi-agent-quickstart-import.md",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/multi-agent-quickstart-1-seat-20260916T011454Z-8ffcc999.json",
         "evidence/runs/multi-agent-quickstart-1-seat-track2-learning-20260906-01.json",
         "evidence/runs/multi-agent-quickstart-1-seat-track2-learning-20260906-02.json",
@@ -922,9 +967,10 @@
       "path": "certification/releases/flightpath-candidate-03/bundle.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "docs/flightpath-candidate-03-staging-runbook.md",
+        "evidence/repository-sanitization/inventory-v1.json",
         "scripts/tests/test_validate_flightpath_promotion_bundle.py"
       ],
       "risk_flags": [
@@ -1031,10 +1077,11 @@
       "path": "config/clusters-arena-cert.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "backend/tests/test_agentops_ephemeral_storage.py",
-        "backend/tests/test_arena_shared_mlflow.py"
+        "backend/tests/test_arena_shared_mlflow.py",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -1059,7 +1106,7 @@
       "path": "config/clusters.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 14,
+      "reference_count": 15,
       "referenced_by": [
         "backend/tests/test_agentops_ephemeral_storage.py",
         "backend/tests/test_arena_shared_mlflow.py",
@@ -1072,6 +1119,7 @@
         "docs/arena-maas-bootstrap.md",
         "docs/ecosystem-architecture-roadmap.md",
         "docs/yaml-cleanup-plan.md",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/catalog-intake-hybrid-fraud/arena-inference-auth-negative-20260922.json",
         "evidence/runs/catalog-intake-hybrid-fraud/arena-model-auth-negative-20260922.json",
         "scripts/tests/test_inventory_yaml_sources.py"
@@ -1147,8 +1195,9 @@
       "path": "config/maas/arena-granite-candidate.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/catalog-intake-hybrid-fraud/arena-maas-candidate-model-green-20260922.json",
         "scripts/tests/test_arena_granite_maas_candidate_manifest.py"
       ],
@@ -1271,10 +1320,11 @@
       "path": "content-intel-llm-tool-calling/antora.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "evidence/intel-tool-calling-five-seat-2026-09-04.json",
-        "evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json"
+        "evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "d427e70307408c46b4e4248bbd8fc17ce35159210fc08b267a8ff1d690f420c8"
@@ -1440,9 +1490,10 @@
       "path": "content/antora.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "backend/tests/test_catalog_onboarding.py"
+        "backend/tests/test_catalog_onboarding.py",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "5fd30433264a69f9b4afa45745a0b662095d0e3b453585c4f5854903d42754f3"
@@ -1703,13 +1754,14 @@
       "path": "contracts/catalog-intake-quality-v1.yaml",
       "proposed_disposition": "preserve-authoritative",
       "protection_class": "authoritative-contract",
-      "reference_count": 7,
+      "reference_count": 8,
       "referenced_by": [
         "admin/public/roadmap/index.html",
         "backend/tests/test_catalog_intake_quality.py",
         "docs/catalog-onboarding.md",
         "docs/product-roadmap-dashboard.html",
         "docs/product-roadmap-status.json",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/admin-intake-quality-ui/manifest.json",
         "evidence/runs/catalog-intake-quality/manifest.json"
       ],
@@ -2449,6 +2501,37 @@
       ],
       "risk_flags": [],
       "sha256": "ab7399b1fdcc907bb0d0930a3ae737543c3a525d6feb7476efb71e22e944961d"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "deletion_eligible": false,
+      "dependency_flags": [
+        "rhpds-git-dependency",
+        "rhpds-image-dependency",
+        "agnostic-automation-dependency"
+      ],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "RepositorySanitizationContract"
+      ],
+      "owner": "contract-governance-owner",
+      "path": "contracts/repository-sanitization-v1.yaml",
+      "proposed_disposition": "preserve-authoritative",
+      "protection_class": "authoritative-contract",
+      "reference_count": 3,
+      "referenced_by": [
+        "docs/repository-hygiene.md",
+        "evidence/repository-sanitization/inventory-v1.json",
+        "scripts/audit_repository_sanitization.py"
+      ],
+      "risk_flags": [
+        "status-field-review-required",
+        "environment-specific"
+      ],
+      "sha256": "b29d463723816edc2484b12f015709e9e1ce33b5c248a950fe16f4ae3b471a13"
     },
     {
       "area": "contracts",
@@ -3437,9 +3520,10 @@
       "path": "demos/deploy/database/secret.yaml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "demos/deploy/database/kustomization.yaml"
+        "demos/deploy/database/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "secret-object-review-required"
@@ -4579,693 +4663,6 @@
       "sha256": "764d6d50ad1a5825e3fa441db7346fabcaf532ead196d611628427b791480068"
     },
     {
-      "area": "deploy/agnosticv/account.yaml",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/account.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "5534af3c5ecefdc0437cd55b03828556810f2a74e01faf59d4da330e44ff720d"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-agent-swarm-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-agent-swarm-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "2ca30b37027619f4a063426076cdaa648ecb675636b15333c68a1559b10ce10c"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-agent-swarm-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-agent-swarm-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-agent-swarm-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-agent-swarm-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-aiops-copilot-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-aiops-copilot-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "137dbb9cd1891bd940db4d402130ba1925504fa4c6a3963b23363a4e6ee36aab"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-aiops-copilot-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-aiops-copilot-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-aiops-copilot-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-aiops-copilot-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-cluster",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-cluster/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "515631ffbe8126665a70f962dd42abc488e2a742c2149bb81dba0587c892a5c1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-cluster",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-cluster/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "ca26fe13dcac9f0a23392b9d98adf72f2e10992963455d82deb44a2d10c7f8e0"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-cluster",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-cluster/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "346936d0638e8ff5bfa0dcae8a199fc6235588dd6edf2e32c704ca0c08d1a40f"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-demo-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "f4c7f4a2a15243851689b5675974defb13214c4a685d7c7a0e4a36f83131dd3f"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-demo-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-demo-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-enterprise-rag-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-enterprise-rag-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "c3c520898bfc8ca903c0813944aa09665ad36e86a9f10727ee77c34ef473b3a6"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-enterprise-rag-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-enterprise-rag-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-enterprise-rag-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-enterprise-rag-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-governed-agent-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-governed-agent-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "87337b8052f7b5a76dc5a0fc5bbefccf604ef28bf499924d7859e7cf81cf9e88"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-governed-agent-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-governed-agent-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-governed-agent-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-governed-agent-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-inference-overdrive-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-inference-overdrive-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "d18534b4f04742d9911ba763dbe72a506e8c6f348f14186a4b1a9d2bdf653029"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-inference-overdrive-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-inference-overdrive-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-inference-overdrive-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-inference-overdrive-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-recovery-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-recovery-demo-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "53330bbca7ed8635b8792971df341c9e3c20d15d61cdb38cbcf57e0bfaa93029"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-recovery-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-recovery-demo-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-recovery-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-recovery-demo-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-replay-comparison-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-replay-comparison-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "0cac78c68b425ab6ef22f8c5019ddd937f6fe977b615277e2f2b1631763f80ee"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-replay-comparison-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-replay-comparison-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-replay-comparison-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-replay-comparison-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-research-agent-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-research-agent-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "5c18c402e5cb1eeadf0e08f9ad1513bb3645f42940b7c7ddd315f24325f960bd"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-research-agent-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-research-agent-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-research-agent-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-research-agent-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-training-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-training-demo-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "54b684434d44900a93afa4d54f09e4c1a3f1c22cd3046a96da34d91c48e9f8f9"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-training-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-training-demo-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-training-demo-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-training-demo-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-workload-generator-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "rhpds-git-dependency",
-        "rhpds-image-dependency",
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-workload-generator-tenant/common.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [
-        "status-field-review-required"
-      ],
-      "sha256": "62193c0a8961d6b78a24498f8e1c4729b2e7b2b875e59f0ce6f5674648029742"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-workload-generator-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-workload-generator-tenant/dev.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "f7b1c7fe6f37adf8ce752e1336f991ab0876063cc4fe9fc25b46ca197cde1089"
-    },
-    {
-      "area": "deploy/agnosticv/launchpad-workload-generator-tenant",
-      "classification": "deployment-source",
-      "deletion_eligible": false,
-      "dependency_flags": [
-        "agnostic-automation-dependency"
-      ],
-      "environment_markers": [],
-      "kinds": [],
-      "owner": "legacy-integration-owner",
-      "path": "deploy/agnosticv/launchpad-workload-generator-tenant/event.yaml",
-      "proposed_disposition": "preserve-pending-external-consumer-review",
-      "protection_class": "external-consumer-unknown",
-      "reference_count": 0,
-      "referenced_by": [],
-      "risk_flags": [],
-      "sha256": "a9c94be0dde939b4cdc2ebbc1bc3812c3393a4ab053d1876a2562cf7c45765b1"
-    },
-    {
       "area": "deploy",
       "classification": "deployment-source",
       "deletion_eligible": false,
@@ -5300,9 +4697,10 @@
       "path": "deploy/console-embed/playbook.yml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/console-embed/README.md"
+        "deploy/console-embed/README.md",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -5322,9 +4720,10 @@
       "path": "deploy/console-embed/requirements.yml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/console-embed/README.md"
+        "deploy/console-embed/README.md",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "a26cbfeb2c749ccce8ce6dfb2e9a96e76b558d96f5e8ac2c4233dd8f8d172c92"
@@ -5343,9 +4742,10 @@
       "path": "deploy/ecosystem/group_vars/all.example.yml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/ecosystem/README.md"
+        "deploy/ecosystem/README.md",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -5996,10 +5396,11 @@
       "path": "deploy/launchpad/catalog-intake-cert/network-policy.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 3,
+      "reference_count": 4,
       "referenced_by": [
         "contracts/catalog-intake-worker-safety-v1.yaml",
         "deploy/launchpad/catalog-intake-cert/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/catalog-intake-worker-safety/evidence.json"
       ],
       "risk_flags": [],
@@ -6398,7 +5799,7 @@
       "path": "deploy/launchpad/overlays/arena/arena-clusters.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 10,
+      "reference_count": 11,
       "referenced_by": [
         "backend/tests/test_agentops_ephemeral_storage.py",
         "backend/tests/test_arena_embedding_serving.py",
@@ -6408,6 +5809,7 @@
         "backend/tests/test_openshift_image_pull_grant.py",
         "backend/tests/test_september_17_event_readiness.py",
         "deploy/launchpad/overlays/arena/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "scripts/flightpath_execution_preflight.py",
         "scripts/tests/test_flightpath_execution_preflight.py"
       ],
@@ -6433,8 +5835,9 @@
       "path": "deploy/launchpad/overlays/arena/argocd-application.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json",
         "scripts/tests/test_inventory_yaml_sources.py"
       ],
       "risk_flags": [
@@ -6530,7 +5933,7 @@
       "path": "deploy/launchpad/overlays/arena/buildconfig.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 9,
+      "reference_count": 10,
       "referenced_by": [
         "admin/public/roadmap/index.html",
         "backend/tests/test_multi_agent_seat_chart.py",
@@ -6538,6 +5941,7 @@
         "deploy/launchpad/overlays/arena/kustomization.yaml",
         "docs/product-roadmap-dashboard.html",
         "docs/product-roadmap-status.json",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/pilot-h0/PILOT-BUG-002-red.xml",
         "evidence/runs/pilot-h0/PILOT-BUG-004-red.xml",
         "evidence/runs/pilot-h0/PILOT-PERF-001-red.xml"
@@ -6610,8 +6014,10 @@
       "path": "deploy/launchpad/overlays/arena/keycloak-route.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "environment-specific"
       ],
@@ -6659,8 +6065,10 @@
       "path": "deploy/launchpad/overlays/arena/operational-patches/ovms-granite-2b-readiness.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "environment-specific"
       ],
@@ -6681,9 +6089,10 @@
       "path": "deploy/launchpad/overlays/arena/operations-automation.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/arena/kustomization.yaml"
+        "deploy/launchpad/overlays/arena/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "mutable-latest-image",
@@ -6728,9 +6137,10 @@
       "path": "deploy/launchpad/overlays/arena/patch-configmap.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/arena/kustomization.yaml"
+        "deploy/launchpad/overlays/arena/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -6800,9 +6210,10 @@
       "path": "deploy/launchpad/overlays/arena/patch-routes.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/arena/kustomization.yaml"
+        "deploy/launchpad/overlays/arena/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -6824,10 +6235,11 @@
       "path": "deploy/launchpad/overlays/arena/patch-runtime.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "backend/tests/test_cluster_ca_bundle_installer.py",
-        "deploy/launchpad/overlays/arena/kustomization.yaml"
+        "deploy/launchpad/overlays/arena/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -6850,9 +6262,10 @@
       "path": "deploy/launchpad/overlays/arena/reliability.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/arena/kustomization.yaml"
+        "deploy/launchpad/overlays/arena/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -6968,10 +6381,11 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/candidate-clusters.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "backend/tests/test_flightpath_model_candidate.py",
-        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -7070,12 +6484,13 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 4,
+      "reference_count": 5,
       "referenced_by": [
         "certification/candidates/staging-candidate-20260922-02.yaml",
         "certification/candidates/staging-candidate-20260922.yaml",
         "certification/candidates/staging-candidate-20260923-03.yaml",
-        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "status-field-review-required",
@@ -7098,12 +6513,13 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 4,
+      "reference_count": 5,
       "referenced_by": [
         "certification/candidates/staging-candidate-20260922-02.yaml",
         "certification/candidates/staging-candidate-20260922.yaml",
         "certification/candidates/staging-candidate-20260923-03.yaml",
-        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "status-field-review-required",
@@ -7150,12 +6566,13 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 4,
+      "reference_count": 5,
       "referenced_by": [
         "certification/candidates/staging-candidate-20260922-02.yaml",
         "certification/candidates/staging-candidate-20260922.yaml",
         "certification/candidates/staging-candidate-20260923-03.yaml",
-        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "status-field-review-required",
@@ -7203,9 +6620,10 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/patch-configmap.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -7300,9 +6718,10 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/patch-routes.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -7450,9 +6869,10 @@
       "path": "deploy/launchpad/overlays/flightpath-dr/flightpath-clusters.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/flightpath-dr/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-dr/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -7500,9 +6920,10 @@
       "path": "deploy/launchpad/overlays/flightpath-dr/patch-configmap.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/flightpath-dr/kustomization.yaml"
+        "deploy/launchpad/overlays/flightpath-dr/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -7849,9 +7270,10 @@
       "path": "deploy/launchpad/overlays/infra01/patch-configmap.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/infra01/kustomization.yaml"
+        "deploy/launchpad/overlays/infra01/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -7875,9 +7297,10 @@
       "path": "deploy/launchpad/overlays/infra01/patch-routes.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/infra01/kustomization.yaml"
+        "deploy/launchpad/overlays/infra01/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -8163,9 +7586,10 @@
       "path": "deploy/launchpad/overlays/oberon/patch-configmap.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/oberon/kustomization.yaml"
+        "deploy/launchpad/overlays/oberon/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -8212,9 +7636,10 @@
       "path": "deploy/launchpad/overlays/oberon/patch-remove-frontend.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/oberon/kustomization.yaml"
+        "deploy/launchpad/overlays/oberon/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -8236,9 +7661,10 @@
       "path": "deploy/launchpad/overlays/oberon/patch-routes.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/launchpad/overlays/oberon/kustomization.yaml"
+        "deploy/launchpad/overlays/oberon/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -8301,11 +7727,12 @@
       "path": "deploy/launchpad/public-access/keycloak.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 3,
+      "reference_count": 4,
       "referenced_by": [
         "backend/tests/test_dependency_security_checkpoint.py",
         "backend/tests/test_public_tunnel_contract.py",
-        "deploy/launchpad/public-access/README.md"
+        "deploy/launchpad/public-access/README.md",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "d5a23e3a00db678bc9a29a60d63882d36e332f133c37f42b7ea29590bf24ff00"
@@ -8393,8 +7820,10 @@
       "path": "deploy/launchpad/runbooks/intel-sep17-dayof.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "mutable-latest-image",
         "environment-specific"
@@ -8502,11 +7931,12 @@
       "path": "deploy/models/arena/nomic-embed-text-v1.5.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 3,
+      "reference_count": 4,
       "referenced_by": [
         "backend/tests/test_arena_embedding_serving.py",
         "deploy/models/arena/kustomization.yaml",
-        "evidence/agentops-shared-embedding-live-2026-09-05.json"
+        "evidence/agentops-shared-embedding-live-2026-09-05.json",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -8671,11 +8101,10 @@
       "path": "deploy/multicluster/arena-argocd-rbac.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 5,
+      "reference_count": 4,
       "referenced_by": [
         "backend/tests/test_agentops_seat_chart.py",
         "deploy/multicluster/README.md",
-        "docs/catalog-onboarding.md",
         "evidence/agentops-onboarding-matrix-2026-09-04.yaml",
         "evidence/agentops-seat-overlay-2026-09-04.json"
       ],
@@ -8844,9 +8273,10 @@
       "path": "deploy/prod-dns/cluster-issuer.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/prod-dns/README.md"
+        "deploy/prod-dns/README.md",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "09add33c7b61e75ef2d330cedef1d7ddf4d0e11d31f976050d59d1d0c13afa19"
@@ -8890,9 +8320,10 @@
       "path": "deploy/prod-dns/wildcard-cert.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/prod-dns/README.md"
+        "deploy/prod-dns/README.md",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -8962,9 +8393,10 @@
       "path": "deploy/workloads/agentops-seat/Chart.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "deploy/workloads/agentops-seat/README.md"
+        "deploy/workloads/agentops-seat/README.md",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "2be7a4ef99f31b625862f32c62eb61d968f0a6c5b4ea331595569a10c597ed42"
@@ -9273,8 +8705,10 @@
       "path": "evidence/agentops-onboarding-matrix-2026-09-04.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "status-field-review-required",
         "environment-specific"
@@ -9334,9 +8768,10 @@
       "path": "evidence/public-access/green-live-arena-one-seat-2026-09-09.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
-        "evidence/public-access/validation-matrix-v6.yaml"
+        "evidence/public-access/validation-matrix-v6.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -9377,8 +8812,10 @@
       "path": "evidence/public-access/green-live-multi-agent-workflow-timeout-2026-09-11.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "environment-specific"
       ],
@@ -9419,10 +8856,11 @@
       "path": "evidence/public-access/red-same-origin-gateway-2026-09-09.yaml",
       "proposed_disposition": "preserve-history",
       "protection_class": "immutable-evidence",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "evidence/public-access/green-local-same-origin-gateway-2026-09-09.yaml",
-        "evidence/public-access/validation-matrix-v6.yaml"
+        "evidence/public-access/validation-matrix-v6.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [
         "environment-specific"
@@ -10017,13 +9455,14 @@
       "path": "site-agentops-observability.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 5,
+      "reference_count": 6,
       "referenced_by": [
         "backend/tests/test_catalog_onboarding.py",
         "backend/tests/test_showroom_content_package.py",
         "catalog-onboarding/agentops-observability.yaml",
         "catalog/agentops-observability/catalog-item.yaml",
-        "evidence/agentops-onboarding-matrix-2026-09-04.yaml"
+        "evidence/agentops-onboarding-matrix-2026-09-04.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "71df4be147b1d7974bab6a7de7718c3f05d1da64535ee672dd2a1f307417d24f"
@@ -10041,12 +9480,13 @@
       "path": "site-intel-llm-cpu-serving.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 6,
+      "reference_count": 7,
       "referenced_by": [
         "backend/tests/test_showroom_content_package.py",
         "catalog-onboarding/intel-llm-cpu-serving.yaml",
         "catalog/intel-llm-cpu-serving/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/intel-llm-cpu-serving-v103-live-20260909.json",
         "evidence/runs/showroom-brand-execute-20260911.json"
       ],
@@ -10066,10 +9506,11 @@
       "path": "site-intel-llm-tool-calling.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "backend/tests/test_showroom_content_package.py",
-        "catalog/intel-llm-tool-calling/catalog-item.yaml"
+        "catalog/intel-llm-tool-calling/catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "6ab24f8cab2be2eaeb4822640f9891bef027d3d71a495d94039802382afbefac"
@@ -10087,13 +9528,14 @@
       "path": "site-intel-xeon6-agent-201.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 6,
+      "reference_count": 7,
       "referenced_by": [
         "backend/tests/test_showroom_content_package.py",
         "backend/tests/test_showroom_gitops.py",
         "catalog-onboarding/intel-xeon6-agent-201.yaml",
         "catalog/intel-xeon6-agent-201/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/showroom-brand-execute-20260911.json"
       ],
       "risk_flags": [],
@@ -10112,13 +9554,14 @@
       "path": "site-multi-agent-quickstart.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 6,
+      "reference_count": 7,
       "referenced_by": [
         "backend/tests/test_multi_agent_quickstart_import.py",
         "backend/tests/test_showroom_content_package.py",
         "catalog-onboarding/multi-agent-quickstart.yaml",
         "catalog/multi-agent-quickstart/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/showroom-brand-execute-20260911.json"
       ],
       "risk_flags": [],
@@ -10137,10 +9580,11 @@
       "path": "site-openshift-operators.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "backend/tests/test_showroom_content_package.py",
-        "catalog/openshift-operators-workshop/catalog-item.yaml"
+        "catalog/openshift-operators-workshop/catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json"
       ],
       "risk_flags": [],
       "sha256": "ec787cdcea53042698a8ce0c23b6ea3cf2f359c3bfd97056b212d80785f0399e"
@@ -10158,7 +9602,7 @@
       "path": "site.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 22,
+      "reference_count": 23,
       "referenced_by": [
         "backend/app/adapters/openshift/provisioning.py",
         "backend/app/adapters/openshift/showroom_gitops.py",
@@ -10178,6 +9622,7 @@
         "catalog/network-operations-agent/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/hybrid-fraud-detection.catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/network-operations-agent.catalog-item.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json",
         "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json",
         "evidence/runs/catalog-intake-hybrid-fraud/discovery-ghcr-source-20260922.json",
@@ -10369,8 +9814,10 @@
       "path": "tenant/bootstrap/values.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 0,
-      "referenced_by": [],
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/repository-sanitization/inventory-v1.json"
+      ],
       "risk_flags": [
         "mutable-latest-image"
       ],
@@ -10403,17 +9850,17 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "74472725a57986468d8361f4c726682241e365e4",
+  "source_commit": "af12a38a4e8c2326f0416483f3607d6608052915",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
-      "catalog-source": 14,
+      "catalog-source": 15,
       "ci": 4,
       "configuration": 11,
       "content-source": 18,
-      "contract": 48,
+      "contract": 49,
       "demo-source": 110,
-      "deployment-source": 194,
+      "deployment-source": 157,
       "deployment-template": 11,
       "evidence": 26,
       "fixture": 20,
@@ -10423,18 +9870,17 @@
     },
     "deletion_eligible": 0,
     "dependency_flag_counts": {
-      "agnostic-automation-dependency": 29,
+      "agnostic-automation-dependency": 4,
       "redhat-gpte-image-dependency": 10,
       "rhdp-service-dependency": 2,
-      "rhpds-git-dependency": 38,
-      "rhpds-image-dependency": 14
+      "rhpds-git-dependency": 27,
+      "rhpds-image-dependency": 4
     },
-    "files_without_detected_repository_reference": 185,
-    "preserved_pending_review": 481,
+    "files_without_detected_repository_reference": 136,
+    "preserved_pending_review": 446,
     "protection_class_counts": {
-      "authoritative-contract": 48,
-      "catalog-release-input": 21,
-      "external-consumer-unknown": 37,
+      "authoritative-contract": 49,
+      "catalog-release-input": 22,
       "immutable-evidence": 26,
       "participant-content-input": 128,
       "repository-governance-input": 8,
@@ -10442,13 +9888,13 @@
       "test-or-delivery-input": 24
     },
     "risk_flag_counts": {
-      "environment-specific": 164,
+      "environment-specific": 165,
       "mutable-latest-image": 19,
       "possible-cluster-export-metadata": 1,
       "secret-object-review-required": 6,
-      "status-field-review-required": 71
+      "status-field-review-required": 61
     },
-    "tracked_yaml_files": 481,
+    "tracked_yaml_files": 446,
     "unassigned_owners": 0
   },
   "tracked_changes_present": true

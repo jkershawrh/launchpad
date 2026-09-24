@@ -106,9 +106,8 @@ cold-pull evidence.
 | `deploy/workloads` | namespace-scoped or workshop-scoped workload packages |
 
 Mock and local adapters remain development tools. Direct OpenShift is the
-current Intel pilot path. RHDP/AgnosticV/AgnosticD material is retained as
-integration provenance and an optional adapter contract; it is not the current
-Intel runtime architecture or the permanent production control plane.
+current Intel delivery path. Retired RHDP and AgnosticV runtime integrations
+are no longer part of the product architecture.
 
 ## Lifecycle authority
 

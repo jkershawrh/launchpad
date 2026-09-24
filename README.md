@@ -134,12 +134,10 @@ receives scoped API access and does not load model weights into its pod.
 
 Catalog definitions live under `catalog/*/catalog-item.yaml`. The previous `guided-rag-on-xeon` item is deprecated; new workshop orders use the operator-focused experience.
 
-Draft onboarding candidates are registered but intentionally hidden from the
-order flow until runtime and live certification gates pass:
-
-| ID | Name | Current gate |
-|---|---|---|
-| `agentops-observability` | AgentOps in Production: End-to-End Observability with Red Hat AI | Five internal seats are GREEN-live with isolated concurrent journeys and zero-residue normal/fault reclaim; 25-seat capacity, public access, and production Logging/TLS remain gated |
+Draft onboarding candidates are intentionally hidden from the order flow until
+runtime and live certification gates pass. The former
+`agentops-observability` candidate is deprecated and cannot be ordered; its
+historical certification evidence remains retained.
 
 `multi-agent-quickstart` has a certified baseline and may use a larger
 event-specific ceiling only where that exact execution target and public-access
@@ -168,12 +166,9 @@ Launchpad control plane
             signed immutable digests in HA registry and mirrors
 ```
 
-Launchpad has adapters for mock, local, direct OpenShift, and RHDP modes.
-**Direct OpenShift mode is the deployed Arena path.** RHDP/AgnosticD integration
-remains repository capability and a useful source contract for importing labs;
-it is not the runtime control plane for the internal Intel deployment. The
-AgentOps import analysis is in
-[docs/agentops-rhdp-gap-analysis.md](docs/agentops-rhdp-gap-analysis.md).
+Launchpad has adapters for mock, local, and direct OpenShift modes.
+**Direct OpenShift mode is the deployed path.** Retired RHDP and AgnosticV
+delivery integrations are no longer repository runtime capabilities.
 The native Multi-Agent Quickstart intake and promotion gates are in
 [docs/multi-agent-quickstart-import.md](docs/multi-agent-quickstart-import.md).
 
@@ -206,7 +201,7 @@ certification/ Declarative 1/5/25-seat proof contracts
 content/       Antora/AsciiDoc Showroom content
 content-*/      Catalog-specific Antora/AsciiDoc Showroom content
 demos/         Demo frontend, gateway, and sandbox image
-deploy/        Kustomize, build, and optional RHDP/AgnosticV assets
+deploy/        Kustomize, build, workload, and platform delivery assets
 docs/          Current runbooks plus historical design documents
 ```
 

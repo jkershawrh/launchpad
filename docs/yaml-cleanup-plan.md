@@ -26,9 +26,10 @@ paths are meant by “those yamls.” Record the answer as `YAML-SCOPE-001` with
 - retention requirements for historical evidence and pilot manifests;
 - live GitOps applications that consume each included path.
 
-No file may be deleted or moved until this scope record is approved. In
-particular, `deploy/agnosticv/`, pilot evidence, catalog fixtures, and
-environment overlays are not presumed obsolete.
+Pilot evidence, catalog fixtures, and environment overlays are not presumed
+obsolete. The retired `deploy/agnosticv/` delivery tree was removed only after
+its runtime adapter, catalog provenance, and repository consumers were removed
+and the current OpenShift delivery tests remained green.
 
 ## Current discovery status
 
@@ -94,10 +95,12 @@ branding, or content. Do not use a blind search-and-replace:
    ownership, digest, provenance, and pull access are documented and tested
    on each eligible cluster. An optional mirror is a resiliency decision,
    not a prerequisite to remove Red Hat references.
-4. **Legacy integration:** `deploy/agnosticv/` and RHDP adapter material are
-   retained as historical or optional integration until external consumers
-   and current code paths are proved absent. Launchpad's direct OpenShift
-   delivery does not need AgnosticD to provision its current labs.
+4. **Legacy integration:** The retired RHDP adapter and `deploy/agnosticv/`
+   delivery tree have been removed after proving current code paths and
+   repository consumers absent. Launchpad's direct OpenShift delivery does not
+   need AgnosticD to provision its current labs. The separate pinned Showroom
+   console-embed role remains an explicit content dependency and is not part of
+   that retired delivery tree.
 
 For each included YAML file, review the actual API kind/schema, image and
 source URLs, Secret references, RBAC scope, Service/Route exposure, storage,

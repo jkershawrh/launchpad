@@ -40,6 +40,20 @@ def test_inventory_is_complete_and_fail_closed():
     )
 
 
+def test_tracked_files_excludes_deleted_working_tree_paths(monkeypatch, tmp_path):
+    module = load_module()
+    present = tmp_path / "present.yaml"
+    present.write_text("kind: ConfigMap\n")
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        module,
+        "_git",
+        lambda *_args: "present.yaml\0deleted.yaml\0",
+    )
+
+    assert module.tracked_files() == ["present.yaml"]
+
+
 def test_classification_keeps_evidence_and_source_distinct():
     module = load_module()
 
@@ -50,7 +64,7 @@ def test_classification_keeps_evidence_and_source_distinct():
     assert module.classify("contracts/example.yaml") == "contract"
 
 
-def test_governance_protects_active_and_legacy_sources():
+def test_governance_protects_active_sources():
     module = load_module()
 
     assert module.governance("catalog/example/catalog-item.yaml", "catalog-source") == {
@@ -58,13 +72,6 @@ def test_governance_protects_active_and_legacy_sources():
         "protection_class": "catalog-release-input",
         "proposed_disposition": "preserve-release-input",
     }
-    legacy = module.governance(
-        "deploy/agnosticv/example/common.yaml", "deployment-source"
-    )
-    assert legacy["owner"] == "legacy-integration-owner"
-    assert legacy["proposed_disposition"] == (
-        "preserve-pending-external-consumer-review"
-    )
     repository_configuration = module.governance(
         ".github/dependabot.yml", "repository-configuration"
     )
@@ -87,7 +94,7 @@ def test_dependency_flags_distinguish_runtime_sources_from_legacy_automation():
         "image: quay.io/rhpds/git-cloner@sha256:abc\n",
     ) == ["rhpds-image-dependency"]
     assert module._dependency_flags(
-        "deploy/agnosticv/example/common.yaml",
+        "fixtures/legacy-integration/common.yaml",
         "role: agnosticd.showroom.ocp4_workload_showroom\n",
     ) == ["agnostic-automation-dependency"]
     assert module._dependency_flags(

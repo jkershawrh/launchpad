@@ -64,33 +64,6 @@ Located in `backend/app/adapters/openshift/`. Used on live OCP clusters for dire
 | OpenShift cleanup | Deletes namespaces and associated resources |
 | OpenShift validation | Checks pod readiness, route accessibility, service endpoints |
 
-## RHDP Adapters (Sandbox API + AgnosticD)
-
-Located in `backend/app/adapters/rhdp/`. Used for Red Hat Demo Platform integration — claims namespaces from the RHDP cluster pool and deploys workloads via AgnosticD/ArgoCD.
-
-| Adapter | What it does |
-|---------|-------------|
-| `SandboxAPIClient` | Full client for the RHDP Sandbox API — JWT auth, placements CRUD, cluster config, sandbox accounts |
-| `RHDPPoolAdapter` | Claims/releases namespaces on shared CNV clusters via the Sandbox API |
-| `RHDPProvisioningAdapter` | Creates provisioning plans referencing AgnosticV configs; deploys via ArgoCD or direct oc/helm |
-| `RHDPValidationAdapter` | Validates sandbox placement exists, namespace assigned, lab URL set |
-| `RHDPCleanupAdapter` | Releases Sandbox API placements on session reclaim |
-
-### Sandbox API Endpoints Used
-
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /api/v1/login` | Exchange login JWT for access token |
-| `POST /api/v1/placements` | Create a tenant placement (namespace on shared cluster) |
-| `GET /api/v1/placements/<uuid>` | Poll placement status until `success` |
-| `DELETE /api/v1/placements/<uuid>` | Release a placement |
-| `POST /api/v1/ocp-shared-cluster-configurations` | Register a cluster (admin) |
-| `GET /api/v1/accounts/OcpSandbox` | List sandbox accounts |
-
-### Hybrid Provisioner Routing
-
-When `LAUNCHPAD_MODE=rhdp`, the provisioning service checks each catalog item's `provisioner_mode` metadata. Items with `provisioner_mode: "rhdp"` route to `RHDPProvisioningAdapter`; others use the default provisioner. This allows mixed mode — official quickstarts use RHDP while sandboxes use direct OpenShift provisioning.
-
 ## Sandbox Provisioner (OpenShift-first)
 
 Sandbox sessions receive a private OpenShift namespace. Optional workspace services run as Pods (or local containers) with configurable stack levels:

@@ -115,9 +115,10 @@ state. Launchpad's database and durable workers remain authoritative for
 orders, reservations, assignments, entitlements, TTL, retries, and reclaim.
 Do not create a Git commit for every seat.
 
-RHDP, AgnosticV, and AgnosticD assets are retained as integration provenance
-and optional adapter inputs. They are not the runtime architecture for the
-current Intel pilot. Their presence does not make RHDP a production dependency.
+Retired RHDP and AgnosticV delivery assets are not part of the runtime
+architecture. The platform deploys directly to registered OpenShift execution
+clusters. Explicit third-party Showroom roles remain pinned content
+dependencies where a catalog contract requires them.
 
 ## Graduation sequence
 

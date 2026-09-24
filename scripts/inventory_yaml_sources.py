@@ -38,7 +38,11 @@ def _git(*args: str) -> str:
 
 def tracked_files() -> list[str]:
     output = _git("ls-files", "-z")
-    return sorted(path for path in output.split("\0") if path)
+    return sorted(
+        path
+        for path in output.split("\0")
+        if path and (ROOT / path).is_file()
+    )
 
 
 def classify(path: str) -> str:
@@ -75,8 +79,6 @@ def area(path: str) -> str:
         return "/".join(parts[:4])
     if path.startswith("deploy/workloads/") and len(parts) >= 3:
         return "/".join(parts[:3])
-    if path.startswith("deploy/agnosticv/") and len(parts) >= 3:
-        return "/".join(parts[:3])
     return parts[0]
 
 
@@ -100,12 +102,6 @@ def governance(path: str, classification: str) -> dict[str, Any]:
             "owner": "catalog-release-owner",
             "protection_class": "catalog-release-input",
             "proposed_disposition": "preserve-release-input",
-        }
-    if path.startswith("deploy/agnosticv/"):
-        return {
-            "owner": "legacy-integration-owner",
-            "protection_class": "external-consumer-unknown",
-            "proposed_disposition": "preserve-pending-external-consumer-review",
         }
     if classification in {
         "deployment-source",
