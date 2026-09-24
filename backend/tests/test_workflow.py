@@ -265,6 +265,7 @@ def test_validation_returns_fail_results():
     validated = svc.validate_session(session.session_id)
     assert validated.status == SessionStatus.VALIDATION_FAILED
     assert any(vr.result == ValidationResultStatus.FAIL for vr in validated.validation_results)
+    assert svc.get_request(req.request_id).status == LabRequestStatus.FAILED
 
 
 # ─── STEP 14: Transition VALIDATING → READY (all pass) ───────────────────────

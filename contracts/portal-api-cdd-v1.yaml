@@ -1,0 +1,38 @@
+schema_version: launchpad.redhat.com/v1alpha1
+kind: PortalApiContract
+metadata:
+  name: requester-admin-backend-v1
+  status: active
+proxy_contract:
+  browser_prefix: /api
+  backend_prefix: /api/v1
+  rule: >-
+    Portal consumers declare paths relative to /api. The Nginx proxy replaces
+    that prefix with /api/v1 exactly once; consumers must never add /v1.
+consumers:
+  - frontend/src/api/client.ts
+  - frontend/src/pages
+  - frontend/src/components
+  - admin/src/api/client.ts
+  - admin/src/pages
+critical_mutations:
+  - {method: POST, path: "/lab-requests"}
+  - {method: POST, path: "/lab-requests/{request_id}/provision"}
+  - {method: POST, path: "/lab-sessions/{session_id}/validate"}
+  - {method: POST, path: "/lab-sessions/{session_id}/reclaim"}
+  - {method: POST, path: "/workshops/capacity-preview"}
+  - {method: POST, path: "/workshops/orders"}
+  - {method: POST, path: "/workshops/{workshop_id}/confirm"}
+  - {method: DELETE, path: "/workshops/{workshop_id}"}
+  - {method: POST, path: "/admin/sessions/{session_id}/force-reclaim"}
+  - {method: POST, path: "/admin/catalog/{catalog_item_id}/force-reclaim"}
+  - {method: POST, path: "/admin/catalog-intakes"}
+  - {method: POST, path: "/admin/catalog-intakes/{intake_id}/source-approval"}
+  - {method: POST, path: "/admin/catalog-intakes/{intake_id}/discovery"}
+  - {method: POST, path: "/public-access/claim"}
+gates:
+  - every portal path resolves to one backend OpenAPI path
+  - critical mutation method and path pairs exist in OpenAPI
+  - no portal consumer duplicates the backend version prefix
+  - requester and admin Nginx configurations implement the same prefix mapping
+  - deployed smoke tests exercise create, provision, observe, and reclaim

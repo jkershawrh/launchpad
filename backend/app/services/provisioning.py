@@ -980,6 +980,16 @@ class ProvisioningService:
 
         self._require_lifecycle_ownership(lifecycle_guard)
         self._save_session(session)
+        request = self._requests.get(session.request_id)
+        if request:
+            request_status = (
+                LabRequestStatus.FAILED
+                if has_failure
+                else LabRequestStatus.READY
+            )
+            self._save_request(
+                request.model_copy(update={"status": request_status})
+            )
         notify_stargate(
             session_id=session.session_id,
             namespace=session.namespace,

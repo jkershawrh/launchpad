@@ -108,26 +108,26 @@ export const api = {
   setCatalogStatus: (id: string, status: string) =>
     request<CatalogItem>(`/admin/catalog/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   listCatalogIntakes: () =>
-    request<CatalogIntakeDraft[]>('/v1/admin/catalog-intakes'),
+    request<CatalogIntakeDraft[]>('/admin/catalog-intakes'),
   getCatalogIntake: (id: string) =>
-    request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}`),
+    request<CatalogIntakeDraft>(`/admin/catalog-intakes/${encodeURIComponent(id)}`),
   getCatalogIntakePipeline: (id: string) =>
-    request<CatalogIntakePipelineView>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/pipeline`),
+    request<CatalogIntakePipelineView>(`/admin/catalog-intakes/${encodeURIComponent(id)}/pipeline`),
   submitCatalogIntake: (data: CatalogIntakeSubmission) =>
-    request<CatalogIntakeDraft>('/v1/admin/catalog-intakes', {
+    request<CatalogIntakeDraft>('/admin/catalog-intakes', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
   approveCatalogIntakeSource: (id: string) =>
-    request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/source-approval`, { method: 'POST' }),
+    request<CatalogIntakeDraft>(`/admin/catalog-intakes/${encodeURIComponent(id)}/source-approval`, { method: 'POST' }),
   runCatalogIntakeDiscovery: (id: string) =>
-    request<CatalogIntakeDraft>(`/v1/admin/catalog-intakes/${encodeURIComponent(id)}/discovery`, { method: 'POST' }),
+    request<CatalogIntakeDraft>(`/admin/catalog-intakes/${encodeURIComponent(id)}/discovery`, { method: 'POST' }),
 
   // Approved event demand (read-only admin visibility)
-  listEvents: () => request<EventRecord[]>('/v1/events'),
-  getEvent: (id: string) => request<EventRecord>(`/v1/events/${encodeURIComponent(id)}`),
-  getEventStatus: (id: string) => request<EventStatusResult>(`/v1/events/${encodeURIComponent(id)}/status`),
-  getEventAdmissionForecast: (id: string) => request<EventAdmissionForecast>(`/v1/events/${encodeURIComponent(id)}/admission-forecast`),
+  listEvents: () => request<EventRecord[]>('/events'),
+  getEvent: (id: string) => request<EventRecord>(`/events/${encodeURIComponent(id)}`),
+  getEventStatus: (id: string) => request<EventStatusResult>(`/events/${encodeURIComponent(id)}/status`),
+  getEventAdmissionForecast: (id: string) => request<EventAdmissionForecast>(`/events/${encodeURIComponent(id)}/admission-forecast`),
 
   // Intelligence / Feedback
   getFeedbackSummary: () =>

@@ -15,6 +15,7 @@ def _run_full_lifecycle(service: ProvisioningService, request: LabRequest):
     session = service.validate_session(session.session_id)
     assert session.status == SessionStatus.READY
     assert len(session.validation_results) == 3
+    assert service.get_request(request.request_id).status == LabRequestStatus.READY
 
     handoff = service.get_handoff(session.session_id)
     assert "Your AI Lab is Ready" in handoff.to_markdown()
