@@ -12,12 +12,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 62a21eb1cce04cd30238dda82e8cecef70e484ca
+    revision: 4f132f0e1752d56a8910fa2d26db4ec67f871685
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 62a21eb1cce04cd30238dda82e8cecef70e484ca
+    revision: 4f132f0e1752d56a8910fa2d26db4ec67f871685
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -57,7 +57,7 @@ runtime:
     helm_values:
       image:
         repository: quay.io/rh-ee-jkershaw/agent-reliability-quickstart
-        digest: sha256:90776916eee2acd6f0ea45990337cc75a04bfe19ef4f8513af1d540e3c529b13
+        digest: sha256:7aff969774fa4b3efac77de4525a046a9c36ce8609de77af20f1077ad17a79d1
       route:
         enabled: true
         name: ar
