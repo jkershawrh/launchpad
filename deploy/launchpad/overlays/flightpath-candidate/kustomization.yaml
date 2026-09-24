@@ -33,7 +33,7 @@ generatorOptions:
 images:
   - name: backend
     newName: quay.io/rh-ee-jkershaw/launchpad-backend
-    digest: sha256:c367a671b10c141c2a4b8f0ece8fceef1b35811660572989d731b90a69d22904
+    digest: sha256:902ba3506bec2d6500b52ba040b00591ef3d120950f6e34ebee8aec0bfe83baf
   - name: partner-portal
     newName: quay.io/rh-ee-jkershaw/launchpad-portal
     digest: sha256:8f8a8bbd410d0ed5bb49a693b93e03d49c46f7001c10a47c7f2ab19b5814d583
