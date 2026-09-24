@@ -516,6 +516,8 @@ def test_dr_backup_tool_encrypts_and_requires_explicit_restore_confirmation() ->
     assert "infrastructureName" in script
     assert "Database system identifier" in script
     assert "KUBECONFIG=\"$cluster_kubeconfig\" oc" in script
+    assert 'namespace="${LAUNCHPAD_NAMESPACE:-partner-ai-launchpad}"' in script
+    assert "LAUNCHPAD_NAMESPACE is not a valid Kubernetes namespace" in script
     assert "mktemp -d" in script
     assert "trap cleanup EXIT" in script
 

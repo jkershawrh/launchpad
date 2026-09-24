@@ -2,8 +2,13 @@
 set -euo pipefail
 umask 077
 
-namespace="partner-ai-launchpad"
+namespace="${LAUNCHPAD_NAMESPACE:-partner-ai-launchpad}"
 work_dir="$(mktemp -d)"
+
+[[ "$namespace" =~ ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$ ]] || {
+  echo "FAIL: LAUNCHPAD_NAMESPACE is not a valid Kubernetes namespace" >&2
+  exit 1
+}
 
 cleanup() {
   rm -f "$work_dir/launchpad.dump"
@@ -69,6 +74,7 @@ backup_database() {
   echo "Encrypted backup: $encrypted_backup"
   echo "Checksum: $checksum_file"
   echo "Source: $server"
+  echo "Namespace: $namespace"
 }
 
 restore_database() {

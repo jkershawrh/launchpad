@@ -17,6 +17,24 @@ Stop before applying anything unless all of the following are true:
 - server-side dry-run accepts the exact rendered promotion manifest; and
 - a rollback owner and decision deadline are recorded.
 
+For this isolated candidate, create the encrypted backup from the candidate
+namespace rather than the historical `partner-ai-launchpad` namespace:
+
+```sh
+LAUNCHPAD_NAMESPACE=launchpad-flightpath-candidate \
+  scripts/launchpad-dr-database.sh backup \
+  /explicit/flightpath.kubeconfig \
+  /secure/backups/flightpath-candidate-03-TIMESTAMP.dump.age \
+  AGE_RECIPIENT
+scripts/launchpad-dr-database.sh verify \
+  /secure/backups/flightpath-candidate-03-TIMESTAMP.dump.age \
+  /secure/backups/flightpath-candidate-03-TIMESTAMP.dump.age.sha256
+```
+
+`AGE_RECIPIENT` and the durable encrypted destination are external security
+inputs. Never invent a recipient, store an age identity in Git, or substitute
+an unencrypted local dump.
+
 Trusted public DNS/TLS remains blocked. Do not enable a public Route or use this
 promotion as evidence of a public participant journey.
 
