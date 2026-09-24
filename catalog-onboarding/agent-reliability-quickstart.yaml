@@ -61,6 +61,8 @@ runtime:
       route:
         enabled: true
         name: agent-reliability
+      profile:
+        labFailureInjection: true
     routes:
       workspace: agent-reliability
   allowed_exposure_policies:

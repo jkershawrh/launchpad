@@ -95,6 +95,8 @@ metadata:
     route:
       enabled: true
       name: agent-reliability
+    profile:
+      labFailureInjection: true
   workload_ignore_differences: []
   workload_runtime_secret_name: model-connection
   workload_runtime_secret_sources:
