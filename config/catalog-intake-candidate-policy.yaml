@@ -1,7 +1,7 @@
 api_version: launchpad.redhat.com/catalog-intake-candidate-policy/v1
 scope: hybrid-fraud-detection-only
 catalog_item_id: hybrid-fraud-detection
-source_revision: 00f07a8265579efd77964b390d65368999a1523a
+source_revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
 image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0
 cluster: arena
 required_model: granite-3.2-8b-tools
