@@ -34,8 +34,8 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agent-reliability-quickstart.yaml
-  certification_stage: five-seat-certified
-  max_workshop_seats: 5
+  certification_stage: twenty-five-seat-certified
+  max_workshop_seats: 25
   promotion_sequence:
   - 1
   - 5
@@ -44,7 +44,6 @@ metadata:
   - Route input screening through a supported TrustyAI and NeMo Guardrails configuration.
   - Prove a RHOAI-managed CPU model-serving path or narrow the OpenShift AI model-serving
     claim.
-  - Complete twenty-five-seat capacity and tenant-isolation qualification.
   allowed_exposure_policies:
   - internal
   showroom_journey: agent-reliability-quickstart
