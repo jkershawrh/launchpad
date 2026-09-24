@@ -418,7 +418,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "2edda5aa8f7130c6d3ad54d63b588a155d2976abf87b5f8fd775b1f3beb04e46"
+      "sha256": "9d1a3597d00fb32e82674b4063f2a4d2fa2c164135daa0c92c0bf6e62a95355f"
     },
     {
       "area": "catalog",
@@ -716,7 +716,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "297e1505610b86fb7c9f12f2aeb9844bbd3547fff1e9b2f3c8e1b98af932e592"
+      "sha256": "fcb17e912ff66f1dd71b4c1724717e649c72fea7960810d5660e86995d8758ba"
     },
     {
       "area": "catalog",
@@ -6657,7 +6657,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "70aeed7378c5cb2804b78e36a0276a64d3c77e184c5058ecaaf4f2db218bfc7a"
+      "sha256": "1a8eb2c566bb250be3ade60f6cd5dcd46d6b9805b422771050d7cce73867552c"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -9677,7 +9677,7 @@
       "path": "site.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 23,
+      "reference_count": 20,
       "referenced_by": [
         "backend/app/adapters/openshift/provisioning.py",
         "backend/app/adapters/openshift/showroom_gitops.py",
@@ -9690,13 +9690,10 @@
         "backend/tests/test_showroom_content_package.py",
         "catalog-onboarding/agent-reliability.yaml",
         "catalog-onboarding/hybrid-fraud-detection.yaml",
-        "catalog-onboarding/network-operations-agent.yaml",
         "catalog/agent-reliability/catalog-item.yaml",
         "catalog/guided-rag-on-xeon/catalog-item.yaml",
         "catalog/hybrid-fraud-detection/catalog-item.yaml",
-        "catalog/network-operations-agent/catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/hybrid-fraud-detection.catalog-item.yaml",
-        "deploy/launchpad/overlays/flightpath-candidate/network-operations-agent.catalog-item.yaml",
         "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json",
         "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json",
@@ -9925,7 +9922,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "dd2e2ef58ab77b6c515fbf09e55a625041ea58ac",
+  "source_commit": "df32d2274302b270dcc112d348f4dfeef968fd11",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
