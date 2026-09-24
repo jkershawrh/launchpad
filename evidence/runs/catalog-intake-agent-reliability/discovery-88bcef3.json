@@ -1,0 +1,888 @@
+{
+  "catalog_item_id": "agent-reliability",
+  "discovery_status": "pass",
+  "draft_intake": {
+    "api_version": "launchpad.redhat.com/v1alpha1",
+    "catalog": {
+      "catalog_item_id": "agent-reliability",
+      "category": "guided_build",
+      "description": "Repository-discovered onboarding draft for Intel AI 301: Engineer Reliable Agentic Workflows.",
+      "display_name": "Intel AI 301: Engineer Reliable Agentic Workflows",
+      "status": "draft",
+      "version": "0.1.0"
+    },
+    "certification": {
+      "activation_blockers": [
+        "Replace zero resource placeholders with measured per-seat resource measurements.",
+        "Review required capabilities, models, participant tabs, routes, identity, and runtime Secret sources.",
+        "Complete source, one-seat, five-seat, and twenty-five-seat certification gates before activation.",
+        "Resolve every repository discovery warning before activation.",
+        "Review every unparsed manifest; templating or invalid YAML prevents complete static discovery.",
+        "Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.",
+        "Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved",
+        "Resolve Quickstart requirement with approved target evidence: manifest-unparsed"
+      ],
+      "max_workshop_seats": 1,
+      "promotion_sequence": [
+        1,
+        5,
+        25
+      ],
+      "stage": "repository-discovery"
+    },
+    "discovery": {
+      "errors": [],
+      "inventory": {
+        "cleanup_candidates": [
+          {
+            "api_version": "apps/v1",
+            "kind": "Deployment",
+            "name": "agent-reliability",
+            "path": "deploy/base/deployment.yaml"
+          },
+          {
+            "api_version": "apps/v1",
+            "kind": "Deployment",
+            "name": "noc-evidence-mcp",
+            "path": "deploy/base/mcp-deployment.yaml"
+          },
+          {
+            "api_version": "argoproj.io/v1alpha1",
+            "kind": "Application",
+            "name": "agent-reliability",
+            "path": "deploy/gitops/application.yaml"
+          },
+          {
+            "api_version": "kustomize.config.k8s.io/v1beta1",
+            "kind": "Kustomization",
+            "name": "",
+            "path": "deploy/base/kustomization.yaml"
+          },
+          {
+            "api_version": "kustomize.config.k8s.io/v1beta1",
+            "kind": "Kustomization",
+            "name": "",
+            "path": "deploy/lab/kustomization.yaml"
+          },
+          {
+            "api_version": "networking.k8s.io/v1",
+            "kind": "NetworkPolicy",
+            "name": "agent-reliability-default-deny",
+            "path": "deploy/base/networkpolicy.yaml"
+          },
+          {
+            "api_version": "route.openshift.io/v1",
+            "kind": "Route",
+            "name": "agent-reliability",
+            "path": "deploy/base/route.yaml"
+          },
+          {
+            "api_version": "tekton.dev/v1",
+            "kind": "Pipeline",
+            "name": "agent-reliability-qualification",
+            "path": "chart/templates/qualification-pipeline.yaml"
+          },
+          {
+            "api_version": "tekton.dev/v1",
+            "kind": "Pipeline",
+            "name": "agent-reliability-qualification",
+            "path": "deploy/pipelines/reliability-pipeline.yaml"
+          },
+          {
+            "api_version": "tekton.dev/v1",
+            "kind": "PipelineRun",
+            "name": "",
+            "path": "deploy/pipelines/pipelinerun.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "ConfigMap",
+            "name": "agent-reliability-profile",
+            "path": "deploy/base/configmap.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "ConfigMap",
+            "name": "agent-reliability-profile",
+            "path": "deploy/lab/lab-profile-patch.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "Service",
+            "name": "agent-reliability",
+            "path": "deploy/base/service.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "Service",
+            "name": "noc-evidence-mcp",
+            "path": "deploy/base/mcp-deployment.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "ServiceAccount",
+            "name": "agent-reliability",
+            "path": "deploy/base/serviceaccount.yaml"
+          }
+        ],
+        "cluster_scoped_resources": [],
+        "containerfiles": [
+          "Containerfile"
+        ],
+        "external_render_dependencies": [],
+        "images": [
+          {
+            "path": "Containerfile",
+            "reference": "registry.access.redhat.com/ubi9/python-312@sha256:8b1b36418501692d863a68f7f31ae47f1f169b83f7cdcc84831ac002304af693",
+            "source": "containerfile"
+          },
+          {
+            "path": "deploy/base/deployment.yaml",
+            "reference": "quay.io/rh-ee-jkershaw/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb",
+            "source": "manifest"
+          },
+          {
+            "path": "deploy/base/mcp-deployment.yaml",
+            "reference": "quay.io/rh-ee-jkershaw/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb",
+            "source": "manifest"
+          }
+        ],
+        "manifest_resources": [
+          {
+            "api_version": "apps/v1",
+            "kind": "Deployment",
+            "name": "agent-reliability",
+            "path": "deploy/base/deployment.yaml"
+          },
+          {
+            "api_version": "apps/v1",
+            "kind": "Deployment",
+            "name": "noc-evidence-mcp",
+            "path": "deploy/base/mcp-deployment.yaml"
+          },
+          {
+            "api_version": "argoproj.io/v1alpha1",
+            "kind": "Application",
+            "name": "agent-reliability",
+            "path": "deploy/gitops/application.yaml"
+          },
+          {
+            "api_version": "kustomize.config.k8s.io/v1beta1",
+            "kind": "Kustomization",
+            "name": "",
+            "path": "deploy/base/kustomization.yaml"
+          },
+          {
+            "api_version": "kustomize.config.k8s.io/v1beta1",
+            "kind": "Kustomization",
+            "name": "",
+            "path": "deploy/lab/kustomization.yaml"
+          },
+          {
+            "api_version": "networking.k8s.io/v1",
+            "kind": "NetworkPolicy",
+            "name": "agent-reliability-default-deny",
+            "path": "deploy/base/networkpolicy.yaml"
+          },
+          {
+            "api_version": "route.openshift.io/v1",
+            "kind": "Route",
+            "name": "agent-reliability",
+            "path": "deploy/base/route.yaml"
+          },
+          {
+            "api_version": "tekton.dev/v1",
+            "kind": "Pipeline",
+            "name": "agent-reliability-qualification",
+            "path": "chart/templates/qualification-pipeline.yaml"
+          },
+          {
+            "api_version": "tekton.dev/v1",
+            "kind": "Pipeline",
+            "name": "agent-reliability-qualification",
+            "path": "deploy/pipelines/reliability-pipeline.yaml"
+          },
+          {
+            "api_version": "tekton.dev/v1",
+            "kind": "PipelineRun",
+            "name": "",
+            "path": "deploy/pipelines/pipelinerun.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "ConfigMap",
+            "name": "agent-reliability-profile",
+            "path": "deploy/base/configmap.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "ConfigMap",
+            "name": "agent-reliability-profile",
+            "path": "deploy/lab/lab-profile-patch.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "Service",
+            "name": "agent-reliability",
+            "path": "deploy/base/service.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "Service",
+            "name": "noc-evidence-mcp",
+            "path": "deploy/base/mcp-deployment.yaml"
+          },
+          {
+            "api_version": "v1",
+            "kind": "ServiceAccount",
+            "name": "agent-reliability",
+            "path": "deploy/base/serviceaccount.yaml"
+          }
+        ],
+        "models": [],
+        "mutable_images": [],
+        "network_exposure": [],
+        "operators": [],
+        "ports": [
+          {
+            "container": "api",
+            "name": "http",
+            "path": "deploy/base/deployment.yaml",
+            "port": 8080,
+            "protocol": "TCP"
+          },
+          {
+            "container": "mcp",
+            "name": "http",
+            "path": "deploy/base/mcp-deployment.yaml",
+            "port": 8080,
+            "protocol": "TCP"
+          }
+        ],
+        "privileged_findings": [],
+        "resource_envelopes": [
+          {
+            "container": "api",
+            "limits": {
+              "cpu": "1",
+              "memory": "512Mi"
+            },
+            "path": "deploy/base/deployment.yaml",
+            "requests": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            }
+          },
+          {
+            "container": "mcp",
+            "limits": {
+              "cpu": "250m",
+              "memory": "256Mi"
+            },
+            "path": "deploy/base/mcp-deployment.yaml",
+            "requests": {
+              "cpu": "50m",
+              "memory": "64Mi"
+            }
+          }
+        ],
+        "routes": [
+          {
+            "host": "",
+            "name": "agent-reliability",
+            "path": "deploy/base/route.yaml"
+          }
+        ],
+        "secret_manifests": [],
+        "secret_references": [
+          {
+            "name": "model-connection",
+            "path": "deploy/base/deployment.yaml",
+            "source": "secretKeyRef"
+          }
+        ],
+        "storage": [],
+        "unparsed_manifests": [
+          "chart/templates/guardrails.yaml",
+          "chart/templates/workload.yaml"
+        ],
+        "unparsed_packages": []
+      },
+      "provisional_fields": [
+        "catalog.description",
+        "runtime.required_capabilities",
+        "runtime.required_models",
+        "runtime.seat_resources",
+        "runtime.tabs"
+      ],
+      "source": "quickstart-repository",
+      "warnings": [
+        "Multiple workload packages were discovered; review the deterministic first selection."
+      ]
+    },
+    "onboarding_contract": "catalog-onboarding/agent-reliability.yaml",
+    "quality": {
+      "artifacts": {
+        "benchmark_rubric": {
+          "entry_count": 3,
+          "path": "tests/benchmark_rubric.yaml",
+          "status": "present-valid"
+        },
+        "ci_workflows": {
+          "path": ".github/workflows",
+          "status": "present"
+        },
+        "claim_registry": {
+          "entry_count": 4,
+          "path": "tests/claim_registry.yaml",
+          "status": "present-valid"
+        },
+        "makefile": {
+          "path": "Makefile",
+          "status": "present"
+        },
+        "publication_test": {
+          "path": "tests/publication/test_readme.py",
+          "status": "present"
+        },
+        "validation_matrix": {
+          "entry_count": 5,
+          "path": "tests/validation_matrix.yaml",
+          "status": "present-valid"
+        }
+      },
+      "authority": {
+        "may_certify": false,
+        "may_modify_source": false,
+        "may_provision": false,
+        "may_publish_catalog": false,
+        "mode": "analysis-only"
+      },
+      "business_solution": {
+        "action_oriented_title": true,
+        "business_language_present": false,
+        "human_review_required": true,
+        "missing_sections": [],
+        "readme_present": true,
+        "required_sections_present": true,
+        "status": "review-required",
+        "title": "Build a Reliable Agentic AI Workflow on OpenShift"
+      },
+      "capacity_proposal": {
+        "declared_models": [],
+        "explicit_resource_envelopes": 2,
+        "framework_signals": [
+          "openai",
+          "vllm"
+        ],
+        "inference_mode": "remote-endpoint",
+        "measurement_required_before_placement": true,
+        "status": "review-required"
+      },
+      "gate": {
+        "blocking_findings": [
+          "One or more Showroom modules lack the What you will learn section",
+          "One or more Showroom modules lack the See section",
+          "One or more Showroom modules lack the Verify section",
+          "One or more Showroom modules lack the Key takeaway section",
+          "One or more Showroom modules lack an executable command block",
+          "One or more Showroom modules are below the content-depth threshold",
+          "Unresolved Quickstart requirement: model-endpoint-unresolved",
+          "Unresolved Quickstart requirement: manifest-unparsed"
+        ],
+        "status": "blocked"
+      },
+      "portfolio_overlap": {
+        "mutable_live_org_scan_allowed": false,
+        "reason": "A pinned versioned portfolio inventory was not supplied.",
+        "status": "not-run"
+      },
+      "requirement_review": {
+        "findings": [
+          {
+            "code": "model-endpoint-unresolved",
+            "evidence_count": 0
+          },
+          {
+            "code": "manifest-unparsed",
+            "evidence_count": 2
+          }
+        ],
+        "resolution_authority": "human-and-cluster-evidence",
+        "status": "blocked",
+        "target_support_inferred": false
+      },
+      "schema_version": "launchpad.redhat.com/catalog-intake-quality/v1",
+      "security_summary": {
+        "cluster_scoped_resource_count": 0,
+        "mutable_image_count": 0,
+        "privileged_finding_count": 0,
+        "secret_manifest_count": 0,
+        "secret_values_included": false,
+        "status": "review-required",
+        "unparsed_manifest_count": 2
+      },
+      "showroom": {
+        "execute_block_count": 0,
+        "hands_on_module_count": 6,
+        "key_takeaway_count": 0,
+        "page_count": 7,
+        "see_section_count": 0,
+        "thin_modules": [
+          "modules/ROOT/pages/01-healthy-agent.adoc",
+          "modules/ROOT/pages/02-safety-architecture.adoc",
+          "modules/ROOT/pages/03-prompt-injection.adoc",
+          "modules/ROOT/pages/04-tool-authorization.adoc",
+          "modules/ROOT/pages/05-inference-disruption.adoc",
+          "modules/ROOT/pages/06-prove-recover.adoc"
+        ],
+        "verification_section_count": 0
+      }
+    },
+    "runtime": {
+      "allowed_exposure_policies": [
+        "internal"
+      ],
+      "deployment_type": "helm",
+      "required_capabilities": [
+        "openshift",
+        "showroom"
+      ],
+      "required_models": [],
+      "seat_resources": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0,
+        "storage_gib": 0
+      },
+      "tabs": [
+        {
+          "id": "terminal",
+          "title": "Terminal"
+        }
+      ]
+    },
+    "sources": {
+      "showroom": {
+        "playbook": "site.yml",
+        "repo_url": "https://github.com/jkershawrh/agent-reliability-quickstart.git",
+        "revision": "88bcef3b0705ea57ca12fc686ba7ea4217abeb25",
+        "start_path": "."
+      },
+      "workload": {
+        "deploy_path": "chart",
+        "repo_url": "https://github.com/jkershawrh/agent-reliability-quickstart.git",
+        "revision": "88bcef3b0705ea57ca12fc686ba7ea4217abeb25"
+      }
+    }
+  },
+  "errors": [],
+  "inventory": {
+    "cleanup_candidates": [
+      {
+        "api_version": "apps/v1",
+        "kind": "Deployment",
+        "name": "agent-reliability",
+        "path": "deploy/base/deployment.yaml"
+      },
+      {
+        "api_version": "apps/v1",
+        "kind": "Deployment",
+        "name": "noc-evidence-mcp",
+        "path": "deploy/base/mcp-deployment.yaml"
+      },
+      {
+        "api_version": "argoproj.io/v1alpha1",
+        "kind": "Application",
+        "name": "agent-reliability",
+        "path": "deploy/gitops/application.yaml"
+      },
+      {
+        "api_version": "kustomize.config.k8s.io/v1beta1",
+        "kind": "Kustomization",
+        "name": "",
+        "path": "deploy/base/kustomization.yaml"
+      },
+      {
+        "api_version": "kustomize.config.k8s.io/v1beta1",
+        "kind": "Kustomization",
+        "name": "",
+        "path": "deploy/lab/kustomization.yaml"
+      },
+      {
+        "api_version": "networking.k8s.io/v1",
+        "kind": "NetworkPolicy",
+        "name": "agent-reliability-default-deny",
+        "path": "deploy/base/networkpolicy.yaml"
+      },
+      {
+        "api_version": "route.openshift.io/v1",
+        "kind": "Route",
+        "name": "agent-reliability",
+        "path": "deploy/base/route.yaml"
+      },
+      {
+        "api_version": "tekton.dev/v1",
+        "kind": "Pipeline",
+        "name": "agent-reliability-qualification",
+        "path": "chart/templates/qualification-pipeline.yaml"
+      },
+      {
+        "api_version": "tekton.dev/v1",
+        "kind": "Pipeline",
+        "name": "agent-reliability-qualification",
+        "path": "deploy/pipelines/reliability-pipeline.yaml"
+      },
+      {
+        "api_version": "tekton.dev/v1",
+        "kind": "PipelineRun",
+        "name": "",
+        "path": "deploy/pipelines/pipelinerun.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "ConfigMap",
+        "name": "agent-reliability-profile",
+        "path": "deploy/base/configmap.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "ConfigMap",
+        "name": "agent-reliability-profile",
+        "path": "deploy/lab/lab-profile-patch.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "Service",
+        "name": "agent-reliability",
+        "path": "deploy/base/service.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "Service",
+        "name": "noc-evidence-mcp",
+        "path": "deploy/base/mcp-deployment.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "ServiceAccount",
+        "name": "agent-reliability",
+        "path": "deploy/base/serviceaccount.yaml"
+      }
+    ],
+    "cluster_scoped_resources": [],
+    "containerfiles": [
+      "Containerfile"
+    ],
+    "external_render_dependencies": [],
+    "images": [
+      {
+        "path": "Containerfile",
+        "reference": "registry.access.redhat.com/ubi9/python-312@sha256:8b1b36418501692d863a68f7f31ae47f1f169b83f7cdcc84831ac002304af693",
+        "source": "containerfile"
+      },
+      {
+        "path": "deploy/base/deployment.yaml",
+        "reference": "quay.io/rh-ee-jkershaw/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb",
+        "source": "manifest"
+      },
+      {
+        "path": "deploy/base/mcp-deployment.yaml",
+        "reference": "quay.io/rh-ee-jkershaw/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb",
+        "source": "manifest"
+      }
+    ],
+    "manifest_resources": [
+      {
+        "api_version": "apps/v1",
+        "kind": "Deployment",
+        "name": "agent-reliability",
+        "path": "deploy/base/deployment.yaml"
+      },
+      {
+        "api_version": "apps/v1",
+        "kind": "Deployment",
+        "name": "noc-evidence-mcp",
+        "path": "deploy/base/mcp-deployment.yaml"
+      },
+      {
+        "api_version": "argoproj.io/v1alpha1",
+        "kind": "Application",
+        "name": "agent-reliability",
+        "path": "deploy/gitops/application.yaml"
+      },
+      {
+        "api_version": "kustomize.config.k8s.io/v1beta1",
+        "kind": "Kustomization",
+        "name": "",
+        "path": "deploy/base/kustomization.yaml"
+      },
+      {
+        "api_version": "kustomize.config.k8s.io/v1beta1",
+        "kind": "Kustomization",
+        "name": "",
+        "path": "deploy/lab/kustomization.yaml"
+      },
+      {
+        "api_version": "networking.k8s.io/v1",
+        "kind": "NetworkPolicy",
+        "name": "agent-reliability-default-deny",
+        "path": "deploy/base/networkpolicy.yaml"
+      },
+      {
+        "api_version": "route.openshift.io/v1",
+        "kind": "Route",
+        "name": "agent-reliability",
+        "path": "deploy/base/route.yaml"
+      },
+      {
+        "api_version": "tekton.dev/v1",
+        "kind": "Pipeline",
+        "name": "agent-reliability-qualification",
+        "path": "chart/templates/qualification-pipeline.yaml"
+      },
+      {
+        "api_version": "tekton.dev/v1",
+        "kind": "Pipeline",
+        "name": "agent-reliability-qualification",
+        "path": "deploy/pipelines/reliability-pipeline.yaml"
+      },
+      {
+        "api_version": "tekton.dev/v1",
+        "kind": "PipelineRun",
+        "name": "",
+        "path": "deploy/pipelines/pipelinerun.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "ConfigMap",
+        "name": "agent-reliability-profile",
+        "path": "deploy/base/configmap.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "ConfigMap",
+        "name": "agent-reliability-profile",
+        "path": "deploy/lab/lab-profile-patch.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "Service",
+        "name": "agent-reliability",
+        "path": "deploy/base/service.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "Service",
+        "name": "noc-evidence-mcp",
+        "path": "deploy/base/mcp-deployment.yaml"
+      },
+      {
+        "api_version": "v1",
+        "kind": "ServiceAccount",
+        "name": "agent-reliability",
+        "path": "deploy/base/serviceaccount.yaml"
+      }
+    ],
+    "models": [],
+    "mutable_images": [],
+    "network_exposure": [],
+    "operators": [],
+    "ports": [
+      {
+        "container": "api",
+        "name": "http",
+        "path": "deploy/base/deployment.yaml",
+        "port": 8080,
+        "protocol": "TCP"
+      },
+      {
+        "container": "mcp",
+        "name": "http",
+        "path": "deploy/base/mcp-deployment.yaml",
+        "port": 8080,
+        "protocol": "TCP"
+      }
+    ],
+    "privileged_findings": [],
+    "resource_envelopes": [
+      {
+        "container": "api",
+        "limits": {
+          "cpu": "1",
+          "memory": "512Mi"
+        },
+        "path": "deploy/base/deployment.yaml",
+        "requests": {
+          "cpu": "100m",
+          "memory": "128Mi"
+        }
+      },
+      {
+        "container": "mcp",
+        "limits": {
+          "cpu": "250m",
+          "memory": "256Mi"
+        },
+        "path": "deploy/base/mcp-deployment.yaml",
+        "requests": {
+          "cpu": "50m",
+          "memory": "64Mi"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "host": "",
+        "name": "agent-reliability",
+        "path": "deploy/base/route.yaml"
+      }
+    ],
+    "secret_manifests": [],
+    "secret_references": [
+      {
+        "name": "model-connection",
+        "path": "deploy/base/deployment.yaml",
+        "source": "secretKeyRef"
+      }
+    ],
+    "storage": [],
+    "unparsed_manifests": [
+      "chart/templates/guardrails.yaml",
+      "chart/templates/workload.yaml"
+    ],
+    "unparsed_packages": []
+  },
+  "quality": {
+    "artifacts": {
+      "benchmark_rubric": {
+        "entry_count": 3,
+        "path": "tests/benchmark_rubric.yaml",
+        "status": "present-valid"
+      },
+      "ci_workflows": {
+        "path": ".github/workflows",
+        "status": "present"
+      },
+      "claim_registry": {
+        "entry_count": 4,
+        "path": "tests/claim_registry.yaml",
+        "status": "present-valid"
+      },
+      "makefile": {
+        "path": "Makefile",
+        "status": "present"
+      },
+      "publication_test": {
+        "path": "tests/publication/test_readme.py",
+        "status": "present"
+      },
+      "validation_matrix": {
+        "entry_count": 5,
+        "path": "tests/validation_matrix.yaml",
+        "status": "present-valid"
+      }
+    },
+    "authority": {
+      "may_certify": false,
+      "may_modify_source": false,
+      "may_provision": false,
+      "may_publish_catalog": false,
+      "mode": "analysis-only"
+    },
+    "business_solution": {
+      "action_oriented_title": true,
+      "business_language_present": false,
+      "human_review_required": true,
+      "missing_sections": [],
+      "readme_present": true,
+      "required_sections_present": true,
+      "status": "review-required",
+      "title": "Build a Reliable Agentic AI Workflow on OpenShift"
+    },
+    "capacity_proposal": {
+      "declared_models": [],
+      "explicit_resource_envelopes": 2,
+      "framework_signals": [
+        "openai",
+        "vllm"
+      ],
+      "inference_mode": "remote-endpoint",
+      "measurement_required_before_placement": true,
+      "status": "review-required"
+    },
+    "gate": {
+      "blocking_findings": [
+        "One or more Showroom modules lack the What you will learn section",
+        "One or more Showroom modules lack the See section",
+        "One or more Showroom modules lack the Verify section",
+        "One or more Showroom modules lack the Key takeaway section",
+        "One or more Showroom modules lack an executable command block",
+        "One or more Showroom modules are below the content-depth threshold",
+        "Unresolved Quickstart requirement: model-endpoint-unresolved",
+        "Unresolved Quickstart requirement: manifest-unparsed"
+      ],
+      "status": "blocked"
+    },
+    "portfolio_overlap": {
+      "mutable_live_org_scan_allowed": false,
+      "reason": "A pinned versioned portfolio inventory was not supplied.",
+      "status": "not-run"
+    },
+    "requirement_review": {
+      "findings": [
+        {
+          "code": "model-endpoint-unresolved",
+          "evidence_count": 0
+        },
+        {
+          "code": "manifest-unparsed",
+          "evidence_count": 2
+        }
+      ],
+      "resolution_authority": "human-and-cluster-evidence",
+      "status": "blocked",
+      "target_support_inferred": false
+    },
+    "schema_version": "launchpad.redhat.com/catalog-intake-quality/v1",
+    "security_summary": {
+      "cluster_scoped_resource_count": 0,
+      "mutable_image_count": 0,
+      "privileged_finding_count": 0,
+      "secret_manifest_count": 0,
+      "secret_values_included": false,
+      "status": "review-required",
+      "unparsed_manifest_count": 2
+    },
+    "showroom": {
+      "execute_block_count": 0,
+      "hands_on_module_count": 6,
+      "key_takeaway_count": 0,
+      "page_count": 7,
+      "see_section_count": 0,
+      "thin_modules": [
+        "modules/ROOT/pages/01-healthy-agent.adoc",
+        "modules/ROOT/pages/02-safety-architecture.adoc",
+        "modules/ROOT/pages/03-prompt-injection.adoc",
+        "modules/ROOT/pages/04-tool-authorization.adoc",
+        "modules/ROOT/pages/05-inference-disruption.adoc",
+        "modules/ROOT/pages/06-prove-recover.adoc"
+      ],
+      "verification_section_count": 0
+    }
+  },
+  "repo_url": "https://github.com/jkershawrh/agent-reliability-quickstart.git",
+  "revision": "88bcef3b0705ea57ca12fc686ba7ea4217abeb25",
+  "schema": "launchpad.redhat.com/catalog-discovery-receipt/v1",
+  "showroom": {
+    "playbook": "site.yml",
+    "start_path": "."
+  },
+  "warnings": [
+    "Multiple workload packages were discovered; review the deterministic first selection."
+  ],
+  "workload": {
+    "deploy_path": "chart",
+    "deployment_type": "helm"
+  }
+}

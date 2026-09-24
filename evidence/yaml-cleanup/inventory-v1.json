@@ -1809,6 +1809,24 @@
       "deletion_eligible": false,
       "dependency_flags": [],
       "environment_markers": [],
+      "kinds": [],
+      "owner": "contract-governance-owner",
+      "path": "contracts/catalog-learning-progression-v1.yaml",
+      "proposed_disposition": "preserve-authoritative",
+      "protection_class": "authoritative-contract",
+      "reference_count": 1,
+      "referenced_by": [
+        "docs/catalog-learning-progression.md"
+      ],
+      "risk_flags": [],
+      "sha256": "2428a338b93d7287ef23869581562af1c57e37a0c212da21dbb0824ccb180089"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
       "kinds": [
         "ConvergenceCandidateContract"
       ],
@@ -10341,7 +10359,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "5f298933209cc5b32f98f298591259b4b624bb95",
+  "source_commit": "9a1b9ebf03c249a5b345b86e2d9be547068473d2",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -10349,7 +10367,7 @@
       "ci": 4,
       "configuration": 11,
       "content-source": 18,
-      "contract": 47,
+      "contract": 48,
       "demo-source": 110,
       "deployment-source": 194,
       "deployment-template": 11,
@@ -10368,9 +10386,9 @@
       "rhpds-image-dependency": 14
     },
     "files_without_detected_repository_reference": 184,
-    "preserved_pending_review": 478,
+    "preserved_pending_review": 479,
     "protection_class_counts": {
-      "authoritative-contract": 47,
+      "authoritative-contract": 48,
       "catalog-release-input": 19,
       "external-consumer-unknown": 37,
       "immutable-evidence": 26,
@@ -10386,8 +10404,8 @@
       "secret-object-review-required": 6,
       "status-field-review-required": 69
     },
-    "tracked_yaml_files": 478,
+    "tracked_yaml_files": 479,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": true
+  "tracked_changes_present": false
 }

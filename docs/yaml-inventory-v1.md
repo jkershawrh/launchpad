@@ -14,14 +14,14 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **478**
+- Tracked YAML/YML files: **479**
 - Owner assignment still required: **0**
-- Preserved pending owner review: **478**
+- Preserved pending owner review: **479**
 - Deletion eligible: **0**
 - No repository reference detected: **184**
-- Base source commit: `5f298933209cc5b32f98f298591259b4b624bb95`
+- Base source commit: `9a1b9ebf03c249a5b345b86e2d9be547068473d2`
 - Source state: **working-tree**; tracked changes present:
-  **true**
+  **false**
 
 ## Classification
 
@@ -31,7 +31,7 @@ CLI, documentation, and human consumers must be checked before disposition.
 | `ci` | 4 |
 | `configuration` | 11 |
 | `content-source` | 18 |
-| `contract` | 47 |
+| `contract` | 48 |
 | `demo-source` | 110 |
 | `deployment-source` | 194 |
 | `deployment-template` | 11 |
@@ -79,7 +79,7 @@ review; it is not named-human acceptance.
 
 | Protection class | Files |
 |---|---:|
-| `authoritative-contract` | 47 |
+| `authoritative-contract` | 48 |
 | `catalog-release-input` | 19 |
 | `external-consumer-unknown` | 37 |
 | `immutable-evidence` | 26 |

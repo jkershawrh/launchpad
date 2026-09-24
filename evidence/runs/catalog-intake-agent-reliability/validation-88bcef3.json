@@ -1,0 +1,33 @@
+{
+  "activation_blockers": [
+    "Re-run the complete one-seat browser, inference, guardrail outage, and reclaim journey against source revision 88bcef3b0705ea57ca12fc686ba7ea4217abeb25 and image digest sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb.",
+    "Treat the documented prior 1/5/25-seat certification as historical evidence; do not transfer its green status to this corrected source and image.",
+    "Produce scan, SBOM, signature, and provenance evidence for the candidate image.",
+    "Prove that the selected Launchpad MaaS gateway enforces the generated per-seat key and that the model Secret is never exposed through Git values or participant access.",
+    "Prove strict fail-closed behavior while the RHOAI NeMo Guardrails service is unavailable, then prove recovery after restoration.",
+    "Prove idempotent reclaim, MaaS-key revocation, GitOps cleanup, namespace deletion, and zero residual resources for the exact candidate revision.",
+    "Resolve the Showroom learning-journey findings before promotion beyond one seat.",
+    "Re-certify five and twenty-five seats before increasing max_workshop_seats.",
+    "Resolve every repository discovery warning before activation.",
+    "Review every unparsed manifest; templating or invalid YAML prevents complete static discovery.",
+    "Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.",
+    "Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved",
+    "Resolve Quickstart requirement with approved target evidence: manifest-unparsed"
+  ],
+  "activation_status": "blocked",
+  "catalog_item_id": "agent-reliability",
+  "checks": {
+    "catalog_drift": "pass",
+    "intake_contract": "pass",
+    "showroom_build": "not-run",
+    "showroom_structure": "pass",
+    "workload_structure": "pass"
+  },
+  "errors": [],
+  "source_revisions": {
+    "showroom": "88bcef3b0705ea57ca12fc686ba7ea4217abeb25",
+    "workload": "88bcef3b0705ea57ca12fc686ba7ea4217abeb25"
+  },
+  "validation_status": "pass",
+  "warnings": []
+}
