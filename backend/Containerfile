@@ -8,14 +8,14 @@ WORKDIR /opt/app-root/src
 
 USER 0
 ARG OPENSHIFT_CLIENT_VERSION=4.22.14
-ARG HELM_VERSION=3.22.0
+ARG HELM_VERSION=4.3.0
 RUN dnf -y upgrade \
     && (dnf -y remove npm 'nodejs*' || true) \
     && dnf clean all \
     && curl --fail --silent --show-error --location \
       "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OPENSHIFT_CLIENT_VERSION}/openshift-client-linux.tar.gz" \
-    | tar xz -C /usr/local/bin oc kubectl \
-    && chmod +x /usr/local/bin/oc /usr/local/bin/kubectl \
+    | tar xz -C /usr/local/bin oc \
+    && chmod +x /usr/local/bin/oc \
     && curl --fail --silent --show-error --location \
       "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
     | tar xz -C /usr/local/bin --strip-components=1 linux-amd64/helm \

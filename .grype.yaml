@@ -1,0 +1,43 @@
+# Temporary, narrowly scoped exceptions for vulnerabilities embedded in the
+# latest official OpenShift and Helm CLI releases. Each exception is mirrored
+# in security/backend-cli-vulnerability-exceptions.yaml, has an owner and an
+# expiry, and applies only to the exact binary location.
+ignore:
+  - vulnerability: GHSA-3p65-76g6-3w7r
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-f2g3-hh2r-cwgc
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-qw64-3x98-g7q2
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-389r-gv7p-r3rp
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-hc8v-wwc9-vgxm
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-78h2-9frx-2jm8
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-4c29-8rgm-jvjj
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-4vrq-3vrq-g6gg
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-hfg8-hc9c-6c3h
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-pc3f-x583-g7j2
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-f5mr-q85p-6hh6
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-f83f-xpx7-ffpw
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GHSA-mh2q-q3fh-2475
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GO-2026-6303
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GO-2026-6354
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GO-2026-6355
+    package: {location: /usr/local/bin/oc}
+  - vulnerability: GO-2026-6354
+    package: {location: /usr/local/bin/helm}
+  - vulnerability: GO-2026-6355
+    package: {location: /usr/local/bin/helm}
+  - vulnerability: CVE-2026-46600
+    package: {location: /usr/local/bin/oc}

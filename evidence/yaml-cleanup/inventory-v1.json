@@ -9888,7 +9888,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "38f5a74561d14be110184350719ac154d3e4a6f6",
+  "source_commit": "8cdbb8436d17597efccbee454ddb00d1f8bf7cda",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

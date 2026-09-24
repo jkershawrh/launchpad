@@ -11,6 +11,8 @@ def test_cluster_clients_are_explicitly_versioned() -> None:
     assert "ARG HELM_VERSION=" in text
     assert "/ocp/stable/" not in text
     assert "helm-v3.17.3" not in text
+    assert "tar xz -C /usr/local/bin oc kubectl" not in text
+    assert "tar xz -C /usr/local/bin oc" in text
     assert "${OPENSHIFT_CLIENT_VERSION}" in text
     assert "${HELM_VERSION}" in text
 
