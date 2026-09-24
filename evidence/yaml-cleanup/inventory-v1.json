@@ -103,6 +103,24 @@
       "sha256": "60fbdc45541047b7fccb206754e64ab49fe057f8ce84e085446d2461db3ccd94"
     },
     {
+      "area": ".grype.yaml",
+      "classification": "repository-configuration",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "repository-maintenance-owner",
+      "path": ".grype.yaml",
+      "proposed_disposition": "preserve-repository-configuration",
+      "protection_class": "repository-governance-input",
+      "reference_count": 1,
+      "referenced_by": [
+        "backend/tests/test_backend_cli_vulnerability_exceptions.py"
+      ],
+      "risk_flags": [],
+      "sha256": "5edae715d4715a3ab102b2d7ddaa21a553fa13becc2465a5ff1463c7f1ce4484"
+    },
+    {
       "area": ".pre-commit-config.yaml",
       "classification": "repository-configuration",
       "deletion_eligible": false,
@@ -9481,6 +9499,25 @@
       "sha256": "f65c4c6a51cb7ddb36327d48fcae7756c01f999e04d7de957a339fa7c82e3f88"
     },
     {
+      "area": "security",
+      "classification": "repository-configuration",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "repository-maintenance-owner",
+      "path": "security/backend-cli-vulnerability-exceptions.yaml",
+      "proposed_disposition": "preserve-repository-configuration",
+      "protection_class": "repository-governance-input",
+      "reference_count": 2,
+      "referenced_by": [
+        ".grype.yaml",
+        "backend/tests/test_backend_cli_vulnerability_exceptions.py"
+      ],
+      "risk_flags": [],
+      "sha256": "4af19f6a3760cac341cf6d34722a71cd668f74644a1fd111e9d250bb632d43fd"
+    },
+    {
       "area": "site-agentops-observability.yml",
       "classification": "content-source",
       "deletion_eligible": false,
@@ -9888,7 +9925,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "8cdbb8436d17597efccbee454ddb00d1f8bf7cda",
+  "source_commit": "781581aa1c42caaa83b518e91301541ea09ad363",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -9903,7 +9940,7 @@
       "evidence": 26,
       "fixture": 20,
       "generated-intake": 7,
-      "repository-configuration": 8,
+      "repository-configuration": 10,
       "tenant-source": 10
     },
     "deletion_eligible": 0,
@@ -9915,13 +9952,13 @@
       "rhpds-image-dependency": 4
     },
     "files_without_detected_repository_reference": 136,
-    "preserved_pending_review": 448,
+    "preserved_pending_review": 450,
     "protection_class_counts": {
       "authoritative-contract": 50,
       "catalog-release-input": 22,
       "immutable-evidence": 26,
       "participant-content-input": 128,
-      "repository-governance-input": 8,
+      "repository-governance-input": 10,
       "runtime-or-deployment-input": 189,
       "test-or-delivery-input": 25
     },
@@ -9932,8 +9969,8 @@
       "secret-object-review-required": 6,
       "status-field-review-required": 62
     },
-    "tracked_yaml_files": 448,
+    "tracked_yaml_files": 450,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": true
+  "tracked_changes_present": false
 }

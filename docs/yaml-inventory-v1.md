@@ -14,14 +14,14 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **448**
+- Tracked YAML/YML files: **450**
 - Owner assignment still required: **0**
-- Preserved pending owner review: **448**
+- Preserved pending owner review: **450**
 - Deletion eligible: **0**
 - No repository reference detected: **136**
-- Base source commit: `8cdbb8436d17597efccbee454ddb00d1f8bf7cda`
+- Base source commit: `781581aa1c42caaa83b518e91301541ea09ad363`
 - Source state: **working-tree**; tracked changes present:
-  **true**
+  **false**
 
 ## Classification
 
@@ -38,7 +38,7 @@ CLI, documentation, and human consumers must be checked before disposition.
 | `evidence` | 26 |
 | `fixture` | 20 |
 | `generated-intake` | 7 |
-| `repository-configuration` | 8 |
+| `repository-configuration` | 10 |
 | `tenant-source` | 10 |
 
 ## Review flags
@@ -83,7 +83,7 @@ review; it is not named-human acceptance.
 | `catalog-release-input` | 22 |
 | `immutable-evidence` | 26 |
 | `participant-content-input` | 128 |
-| `repository-governance-input` | 8 |
+| `repository-governance-input` | 10 |
 | `runtime-or-deployment-input` | 189 |
 | `test-or-delivery-input` | 25 |
 
