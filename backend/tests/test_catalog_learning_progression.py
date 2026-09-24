@@ -5,6 +5,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = ROOT / "catalog"
 CONTRACT = ROOT / "contracts" / "catalog-learning-progression-v1.yaml"
+FLIGHTPATH_CANDIDATES = (
+    ROOT / "deploy" / "launchpad" / "overlays" / "flightpath-candidate"
+)
 
 
 def _items() -> dict[str, dict]:
@@ -50,3 +53,12 @@ def test_catalog_ids_and_runtime_versions_remain_independent_of_learning_level()
     for catalog_id, item in _items().items():
         assert item["catalog_item_id"] == catalog_id
         assert item["version"]
+
+
+def test_flightpath_candidate_titles_match_canonical_learning_titles():
+    canonical = _items()
+    for path in sorted(FLIGHTPATH_CANDIDATES.glob("*.catalog-item.yaml")):
+        candidate = yaml.safe_load(path.read_text())
+        catalog_id = candidate["catalog_item_id"]
+        assert catalog_id in canonical
+        assert candidate["display_name"] == canonical[catalog_id]["display_name"]

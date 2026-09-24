@@ -1,5 +1,5 @@
 catalog_item_id: intel-llm-cpu-serving
-display_name: "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs"
+display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
 description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
 category: guided_build
 version: "1.0.12-flightpath.1"

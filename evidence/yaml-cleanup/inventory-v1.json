@@ -174,10 +174,11 @@
       "path": "catalog-onboarding/agent-reliability.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
         "catalog/agent-reliability/catalog-item.yaml",
-        "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json"
+        "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json",
+        "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json"
       ],
       "risk_flags": [
         "status-field-review-required"
@@ -7052,7 +7053,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "4f15d15e1880589f189dcf07ce7eaddf1943c3956c9e6e8b658bf15d7813c159"
+      "sha256": "831c23be8b0f37cb184e74835f97e786386462c091e9422550c09c6662757a8b"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -7080,7 +7081,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "efcc5ee68bad479977e90ff728f5de3d6508444d5928b4d2e0419cfc7a1be348"
+      "sha256": "51e4c0a9c52bceba3d66523bb181155b8f31496737653c5602aaf6c0dbb8a68b"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -7108,7 +7109,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "7a6f799eddb1f970943610c8d35a885f682feea8237ca414c1b7ecef18e5f0a8"
+      "sha256": "f4844b06dc6b62c2f7060964ea272b0d68e87bdc0a2e3fb8674b3b3e4320b439"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -7160,7 +7161,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "1d7433a4593c2c9665a43a97ec6cd88d782ede86f495c9d660887df1e1d74900"
+      "sha256": "6c0d2eb38502de0d8cdf3dc594ec02033f987111ab352e46c80c25ecce401bad"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -7183,7 +7184,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "030895c1d37a4901e340dbd6437b81b5305b8771a62ad55b67d4975f7d4647fb"
+      "sha256": "434732127cfe7d2cc0ca349c3f1e7a89a74945b15d3addf90532d1e46762d2e0"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -10157,7 +10158,7 @@
       "path": "site.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 21,
+      "reference_count": 22,
       "referenced_by": [
         "backend/app/adapters/openshift/provisioning.py",
         "backend/app/adapters/openshift/showroom_gitops.py",
@@ -10178,6 +10179,7 @@
         "deploy/launchpad/overlays/flightpath-candidate/hybrid-fraud-detection.catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/network-operations-agent.catalog-item.yaml",
         "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json",
+        "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json",
         "evidence/runs/catalog-intake-hybrid-fraud/discovery-ghcr-source-20260922.json",
         "package.json"
       ],
@@ -10401,7 +10403,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "f02f55a8c20688604f8a6da99c243f06d2910257",
+  "source_commit": "66907f752408a3295d14bfb55af3dc7472625dd1",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

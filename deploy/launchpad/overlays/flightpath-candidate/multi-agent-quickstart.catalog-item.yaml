@@ -1,5 +1,5 @@
 catalog_item_id: multi-agent-quickstart
-display_name: Build Multi-Agent AI Systems with Open Protocols
+display_name: 'Intel AI 301: Build Multi-Agent AI Systems with Open Protocols'
 description: Investigate a fictional service incident with specialized agents, produce an evidence-backed response package for human review, operate the workload on OpenShift, and explore its advanced blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry, guardrails, and service authentication on Intel infrastructure.
 category: guided_build
 version: 0.2.15-flightpath.1

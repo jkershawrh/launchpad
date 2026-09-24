@@ -1,5 +1,5 @@
 catalog_item_id: network-operations-agent
-display_name: Evidence-Backed Network Operations Agent
+display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
 description: Investigate a simulated telecom network alarm with an evidence-backed agent, internal MCP diagnostics, and shared CPU model inference.
 category: guided_build
 version: 0.1.0-flightpath.1
