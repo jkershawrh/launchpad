@@ -49,7 +49,7 @@ metadata:
   showroom_title: 'When Agents Fail: Reliable Agentic AI on OpenShift'
   namespace_slug: agent-reliability-quickstart
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: a13c047a2cd983ca3deed6448f65f5895089e60e
+  showroom_content_ref: e9435523958ffc5a12298441811460b240c95454
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   showroom_terminal_storage: true
@@ -73,7 +73,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: a13c047a2cd983ca3deed6448f65f5895089e60e
+  workload_revision: e9435523958ffc5a12298441811460b240c95454
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -105,5 +105,5 @@ metadata:
     workspace: agent-reliability
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: a13c047a2cd983ca3deed6448f65f5895089e60e
+  source_content_revision: e9435523958ffc5a12298441811460b240c95454
   source_references: {}
