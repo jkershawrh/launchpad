@@ -2,7 +2,7 @@ catalog_item_id: hybrid-fraud-detection
 display_name: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
 description: Build and test an explainable hybrid fraud scorer using deterministic rules and shared Intel Xeon model inference.
 category: guided_build
-version: 0.1.1-flightpath.1
+version: 0.1.1-flightpath.2
 status: active
 required_capabilities: [openshift, showroom, model_endpoint]
 default_hardware_profile: xeon-basic
@@ -28,7 +28,7 @@ metadata:
   showroom_title: Hybrid Fraud Detection on Intel Xeon
   namespace_slug: fraud
   showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  showroom_content_ref: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
+  showroom_content_ref: 14fad40be5904e293c5061bdaa09f8be31db7f7f
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   showroom_terminal_storage: true
@@ -54,7 +54,7 @@ metadata:
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
   workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  workload_revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
+  workload_revision: 14fad40be5904e293c5061bdaa09f8be31db7f7f
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -63,7 +63,7 @@ metadata:
   workload_release_name: fraud
   workload_helm_values:
     app:
-      image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0
+      image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:f217fccd35f5a3508ca142671941180fae6a0a1b031ec6a8f045473ad2bae237
     model:
       endpointFromSecret: true
   workload_runtime_secret_name: fraud-model-runtime

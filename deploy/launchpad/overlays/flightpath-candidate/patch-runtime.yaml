@@ -48,6 +48,10 @@ spec:
             - name: candidate-network-operations-catalog
               mountPath: /opt/catalog/network-operations-agent
               readOnly: true
+            - name: candidate-agent-reliability-catalog
+              mountPath: /opt/catalog/agent-reliability/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
             - name: canonical-ai-sandbox-catalog
               mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
               subPath: catalog-item.yaml
@@ -95,6 +99,9 @@ spec:
         - name: candidate-network-operations-catalog
           configMap:
             name: flightpath-candidate-network-operations-catalog
+        - name: candidate-agent-reliability-catalog
+          configMap:
+            name: flightpath-candidate-agent-reliability-catalog
         - name: canonical-ai-sandbox-catalog
           configMap:
             name: canonical-ai-sandbox-catalog
@@ -156,6 +163,10 @@ spec:
             - name: candidate-network-operations-catalog
               mountPath: /opt/catalog/network-operations-agent
               readOnly: true
+            - name: candidate-agent-reliability-catalog
+              mountPath: /opt/catalog/agent-reliability/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
             - name: canonical-ai-sandbox-catalog
               mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
               subPath: catalog-item.yaml
@@ -200,6 +211,9 @@ spec:
         - name: candidate-network-operations-catalog
           configMap:
             name: flightpath-candidate-network-operations-catalog
+        - name: candidate-agent-reliability-catalog
+          configMap:
+            name: flightpath-candidate-agent-reliability-catalog
         - name: canonical-ai-sandbox-catalog
           configMap:
             name: canonical-ai-sandbox-catalog

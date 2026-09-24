@@ -1,0 +1,196 @@
+catalog_item_id: agent-reliability
+display_name: 'Intel AI 301: Engineer Reliable Agentic Workflows'
+description: A 75-minute Red Hat and Intel guided build that teaches platform teams
+  to contain prompt injection, deny unauthorized MCP tools, prove evidence-backed
+  recommendations, and degrade safely when inference is unavailable.
+category: guided_build
+version: 0.1.0-flightpath.1
+status: active
+required_capabilities:
+- openshift
+- showroom
+- model_endpoint
+- openshift-ai
+- openshift-pipelines
+- openshift-gitops
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: 4h
+provisioner_refs:
+- helm-workload
+- showroom
+validation_refs:
+- pod-ready
+- route-accessible
+- inference-health
+- agentops-journey
+observability_profile: agentops-full-stack
+supported_branding:
+- redhat-intel-default
+- intel-internal
+metadata:
+  learning_level: '301'
+  learning_stage: Engineer
+  experience_type: reliability_engineering
+  prerequisites:
+  - intel-xeon6-agent-201
+  recommended_next_items: []
+  showroom: true
+  showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
+  showroom_content_ref: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+  showroom_content_playbook: site.yml
+  showroom_content_start_path: .
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/agent-reliability.yaml
+  certification_stage: one-seat-candidate
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  - 5
+  - 25
+  activation_blockers: []
+  allowed_exposure_policies:
+  - internal
+  showroom_journey: agent-reliability
+  showroom_title: 'Intel AI 301: Engineer Reliable Agentic Workflows'
+  namespace_slug: agent-reliability
+  showroom_terminal_storage: true
+  showroom_tabs:
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: workspace
+    title: Reliability Advisor
+    source: workload.route.workspace
+  required_models:
+  - granite-3.2-8b-tools
+  inference_endpoint: litellm
+  seat_cpu_millicores: 150
+  seat_memory_mib: 192
+  seat_pods: 3
+  seat_storage_gib: 0
+  workshop_provision_concurrency: 5
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 900
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
+  workload_revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: chart
+  workload_source_kind: chart
+  workload_gitops_ready: true
+  workload_release_name: agent-reliability
+  workload_helm_values:
+    image:
+      repository: ghcr.io/jkershawrh/agent-reliability-quickstart
+      digest: sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+    route:
+      enabled: true
+      name: ar
+    profile:
+      labFailureInjection: true
+  workload_ignore_differences: []
+  workload_runtime_secret_name: model-connection
+  workload_runtime_secret_sources:
+    endpoint:
+      source: model_endpoint
+      model: granite-3.2-8b-tools
+    model:
+      source: requested_model
+    api-key:
+      source: maas_api_key
+  workload_runtime_secret_value_path: model.existingSecret
+  workload_identity_value_path: ''
+  workload_routes:
+    workspace: ar
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
+  source_content_revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+  source_references: {}
+  intake_quality:
+    schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+    business_solution:
+      status: review-required
+      readme_present: true
+      title: Build a Reliable Agentic AI Workflow on OpenShift
+      action_oriented_title: true
+      required_sections_present: true
+      missing_sections: []
+      business_language_present: false
+      human_review_required: true
+    artifacts:
+      validation_matrix:
+        path: tests/validation_matrix.yaml
+        status: present-valid
+        entry_count: 5
+      claim_registry:
+        path: tests/claim_registry.yaml
+        status: present-valid
+        entry_count: 4
+      benchmark_rubric:
+        path: tests/benchmark_rubric.yaml
+        status: present-valid
+        entry_count: 3
+      publication_test:
+        path: tests/publication/test_readme.py
+        status: present
+      makefile:
+        path: Makefile
+        status: present
+      ci_workflows:
+        path: .github/workflows
+        status: present
+    showroom:
+      page_count: 7
+      hands_on_module_count: 6
+      execute_block_count: 20
+      see_section_count: 6
+      verification_section_count: 6
+      key_takeaway_count: 6
+      thin_modules: []
+    capacity_proposal:
+      status: review-required
+      inference_mode: remote-endpoint
+      framework_signals:
+      - openai
+      - vllm
+      declared_models: []
+      explicit_resource_envelopes: 2
+      measurement_required_before_placement: true
+    requirement_review:
+      status: blocked
+      resolution_authority: human-and-cluster-evidence
+      findings:
+      - code: model-endpoint-unresolved
+        evidence_count: 0
+      - code: manifest-unparsed
+        evidence_count: 2
+      target_support_inferred: false
+    security_summary:
+      status: review-required
+      mutable_image_count: 0
+      cluster_scoped_resource_count: 0
+      privileged_finding_count: 0
+      secret_manifest_count: 0
+      unparsed_manifest_count: 2
+      secret_values_included: false
+    portfolio_overlap:
+      status: not-run
+      reason: A pinned versioned portfolio inventory was not supplied.
+      mutable_live_org_scan_allowed: false
+    gate:
+      status: blocked
+      blocking_findings:
+      - 'Unresolved Quickstart requirement: model-endpoint-unresolved'
+      - 'Unresolved Quickstart requirement: manifest-unparsed'
+    authority:
+      mode: analysis-only
+      may_modify_source: false
+      may_publish_catalog: false
+      may_provision: false
+      may_certify: false
+

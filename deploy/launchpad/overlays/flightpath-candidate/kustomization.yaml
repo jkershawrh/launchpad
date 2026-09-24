@@ -26,6 +26,9 @@ configMapGenerator:
   - name: flightpath-candidate-network-operations-catalog
     files:
       - catalog-item.yaml=network-operations-agent.catalog-item.yaml
+  - name: flightpath-candidate-agent-reliability-catalog
+    files:
+      - catalog-item.yaml=agent-reliability.catalog-item.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
