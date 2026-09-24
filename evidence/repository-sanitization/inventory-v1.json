@@ -7,18 +7,18 @@
   },
   "summary": {
     "tracked_files_reviewed": 2304,
-    "candidate_files": 277,
+    "candidate_files": 276,
     "categories": {
-      "operational-topology": 202,
+      "operational-topology": 200,
       "personal-identifier": 4,
       "rhpds-artifact-provenance": 44,
-      "rhpds-reference": 82
+      "rhpds-reference": 80
     },
     "dispositions": {
       "replace-with-sanitized-summary": 102,
-      "retain": 91,
+      "retain": 92,
       "retain-until-mirrored-and-certified": 44,
-      "review-and-generalize": 36,
+      "review-and-generalize": 34,
       "sanitize": 4
     }
   },
@@ -399,7 +399,7 @@
       ],
       "disposition": "retain",
       "counts": {
-        "operational_domains": 20,
+        "operational_domains": 25,
         "private_ips": 0,
         "non_fixture_emails": 0
       }
@@ -893,12 +893,11 @@
     {
       "path": "deploy/console-embed/playbook.yml",
       "categories": [
-        "operational-topology",
         "rhpds-reference"
       ],
       "disposition": "review-and-generalize",
       "counts": {
-        "operational_domains": 1,
+        "operational_domains": 0,
         "private_ips": 0,
         "non_fixture_emails": 0
       }
@@ -1380,6 +1379,18 @@
       }
     },
     {
+      "path": "deploy/tunnel-oncluster/deployment.yaml",
+      "categories": [
+        "operational-topology"
+      ],
+      "disposition": "retain",
+      "counts": {
+        "operational_domains": 4,
+        "private_ips": 0,
+        "non_fixture_emails": 0
+      }
+    },
+    {
       "path": "deploy/tunnel-oncluster/propagate.sh",
       "categories": [
         "operational-topology"
@@ -1387,19 +1398,6 @@
       "disposition": "retain",
       "counts": {
         "operational_domains": 2,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "deploy/tunnel-oncluster/router.py",
-      "categories": [
-        "operational-topology",
-        "rhpds-reference"
-      ],
-      "disposition": "review-and-generalize",
-      "counts": {
-        "operational_domains": 5,
         "private_ips": 0,
         "non_fixture_emails": 0
       }
@@ -3134,19 +3132,6 @@
       "disposition": "retain",
       "counts": {
         "operational_domains": 1,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "scripts/quick_tunnel_router.py",
-      "categories": [
-        "operational-topology",
-        "rhpds-reference"
-      ],
-      "disposition": "review-and-generalize",
-      "counts": {
-        "operational_domains": 4,
         "private_ips": 0,
         "non_fixture_emails": 0
       }

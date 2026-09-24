@@ -50,14 +50,11 @@ UPSTREAM_TIMEOUT = httpx.Timeout(
     pool=10,
 )
 
-ARENA_CONSOLE_HOST = "console-openshift-console.apps.arena.fm2aihpcsed.com"
-ARENA_OAUTH_HOST = "oauth-openshift.apps.arena.fm2aihpcsed.com"
-ARENA_KEYCLOAK_HOST = "keycloak.apps.arena.fm2aihpcsed.com"
+OPENSHIFT_CONSOLE_HOST = os.environ["OPENSHIFT_CONSOLE_HOST"]
+OPENSHIFT_OAUTH_HOST = os.environ["OPENSHIFT_OAUTH_HOST"]
+KEYCLOAK_PUBLIC_HOST = os.environ["KEYCLOAK_PUBLIC_HOST"]
+OPENSHIFT_INGRESS_DOMAIN = os.environ["OPENSHIFT_INGRESS_DOMAIN"]
 KEYCLOAK_INT_ORIGIN = "http://keycloak-service.keycloak.svc:8080"
-
-INFRA01_CONSOLE_HOST = "console-openshift-console.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
-INFRA01_OAUTH_HOST = "oauth-openshift.apps.ocpv-infra01.dal12.infra.demo.redhat.com"
-INFRA01_API_HOST = "api.ocpv-infra01.dal12.infra.demo.redhat.com:6443"
 
 
 def _select_upstream(path: str) -> tuple:
@@ -144,19 +141,13 @@ def _rewrite_url(value: str, tunnel_host: str) -> str:
     # query strings) must NOT be rewritten or OAuth token exchanges will
     # fail with redirect_uri mismatch errors.
     pairs = [
-        (f"https://{ARENA_CONSOLE_HOST}", f"https://{tunnel_host}"),
-        (f"https://{ARENA_OAUTH_HOST}", f"https://{tunnel_host}/oauth"),
-        (f"https://{INFRA01_CONSOLE_HOST}", f"https://{tunnel_host}"),
-        (f"https://{INFRA01_OAUTH_HOST}", f"https://{tunnel_host}/oauth"),
-        (f"https://{ARENA_KEYCLOAK_HOST}", f"https://{tunnel_host}"),
+        (f"https://{OPENSHIFT_CONSOLE_HOST}", f"https://{tunnel_host}"),
+        (f"https://{OPENSHIFT_OAUTH_HOST}", f"https://{tunnel_host}/oauth"),
+        (f"https://{KEYCLOAK_PUBLIC_HOST}", f"https://{tunnel_host}"),
         (KEYCLOAK_INT_ORIGIN, f"https://{tunnel_host}"),
     ]
     for old, new in pairs:
         value = value.replace(old, new)
-    value = value.replace(
-        f"https://{INFRA01_API_HOST}",
-        "https://api.arena.fm2aihpcsed.com:6443",
-    )
     # Normalize callbacks created by an already-running prefixed Console
     # session. New sessions use the root-level Console SPA routes above.
     value = value.replace(
@@ -189,7 +180,7 @@ def _rewrite_nested_redirect_uri(value: str, tunnel_host: str) -> str:
     if parsed.scheme not in {"http", "https"} or not parsed.netloc or not parsed.query:
         return value
     rewrites = {
-        f"https://{ARENA_CONSOLE_HOST}/auth/callback": (
+        f"https://{OPENSHIFT_CONSOLE_HOST}/auth/callback": (
             f"https://{tunnel_host}/auth/callback"
         ),
     }
@@ -357,9 +348,9 @@ async def route(path: str, request: Request):
     }
 
     if is_tls and origin == CONSOLE_ORIGIN:
-        headers["host"] = ARENA_CONSOLE_HOST
+        headers["host"] = OPENSHIFT_CONSOLE_HOST
     elif is_tls and origin == OAUTH_ORIGIN:
-        headers["host"] = ARENA_OAUTH_HOST
+        headers["host"] = OPENSHIFT_OAUTH_HOST
 
     async with httpx.AsyncClient(
         timeout=UPSTREAM_TIMEOUT, follow_redirects=False, verify=False
@@ -411,7 +402,7 @@ async def route(path: str, request: Request):
     if is_tls:
         response.headers["content-security-policy"] = (
             "frame-ancestors 'self' "
-            f"https://{tunnel_host} https://*.apps.arena.fm2aihpcsed.com"
+            f"https://{tunnel_host} https://*.{OPENSHIFT_INGRESS_DOMAIN}"
         )
     for cookie in upstream.headers.get_list("set-cookie"):
         response.headers.append("set-cookie", _rewrite_response_cookie(cookie, origin))

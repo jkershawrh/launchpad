@@ -5,12 +5,20 @@
   gather_facts: false
   vars:
     ACTION: provision
-    ocp_console_embed_domain: apps.arena.fm2aihpcsed.com
+    ocp_console_embed_domain: "{{ lookup('env', 'OPENSHIFT_INGRESS_DOMAIN') }}"
     public_lab_frame_origins: []
+  pre_tasks:
+    - name: Require the target OpenShift ingress domain
+      ansible.builtin.assert:
+        that:
+          - ocp_console_embed_domain | length > 0
+        fail_msg: >-
+          OPENSHIFT_INGRESS_DOMAIN must identify the target cluster ingress
+          domain before applying the console embed configuration.
   roles:
     - agnosticd.showroom.ocp4_workload_ocp_console_embed
   post_tasks:
-    - name: Allow Arena Showrooms and approved public lab origins to frame Console
+    - name: Allow Showrooms and approved public lab origins to frame Console
       kubernetes.core.k8s:
         api_version: operator.openshift.io/v1
         kind: IngressController

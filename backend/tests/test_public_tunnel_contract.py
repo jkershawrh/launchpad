@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 from urllib.parse import parse_qs, quote, urlsplit
@@ -17,8 +18,48 @@ def _router_module():
     spec = importlib.util.spec_from_file_location("launchpad_tunnel_router", path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    target_hosts = {
+        "OPENSHIFT_CONSOLE_HOST": "console-openshift-console.apps.arena.fm2aihpcsed.com",
+        "OPENSHIFT_OAUTH_HOST": "oauth-openshift.apps.arena.fm2aihpcsed.com",
+        "KEYCLOAK_PUBLIC_HOST": "keycloak.apps.arena.fm2aihpcsed.com",
+        "OPENSHIFT_INGRESS_DOMAIN": "apps.arena.fm2aihpcsed.com",
+    }
+    previous = {name: os.environ.get(name) for name in target_hosts}
+    os.environ.update(target_hosts)
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        for name, value in previous.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
     return module
+
+
+def test_router_requires_provider_neutral_target_hosts():
+    router = (ROOT / "deploy/tunnel-oncluster/router.py").read_text()
+    manifest = (ROOT / "deploy/tunnel-oncluster/deployment.yaml").read_text()
+
+    for variable in (
+        "OPENSHIFT_CONSOLE_HOST",
+        "OPENSHIFT_OAUTH_HOST",
+        "KEYCLOAK_PUBLIC_HOST",
+        "OPENSHIFT_INGRESS_DOMAIN",
+    ):
+        assert f'os.environ["{variable}"]' in router
+        assert f"name: {variable}" in manifest
+
+    assert "arena.fm2aihpcsed.com" not in router
+    assert "ocpv-infra01" not in router
+
+
+def test_console_embed_requires_an_explicit_target_ingress_domain():
+    playbook = (ROOT / "deploy/console-embed/playbook.yml").read_text()
+
+    assert "lookup('env', 'OPENSHIFT_INGRESS_DOMAIN')" in playbook
+    assert "ansible.builtin.assert:" in playbook
+    assert "ocp_console_embed_domain | length > 0" in playbook
 
 
 def test_on_cluster_tunnel_has_a_dedicated_unprivileged_identity():

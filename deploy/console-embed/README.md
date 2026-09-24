@@ -5,19 +5,21 @@ OpenShift Console remains inside the `OpenShift Console` Showroom tab.
 
 It uses the pinned `agnosticd.showroom.ocp4_workload_ocp_console_embed` role to:
 
-- remove `X-Frame-Options` from Arena ingress responses;
+- remove `X-Frame-Options` from the selected cluster's ingress responses;
 - enforce an explicit `frame-ancestors` allowlist;
 - convert and continuously reconcile the OpenShift OAuth route to re-encrypt
   TLS so the router can apply the response-header policy.
 
-This is intentionally a cluster-admin operation. It changes Arena's default
-IngressController and OAuth route and rolls the default router. Do not run it
-against another cluster by changing the current context. Always pass Arena's
-kubeconfig explicitly.
+This is intentionally a cluster-admin operation. It changes the selected
+cluster's default IngressController and OAuth route and rolls the default
+router. Always pass the intended cluster's kubeconfig and ingress domain
+explicitly; the playbook fails closed when the domain is absent.
 
 ```sh
 ansible-galaxy collection install -r deploy/console-embed/requirements.yml
-KUBECONFIG="$ARENA_KUBECONFIG" ansible-playbook \
+KUBECONFIG="$TARGET_CLUSTER_KUBECONFIG" \
+OPENSHIFT_INGRESS_DOMAIN="apps.target-cluster.example.com" \
+ansible-playbook \
   deploy/console-embed/playbook.yml \
   -e '{"public_lab_frame_origins":["https://public-labs.example.com"]}'
 ```
