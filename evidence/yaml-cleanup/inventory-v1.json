@@ -1099,7 +1099,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "be8128b4fb2ebbf34c00d3909ae8f9bedbef6ce76ef6e5c38157c4fe6278334b"
+      "sha256": "1c1e7e69c8d0588626416bbd7fbc5d3d8bc68e9a7d6bf12545fb9f5eea335598"
     },
     {
       "area": "config",
@@ -9922,7 +9922,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "8a17adf37db5b2e6651a3dfd4b204765a13b6787",
+  "source_commit": "09e746d3f403666c6fad0596aa855f575f1cb5d5",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -9969,5 +9969,5 @@
     "tracked_yaml_files": 450,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": true
+  "tracked_changes_present": false
 }
