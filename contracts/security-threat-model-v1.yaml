@@ -132,7 +132,7 @@ controls:
     implementation: Provisioner binding and remote credentials are limited to declared resources and roles.
     evidence:
       - backend/tests/test_launchpad_rbac_manifest.py
-      - backend/tests/test_kubeconfig_security.py
+      - backend/tests/test_multicluster.py
       - backend/tests/test_ha_dr_manifests.py
   - id: CTRL-MODEL-KEY-LIFECYCLE
     owner: ai-service-owner

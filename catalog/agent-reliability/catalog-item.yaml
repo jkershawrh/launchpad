@@ -37,7 +37,7 @@ metadata:
   recommended_next_items: []
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
+  showroom_content_ref: 99146600cbf3507527d59b73e569fbb642321721
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   operator_workshop: true
@@ -52,7 +52,7 @@ metadata:
   - 25
   activation_blockers:
   - Re-run the complete one-seat browser, inference, guardrail outage, and reclaim
-    journey against source revision 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef and image
+    journey against source revision 99146600cbf3507527d59b73e569fbb642321721 and image
     digest sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb.
   - Treat the documented prior 1/5/25-seat certification as historical evidence; do
     not transfer its green status to this corrected source and image.
@@ -97,7 +97,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
+  workload_revision: 99146600cbf3507527d59b73e569fbb642321721
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -129,7 +129,7 @@ metadata:
     workspace: ar
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
+  source_content_revision: 99146600cbf3507527d59b73e569fbb642321721
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1

@@ -21,7 +21,7 @@ def _router_module():
     target_hosts = {
         "OPENSHIFT_CONSOLE_HOST": "console-openshift-console.apps.arena.fm2aihpcsed.com",
         "OPENSHIFT_OAUTH_HOST": "oauth-openshift.apps.arena.fm2aihpcsed.com",
-        "KEYCLOAK_PUBLIC_HOST": "keycloak.apps.arena.fm2aihpcsed.com",
+        "KEYCLOAK_PUBLIC_HOST": "idp.example.test",
         "OPENSHIFT_INGRESS_DOMAIN": "apps.arena.fm2aihpcsed.com",
     }
     previous = {name: os.environ.get(name) for name in target_hosts}

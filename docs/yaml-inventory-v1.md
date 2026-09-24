@@ -19,9 +19,9 @@ CLI, documentation, and human consumers must be checked before disposition.
 - Preserved pending owner review: **447**
 - Deletion eligible: **0**
 - No repository reference detected: **136**
-- Base source commit: `89c6b34b61a11210b2c007aa98e2ff037393d5b8`
+- Base source commit: `d8ccd6c5092250378e4fc55d9322f763c9809bfd`
 - Source state: **working-tree**; tracked changes present:
-  **false**
+  **true**
 
 ## Classification
 

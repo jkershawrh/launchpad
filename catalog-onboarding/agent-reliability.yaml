@@ -19,12 +19,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
+    revision: 99146600cbf3507527d59b73e569fbb642321721
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
+    revision: 99146600cbf3507527d59b73e569fbb642321721
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -87,7 +87,7 @@ certification:
   - 25
   activation_blockers:
   - Re-run the complete one-seat browser, inference, guardrail outage, and reclaim
-    journey against source revision 9f1cb2e270d8a6d9e98e2c866f265868b5a4daef
+    journey against source revision 99146600cbf3507527d59b73e569fbb642321721
     and image digest sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb.
   - Treat the documented prior 1/5/25-seat certification as historical evidence;
     do not transfer its green status to this corrected source and image.

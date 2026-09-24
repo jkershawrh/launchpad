@@ -183,7 +183,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "3ce5975fecd8b84a48dcea6c145f2ac792b318515d253e2dc0864519bb27d511"
+      "sha256": "0cf9bdcfa97b02d793d9d7ef71db23c42468ccf6e45a0f6493824866f55b0911"
     },
     {
       "area": "catalog-onboarding",
@@ -399,7 +399,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "49910cb801f06e03869dd56331382b07a338e9af61e9e6f9e289e29c3b9f2fde"
+      "sha256": "2b4cc5a305379caf501a9dc5d281f7e447179c290315947839dffaeb27ed5942"
     },
     {
       "area": "catalog",
@@ -2580,7 +2580,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "a17828ac196a272e41e92f2034ecb505aa1543227aab89de7eff846ac060ef4c"
+      "sha256": "b8520ddf7c172f68deaf983758735b45a4994cf72e235253a1fdf56921f479c5"
     },
     {
       "area": "contracts",
@@ -9869,7 +9869,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "89c6b34b61a11210b2c007aa98e2ff037393d5b8",
+  "source_commit": "d8ccd6c5092250378e4fc55d9322f763c9809bfd",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -9916,5 +9916,5 @@
     "tracked_yaml_files": 447,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": false
+  "tracked_changes_present": true
 }
