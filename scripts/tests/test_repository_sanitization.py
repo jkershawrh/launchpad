@@ -51,3 +51,18 @@ def test_stargate_capacity_adapter_is_provider_neutral() -> None:
     assert "app.adapters.stargate.capacity" in placement
     assert "app.adapters.rhdp.stargate_capacity" not in placement
     assert (ROOT / "backend" / "app" / "adapters" / "stargate" / "capacity.py").is_file()
+
+
+def test_email_inventory_ignores_fixtures_role_mailboxes_and_url_userinfo() -> None:
+    assert module.non_fixture_email_count("participant@example.com") == 0
+    assert module.non_fixture_email_count("postgresql://user:password@database:5432/app") == 0
+    assert module.non_fixture_email_count("https://token@public.example.test/path") == 0
+    assert module.non_fixture_email_count("person@company.invalid") == 1
+    assert "fm2aihpcsed.com" in module.OPERATIONAL_ROLE_EMAIL_DOMAINS
+
+
+def test_inventory_has_no_personal_identifier_candidates() -> None:
+    assert not any(
+        "personal-identifier" in record["categories"]
+        for record in module.audit()["records"]
+    )

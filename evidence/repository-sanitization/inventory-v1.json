@@ -6,20 +6,18 @@
     "privacy": "paths-and-counts-only-no-matched-values"
   },
   "summary": {
-    "tracked_files_reviewed": 2304,
-    "candidate_files": 276,
+    "tracked_files_reviewed": 2303,
+    "candidate_files": 273,
     "categories": {
       "operational-topology": 200,
-      "personal-identifier": 4,
       "rhpds-artifact-provenance": 44,
       "rhpds-reference": 80
     },
     "dispositions": {
       "replace-with-sanitized-summary": 102,
-      "retain": 92,
+      "retain": 93,
       "retain-until-mirrored-and-certified": 44,
-      "review-and-generalize": 34,
-      "sanitize": 4
+      "review-and-generalize": 34
     }
   },
   "records": [
@@ -358,14 +356,13 @@
     {
       "path": "backend/tests/test_public_access.py",
       "categories": [
-        "operational-topology",
-        "personal-identifier"
+        "operational-topology"
       ],
-      "disposition": "sanitize",
+      "disposition": "retain",
       "counts": {
         "operational_domains": 20,
         "private_ips": 0,
-        "non_fixture_emails": 1
+        "non_fixture_emails": 0
       }
     },
     {
@@ -843,18 +840,6 @@
       }
     },
     {
-      "path": "demos/deploy/database/secret.yaml",
-      "categories": [
-        "personal-identifier"
-      ],
-      "disposition": "sanitize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 1
-      }
-    },
-    {
       "path": "demos/frontend/package-lock.json",
       "categories": [
         "operational-topology"
@@ -1328,18 +1313,6 @@
         "operational_domains": 4,
         "private_ips": 0,
         "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "deploy/prod-dns/cluster-issuer.yaml",
-      "categories": [
-        "personal-identifier"
-      ],
-      "disposition": "sanitize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 1
       }
     },
     {
@@ -2882,18 +2855,6 @@
         "operational_domains": 7,
         "private_ips": 0,
         "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "keycloak-authenticator/src/main/resources/theme-resources/templates/launchpad-code.ftl",
-      "categories": [
-        "personal-identifier"
-      ],
-      "disposition": "sanitize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 1
       }
     },
     {

@@ -53,7 +53,7 @@
   <#elseif section = "form">
     <form id="kc-launchpad-code" class="launchpad-form" action="${url.loginAction}" method="post">
       <input type="hidden" name="order_id" value="${orderId!''}" />
-      <div class="launchpad-field"><label class="launchpad-label" for="email">Participant email</label><input class="launchpad-input" id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required /></div>
+      <div class="launchpad-field"><label class="launchpad-label" for="email">Participant email</label><input class="launchpad-input" id="email" name="email" type="email" autocomplete="email" placeholder="participant@example.com" required /></div>
       <div class="launchpad-field"><label class="launchpad-label" for="code">Instructor code</label><input class="launchpad-input" id="code" name="code" autocomplete="one-time-code" placeholder="XXXX-XXXX-XXXX-XXXX-XXXX" required /></div>
       <p class="launchpad-help">Use the email assigned to your seat and the code provided by your instructor. Email ownership is not verified.</p>
       <button class="launchpad-submit" type="submit">Enter lab</button>

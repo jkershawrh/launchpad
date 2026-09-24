@@ -16,8 +16,10 @@ DEFAULT_OUTPUT = ROOT / "evidence" / "repository-sanitization" / "inventory-v1.j
 RHPDS_TERMS = re.compile(r"rhpds|agnosticv|agnosticd|opentlc|demo\.redhat\.com|SANDBOX_API_URL|SANDBOX_LOGIN_TOKEN|app\.adapters\.rhdp", re.I)
 OPERATIONAL_DOMAIN = re.compile(r"\b(?:[a-z0-9-]+\.)+(?:fm2aihpcsed\.com|smg-helix\.ai|trycloudflare\.com)\b", re.I)
 PRIVATE_IP = re.compile(r"(?<![0-9.])(?:10\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|192\.168\.)\d{1,3}\.\d{1,3}(?![0-9.])")
-EMAIL = re.compile(r"\b[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", re.I)
+EMAIL = re.compile(r"(?<![:/])\b[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Za-z]{2,})\b", re.I)
+URI_USERINFO = re.compile(r"\b[a-z][a-z0-9+.-]*://[^/\s@]+@", re.I)
 FIXTURE_EMAIL_DOMAINS = {"example.com", "example.org", "example.net", "example.test"}
+OPERATIONAL_ROLE_EMAIL_DOMAINS = {"fm2aihpcsed.com"}
 GOVERNANCE_PATHS = {
     "contracts/repository-sanitization-v1.yaml",
     "docs/repository-hygiene.md",
@@ -62,6 +64,16 @@ def disposition(path: str, categories: set[str]) -> str:
     return "retain"
 
 
+def non_fixture_email_count(text: str) -> int:
+    text_without_url_credentials = URI_USERINFO.sub("", text)
+    ignored_domains = FIXTURE_EMAIL_DOMAINS | OPERATIONAL_ROLE_EMAIL_DOMAINS
+    return sum(
+        1
+        for match in EMAIL.finditer(text_without_url_credentials)
+        if match.group(1).lower() not in ignored_domains
+    )
+
+
 def audit() -> dict[str, Any]:
     records: list[dict[str, Any]] = []
     files = tracked_files()
@@ -82,11 +94,11 @@ def audit() -> dict[str, Any]:
         private_ip_count = len(PRIVATE_IP.findall(text))
         if domain_count or private_ip_count:
             categories.add("operational-topology")
-        non_fixture_email_count = sum(1 for match in EMAIL.finditer(text) if match.group(1).lower() not in FIXTURE_EMAIL_DOMAINS)
-        if non_fixture_email_count:
+        email_count = non_fixture_email_count(text)
+        if email_count:
             categories.add("personal-identifier")
         if categories:
-            records.append({"path": path, "categories": sorted(categories), "disposition": disposition(path, categories), "counts": {"operational_domains": domain_count, "private_ips": private_ip_count, "non_fixture_emails": non_fixture_email_count}})
+            records.append({"path": path, "categories": sorted(categories), "disposition": disposition(path, categories), "counts": {"operational_domains": domain_count, "private_ips": private_ip_count, "non_fixture_emails": email_count}})
     category_counts = Counter(category for record in records for category in record["categories"])
     disposition_counts = Counter(record["disposition"] for record in records)
     return {
