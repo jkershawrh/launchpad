@@ -32,7 +32,7 @@ metadata:
   recommended_next_items: []
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
-  showroom_content_ref: a1c0ec072d305c9e52eab43695c3e33e5620c083
+  showroom_content_ref: c3965bb8c6d38d47abc70f79b9d3dbe03f0d9573
   showroom_content_playbook: site-lab.yml
   showroom_content_start_path: showroom-lab
   operator_workshop: true
@@ -84,7 +84,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/network-operations-agent.git
-  workload_revision: a1c0ec072d305c9e52eab43695c3e33e5620c083
+  workload_revision: c3965bb8c6d38d47abc70f79b9d3dbe03f0d9573
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -113,7 +113,7 @@ metadata:
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/network-operations-agent.git
-  source_content_revision: a1c0ec072d305c9e52eab43695c3e33e5620c083
+  source_content_revision: c3965bb8c6d38d47abc70f79b9d3dbe03f0d9573
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1
