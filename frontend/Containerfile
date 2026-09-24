@@ -13,6 +13,9 @@ LABEL name="partner-ai-launchpad-portal" \
       version="0.1.0" \
       description="Partner AI Launchpad — Partner Portal"
 
+USER 0
+RUN dnf -y upgrade && dnf clean all
+
 COPY --from=build /opt/app-root/src/dist /opt/app-root/src
 COPY nginx.conf /etc/nginx/nginx.conf
 

@@ -53,3 +53,14 @@ def test_ci_builds_both_portal_containerfiles() -> None:
 
     assert "-f frontend/Containerfile frontend/" in text
     assert "-f admin/Containerfile admin/" in text
+
+
+def test_release_images_apply_available_ubi_security_updates() -> None:
+    for relative_path in (
+        "backend/Containerfile",
+        "frontend/Containerfile",
+        "admin/Containerfile",
+    ):
+        text = (ROOT / relative_path).read_text()
+        assert "dnf -y upgrade" in text
+        assert "dnf clean all" in text
