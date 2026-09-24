@@ -104,6 +104,15 @@ is still blocked from a staging claim because the Flightpath wildcard route
 certificate is not publicly trusted. Trusted DNS/TLS and one authenticated
 browser order/reclaim journey remain the next gate.
 
+A later read-only preflight found that the periodic catalog-health request to
+the protected Candidate MaaS endpoint omitted its bearer token and returned
+`401`, even though direct inference had passed. The source correction is in
+repository revision `0dbaacb01abd3a4bb57291c9ec805970409fb2c4`; its
+linux/amd64 backend image is published as immutable digest
+`sha256:e922ef53a5e08ae957de8b0a034652f7d64d605e09bdc032a6405279ba9c16e1`.
+That new image is not credited as live proof until Candidate 03 is promoted
+and three consecutive authenticated discovery intervals pass.
+
 ## Incident decision tree
 
 Use the smallest recovery action that matches the failed boundary.

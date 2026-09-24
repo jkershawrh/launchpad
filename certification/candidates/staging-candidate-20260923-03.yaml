@@ -3,8 +3,8 @@ candidate_id: launchpad-staging-20260923-03
 current_stage: green-integration
 platform:
   repository: https://github.com/jkershawrh/launchpad.git
-  revision: ceb39217e57acf78b0c724f95aadd286e68c9793
-  backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:2bd7996ed013f2138c85c4922aee4610a1019d0f5929dc5f4a4580db04f5fc71
+  revision: 51a9785ab61798a5e4921f31afc423ac984f1aa2
+  backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:e922ef53a5e08ae957de8b0a034652f7d64d605e09bdc032a6405279ba9c16e1
 catalog_releases:
   - catalog_id: intel-llm-cpu-serving
     version: 1.0.11

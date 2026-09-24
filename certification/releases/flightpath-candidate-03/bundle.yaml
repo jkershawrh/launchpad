@@ -8,10 +8,10 @@ target:
 promotion:
   candidate_id: launchpad-staging-20260923-03
   candidate_path: certification/candidates/staging-candidate-20260923-03.yaml
-  revision: ceb39217e57acf78b0c724f95aadd286e68c9793
+  revision: 51a9785ab61798a5e4921f31afc423ac984f1aa2
   overlay_path: deploy/launchpad/overlays/flightpath-candidate
-  rendered_sha256: 703cfd5c8899293ad422988386b80c089f3d5eede3f56eb4327390d24a832d48
-  backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:2bd7996ed013f2138c85c4922aee4610a1019d0f5929dc5f4a4580db04f5fc71
+  rendered_sha256: 3d8b3114c3f690da5e1687e8a1f1f90eb10ded8a4d37dec607ab8bb0342de9ac
+  backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:e922ef53a5e08ae957de8b0a034652f7d64d605e09bdc032a6405279ba9c16e1
 rollback:
   candidate_id: launchpad-staging-20260922-02
   candidate_path: certification/candidates/staging-candidate-20260922-02.yaml

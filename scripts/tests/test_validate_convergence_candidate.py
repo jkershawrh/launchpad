@@ -66,7 +66,7 @@ def test_third_candidate_binds_flightpath_lifecycle_and_requester_evidence() -> 
         "valid": True,
         "candidate_id": "launchpad-staging-20260923-03",
         "stage": "green-integration",
-        "platform_revision": "ceb39217e57acf78b0c724f95aadd286e68c9793",
+        "platform_revision": "51a9785ab61798a5e4921f31afc423ac984f1aa2",
         "catalog_count": 3,
         "evidence_count": 2,
         "next_stage": "green-canary",
