@@ -17,7 +17,7 @@
         "scripts/tests/test_backend_release_workflow.py"
       ],
       "risk_flags": [],
-      "sha256": "c79a3cddcd18a471bcad5e130a78ceb5b6cbbfb57ad6a228f50e6de83486cd7c"
+      "sha256": "3a6cef5efb658b6364d427537a4f0b95fbce2812e6ad1698f4b30e1327c3a102"
     },
     {
       "area": ".github",
@@ -84,7 +84,7 @@
         "scripts/tests/test_portal_release_workflow.py"
       ],
       "risk_flags": [],
-      "sha256": "463c44235e14d08f244c6f4d55cd127c696f33be6cb40f675223d30c3089031c"
+      "sha256": "400a7930d4ae74f7a7ce74da21fce7c16cade7dee95733087a294112bd949227"
     },
     {
       "area": ".github",
@@ -9888,7 +9888,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "bf609610704690cc40a8ef72497b82afafa4b050",
+  "source_commit": "38f5a74561d14be110184350719ac154d3e4a6f6",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

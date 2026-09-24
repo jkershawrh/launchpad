@@ -76,6 +76,15 @@ jobs:
           output-format: json
           output-file: vulnerability-report-fixable.json
 
+      - name: Retain vulnerability evidence even when the gate blocks
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: backend-vulnerability-scan-${{ inputs.expected_sha }}
+          path: |
+            vulnerability-report.json
+            vulnerability-report-fixable.json
+
       - name: Generate the SBOM
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
         with:
