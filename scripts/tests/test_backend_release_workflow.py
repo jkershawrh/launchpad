@@ -34,6 +34,9 @@ def test_backend_release_scans_generates_sbom_signs_and_attests() -> None:
 
     assert "anchore/scan-action@1638637db639e0ade3258b51db49a9a137574c3e" in text
     assert "severity-cutoff: high" in text
+    assert "Inventory all candidate vulnerabilities" in text
+    assert "Block fixable high and critical vulnerabilities" in text
+    assert "only-fixed: true" in text
     assert "anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610" in text
     assert "cosign sign --yes" in text
     assert "actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be" in text

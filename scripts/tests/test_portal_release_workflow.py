@@ -39,6 +39,9 @@ def test_portal_release_scans_sboms_signs_and_attests() -> None:
 
     assert "anchore/scan-action@" in text
     assert "severity-cutoff: high" in text
+    assert "Inventory all candidate vulnerabilities" in text
+    assert "Block fixable high and critical vulnerabilities" in text
+    assert "only-fixed: true" in text
     assert "anchore/sbom-action@" in text
     assert "cosign sign --yes" in text
     assert "actions/attest-build-provenance@" in text
