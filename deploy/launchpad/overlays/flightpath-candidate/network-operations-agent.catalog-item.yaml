@@ -29,7 +29,7 @@ metadata:
   showroom_title: Evidence-Backed Network Operations Agent
   namespace_slug: network-ops
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
-  showroom_content_ref: 1f24514abf5ba49955f22c3e5034bdb425725a71
+  showroom_content_ref: 6b8c63ddb7f361c0a91074e5c65323715aac745c
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   showroom_terminal_storage: true
@@ -55,7 +55,7 @@ metadata:
   workshop_node_spread: false
   workshop_node_min_ready_seconds: 0
   workload_repo: https://github.com/jkershawrh/network-operations-agent.git
-  workload_revision: 1f24514abf5ba49955f22c3e5034bdb425725a71
+  workload_revision: 6b8c63ddb7f361c0a91074e5c65323715aac745c
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
