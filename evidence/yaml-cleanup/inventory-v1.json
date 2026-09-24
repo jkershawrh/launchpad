@@ -30,7 +30,7 @@
       "path": ".github/workflows/ci.yml",
       "proposed_disposition": "preserve-test-or-delivery-input",
       "protection_class": "test-or-delivery-input",
-      "reference_count": 10,
+      "reference_count": 11,
       "referenced_by": [
         "admin/public/roadmap/index.html",
         "backend/tests/test_artifact_registry_policy.py",
@@ -41,10 +41,11 @@
         "evidence/runs/pilot-h1/PILOT-FEAT-001-red.xml",
         "evidence/runs/security-threat-model/report.json",
         "scripts/pre-commit-secret-scan.sh",
+        "scripts/tests/test_portal_release_workflow.py",
         "scripts/tests/test_write_ci_test_receipt.py"
       ],
       "risk_flags": [],
-      "sha256": "27072485c781788069e8dfb6376ec1a5049cc850f7ecf1e25ffc169a8b03901d"
+      "sha256": "4f5ada820b7ffcc581e7ce7f0b0a7ceec0a21ddef7464b9fc603e380dd51e8ca"
     },
     {
       "area": ".github",
@@ -66,6 +67,24 @@
         "environment-specific"
       ],
       "sha256": "edb764b0485734fd1a6c5368ee93205df94f6bbcc5080e8b83fb51735d59d628"
+    },
+    {
+      "area": ".github",
+      "classification": "ci",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "quality-engineering-owner",
+      "path": ".github/workflows/portal-release.yml",
+      "proposed_disposition": "preserve-test-or-delivery-input",
+      "protection_class": "test-or-delivery-input",
+      "reference_count": 1,
+      "referenced_by": [
+        "scripts/tests/test_portal_release_workflow.py"
+      ],
+      "risk_flags": [],
+      "sha256": "6f0ee366c3b08c459da7398ac657759ec5529a9a1e09258373bae439851ec839"
     },
     {
       "area": ".github",
@@ -9869,12 +9888,12 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "d8ccd6c5092250378e4fc55d9322f763c9809bfd",
+  "source_commit": "057058dc439d89a8cf50799990f81e641d4ac9e5",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
       "catalog-source": 15,
-      "ci": 4,
+      "ci": 5,
       "configuration": 11,
       "content-source": 18,
       "contract": 50,
@@ -9896,7 +9915,7 @@
       "rhpds-image-dependency": 4
     },
     "files_without_detected_repository_reference": 136,
-    "preserved_pending_review": 447,
+    "preserved_pending_review": 448,
     "protection_class_counts": {
       "authoritative-contract": 50,
       "catalog-release-input": 22,
@@ -9904,7 +9923,7 @@
       "participant-content-input": 128,
       "repository-governance-input": 8,
       "runtime-or-deployment-input": 189,
-      "test-or-delivery-input": 24
+      "test-or-delivery-input": 25
     },
     "risk_flag_counts": {
       "environment-specific": 164,
@@ -9913,8 +9932,8 @@
       "secret-object-review-required": 6,
       "status-field-review-required": 62
     },
-    "tracked_yaml_files": 447,
+    "tracked_yaml_files": 448,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": true
+  "tracked_changes_present": false
 }
