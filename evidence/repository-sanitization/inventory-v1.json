@@ -7,16 +7,16 @@
   },
   "summary": {
     "tracked_files_reviewed": 2368,
-    "candidate_files": 348,
+    "candidate_files": 347,
     "categories": {
       "operational-topology": 202,
       "personal-identifier": 17,
       "rhpds-artifact-provenance": 56,
-      "rhpds-reference": 148,
-      "runtime-rhdp-coupling": 14
+      "rhpds-reference": 147,
+      "runtime-rhdp-coupling": 13
     },
     "dispositions": {
-      "refactor-before-adapter-removal": 5,
+      "refactor-before-adapter-removal": 4,
       "remove-after-deployment-consumer-tests": 53,
       "remove-after-runtime-consumer-tests": 8,
       "remove-with-rhdp-adapter": 1,
@@ -222,19 +222,6 @@
         "runtime-rhdp-coupling"
       ],
       "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/api/deps.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "refactor-before-adapter-removal",
       "counts": {
         "operational_domains": 0,
         "private_ips": 0,

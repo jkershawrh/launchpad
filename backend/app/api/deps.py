@@ -97,17 +97,13 @@ def _create_catalog():
     else:
         local = MockCatalogAdapter()
 
-    babylon_kc = os.environ.get("BABYLON_KUBECONFIG", "")
-    if babylon_kc and os.path.exists(babylon_kc):
-        from app.adapters.rhdp.babylon_catalog import BabylonCatalogAdapter
-        from app.adapters.rhdp.combined_catalog import CombinedCatalogAdapter
-        babylon = BabylonCatalogAdapter(kubeconfig_path=babylon_kc)
-        return CombinedCatalogAdapter(local_catalog=local, babylon_catalog=babylon)
     return local
 
 
 def create_provisioning_service() -> ProvisioningService:
     mode = os.environ.get("LAUNCHPAD_MODE", "mock")
+    if mode not in {"mock", "local", "openshift"}:
+        raise ValueError(f"Unsupported LAUNCHPAD_MODE={mode}")
     db_stores = _create_db_stores()
     catalog = _create_catalog()
     if mode == "local":
@@ -224,64 +220,6 @@ def create_provisioning_service() -> ProvisioningService:
             cluster_registry=cluster_registry,
             cluster_client_factory=cluster_client_factory,
         )
-    elif mode == "rhdp":
-        from app.adapters.rhdp.cleanup import RHDPCleanupAdapter
-        from app.adapters.rhdp.pool import RHDPPoolAdapter
-        from app.adapters.rhdp.provisioning import RHDPProvisioningAdapter
-        from app.adapters.rhdp.sandbox_api import SandboxAPIClient
-        from app.adapters.rhdp.validation import RHDPValidationAdapter
-        sandbox_api = SandboxAPIClient()
-
-        placement = None
-        if os.environ.get("SMART_PLACEMENT_ENABLED", "true").lower() != "false":
-            from app.services.placement import PlacementService
-            placement = PlacementService(
-                stargate_url=os.environ.get("STARGATE_API_URL", ""),
-                stargate_api_key=os.environ.get("STARGATE_API_KEY", ""),
-            )
-
-        classifier = None
-        if os.environ.get("WORKLOAD_PROFILING_ENABLED", "false").lower() == "true":
-            from app.services.workload_classifier import WorkloadClassifier
-            classifier = WorkloadClassifier()
-
-        feedback = None
-        if os.environ.get("FEEDBACK_TRACKING_ENABLED", "false").lower() == "true":
-            from app.services.feedback_tracker import FeedbackTracker
-            outcome_store = None
-            if db_stores:
-                from app.storage.stores import PostgresOutcomeStore
-                outcome_store = PostgresOutcomeStore()
-            feedback = FeedbackTracker(db_store=outcome_store)
-
-        brain = None
-        if os.environ.get("ORCHESTRATION_BRAIN_ENABLED", "false").lower() == "true":
-            from app.services.orchestration_brain import OrchestrationBrain
-            deepfield = None
-            deepfield_url = os.environ.get("DEEPFIELD_API_URL", "")
-            if deepfield_url:
-                from app.adapters.deepfield.client import DeepFieldAdapter
-                deepfield = DeepFieldAdapter(api_url=deepfield_url)
-            brain = OrchestrationBrain(
-                classifier=classifier,
-                placement=placement,
-                feedback_tracker=feedback,
-                deepfield=deepfield,
-            )
-
-        return ProvisioningService(
-            catalog=catalog,
-            pool=RHDPPoolAdapter(sandbox_api=sandbox_api),
-            provisioner=RHDPProvisioningAdapter(),
-            validator=RHDPValidationAdapter(),
-            cleanup=RHDPCleanupAdapter(sandbox_api=sandbox_api),
-            db_stores=db_stores,
-            placement=placement,
-            workload_classifier=classifier,
-            feedback_tracker=feedback,
-            brain=brain,
-        )
-
     classifier = None
     if os.environ.get("WORKLOAD_PROFILING_ENABLED", "false").lower() == "true":
         from app.services.workload_classifier import WorkloadClassifier
