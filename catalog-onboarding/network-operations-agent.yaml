@@ -18,12 +18,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: 98b8ad4308488b8093b2c98e52e12ecc9baf5e98
+    revision: 46cffacec6a48828c64540d844781a1838e60e17
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: 98b8ad4308488b8093b2c98e52e12ecc9baf5e98
+    revision: 46cffacec6a48828c64540d844781a1838e60e17
     deploy_path: chart
 runtime:
   deployment_type: helm
