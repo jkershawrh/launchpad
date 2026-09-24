@@ -6,19 +6,19 @@
     "privacy": "paths-and-counts-only-no-matched-values"
   },
   "summary": {
-    "tracked_files_reviewed": 2359,
-    "candidate_files": 279,
+    "tracked_files_reviewed": 2304,
+    "candidate_files": 278,
     "categories": {
       "operational-topology": 202,
       "personal-identifier": 5,
       "rhpds-artifact-provenance": 44,
-      "rhpds-reference": 83
+      "rhpds-reference": 82
     },
     "dispositions": {
       "replace-with-sanitized-summary": 102,
       "retain": 91,
       "retain-until-mirrored-and-certified": 44,
-      "review-and-generalize": 37,
+      "review-and-generalize": 36,
       "sanitize": 5
     }
   },
@@ -69,18 +69,6 @@
       "counts": {
         "operational_domains": 0,
         "private_ips": 2,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/mock/catalog.py",
-      "categories": [
-        "rhpds-reference"
-      ],
-      "disposition": "review-and-generalize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
         "non_fixture_emails": 0
       }
     },

@@ -33,6 +33,15 @@ def test_provisioning_service_has_no_legacy_runtime_imports() -> None:
     assert "RHDPPoolAdapter" not in source
 
 
+def test_mock_catalog_does_not_advertise_retired_delivery_modes() -> None:
+    source = (ROOT / "backend/app/adapters/mock/catalog.py").read_text()
+
+    assert 'provisioner_mode": "rhdp' not in source
+    assert "agnosticv_tenant_config" not in source
+    assert "agnosticv_cloud_selector" not in source
+    assert "rhdp-provisioner" not in source
+
+
 def test_current_runtime_modes_remain_supported() -> None:
     from app.main import SUPPORTED_LAUNCHPAD_MODES
 
