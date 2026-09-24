@@ -4,6 +4,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 # ── Gate 5.1: test_shallow_health_unchanged ──────────────────────────
@@ -20,6 +21,20 @@ class TestShallowHealthUnchanged:
 
 
 class TestReadinessIsFailClosed:
+    def test_startup_rejects_retired_rhdp_mode(self):
+        from app.main import _validate_config
+
+        with patch.dict("os.environ", {"LAUNCHPAD_MODE": "rhdp"}, clear=False):
+            with pytest.raises(RuntimeError, match="Unsupported LAUNCHPAD_MODE=rhdp"):
+                _validate_config()
+
+    def test_startup_rejects_unknown_mode(self):
+        from app.main import _validate_config
+
+        with patch.dict("os.environ", {"LAUNCHPAD_MODE": "unexpected"}, clear=False):
+            with pytest.raises(RuntimeError, match="Unsupported LAUNCHPAD_MODE=unexpected"):
+                _validate_config()
+
     def test_mock_mode_is_ready_without_external_dependencies(self):
         from app.main import app
 

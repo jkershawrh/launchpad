@@ -35,20 +35,16 @@ _model_health_task = None
 _workshop_recovery_task = None
 
 
-REQUIRED_ENV_VARS = {
-    "rhdp": ["SANDBOX_API_URL", "SANDBOX_LOGIN_TOKEN"],
-    "openshift": [],
-}
+SUPPORTED_LAUNCHPAD_MODES = frozenset({"mock", "local", "openshift"})
 
 
 def _validate_config() -> None:
     """Validate mode-specific required env vars at startup."""
     mode = os.environ.get("LAUNCHPAD_MODE", "mock")
-    required = REQUIRED_ENV_VARS.get(mode, [])
-    missing = [v for v in required if not os.environ.get(v)]
-    if missing:
+    if mode not in SUPPORTED_LAUNCHPAD_MODES:
+        supported = ", ".join(sorted(SUPPORTED_LAUNCHPAD_MODES))
         raise RuntimeError(
-            f"LAUNCHPAD_MODE={mode} requires env vars: {', '.join(missing)}"
+            f"Unsupported LAUNCHPAD_MODE={mode}; supported modes: {supported}"
         )
     if mode != "mock":
         logger.info("Launchpad starting in %s mode", mode)

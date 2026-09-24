@@ -7,12 +7,12 @@
   },
   "summary": {
     "tracked_files_reviewed": 2368,
-    "candidate_files": 350,
+    "candidate_files": 348,
     "categories": {
       "operational-topology": 202,
       "personal-identifier": 17,
       "rhpds-artifact-provenance": 56,
-      "rhpds-reference": 150,
+      "rhpds-reference": 148,
       "runtime-rhdp-coupling": 14
     },
     "dispositions": {
@@ -23,7 +23,7 @@
       "replace-with-sanitized-summary": 102,
       "retain": 91,
       "retain-until-mirrored-and-certified": 44,
-      "review-and-generalize": 41,
+      "review-and-generalize": 39,
       "sanitize": 5
     }
   },
@@ -74,18 +74,6 @@
       "counts": {
         "operational_domains": 0,
         "private_ips": 2,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/.env.example",
-      "categories": [
-        "rhpds-reference"
-      ],
-      "disposition": "review-and-generalize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
         "non_fixture_emails": 0
       }
     },
@@ -247,18 +235,6 @@
         "runtime-rhdp-coupling"
       ],
       "disposition": "refactor-before-adapter-removal",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/main.py",
-      "categories": [
-        "rhpds-reference"
-      ],
-      "disposition": "review-and-generalize",
       "counts": {
         "operational_domains": 0,
         "private_ips": 0,
