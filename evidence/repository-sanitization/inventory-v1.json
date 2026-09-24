@@ -7,10 +7,10 @@
   },
   "summary": {
     "tracked_files_reviewed": 2304,
-    "candidate_files": 278,
+    "candidate_files": 277,
     "categories": {
       "operational-topology": 202,
-      "personal-identifier": 5,
+      "personal-identifier": 4,
       "rhpds-artifact-provenance": 44,
       "rhpds-reference": 82
     },
@@ -19,7 +19,7 @@
       "retain": 91,
       "retain-until-mirrored-and-certified": 44,
       "review-and-generalize": 36,
-      "sanitize": 5
+      "sanitize": 4
     }
   },
   "records": [
@@ -109,18 +109,6 @@
         "operational_domains": 0,
         "private_ips": 0,
         "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/celery_app.py",
-      "categories": [
-        "personal-identifier"
-      ],
-      "disposition": "sanitize",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 1
       }
     },
     {

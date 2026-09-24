@@ -1,7 +1,8 @@
 """Celery application for Launchpad background task processing.
 
 Replaces asyncio background loops with persistent, retryable, observable tasks.
-Broker: Redis in ecosystem-redis namespace (DB 2).
+Production deployments must inject ``CELERY_BROKER_URL`` from a Secret-backed
+environment variable. The default is local development only.
 """
 
 import os
@@ -10,7 +11,7 @@ from celery import Celery
 
 REDIS_URL = os.environ.get(
     "CELERY_BROKER_URL",
-    "redis://:ecosystem-redis-2026@redis.ecosystem-redis.svc:6379/2",
+    "redis://127.0.0.1:6379/2",
 )
 
 app = Celery("launchpad", broker=REDIS_URL, backend=REDIS_URL)

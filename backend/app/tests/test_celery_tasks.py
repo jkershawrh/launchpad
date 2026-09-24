@@ -28,9 +28,10 @@ class TestCeleryAppExists:
         from celery_app import REDIS_URL
         assert "/2" in REDIS_URL
 
-    def test_broker_uses_ecosystem_redis(self):
+    def test_default_broker_contains_no_embedded_credentials(self):
         from celery_app import REDIS_URL
-        assert "ecosystem-redis" in REDIS_URL
+        assert "@" not in REDIS_URL
+        assert REDIS_URL == "redis://127.0.0.1:6379/2"
 
     def test_json_serializer(self):
         from celery_app import app
