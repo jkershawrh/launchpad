@@ -58,8 +58,6 @@ if [ "$CATALOG_COUNT" -ge 21 ]; then pass "Catalog: $CATALOG_COUNT items"; else 
 OFFICIALS=$(echo "$CATALOG" | python3 -c "import sys,json; print(sum(1 for i in json.load(sys.stdin) if i.get('metadata',{}).get('official_quickstart')))" 2>/dev/null || echo "0")
 if [ "$OFFICIALS" -ge 3 ]; then pass "Official quickstarts: $OFFICIALS"; else fail "Official quickstarts: only $OFFICIALS (expected 3+)"; fi
 
-RHDP=$(echo "$CATALOG" | python3 -c "import sys,json; print(sum(1 for i in json.load(sys.stdin) if i.get('metadata',{}).get('provisioner_mode')=='rhdp'))" 2>/dev/null || echo "0")
-pass "RHDP-wired items: $RHDP (new items need DB sync)"
 echo ""
 
 # ── Step 4: Launchpad API — Full Lifecycle ────────────

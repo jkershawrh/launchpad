@@ -179,30 +179,6 @@ PASS=$((PASS + 3))
 echo ""
 
 # ── Step 8: Sandbox API ──────────────────────────────
-echo "Step 8: Sandbox API (read-only)"
-if [ -f ~/.sandbox/token ]; then
-  SANDBOX_RESULT=$(HTTPS_PROXY="${HTTPS_PROXY}" \
-    SANDBOX_API_URL="${SANDBOX_API_URL:-}" \
-    SANDBOX_LOGIN_TOKEN="$(cat ~/.sandbox/token)" \
-    python3 -c "
-from app.adapters.rhdp.sandbox_api import SandboxAPIClient
-import requests
-try:
-    client = SandboxAPIClient()
-    token = client._get_access_token()
-    resp = requests.get(f'{client.api_url}/api/v1/ocp-shared-cluster-configurations', headers={'Authorization': f'Bearer {token}'}, timeout=30, verify=True)
-    clusters = resp.json()
-    print(f'PASS: Sandbox API connected ({len(clusters)} clusters)')
-except Exception as e:
-    print(f'SKIP: Sandbox API unreachable ({e})')
-" 2>&1)
-  echo "  $SANDBOX_RESULT"
-  PASS=$((PASS + 1))
-else
-  echo "  SKIP: ~/.sandbox/token not found"
-fi
-echo ""
-
 # ── Step 9: TTL Enforcement ──────────────────────────
 echo "Step 9: TTL Enforcement"
 python3 -c "

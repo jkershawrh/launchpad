@@ -7,19 +7,15 @@
   },
   "summary": {
     "tracked_files_reviewed": 2369,
-    "candidate_files": 347,
+    "candidate_files": 334,
     "categories": {
       "operational-topology": 202,
       "personal-identifier": 17,
       "rhpds-artifact-provenance": 56,
-      "rhpds-reference": 147,
-      "runtime-rhdp-coupling": 13
+      "rhpds-reference": 138
     },
     "dispositions": {
-      "refactor-before-adapter-removal": 4,
       "remove-after-deployment-consumer-tests": 53,
-      "remove-after-runtime-consumer-tests": 8,
-      "remove-with-rhdp-adapter": 1,
       "replace-with-sanitized-summary": 102,
       "retain": 91,
       "retain-until-mirrored-and-certified": 44,
@@ -122,106 +118,6 @@
         "rhpds-reference"
       ],
       "disposition": "retain-until-mirrored-and-certified",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/__init__.py",
-      "categories": [
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/babylon_catalog.py",
-      "categories": [
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/cleanup.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/combined_catalog.py",
-      "categories": [
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/pool.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/provisioning.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/sandbox_api.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/app/adapters/rhdp/validation.py",
-      "categories": [
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-after-runtime-consumer-tests",
       "counts": {
         "operational_domains": 0,
         "private_ips": 0,
@@ -434,19 +330,6 @@
       }
     },
     {
-      "path": "backend/tests/test_kubeconfig_security.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "refactor-before-adapter-removal",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
       "path": "backend/tests/test_lifecycle_process_ha_certifier.py",
       "categories": [
         "operational-topology"
@@ -559,32 +442,6 @@
       }
     },
     {
-      "path": "backend/tests/test_rhdp_adapters.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "remove-with-rhdp-adapter",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/tests/test_runtime_mode_contract.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "refactor-before-adapter-removal",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
       "path": "backend/tests/test_september_17_exact_75_driver.py",
       "categories": [
         "operational-topology"
@@ -628,19 +485,6 @@
         "rhpds-reference"
       ],
       "disposition": "retain-until-mirrored-and-certified",
-      "counts": {
-        "operational_domains": 0,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "backend/tests/test_smart_placement.py",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "refactor-before-adapter-removal",
       "counts": {
         "operational_domains": 0,
         "private_ips": 0,
@@ -3963,19 +3807,6 @@
       "disposition": "retain",
       "counts": {
         "operational_domains": 1,
-        "private_ips": 0,
-        "non_fixture_emails": 0
-      }
-    },
-    {
-      "path": "scripts/live-e2e-test.sh",
-      "categories": [
-        "rhpds-reference",
-        "runtime-rhdp-coupling"
-      ],
-      "disposition": "refactor-before-adapter-removal",
-      "counts": {
-        "operational_domains": 0,
         "private_ips": 0,
         "non_fixture_emails": 0
       }

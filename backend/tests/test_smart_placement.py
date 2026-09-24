@@ -282,23 +282,6 @@ class TestPlacementIntegration:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 
-class TestPoolPreferredCluster:
-
-    def test_build_cloud_selector_without_preference(self):
-        from app.adapters.rhdp.pool import RHDPPoolAdapter
-        adapter = RHDPPoolAdapter(sandbox_api=MagicMock())
-        selector = adapter._build_cloud_selector("gaudi-endpoint")
-        assert "gaudi" in selector
-        assert "cluster_name" not in selector
-
-    def test_build_cloud_selector_with_preference(self):
-        from app.adapters.rhdp.pool import RHDPPoolAdapter
-        adapter = RHDPPoolAdapter(sandbox_api=MagicMock())
-        selector = adapter._build_cloud_selector("gaudi-endpoint", preferred_cluster="cluster-a")
-        assert selector.get("cluster_name") == "cluster-a"
-        assert selector.get("gaudi") == "true"
-
-
 # ═══════════════════════════════════════════════════════════════════════════════
 # Celery Task
 # ═══════════════════════════════════════════════════════════════════════════════

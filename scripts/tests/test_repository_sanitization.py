@@ -40,9 +40,9 @@ def test_inventory_contains_paths_and_counts_but_never_matched_values() -> None:
         assert not record["path"].startswith("evidence/repository-sanitization/")
 
 
-def test_current_baseline_identifies_legacy_runtime_and_delivery_candidates() -> None:
+def test_current_baseline_identifies_legacy_delivery_candidates() -> None:
     records = module.audit()["records"]
-    assert any(record["path"].startswith("backend/app/adapters/rhdp/") and record["disposition"] == "remove-after-runtime-consumer-tests" for record in records)
+    assert not any(record["path"].startswith("backend/app/adapters/rhdp/") for record in records)
     assert any(record["path"].startswith("deploy/agnosticv/") and record["disposition"] == "remove-after-deployment-consumer-tests" for record in records)
 
 

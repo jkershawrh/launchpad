@@ -23,6 +23,7 @@ GOVERNANCE_PATHS = {
     "docs/repository-hygiene.md",
     "scripts/audit_repository_sanitization.py",
     "scripts/tests/test_repository_sanitization.py",
+    "backend/tests/test_runtime_mode_contract.py",
 }
 
 
