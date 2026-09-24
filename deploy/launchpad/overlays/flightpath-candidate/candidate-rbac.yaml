@@ -121,7 +121,19 @@ spec:
               && request.resource.resource == 'applications'
               && request.namespace == 'openshift-gitops'
               && (request.operation == 'DELETE' ? oldObject.metadata.name : object.metadata.name)
-                .matches('^(showroom|workload)-launchpad-.*$')))
+                .matches('^(showroom|workload)-launchpad-.*$'))
+            || (request.resource.group == 'rbac.authorization.k8s.io'
+              && request.resource.resource == 'rolebindings'
+              && request.namespace == 'partner-ai-launchpad'
+              && (request.operation == 'DELETE' ? oldObject.metadata.name : object.metadata.name)
+                .matches('^launchpad-.*-image-puller$')
+              && (request.operation == 'DELETE' ? oldObject.roleRef.kind : object.roleRef.kind) == 'ClusterRole'
+              && (request.operation == 'DELETE' ? oldObject.roleRef.name : object.roleRef.name) == 'system:image-puller'
+              && (request.operation == 'DELETE' ? oldObject.subjects : object.subjects).size() > 0
+              && (request.operation == 'DELETE' ? oldObject.subjects : object.subjects).all(
+                subject,
+                subject.kind == 'Group'
+                  && subject.name.startsWith('system:serviceaccounts:launchpad-'))))
       message: Flightpath candidate writes are restricted to Launchpad-owned namespaces.
 ---
 apiVersion: admissionregistration.k8s.io/v1

@@ -706,6 +706,14 @@ def test_flightpath_candidate_provisioner_is_admission_scoped() -> None:
     assert "request.resource.group == 'argoproj.io'" in expression
     assert "request.namespace == 'openshift-gitops'" in expression
     assert "'^(showroom|workload)-launchpad-.*$'" in expression
+    assert "request.resource.group == 'rbac.authorization.k8s.io'" in expression
+    assert "request.resource.resource == 'rolebindings'" in expression
+    assert "request.namespace == 'partner-ai-launchpad'" in expression
+    assert "'^launchpad-.*-image-puller$'" in expression
+    assert "== 'system:image-puller'" in expression
+    assert "subject.kind == 'Group'" in expression
+    assert "subject.name.startsWith('system:serviceaccounts:launchpad-')" in expression
+    assert "request.namespace == 'partner-ai-launchpad'\n            ||" not in expression
     assert policy_binding["spec"] == {
         "policyName": "launchpad-flightpath-candidate-namespace-boundary",
         "validationActions": ["Deny"],
