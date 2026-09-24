@@ -522,6 +522,23 @@ def test_dr_backup_tool_encrypts_and_requires_explicit_restore_confirmation() ->
     assert "trap cleanup EXIT" in script
 
 
+def test_flightpath_maas_health_certification_is_exact_and_secret_safe() -> None:
+    script = (ROOT / "scripts/certify_flightpath_maas_health.sh").read_text()
+
+    assert "https://api.flightpath.fm2aihpcsed.com:6443" in script
+    assert "sha256:[a-f0-9]{64}" in script
+    assert "rollout status deployment/backend" in script
+    assert 'os.environ["LITELLM_API_KEY"]' in script
+    assert 'headers={"Authorization": f"Bearer {key}"}' in script
+    assert "authenticated Candidate MaaS inventory check $check/3" in script
+    assert "Model health: checked" in script
+    assert "LiteLLM unreachable.*401 Unauthorized" in script
+    assert "Authorization: Bearer" in script
+    assert "oc apply" not in script
+    assert "oc patch" not in script
+    assert "oc delete" not in script
+
+
 def test_flightpath_passive_dr_receipt_preserves_the_certification_boundary() -> None:
     evidence = json.loads(
         (

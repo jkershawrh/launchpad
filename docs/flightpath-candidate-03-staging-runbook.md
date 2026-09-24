@@ -85,6 +85,21 @@ Run the existing Flightpath certification checks and capture their immutable
 output. The promotion is successful only when internal order, readiness, and
 zero-residue reclaim pass against the exact Candidate 03 identities.
 
+For the Candidate MaaS authorization correction, retain the deployed digest
+and run the three-interval proof without printing the key:
+
+```sh
+scripts/certify_flightpath_maas_health.sh \
+  /explicit/flightpath.kubeconfig \
+  launchpad-flightpath-candidate \
+  sha256:e922ef53a5e08ae957de8b0a034652f7d64d605e09bdc032a6405279ba9c16e1
+```
+
+Do not mark `PILOT-BUG-014` verified from a single direct request. The script
+requires the exact deployed digest, three authenticated inventory requests,
+three successful scheduled model-health intervals, and no authorization or
+credential-bearing log output.
+
 ## Roll back
 
 Trigger rollback on failed migration, failed readiness, catalog/image identity
