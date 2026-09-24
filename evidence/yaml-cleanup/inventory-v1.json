@@ -2443,6 +2443,29 @@
       "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
+        "PortalApiContract"
+      ],
+      "owner": "contract-governance-owner",
+      "path": "contracts/portal-api-cdd-v1.yaml",
+      "proposed_disposition": "preserve-authoritative",
+      "protection_class": "authoritative-contract",
+      "reference_count": 2,
+      "referenced_by": [
+        "backend/tests/test_portal_api_cdd.py",
+        "docs/portal-api-cdd.md"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "3524051e57d0b6a703bba1451133c1fa9d378265b9f2f8a231a3246ec9a46f1d"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
         "ProductionReadinessContract"
       ],
       "owner": "contract-governance-owner",
@@ -3520,10 +3543,9 @@
       "path": "demos/deploy/database/secret.yaml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 2,
+      "reference_count": 1,
       "referenced_by": [
-        "demos/deploy/database/kustomization.yaml",
-        "evidence/repository-sanitization/inventory-v1.json"
+        "demos/deploy/database/kustomization.yaml"
       ],
       "risk_flags": [
         "secret-object-review-required"
@@ -4689,23 +4711,20 @@
       "dependency_flags": [
         "agnostic-automation-dependency"
       ],
-      "environment_markers": [
-        "arena"
-      ],
+      "environment_markers": [],
       "kinds": [],
       "owner": "platform-release-owner",
       "path": "deploy/console-embed/playbook.yml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 2,
+      "reference_count": 3,
       "referenced_by": [
+        "backend/tests/test_public_tunnel_contract.py",
         "deploy/console-embed/README.md",
         "evidence/repository-sanitization/inventory-v1.json"
       ],
-      "risk_flags": [
-        "environment-specific"
-      ],
-      "sha256": "c7c0a392a8f90204d835df92de7a6f5648062affdce50c0728189c686d1bf62c"
+      "risk_flags": [],
+      "sha256": "dc2312804ce2b55f265f45030ba6125326b6183050315c37bdfff2822e8a9d74"
     },
     {
       "area": "deploy",
@@ -8273,10 +8292,9 @@
       "path": "deploy/prod-dns/cluster-issuer.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 2,
+      "reference_count": 1,
       "referenced_by": [
-        "deploy/prod-dns/README.md",
-        "evidence/repository-sanitization/inventory-v1.json"
+        "deploy/prod-dns/README.md"
       ],
       "risk_flags": [],
       "sha256": "09add33c7b61e75ef2d330cedef1d7ddf4d0e11d31f976050d59d1d0c13afa19"
@@ -8347,17 +8365,18 @@
       "path": "deploy/tunnel-oncluster/deployment.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 4,
+      "reference_count": 5,
       "referenced_by": [
         "backend/tests/test_public_tunnel_contract.py",
         "deploy/tunnel-oncluster/README.md",
         "deploy/tunnel-oncluster/kustomization.yaml",
+        "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/public-tunnel-connector-failover-green-live-20260909.json"
       ],
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "e2e8f1cf6498223c2b73baf431c3e07709eb38746f1e5936e8e72a3140203e17"
+      "sha256": "b076aca782d77e7daebc5812889df17f14bd36a95907286b2f05dcb45db4af82"
     },
     {
       "area": "deploy",
@@ -9850,7 +9869,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "af12a38a4e8c2326f0416483f3607d6608052915",
+  "source_commit": "89c6b34b61a11210b2c007aa98e2ff037393d5b8",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
@@ -9858,7 +9877,7 @@
       "ci": 4,
       "configuration": 11,
       "content-source": 18,
-      "contract": 49,
+      "contract": 50,
       "demo-source": 110,
       "deployment-source": 157,
       "deployment-template": 11,
@@ -9877,9 +9896,9 @@
       "rhpds-image-dependency": 4
     },
     "files_without_detected_repository_reference": 136,
-    "preserved_pending_review": 446,
+    "preserved_pending_review": 447,
     "protection_class_counts": {
-      "authoritative-contract": 49,
+      "authoritative-contract": 50,
       "catalog-release-input": 22,
       "immutable-evidence": 26,
       "participant-content-input": 128,
@@ -9888,14 +9907,14 @@
       "test-or-delivery-input": 24
     },
     "risk_flag_counts": {
-      "environment-specific": 165,
+      "environment-specific": 164,
       "mutable-latest-image": 19,
       "possible-cluster-export-metadata": 1,
       "secret-object-review-required": 6,
-      "status-field-review-required": 61
+      "status-field-review-required": 62
     },
-    "tracked_yaml_files": 446,
+    "tracked_yaml_files": 447,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": true
+  "tracked_changes_present": false
 }
