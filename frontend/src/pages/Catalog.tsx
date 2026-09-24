@@ -7,8 +7,8 @@ import { catalogLaunchPath } from '../catalogNavigation';
 import {
   LEARNING_LEVELS,
   LEARNING_STAGE,
+  groupByLearningProgression,
   learningLevel,
-  learningStage,
   prerequisites,
   recommendedNextItems,
   sortByLearningProgression,
@@ -27,9 +27,19 @@ const CATEGORY_BORDER: Record<string, string> = {
   open_sandbox: '#3E8635',
 };
 
+const STAGE_COPY: Record<string, string> = {
+  Explore: 'Orient yourself to the platform and open a flexible environment.',
+  Learn: 'Build foundational model-serving and retrieval skills.',
+  Build: 'Create a complete solution using models, tools, and OpenShift.',
+  Engineer: 'Design multi-agent, domain, and reliability patterns.',
+  Operate: 'Observe, govern, and run AI systems in production.',
+  'Additional environments': 'Specialized environments available for ordering.',
+};
+
 export default function Catalog() {
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const filter = searchParams.get('category') || 'all';
   const levelFilter = searchParams.get('level') || 'all';
@@ -41,10 +51,19 @@ export default function Catalog() {
     });
   }, []);
 
-  const filtered = sortByLearningProgression(items.filter((item) => (
-    (filter === 'all' || item.category === filter) &&
-    (levelFilter === 'all' || learningLevel(item) === levelFilter)
-  )));
+  const normalizedQuery = query.trim().toLowerCase();
+  const filtered = sortByLearningProgression(items.filter((item) => {
+    const searchable = [
+      item.display_name,
+      item.description,
+      item.catalog_item_id,
+      ...item.required_capabilities,
+    ].join(' ').toLowerCase();
+    return (filter === 'all' || item.category === filter)
+      && (levelFilter === 'all' || learningLevel(item) === levelFilter)
+      && (!normalizedQuery || searchable.includes(normalizedQuery));
+  }));
+  const sections = groupByLearningProgression(filtered);
 
   const updateFilter = (key: 'category' | 'level', value: string) => {
     const next = new URLSearchParams(searchParams);
@@ -55,42 +74,41 @@ export default function Catalog() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'Red Hat Display' }}>Catalog</h1>
-        <p className="text-[#6A6E73] text-sm mt-1">Browse available labs, guided builds, and sandboxes.</p>
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#333] pb-5">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#73BCF7]">Order an environment</p>
+          <h1 className="mt-1 text-3xl font-bold text-white" style={{ fontFamily: 'Red Hat Display' }}>AI learning catalog</h1>
+          <p className="mt-2 max-w-2xl text-sm text-[#8A8D90]">Choose a starting point or follow the 001–401 progression. Every card below is currently available to order.</p>
+        </div>
+        <div className="rounded-lg border border-[#3c3f42] bg-[#212121] px-4 py-3 text-right">
+          <strong className="block text-2xl text-white">{items.length}</strong>
+          <span className="text-xs uppercase tracking-wider text-[#8A8D90]">Available items</span>
+        </div>
       </div>
 
-      <div className="flex gap-2">
-        {['all', 'quick_start', 'guided_build', 'open_sandbox'].map((cat) => (
-          <button
-            key={cat}
-            onClick={() => updateFilter('category', cat)}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition ${
-              filter === cat
-                ? 'bg-white/15 text-white'
-                : 'text-[#6A6E73] hover:text-white hover:bg-white/10'
-            }`}
-          >
-            {cat === 'all' ? 'All' : CATEGORY_LABELS[cat]}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="mr-1 text-xs font-medium uppercase tracking-wider text-[#6A6E73]">Learning level</span>
-        {['all', ...LEARNING_LEVELS].map((level) => (
-          <button
-            key={level}
-            onClick={() => updateFilter('level', level)}
-            className={`rounded px-3 py-1.5 text-xs font-medium transition ${
-              levelFilter === level
-                ? 'bg-[#0068B5] text-white'
-                : 'bg-[#212121] text-[#8A8D90] hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            {level === 'all' ? 'All levels' : `${level} · ${LEARNING_STAGE[level as keyof typeof LEARNING_STAGE]}`}
-          </button>
-        ))}
+      <div className="space-y-4 rounded-lg border border-[#333] bg-[#1b1b1b] p-4">
+        <div className="grid gap-3 lg:grid-cols-[minmax(240px,1fr)_auto] lg:items-center">
+          <label className="relative block">
+            <span className="sr-only">Search catalog</span>
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search labs, skills, or capabilities…" className="w-full rounded border border-[#4b4b4b] bg-[#151515] px-4 py-2.5 text-sm text-white placeholder:text-[#6A6E73] focus:border-[#73BCF7] focus:outline-none" />
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {['all', 'quick_start', 'guided_build', 'open_sandbox'].map((cat) => (
+              <button key={cat} onClick={() => updateFilter('category', cat)} className={`rounded px-3 py-2 text-xs font-medium transition ${filter === cat ? 'bg-white/15 text-white' : 'text-[#8A8D90] hover:bg-white/10 hover:text-white'}`}>
+                {cat === 'all' ? 'All types' : CATEGORY_LABELS[cat]}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 border-t border-[#333] pt-4">
+          <span className="mr-1 text-xs font-medium uppercase tracking-wider text-[#8A8D90]">Level</span>
+          {['all', ...LEARNING_LEVELS].map((level) => (
+            <button key={level} onClick={() => updateFilter('level', level)} className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${levelFilter === level ? 'bg-[#0068B5] text-white' : 'bg-[#212121] text-[#8A8D90] hover:bg-white/10 hover:text-white'}`}>
+              {level === 'all' ? 'All' : `${level} · ${LEARNING_STAGE[level as keyof typeof LEARNING_STAGE]}`}
+            </button>
+          ))}
+          <span className="ml-auto text-xs text-[#6A6E73]">Showing {filtered.length} of {items.length}</span>
+        </div>
       </div>
 
       {loading ? (
@@ -98,58 +116,40 @@ export default function Catalog() {
           {[1, 2, 3].map(i => <div key={i} className="h-20 bg-[#212121] rounded-lg animate-pulse" />)}
         </div>
       ) : (
-        <div className="grid gap-3">
-          {filtered.map((item) => (
-            <div
-              key={item.catalog_item_id}
-              className="bg-[#212121] border border-[#2e2e2e] rounded-lg p-4 hover:border-[#555] transition"
-              style={{ borderLeftWidth: '3px', borderLeftColor: CATEGORY_BORDER[item.category] || '#333' }}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-sm font-semibold text-white">{item.display_name}</h3>
-                    {learningLevel(item) && (
-                      <span className="rounded bg-[#0068B5]/20 px-2 py-0.5 text-xs font-semibold text-[#73BCF7]">
-                        {learningLevel(item)} · {learningStage(item)}
-                      </span>
-                    )}
-                    <StatusBadge status={item.category} />
-                    <span className="text-xs text-[#6A6E73]">v{item.version}</span>
+        sections.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-[#4b4b4b] py-14 text-center text-sm text-[#8A8D90]">No available catalog items match these filters.</div>
+        ) : (
+          <div className="space-y-9">
+            {sections.map((section) => (
+              <section key={section.level} aria-labelledby={`catalog-level-${section.level}`}>
+                <div className="mb-4 flex items-end justify-between gap-4 border-b border-[#333] pb-3">
+                  <div className="flex items-center gap-3">
+                    <span className="rounded bg-[#0068B5] px-2.5 py-1 text-sm font-bold text-white">{section.level === 'other' ? 'More' : section.level}</span>
+                    <div><h2 id={`catalog-level-${section.level}`} className="text-lg font-semibold text-white">{section.stage}</h2><p className="text-xs text-[#8A8D90]">{STAGE_COPY[section.stage]}</p></div>
                   </div>
-                  <p className="text-[#6A6E73] text-xs mb-3">{item.description}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {item.required_capabilities.map((cap) => (
-                      <span key={cap} className="text-xs bg-[#1a1a1a] text-[#6A6E73] px-2 py-0.5 rounded">{cap}</span>
-                    ))}
-                  </div>
-                  {prerequisites(item).length > 0 && (
-                    <p className="mt-3 text-xs text-[#8A8D90]">
-                      Prerequisite: {prerequisites(item).map((id) => items.find((entry) => entry.catalog_item_id === id)?.display_name || id).join(', ')}
-                    </p>
-                  )}
-                  {recommendedNextItems(item).length > 0 && (
-                    <p className="mt-1 text-xs text-[#8A8D90]">
-                      Continue with: {recommendedNextItems(item).map((id) => items.find((entry) => entry.catalog_item_id === id)?.display_name || id).join(', ')}
-                    </p>
-                  )}
+                  <span className="text-xs text-[#6A6E73]">{section.items.length} available</span>
                 </div>
-                <Link
-                  to={catalogLaunchPath(item.category, item.catalog_item_id)}
-                  className="ml-4 px-4 py-2 rounded text-xs font-medium text-white transition hover:opacity-90 shrink-0"
-                  style={{ backgroundColor: 'var(--brand-primary)' }}
-                >
-                  {item.category === 'open_sandbox' ? 'Configure' : 'Launch'}
-                </Link>
-              </div>
-              <div className="mt-2 flex gap-4 text-xs text-[#6A6E73]">
-                {item.default_hardware_profile && <span>Hardware: {item.default_hardware_profile}</span>}
-                {item.default_ttl && <span>TTL: {item.default_ttl}</span>}
-                {item.default_quota_profile && <span>Quota: {item.default_quota_profile}</span>}
-              </div>
-            </div>
-          ))}
-        </div>
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {section.items.map((item) => (
+                    <article key={item.catalog_item_id} className="flex min-h-[285px] flex-col rounded-lg border border-[#353535] bg-[#212121] p-5 transition hover:-translate-y-0.5 hover:border-[#666]" style={{ borderTopWidth: '3px', borderTopColor: CATEGORY_BORDER[item.category] || '#333' }}>
+                      <div className="mb-3 flex flex-wrap items-center gap-2"><StatusBadge status={item.category} /><span className="text-xs text-[#6A6E73]">v{item.version}</span></div>
+                      <h3 className="text-base font-semibold leading-snug text-white">{item.display_name}</h3>
+                      <p className="mt-2 line-clamp-4 text-xs leading-5 text-[#8A8D90]">{item.description}</p>
+                      <div className="mt-4 flex flex-wrap gap-1">{item.required_capabilities.slice(0, 4).map((cap) => <span key={cap} className="rounded bg-[#171717] px-2 py-0.5 text-[11px] text-[#8A8D90]">{cap}</span>)}</div>
+                      <div className="mt-auto pt-5">
+                        {prerequisites(item).length > 0 && <p className="mb-2 text-[11px] text-[#8A8D90]">Builds on: {prerequisites(item).map((id) => items.find((entry) => entry.catalog_item_id === id)?.display_name || id).join(', ')}</p>}
+                        <Link to={catalogLaunchPath(item.category, item.catalog_item_id)} className="block w-full rounded px-4 py-2.5 text-center text-xs font-semibold text-white transition hover:brightness-110" style={{ backgroundColor: 'var(--brand-primary)' }}>
+                          {item.category === 'open_sandbox' ? 'Configure environment' : 'Order this lab'}
+                        </Link>
+                        {recommendedNextItems(item).length > 0 && <p className="mt-2 text-center text-[11px] text-[#6A6E73]">Next: {recommendedNextItems(item).map((id) => items.find((entry) => entry.catalog_item_id === id)?.display_name || id).join(', ')}</p>}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        )
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CatalogItem } from './api/types';
 import {
+  groupByLearningProgression,
   learningLevel,
   learningStage,
   prerequisites,
@@ -46,5 +47,14 @@ describe('catalog learning progression', () => {
       'unclassified',
     ]);
     expect(source[0].catalog_item_id).toBe('operate');
+  });
+
+  it('organizes legacy deployed items by stable id when metadata is absent', () => {
+    const legacy = item('intel-llm-cpu-serving');
+    legacy.display_name = 'Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs';
+    const sections = groupByLearningProgression([legacy, item('ai-sandbox')]);
+
+    expect(sections.map((section) => section.level)).toEqual(['001', '101']);
+    expect(sections[1].items[0].catalog_item_id).toBe('intel-llm-cpu-serving');
   });
 });
