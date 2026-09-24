@@ -38,8 +38,10 @@ runtime:
   tabs:
   - id: terminal
     title: Terminal
+    source: showroom.terminal
   - id: workspace
     title: Reliability Advisor
+    source: workload.route.workspace
   workload:
     gitops_ready: true
     runtime_secret_name: model-connection

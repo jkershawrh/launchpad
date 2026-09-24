@@ -64,8 +64,10 @@ metadata:
   showroom_tabs:
   - id: terminal
     title: Terminal
+    source: showroom.terminal
   - id: workspace
     title: Reliability Advisor
+    source: workload.route.workspace
   required_models:
   - granite-3.2-8b-tools
   inference_endpoint: litellm
