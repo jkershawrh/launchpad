@@ -1,0 +1,64 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-evidence/v1",
+  "candidate_id": "launchpad-staging-20260923-03",
+  "stage": "green-integration-live-readonly-preflight",
+  "recorded_at": "2026-09-24T02:05:00Z",
+  "scope": {
+    "control_plane_namespace": "launchpad-flightpath-candidate",
+    "execution_cluster": "flightpath",
+    "public_access_enabled": false,
+    "mutating_operations": false
+  },
+  "results": {
+    "cluster": {
+      "status": "passed",
+      "api_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+      "ready_nodes": 6,
+      "unschedulable_nodes": 0
+    },
+    "control_plane": {
+      "status": "passed",
+      "admin": "1/1",
+      "backend": "1/1",
+      "candidate_maas": "1/1",
+      "lifecycle_worker": "1/1",
+      "partner_portal": "1/1",
+      "postgres": "1/1",
+      "public_access_gateway": "0/0"
+    },
+    "managed_residue": {
+      "status": "passed",
+      "launchpad_managed_namespaces": [
+        "launchpad-model-candidate"
+      ],
+      "active_participant_namespaces": 0
+    },
+    "lifecycle_scheduler": {
+      "status": "passed-current-with-historical-failure",
+      "latest_cycle": "20260924T0200",
+      "latest_result": "completed",
+      "historical_defect": "older session data contained a non-ISO timezone offset and caused validation failure"
+    },
+    "maas_discovery": {
+      "status": "blocked",
+      "http_status": 401,
+      "reason": "periodic model-health discovery omitted the configured bearer token",
+      "source_regression_test_added": true,
+      "live_fix_deployed": false
+    },
+    "browser_tls": {
+      "status": "blocked",
+      "route_admitted": true,
+      "certificate_subject": "*.apps.flightpath.fm2aihpcsed.com",
+      "certificate_issuer": "OpenShift ingress operator",
+      "verification_result": "self signed certificate in certificate chain"
+    }
+  },
+  "boundaries": {
+    "secrets_exported": false,
+    "orders_submitted": false,
+    "workshops_mutated": false,
+    "resources_created_or_deleted": false,
+    "promotion_claim": "Candidate 03 remains green-integration only. MaaS health authorization and trusted browser TLS must close before green-canary."
+  }
+}

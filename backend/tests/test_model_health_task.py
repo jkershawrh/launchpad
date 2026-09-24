@@ -3,8 +3,6 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from app.domain.enums import CatalogCategory, CatalogStatus
 from app.domain.models import CatalogItem
 
@@ -24,6 +22,25 @@ def _make_item(item_id, required_models=None, status="active"):
 # ── Gate 4.4: test_health_marks_unavailable ──────────────────────────
 
 class TestHealthMarksUnavailable:
+    def test_protected_model_inventory_uses_configured_bearer_token(self):
+        from tasks.model_health import _do_model_health_check
+
+        adapter = MagicMock()
+        adapter.list_items.return_value = []
+
+        with patch("tasks.model_health.httpx") as mock_httpx:
+            mock_resp = MagicMock()
+            mock_resp.json.return_value = {"data": []}
+            mock_httpx.get.return_value = mock_resp
+
+            _do_model_health_check(adapter, "http://fake:4000", "candidate-key")
+
+        mock_httpx.get.assert_called_once_with(
+            "http://fake:4000/models",
+            headers={"Authorization": "Bearer candidate-key"},
+            timeout=10,
+        )
+
     def test_unhealthy_model_sets_draft(self):
         from tasks.model_health import _do_model_health_check
 

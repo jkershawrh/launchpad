@@ -4,19 +4,27 @@ import logging
 import os
 
 import httpx
-from celery import shared_task
-
 from app.domain.enums import CatalogStatus
+from celery import shared_task
 
 logger = logging.getLogger("launchpad.tasks.model_health")
 
 
-def _do_model_health_check(catalog_adapter, litellm_base: str):
+def _do_model_health_check(
+    catalog_adapter,
+    litellm_base: str,
+    api_key: str = "",
+):
     try:
-        resp = httpx.get(f"{litellm_base.rstrip('/')}/models", timeout=10)
+        headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+        resp = httpx.get(
+            f"{litellm_base.rstrip('/')}/models",
+            headers=headers,
+            timeout=10,
+        )
         resp.raise_for_status()
         available = {m["id"] for m in resp.json().get("data", [])}
-    except Exception as e:
+    except (httpx.HTTPError, KeyError, TypeError, ValueError) as e:
         logger.warning("LiteLLM unreachable at %s: %s", litellm_base, e)
         return
 
@@ -53,8 +61,12 @@ def check_model_health(self):
             return {"status": "skipped"}
 
         from app.api.deps import catalog_adapter
-        _do_model_health_check(catalog_adapter, litellm_base)
+        _do_model_health_check(
+            catalog_adapter,
+            litellm_base,
+            os.environ.get("LITELLM_API_KEY", ""),
+        )
         return {"status": "ok"}
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - Celery must retry dependency failures
         logger.warning("Model health check failed (retry %d/%d): %s", self.request.retries, self.max_retries, e)
         raise self.retry(exc=e)

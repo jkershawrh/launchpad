@@ -94,7 +94,11 @@ async def _model_health_loop():
             from tasks.model_health import _do_model_health_check
 
             from app.api.deps import catalog_adapter
-            _do_model_health_check(catalog_adapter, litellm_base)
+            _do_model_health_check(
+                catalog_adapter,
+                litellm_base,
+                os.environ.get("LITELLM_API_KEY", ""),
+            )
         except Exception as e:  # noqa: BLE001 - the maintenance loop must survive health-check failures
             logger.debug("Model health check error (non-critical): %s", e)
 

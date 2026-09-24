@@ -46,6 +46,8 @@ operation, cluster maintenance action, or reclaim.
 | `PILOT-BUG-011` | Telemetry owner | H3 | `LP-T076`, producer/consumer outcome contract |
 | `PILOT-BUG-012` | Telemetry owner | H3 | `LP-T074`/`LP-T078`, outbox, receipt, replay and fault proof |
 | `PILOT-BUG-013` | Multi-Agent application owner | H0 | `LP-T084`, authenticated client and participant journey |
+| `PILOT-BUG-014` | AI platform owner | H0 | authenticated MaaS discovery and catalog-health regression proof |
+| `PILOT-BUG-015` | Edge/identity owner | H1 | `LP-E007`, trusted Flightpath browser and OIDC journey |
 | `PILOT-PERF-001` | AI workload owner | H0 | `LP-T012`, exact-concurrency stage-latency proof |
 | `PILOT-PERF-002` | AI serving owner | H3 | `LP-E009`, 30-user inference SLO proof |
 | `PILOT-PERF-003` | Placement/AI serving owners | H3 | `LP-E009`, saturated-model admission and release proof |
@@ -281,6 +283,33 @@ operation, cluster maintenance action, or reclaim.
   endpoint; a fresh seat displays discovered agents and completes the streamed
   workflow; missing/invalid tokens still receive 401; the certified concurrent
   journey has zero unintended 401 responses.
+
+### PILOT-BUG-014 — Model-health discovery omits MaaS authorization
+
+- **Status / severity:** Mitigated in source / S1
+- **Observed:** the Flightpath candidate backend repeatedly received `401`
+  from the protected Candidate MaaS `/models` endpoint. Direct model calls had
+  passed, but the periodic catalog-health path did not send the configured
+  `LITELLM_API_KEY` and therefore reported the service as unreachable.
+- **Durable fix:** pass the existing Secret-backed MaaS key to both in-process
+  and scheduled model-health discovery without logging or persisting it.
+- **Proof to close:** the corrected immutable backend image is deployed, the
+  authenticated inventory probe succeeds for at least three consecutive
+  intervals, required catalogs remain correctly eligible, an invalid key fails
+  closed, and logs contain no credential value.
+
+### PILOT-BUG-015 — Flightpath application routes use an untrusted chain
+
+- **Status / severity:** Open / S1
+- **Observed:** Flightpath candidate Routes are admitted and serve the expected
+  OpenShift OAuth challenge, but normal certificate verification fails with a
+  self-signed certificate in the chain. The served wildcard certificate is
+  issued by the OpenShift ingress operator rather than a publicly trusted CA.
+- **Durable fix:** install an approved trusted ingress certificate or use a
+  dedicated trusted Launchpad hostname without weakening client verification.
+- **Proof to close:** requester, admin, API, OIDC, Showroom, workspace, and
+  logout journeys pass from a clean external browser with no warning, bypass,
+  or private CA installation.
 
 ## Performance and scale defects
 
