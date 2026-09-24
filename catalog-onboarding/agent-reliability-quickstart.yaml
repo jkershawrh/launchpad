@@ -12,15 +12,15 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
+    revision: 0f13d85162800adaa1cd7821fff417528fcb76ea
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
-    deploy_path: deploy/base
+    revision: 0f13d85162800adaa1cd7821fff417528fcb76ea
+    deploy_path: chart
 runtime:
-  deployment_type: kustomize
+  deployment_type: helm
   required_capabilities:
   - openshift
   - showroom
@@ -41,6 +41,7 @@ runtime:
   - id: workspace
     title: Reliability Advisor
   workload:
+    gitops_ready: true
     runtime_secret_name: model-connection
     runtime_secret_sources:
       endpoint:
@@ -50,7 +51,14 @@ runtime:
         source: requested_model
       api-key:
         source: maas_api_key
-    runtime_secret_value_path: model-connection
+    runtime_secret_value_path: model.existingSecret
+    helm_values:
+      image:
+        repository: quay.io/rh-ee-jkershaw/agent-reliability-quickstart
+        digest: sha256:ccb631bb51942c71ae02f167fb39dc6e0931d7624243890acafcdbd510a1d0ce
+      route:
+        enabled: true
+        name: agent-reliability
     routes:
       workspace: agent-reliability
   allowed_exposure_policies:

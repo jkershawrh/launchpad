@@ -57,7 +57,7 @@ metadata:
   showroom_title: 'When Agents Fail: Reliable Agentic AI on OpenShift'
   namespace_slug: agent-reliability-quickstart
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
+  showroom_content_ref: 0f13d85162800adaa1cd7821fff417528fcb76ea
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   showroom_terminal_storage: true
@@ -79,14 +79,20 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
-  workload_deploy_type: kustomize
+  workload_revision: 0f13d85162800adaa1cd7821fff417528fcb76ea
+  workload_deploy_type: helm
   workload_deployment_scope: seat
-  workload_deploy_path: deploy/base
+  workload_deploy_path: chart
   workload_source_kind: chart
-  workload_gitops_ready: false
+  workload_gitops_ready: true
   workload_release_name: agent-reliability-quickstart
-  workload_helm_values: {}
+  workload_helm_values:
+    image:
+      repository: quay.io/rh-ee-jkershaw/agent-reliability-quickstart
+      digest: sha256:ccb631bb51942c71ae02f167fb39dc6e0931d7624243890acafcdbd510a1d0ce
+    route:
+      enabled: true
+      name: agent-reliability
   workload_ignore_differences: []
   workload_runtime_secret_name: model-connection
   workload_runtime_secret_sources:
@@ -97,11 +103,11 @@ metadata:
       source: requested_model
     api-key:
       source: maas_api_key
-  workload_runtime_secret_value_path: model-connection
+  workload_runtime_secret_value_path: model.existingSecret
   workload_identity_value_path: ''
   workload_routes:
     workspace: agent-reliability
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 8b1ad2403951acb0746fa27b16f8f1fd80baab76
+  source_content_revision: 0f13d85162800adaa1cd7821fff417528fcb76ea
   source_references: {}
