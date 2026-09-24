@@ -12,12 +12,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 34325425d83fe258250f4acb9f443a297baa2f28
+    revision: 04f8feee58965a8b6e9397487b61db0928869a9d
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 34325425d83fe258250f4acb9f443a297baa2f28
+    revision: 04f8feee58965a8b6e9397487b61db0928869a9d
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -68,23 +68,17 @@ runtime:
   allowed_exposure_policies:
   - internal
 certification:
-  stage: repository-discovery
+  stage: one-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
   - 25
   activation_blockers:
-  - Replace zero resource placeholders with measured per-seat resource measurements.
-  - Review required capabilities, models, participant tabs, routes, identity, and
-    runtime Secret sources.
-  - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
-    before activation.
-  - Resolve every repository discovery warning before activation.
-  - Review every mutable container image and replace it with an approved immutable
-    digest.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
-  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
+  - Route input screening through a supported TrustyAI and NeMo Guardrails configuration.
+  - Prove a RHOAI-managed CPU model-serving path or narrow the OpenShift AI model-serving claim.
+  - Complete five-seat and twenty-five-seat capacity and tenant-isolation qualification.
+  - Complete a clean re-order test of the pinned release after reclaim.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

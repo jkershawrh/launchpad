@@ -34,30 +34,25 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agent-reliability-quickstart.yaml
-  certification_stage: repository-discovery
+  certification_stage: one-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
   - 25
   activation_blockers:
-  - Replace zero resource placeholders with measured per-seat resource measurements.
-  - Review required capabilities, models, participant tabs, routes, identity, and
-    runtime Secret sources.
-  - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
-    before activation.
-  - Resolve every repository discovery warning before activation.
-  - Review every mutable container image and replace it with an approved immutable
-    digest.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
-  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
+  - Route input screening through a supported TrustyAI and NeMo Guardrails configuration.
+  - Prove a RHOAI-managed CPU model-serving path or narrow the OpenShift AI model-serving
+    claim.
+  - Complete five-seat and twenty-five-seat capacity and tenant-isolation qualification.
+  - Complete a clean re-order test of the pinned release after reclaim.
   allowed_exposure_policies:
   - internal
   showroom_journey: agent-reliability-quickstart
   showroom_title: 'When Agents Fail: Reliable Agentic AI on OpenShift'
   namespace_slug: agent-reliability-quickstart
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 34325425d83fe258250f4acb9f443a297baa2f28
+  showroom_content_ref: 04f8feee58965a8b6e9397487b61db0928869a9d
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   showroom_terminal_storage: true
@@ -81,7 +76,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 34325425d83fe258250f4acb9f443a297baa2f28
+  workload_revision: 04f8feee58965a8b6e9397487b61db0928869a9d
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -113,5 +108,5 @@ metadata:
     workspace: agent-reliability
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 34325425d83fe258250f4acb9f443a297baa2f28
+  source_content_revision: 04f8feee58965a8b6e9397487b61db0928869a9d
   source_references: {}
