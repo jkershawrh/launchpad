@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+configMapGenerator:
+  - name: canonical-ai-sandbox-catalog
+    files:
+      - catalog-item.yaml=ai-sandbox/catalog-item.yaml
+  - name: canonical-cpu-inference-serving-catalog
+    files:
+      - catalog-item.yaml=cpu-inference-serving/catalog-item.yaml
+  - name: canonical-rag-on-xeon-catalog
+    files:
+      - catalog-item.yaml=rag-on-xeon/catalog-item.yaml
+  - name: canonical-intel-llm-tool-calling-catalog
+    files:
+      - catalog-item.yaml=intel-llm-tool-calling/catalog-item.yaml
+  - name: canonical-openshift-operators-workshop-catalog
+    files:
+      - catalog-item.yaml=openshift-operators-workshop/catalog-item.yaml
+  - name: canonical-smoke-test-catalog
+    files:
+      - catalog-item.yaml=smoke-test/catalog-item.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true

@@ -5,6 +5,7 @@ namespace: launchpad-flightpath-candidate
 
 resources:
   - ../../base
+  - ../../../../catalog
   - candidate-clusters.yaml
   - candidate-rbac.yaml
   - candidate-maas.yaml

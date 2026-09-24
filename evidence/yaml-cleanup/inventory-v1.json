@@ -703,7 +703,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "df8377e6b067ccff4b73c81214f7b5b37f51266350caf5dcdf53f013f8980ee5"
+      "sha256": "50d074fa3beb59f67d9229943bfb30827b954a3a697a60434e3639e253c49e4f"
     },
     {
       "area": "certification",
@@ -7133,7 +7133,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "8733a76cd28f628d73f352ad337608e90c4b76c2229835622a023268cb83d299"
+      "sha256": "27ee48fe29325f505ccbd64b862906c21bbb136928c804a50abba7dbd4628966"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -7332,7 +7332,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "5eb304d21226df04fa1e545c48e691854156ed18541b030772212006a28c2880"
+      "sha256": "f86b2731c5592284485ccd2a607b6a1b43d8f676ba499d5dbb93c63208c7ac68"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-dr-gitops",
@@ -10403,7 +10403,7 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "6b1330861ed07109b6654cdbd9d648aeefbf13b1",
+  "source_commit": "74472725a57986468d8361f4c726682241e365e4",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {

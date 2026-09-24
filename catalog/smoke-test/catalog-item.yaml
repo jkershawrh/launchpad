@@ -1,5 +1,5 @@
 catalog_item_id: smoke-test
-display_name: "Smoke Test Demo"
+display_name: "Launchpad 001: Platform Smoke Test"
 description: "Minimal demo for platform validation. Deploys a single nginx pod. No model dependency. 10 minute TTL."
 category: quick_start
 version: "1.0.0"

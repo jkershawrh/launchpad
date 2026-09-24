@@ -46,6 +46,11 @@ def test_public_learning_titles_include_their_level():
         assert str(metadata["learning_level"]).zfill(3) in item["display_name"], catalog_id
 
 
+def test_internal_platform_validation_title_is_explicit():
+    smoke_test = _items()["smoke-test"]
+    assert smoke_test["display_name"] == "Launchpad 001: Platform Smoke Test"
+
+
 def test_catalog_ids_and_runtime_versions_remain_independent_of_learning_level():
     contract = yaml.safe_load(CONTRACT.read_text())
     assert contract["compatibility"]["catalog_ids_are_stable"] is True

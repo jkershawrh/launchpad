@@ -48,6 +48,30 @@ spec:
             - name: candidate-network-operations-catalog
               mountPath: /opt/catalog/network-operations-agent
               readOnly: true
+            - name: canonical-ai-sandbox-catalog
+              mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-cpu-inference-serving-catalog
+              mountPath: /opt/catalog/cpu-inference-serving/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-rag-on-xeon-catalog
+              mountPath: /opt/catalog/rag-on-xeon/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-intel-llm-tool-calling-catalog
+              mountPath: /opt/catalog/intel-llm-tool-calling/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-openshift-operators-workshop-catalog
+              mountPath: /opt/catalog/openshift-operators-workshop/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-smoke-test-catalog
+              mountPath: /opt/catalog/smoke-test/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-targets
           configMap:
@@ -71,6 +95,24 @@ spec:
         - name: candidate-network-operations-catalog
           configMap:
             name: flightpath-candidate-network-operations-catalog
+        - name: canonical-ai-sandbox-catalog
+          configMap:
+            name: canonical-ai-sandbox-catalog
+        - name: canonical-cpu-inference-serving-catalog
+          configMap:
+            name: canonical-cpu-inference-serving-catalog
+        - name: canonical-rag-on-xeon-catalog
+          configMap:
+            name: canonical-rag-on-xeon-catalog
+        - name: canonical-intel-llm-tool-calling-catalog
+          configMap:
+            name: canonical-intel-llm-tool-calling-catalog
+        - name: canonical-openshift-operators-workshop-catalog
+          configMap:
+            name: canonical-openshift-operators-workshop-catalog
+        - name: canonical-smoke-test-catalog
+          configMap:
+            name: canonical-smoke-test-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -114,6 +156,30 @@ spec:
             - name: candidate-network-operations-catalog
               mountPath: /opt/catalog/network-operations-agent
               readOnly: true
+            - name: canonical-ai-sandbox-catalog
+              mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-cpu-inference-serving-catalog
+              mountPath: /opt/catalog/cpu-inference-serving/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-rag-on-xeon-catalog
+              mountPath: /opt/catalog/rag-on-xeon/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-intel-llm-tool-calling-catalog
+              mountPath: /opt/catalog/intel-llm-tool-calling/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-openshift-operators-workshop-catalog
+              mountPath: /opt/catalog/openshift-operators-workshop/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-smoke-test-catalog
+              mountPath: /opt/catalog/smoke-test/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-ca-bundle
           configMap:
@@ -134,6 +200,24 @@ spec:
         - name: candidate-network-operations-catalog
           configMap:
             name: flightpath-candidate-network-operations-catalog
+        - name: canonical-ai-sandbox-catalog
+          configMap:
+            name: canonical-ai-sandbox-catalog
+        - name: canonical-cpu-inference-serving-catalog
+          configMap:
+            name: canonical-cpu-inference-serving-catalog
+        - name: canonical-rag-on-xeon-catalog
+          configMap:
+            name: canonical-rag-on-xeon-catalog
+        - name: canonical-intel-llm-tool-calling-catalog
+          configMap:
+            name: canonical-intel-llm-tool-calling-catalog
+        - name: canonical-openshift-operators-workshop-catalog
+          configMap:
+            name: canonical-openshift-operators-workshop-catalog
+        - name: canonical-smoke-test-catalog
+          configMap:
+            name: canonical-smoke-test-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
