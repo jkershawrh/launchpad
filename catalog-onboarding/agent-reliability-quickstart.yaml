@@ -12,12 +12,12 @@ catalog:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: e9435523958ffc5a12298441811460b240c95454
+    revision: 62a21eb1cce04cd30238dda82e8cecef70e484ca
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: e9435523958ffc5a12298441811460b240c95454
+    revision: 62a21eb1cce04cd30238dda82e8cecef70e484ca
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -60,11 +60,11 @@ runtime:
         digest: sha256:90776916eee2acd6f0ea45990337cc75a04bfe19ef4f8513af1d540e3c529b13
       route:
         enabled: true
-        name: agent-reliability
+        name: ar
       profile:
         labFailureInjection: true
     routes:
-      workspace: agent-reliability
+      workspace: ar
   allowed_exposure_policies:
   - internal
 certification:

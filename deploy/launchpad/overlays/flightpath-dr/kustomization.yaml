@@ -6,6 +6,7 @@ namespace: partner-ai-launchpad
 resources:
   - ../../base
   - flightpath-clusters.yaml
+  - argocd-trustyai-rbac.yaml
 
 images:
   - name: backend
