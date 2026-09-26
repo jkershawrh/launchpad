@@ -1,0 +1,38 @@
+{
+  "schema_version": "launchpad.redhat.com/convergence-preflight-evidence/v1",
+  "candidate_id": "launchpad-staging-20260925-04",
+  "collected_at": "2026-09-26T21:47:19Z",
+  "stage": "green-integration",
+  "result": "blocked",
+  "target": {
+    "cluster_id": "flightpath",
+    "infrastructure_id": "flightpath-6c76l",
+    "api_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "namespace": "launchpad-flightpath-candidate"
+  },
+  "lifecycle_gate": {
+    "active_workshops": 0,
+    "active_sessions": 0,
+    "passed": true
+  },
+  "backup": {
+    "format": "PostgreSQL custom dump encrypted with age X25519",
+    "encrypted_filename": "flightpath-candidate-04-20260926T214719Z.dump.age",
+    "encrypted_bytes": 541642,
+    "sha256": "ca7e41b6619f20508fd05c0608d7ffbdd5935b17ea8c77b983dff74ef36c8cd2",
+    "checksum_verified": true,
+    "restore_identity_stored_outside_git": true
+  },
+  "payload": {
+    "rendered_sha256": "ea287ce14b7bcdd28e055c85bb5bf291316ad2f82667e899f34409dbaea4af0b",
+    "server_validated_dry_run": "passed",
+    "validated_resource_count": 47
+  },
+  "blocking_gates": {
+    "candidate_routes_reachable": false,
+    "route_observation": "The admin hostname still resolves to unreachable 192.168.1.245; the active Flightpath ingress is 192.168.1.246."
+  },
+  "mutation_performed": false,
+  "promotion_authorized": false,
+  "next_gate": "Correct the admin DNS record, verify all three candidate routes, repeat the exact dry-run, then apply the approved bundle."
+}
