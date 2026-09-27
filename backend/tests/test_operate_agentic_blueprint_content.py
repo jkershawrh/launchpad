@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 import yaml
 
@@ -21,6 +22,8 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["prerequisites"] == ["multi-agent-quickstart"]
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
     assert metadata["workload_helm_values"]["image"]["digest"].startswith("sha256:")
+    assert re.fullmatch(r"[0-9a-f]{40}", metadata["showroom_content_ref"])
+    assert metadata["source_content_revision"] == metadata["showroom_content_ref"]
     assert metadata["activation_blockers"]
 
 
@@ -75,4 +78,3 @@ def test_operate_blueprint_playbook_uses_local_content():
         {"url": ".", "start_path": "content-operate-agentic-blueprint"}
     ]
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
-

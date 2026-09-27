@@ -6,8 +6,9 @@ This working tree contains the foundation and first content candidate for a
 single episodic Launchpad journey built on the Red Hat and Intel evidence-backed
 multi-agent blueprint.
 
-The work is intentionally uncommitted on branch
-`codex/flightpath-migration-20260922`. Review it before committing or pushing.
+The source and content candidate were committed on branch
+`codex/flightpath-migration-20260922`. The catalog pins the Showroom content to
+commit `ddd7c2aab25d4c10f7738f15eece1ab101a95b15`.
 
 ## Decisions already made
 
@@ -54,6 +55,16 @@ The candidate reuses the digest-pinned `multi-agent-seat` chart and workload
 image from `multi-agent-quickstart`. It is `status: draft`, limited to one seat,
 and is not ready for participant ordering.
 
+Immutable runtime artifact:
+
+```text
+quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+```
+
+The image manifest was resolved successfully from Quay. Launchpad builds the
+Showroom from the immutable Git content revision above; it does not package
+each guide into a separate participant-content image.
+
 The linear content journey is:
 
 1. Establish namespace, workload, model, and resource baseline.
@@ -96,6 +107,8 @@ Using the repository Python 3.12 environment:
 Focused blueprint, catalog, onboarding, content tests: 52 passed
 Full non-local backend suite: 2293 passed, 27 skipped, 13 deselected
 All catalog, onboarding, and contract YAML parsed successfully
+Antora Showroom build: passed without warnings
+Immutable workload image manifest: resolved from Quay
 git diff --check: clean
 ```
 
@@ -115,4 +128,3 @@ not failures in this change.
    contract tests first.
 6. Replace `main` content references with immutable revisions.
 7. Run one-seat certification before changing `status` or seat capacity.
-
