@@ -44,6 +44,7 @@ metadata:
   content_only: false
   onboarding_managed: false
   certification_stage: content-candidate
+  certification_proof_contract: certification/catalog/operate-agentic-blueprint.yaml
   max_workshop_seats: 1
   promotion_sequence:
     - 1

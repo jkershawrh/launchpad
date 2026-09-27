@@ -58,7 +58,7 @@ def test_multi_agent_live_driver_does_not_pipe_curl_into_early_exit_grep():
     source = DRIVER.read_text()
 
     assert 'showroom_index="$(curl' in source
-    assert "grep -q 'Build Multi-Agent AI Systems' <<<\"$showroom_index\"" in source
+    assert 'grep -Fq "$showroom_marker" <<<"$showroom_index"' in source
     assert "| grep -q 'Build Multi-Agent AI Systems'" not in source
 
 

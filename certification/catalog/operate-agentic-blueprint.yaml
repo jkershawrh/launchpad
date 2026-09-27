@@ -1,0 +1,123 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+
+metadata:
+  catalog_item_id: operate-agentic-blueprint
+  display_name: "Operate Evidence-Backed Multi-Agent Systems"
+
+spec:
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies:
+    - internal
+
+  scale_profiles:
+    - seats: 1
+      required_consecutive_runs: 1
+      probe_concurrency: 1
+      maximum_ready_seconds: 900
+      maximum_cleanup_seconds: 600
+
+  showroom:
+    pages:
+      - id: welcome
+        path: /www/modules/index.html
+        marker: "Operate Evidence-Backed Multi-Agent Systems"
+      - id: baseline
+        path: /www/modules/01-baseline.html
+        marker: "Establish the Operational Baseline"
+      - id: correlate
+        path: /www/modules/02-correlate.html
+        marker: "Correlate the Journey"
+      - id: policy
+        path: /www/modules/03-policy.html
+        marker: "Inspect Evidence and Policy"
+      - id: recovery
+        path: /www/modules/04-failure-recovery.html
+        marker: "Prove Safe Denial and Recovery"
+      - id: change
+        path: /www/modules/05-change-proof.html
+        marker: "Change, Compare, and Restore"
+      - id: conclusion
+        path: /www/modules/99-conclusion.html
+        marker: "Operational Proof Package"
+
+  seat_probe:
+    argv:
+      - bash
+      - scripts/certify-operate-agentic-blueprint-seat.sh
+      - "{namespace}"
+      - "{cluster_ref}"
+    timeout_seconds: 900
+    result_format: json
+    json_assertions:
+      - path: result
+        equals: GREEN-live-internal-seat
+      - path: cluster_ref
+        equals: flightpath
+      - path: readiness.agents_discovered
+        equals: 3
+      - path: multi_agent_journey.steps
+        equals: 3
+      - path: multi_agent_journey.errors
+        length_equals: 0
+      - path: presentation.required
+        equals: true
+      - path: presentation.root_http_status
+        equals: 200
+      - path: presentation.health.agents_discovered
+        equals: 3
+      - path: presentation.policy.authority
+        equals: recommend_only
+      - path: presentation.client_token_exposed
+        equals: false
+      - path: terminal_scope
+        contains: own_edit=yes
+      - path: terminal_scope
+        contains: cross_namespace=DENIED
+      - path: terminal_scope
+        contains: node_list=DENIED
+      - path: contains_sensitive_values
+        equals: false
+
+  cleanup:
+    resources:
+      - namespaces
+      - applications.argoproj.io
+      - rolebindings.rbac.authorization.k8s.io
+      - persistentvolumeclaims
+      - persistentvolumes
+      - routes.route.openshift.io
+      - secrets
+
+  rubric:
+    required_score: 100
+    categories:
+      - id: contract_integrity
+        weight: 15
+        requires:
+          - contract_valid
+          - evidence_hashed
+      - id: provisioning_readiness
+        weight: 20
+        requires:
+          - all_seats_ready
+          - ready_within_limit
+      - id: participant_function
+        weight: 25
+        requires:
+          - showroom_pages_passed
+          - seat_probes_passed
+          - presentation_live_passed
+      - id: authorization
+        weight: 20
+        requires:
+          - namespace_isolation_passed
+          - sensitive_values_absent
+          - server_side_proxy_auth_passed
+      - id: cleanup
+        weight: 20
+        requires:
+          - cleanup_completed
+          - zero_residue_cleanup
+          - model_keys_revoked

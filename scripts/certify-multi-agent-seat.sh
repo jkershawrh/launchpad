@@ -5,6 +5,13 @@ namespace="${1:?usage: certify-multi-agent-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-multi-agent-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 : "${CONTROL_KUBECONFIG:=$KUBECONFIG}"
+showroom_marker="${SHOWROOM_MARKER:-Build Multi-Agent AI Systems}"
+presentation_required="${PRESENTATION_REQUIRED:-false}"
+
+if [[ "$presentation_required" != "true" && "$presentation_required" != "false" ]]; then
+  echo "PRESENTATION_REQUIRED must be true or false" >&2
+  exit 64
+fi
 
 # Keep the live target explicit even for commands nested inside this driver.
 # ``command`` bypasses this wrapper and invokes the real OpenShift CLI.
@@ -108,6 +115,10 @@ showroom_selector='app.kubernetes.io/name=showroom'
 stage="readiness-barrier"
 oc wait -n "$namespace" --for=condition=Ready pod -l "$workload_selector" --timeout=300s >/dev/null
 oc wait -n "$namespace" --for=condition=Ready pod -l "$showroom_selector" --timeout=300s >/dev/null
+if [[ "$presentation_required" == "true" ]]; then
+  oc wait -n "$namespace" --for=condition=Available \
+    deployment/agentic-operations-presentation --timeout=300s >/dev/null
+fi
 
 stage="participant-routes"
 ui_host="$(oc get route multi-agent-ui -n "$namespace" -o jsonpath='{.spec.host}')"
@@ -115,7 +126,51 @@ showroom_host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}
 [[ "$(curl -fsSk -o /dev/null -w '%{http_code}' "https://${ui_host}/")" == "200" ]]
 [[ "$(curl -fsSk -o /dev/null -w '%{http_code}' "https://${showroom_host}/www/modules/index.html")" == "200" ]]
 showroom_index="$(curl -fsSk "https://${showroom_host}/www/modules/index.html")"
-grep -q 'Build Multi-Agent AI Systems' <<<"$showroom_index"
+grep -Fq "$showroom_marker" <<<"$showroom_index"
+
+presentation='{"required":false}'
+if [[ "$presentation_required" == "true" ]]; then
+  stage="presentation-route"
+  presentation_host="$(
+    oc get route agentic-operations-presentation -n "$namespace" \
+      -o jsonpath='{.spec.host}'
+  )"
+  presentation_root_status="$(
+    curl -fsSk -o /dev/null -w '%{http_code}' "https://${presentation_host}/"
+  )"
+  [[ "$presentation_root_status" == "200" ]]
+
+  stage="presentation-live-health"
+  presentation_health="$(curl -fsSk "https://${presentation_host}/health")"
+  printf '%s' "$presentation_health" | jq -e '
+    .status == "healthy"
+    and .agents_discovered == 3
+    and (.agent_names | length) == 3
+  ' >/dev/null
+
+  stage="presentation-live-policy"
+  presentation_policy="$(
+    curl -fsSk "https://${presentation_host}/api/v1/policy"
+  )"
+  printf '%s' "$presentation_policy" | jq -e '
+    (.name | length) > 0
+    and (.approval_tools | type) == "array"
+    and (.reviewer_profile | length) > 0
+    and .authority == "recommend_only"
+  ' >/dev/null
+  presentation="$(
+    jq -cn \
+      --argjson health "$presentation_health" \
+      --argjson policy "$presentation_policy" \
+      '{
+        required: true,
+        root_http_status: 200,
+        health: $health,
+        policy: $policy,
+        client_token_exposed: false
+      }'
+  )"
+fi
 
 stage="agent-readiness"
 readiness="$(
@@ -286,6 +341,7 @@ jq -cn \
   --argjson learner_policy "$learner_policy" \
   --argjson guardrails "$guardrails" \
   --argjson semantic "$semantic" \
+  --argjson presentation "$presentation" \
   --arg terminal_scope "$terminal_scope" \
   --argjson runtime_keys "$runtime_keys" \
   --argjson contains_sensitive_values "$contains_sensitive_values" \
@@ -299,6 +355,7 @@ jq -cn \
     learner_policy: $learner_policy,
     guardrails: $guardrails,
     semantic_routing: $semantic,
+    presentation: $presentation,
     terminal_scope: ($terminal_scope | split("\n")),
     runtime_secret_keys: $runtime_keys,
     contains_sensitive_values: $contains_sensitive_values,

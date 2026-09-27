@@ -67,6 +67,14 @@ Deployment, Service, edge Route, and ingress policy in the seat namespace. The
 The catalog pins that chart contract to Launchpad commit
 `1a4c0349d148d1e933cfbd069b7af970054383aa`.
 
+The first live gate is now encoded at
+`certification/catalog/operate-agentic-blueprint.yaml`. It permits one internal
+Flightpath seat only and runs
+`scripts/certify-operate-agentic-blueprint-seat.sh`, which inherits the
+certified 301 functional and isolation journey and additionally proves the
+presentation route, live health response, authenticated policy proxy, human
+authority boundary, and absence of a browser-visible service token.
+
 Immutable runtime artifact:
 
 ```text
