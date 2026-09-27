@@ -27,10 +27,25 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     presentation = metadata["presentation"]
     assert re.fullmatch(r"[0-9a-f]{40}", presentation["revision"])
     assert re.fullmatch(r"sha256:[0-9a-f]{64}", presentation["image"]["digest"])
-    assert presentation["build_configuration"] == {
-        "live_api_base": "VITE_API_BASE",
-        "launchpad_lab_url": "VITE_LAB_URL",
+    assert presentation["runtime_configuration"] == {
+        "api_mode": "same-origin-proxy",
+        "api_path": "/api",
+        "api_upstream": "http://multi-agent:8000",
+        "lab_handoff": "showroom",
     }
+    assert metadata["workload_helm_values"]["presentation"] == {
+        "enabled": True,
+        "image": presentation["image"],
+        "apiUpstream": "http://multi-agent:8000",
+    }
+    assert metadata["workload_routes"]["presentation"] == (
+        "agentic-operations-presentation"
+    )
+    presentation_tab = next(
+        tab for tab in metadata["showroom_tabs"] if tab["id"] == "presentation"
+    )
+    assert presentation_tab["source"] == "workload.route.presentation"
+    assert metadata["seat_pods"] == 3
     assert metadata["activation_blockers"]
 
 

@@ -1,0 +1,141 @@
+{{- if .Values.presentation.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agentic-operations-presentation-nginx
+  labels:
+    {{- include "multiAgent.presentationLabels" . | nindent 4 }}
+data:
+  default.conf.template: |
+    server {
+      listen 8080;
+      server_name _;
+      root /usr/share/nginx/html;
+      index index.html;
+
+      location /api/ {
+        proxy_pass {{ required "presentation.apiUpstream is required" .Values.presentation.apiUpstream }};
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Authorization "Bearer ${AGENT_AUTH_TOKEN}";
+        proxy_connect_timeout 10s;
+        proxy_read_timeout 300s;
+      }
+
+      location / {
+        try_files $uri $uri/ /index.html;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentic-operations-presentation
+  labels:
+    {{- include "multiAgent.presentationLabels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "multiAgent.presentationSelectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "multiAgent.presentationLabels" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: presentation
+          image: {{ include "multiAgent.presentationImage" . | quote }}
+          imagePullPolicy: {{ .Values.presentation.image.pullPolicy }}
+          env:
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "multiAgent.runtimeSecret" . }}
+                  key: AGENT_AUTH_TOKEN
+            - {name: NGINX_ENVSUBST_FILTER, value: "AGENT_AUTH_TOKEN"}
+          ports:
+            - {name: http, containerPort: 8080}
+          readinessProbe:
+            httpGet: {path: /, port: http}
+            timeoutSeconds: 5
+            periodSeconds: 5
+            failureThreshold: 24
+          livenessProbe:
+            httpGet: {path: /, port: http}
+            timeoutSeconds: 5
+            periodSeconds: 20
+            failureThreshold: 6
+          securityContext:
+            {{- include "multiAgent.containerSecurityContext" . | nindent 12 }}
+          resources:
+            {{- toYaml .Values.presentation.resources | nindent 12 }}
+          volumeMounts:
+            - {name: nginx-template, mountPath: /etc/nginx/templates/default.conf.template, subPath: default.conf.template, readOnly: true}
+            - {name: nginx-runtime-config, mountPath: /etc/nginx/conf.d}
+            - {name: nginx-cache, mountPath: /var/cache/nginx}
+            - {name: runtime-tmp, mountPath: /tmp}
+      volumes:
+        - name: nginx-template
+          configMap:
+            name: agentic-operations-presentation-nginx
+        - name: nginx-runtime-config
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}
+        - name: runtime-tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agentic-operations-presentation
+  labels:
+    {{- include "multiAgent.presentationLabels" . | nindent 4 }}
+spec:
+  selector:
+    {{- include "multiAgent.presentationSelectorLabels" . | nindent 4 }}
+  ports:
+    - {name: http, port: 8080, targetPort: http}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: agentic-operations-presentation
+  annotations:
+    haproxy.router.openshift.io/timeout: 600s
+  labels:
+    {{- include "multiAgent.presentationLabels" . | nindent 4 }}
+spec:
+  to: {kind: Service, name: agentic-operations-presentation}
+  port: {targetPort: http}
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: agentic-operations-presentation-ingress
+  labels:
+    {{- include "multiAgent.presentationLabels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "multiAgent.presentationSelectorLabels" . | nindent 6 }}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+      ports:
+        - {protocol: TCP, port: 8080}
+{{- end }}

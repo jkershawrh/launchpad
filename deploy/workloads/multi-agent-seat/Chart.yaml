@@ -2,5 +2,5 @@ apiVersion: v2
 name: multi-agent-seat
 description: Launchpad-owned single-pod runtime for the Multi-Agent Quickstart
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "0.1.0"

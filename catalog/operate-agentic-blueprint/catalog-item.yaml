@@ -50,6 +50,8 @@ metadata:
     - 5
     - 25
   activation_blockers:
+    - Republish the presentation from CI with correct OCI source labels, SBOM, signature, and provenance attestation.
+    - Certify the same-origin presentation API proxy as live, authenticated, namespace-scoped, and visibly distinct from rehearsal fallback.
     - Implement and validate the agentic-journey-telemetry-v1 correlation fields in the workload runtime.
     - Prove independent guardrail and inference outage tests, fail-closed behavior, and recovery without relying on co-located-process restarts.
     - Add certified OpenTelemetry collection and a learner-visible correlated trace without exposing secrets or hidden model reasoning.
@@ -58,6 +60,7 @@ metadata:
     - Complete one-, five-, and twenty-five-seat certification with zero-residue reclaim evidence.
   production_blockers:
     - Use an organization-owned digest-pinned workload image before general availability.
+    - Use an organization-owned digest-pinned presentation image before general availability.
   allowed_exposure_policies:
     - internal
     - public_code
@@ -74,12 +77,17 @@ metadata:
     image:
       repository: quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation
       digest: sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
-    build_configuration:
-      live_api_base: VITE_API_BASE
-      launchpad_lab_url: VITE_LAB_URL
+    runtime_configuration:
+      api_mode: same-origin-proxy
+      api_path: /api
+      api_upstream: http://multi-agent:8000
+      lab_handoff: showroom
     status: candidate
   showroom_terminal_storage: false
   showroom_tabs:
+    - id: presentation
+      title: Live Operations Story
+      source: workload.route.presentation
     - id: terminal
       title: Terminal
       source: showroom.terminal
@@ -94,7 +102,7 @@ metadata:
   inference_endpoint: litellm
   seat_cpu_millicores: 1200
   seat_memory_mib: 2048
-  seat_pods: 2
+  seat_pods: 3
   seat_storage_gib: 0
   workshop_provision_concurrency: 1
   workshop_node_spread: true
@@ -113,6 +121,12 @@ metadata:
     image:
       repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
       digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+    presentation:
+      enabled: true
+      image:
+        repository: quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation
+        digest: sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
+      apiUpstream: http://multi-agent:8000
   workload_ignore_differences: []
   workload_runtime_secret_name: multi-agent-runtime
   workload_runtime_secret_sources:
@@ -130,6 +144,7 @@ metadata:
   workload_routes:
     ui: multi-agent-ui
     orchestrator: multi-agent
+    presentation: agentic-operations-presentation
   workload_readiness: []
   source_content_repo: "https://github.com/rhpds/launchpad.git"
   source_content_revision: ddd7c2aab25d4c10f7738f15eece1ab101a95b15

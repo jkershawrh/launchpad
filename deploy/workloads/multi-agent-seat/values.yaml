@@ -13,6 +13,21 @@ image:
   digest: ""
   pullPolicy: IfNotPresent
 
+# Optional 401 operations presentation. It is deliberately disabled for the
+# established 301 lab and must be enabled by a catalog item with an immutable
+# digest. The mounted NGINX configuration keeps the browser on one origin and
+# forwards /api to the seat-local orchestrator.
+presentation:
+  enabled: false
+  image:
+    repository: ""
+    digest: ""
+    pullPolicy: IfNotPresent
+  apiUpstream: http://multi-agent:8000
+  resources:
+    requests: {cpu: 25m, memory: 32Mi}
+    limits: {cpu: 200m, memory: 128Mi}
+
 resources:
   orchestrator:
     requests: {cpu: 150m, memory: 192Mi}

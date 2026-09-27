@@ -16,6 +16,10 @@ IMAGE_REPOSITORY = (
     "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart"
 )
 TEST_DIGEST = "sha256:" + ("a" * 64)
+PRESENTATION_REPOSITORY = (
+    "quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation"
+)
+PRESENTATION_DIGEST = "sha256:" + ("b" * 64)
 
 
 def test_chart_defaults_to_a_portable_repository_and_requires_a_pinned_digest():
@@ -50,6 +54,7 @@ IDENTITY_ARGS = [
 
 def _render(
     namespace: str = "launchpad-cert-multi-agent-123456",
+    extra_args: list[str] | None = None,
 ) -> tuple[str, list[dict[str, Any]]]:
     completed = subprocess.run(
         [
@@ -66,6 +71,7 @@ def _render(
             "--set",
             f"image.digest={TEST_DIGEST}",
             *IDENTITY_ARGS,
+            *(extra_args or []),
         ],
         check=True,
         capture_output=True,
@@ -73,6 +79,89 @@ def _render(
     )
     documents = [document for document in yaml.safe_load_all(completed.stdout) if document]
     return completed.stdout, documents
+
+
+def test_optional_operations_presentation_is_disabled_by_default():
+    values = yaml.safe_load((CHART / "values.yaml").read_text())
+
+    assert values["presentation"]["enabled"] is False
+    _, documents = _render()
+    names = {(item["kind"], item["metadata"]["name"]) for item in documents}
+    assert ("Deployment", "agentic-operations-presentation") not in names
+    assert ("Route", "agentic-operations-presentation") not in names
+
+
+def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_origin():
+    _, documents = _render(
+        extra_args=[
+            "--set",
+            "presentation.enabled=true",
+            "--set",
+            f"presentation.image.repository={PRESENTATION_REPOSITORY}",
+            "--set",
+            f"presentation.image.digest={PRESENTATION_DIGEST}",
+        ]
+    )
+    resources = {(item["kind"], item["metadata"]["name"]): item for item in documents}
+
+    deployment = resources[("Deployment", "agentic-operations-presentation")]
+    container = deployment["spec"]["template"]["spec"]["containers"][0]
+    assert container["image"] == f"{PRESENTATION_REPOSITORY}@{PRESENTATION_DIGEST}"
+    assert container["securityContext"]["readOnlyRootFilesystem"] is True
+    assert resources[("Service", "agentic-operations-presentation")]["spec"]["ports"] == [
+        {"name": "http", "port": 8080, "targetPort": "http"}
+    ]
+    route = resources[("Route", "agentic-operations-presentation")]
+    assert route["spec"]["tls"] == {
+        "termination": "edge",
+        "insecureEdgeTerminationPolicy": "Redirect",
+    }
+
+    nginx = resources[("ConfigMap", "agentic-operations-presentation-nginx")]["data"][
+        "default.conf.template"
+    ]
+    assert "location /api/" in nginx
+    assert "proxy_pass http://multi-agent:8000;" in nginx
+    assert 'proxy_set_header Authorization "Bearer ${AGENT_AUTH_TOKEN}";' in nginx
+    assert "try_files $uri $uri/ /index.html;" in nginx
+    presentation_env = _env(container)
+    assert presentation_env["AGENT_AUTH_TOKEN"]["valueFrom"]["secretKeyRef"] == {
+        "name": "multi-agent-runtime",
+        "key": "AGENT_AUTH_TOKEN",
+    }
+    assert presentation_env["NGINX_ENVSUBST_FILTER"]["value"] == "AGENT_AUTH_TOKEN"
+    volumes = {
+        item["name"]: item for item in deployment["spec"]["template"]["spec"]["volumes"]
+    }
+    assert volumes["nginx-runtime-config"] == {
+        "name": "nginx-runtime-config",
+        "emptyDir": {},
+    }
+
+
+def test_operations_presentation_fails_closed_without_an_immutable_digest():
+    completed = subprocess.run(
+        [
+            "helm",
+            "template",
+            "multi-agent",
+            str(CHART),
+            "--set",
+            "runtime.existingSecret=multi-agent-runtime",
+            "--set",
+            f"image.digest={TEST_DIGEST}",
+            "--set",
+            "presentation.enabled=true",
+            "--set",
+            f"presentation.image.repository={PRESENTATION_REPOSITORY}",
+            *IDENTITY_ARGS,
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode != 0
+    assert "presentation.image.digest" in completed.stderr
 
 
 def _env(container: dict[str, Any]) -> dict[str, dict[str, Any]]:

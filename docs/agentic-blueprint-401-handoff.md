@@ -60,6 +60,11 @@ The candidate reuses the digest-pinned `multi-agent-seat` chart and workload
 image from `multi-agent-quickstart`. It is `status: draft`, limited to one seat,
 and is not ready for participant ordering.
 
+The chart now has an opt-in presentation runtime contract. When the 401
+catalog item enables it, Argo CD creates a separately owned presentation
+Deployment, Service, edge Route, and ingress policy in the seat namespace. The
+301 catalog item does not enable it and therefore renders unchanged.
+
 Immutable runtime artifact:
 
 ```text
@@ -76,14 +81,21 @@ The presentation uses the Triforce underpinning: a concise business opening,
 guided architecture questions, the same architecture animated through live
 proof, Intel Xeon inference, MCP evidence, deterministic policy, human
 authority, measured payoff, closure, and only then the Launchpad lab handoff.
-`VITE_API_BASE` and `VITE_LAB_URL` are build-time deployment inputs. They are
-not guessed or baked into the canonical image. Without a live API, the
-presentation labels fixture data as rehearsal/offline; without a lab URL, it
-shows the handoff instructions without inventing a link.
+The canonical image was built without a seat-specific API URL. Launchpad
+therefore serves it on a dedicated route and replaces its NGINX runtime
+configuration with a same-origin `/api` proxy to the seat-local orchestrator.
+The proxy injects the per-seat service token server-side from the existing
+runtime Secret; that token is not exposed to the browser or serialized into
+the Argo CD Application. The Showroom itself remains the lab handoff rather
+than baking a dynamic participant URL into the image.
 
-The image manifest was resolved successfully from Quay. Launchpad builds the
-Showroom from the immutable Git content revision above; it does not package
-each guide into a separate participant-content image.
+The image manifest was resolved successfully from Quay. Its current artifact
+evidence is not sufficient for activation: the OCI source labels identify the
+base NGINX image, and no image signature, SBOM, or provenance attestation was
+found. Republish it through the approved CI path before one-seat live
+certification. Launchpad builds the Showroom from the immutable Git content
+revision above; it does not package each guide into a separate participant-
+content image.
 
 The linear content journey is:
 
@@ -110,13 +122,17 @@ exists.
 
 The catalog item records these gates:
 
-1. Implement `agentic-journey-telemetry-v1` correlation in the runtime.
-2. Prove independent guardrail and inference outages, fail-closed behavior,
+1. Republish the presentation with correct OCI labels, SBOM, signature, and
+   provenance attestation.
+2. Certify the authenticated same-origin proxy and prove that live and
+   rehearsal modes cannot be confused.
+3. Implement `agentic-journey-telemetry-v1` correlation in the runtime.
+4. Prove independent guardrail and inference outages, fail-closed behavior,
    and recovery.
-3. Add certified OpenTelemetry collection and a learner-visible trace.
-4. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
-5. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
-6. Pin immutable content provenance and complete one-, five-, and
+5. Add certified OpenTelemetry collection and a learner-visible trace.
+6. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
+7. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
+8. Pin immutable content provenance and complete one-, five-, and
    twenty-five-seat certification with zero-residue reclaim.
 
 ## Validation already completed
@@ -132,6 +148,7 @@ Immutable workload image manifest: resolved from Quay
 Presentation unit/component/build checks: 33 passed
 Presentation visual checks: 9 passed at presentation, laptop, and rehearsal widths
 Immutable presentation image: built for linux/amd64 and pushed to Quay
+Presentation chart contract: digest-pinned, opt-in, same-origin API proxy, and namespace-owned
 git diff --check: clean
 ```
 
@@ -140,14 +157,15 @@ not failures in this change.
 
 ## Recommended next work
 
-1. Review the 401 learning flow and commands for the intended participant
+1. Republish the presentation from CI with correct source metadata and supply-
+   chain evidence.
+2. Review the 401 learning flow and commands for the intended participant
    persona.
-2. Build the Showroom package and visually inspect every page.
-3. Implement native journey correlation in the canonical multi-agent workload
+3. Build the Showroom package and visually inspect every page.
+4. Implement native journey correlation in the canonical multi-agent workload
    rather than synthesizing it in the guide.
-4. Add an independently addressable guardrail boundary so failure injection
+5. Add an independently addressable guardrail boundary so failure injection
    can be tested without terminating the compact workload pod.
-5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
+6. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
    contract tests first.
-6. Replace `main` content references with immutable revisions.
 7. Run one-seat certification before changing `status` or seat capacity.
