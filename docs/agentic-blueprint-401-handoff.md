@@ -65,7 +65,7 @@ catalog item enables it, Argo CD creates a separately owned presentation
 Deployment, Service, edge Route, and ingress policy in the seat namespace. The
 301 catalog item does not enable it and therefore renders unchanged.
 The catalog pins that chart contract to Launchpad commit
-`4da2ea8a23d40bc74d0836c741f4abd22770aa12`.
+`1a4c0349d148d1e933cfbd069b7af970054383aa`.
 
 Immutable runtime artifact:
 

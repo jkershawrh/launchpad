@@ -111,7 +111,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: "https://github.com/rhpds/launchpad.git"
-  workload_revision: 4da2ea8a23d40bc74d0836c741f4abd22770aa12
+  workload_revision: 1a4c0349d148d1e933cfbd069b7af970054383aa
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: deploy/workloads/multi-agent-seat
