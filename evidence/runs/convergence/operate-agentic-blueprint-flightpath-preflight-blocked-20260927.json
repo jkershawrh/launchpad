@@ -1,0 +1,39 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-live-preflight-evidence/v1",
+  "catalog_item_id": "operate-agentic-blueprint",
+  "collected_at": "2026-09-27T22:05:00Z",
+  "stage": "green-integration",
+  "result": "blocked",
+  "target": {
+    "cluster_id": "flightpath",
+    "api_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "candidate_namespace": "launchpad-flightpath-candidate"
+  },
+  "artifact_contract": {
+    "runtime_image": "ghcr.io/jkershawrh/multi-agent-quickstart@sha256:bf48f40f29b88c985adb2f6e1522dbbcdd999d2d5ff6f6911e48b2737f320767",
+    "presentation_image": "ghcr.io/jkershawrh/operate-agentic-blueprint-presentation@sha256:7d48b3e1c9d8dde414259add960e09bacbeb9bf7bb61013c78527b19c0c05f0b",
+    "source_revision": "c2a72e7865bae7aebc913a49f91601647a95efbb",
+    "launchpad_chart_revision": "1a4c0349d148d1e933cfbd069b7af970054383aa",
+    "release_workflow": "https://github.com/jkershawrh/multi-agent-quickstart/actions/runs/36352732547"
+  },
+  "observations": {
+    "ambient_oc_server": "https://api.ocpv-infra01.dal12.infra.demo.redhat.com:6443",
+    "ambient_context_rejected": true,
+    "explicit_local_flightpath_kubeconfig_found": false,
+    "arena_control_plane_reachable": false,
+    "flightpath_private_api_dns_resolved": false,
+    "flightpath_candidate_dns_resolved": false,
+    "public_gateway_http_status": 200,
+    "public_gateway_health_http_status": 200
+  },
+  "blocking_gates": [
+    "Restore the operator VPN/private DNS path for api.flightpath.fm2aihpcsed.com.",
+    "Establish an explicit Flightpath kubeconfig without changing the ambient context.",
+    "Confirm cluster identity, node health, active workshops, active sessions, Argo CD health, and exact-digest image pull reachability.",
+    "Run the internal one-seat certification and prove zero-residue reclaim."
+  ],
+  "mutation_performed": false,
+  "catalog_activated": false,
+  "workshop_created": false,
+  "promotion_authorized": false
+}

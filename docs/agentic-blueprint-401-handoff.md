@@ -145,23 +145,30 @@ The catalog item records these gates:
 
 ## Validation already completed
 
-Using the repository Python 3.12 environment:
+Using the repository Python 3.12 environment and the published release-candidate
+artifacts:
 
 ```text
-Focused blueprint, catalog, onboarding, content tests: 52 passed
-Full non-local backend suite: 2293 passed, 27 skipped, 13 deselected
+Focused chart, content, provisioning, and access tests: 124 passed
+Focused certification and contract tests: 88 passed
 All catalog, onboarding, and contract YAML parsed successfully
 Antora Showroom build: passed without warnings
-Immutable workload image manifest: resolved from Quay
+Helm chart lint and shell syntax checks: passed
 Presentation unit/component/build checks: 33 passed
 Presentation visual checks: 9 passed at presentation, laptop, and rehearsal widths
-Immutable presentation image: built for linux/amd64 and pushed to Quay
+Runtime and presentation images: published publicly to GHCR for linux/amd64
+Runtime and presentation images: exact-digest pull and OCI source/revision labels verified
+Runtime and presentation images: GitHub build attestations verified
+Published runtime policy endpoint: executed successfully with recommend-only authority
 Presentation chart contract: digest-pinned, opt-in, same-origin API proxy, and namespace-owned
 git diff --check: clean
 ```
 
-The 13 deselected local-runtime tests require the local Podman services and are
-not failures in this change.
+The Flightpath live gate has not run. On September 27, 2026 the stable public
+gateway and its health endpoint returned HTTP 200, but the private Flightpath
+API and candidate hostnames did not resolve from the operator machine. The
+preflight therefore failed closed before authentication or mutation. See
+`evidence/runs/convergence/operate-agentic-blueprint-flightpath-preflight-blocked-20260927.json`.
 
 ## Recommended next work
 
@@ -174,4 +181,6 @@ not failures in this change.
    can be tested without terminating the compact workload pod.
 5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
    contract tests first.
-6. Run one-seat certification before changing `status` or seat capacity.
+6. Restore private Flightpath DNS/VPN reachability, repeat the read-only
+   preflight, and prove that the target has no conflicting active workshop.
+7. Run one-seat certification before changing `status` or seat capacity.
