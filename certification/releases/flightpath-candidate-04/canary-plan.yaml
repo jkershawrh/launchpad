@@ -1,0 +1,65 @@
+schema_version: launchpad.redhat.com/canary-plan/v1
+candidate_id: launchpad-staging-20260925-04
+execution:
+  cluster_id: flightpath
+  sequential: true
+  max_concurrent_canaries: 1
+  seats_per_canary: 1
+  retain_failed_canary: false
+required_proof:
+  - capacity-preview-and-placement
+  - order-and-readiness
+  - pinned-showroom-content
+  - declared-tabs-and-routes
+  - namespace-scoped-terminal-and-rbac
+  - required-model-workflow
+  - entitlement-resume
+  - manual-reclaim
+  - ttl-expiry
+  - zero-active-residue
+catalogs:
+  - catalog_id: intel-llm-cpu-serving
+    display_name: 'Intel AI 101: Serve LLMs on Intel Xeon CPUs'
+    exposure_journey: internal
+    status: not-run
+  - catalog_id: intel-xeon6-agent-201
+    display_name: 'Intel AI 201: Build an AI Agent on Intel Xeon 6'
+    exposure_journey: internal
+    status: not-run
+  - catalog_id: hybrid-fraud-detection
+    display_name: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
+    exposure_journey: internal
+    status: not-run
+  - catalog_id: agent-reliability
+    display_name: 'Intel AI 301: Engineer Reliable Agentic Workflows'
+    exposure_journey: internal
+    status: not-run
+  - catalog_id: multi-agent-quickstart
+    display_name: 'Intel AI 301: Build Multi-Agent AI Systems with Open Protocols'
+    exposure_journey: internal
+    public_code_manifest_capability: true
+    public_certification_in_this_plan: false
+    status: not-run
+  - catalog_id: network-operations-agent
+    display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
+    exposure_journey: internal-and-public-code
+    public_code_manifest_capability: true
+    public_certification_in_this_plan: true
+    public_max_seats: 1
+    status: not-run
+public_proof:
+  catalog_ids:
+    - network-operations-agent
+  required:
+    - one-time-code-claim
+    - invalid-code-denial
+    - same-email-seat-recovery
+    - logout-and-resume
+    - cross-seat-denial
+    - expiration-denial
+    - identity-cleanup
+    - one-public-seat-limit
+evidence_output:
+  immutable_manifest_required: true
+  plaintext_instructor_codes_forbidden: true
+  advance_stage_only_when_all_required_rows_green: true

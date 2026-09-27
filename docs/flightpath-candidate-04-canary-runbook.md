@@ -17,11 +17,12 @@ the following catalog revisions:
 5. Intel AI 301: Hybrid Fraud Detection
 6. Intel AI 301: Build an Evidence-Backed Network Operations Agent
 
-All six require a complete internal one-seat lifecycle. Only catalogs whose
-pinned manifest declares `public_code` may run the public claim journey.
-Candidate 04 enables that public journey for Network Operations only, with a
-hard limit of one public seat. This does not certify the other five catalogs
-for public access or any catalog for multi-seat scale.
+All six require a complete internal one-seat lifecycle. Although the pinned
+Multi-Agent and Network Operations manifests both permit `public_code`, this
+release gate authorizes the public claim journey for Network Operations only,
+with a hard limit of one public seat. Multi-Agent public access remains outside
+this canary plan. This does not certify the other five catalogs for public
+access or any catalog for multi-seat scale.
 
 ## Stop conditions
 

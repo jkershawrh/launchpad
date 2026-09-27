@@ -145,9 +145,25 @@ def validate(bundle: dict[str, Any], *, root: Path = ROOT) -> dict[str, Any]:
         runbook_path = Path(canary.get("runbook_path", ""))
         _require(not runbook_path.is_absolute(), "canary runbook path must be relative")
         _require((root / runbook_path).is_file(), "canary runbook does not exist")
+        plan_path = Path(canary.get("plan_path", ""))
+        _require(not plan_path.is_absolute(), "canary plan path must be relative")
+        resolved_plan = root / plan_path
+        _require(resolved_plan.is_file(), "canary plan does not exist")
+        plan_hash = hashlib.sha256(resolved_plan.read_bytes()).hexdigest()
+        _require(plan_hash == canary.get("plan_sha256"), "canary plan hash drift")
+        plan = yaml.safe_load(resolved_plan.read_text(encoding="utf-8"))
+        _require(
+            plan.get("candidate_id") == bundle.get("promotion", {}).get("candidate_id"),
+            "canary plan candidate drift",
+        )
         _require(
             canary.get("catalog_ids") == FLIGHTPATH_CANDIDATE_CATALOGS,
             "canary catalog scope drift",
+        )
+        _require(
+            sorted(item.get("catalog_id") for item in plan.get("catalogs", []))
+            == FLIGHTPATH_CANDIDATE_CATALOGS,
+            "canary plan catalog scope drift",
         )
         _require(
             canary.get("internal_seats_per_catalog") == 1,
@@ -156,6 +172,11 @@ def validate(bundle: dict[str, Any], *, root: Path = ROOT) -> dict[str, Any]:
         _require(
             canary.get("public_catalog_ids") == ["network-operations-agent"],
             "public canary scope exceeds the enabled catalog",
+        )
+        _require(
+            plan.get("public_proof", {}).get("catalog_ids")
+            == canary.get("public_catalog_ids"),
+            "canary plan public scope drift",
         )
         _require(
             canary.get("max_concurrent_canaries") == 1,

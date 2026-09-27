@@ -32,6 +32,8 @@ render:
   kustomize_version: v5.7.1
 canary:
   runbook_path: docs/flightpath-candidate-04-canary-runbook.md
+  plan_path: certification/releases/flightpath-candidate-04/canary-plan.yaml
+  plan_sha256: b77ae4a54bdc44a3a374df6745d4dabf76c768bc383e16440b751301e5d277b9
   catalog_ids:
     - agent-reliability
     - hybrid-fraud-detection
