@@ -21,6 +21,11 @@ metadata:
   experience_type: platform_validation
   prerequisites: []
   recommended_next_items: []
+  journey_role: reference
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: null
   deploy_method: kustomize-dir
   cpu_only: true
   smoke_test: true

@@ -1,0 +1,131 @@
+catalog_item_id: operate-agentic-blueprint
+display_name: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
+description: >-
+  Operate the same Red Hat and Intel multi-agent blueprint built at level 301:
+  correlate requests with agents, MCP evidence, deterministic policy, Intel
+  Xeon inference, and human review; exercise safe denial and recovery; and
+  prove a controlled configuration change on OpenShift.
+category: guided_build
+version: "0.1.0"
+status: draft
+required_capabilities:
+  - openshift
+  - showroom
+  - model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: "4h"
+provisioner_refs:
+  - helm-workload
+  - showroom
+validation_refs:
+  - pod-ready
+  - route-accessible
+  - inference-health
+  - multi-agent-journey
+observability_profile: agentic-blueprint-core
+supported_branding:
+  - redhat-intel-default
+  - intel-internal
+metadata:
+  learning_level: "401"
+  learning_stage: Operate
+  experience_type: blueprint_operations
+  prerequisites:
+    - multi-agent-quickstart
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  showroom: true
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: false
+  certification_stage: content-candidate
+  max_workshop_seats: 1
+  promotion_sequence:
+    - 1
+    - 5
+    - 25
+  activation_blockers:
+    - Implement and validate the agentic-journey-telemetry-v1 correlation fields in the workload runtime.
+    - Prove independent guardrail and inference outage tests, fail-closed behavior, and recovery without relying on co-located-process restarts.
+    - Add certified OpenTelemetry collection and a learner-visible correlated trace without exposing secrets or hidden model reasoning.
+    - Validate namespace-scoped GitOps drift detection and pipeline-based evaluation before presenting those operator capabilities as live.
+    - Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation through an approved telemetry source.
+    - Complete one-, five-, and twenty-five-seat certification with zero-residue reclaim evidence.
+  production_blockers:
+    - Use an organization-owned digest-pinned workload image before general availability.
+  allowed_exposure_policies:
+    - internal
+    - public_code
+  showroom_journey: operate-agentic-blueprint
+  showroom_title: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
+  namespace_slug: agentic-operations
+  showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
+  showroom_content_ref: main
+  showroom_content_playbook: site-operate-agentic-blueprint.yml
+  showroom_content_start_path: content-operate-agentic-blueprint
+  showroom_terminal_storage: false
+  showroom_tabs:
+    - id: terminal
+      title: Terminal
+      source: showroom.terminal
+    - id: workspace
+      title: Multi-Agent Workspace
+      source: workload.route.ui
+    - id: openshift-console
+      title: OpenShift Console
+      source: cluster.console_url
+  required_models:
+    - granite-3.2-8b-tools
+  inference_endpoint: litellm
+  seat_cpu_millicores: 1200
+  seat_memory_mib: 2048
+  seat_pods: 2
+  seat_storage_gib: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: true
+  workshop_node_min_ready_seconds: 900
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: "https://github.com/rhpds/launchpad.git"
+  workload_revision: 5292234017bf3f538767e6b6a3c627d146fca086
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: deploy/workloads/multi-agent-seat
+  workload_source_kind: launchpad-seat-chart
+  workload_gitops_ready: true
+  workload_release_name: multi-agent
+  workload_helm_values:
+    image:
+      repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
+      digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+  workload_ignore_differences: []
+  workload_runtime_secret_name: multi-agent-runtime
+  workload_runtime_secret_sources:
+    MODEL_ENDPOINT:
+      source: maas_api_url
+    MODEL_API_KEY:
+      source: maas_api_key
+    MODEL_NAME:
+      source: requested_model
+    AGENT_AUTH_TOKEN:
+      source: generated_password
+      length: 48
+  workload_runtime_secret_value_path: runtime.existingSecret
+  workload_identity_value_path: identity
+  workload_routes:
+    ui: multi-agent-ui
+    orchestrator: multi-agent
+  workload_readiness: []
+  source_content_repo: "https://github.com/rhpds/launchpad.git"
+  source_content_revision: main
+  source_references:
+    canonical_blueprint:
+      path: contracts/agentic-blueprint-v1.yaml
+    telemetry_contract:
+      path: contracts/agentic-journey-telemetry-v1.yaml
+

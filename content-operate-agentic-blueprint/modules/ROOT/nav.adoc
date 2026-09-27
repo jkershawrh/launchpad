@@ -1,0 +1,9 @@
+.Operate the Agentic Blueprint
+* xref:index.adoc[Welcome]
+* xref:01-baseline.adoc[1. Establish the Baseline]
+* xref:02-correlate.adoc[2. Correlate the Journey]
+* xref:03-policy.adoc[3. Inspect Evidence and Policy]
+* xref:04-failure-recovery.adoc[4. Prove Safe Denial and Recovery]
+* xref:05-change-proof.adoc[5. Change, Compare, and Restore]
+* xref:99-conclusion.adoc[Operational Proof Package]
+

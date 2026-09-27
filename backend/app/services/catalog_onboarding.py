@@ -1360,10 +1360,13 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                 "201": "Build",
                 "301": "Engineer",
                 "401": "Operate",
+                "501": "Scale",
             }
             level = str(learning.get("learning_level", "")).zfill(3)
             if level not in levels:
-                errors.append("learning.learning_level must be 001, 101, 201, 301, or 401")
+                errors.append(
+                    "learning.learning_level must be 001, 101, 201, 301, 401, or 501"
+                )
             elif learning.get("learning_stage") != levels[level]:
                 errors.append("learning.learning_stage must match learning.learning_level")
             if not str(learning.get("experience_type", "")).strip():
@@ -1375,6 +1378,30 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                     for reference in (references if isinstance(references, list) else [])
                 ):
                     errors.append(f"learning.{field} must be a list of catalog IDs")
+            role = learning.get("journey_role")
+            if role not in {"core", "specialty", "reference"}:
+                errors.append("learning.journey_role must be core, specialty, or reference")
+            family = learning.get("specialty_family")
+            families = {"domain", "platform", "data", "inference", "tooling", "reliability"}
+            if family is not None and family not in families:
+                errors.append("learning.specialty_family is not recognized")
+            if role == "specialty" and (family is None or not learning.get("branches_from")):
+                errors.append(
+                    "specialty learning requires specialty_family and branches_from"
+                )
+            for field in ("branches_from", "returns_to"):
+                reference = learning.get(field)
+                if reference is not None and (
+                    not isinstance(reference, str) or not CATALOG_ID.fullmatch(reference)
+                ):
+                    errors.append(f"learning.{field} must be null or a catalog ID")
+            blueprint = learning.get("shared_blueprint")
+            if blueprint not in {None, "red-hat-intel-agentic-v1"}:
+                errors.append(
+                    "learning.shared_blueprint must be red-hat-intel-agentic-v1 or null"
+                )
+            if role == "core" and blueprint != "red-hat-intel-agentic-v1":
+                errors.append("core learning requires the canonical shared_blueprint")
 
     for source_name, source in (("showroom", showroom), ("workload", workload)):
         if not str(source.get("repo_url", "")).startswith("https://github.com/"):

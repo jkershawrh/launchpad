@@ -23,6 +23,11 @@ metadata:
   prerequisites: []
   recommended_next_items:
     - intel-llm-cpu-serving
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
   sandbox_type: openshift_dev
   stack_level: ai_dev
   access_methods:

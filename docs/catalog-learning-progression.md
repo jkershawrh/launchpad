@@ -15,6 +15,9 @@ replacement for live certification.
   and failure controls.
 - **401 — Operate:** observe, govern, scale, and recover production-style AI
   systems.
+- **501 — Scale:** scale, upgrade, secure, recover, and certify a production
+  architecture. A 501 title is reserved for a workload that has passed its
+  declared certification gate.
 
 The machine-readable authority is
 [`../contracts/catalog-learning-progression-v1.yaml`](../contracts/catalog-learning-progression-v1.yaml).
@@ -22,25 +25,34 @@ Every catalog item declares its level, stage, experience type, prerequisites,
 and recommended next items. Catalog IDs and workload versions do not change
 when presentation metadata changes.
 
-## Agentic learning path
+## Core agentic learning path
 
 The intended progression is:
 
-1. `intel-llm-cpu-serving` — learn shared CPU inference.
-2. `intel-llm-tool-calling` or `intel-xeon6-agent-201` — build tools or a
-   single agent.
-3. `multi-agent-quickstart` — engineer a multi-agent system.
-4. `network-operations-agent` — apply evidence-backed agents to network
-   operations.
-5. `agent-reliability` — planned 301 lab for reliability controls, degraded
-   behavior, authorization, recovery, and qualification.
-6. `agentops-observability` — operate and observe production-style agents at
-   level 401.
+1. `ai-sandbox` — explore OpenShift and shared Intel CPU inference.
+2. `intel-llm-cpu-serving` — learn shared CPU inference.
+3. `intel-xeon6-agent-201` — build a bounded agent and MCP tools.
+4. `multi-agent-quickstart` — engineer the canonical multi-agent system.
+5. `operate-agentic-blueprint` — operate and recover that same system; this
+   remains draft until its activation gates are certified.
+6. A future certified 501 item will scale and qualify that same architecture.
 
-The network-operations and agent-reliability labs remain separate. The former
-teaches a domain solution; the latter teaches how to engineer trustworthy
-failure behavior. A shared NOC scenario is permitted because their learning
-objectives and proof contracts are different.
+The canonical architecture is
+[`../contracts/agentic-blueprint-v1.yaml`](../contracts/agentic-blueprint-v1.yaml).
+Its common live-proof record is
+[`../contracts/agentic-journey-telemetry-v1.yaml`](../contracts/agentic-journey-telemetry-v1.yaml).
+
+## Specialty episodes
+
+Specialties branch from the core journey and teach a bounded domain, platform,
+data, inference, tooling, or reliability outcome. Network Operations and Agent
+Reliability remain separate specialties: the former teaches a domain solution;
+the latter teaches trustworthy failure behavior. The full map and current
+lifecycle status are documented in
+[`catalog-journey-map.md`](catalog-journey-map.md).
+
+The deprecated `agentops-observability` item is reference material only. It is
+not the planned 401 runtime and does not define the canonical architecture.
 
 ## Compatibility and promotion
 
@@ -51,5 +63,6 @@ objectives and proof contracts are different.
 - Prerequisite and next-item references must resolve to known catalog IDs.
 - Draft and deprecated items can appear in the progression contract without
   becoming participant-orderable.
+- Journey role never overrides lifecycle status or certification.
 - `smoke-test` is classified as 001 platform validation but remains an
   internal operational item rather than participant curriculum.

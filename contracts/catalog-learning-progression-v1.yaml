@@ -14,13 +14,34 @@ levels:
     description: Integrate systems, protocols, evidence, and failure controls.
   "401":
     name: Operate
-    description: Operate, observe, govern, and scale production-style AI systems.
+    description: Operate, observe, govern, and recover production-style AI systems.
+  "501":
+    name: Scale
+    description: Scale, upgrade, secure, recover, and certify a production architecture.
+    publication_gate: certified
+canonical_blueprint: red-hat-intel-agentic-v1
+journey_roles:
+  core: The recommended progression that incrementally builds the canonical blueprint.
+  specialty: A bounded domain, platform, data, or reliability episode that branches from and may return to the core journey.
+  reference: Retained implementation knowledge that is not part of the recommended learner path.
+specialty_families:
+  - domain
+  - platform
+  - data
+  - inference
+  - tooling
+  - reliability
 required_metadata:
   - learning_level
   - learning_stage
   - experience_type
   - prerequisites
   - recommended_next_items
+  - journey_role
+  - specialty_family
+  - branches_from
+  - returns_to
+  - shared_blueprint
 compatibility:
   catalog_ids_are_stable: true
   runtime_release_versions_unchanged_by_taxonomy: true

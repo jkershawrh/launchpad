@@ -1,0 +1,78 @@
+from pathlib import Path
+
+import yaml
+
+
+ROOT = Path(__file__).resolve().parents[2]
+CATALOG_PATH = ROOT / "catalog/operate-agentic-blueprint/catalog-item.yaml"
+CONTENT_ROOT = ROOT / "content-operate-agentic-blueprint"
+
+
+def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
+    catalog = yaml.safe_load(CATALOG_PATH.read_text())
+    metadata = catalog["metadata"]
+
+    assert catalog["catalog_item_id"] == "operate-agentic-blueprint"
+    assert catalog["status"] == "draft"
+    assert metadata["learning_level"] == "401"
+    assert metadata["learning_stage"] == "Operate"
+    assert metadata["journey_role"] == "core"
+    assert metadata["shared_blueprint"] == "red-hat-intel-agentic-v1"
+    assert metadata["prerequisites"] == ["multi-agent-quickstart"]
+    assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
+    assert metadata["workload_helm_values"]["image"]["digest"].startswith("sha256:")
+    assert metadata["activation_blockers"]
+
+
+def test_operate_blueprint_content_is_a_linear_evidence_journey():
+    pages = CONTENT_ROOT / "modules/ROOT/pages"
+    nav = (CONTENT_ROOT / "modules/ROOT/nav.adoc").read_text()
+    expected = [
+        "index.adoc",
+        "01-baseline.adoc",
+        "02-correlate.adoc",
+        "03-policy.adoc",
+        "04-failure-recovery.adoc",
+        "05-change-proof.adoc",
+        "99-conclusion.adoc",
+    ]
+    assert [
+        line.split("xref:", 1)[1].split("[", 1)[0]
+        for line in nav.splitlines()
+        if "xref:" in line
+    ] == expected
+
+    guide = "\n".join((pages / name).read_text() for name in expected)
+    for proof in (
+        "journey ID",
+        "Supporting Evidence",
+        "policy",
+        "Prompt in",
+        "Response out",
+        "Intel Xeon",
+        "human review",
+        "REHEARSAL",
+    ):
+        assert proof in guide
+
+
+def test_operate_blueprint_does_not_present_uncertified_integrations_as_live():
+    pages = CONTENT_ROOT / "modules/ROOT/pages"
+    guide = "\n".join(path.read_text() for path in sorted(pages.glob("*.adoc")))
+
+    assert "not deployed in this draft" in guide
+    assert "OpenTelemetry" in guide
+    assert "Kagenti" in guide
+    assert "MLflow" not in guide
+    assert "mortgage" not in guide.lower()
+
+
+def test_operate_blueprint_playbook_uses_local_content():
+    playbook = yaml.safe_load((ROOT / "site-operate-agentic-blueprint.yml").read_text())
+    component = yaml.safe_load((CONTENT_ROOT / "antora.yml").read_text())
+
+    assert playbook["content"]["sources"] == [
+        {"url": ".", "start_path": "content-operate-agentic-blueprint"}
+    ]
+    assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
+

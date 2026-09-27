@@ -35,6 +35,11 @@ metadata:
   prerequisites:
   - intel-xeon6-agent-201
   recommended_next_items: []
+  journey_role: specialty
+  specialty_family: reliability
+  branches_from: multi-agent-quickstart
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
   showroom_content_ref: 99146600cbf3507527d59b73e569fbb642321721

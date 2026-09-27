@@ -1,0 +1,97 @@
+api_version: launchpad.redhat.com/agentic-journey-telemetry/v1
+blueprint_id: red-hat-intel-agentic-v1
+purpose: >-
+  Correlate the learner-visible journey with architecture, evidence, policy,
+  Intel Xeon inference, OpenShift operation, and human disposition.
+correlation:
+  required_fields:
+    - journey_id
+    - investigation_id
+    - request_id
+    - event_id
+    - occurred_at
+    - component_id
+  optional_fields:
+    - trace_id
+    - span_id
+    - parent_event_id
+    - catalog_item_id
+    - session_id
+journey_events:
+  - name: journey.accepted
+    producer: intake
+    proof: scenario contract and original request
+  - name: agent.delegated
+    producer: orchestrator
+    proof: target agent, bounded task, and protocol identity
+  - name: tool.requested
+    producer: specialized_agent
+    proof: MCP server, tool name, arguments hash, and authorization context
+  - name: evidence.observed
+    producer: mcp
+    proof: source, observation, timestamp, provenance, and collection status
+  - name: evidence.assembled
+    producer: evidence_ledger
+    proof: ordered evidence references and completeness state
+  - name: policy.evaluated
+    producer: deterministic_policy
+    proof: policy identifier, version, inputs, result, and reason codes
+  - name: inference.requested
+    producer: llm_adapter
+    proof: prompt template identifier, bounded prompt, model, and endpoint identity
+  - name: inference.completed
+    producer: llm_adapter
+    proof: response, latency, model, token usage, and source state
+  - name: review.requested
+    producer: human_review
+    proof: supported conclusion, unresolved uncertainty, and prohibited actions
+  - name: review.completed
+    producer: human_review
+    proof: reviewer disposition, elapsed time, and authorized action
+  - name: journey.failed
+    producer: any
+    proof: failed boundary, safe state, and recovery guidance
+  - name: journey.recovered
+    producer: any
+    proof: restored dependency, validation result, and resumed boundary
+source_states:
+  - live
+  - rehearsal
+  - offline
+  - unavailable
+proof_requirements:
+  learner_visible:
+    - original_request
+    - agent_and_tool_path
+    - evidence_and_provenance
+    - policy_version_and_result
+    - prompt_in_and_response_out
+    - model_and_latency
+    - human_disposition
+  operational:
+    - component_health
+    - failures_and_recovery
+    - deployment_revision
+    - configuration_drift
+  intel:
+    - model_name
+    - endpoint_identity
+    - inference_latency_ms
+    - cpu_allocation_when_available
+    - token_usage_when_available
+privacy_and_security:
+  redact:
+    - api_keys
+    - bearer_tokens
+    - session_secrets
+    - sensitive_prompt_fields_declared_by_specialty
+  prompt_capture_requires_redaction: true
+  evidence_payload_capture_requires_specialty_policy: true
+  immutable_policy_identity_required: true
+fallback_labeling:
+  live: LIVE
+  rehearsal: REHEARSAL
+  offline: OFFLINE
+  unavailable: UNAVAILABLE
+  fallback_must_never_be_presented_as_live: true
+

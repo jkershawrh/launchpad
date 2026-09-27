@@ -1,0 +1,49 @@
+= Operate Evidence-Backed Multi-Agent Systems
+:navtitle: Welcome
+
+== Continue the Same Journey
+
+This 401 experience operates the same Red Hat and Intel blueprint you built at
+level 301. It does not replace the incident workload with a separate
+observability application. Research, analyst, executor, A2A, MCP, guardrails,
+the shared Intel Xeon model endpoint, and human review remain the system under
+test.
+
+Your goal is to produce an operational proof package for one fictional
+incident. You will connect what the operator sees to the workload that ran,
+the Supporting Evidence it gathered, the policy boundary it applied, the
+Prompt in and Response out at the learner-visible boundary, the Intel Xeon
+inference identity, and the final human review.
+
+== What Is Live in This Draft
+
+The OpenShift workload, guarded workflow API, A2A agents, MCP server, stage
+latencies, logs, probes, configuration policy, participant UI, and shared
+Intel Xeon inference are live. Every measurement you record must come from
+your assigned namespace or the workflow response.
+
+OpenTelemetry collection, Kagenti resources, GitOps drift reconciliation, and
+pipeline-based evaluation are not deployed in this draft. They remain
+promotion gates and must not be represented as live proof. If a live source is
+unavailable, label supplied example information `REHEARSAL`; never label it
+live.
+
+== Operating Sequence
+
+[cols="1,3,1",options="header"]
+|===
+| Step | Outcome | Time
+| 1 | Establish deployment, model, and health baseline | 10 min
+| 2 | Correlate one request across response stages and logs | 15 min
+| 3 | Separate MCP evidence, deterministic policy, and LLM explanation | 15 min
+| 4 | Prove safe denial followed by healthy recovery | 10 min
+| 5 | Change one policy, compare the result, and restore baseline | 15 min
+| 6 | Assemble the operational proof package | 10 min
+|===
+
+IMPORTANT: Use only fictional or sanitized information. Never print the
+runtime Secret or model credential.
+
+[.next-nav]
+xref:01-baseline.adoc[Start: Establish the Operational Baseline ->]
+

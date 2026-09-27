@@ -39,6 +39,11 @@ metadata:
   prerequisites:
   - multi-agent-quickstart
   recommended_next_items: []
+  journey_role: reference
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: null
   showroom: true
   operator_workshop: true
   content_only: false

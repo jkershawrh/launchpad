@@ -1,0 +1,62 @@
+= Inspect Evidence and Policy
+
+== Three Different Authorities
+
+Do not collapse the workflow into “the AI decided.” Operate it as three
+separate boundaries:
+
+[cols="2,3,3",options="header"]
+|===
+| Boundary | Owns | Does not own
+| MCP and agents | Observations and Supporting Evidence | Final action authority
+| Deterministic policy | Allow, deny, require review, or abstain rules | Learned model wording
+| Intel Xeon LLM | Bounded explanation and summarization | Evidence validity or execution
+| Human review | Final disposition and authorized action | Hidden automation
+|===
+
+In the Multi-Agent Workspace, open the completed run and inspect *Supporting
+Evidence*. For each item, record its source, observation, and whether it was
+actually returned in this journey. Missing proof is not converted into a fact
+by the model.
+
+== Inspect the MCP Contract
+
+[source,bash,role="execute"]
+----
+oc port-forward service/multi-agent-mcp 18004:8004 >/tmp/agentic-401-mcp-forward.log 2>&1 &
+MCP_FORWARD_PID=$!
+until curl -fsS http://127.0.0.1:18004/health >/dev/null 2>&1; do sleep 1; done
+curl -fsS http://127.0.0.1:18004/health | python3 -m json.tool
+kill "${MCP_FORWARD_PID}"
+----
+
+The MCP health response proves the tool service is available; the workflow's
+Supporting Evidence proves whether tools contributed to this run. Availability
+alone is not evidence that a tool was called.
+
+== Record the Policy Boundary
+
+[source,bash,role="execute"]
+----
+test "$(oc get configmap workflow-policy --ignore-not-found)" = ""
+oc exec deployment/multi-agent -c executor -- \
+  python -c 'import agent; print("executor token policy:", agent.AGENT_MAX_TOKENS)'
+----
+
+The baseline policy is versioned in the deployed image and permits no
+learner-configured override. The optional ConfigMap is a controlled,
+non-secret extension point. It changes a generation bound; it does not teach
+the LLM a new policy or grant action authority.
+
+Record four adjacent items in the proof package: Supporting Evidence, policy
+state, Prompt in, and Response out. The separation is the operating control.
+
+== Policy Checkpoint
+
+You can explain which system supplied evidence, which deterministic control
+bounded behavior, what the Intel Xeon model explained, and why human review
+retains authority.
+
+[.next-nav]
+xref:04-failure-recovery.adoc[Next: Prove Safe Denial and Recovery ->]
+

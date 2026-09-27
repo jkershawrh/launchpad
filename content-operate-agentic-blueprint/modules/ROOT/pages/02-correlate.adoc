@@ -1,0 +1,73 @@
+= Correlate the Journey
+
+== Create a Journey Identity
+
+The current 301 runtime returns stages and latency but does not yet implement
+every field in `agentic-journey-telemetry-v1`. Create a learner-side journey ID
+so that your request, response, and log window remain visibly connected.
+
+[source,bash,role="execute"]
+----
+JOURNEY_ID="journey-$(date -u +%Y%m%dT%H%M%SZ)"
+STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+printf 'Journey ID: %s\nStarted: %s\n' "${JOURNEY_ID}" "${STARTED_AT}"
+
+AGENT_AUTH_TOKEN="$(
+  oc get secret multi-agent-runtime \
+    -o jsonpath='{.data.AGENT_AUTH_TOKEN}' | base64 -d
+)"
+test -n "${AGENT_AUTH_TOKEN}"
+oc port-forward service/multi-agent 18000:8000 >/tmp/agentic-401-port-forward.log 2>&1 &
+PORT_FORWARD_PID=$!
+trap 'kill ${PORT_FORWARD_PID} 2>/dev/null || true; unset AGENT_AUTH_TOKEN' EXIT
+until curl -fsS http://127.0.0.1:18000/health >/dev/null 2>&1; do sleep 1; done
+----
+
+== Run the Baseline Investigation
+
+[source,bash,role="execute"]
+----
+cat >/tmp/agentic-401-request.json <<EOF
+{
+  "query": "Investigate a fictional API error spike, gather supporting evidence, and prepare a remediation task for human review. Journey ID: ${JOURNEY_ID}",
+  "workflow_type": "comprehensive"
+}
+EOF
+
+curl -fsS http://127.0.0.1:18000/api/v1/workflow \
+  -H "Authorization: Bearer ${AGENT_AUTH_TOKEN}" \
+  -H 'Content-Type: application/json' \
+  --data-binary @/tmp/agentic-401-request.json \
+  -o /tmp/agentic-401-response.json
+
+python3 -m json.tool /tmp/agentic-401-response.json
+----
+
+Treat the submitted query as Prompt in at the public workflow boundary and the
+structured JSON as Response out. Do not describe either as hidden model
+reasoning. Record `agents_involved`, `steps`, each stage latency, total latency,
+routing information, and the AI disclaimer.
+
+== Align the Runtime Window
+
+[source,bash,role="execute"]
+----
+for CONTAINER in orchestrator research analyst executor mcp-server guardrails; do
+  printf '\n=== %s | %s ===\n' "${JOURNEY_ID}" "${CONTAINER}"
+  oc logs deployment/multi-agent -c "${CONTAINER}" --since-time="${STARTED_AT}" | tail -40
+done
+----
+
+The timestamp and journey ID provide a learner-visible correlation aid. Full
+cross-service trace and span propagation remains a certification blocker until
+the OpenTelemetry runtime integration is deployed.
+
+== Correlation Checkpoint
+
+You can relate one journey ID to its request, structured response, stage
+latencies, agent list, and bounded runtime-log window without exposing a
+credential.
+
+[.next-nav]
+xref:03-policy.adoc[Next: Separate Evidence, Policy, and Explanation ->]
+

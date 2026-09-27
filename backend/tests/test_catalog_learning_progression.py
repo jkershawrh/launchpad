@@ -5,6 +5,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = ROOT / "catalog"
 CONTRACT = ROOT / "contracts" / "catalog-learning-progression-v1.yaml"
+BLUEPRINT_CONTRACT = ROOT / "contracts" / "agentic-blueprint-v1.yaml"
+TELEMETRY_CONTRACT = ROOT / "contracts" / "agentic-journey-telemetry-v1.yaml"
 FLIGHTPATH_CANDIDATES = (
     ROOT / "deploy" / "launchpad" / "overlays" / "flightpath-candidate"
 )
@@ -36,6 +38,52 @@ def test_catalog_learning_metadata_matches_versioned_contract():
         assert catalog_id not in metadata["recommended_next_items"]
         for reference in metadata["prerequisites"] + metadata["recommended_next_items"]:
             assert reference in items, f"{catalog_id} references unknown item {reference}"
+
+
+def test_catalog_journey_roles_form_valid_core_and_specialty_paths():
+    contract = yaml.safe_load(CONTRACT.read_text())
+    items = _items()
+    roles = set(contract["journey_roles"])
+    specialty_families = set(contract["specialty_families"])
+
+    for catalog_id, item in items.items():
+        metadata = item["metadata"]
+        assert metadata["journey_role"] in roles
+        assert metadata["specialty_family"] in specialty_families | {None}
+        assert metadata["shared_blueprint"] in {
+            contract["canonical_blueprint"],
+            None,
+        }
+        for field in ("branches_from", "returns_to"):
+            reference = metadata[field]
+            assert reference is None or reference in items, (
+                f"{catalog_id} {field} references unknown item {reference}"
+            )
+
+        if metadata["journey_role"] == "core":
+            assert metadata["shared_blueprint"] == contract["canonical_blueprint"]
+            assert metadata["specialty_family"] is None
+        elif metadata["journey_role"] == "specialty":
+            assert metadata["specialty_family"] is not None
+            assert metadata["branches_from"] is not None
+
+
+def test_agentic_blueprint_and_telemetry_contracts_share_identity():
+    progression = yaml.safe_load(CONTRACT.read_text())
+    blueprint = yaml.safe_load(BLUEPRINT_CONTRACT.read_text())
+    telemetry = yaml.safe_load(TELEMETRY_CONTRACT.read_text())
+
+    assert blueprint["blueprint_id"] == progression["canonical_blueprint"]
+    assert telemetry["blueprint_id"] == blueprint["blueprint_id"]
+    assert telemetry["correlation"]["required_fields"]
+    assert telemetry["journey_events"]
+    assert telemetry["proof_requirements"]
+
+
+def test_progression_reserves_501_for_scale_and_certification():
+    contract = yaml.safe_load(CONTRACT.read_text())
+    assert contract["levels"]["501"]["name"] == "Scale"
+    assert contract["levels"]["501"]["publication_gate"] == "certified"
 
 
 def test_public_learning_titles_include_their_level():

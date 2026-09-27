@@ -1,0 +1,37 @@
+= Operational Proof Package
+
+== What You Proved
+
+Your evidence package should contain:
+
+* participant and namespace boundary;
+* deployment revision, readiness, and container resource requests;
+* shared Intel Xeon model identity;
+* journey ID, start time, Prompt in, and Response out;
+* agents involved, ordered stages, and measured stage latency;
+* Supporting Evidence and its visible provenance;
+* deterministic policy state;
+* guardrail denial with no resulting action;
+* successful recovery using a clean request;
+* human review and final action boundary; and
+* configuration change, comparison, rollback, and restored baseline.
+
+If any supplied fixture or example was used instead of a runtime observation,
+mark it `REHEARSAL`. This candidate does not permit offline information to be
+presented as live evidence.
+
+== What Remains Before Activation
+
+This content is a 401 candidate, not an active catalog promise. Promotion
+requires native journey correlation, certified OpenTelemetry collection,
+independent service-outage recovery, approved Intel CPU telemetry, GitOps
+drift proof, pipeline evaluation, immutable content provenance, and staged
+one-, five-, and twenty-five-seat qualification. Kagenti integration is also
+not deployed in this draft.
+
+== Continue with a Specialty
+
+The same operating method can be applied to Network Operations, reliability,
+fraud, RAG, or another approved specialty. The specialty changes the evidence
+and policy; it does not replace the canonical Red Hat and Intel boundaries.
+

@@ -1,0 +1,20 @@
+name: modules
+version: master
+title: "Operate Evidence-Backed Multi-Agent Systems"
+start_page: index.adoc
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    user: '%user%'
+    guid: '%guid%'
+    openshift_api_url: '%openshift_api_url%'
+    openshift_console_url: '%openshift_console_url%'
+    openshift_cluster_ingress_domain: '%openshift_cluster_ingress_domain%'
+    cluster_display_name: '%cluster_display_name%'
+    project_name: '%namespace%'
+    maas_endpoint: '%maas_endpoint%'
+    maas_api_url: '%maas_api_url%'
+    maas_model: '%maas_model%'
+

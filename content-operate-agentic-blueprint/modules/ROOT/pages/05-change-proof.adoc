@@ -1,0 +1,49 @@
+= Change, Compare, and Restore
+
+== Apply One Controlled Policy Change
+
+[source,bash,role="execute"]
+----
+oc create configmap workflow-policy \
+  --from-literal=AGENT_MAX_TOKENS_OVERRIDE=48 \
+  --dry-run=client -o yaml | oc apply -f -
+oc rollout restart deployment/multi-agent
+oc rollout status deployment/multi-agent --timeout=5m
+test "$(oc exec deployment/multi-agent -c executor -- \
+  python -c 'import agent; print(agent.AGENT_MAX_TOKENS)')" = "48"
+----
+
+Run the same baseline request from the Multi-Agent Workspace. Compare the
+ordered stages, Supporting Evidence, human-review boundary, per-stage latency,
+and Response out with the baseline. A token bound may change wording or
+latency; it must not silently remove evidence provenance or grant action
+authority.
+
+== Restore the Certified Baseline
+
+[source,bash,role="execute"]
+----
+oc delete configmap workflow-policy
+oc rollout restart deployment/multi-agent
+oc rollout status deployment/multi-agent --timeout=5m
+test "$(oc get configmap workflow-policy --ignore-not-found)" = ""
+test "$(oc exec deployment/multi-agent -c executor -- \
+  python -c 'import agent; print(agent.AGENT_MAX_TOKENS)')" = "96"
+----
+
+Record rollout completion and the restored value. The proof is incomplete if
+the change works but the environment is not returned to baseline.
+
+GitOps drift detection and pipeline-based evaluation are not deployed in this
+draft. This exercise establishes the behavior they must later automate:
+identify the approved state, evaluate a change, compare evidence, and restore
+the known baseline.
+
+== Change Checkpoint
+
+You can show the baseline, approved change, measured comparison, rollback, and
+restored policy value as one auditable sequence.
+
+[.next-nav]
+xref:99-conclusion.adoc[Next: Assemble the Operational Proof Package ->]
+

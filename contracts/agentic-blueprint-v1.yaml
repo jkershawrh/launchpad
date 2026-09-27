@@ -1,0 +1,111 @@
+api_version: launchpad.redhat.com/agentic-blueprint/v1
+blueprint_id: red-hat-intel-agentic-v1
+display_name: Red Hat and Intel Evidence-Backed Agentic Blueprint
+purpose: >-
+  A reusable, human-governed multi-agent architecture that collects evidence,
+  applies deterministic policy, and uses Intel Xeon inference for bounded
+  explanation on Red Hat OpenShift.
+principles:
+  - evidence_before_inference
+  - deterministic_policy_owns_the_decision
+  - llm_has_no_evidence_or_action_authority
+  - human_retains_action_authority
+  - fail_closed_when_required_services_are_unavailable
+  - every_claim_is_correlated_to_runtime_proof
+components:
+  workload:
+    required:
+      - id: intake
+        responsibility: Establish the scenario contract and correlation identity.
+      - id: orchestrator
+        responsibility: Coordinate work without performing inference or owning evidence.
+      - id: specialized_agents
+        responsibility: Research and analyze bounded portions of the request.
+      - id: a2a
+        responsibility: Exchange agent cards, tasks, and results through open protocols.
+      - id: mcp
+        responsibility: Expose allowlisted, read-only evidence tools with provenance.
+      - id: evidence_ledger
+        responsibility: Preserve observations, source identity, time, and completeness.
+      - id: deterministic_policy
+        responsibility: Evaluate evidence sufficiency and produce a bounded disposition.
+      - id: llm_adapter
+        responsibility: Request explanation only after evidence and policy are established.
+      - id: human_review
+        responsibility: Accept, reject, or defer the proposed conclusion and any action.
+  platform:
+    required:
+      - openshift
+      - model_endpoint
+    progressive:
+      - openshift-ai
+      - openshift-gitops
+      - openshift-pipelines
+      - cluster-observability
+      - openshift-logging
+      - opentelemetry
+      - service-mesh
+      - workload-identity
+  hardware:
+    required:
+      provider: Intel
+      architecture: x86_64
+      inference_target: Intel Xeon CPU
+      proof:
+        - model_name
+        - endpoint_identity
+        - request_latency_ms
+        - token_usage_when_available
+        - cpu_allocation_when_available
+boundaries:
+  mcp:
+    default_access: read_only
+    mutation_requires_explicit_specialty_contract: true
+  policy:
+    implementation: versioned_code_or_configuration
+    learned_by_llm: false
+  llm:
+    may_explain: true
+    may_select_final_evidence: false
+    may_execute_action: false
+  human:
+    owns_final_disposition: true
+runtime_maturity:
+  live_today:
+    - orchestrator
+    - specialized_agents
+    - a2a
+    - mcp
+    - deterministic_policy
+    - human_review
+    - shared_intel_xeon_model_endpoint
+  progressive_or_specialty:
+    - openshift-ai
+    - openshift-gitops
+    - openshift-pipelines
+    - cluster-observability
+    - openshift-logging
+    - service-mesh
+    - workload-identity
+  architecture_only_until_certified:
+    - kagenti
+    - opentelemetry_runtime_integration
+specialty_rules:
+  may_add:
+    - agents
+    - mcp_tools
+    - evidence_schemas
+    - deterministic_policies
+    - operator_capabilities
+  must_not_replace:
+    - evidence_before_inference
+    - deterministic_policy_ownership
+    - bounded_llm_authority
+    - human_action_authority
+  required_declarations:
+    - branches_from
+    - unique_learning_outcome
+    - added_components
+    - live_proof
+    - return_point
+

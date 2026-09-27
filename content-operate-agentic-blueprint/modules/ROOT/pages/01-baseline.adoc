@@ -1,0 +1,55 @@
+= Establish the Operational Baseline
+
+== Confirm Scope and Identity
+
+[source,bash,role="execute",subs=attributes+]
+----
+test "$(oc project -q)" = "{project_name}"
+oc whoami
+oc auth can-i get pods -n {project_name}
+oc auth can-i get nodes
+----
+
+The pod check must return `yes`; the cluster-scoped node check must return
+`no`. Operations begin by proving the participant boundary, not by assuming
+administrator access.
+
+== Observe the Running Blueprint
+
+[source,bash,role="execute"]
+----
+oc get deployment multi-agent -o wide
+oc rollout status deployment/multi-agent --timeout=5m
+oc get pods -l app.kubernetes.io/name=multi-agent-seat
+oc get services,routes -l app.kubernetes.io/name=multi-agent-seat
+oc get deployment multi-agent \
+  -o jsonpath='{range .spec.template.spec.containers[*]}{.name}{"\t"}{.resources.requests.cpu}{"\t"}{.resources.requests.memory}{"\n"}{end}'
+----
+
+Identify the orchestrator, research, analyst, executor, MCP, guardrails, and UI
+containers. Their resource requests are OpenShift scheduling evidence. They do
+not claim to be model-server CPU consumption because inference runs through a
+shared Intel Xeon endpoint.
+
+Confirm the configured model name without reading the complete Secret:
+
+[source,bash,role="execute",subs=attributes+]
+----
+MODEL_NAME="$(oc get secret multi-agent-runtime -o jsonpath='{.data.MODEL_NAME}' | base64 -d)"
+test -n "$MODEL_NAME"
+printf 'Configured model: %s\n' "$MODEL_NAME"
+test "$MODEL_NAME" = "{maas_model}"
+unset MODEL_NAME
+----
+
+Record the deployment revision, ready replicas, model name, and observation
+time as the start of your proof package.
+
+== Baseline Checkpoint
+
+You can identify every workload boundary, prove namespace isolation, and
+distinguish application CPU requests from the shared Intel Xeon inference
+service.
+
+[.next-nav]
+xref:02-correlate.adoc[Next: Correlate One Journey ->]
