@@ -37,6 +37,25 @@ def test_login_brand_marks_are_inline_and_do_not_depend_on_external_images():
     assert "keycloak-bg-darken.svg" not in template
 
 
+def test_login_page_explains_the_platform_and_catalog_before_access():
+    template = (
+        Path(__file__).resolve().parents[2]
+        / "keycloak-authenticator/src/main/resources/theme-resources/templates/launchpad-code.ftl"
+    ).read_text()
+
+    assert "Hands-on AI environments for learning, building, and operating" in template
+    assert "What you can do in Launchpad" in template
+    assert "Serve AI models" in template
+    assert "Build AI solutions" in template
+    assert "Engineer agentic systems" in template
+    assert "Operate with evidence" in template
+    assert "Quick starts" in template
+    assert "Guided labs" in template
+    assert "Multi-seat workshops" in template
+    assert "Experiences available to you depend on your event and instructor code" in template
+    assert "Access your lab" in template
+
+
 def test_console_oidc_fallback_can_validate_a_code_without_redirect_host_order():
     source = (
         Path(__file__).resolve().parents[2]
