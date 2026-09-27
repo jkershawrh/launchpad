@@ -24,6 +24,13 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["workload_helm_values"]["image"]["digest"].startswith("sha256:")
     assert re.fullmatch(r"[0-9a-f]{40}", metadata["showroom_content_ref"])
     assert metadata["source_content_revision"] == metadata["showroom_content_ref"]
+    presentation = metadata["presentation"]
+    assert re.fullmatch(r"[0-9a-f]{40}", presentation["revision"])
+    assert re.fullmatch(r"sha256:[0-9a-f]{64}", presentation["image"]["digest"])
+    assert presentation["build_configuration"] == {
+        "live_api_base": "VITE_API_BASE",
+        "launchpad_lab_url": "VITE_LAB_URL",
+    }
     assert metadata["activation_blockers"]
 
 

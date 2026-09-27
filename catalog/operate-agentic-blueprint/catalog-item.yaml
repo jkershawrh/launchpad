@@ -68,6 +68,16 @@ metadata:
   showroom_content_ref: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
   showroom_content_playbook: site-operate-agentic-blueprint.yml
   showroom_content_start_path: content-operate-agentic-blueprint
+  presentation:
+    repo_url: "https://github.com/jkershawrh/multi-agent-quickstart.git"
+    revision: 9cec3cebe7972b92385c55174674532eeb895f97
+    image:
+      repository: quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation
+      digest: sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
+    build_configuration:
+      live_api_base: VITE_API_BASE
+      launchpad_lab_url: VITE_LAB_URL
+    status: candidate
   showroom_terminal_storage: false
   showroom_tabs:
     - id: terminal

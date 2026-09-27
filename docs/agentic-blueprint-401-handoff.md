@@ -2,13 +2,18 @@
 
 ## Current state
 
-This working tree contains the foundation and first content candidate for a
-single episodic Launchpad journey built on the Red Hat and Intel evidence-backed
-multi-agent blueprint.
+This working tree contains the complete candidate package for a single episodic
+Launchpad journey built on the Red Hat and Intel evidence-backed multi-agent
+blueprint: a Triforce-style pre-lab presentation followed by the 401 hands-on
+operations lab.
 
 The source and content candidate were committed on branch
 `codex/flightpath-migration-20260922`. The catalog pins the Showroom content to
 commit `ddd7c2aab25d4c10f7738f15eece1ab101a95b15`.
+
+The presentation source is pinned to commit
+`9cec3cebe7972b92385c55174674532eeb895f97` in
+`jkershawrh/multi-agent-quickstart`.
 
 ## Decisions already made
 
@@ -61,6 +66,21 @@ Immutable runtime artifact:
 quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
 ```
 
+Immutable presentation artifact:
+
+```text
+quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
+```
+
+The presentation uses the Triforce underpinning: a concise business opening,
+guided architecture questions, the same architecture animated through live
+proof, Intel Xeon inference, MCP evidence, deterministic policy, human
+authority, measured payoff, closure, and only then the Launchpad lab handoff.
+`VITE_API_BASE` and `VITE_LAB_URL` are build-time deployment inputs. They are
+not guessed or baked into the canonical image. Without a live API, the
+presentation labels fixture data as rehearsal/offline; without a lab URL, it
+shows the handoff instructions without inventing a link.
+
 The image manifest was resolved successfully from Quay. Launchpad builds the
 Showroom from the immutable Git content revision above; it does not package
 each guide into a separate participant-content image.
@@ -109,6 +129,9 @@ Full non-local backend suite: 2293 passed, 27 skipped, 13 deselected
 All catalog, onboarding, and contract YAML parsed successfully
 Antora Showroom build: passed without warnings
 Immutable workload image manifest: resolved from Quay
+Presentation unit/component/build checks: 33 passed
+Presentation visual checks: 9 passed at presentation, laptop, and rehearsal widths
+Immutable presentation image: built for linux/amd64 and pushed to Quay
 git diff --check: clean
 ```
 
