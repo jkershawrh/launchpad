@@ -11,8 +11,8 @@ The source and content candidate were committed on branch
 `codex/flightpath-migration-20260922`. The catalog pins the Showroom content to
 commit `ddd7c2aab25d4c10f7738f15eece1ab101a95b15`.
 
-The presentation source is pinned to commit
-`9cec3cebe7972b92385c55174674532eeb895f97` in
+The converged runtime and presentation source is pinned to commit
+`c2a72e7865bae7aebc913a49f91601647a95efbb` in
 `jkershawrh/multi-agent-quickstart`.
 
 ## Decisions already made
@@ -70,13 +70,13 @@ The catalog pins that chart contract to Launchpad commit
 Immutable runtime artifact:
 
 ```text
-quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+ghcr.io/jkershawrh/multi-agent-quickstart@sha256:bf48f40f29b88c985adb2f6e1522dbbcdd999d2d5ff6f6911e48b2737f320767
 ```
 
 Immutable presentation artifact:
 
 ```text
-quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
+ghcr.io/jkershawrh/operate-agentic-blueprint-presentation@sha256:7d48b3e1c9d8dde414259add960e09bacbeb9bf7bb61013c78527b19c0c05f0b
 ```
 
 The presentation uses the Triforce underpinning: a concise business opening,
@@ -91,13 +91,13 @@ runtime Secret; that token is not exposed to the browser or serialized into
 the Argo CD Application. The Showroom itself remains the lab handoff rather
 than baking a dynamic participant URL into the image.
 
-The image manifest was resolved successfully from Quay. Its current artifact
-evidence is not sufficient for activation: the OCI source labels identify the
-base NGINX image, and no image signature, SBOM, or provenance attestation was
-found. Republish it through the approved CI path before one-seat live
-certification. Launchpad builds the Showroom from the immutable Git content
-revision above; it does not package each guide into a separate participant-
-content image.
+The release-candidate workflow completed successfully at
+https://github.com/jkershawrh/multi-agent-quickstart/actions/runs/36352732547.
+Both public GHCR images are Linux/AMD64, carry the correct source and revision
+labels, and have SBOM, provenance, GitHub build attestation, and keyless Cosign
+signature evidence. Launchpad builds the Showroom from the immutable Git
+content revision above; it does not package each guide into a separate
+participant-content image.
 
 The linear content journey is:
 
@@ -124,20 +124,15 @@ exists.
 
 The catalog item records these gates:
 
-1. Republish the presentation with correct OCI labels, SBOM, signature, and
-   provenance attestation.
-2. Certify the authenticated same-origin proxy and prove that live and
+1. Certify the authenticated same-origin proxy and prove that live and
    rehearsal modes cannot be confused.
-3. Add and contract-test `GET /api/v1/policy`; the presentation requests it,
-   but the pinned workload runtime currently exposes only the live agents and
-   workflow APIs.
-4. Implement `agentic-journey-telemetry-v1` correlation in the runtime.
-5. Prove independent guardrail and inference outages, fail-closed behavior,
+2. Implement `agentic-journey-telemetry-v1` correlation in the runtime.
+3. Prove independent guardrail and inference outages, fail-closed behavior,
    and recovery.
-6. Add certified OpenTelemetry collection and a learner-visible trace.
-7. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
-8. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
-9. Pin immutable content provenance and complete one-, five-, and
+4. Add certified OpenTelemetry collection and a learner-visible trace.
+5. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
+6. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
+7. Pin immutable content provenance and complete one-, five-, and
    twenty-five-seat certification with zero-residue reclaim.
 
 ## Validation already completed
@@ -162,15 +157,13 @@ not failures in this change.
 
 ## Recommended next work
 
-1. Republish the presentation from CI with correct source metadata and supply-
-   chain evidence.
-2. Review the 401 learning flow and commands for the intended participant
+1. Review the 401 learning flow and commands for the intended participant
    persona.
-3. Build the Showroom package and visually inspect every page.
-4. Implement native journey correlation in the canonical multi-agent workload
+2. Build the Showroom package and visually inspect every page.
+3. Implement native journey correlation in the canonical multi-agent workload
    rather than synthesizing it in the guide.
-5. Add an independently addressable guardrail boundary so failure injection
+4. Add an independently addressable guardrail boundary so failure injection
    can be tested without terminating the compact workload pod.
-6. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
+5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
    contract tests first.
-7. Run one-seat certification before changing `status` or seat capacity.
+6. Run one-seat certification before changing `status` or seat capacity.

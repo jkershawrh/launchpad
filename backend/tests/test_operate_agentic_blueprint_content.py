@@ -29,6 +29,8 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     presentation = metadata["presentation"]
     assert re.fullmatch(r"[0-9a-f]{40}", presentation["revision"])
     assert re.fullmatch(r"sha256:[0-9a-f]{64}", presentation["image"]["digest"])
+    assert presentation["revision"] == "c2a72e7865bae7aebc913a49f91601647a95efbb"
+    assert presentation["image"]["repository"].startswith("ghcr.io/jkershawrh/")
     assert presentation["runtime_configuration"] == {
         "api_mode": "same-origin-proxy",
         "api_path": "/api",
@@ -48,6 +50,9 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     )
     assert presentation_tab["source"] == "workload.route.presentation"
     assert metadata["seat_pods"] == 3
+    assert metadata["workload_helm_values"]["image"]["repository"] == (
+        "ghcr.io/jkershawrh/multi-agent-quickstart"
+    )
     assert metadata["activation_blockers"]
 
 
