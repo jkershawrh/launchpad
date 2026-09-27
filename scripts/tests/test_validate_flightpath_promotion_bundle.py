@@ -44,6 +44,9 @@ def test_public_canary_bundle_binds_all_signed_platform_images() -> None:
     assert bundle["target"]["public_max_seats"] == 1
     assert len(bundle["canary"]["catalog_ids"]) == 6
     assert bundle["canary"]["public_catalog_ids"] == ["network-operations-agent"]
+    assert result["identities"]["rollback"]["candidate_id"] == (
+        "launchpad-staging-20260925-04-compatible-rollback"
+    )
 
 
 def test_public_canary_bundle_fails_closed_on_scope_or_image_drift() -> None:
@@ -56,6 +59,11 @@ def test_public_canary_bundle_fails_closed_on_scope_or_image_drift() -> None:
     bundle = copy.deepcopy(_bundle_04())
     bundle["promotion"]["requester_image"] = bundle["promotion"]["admin_image"]
     with pytest.raises(ValueError, match="requester_image does not match"):
+        module.validate(bundle, root=ROOT)
+
+    bundle = copy.deepcopy(_bundle_04())
+    bundle["rollback"]["admin_image"] = bundle["rollback"]["requester_image"]
+    with pytest.raises(ValueError, match="rollback admin_image does not match"):
         module.validate(bundle, root=ROOT)
 
     bundle = copy.deepcopy(_bundle_04())

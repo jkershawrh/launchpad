@@ -102,16 +102,16 @@ def validate(bundle: dict[str, Any], *, root: Path = ROOT) -> dict[str, Any]:
         )
         identities[action] = {"candidate_id": release["candidate_id"], "revision": revision}
 
-        if schema_version.endswith("/v2") and action == "promotion":
+        if schema_version.endswith("/v2"):
             for field in ("backend_image", "requester_image", "admin_image"):
                 image = release.get(field, "")
                 _require(
                     bool(DIGEST_IMAGE.fullmatch(image)),
-                    f"promotion {field} must be digest pinned",
+                    f"{action} {field} must be digest pinned",
                 )
                 _require(
                     candidate.get("platform", {}).get(field) == image,
-                    f"promotion {field} does not match the candidate",
+                    f"{action} {field} does not match the candidate",
                 )
 
     _require(

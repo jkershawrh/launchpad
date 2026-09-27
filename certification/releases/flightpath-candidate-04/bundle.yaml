@@ -17,12 +17,14 @@ promotion:
   requester_image: ghcr.io/rhpds/launchpad-portal@sha256:f6778b456d7e737fd5483f3338205c15b5003faa475fafb1ecdb712c6928c9d1
   admin_image: ghcr.io/rhpds/launchpad-admin@sha256:9808230f3ad7686a1f3413004ef24f0d3eabf33a71243252b6368dcc643c44ce
 rollback:
-  candidate_id: launchpad-staging-20260923-03
-  candidate_path: certification/candidates/staging-candidate-20260923-03.yaml
-  revision: 51a9785ab61798a5e4921f31afc423ac984f1aa2
-  overlay_path: deploy/launchpad/overlays/flightpath-candidate
-  rendered_sha256: 3d8b3114c3f690da5e1687e8a1f1f90eb10ded8a4d37dec607ab8bb0342de9ac
+  candidate_id: launchpad-staging-20260925-04-compatible-rollback
+  candidate_path: certification/candidates/flightpath-candidate-04-compatible-rollback.yaml
+  revision: 705305f0eb6e94c1993977c8cd6edb788ad66779
+  overlay_path: deploy/launchpad/overlays/flightpath-candidate-04-rollback
+  rendered_sha256: c7207b910c10c58ac7d821acfd5505585939527a9369e24e43fd86af8cd29234
   backend_image: quay.io/rh-ee-jkershaw/launchpad-backend@sha256:e922ef53a5e08ae957de8b0a034652f7d64d605e09bdc032a6405279ba9c16e1
+  requester_image: quay.io/rh-ee-jkershaw/launchpad-portal@sha256:84358765ab9c78258fbba8ddb50791dcff69578b7c2fc6a822758d25c4b7f71d
+  admin_image: quay.io/rh-ee-jkershaw/launchpad-admin@sha256:b599a1d7b75005c55ce32fbe51db86d1aa3e8c0946260d0310dfa700f55acb29
   scope: application-manifests-only
   database_restore: forbidden-without-separately-verified-compatible-backup
 render:

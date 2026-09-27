@@ -59,7 +59,7 @@ python3 scripts/validate_flightpath_promotion_bundle.py \
   --render promotion --output /secure/release/flightpath-candidate-04.yaml
 python3 scripts/validate_flightpath_promotion_bundle.py \
   certification/releases/flightpath-candidate-04/bundle.yaml \
-  --render rollback --output /secure/release/flightpath-candidate-03-rollback.yaml
+  --render rollback --output /secure/release/flightpath-candidate-04-compatible-rollback.yaml
 ```
 
 Retain the reported SHA-256 values with the two payloads. Never regenerate the
@@ -147,8 +147,11 @@ rollback, performance, and soak remain required for `green-staging`.
 ## Rollback
 
 Stop new orders and application writers before applying the verified Candidate
-03 rollback payload. Application rollback does not authorize database restore.
+04 compatibility rollback payload. The rollback preserves Candidate 04's
+catalog, route, RBAC, and volume shape while reverting the backend, requester,
+and admin runtime images to the previously working set. Do not apply the stale
+Candidate 03 object shape. Application rollback does not authorize database restore.
 A database restore requires a separately proven compatible backup, explicit
 RPO/data-loss acceptance, and database-owner approval. After rollback, verify
-the Candidate 03 image identities, platform health, closed order ingress, and
+the compatibility rollback image identities, platform health, closed order ingress, and
 zero active lifecycle or workshop residue.
