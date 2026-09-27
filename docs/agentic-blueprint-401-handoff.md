@@ -128,13 +128,16 @@ The catalog item records these gates:
    provenance attestation.
 2. Certify the authenticated same-origin proxy and prove that live and
    rehearsal modes cannot be confused.
-3. Implement `agentic-journey-telemetry-v1` correlation in the runtime.
-4. Prove independent guardrail and inference outages, fail-closed behavior,
+3. Add and contract-test `GET /api/v1/policy`; the presentation requests it,
+   but the pinned workload runtime currently exposes only the live agents and
+   workflow APIs.
+4. Implement `agentic-journey-telemetry-v1` correlation in the runtime.
+5. Prove independent guardrail and inference outages, fail-closed behavior,
    and recovery.
-5. Add certified OpenTelemetry collection and a learner-visible trace.
-6. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
-7. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
-8. Pin immutable content provenance and complete one-, five-, and
+6. Add certified OpenTelemetry collection and a learner-visible trace.
+7. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
+8. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
+9. Pin immutable content provenance and complete one-, five-, and
    twenty-five-seat certification with zero-residue reclaim.
 
 ## Validation already completed

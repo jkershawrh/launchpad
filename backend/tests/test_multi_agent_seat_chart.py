@@ -123,6 +123,7 @@ def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_orig
     assert "location /api/" in nginx
     assert "proxy_pass http://multi-agent:8000;" in nginx
     assert 'proxy_set_header Authorization "Bearer ${AGENT_AUTH_TOKEN}";' in nginx
+    assert "location = /health" in nginx
     assert "try_files $uri $uri/ /index.html;" in nginx
     presentation_env = _env(container)
     assert presentation_env["AGENT_AUTH_TOKEN"]["valueFrom"]["secretKeyRef"] == {
