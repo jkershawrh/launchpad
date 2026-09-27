@@ -64,6 +64,8 @@ The chart now has an opt-in presentation runtime contract. When the 401
 catalog item enables it, Argo CD creates a separately owned presentation
 Deployment, Service, edge Route, and ingress policy in the seat namespace. The
 301 catalog item does not enable it and therefore renders unchanged.
+The catalog pins that chart contract to Launchpad commit
+`4da2ea8a23d40bc74d0836c741f4abd22770aa12`.
 
 Immutable runtime artifact:
 
