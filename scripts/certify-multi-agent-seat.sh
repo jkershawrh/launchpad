@@ -355,14 +355,17 @@ semantic="$(
   oc_exec_json orchestrator \
     'import os,httpx,json; r=httpx.post("http://127.0.0.1:8000/api/v1/workflow",headers={"Authorization":"Bearer "+os.environ["AGENT_AUTH_TOKEN"]},json={"query":"Summarize the current project status","workflow_type":"auto"},timeout=500); r.raise_for_status(); x=r.json(); c=x.get("classification") or {}; print(json.dumps({"classification_status":c.get("status"),"classifier":c.get("classifier_id"),"selected_workflow":c.get("selected_workflow"),"selected_model":c.get("selected_model"),"steps":len(x.get("steps",[])),"errors":[s["result"] for s in x.get("steps",[]) if s.get("result","").startswith("Error:")],"latency_ms":x.get("total_latency_ms")}))'
 )"
-printf '%s' "$semantic" | jq -e '
+if ! printf '%s' "$semantic" | jq -e '
   .classification_status == "ok"
   and .classifier == "llm-fallback"
   and (.selected_workflow | length) > 0
   and (.selected_model | length) > 0
   and .steps > 0
   and (.errors | length) == 0
-' >/dev/null
+' >/dev/null; then
+  printf 'semantic_response=%s\n' "$semantic" >&2
+  false
+fi
 
 stage="terminal-scope"
 terminal_scope=""
