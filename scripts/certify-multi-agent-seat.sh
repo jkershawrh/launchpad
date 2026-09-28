@@ -352,22 +352,35 @@ printf '%s' "$semantic" | jq -e '
 ' >/dev/null
 
 stage="terminal-scope"
-terminal_scope="$(
-  oc exec -n "$namespace" deployment/showroom -c terminal -- sh -c '
-    printf "project=%s\n" "$(oc project -q)"
-    printf "own_edit=%s\n" "$(oc auth can-i create deployments.apps -n "$PROJECT_NAME")"
-    if oc get pods -n partner-ai-launchpad >/dev/null 2>&1; then
-      echo cross_namespace=ALLOWED
-    else
-      echo cross_namespace=DENIED
-    fi
-    if oc get nodes >/dev/null 2>&1; then
-      echo node_list=ALLOWED
-    else
-      echo node_list=DENIED
-    fi
-  '
-)"
+terminal_scope=""
+terminal_scope_valid=false
+for terminal_scope_attempt in {1..6}; do
+  if terminal_scope="$(
+    oc exec -n "$namespace" deployment/showroom -c terminal -- sh -c '
+      printf "project=%s\n" "$(oc project -q)"
+      printf "own_edit=%s\n" "$(oc auth can-i create deployments.apps -n "$PROJECT_NAME")"
+      if oc get pods -n partner-ai-launchpad >/dev/null 2>&1; then
+        echo cross_namespace=ALLOWED
+      else
+        echo cross_namespace=DENIED
+      fi
+      if oc get nodes >/dev/null 2>&1; then
+        echo node_list=ALLOWED
+      else
+        echo node_list=DENIED
+      fi
+    '
+  )" \
+    && grep -qx "project=${namespace}" <<<"$terminal_scope" \
+    && grep -qx 'own_edit=yes' <<<"$terminal_scope" \
+    && grep -qx 'cross_namespace=DENIED' <<<"$terminal_scope" \
+    && grep -qx 'node_list=DENIED' <<<"$terminal_scope"; then
+    terminal_scope_valid=true
+    break
+  fi
+  sleep "$((terminal_scope_attempt * 2))"
+done
+[[ "$terminal_scope_valid" == "true" ]]
 grep -qx "project=${namespace}" <<<"$terminal_scope"
 grep -qx 'own_edit=yes' <<<"$terminal_scope"
 grep -qx 'cross_namespace=DENIED' <<<"$terminal_scope"

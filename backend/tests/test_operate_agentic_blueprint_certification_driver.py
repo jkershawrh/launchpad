@@ -49,6 +49,15 @@ def test_shared_driver_keeps_301_behavior_as_the_default():
     assert 'PRESENTATION_REQUIRED:-false' in source
 
 
+def test_shared_driver_retries_terminal_scope_during_concurrent_certification():
+    source = BASE_DRIVER.read_text()
+
+    assert 'for terminal_scope_attempt in {1..6}; do' in source
+    assert 'terminal_scope_valid=true' in source
+    assert 'sleep "$((terminal_scope_attempt * 2))"' in source
+    assert '[[ "$terminal_scope_valid" == "true" ]]' in source
+
+
 def test_401_certification_advances_from_five_to_twenty_five_seats_on_flightpath():
     contract = load_certification_contract(CERTIFICATION)
     intake = load_intake(INTAKE)
