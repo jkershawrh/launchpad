@@ -520,26 +520,76 @@ class PublicAccessService:
                 if self.store:
                     self.store.save_session(revoked)
 
+    @staticmethod
+    def _utc_naive(value: datetime) -> datetime:
+        if value.tzinfo is None:
+            return value
+        return value.astimezone(UTC).replace(tzinfo=None)
+
+    def _expire_order_locked(self, order_id: str, *, now: datetime) -> None:
+        policy = self._policies.get(order_id)
+        if policy:
+            self._policies[order_id] = policy.model_copy(update={"enabled": False})
+            if self.store:
+                self.store.save_policy(self._policies[order_id])
+        for key, entitlement in list(self._entitlements.items()):
+            if entitlement.order_id == order_id:
+                updated = entitlement.model_copy(update={
+                    "status": EntitlementStatus.EXPIRED,
+                    "updated_at": now,
+                })
+                self._entitlements[key] = updated
+                if self.store:
+                    self.store.save_entitlement(updated)
+        for participant_id in {
+            item.participant_id
+            for item in self._entitlements.values()
+            if item.order_id == order_id
+        }:
+            self._disable_identity_if_finished(participant_id)
+        self._audit("expire", order_id, "completed")
+
     def expire_order(self, order_id: str) -> None:
         self._refresh()
         with self._lock:
-            policy = self._policies.get(order_id)
-            if policy:
-                self._policies[order_id] = policy.model_copy(update={"enabled": False})
-                if self.store:
-                    self.store.save_policy(self._policies[order_id])
-            for key, entitlement in list(self._entitlements.items()):
-                if entitlement.order_id == order_id:
-                    updated = entitlement.model_copy(update={
-                        "status": EntitlementStatus.EXPIRED,
-                        "updated_at": datetime.utcnow(),
-                    })
-                    self._entitlements[key] = updated
-                    if self.store:
-                        self.store.save_entitlement(updated)
-            for participant_id in {item.participant_id for item in self._entitlements.values() if item.order_id == order_id}:
-                self._disable_identity_if_finished(participant_id)
-            self._audit("expire", order_id, "completed")
+            self._expire_order_locked(order_id, now=datetime.utcnow())
+
+    def expire_stale_orders(self, *, now: datetime | None = None) -> dict[str, object]:
+        """Repair expired access state independently of session lifecycle state.
+
+        Session and workshop records can already be terminal when a lifecycle
+        process restarts.  Authorization still fails closed on timestamps, but
+        this sweep also disables the policy, expires entitlements, revokes the
+        final participant session, and disables identities with no remaining
+        access.
+        """
+
+        self._refresh()
+        observed_at = self._utc_naive(now or datetime.utcnow())
+        active_statuses = {
+            EntitlementStatus.ACTIVE,
+            EntitlementStatus.REAUTH_REQUIRED,
+        }
+        with self._lock:
+            stale_order_ids = sorted(
+                policy.order_id
+                for policy in self._policies.values()
+                if self._utc_naive(policy.expires_at) <= observed_at
+                and (
+                    policy.enabled
+                    or any(
+                        entitlement.order_id == policy.order_id
+                        and entitlement.status in active_statuses
+                        for entitlement in self._entitlements.values()
+                    )
+                )
+            )
+            for order_id in stale_order_ids:
+                self._expire_order_locked(order_id, now=observed_at)
+        return {
+            "orders_expired": len(stale_order_ids),
+            "order_ids": stale_order_ids,
+        }
 
     def entitlements_for(self, participant_id: str) -> list[ParticipantEntitlement]:
         self._refresh()

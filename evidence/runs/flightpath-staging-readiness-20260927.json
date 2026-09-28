@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "evidence_id": "flightpath-staging-readiness-20260927",
+  "observed_at": "2026-09-28T01:43:36Z",
+  "source_revision": "e30300c0c53ea1a97fa64020526fdb268eb4391c",
+  "branch": "codex/flightpath-migration-20260922",
+  "environment": "flightpath",
+  "mode": "read-only live inspection plus local RED/GREEN remediation",
+  "live_state": {
+    "cluster": {
+      "openshift_version": "4.21.10",
+      "ready_schedulable_nodes": 6,
+      "degraded_cluster_operators": 0
+    },
+    "candidate_control_plane": {
+      "namespace": "launchpad-flightpath-candidate",
+      "workloads_ready": true,
+      "routes_admitted": true,
+      "postgres_replicas": 1,
+      "ha_interpretation": "Stateless redundancy exists, but a single PostgreSQL replica is not control-plane HA."
+    },
+    "isolated_stage": {
+      "namespace": "launchpad-stage",
+      "backend_replicas_ready": "2/2",
+      "keycloak_replicas_ready": "2/2",
+      "postgres_replicas_ready": "1/1"
+    },
+    "participant_resources": {
+      "active_lab_namespaces": 0,
+      "session_records": 341,
+      "session_status": "all reclaimed",
+      "workshops_completed": 38,
+      "workshops_failed": 1
+    },
+    "lifecycle": {
+      "scheduler_interval_minutes": 5,
+      "latest_enforce_ttl_succeeded": true,
+      "latest_reconcile_succeeded": true,
+      "stale_enabled_expired_access_policies": 5,
+      "stale_active_expired_entitlements": 2,
+      "authorization_risk": "Fail closed by expiration timestamp; cleanup state remained incomplete."
+    },
+    "model_runtime": {
+      "granite_2b_cpu_health": 200,
+      "granite_3_2_8b_tools_health": 200,
+      "model_discovery_verified": true
+    },
+    "routing": {
+      "requester_and_api_target": "192.168.1.246",
+      "admin_observed_target": "192.168.1.245",
+      "admin_expected_target": "192.168.1.246",
+      "forced_expected_target_result": "OpenShift OAuth 403 login response, proving the Route and Service path is reachable",
+      "owner_action": "Update the authoritative admin hostname record to 192.168.1.246."
+    }
+  },
+  "red_green": {
+    "red": "Reconciliation did not inspect expired public-access records when no active session remained.",
+    "green_local": {
+      "implementation": [
+        "backend/app/services/public_access.py",
+        "backend/app/services/resource_reconciliation.py"
+      ],
+      "tests": [
+        "backend/tests/test_public_access.py",
+        "backend/tests/test_resource_reconciliation.py"
+      ],
+      "result": "55 passed"
+    },
+    "green_integration": "pending immutable candidate build and deployed lifecycle run",
+    "green_live": "pending post-deploy proof that stale counts reach zero"
+  },
+  "release_decision": {
+    "state": "not staging-ready",
+    "blocking_gates": [
+      "Deploy and verify the public-access expiry reconciliation fix.",
+      "Correct the candidate admin DNS target.",
+      "Publish a supported Keycloak image that passes Critical/High dependency policy, then execute the browser journey.",
+      "Certify PostgreSQL HA, backup, restore, and failover."
+    ]
+  },
+  "safety": {
+    "cluster_mutations": 0,
+    "participant_namespaces_modified": 0,
+    "secrets_recorded": false,
+    "participant_pii_recorded": false
+  }
+}

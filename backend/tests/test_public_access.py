@@ -1024,6 +1024,60 @@ def test_final_entitlement_expiry_disables_identity_and_revokes_session():
     }
 
 
+def test_expire_stale_orders_repairs_access_left_after_terminal_lifecycle():
+    access = service()
+    policy, code = access.create_policy(
+        order_id="terminal-order",
+        order_type="individual",
+        catalog_slug="sandbox",
+        seat_refs=["seat"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+    claim = access.claim(
+        policy.order_id,
+        "person@example.com",
+        code,
+        "192.0.2.41",
+    )
+
+    result = access.expire_stale_orders(
+        now=policy.expires_at + timedelta(seconds=1)
+    )
+
+    assert result == {"orders_expired": 1, "order_ids": [policy.order_id]}
+    assert access.get_policy(policy.order_id).enabled is False
+    assert access.entitlements_for(claim.identity.participant_id)[0].status == (
+        EntitlementStatus.EXPIRED
+    )
+    assert access._identities["person@example.com"].disabled_at is not None
+    assert access._sessions[access._token_hash(claim.session_token)].revoked_at is not None
+
+
+def test_expire_stale_orders_is_idempotent_and_ignores_future_orders():
+    access = service()
+    expired, _ = access.create_policy(
+        order_id="expired-order",
+        order_type="individual",
+        catalog_slug="sandbox",
+        seat_refs=["expired-seat"],
+        expires_at=datetime.utcnow() - timedelta(seconds=1),
+    )
+    future, _ = access.create_policy(
+        order_id="future-order",
+        order_type="individual",
+        catalog_slug="sandbox",
+        seat_refs=["future-seat"],
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+    )
+
+    first = access.expire_stale_orders()
+    second = access.expire_stale_orders()
+
+    assert first == {"orders_expired": 1, "order_ids": [expired.order_id]}
+    assert second == {"orders_expired": 0, "order_ids": []}
+    assert access.get_policy(future.order_id).enabled is True
+
+
 def test_claiming_a_later_lab_reactivates_the_ephemeral_identity():
     access = service()
     _, first_code = access.create_policy(

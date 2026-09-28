@@ -107,12 +107,21 @@ def reconcile_resources(
     _require_lifecycle_ownership(lifecycle_guard)
     report: dict[str, Any] = {
         "sessions_reconciled": 0,
+        "public_access_orders_expired": [],
         "workshops_reconciled": [],
         "workshops_reclaiming": [],
         "late_workshop_sessions_reclaimed": [],
         "orphan_namespaces_deleted": [],
         "errors": [],
     }
+    access = getattr(service, "public_access_service", None)
+    if access:
+        _require_lifecycle_ownership(lifecycle_guard)
+        try:
+            expiry = access.expire_stale_orders()
+            report["public_access_orders_expired"] = expiry["order_ids"]
+        except Exception as exc:
+            report["errors"].append(f"public access expiry sweep: {exc}")
     if delete_orphans and not _database_available():
         report["errors"].append("database unavailable — orphan deletion skipped")
         return report

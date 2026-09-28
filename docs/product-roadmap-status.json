@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-27T22:05:00Z",
+  "updated_at": "2026-09-28T01:43:36Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -672,9 +672,12 @@
         "evidence/runs/public-access-atomic-activation/green-local.xml",
         "evidence/runs/public-access-atomic-rotation/green-local.xml",
         "backend/tests/test_public_gateway_availability_contract.py",
-        "docs/participant-access-availability-contract.md"
+        "docs/participant-access-availability-contract.md",
+        "backend/app/services/resource_reconciliation.py",
+        "backend/tests/test_resource_reconciliation.py",
+        "evidence/runs/flightpath-staging-readiness-20260927.json"
       ],
-      "note": "Flightpath isolated stage now proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. A new GREEN-local participant gateway contract returns retryable 503 on upstream transport failure rather than a false empty-labs state; it does not constitute a deployed browser pass. No public Route, production tunnel token, execution-cluster credential, lifecycle worker, or live workshop was touched. This remains GREEN-integration: realm/client/browser and namespace-RBAC journeys, a dedicated staging connector, PostgreSQL HA, external load, live failover, and soak remain open."
+      "note": "Flightpath isolated stage proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. The September 27 read-only staging audit found no participant namespaces and all 341 session records reclaimed, but also found five enabled expired access policies and two expired entitlements still marked active. A new GREEN-local, idempotent reconciliation sweep disables expired policies, expires entitlements, revokes final sessions, and disables identities even when no active session remains; 55 focused public-access and lifecycle tests pass. It is not deployed, so the stale live counts remain open. A GREEN-local participant gateway contract returns retryable 503 on upstream transport failure rather than a false empty-labs state. This remains GREEN-integration: deploy the cleanup sweep and prove zero stale records, complete realm/client/browser and namespace-RBAC journeys, correct candidate admin DNS, publish a dependency-policy-compliant Keycloak image, certify PostgreSQL HA, and complete external load, live failover, and soak."
     },
     "LP-T018": {
       "state": "green-local",

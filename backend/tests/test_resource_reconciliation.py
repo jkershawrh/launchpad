@@ -32,6 +32,30 @@ def test_reconcile_stops_before_mutation_when_lifecycle_fence_is_lost():
     service.cleanup.assert_not_called()
 
 
+def test_reconcile_sweeps_expired_public_access_without_active_sessions():
+    access = MagicMock()
+    access.expire_stale_orders.return_value = {
+        "orders_expired": 2,
+        "order_ids": ["expired-a", "expired-b"],
+    }
+    service = SimpleNamespace(
+        _sessions={},
+        _workshops={},
+        cleanup=None,
+        public_access_service=access,
+    )
+
+    from app.services.resource_reconciliation import reconcile_resources
+
+    report = reconcile_resources(service, delete_orphans=False)
+
+    access.expire_stale_orders.assert_called_once()
+    assert report["public_access_orders_expired"] == [
+        "expired-a",
+        "expired-b",
+    ]
+
+
 def test_reconcile_marks_cleanup_failed_reclaimed_when_namespace_is_gone(lab_session):
     service = MagicMock(spec=ProvisioningService)
     service._sessions = {lab_session.session_id: lab_session.model_copy(update={"status": SessionStatus.CLEANUP_FAILED})}
