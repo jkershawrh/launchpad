@@ -58,7 +58,7 @@ def test_shared_driver_retries_terminal_scope_during_concurrent_certification():
     assert '[[ "$terminal_scope_valid" == "true" ]]' in source
 
 
-def test_401_certification_advances_from_five_to_twenty_five_seats_on_flightpath():
+def test_401_certification_records_the_earned_twenty_five_seat_limit():
     contract = load_certification_contract(CERTIFICATION)
     intake = load_intake(INTAKE)
     assert validate_certification_contract(
@@ -102,9 +102,9 @@ def test_401_certification_advances_from_five_to_twenty_five_seats_on_flightpath
         seats=25,
         exposure_policy="internal",
     )
-    assert plan["current_certified_seats"] == 5
-    assert plan["next_promotion_target"] == 25
-    assert plan["certification_override"] is True
+    assert plan["current_certified_seats"] == 25
+    assert plan["next_promotion_target"] is None
+    assert plan["certification_override"] is False
     assert plan["execution_eligible"] is True
     assert plan["probe_concurrency"] == 10
     assert plan["required_consecutive_runs"] == 3

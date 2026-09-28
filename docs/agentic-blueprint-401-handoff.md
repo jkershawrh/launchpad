@@ -58,8 +58,9 @@ Files:
 - `backend/tests/test_operate_agentic_blueprint_content.py`
 
 The candidate reuses the digest-pinned `multi-agent-seat` chart and workload
-image from `multi-agent-quickstart`. It is `status: draft`, limited to one seat,
-and is not ready for participant ordering.
+image from `multi-agent-quickstart`. It remains `status: draft` and is not
+ready for participant ordering. Its earned internal certification limit is 25
+seats while its public limit remains one seat.
 
 The chart now has an opt-in presentation runtime contract. When the 401
 catalog item enables it, Argo CD creates a separately owned presentation
@@ -69,9 +70,9 @@ The catalog pins that chart contract to Launchpad commit
 `1a4c0349d148d1e933cfbd069b7af970054383aa`.
 
 The live scale gates are encoded at
-`certification/catalog/operate-agentic-blueprint.yaml`. One- and five-seat
-internal Flightpath certification are complete. The next gate is 25 seats and
-requires three consecutive passing runs. Every gate runs
+`certification/catalog/operate-agentic-blueprint.yaml`. One-, five-, and
+25-seat internal Flightpath certification are complete, including three
+consecutive 25-seat passing runs. Every gate runs
 `scripts/certify-operate-agentic-blueprint-seat.sh`, which inherits the
 certified 301 functional and isolation journey and additionally proves the
 presentation route, live health and workflow responses, explicitly labeled
@@ -146,8 +147,8 @@ The catalog item records these gates:
 4. Add certified OpenTelemetry collection and a learner-visible trace.
 5. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
 6. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
-7. Pin immutable content provenance and complete one-, five-, and
-   twenty-five-seat certification with zero-residue reclaim.
+7. Keep the immutable content provenance and completed one-, five-, and
+   twenty-five-seat zero-residue evidence attached to subsequent releases.
 
 ## Validation already completed
 
@@ -187,6 +188,17 @@ scored 100/100 without disabling TLS verification. Evidence:
 - `evidence/runs/catalog/operate-agentic-blueprint-flightpath-five-seat-r1-20260928.json`
 - `evidence/runs/catalog/operate-agentic-blueprint-flightpath-five-seat-r2-20260928.json`
 
+The 25-seat gate is also complete. A concurrent terminal-scope check exposed a
+transient OpenShift API failure and was first preserved as RED evidence. A
+bounded retry/backoff regression fix then completed three consecutive
+GREEN-live runs (`r4`, `r5`, and `r6`), each with 25/25 participant probes,
+100/100 rubric score, and zero residue. The final run reached readiness in
+1186.831 seconds and reclaimed in 172.343 seconds.
+
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r4-20260928.json`
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r5-20260928.json`
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r6-20260928.json`
+
 ## Recommended next work
 
 1. Review the 401 learning flow and commands for the intended participant
@@ -200,5 +212,5 @@ scored 100/100 without disabling TLS verification. Evidence:
    contract tests first.
 6. Preserve the Flightpath ingress CA as an explicit certification input; do
    not replace certificate verification with an insecure client flag.
-7. Run three consecutive 25-seat certifications before changing catalog
-   `status`, public exposure, or the runtime ordering cap.
+7. Keep the catalog draft and public capacity at one until the remaining
+   telemetry, failure-boundary, and production-ownership blockers are closed.
