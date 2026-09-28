@@ -53,10 +53,11 @@ runtime:
 
 certification:
   stage: content-candidate
-  max_workshop_seats: 1
+  max_workshop_seats: 5
   promotion_sequence:
     - 1
     - 5
+    - 25
   proof_contract: certification/catalog/operate-agentic-blueprint.yaml
   activation_blockers:
-    - Complete the Flightpath five-seat live certification and zero-residue reclaim.
+    - Complete three consecutive Flightpath 25-seat live certifications with zero-residue reclaim.

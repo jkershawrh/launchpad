@@ -49,7 +49,7 @@ def test_shared_driver_keeps_301_behavior_as_the_default():
     assert 'PRESENTATION_REQUIRED:-false' in source
 
 
-def test_401_certification_advances_from_one_to_five_seats_on_flightpath():
+def test_401_certification_advances_from_five_to_twenty_five_seats_on_flightpath():
     contract = load_certification_contract(CERTIFICATION)
     intake = load_intake(INTAKE)
     assert validate_certification_contract(
@@ -76,6 +76,13 @@ def test_401_certification_advances_from_one_to_five_seats_on_flightpath():
             "maximum_ready_seconds": 1200,
             "maximum_cleanup_seconds": 900,
         },
+        {
+            "seats": 25,
+            "required_consecutive_runs": 3,
+            "probe_concurrency": 10,
+            "maximum_ready_seconds": 2400,
+            "maximum_cleanup_seconds": 1200,
+        },
     ]
     assert spec["seat_probe"]["argv"][1] == (
         "scripts/certify-operate-agentic-blueprint-seat.sh"
@@ -83,14 +90,15 @@ def test_401_certification_advances_from_one_to_five_seats_on_flightpath():
     plan = build_certification_plan(
         contract,
         intake=intake,
-        seats=5,
+        seats=25,
         exposure_policy="internal",
     )
-    assert plan["current_certified_seats"] == 1
-    assert plan["next_promotion_target"] == 5
+    assert plan["current_certified_seats"] == 5
+    assert plan["next_promotion_target"] == 25
     assert plan["certification_override"] is True
     assert plan["execution_eligible"] is True
-    assert plan["probe_concurrency"] == 5
+    assert plan["probe_concurrency"] == 10
+    assert plan["required_consecutive_runs"] == 3
     assertions = {
         item["path"]: item for item in spec["seat_probe"]["json_assertions"]
     }

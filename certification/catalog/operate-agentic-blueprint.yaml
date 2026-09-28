@@ -22,6 +22,11 @@ spec:
       probe_concurrency: 5
       maximum_ready_seconds: 1200
       maximum_cleanup_seconds: 900
+    - seats: 25
+      required_consecutive_runs: 3
+      probe_concurrency: 10
+      maximum_ready_seconds: 2400
+      maximum_cleanup_seconds: 1200
 
   showroom:
     pages:

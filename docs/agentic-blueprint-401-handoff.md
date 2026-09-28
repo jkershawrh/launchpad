@@ -11,9 +11,10 @@ The source and content candidate were committed on branch
 `codex/flightpath-migration-20260922`. The catalog pins the Showroom content to
 commit `ddd7c2aab25d4c10f7738f15eece1ab101a95b15`.
 
-The converged runtime and presentation source is pinned to commit
-`c2a72e7865bae7aebc913a49f91601647a95efbb` in
-`jkershawrh/multi-agent-quickstart`.
+The presentation source is pinned to commit
+`9cec3cebe7972b92385c55174674532eeb895f97` in
+`jkershawrh/multi-agent-quickstart`. The Launchpad workload and Showroom
+contracts remain independently pinned in the catalog item.
 
 ## Decisions already made
 
@@ -67,9 +68,10 @@ Deployment, Service, edge Route, and ingress policy in the seat namespace. The
 The catalog pins that chart contract to Launchpad commit
 `1a4c0349d148d1e933cfbd069b7af970054383aa`.
 
-The first live gate is now encoded at
-`certification/catalog/operate-agentic-blueprint.yaml`. It permits one internal
-Flightpath seat only and runs
+The live scale gates are encoded at
+`certification/catalog/operate-agentic-blueprint.yaml`. One- and five-seat
+internal Flightpath certification are complete. The next gate is 25 seats and
+requires three consecutive passing runs. Every gate runs
 `scripts/certify-operate-agentic-blueprint-seat.sh`, which inherits the
 certified 301 functional and isolation journey and additionally proves the
 presentation route, live health and workflow responses, explicitly labeled
@@ -82,13 +84,13 @@ than presenting it as live evidence.
 Immutable runtime artifact:
 
 ```text
-ghcr.io/jkershawrh/multi-agent-quickstart@sha256:bf48f40f29b88c985adb2f6e1522dbbcdd999d2d5ff6f6911e48b2737f320767
+quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
 ```
 
 Immutable presentation artifact:
 
 ```text
-ghcr.io/jkershawrh/operate-agentic-blueprint-presentation@sha256:7d48b3e1c9d8dde414259add960e09bacbeb9bf7bb61013c78527b19c0c05f0b
+quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
 ```
 
 The presentation uses the Triforce underpinning: a concise business opening,
@@ -168,11 +170,22 @@ Presentation chart contract: digest-pinned, opt-in, same-origin API proxy, and n
 git diff --check: clean
 ```
 
-The Flightpath live gate has not run. On September 27, 2026 the stable public
-gateway and its health endpoint returned HTTP 200, but the private Flightpath
-API and candidate hostnames did not resolve from the operator machine. The
-preflight therefore failed closed before authentication or mutation. See
-`evidence/runs/convergence/operate-agentic-blueprint-flightpath-preflight-blocked-20260927.json`.
+Flightpath one-seat and five-seat live certification are complete. The
+five-seat run created one workshop with five independently scoped namespaces,
+waited for the common readiness barrier, and ran all five participant probes
+concurrently. Every probe passed the seven Showroom pages, presentation and
+handoff, real `granite-3.2-8b-tools` inference, the three-agent workflow,
+policy and recovery checks, and namespace isolation. Readiness took 264.384
+seconds. Bulk reclaim took 101.455 seconds and left zero namespaces, Routes,
+RoleBindings, Secrets, PVCs, PVs, Argo CD Applications, or model keys.
+
+The first five-seat attempt is retained as RED evidence: all functional probes
+passed, but the out-of-band Showroom verifier did not trust Flightpath's
+private ingress CA. The GREEN rerun supplied the cluster ingress CA bundle and
+scored 100/100 without disabling TLS verification. Evidence:
+
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-five-seat-r1-20260928.json`
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-five-seat-r2-20260928.json`
 
 ## Recommended next work
 
@@ -185,6 +198,7 @@ preflight therefore failed closed before authentication or mutation. See
    can be tested without terminating the compact workload pod.
 5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
    contract tests first.
-6. Restore private Flightpath DNS/VPN reachability, repeat the read-only
-   preflight, and prove that the target has no conflicting active workshop.
-7. Run one-seat certification before changing `status` or seat capacity.
+6. Preserve the Flightpath ingress CA as an explicit certification input; do
+   not replace certificate verification with an insecure client flag.
+7. Run three consecutive 25-seat certifications before changing catalog
+   `status`, public exposure, or the runtime ordering cap.
