@@ -140,6 +140,7 @@ if [[ "$presentation_required" == "true" ]]; then
   )"
   [[ "$presentation_root_status" == "200" ]]
   presentation_html="$(curl -fsSk "https://${presentation_host}/")"
+  stage="presentation-navigation-bundle"
   presentation_asset="$(
     sed -nE 's#.*<script[^>]+src="([^"]+\.js)".*#\1#p' <<<"$presentation_html" | head -1
   )"
@@ -150,11 +151,17 @@ if [[ "$presentation_required" == "true" ]]; then
     'Guided Architecture' \
     'Live Agent Journey' \
     'Why It Works' \
-    'Close' \
-    'source-live' \
-    'source-rehearsal' \
-    'source-offline'; do
+    'Close'; do
     grep -Fq "$marker" <<<"$presentation_bundle"
+  done
+  stage="presentation-mode-labels"
+  presentation_stylesheet="$(
+    sed -nE 's#.*<link[^>]+href="([^"]+\.css)".*#\1#p' <<<"$presentation_html" | head -1
+  )"
+  [[ -n "$presentation_stylesheet" ]]
+  presentation_css="$(curl -fsSk "https://${presentation_host}${presentation_stylesheet}")"
+  for marker in '.source-live' '.source-rehearsal' '.source-offline'; do
+    grep -Fq "$marker" <<<"$presentation_css"
   done
 
   stage="presentation-lab-handoff"

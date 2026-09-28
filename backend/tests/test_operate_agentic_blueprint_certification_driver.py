@@ -31,6 +31,8 @@ def test_shared_driver_proves_the_live_presentation_and_policy_proxy():
     assert '"https://${presentation_host}/health"' in source
     assert '"https://${presentation_host}/lab"' in source
     assert '"https://${presentation_host}/api/v1/workflow"' in source
+    assert 'stage="presentation-navigation-bundle"' in source
+    assert 'stage="presentation-mode-labels"' in source
     assert '.authority == "recommend_only"' in source
     assert 'presentation: $presentation' in source
 
