@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 import yaml
 
@@ -59,3 +60,14 @@ def test_flightpath_promotion_verifies_digest_attestation_and_signature():
     assert "token.actions.githubusercontent.com" in source
     assert "patch keycloak keycloak" in source
     assert "What you can do in Launchpad" in source
+
+
+def test_keycloak_spi_and_runtime_use_the_same_supported_patch_release():
+    pom = (ROOT / "keycloak-authenticator/pom.xml").read_text()
+    containerfile = (ROOT / "keycloak-authenticator/Containerfile").read_text()
+    spi_version = re.search(r"<keycloak.version>([^<]+)</keycloak.version>", pom)
+    runtime_version = re.search(r"quay.io/keycloak/keycloak:([^\s]+)", containerfile)
+
+    assert spi_version is not None
+    assert runtime_version is not None
+    assert spi_version.group(1) == runtime_version.group(1) == "26.7.4"
