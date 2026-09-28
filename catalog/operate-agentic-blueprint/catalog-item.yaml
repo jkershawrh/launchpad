@@ -150,7 +150,7 @@ metadata:
   workload_routes:
     ui: multi-agent-ui
     orchestrator: multi-agent
-    presentation: agentic-operations-presentation
+    presentation: story
   workload_readiness: []
   source_content_repo: "https://github.com/rhpds/launchpad.git"
   source_content_revision: ddd7c2aab25d4c10f7738f15eece1ab101a95b15

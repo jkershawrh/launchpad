@@ -88,7 +88,7 @@ def test_optional_operations_presentation_is_disabled_by_default():
     _, documents = _render()
     names = {(item["kind"], item["metadata"]["name"]) for item in documents}
     assert ("Deployment", "agentic-operations-presentation") not in names
-    assert ("Route", "agentic-operations-presentation") not in names
+    assert ("Route", "story") not in names
 
 
 def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_origin():
@@ -113,15 +113,14 @@ def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_orig
         {"name": "launchpad-registry-pull"}
     ]
     container = deployment["spec"]["template"]["spec"]["containers"][0]
+    assert container["resources"]["limits"]["memory"] == "512Mi"
     assert container["image"] == f"{PRESENTATION_REPOSITORY}@{PRESENTATION_DIGEST}"
     assert container["securityContext"]["readOnlyRootFilesystem"] is True
     assert resources[("Service", "agentic-operations-presentation")]["spec"]["ports"] == [
         {"name": "http", "port": 8080, "targetPort": "http"}
     ]
-    route = resources[("Route", "agentic-operations-presentation")]
-    assert route["spec"]["host"] == (
-        "agentic-story-session-.apps.flightpath.fm2aihpcsed.com"
-    )
+    route = resources[("Route", "story")]
+    assert "host" not in route["spec"]
     assert route["spec"]["tls"] == {
         "termination": "edge",
         "insecureEdgeTerminationPolicy": "Redirect",

@@ -30,8 +30,8 @@ presentation:
   # per-seat Showroom Route. Required whenever the presentation is enabled.
   ingressDomain: ""
   resources:
-    requests: {cpu: 25m, memory: 32Mi}
-    limits: {cpu: 200m, memory: 128Mi}
+    requests: {cpu: 25m, memory: 64Mi}
+    limits: {cpu: 200m, memory: 512Mi}
 
 resources:
   orchestrator:

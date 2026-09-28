@@ -26,7 +26,7 @@ def test_shared_driver_proves_the_live_presentation_and_policy_proxy():
     source = BASE_DRIVER.read_text()
 
     assert "PRESENTATION_REQUIRED" in source
-    assert "agentic-operations-presentation" in source
+    assert "oc get route story" in source
     assert '"https://${presentation_host}/api/v1/policy"' in source
     assert '"https://${presentation_host}/health"' in source
     assert '"https://${presentation_host}/lab"' in source

@@ -132,7 +132,7 @@ presentation='{"required":false}'
 if [[ "$presentation_required" == "true" ]]; then
   stage="presentation-route"
   presentation_host="$(
-    oc get route agentic-operations-presentation -n "$namespace" \
+    oc get route story -n "$namespace" \
       -o jsonpath='{.spec.host}'
   )"
   presentation_root_status="$(

@@ -53,9 +53,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         "apiUpstream": "http://multi-agent:8000",
         "ingressDomain": "apps.flightpath.fm2aihpcsed.com",
     }
-    assert metadata["workload_routes"]["presentation"] == (
-        "agentic-operations-presentation"
-    )
+    assert metadata["workload_routes"]["presentation"] == "story"
     presentation_tab = next(
         tab for tab in metadata["showroom_tabs"] if tab["id"] == "presentation"
     )
