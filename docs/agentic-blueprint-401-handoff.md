@@ -85,7 +85,7 @@ than presenting it as live evidence.
 Immutable runtime artifact:
 
 ```text
-ghcr.io/jkershawrh/multi-agent-quickstart@sha256:5b98f0206d0223172ff0441dd3adaa221fa80a218b06248c67f2b710d8431b2e
+ghcr.io/jkershawrh/multi-agent-quickstart@sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86
 ```
 
 Immutable presentation artifact:
@@ -158,11 +158,12 @@ The catalog item records these gates:
    twenty-five-seat zero-residue evidence attached to subsequent releases.
 
 The previous runtime digest earned 25-seat internal scale. Runtime source
-`4b632337242817aa1698b7c27a3f4830ef72ba74` adds native correlation and keeps
+`43889bc9444f9ef07f5b1a88e7de534af9647264` adds native correlation, keeps
 the Kubernetes readiness boundary unauthenticated while workflow APIs remain
-protected. It is
+protected, and authenticates every model and semantic-classification request
+with its seat-scoped key. It is
 published as
-`ghcr.io/jkershawrh/multi-agent-quickstart@sha256:5b98f0206d0223172ff0441dd3adaa221fa80a218b06248c67f2b710d8431b2e`.
+`ghcr.io/jkershawrh/multi-agent-quickstart@sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86`.
 Because this is a new immutable release, the catalog ceiling is reset to one
 seat until the one-, five-, and 25-seat gates are earned again. Historical
 scale evidence remains valid only for the digest it tested.
