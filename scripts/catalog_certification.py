@@ -67,6 +67,22 @@ def _presentation_gates(
     ]
     if not all(isinstance(presentation, dict) for presentation in presentations):
         return False, False
+
+    def policy_evidence_is_truthful(presentation: dict[str, Any]) -> bool:
+        policy = presentation.get("policy", {})
+        common = policy.get("authority") == "recommend_only"
+        live = (
+            policy.get("mode") == "live"
+            and policy.get("endpoint_http_status") == 200
+            and policy.get("presented_as_live") is True
+        )
+        rehearsal = (
+            policy.get("mode") == "rehearsal"
+            and policy.get("endpoint_http_status") == 404
+            and policy.get("presented_as_live") is False
+        )
+        return common and (live or rehearsal)
+
     presentation_live_passed = all(
         presentation.get("required") is True
         and presentation.get("root_http_status") == 200
@@ -75,7 +91,7 @@ def _presentation_gates(
         and presentation.get("workflow", {}).get("errors") == 0
         and presentation.get("handoff", {}).get("http_status") == 302
         and presentation.get("handoff", {}).get("target_http_status") == 200
-        and presentation.get("policy", {}).get("presented_as_live") is False
+        and policy_evidence_is_truthful(presentation)
         for presentation in presentations
     )
     server_side_proxy_auth_passed = all(

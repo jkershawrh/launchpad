@@ -42,7 +42,12 @@ def test_presentation_gates_are_derived_from_asserted_live_seat_evidence():
         "health": {"agents_discovered": 3},
         "workflow": {"steps": 3, "errors": 0},
         "handoff": {"http_status": 302, "target_http_status": 200},
-        "policy": {"mode": "rehearsal", "presented_as_live": False},
+        "policy": {
+            "mode": "live",
+            "endpoint_http_status": 200,
+            "authority": "recommend_only",
+            "presented_as_live": True,
+        },
         "client_token_exposed": False,
     }
     seats = [{"probe": {"passed": True, "result": {"presentation": presentation}}}]
@@ -51,10 +56,20 @@ def test_presentation_gates_are_derived_from_asserted_live_seat_evidence():
         seats, seat_count=1, seat_probes_passed=True
     ) == (True, True)
 
-    presentation["policy"]["presented_as_live"] = True
+    presentation["policy"]["presented_as_live"] = False
     assert runner._presentation_gates(
         seats, seat_count=1, seat_probes_passed=True
     ) == (False, True)
+
+    presentation["policy"] = {
+        "mode": "rehearsal",
+        "endpoint_http_status": 404,
+        "authority": "recommend_only",
+        "presented_as_live": False,
+    }
+    assert runner._presentation_gates(
+        seats, seat_count=1, seat_probes_passed=True
+    ) == (True, True)
 
 
 def test_multi_agent_is_the_reference_reusable_certification_contract():
