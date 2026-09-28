@@ -839,7 +839,8 @@ The pilot should add only bounded, testable controls before the event freeze:
    it privately, rate-limit attempts, rotate it on suspected disclosure, deny
    access immediately at rotation or TTL, and audit claims and removals. Pilot
    email remains an unverified identity label and must be described that way.
-5. Complete the Keycloak 26.7.2 live rollout and rollback browser gate before
+5. Complete the latest supported Keycloak patch release, supply-chain gate,
+   live rollout, and rollback browser gate before
    using public access for the event. If that gate or the 25-claim abuse test is
    not green, use the internal access path for September 17.
 6. Verify logout, session revocation, RoleBinding removal, model-key revocation,

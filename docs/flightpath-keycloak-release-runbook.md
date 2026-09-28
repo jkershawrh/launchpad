@@ -17,6 +17,24 @@ items, participant entitlements, workshop state, or the public tunnel.
 
 The release workflow can run without the Intel VPN. It cannot deploy anything.
 
+## Fail-closed dependency handling
+
+Do not waive the fixable high/critical vulnerability gate or replace libraries
+inside the Keycloak distribution by hand. Keycloak's Quarkus distribution owns
+and tests those transitive libraries as one release. If the newest supported
+patch still contains a fixable high or critical dependency vulnerability:
+
+1. retain the full inventory and fixable-only reports as workflow artifacts;
+2. record their hashes, package versions, advisories, and fixed versions in a
+   repository evidence summary;
+3. publish no image and make no live change;
+4. move to the next supported upstream patch only after the SPI and runtime
+   versions have been updated together; and
+5. rerun this complete workflow from the exact new source revision.
+
+An experimental nightly image, a mutable tag, a scanner ignore, or a locally
+repacked Keycloak distribution is not an acceptable Flightpath candidate.
+
 ## Promote when Flightpath access is restored
 
 Use a dedicated Flightpath kubeconfig and the downloaded receipt:
@@ -40,4 +58,3 @@ Record the current digest printed by the promotion script. If login, OIDC, or
 claim validation fails, patch `keycloak/keycloak.spec.image` back to that exact
 digest, wait for Ready, and repeat the existing login and entitlement smoke
 checks. Do not roll back with a mutable tag.
-

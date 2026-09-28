@@ -1,0 +1,75 @@
+{
+  "schema_version": "launchpad.redhat.com/keycloak-release-block/v1",
+  "recorded_at": "2026-09-28T00:54:25Z",
+  "source_revision": "c9d6f3f2699ec64b3847899b9f3c659edcdbec0c",
+  "workflow": {
+    "repository": "rhpds/launchpad",
+    "run_id": 36363607719,
+    "url": "https://github.com/rhpds/launchpad/actions/runs/36363607719",
+    "conclusion": "failure",
+    "failed_gate": "fixable high and critical vulnerabilities",
+    "published": false,
+    "deployed": false
+  },
+  "candidate": {
+    "keycloak_version": "26.7.4",
+    "platform": "linux/amd64",
+    "spi_runtime_versions_match": true
+  },
+  "passed_before_block": [
+    "exact source revision checkout",
+    "clean source validation",
+    "Java 17 setup",
+    "authenticator and landing-page contracts",
+    "Maven package",
+    "Linux/AMD64 image build",
+    "full vulnerability inventory"
+  ],
+  "fixable_findings": [
+    {
+      "package": "bcprov-jdk18on",
+      "installed": "1.84",
+      "advisory": "GHSA-9pwp-9qqc-pr26",
+      "severity": "Critical",
+      "fixed_in": "1.85"
+    },
+    {
+      "package": "bcprov-jdk18on",
+      "installed": "1.84",
+      "advisory": "GHSA-qp49-qgx5-5m26",
+      "severity": "High",
+      "fixed_in": "1.85"
+    },
+    {
+      "package": "netty-handler",
+      "installed": "4.1.136.Final",
+      "advisory": "GHSA-c4c3-7fpv-j4q5",
+      "severity": "Critical",
+      "fixed_in": "4.1.137.Final"
+    },
+    {
+      "package": "mssql-jdbc",
+      "installed": "13.2.1",
+      "advisory": "GHSA-m494-w24q-6f7w",
+      "severity": "High",
+      "fixed_in": "13.2.1.jre11"
+    }
+  ],
+  "reports": {
+    "workflow_artifact": "keycloak-release-evidence-c9d6f3f2699ec64b3847899b9f3c659edcdbec0c",
+    "inventory_sha256": "56c073b75a9ae69902755abeaf775407d394b437a22f623041193428fc06d8d0",
+    "fixable_sha256": "ae215db69b1e8ae340258059606b84a4656bc936c6c12964c42fe47d22c13084"
+  },
+  "decision": {
+    "status": "blocked_upstream",
+    "reason": "The newest supported Keycloak patch contains fixable high and critical transitive dependencies.",
+    "next_action": "Adopt the next supported Keycloak patch that contains the fixes, then rerun the complete immutable release workflow.",
+    "prohibited_shortcuts": [
+      "disable or waive the vulnerability gate",
+      "publish a mutable or unscanned image",
+      "use a nightly Keycloak image",
+      "replace Keycloak distribution libraries by hand"
+    ]
+  },
+  "live_impact": "none"
+}
