@@ -25,6 +25,10 @@ spec:
         {{- include "multiAgent.labels" . | nindent 8 }}
     spec:
       serviceAccountName: multi-agent
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true

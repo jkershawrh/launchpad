@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 import pytest
 import yaml
@@ -272,20 +272,6 @@ def test_private_workload_pull_secret_is_copied_without_entering_gitops(monkeypa
         "labels": labels,
     }
     assert body["data"] == {".dockerconfigjson": "opaque-base64-config"}
-    assert adapter._core_v1.patch_namespaced_service_account.call_args_list == [
-        call(
-            "default",
-            "launchpad-seat-1",
-            body={"imagePullSecrets": [{"name": "launchpad-registry-pull"}]},
-        ),
-        call(
-            "multi-agent",
-            "launchpad-seat-1",
-            body={"imagePullSecrets": [{"name": "launchpad-registry-pull"}]},
-        ),
-    ]
-
-
 def test_private_workload_pull_secret_fails_closed_when_source_is_missing(monkeypatch):
     from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
 

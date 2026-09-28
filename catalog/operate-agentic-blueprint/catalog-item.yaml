@@ -120,6 +120,8 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: multi-agent
   workload_helm_values:
+    imagePullSecrets:
+      - name: launchpad-registry-pull
     image:
       repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
       digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661

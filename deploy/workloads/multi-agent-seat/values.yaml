@@ -8,6 +8,8 @@ identity:
 runtime:
   existingSecret: ""
 
+imagePullSecrets: []
+
 image:
   repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
   digest: ""

@@ -65,6 +65,9 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         "repository": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart",
         "digest": "sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661",
     }
+    assert metadata["workload_helm_values"]["imagePullSecrets"] == [
+        {"name": "launchpad-registry-pull"}
+    ]
     assert metadata["activation_blockers"]
 
 

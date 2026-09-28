@@ -102,11 +102,16 @@ def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_orig
             f"presentation.image.digest={PRESENTATION_DIGEST}",
             "--set",
             "presentation.ingressDomain=apps.flightpath.fm2aihpcsed.com",
+            "--set",
+            "imagePullSecrets[0].name=launchpad-registry-pull",
         ]
     )
     resources = {(item["kind"], item["metadata"]["name"]): item for item in documents}
 
     deployment = resources[("Deployment", "agentic-operations-presentation")]
+    assert deployment["spec"]["template"]["spec"]["imagePullSecrets"] == [
+        {"name": "launchpad-registry-pull"}
+    ]
     container = deployment["spec"]["template"]["spec"]["containers"][0]
     assert container["image"] == f"{PRESENTATION_REPOSITORY}@{PRESENTATION_DIGEST}"
     assert container["securityContext"]["readOnlyRootFilesystem"] is True

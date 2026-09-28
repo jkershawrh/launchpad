@@ -1166,12 +1166,7 @@ http {{
                     f"Failed to create workload image pull Secret '{name}'"
                 ) from exc
             self._core_v1.patch_namespaced_secret(name, target_namespace, body=body)
-        for service_account in ("default", "multi-agent"):
-            self._core_v1.patch_namespaced_service_account(
-                service_account,
-                target_namespace,
-                body={"imagePullSecrets": [{"name": name}]},
-            )
+
     def _apply_model_ca_bundle(
         self,
         namespace: str,
