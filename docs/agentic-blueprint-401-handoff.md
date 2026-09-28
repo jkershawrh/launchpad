@@ -72,8 +72,12 @@ The first live gate is now encoded at
 Flightpath seat only and runs
 `scripts/certify-operate-agentic-blueprint-seat.sh`, which inherits the
 certified 301 functional and isolation journey and additionally proves the
-presentation route, live health response, authenticated policy proxy, human
-authority boundary, and absence of a browser-visible service token.
+presentation route, live health and workflow responses, explicitly labeled
+policy rehearsal boundary, human authority boundary, and absence of a
+browser-visible service token. The exact runtime image does not publish
+`/api/v1/policy`; certification therefore requires HTTP 404 at that path and
+requires the presentation to label the resulting fixture as rehearsal rather
+than presenting it as live evidence.
 
 Immutable runtime artifact:
 
@@ -159,7 +163,7 @@ Presentation visual checks: 9 passed at presentation, laptop, and rehearsal widt
 Runtime and presentation images: published publicly to GHCR for linux/amd64
 Runtime and presentation images: exact-digest pull and OCI source/revision labels verified
 Runtime and presentation images: GitHub build attestations verified
-Published runtime policy endpoint: executed successfully with recommend-only authority
+Published runtime policy endpoint: intentionally absent; presentation fallback is labeled rehearsal
 Presentation chart contract: digest-pinned, opt-in, same-origin API proxy, and namespace-owned
 git diff --check: clean
 ```

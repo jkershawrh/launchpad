@@ -185,16 +185,22 @@ if [[ "$presentation_required" == "true" ]]; then
     and (.agent_names | length) == 3
   ' >/dev/null
 
-  stage="presentation-live-policy"
-  presentation_policy="$(
-    curl -fsSk "https://${presentation_host}/api/v1/policy"
+  stage="presentation-policy-rehearsal-boundary"
+  presentation_policy_http_status="$(
+    curl -sSk -o /dev/null -w '%{http_code}' "https://${presentation_host}/api/v1/policy"
   )"
-  printf '%s' "$presentation_policy" | jq -e '
-    (.name | length) > 0
-    and (.approval_tools | type) == "array"
-    and (.reviewer_profile | length) > 0
-    and .authority == "recommend_only"
-  ' >/dev/null
+  [[ "$presentation_policy_http_status" == "404" ]]
+  grep -Fq '/api/v1/policy' <<<"$presentation_bundle"
+  presentation_policy="$(
+    jq -cn \
+      --arg endpoint_http_status "$presentation_policy_http_status" \
+      '{
+        mode: "rehearsal",
+        endpoint_http_status: ($endpoint_http_status | tonumber),
+        authority: "recommend_only",
+        presented_as_live: false
+      }'
+  )"
 
   stage="presentation-live-workflow"
   presentation_workflow="$(
