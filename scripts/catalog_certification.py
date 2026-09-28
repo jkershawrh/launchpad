@@ -334,6 +334,13 @@ def _seat_probe(
             stages = PROBE_FAILURE_STAGE.findall(completed.stderr or "")
             if stages:
                 failed_probe["failure_stage"] = stages[-1]
+            safe_diagnostics = [
+                line
+                for line in (completed.stderr or "").splitlines()
+                if line.startswith("semantic_response=")
+            ]
+            if safe_diagnostics:
+                failed_probe["diagnostics"] = sanitize_evidence(safe_diagnostics[-3:])
             result["probe"] = failed_probe
             return result
         try:

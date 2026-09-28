@@ -435,6 +435,7 @@ def test_failed_seat_probe_preserves_safe_stage_diagnostic(monkeypatch):
             stdout="",
             stderr=(
                 "transport details that must not be persisted\n"
+                'semantic_response={"classification_status":null,"errors":[]}\n'
                 "seat_probe_failure stage=semantic-routing exit_code=4\n"
             ),
         ),
@@ -456,6 +457,9 @@ def test_failed_seat_probe_preserves_safe_stage_diagnostic(monkeypatch):
         "passed": False,
         "exit_code": 4,
         "failure_stage": "semantic-routing",
+        "diagnostics": [
+            'semantic_response={"classification_status":null,"errors":[]}'
+        ],
         "assertion_failures": ["seat probe exited with status 4"],
         "duration_seconds": result["probe"]["duration_seconds"],
     }
