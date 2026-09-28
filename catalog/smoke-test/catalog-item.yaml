@@ -26,6 +26,7 @@ metadata:
   branches_from: null
   returns_to: null
   shared_blueprint: null
+  solution_family: platform_validation
   deploy_method: kustomize-dir
   cpu_only: true
   smoke_test: true

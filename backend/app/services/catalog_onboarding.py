@@ -1402,6 +1402,18 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                 )
             if role == "core" and blueprint != "red-hat-intel-agentic-v1":
                 errors.append("core learning requires the canonical shared_blueprint")
+            solution_family = learning.get("solution_family")
+            solution_families = {
+                "platform_foundations",
+                "inference",
+                "generative_ai",
+                "agentic_ai",
+                "operations_reliability",
+                "industry_solutions",
+                "platform_validation",
+            }
+            if solution_family is not None and solution_family not in solution_families:
+                errors.append("learning.solution_family is not recognized")
 
     for source_name, source in (("showroom", showroom), ("workload", workload)):
         if not str(source.get("repo_url", "")).startswith("https://github.com/"):

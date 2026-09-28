@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import type { CatalogItem } from './api/types';
 import {
   groupByLearningProgression,
+  groupBySolutionFamily,
   learningLevel,
   learningStage,
   prerequisites,
   recommendedNextItems,
+  solutionFamily,
   sortByLearningProgression,
 } from './catalogLearning';
 
@@ -25,7 +27,19 @@ describe('catalog learning progression', () => {
   it('normalizes and labels supported levels', () => {
     expect(learningLevel(item('intro', '001'))).toBe('001');
     expect(learningStage(item('advanced', '301'))).toBe('Engineer');
+    expect(learningStage(item('scale', '501'))).toBe('Scale');
     expect(learningLevel(item('unknown', '999'))).toBeUndefined();
+  });
+
+  it('groups catalog items by customer usage while retaining learning levels', () => {
+    const agentic = item('agent', '201');
+    agentic.metadata = { learning_level: '201', solution_family: 'agentic_ai' };
+    const inference = item('serve', '101');
+    inference.metadata = { learning_level: '101', solution_family: 'inference' };
+
+    expect(solutionFamily(agentic)).toBe('agentic_ai');
+    expect(groupBySolutionFamily([agentic, inference]).map((section) => section.family))
+      .toEqual(['inference', 'agentic_ai']);
   });
 
   it('returns safe prerequisite and recommendation lists', () => {

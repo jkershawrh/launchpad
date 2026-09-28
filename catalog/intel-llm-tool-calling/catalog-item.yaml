@@ -35,6 +35,7 @@ metadata:
   branches_from: intel-llm-cpu-serving
   returns_to: intel-xeon6-agent-201
   shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: agentic_ai
   showroom: true
   operator_workshop: true
   content_only: true

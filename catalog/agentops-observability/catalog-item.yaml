@@ -44,6 +44,7 @@ metadata:
   branches_from: null
   returns_to: null
   shared_blueprint: null
+  solution_family: operations_reliability
   showroom: true
   operator_workshop: true
   content_only: false

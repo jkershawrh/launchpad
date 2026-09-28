@@ -30,6 +30,7 @@ metadata:
   branches_from: ai-sandbox
   returns_to: intel-llm-cpu-serving
   shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: platform_foundations
   showroom: true
   showroom_journey: openshift-operators
   operator_workshop: true

@@ -1,4 +1,27 @@
-# Agentic catalog journey map
+# Catalog journey and solution-family map
+
+The catalog uses two independent axes:
+
+- `solution_family` groups experiences by customer usage.
+- `learning_level` describes progression from 001 exploration through 501 certification.
+
+The participant catalog groups cards by solution family and orders each group
+by learning level. A learner can filter either dimension without forcing every
+experience into one hierarchy.
+
+## Solution families
+
+- Platform foundations: `ai-sandbox`, `openshift-operators-workshop`.
+- Inference: `intel-llm-cpu-serving`, `cpu-inference-serving`.
+- Generative AI and RAG: `rag-on-xeon`, `guided-rag-on-xeon`.
+- Agentic AI: `intel-xeon6-agent-201`, `intel-llm-tool-calling`, and
+  `multi-agent-quickstart`.
+- Operations and reliability: `agent-reliability`,
+  `operate-agentic-blueprint`, `scale-agentic-blueprint`, and the deprecated
+  `agentops-observability` reference.
+- Industry solutions: `network-operations-agent` and
+  `hybrid-fraud-detection`.
+- Platform validation: `smoke-test`.
 
 Catalog lifecycle and journey role are independent:
 
@@ -15,7 +38,8 @@ Catalog lifecycle and journey role are independent:
 4. `multi-agent-quickstart` — 301 Engineer.
 5. `operate-agentic-blueprint` — 401 Operate; currently a draft content and
    certification candidate using this same runtime.
-6. A future 501 experience will scale and certify this same blueprint.
+6. `scale-agentic-blueprint` — 501 Scale; currently a non-orderable charter
+   that extends and certifies this same blueprint.
 
 ## Specialty episodes
 

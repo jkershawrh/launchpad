@@ -1,0 +1,87 @@
+catalog_item_id: scale-agentic-blueprint
+display_name: "Intel AI 501: Scale and Certify Agentic Systems"
+description: >-
+  Extend the Red Hat and Intel evidence-backed agentic blueprint from one
+  trustworthy operational journey to a measured, resilient, and certified
+  deployment envelope on OpenShift and Intel Xeon infrastructure.
+category: guided_build
+version: "0.1.0"
+status: draft
+required_capabilities:
+  - openshift
+  - showroom
+  - model_endpoint
+  - observability
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: "6h"
+provisioner_refs:
+  - helm-workload
+  - showroom
+validation_refs:
+  - pod-ready
+  - route-accessible
+  - inference-health
+  - multi-agent-journey
+  - zero-residue
+observability_profile: agentic-blueprint-scale
+supported_branding:
+  - redhat-intel-default
+  - intel-internal
+metadata:
+  learning_level: "501"
+  learning_stage: Scale
+  experience_type: blueprint_scale_certification
+  prerequisites:
+    - operate-agentic-blueprint
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: operations_reliability
+  publication_gate: certified
+  showroom: false
+  operator_workshop: false
+  content_only: true
+  onboarding_managed: false
+  certification_stage: charter
+  max_workshop_seats: 1
+  promotion_sequence:
+    - 1
+    - 5
+    - 25
+  scale_dimensions:
+    - agent_replicas
+    - concurrent_journeys
+    - inference_capacity
+    - evidence_throughput
+    - policy_consistency
+    - recovery_time
+  required_proof:
+    - End-to-end correlation from request through human review.
+    - Measured p50 and p95 journey and inference latency under declared load.
+    - Intel CPU allocation, saturation, token usage, and throughput from approved telemetry.
+    - Backpressure, retry-budget, fail-closed, and recovery evidence.
+    - Quality and policy-compliance comparison before and during scale.
+    - One-, five-, and twenty-five-seat certification with zero-residue reclaim.
+  activation_blockers:
+    - Certify operate-agentic-blueprint at one seat before implementing this lab.
+    - Define versioned load profiles and pass/fail service-level objectives.
+    - Deploy approved OpenTelemetry collection with learner-visible correlated traces.
+    - Expose approved Intel Xeon utilization and inference telemetry.
+    - Prove independently addressable dependency failure and recovery paths.
+    - Implement quality evaluation that detects degradation under load.
+    - Produce immutable workload, content, and presentation artifacts.
+    - Complete one-, five-, and twenty-five-seat certification with zero residue.
+  production_blockers:
+    - Use organization-owned digest-pinned images and content revisions.
+    - Complete security, capacity, resilience, and operational-owner review.
+  source_references:
+    canonical_blueprint:
+      path: contracts/agentic-blueprint-v1.yaml
+    telemetry_contract:
+      path: contracts/agentic-journey-telemetry-v1.yaml
+    charter:
+      path: docs/scale-agentic-blueprint-501.md

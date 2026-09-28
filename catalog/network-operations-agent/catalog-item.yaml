@@ -35,6 +35,7 @@ metadata:
   branches_from: multi-agent-quickstart
   returns_to: null
   shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: industry_solutions
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
   showroom_content_ref: c3965bb8c6d38d47abc70f79b9d3dbe03f0d9573

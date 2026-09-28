@@ -31,6 +31,7 @@ metadata:
   branches_from: null
   returns_to: null
   shared_blueprint: null
+  solution_family: generative_ai
   demo_pages: try-it
   workspace_path: /try-it
   required_models:

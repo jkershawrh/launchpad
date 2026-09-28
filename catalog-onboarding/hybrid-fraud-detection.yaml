@@ -21,6 +21,7 @@ learning:
   branches_from: intel-llm-cpu-serving
   returns_to: multi-agent-quickstart
   shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: industry_solutions
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git

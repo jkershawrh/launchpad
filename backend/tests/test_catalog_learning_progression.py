@@ -45,11 +45,13 @@ def test_catalog_journey_roles_form_valid_core_and_specialty_paths():
     items = _items()
     roles = set(contract["journey_roles"])
     specialty_families = set(contract["specialty_families"])
+    solution_families = set(contract["solution_families"])
 
     for catalog_id, item in items.items():
         metadata = item["metadata"]
         assert metadata["journey_role"] in roles
         assert metadata["specialty_family"] in specialty_families | {None}
+        assert metadata["solution_family"] in solution_families
         assert metadata["shared_blueprint"] in {
             contract["canonical_blueprint"],
             None,
@@ -84,6 +86,20 @@ def test_progression_reserves_501_for_scale_and_certification():
     contract = yaml.safe_load(CONTRACT.read_text())
     assert contract["levels"]["501"]["name"] == "Scale"
     assert contract["levels"]["501"]["publication_gate"] == "certified"
+
+
+def test_scale_blueprint_extends_401_as_a_separate_gated_catalog_item():
+    items = _items()
+    operate = items["operate-agentic-blueprint"]
+    scale = items["scale-agentic-blueprint"]
+
+    assert scale["status"] == "draft"
+    assert scale["metadata"]["learning_level"] == "501"
+    assert scale["metadata"]["prerequisites"] == ["operate-agentic-blueprint"]
+    assert scale["metadata"]["shared_blueprint"] == operate["metadata"]["shared_blueprint"]
+    assert scale["metadata"]["solution_family"] == "operations_reliability"
+    assert scale["metadata"]["publication_gate"] == "certified"
+    assert scale["metadata"]["activation_blockers"]
 
 
 def test_public_learning_titles_include_their_level():

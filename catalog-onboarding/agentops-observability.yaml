@@ -27,6 +27,7 @@ learning:
   branches_from: null
   returns_to: null
   shared_blueprint: null
+  solution_family: operations_reliability
 
 sources:
   showroom:

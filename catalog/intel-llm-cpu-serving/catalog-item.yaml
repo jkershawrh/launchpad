@@ -34,6 +34,7 @@ metadata:
   branches_from: null
   returns_to: null
   shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: inference
   showroom: true
   operator_workshop: true
   content_only: true

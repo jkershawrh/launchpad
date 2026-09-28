@@ -31,6 +31,14 @@ specialty_families:
   - inference
   - tooling
   - reliability
+solution_families:
+  platform_foundations: OpenShift, sandbox, and platform-building experiences.
+  inference: Model serving, hardware placement, and inference optimization.
+  generative_ai: Generative AI, retrieval, grounding, and content workflows.
+  agentic_ai: Tool-using agents, multi-agent systems, and open agent protocols.
+  operations_reliability: Observability, policy, resilience, scale, and certification.
+  industry_solutions: Domain-specific applications of the shared architecture.
+  platform_validation: Internal platform verification rather than a learner journey.
 required_metadata:
   - learning_level
   - learning_stage
@@ -42,6 +50,7 @@ required_metadata:
   - branches_from
   - returns_to
   - shared_blueprint
+  - solution_family
 compatibility:
   catalog_ids_are_stable: true
   runtime_release_versions_unchanged_by_taxonomy: true

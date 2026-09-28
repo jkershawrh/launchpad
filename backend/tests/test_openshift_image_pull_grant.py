@@ -80,7 +80,12 @@ def test_deployed_cluster_images_and_pilot_catalog_preserve_grant_boundary(
         for template in chart_templates.glob("*.yaml"):
             for line in template.read_text().splitlines():
                 if line.strip().startswith("image:"):
-                    assert 'include "multiAgent.image"' in line, template
+                    helper = (
+                        'include "multiAgent.presentationImage"'
+                        if template.name == "presentation.yaml"
+                        else 'include "multiAgent.image"'
+                    )
+                    assert helper in line, template
 
 
 def test_internal_images_and_unknown_workload_images_require_grant() -> None:
