@@ -28,6 +28,8 @@ supported_branding:
   - redhat-intel-default
   - intel-internal
 metadata:
+  package_base_commit: 272bcea5889ef761a3e1cb54103861534b69e807
+  flightpath_deployment_overlay_commit: a59984f4c45e260bbe9e786ff55057c59f307fda
   learning_level: "401"
   learning_stage: Operate
   experience_type: blueprint_operations
@@ -110,7 +112,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: "https://github.com/rhpds/launchpad.git"
-  workload_revision: 1a4c0349d148d1e933cfbd069b7af970054383aa
+  workload_revision: a59984f4c45e260bbe9e786ff55057c59f307fda
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: deploy/workloads/multi-agent-seat

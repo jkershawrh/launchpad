@@ -19,6 +19,12 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["learning_stage"] == "Operate"
     assert metadata["journey_role"] == "core"
     assert metadata["shared_blueprint"] == "red-hat-intel-agentic-v1"
+    assert metadata["package_base_commit"] == (
+        "272bcea5889ef761a3e1cb54103861534b69e807"
+    )
+    assert metadata["flightpath_deployment_overlay_commit"] == (
+        "a59984f4c45e260bbe9e786ff55057c59f307fda"
+    )
     assert metadata["prerequisites"] == ["multi-agent-quickstart"]
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
     assert re.fullmatch(r"[0-9a-f]{40}", metadata["workload_revision"])
