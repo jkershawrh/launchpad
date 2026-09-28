@@ -1,0 +1,59 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+
+metadata:
+  catalog_item_id: scale-agentic-blueprint
+  display_name: "Scale and Certify Agentic Systems"
+
+spec:
+  state: charter
+  execution_enabled: false
+  prerequisite_catalog_item: operate-agentic-blueprint
+  governing_contract: contracts/agentic-scale-certification-v1.yaml
+  target_cluster: null
+  allowed_exposure_policies:
+    - internal
+
+  scale_profiles:
+    - seats: 1
+      profile_id: baseline-one-seat
+      required_consecutive_runs: 3
+    - seats: 5
+      profile_id: team-five-seat
+      required_consecutive_runs: 3
+    - seats: 25
+      profile_id: event-twenty-five-seat
+      required_consecutive_runs: 3
+
+  execution_blockers:
+    - The 401 prerequisite is not yet certified.
+    - No immutable 501 content or workload artifact exists.
+    - The versioned load generator and immutable evaluation set do not exist.
+    - Approved OpenTelemetry and Intel Xeon telemetry are not connected.
+    - Fault injection boundaries and automated recovery assertions are not implemented.
+
+  rubric:
+    required_score: 100
+    categories:
+      - id: contract_and_provenance
+        weight: 10
+        requires: [contract_valid, immutable_artifacts, evidence_hashed]
+      - id: journey_performance
+        weight: 15
+        requires: [success_slo_passed, latency_slo_passed, correlation_complete]
+      - id: inference_and_intel
+        weight: 15
+        requires: [intel_metrics_complete, inference_slo_passed, capacity_guardrail_passed]
+      - id: evidence_and_policy
+        weight: 15
+        requires: [provenance_complete, policy_attribution_complete, prohibited_actions_zero]
+      - id: quality
+        weight: 15
+        requires: [evaluation_set_immutable, quality_floor_passed, degradation_limit_passed]
+      - id: resilience
+        weight: 15
+        requires: [all_faults_safe, recovery_slos_passed]
+      - id: lifecycle
+        weight: 15
+        requires: [all_seats_ready, cleanup_within_limit, zero_residue_cleanup]
+

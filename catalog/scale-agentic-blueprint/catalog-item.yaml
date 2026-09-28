@@ -47,6 +47,7 @@ metadata:
   content_only: true
   onboarding_managed: false
   certification_stage: charter
+  certification_proof_contract: certification/catalog/scale-agentic-blueprint.yaml
   max_workshop_seats: 1
   promotion_sequence:
     - 1
@@ -83,5 +84,7 @@ metadata:
       path: contracts/agentic-blueprint-v1.yaml
     telemetry_contract:
       path: contracts/agentic-journey-telemetry-v1.yaml
+    scale_certification_contract:
+      path: contracts/agentic-scale-certification-v1.yaml
     charter:
       path: docs/scale-agentic-blueprint-501.md

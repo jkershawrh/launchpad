@@ -41,6 +41,17 @@ non-orderable, and content-only until the 401 prerequisite is certified and all
 activation blockers have evidence. No projected metric may be presented as a
 live result.
 
+The executable gates are defined by
+`contracts/agentic-scale-certification-v1.yaml`. Its initial thresholds are
+explicitly provisional until a reviewed one-seat baseline approves or revises
+them. Any threshold revision requires versioned rationale and approval; results
+cannot be reinterpreted after a run to manufacture a pass.
+
+`certification/catalog/scale-agentic-blueprint.yaml` is intentionally marked
+`execution_enabled: false`. It becomes executable only after the 401
+prerequisite, immutable artifacts, load generator, evaluation set, telemetry,
+and fault boundaries are ready.
+
 ## Future specialty episodes
 
 - Agentic performance engineering
