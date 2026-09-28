@@ -1,0 +1,17 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: WorkloadScaleCharter
+metadata:
+  catalog_item_id: scale-agentic-blueprint
+  display_name: "Scale One Agentic Workload"
+spec:
+  state: charter
+  execution_enabled: false
+  governing_contract: contracts/agentic-workload-scale-v1.yaml
+  evaluation_set: evaluation/agentic-scale-v1.yaml
+  profiles: [baseline, sustained, pressure]
+  execution_blockers:
+    - The 401 prerequisite is not yet certified.
+    - The live workload adapter and quality scorer are not implemented.
+    - Approved correlated traces and Intel Xeon telemetry are not connected.
+    - Safe fault drivers and recovery assertions are not implemented.
+

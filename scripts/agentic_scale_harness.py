@@ -12,9 +12,9 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_CONTRACT = ROOT / "contracts/agentic-scale-certification-v1.yaml"
+DEFAULT_CONTRACT = ROOT / "contracts/agentic-workload-scale-v1.yaml"
 DEFAULT_EVALUATION_SET = ROOT / "evaluation/agentic-scale-v1.yaml"
-DEFAULT_CERTIFICATION = ROOT / "certification/catalog/scale-agentic-blueprint.yaml"
+DEFAULT_EXECUTION_CHARTER = ROOT / "certification/workload/scale-agentic-blueprint.yaml"
 
 
 class HarnessError(ValueError):
@@ -63,13 +63,13 @@ def build_plan(
     run_id: str,
     contract_path: Path = DEFAULT_CONTRACT,
     evaluation_path: Path = DEFAULT_EVALUATION_SET,
-    certification_path: Path = DEFAULT_CERTIFICATION,
+    execution_charter_path: Path = DEFAULT_EXECUTION_CHARTER,
 ) -> dict[str, Any]:
     contract = load_yaml(contract_path)
     evaluation = load_yaml(evaluation_path)
-    certification = load_yaml(certification_path)
+    execution_charter = load_yaml(execution_charter_path)
     validate_evaluation_set(evaluation, contract)
-    profiles = {profile["id"]: profile for profile in contract["load_profiles"]}
+    profiles = {profile["id"]: profile for profile in contract["workload_profiles"]}
     if profile_id not in profiles:
         raise HarnessError(f"unknown profile: {profile_id}")
     profile = profiles[profile_id]
@@ -91,7 +91,7 @@ def build_plan(
         "schema": "launchpad.agentic-scale-run-plan/v1",
         "run_id": run_id,
         "mode": "plan",
-        "execution_enabled": certification["spec"]["execution_enabled"],
+        "execution_enabled": execution_charter["spec"]["execution_enabled"],
         "profile": profile,
         "evaluation_set": {
             "id": evaluation["evaluation_set_id"],
@@ -110,10 +110,10 @@ def main() -> int:
     parser.add_argument("--mode", choices=("plan", "execute"), default="plan")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    certification = load_yaml(DEFAULT_CERTIFICATION)
+    execution_charter = load_yaml(DEFAULT_EXECUTION_CHARTER)
     if args.mode == "execute":
-        if not certification["spec"]["execution_enabled"]:
-            parser.error("live execution is disabled by the 501 certification charter")
+        if not execution_charter["spec"]["execution_enabled"]:
+            parser.error("live execution is disabled by the 501 workload charter")
         parser.error("live execution adapter is not implemented")
     plan = build_plan(args.profile, args.run_id)
     rendered = json.dumps(plan, indent=2, sort_keys=True) + "\n"
@@ -126,4 +126,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

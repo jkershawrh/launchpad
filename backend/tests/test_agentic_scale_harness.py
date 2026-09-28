@@ -32,25 +32,26 @@ def test_evaluation_set_is_balanced_and_contract_complete():
     assert all(required <= set(case) for case in evaluation["cases"])
     harness.validate_evaluation_set(
         evaluation,
-        yaml.safe_load((ROOT / "contracts/agentic-scale-certification-v1.yaml").read_text()),
+        yaml.safe_load((ROOT / "contracts/agentic-workload-scale-v1.yaml").read_text()),
     )
 
 
 def test_planner_builds_deterministic_hashed_profiles():
-    first = harness.build_plan("team-five-seat", "run-501")
-    second = harness.build_plan("team-five-seat", "run-501")
+    first = harness.build_plan("sustained", "run-501")
+    second = harness.build_plan("sustained", "run-501")
 
     assert first == second
     assert first["mode"] == "plan"
     assert first["execution_enabled"] is False
-    assert first["profile"]["seats"] == 5
+    assert first["profile"]["agent_replicas"] == 2
+    assert first["profile"]["concurrent_journeys"] == 5
     assert len(first["journeys"]) == 50
     assert len(first["evaluation_set"]["sha256"]) == 64
     assert len({journey["journey_id"] for journey in first["journeys"]}) == 50
 
 
 def test_one_seat_plan_still_runs_the_complete_quality_set():
-    plan = harness.build_plan("baseline-one-seat", "baseline")
+    plan = harness.build_plan("baseline", "baseline")
 
     assert len(plan["journeys"]) == 30
     assert {journey["case_id"] for journey in plan["journeys"]} == {
@@ -64,7 +65,7 @@ def test_live_execution_fails_closed_while_charter_is_disabled():
             sys.executable,
             str(SCRIPT),
             "--profile",
-            "baseline-one-seat",
+            "baseline",
             "--run-id",
             "blocked",
             "--mode",
@@ -77,5 +78,4 @@ def test_live_execution_fails_closed_while_charter_is_disabled():
     )
 
     assert result.returncode != 0
-    assert "live execution is disabled" in result.stderr
-
+    assert "live execution is disabled by the 501 workload charter" in result.stderr

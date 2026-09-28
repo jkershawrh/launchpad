@@ -1,0 +1,28 @@
+api_version: launchpad.redhat.com/catalog-scale-delivery-certification/v1
+contract_id: launchpad-scale-agentic-blueprint-delivery-v1
+catalog_item_id: scale-agentic-blueprint
+purpose: >-
+  Certify Launchpad's ability to deliver the 501 lab to multiple independent
+  participant environments. This contract is platform release evidence and is
+  not part of the learner lab.
+seat_profiles:
+  - {seats: 1, required_consecutive_green_runs: 3}
+  - {seats: 5, required_consecutive_green_runs: 3}
+  - {seats: 25, required_consecutive_green_runs: 3}
+delivery_objectives:
+  maximum_ready_seconds: 900
+  maximum_cleanup_seconds: 600
+  namespace_isolation_required: true
+  routes_and_model_access_required: true
+  representative_workload_probe_required_per_seat: true
+  zero_residue_required: true
+promotion:
+  sequence: [1, 5, 25]
+  no_skipped_stages: true
+  each_stage_requires_matching_profile_green: true
+  publication_gate: certified
+evidence_package:
+  required_identity: [contract_id, contract_revision, catalog_revision, content_revision, cluster_id, run_id, started_at, completed_at]
+  required_results: [provisioning, participant_probe, isolation, model_access, cleanup, zero_residue]
+  sha256_manifest_required: true
+

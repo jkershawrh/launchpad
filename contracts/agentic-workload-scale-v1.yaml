@@ -1,0 +1,114 @@
+api_version: launchpad.redhat.com/agentic-workload-scale/v1
+contract_id: red-hat-intel-agentic-workload-scale-v1
+blueprint_id: red-hat-intel-agentic-v1
+catalog_item_id: scale-agentic-blueprint
+purpose: >-
+  Define the learner-facing measurement of one agentic workload as replicas,
+  journey concurrency, and Intel Xeon inference pressure increase inside one
+  assigned environment.
+
+truth_boundary:
+  threshold_state: provisional_until_baseline_approved
+  projected_results_are_not_live_results: true
+  every_result_requires_source_state: true
+  permitted_source_states: [live, rehearsal, offline, unavailable]
+  lab_completion_accepts_source_state: live
+  threshold_changes_require: [contract_revision, rationale, reviewer, approval_timestamp]
+
+prerequisites:
+  catalog_item: operate-agentic-blueprint
+  required_state: certified
+  required_contracts:
+    - contracts/agentic-blueprint-v1.yaml
+    - contracts/agentic-journey-telemetry-v1.yaml
+    - contracts/agentic-scale-evaluation-set-v1.yaml
+
+workload_profiles:
+  - id: baseline
+    agent_replicas: 1
+    concurrent_journeys: 1
+    minimum_completed_journeys: 30
+    duration_minutes: 10
+  - id: sustained
+    agent_replicas: 2
+    concurrent_journeys: 5
+    minimum_completed_journeys: 50
+    duration_minutes: 15
+  - id: pressure
+    agent_replicas: 3
+    concurrent_journeys: 10
+    minimum_completed_journeys: 250
+    duration_minutes: 30
+
+service_objectives:
+  journey:
+    minimum_success_rate_percent: 99
+    maximum_p95_latency_ms: 90000
+    maximum_error_rate_percent: 1
+    maximum_uncorrelated_events: 0
+  inference:
+    maximum_p95_latency_ms: 30000
+    maximum_timeout_rate_percent: 1
+    maximum_queue_p95_ms: 5000
+    token_measurement_required: true
+  policy:
+    required_evaluation_rate_percent: 100
+    required_version_attribution_rate_percent: 100
+    prohibited_action_execution_count: 0
+  evidence:
+    required_provenance_rate_percent: 100
+    required_source_state_rate_percent: 100
+    maximum_incomplete_evidence_decisions: 0
+
+quality_gate:
+  evaluation_set:
+    immutable_revision_required: true
+    minimum_cases: 30
+    domain_balance_required: true
+    canonical_set: evaluation/agentic-scale-v1.yaml
+  minimum_supported_decision_rate_percent: 95
+  maximum_degradation_from_baseline_percentage_points: 2
+  deterministic_policy_agreement_percent: 100
+  unsupported_claim_rate_percent: 0
+  review_required_state_rate_percent: 100
+  representative_manual_review:
+    minimum_cases_per_profile: 5
+    all_denied_and_inconclusive_cases_required: true
+  automatic_action_execution_count: 0
+
+intel_xeon_evidence:
+  request_attributed:
+    - endpoint_identity
+    - model_name
+    - model_revision
+    - inference_requests
+    - input_tokens
+    - output_tokens
+    - inference_p50_ms
+    - inference_p95_ms
+    - queue_p95_ms
+  shared_endpoint:
+    - cpu_model
+    - cpu_allocation_cores
+    - cpu_utilization_average_percent
+    - cpu_utilization_peak_percent
+    - throughput_tokens_per_second
+  shared_metrics_must_not_be_presented_as_per_journey: true
+  approved_telemetry_source_required: true
+
+resilience_scenarios:
+  - {id: agent-pod-loss, fault: terminate_one_agent_replica, expected_safe_state: bounded_retry_or_human_review, maximum_recovery_seconds: 180}
+  - {id: mcp-unavailable, fault: make_one_evidence_source_unavailable, expected_safe_state: no_supported_decision_without_required_evidence, maximum_recovery_seconds: 180}
+  - {id: inference-timeout, fault: exceed_inference_timeout, expected_safe_state: no_action_and_visible_failure, maximum_recovery_seconds: 300}
+  - {id: policy-denial, fault: submit_prohibited_action, expected_safe_state: deterministic_denial_and_audit_event, maximum_recovery_seconds: 0}
+  - {id: overload-backpressure, fault: exceed_declared_concurrency, expected_safe_state: bounded_queue_or_explicit_rate_limit, maximum_recovery_seconds: 300}
+  - {id: evidence-incomplete, fault: omit_required_provenance, expected_safe_state: inconclusive_or_human_review, maximum_recovery_seconds: 0}
+
+learner_evidence_package:
+  required_identity: [contract_id, contract_revision, workload_image_digest, run_id, started_at, completed_at]
+  required_results: [baseline, sustained, pressure, quality, policy, resilience, intel_inference]
+  integrity:
+    sha256_manifest_required: true
+    immutable_raw_evidence_required: true
+    secrets_and_sensitive_prompts_prohibited: true
+
