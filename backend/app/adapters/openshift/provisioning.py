@@ -497,6 +497,7 @@ class OpenShiftProvisioningAdapter:
                         or res.get("showroom_journey", "guided-rag")
                     ),
                     antora_version=str(res.get("showroom_antora_version", "main")),
+                    antora_flat=bool(res.get("showroom_antora_flat", False)),
                     content_only=bool(res.get("content_only", False)),
                     terminal_storage_enabled=bool(res.get("showroom_terminal_storage", True)),
                     terminal_image=str(

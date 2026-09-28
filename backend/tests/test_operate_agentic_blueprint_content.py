@@ -54,6 +54,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         "ingressDomain": "apps.flightpath.fm2aihpcsed.com",
     }
     assert metadata["workload_routes"]["presentation"] == "story"
+    assert metadata["showroom_antora_flat"] is True
     presentation_tab = next(
         tab for tab in metadata["showroom_tabs"] if tab["id"] == "presentation"
     )

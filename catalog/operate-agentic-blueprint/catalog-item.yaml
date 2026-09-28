@@ -75,6 +75,7 @@ metadata:
   showroom_content_ref: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
   showroom_content_playbook: site-operate-agentic-blueprint.yml
   showroom_content_start_path: content-operate-agentic-blueprint
+  showroom_antora_flat: true
   presentation:
     repo_url: "https://github.com/jkershawrh/multi-agent-quickstart.git"
     revision: 9cec3cebe7972b92385c55174674532eeb895f97

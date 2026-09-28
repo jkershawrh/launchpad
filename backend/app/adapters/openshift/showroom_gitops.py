@@ -86,6 +86,7 @@ class ShowroomSeat:
     content_playbook: str = "site.yml"
     antora_name: str = ""
     antora_version: str = "main"
+    antora_flat: bool = False
     ui_config_path: str = "ui-config.yml"
     journey: str = "guided-rag"
     content_only: bool = False
@@ -157,6 +158,17 @@ def build_showroom_application(
             tabs.insert(1, {"name": seat.workspace_title, "url": seat.workspace_url})
         if seat.console_url:
             tabs.append({"name": "OpenShift Console", "url": seat.console_url})
+    antora_config = {
+        "dir": "www",
+        "modules": [{"name": "index", "label": "Instructions"}],
+    }
+    if not seat.antora_flat:
+        antora_config.update(
+            {
+                "name": seat.antora_name or seat.journey,
+                "version": seat.antora_version,
+            }
+        )
     ui_config = {
         "type": "showroom",
         "default_width": 40,
@@ -164,16 +176,11 @@ def build_showroom_application(
         # state persistence is unsafe there because an outer Showroom URL can
         # be restored inside one of its own frames.
         "persist_url_state": False,
-        # The Showroom shell otherwise defaults to www/modules/index.html.
-        # Quickstart repositories build Antora under their component name and
-        # version (for example www/network-operations-agent/main/index.html),
-        # so make that generated path explicit for every provisioned seat.
-        "antora": {
-            "dir": "www",
-            "name": seat.antora_name or seat.journey,
-            "version": seat.antora_version,
-            "modules": [{"name": "index", "label": "Instructions"}],
-        },
+        # Most quickstart repositories build Antora under their component name
+        # and version. Repository-local playbooks can instead emit the flat
+        # Showroom default at www/modules/index.html; those catalog items opt
+        # in explicitly so one layout cannot silently break the other.
+        "antora": antora_config,
         "tabs": tabs,
     }
     values = {

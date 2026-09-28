@@ -138,6 +138,33 @@ def test_showroom_points_instruction_frame_at_generated_antora_component_path():
     }
 
 
+def test_showroom_points_instruction_frame_at_flat_antora_output():
+    app = build_showroom_application(
+        ShowroomSeat(
+            namespace="launchpad-agentic-ops-1",
+            workshop_id="workshop-1",
+            seat_id="seat-1",
+            participant_id="participant-1",
+            workspace_url="https://workspace.example.com",
+            content_repo_url="https://github.com/rhpds/launchpad.git",
+            content_ref="e" * 40,
+            apps_domain="apps.example.com",
+            journey="operate-agentic-blueprint",
+            antora_name="operate-agentic-blueprint",
+            antora_version="main",
+            antora_flat=True,
+        )
+    )
+
+    values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
+    ui = yaml.safe_load(values["content"]["uiConfig"])
+
+    assert ui["antora"] == {
+        "dir": "www",
+        "modules": [{"name": "index", "label": "Instructions"}],
+    }
+
+
 def test_showroom_application_leaves_cascade_to_namespace_reclaim():
     app = build_showroom_application(
         ShowroomSeat(
