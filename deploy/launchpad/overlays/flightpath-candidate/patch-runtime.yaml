@@ -52,6 +52,10 @@ spec:
               mountPath: /opt/catalog/agent-reliability/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: canonical-operate-agentic-blueprint-catalog
+              mountPath: /opt/catalog/operate-agentic-blueprint/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
             - name: canonical-ai-sandbox-catalog
               mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
               subPath: catalog-item.yaml
@@ -102,6 +106,9 @@ spec:
         - name: candidate-agent-reliability-catalog
           configMap:
             name: flightpath-candidate-agent-reliability-catalog
+        - name: canonical-operate-agentic-blueprint-catalog
+          configMap:
+            name: canonical-operate-agentic-blueprint-catalog
         - name: canonical-ai-sandbox-catalog
           configMap:
             name: canonical-ai-sandbox-catalog
@@ -167,6 +174,10 @@ spec:
               mountPath: /opt/catalog/agent-reliability/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: canonical-operate-agentic-blueprint-catalog
+              mountPath: /opt/catalog/operate-agentic-blueprint/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
             - name: canonical-ai-sandbox-catalog
               mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
               subPath: catalog-item.yaml
@@ -214,6 +225,9 @@ spec:
         - name: candidate-agent-reliability-catalog
           configMap:
             name: flightpath-candidate-agent-reliability-catalog
+        - name: canonical-operate-agentic-blueprint-catalog
+          configMap:
+            name: canonical-operate-agentic-blueprint-catalog
         - name: canonical-ai-sandbox-catalog
           configMap:
             name: canonical-ai-sandbox-catalog

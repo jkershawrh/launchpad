@@ -121,3 +121,41 @@ def test_operate_blueprint_playbook_uses_local_content():
         {"url": ".", "start_path": "content-operate-agentic-blueprint"}
     ]
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
+
+
+def test_flightpath_mounts_the_operate_catalog_from_source_control():
+    overlay = ROOT / "deploy/launchpad/overlays/flightpath-candidate"
+    kustomization = yaml.safe_load((ROOT / "catalog/kustomization.yaml").read_text())
+    generated = {
+        item["name"]: item.get("files", [])
+        for item in kustomization["configMapGenerator"]
+    }
+    assert generated["canonical-operate-agentic-blueprint-catalog"] == [
+        "catalog-item.yaml=operate-agentic-blueprint/catalog-item.yaml"
+    ]
+
+    documents = list(yaml.safe_load_all((overlay / "patch-runtime.yaml").read_text()))
+    for deployment_name in ("backend", "lifecycle-worker"):
+        deployment = next(
+            item for item in documents if item["metadata"]["name"] == deployment_name
+        )
+        pod_spec = deployment["spec"]["template"]["spec"]
+        container = next(
+            item for item in pod_spec["containers"] if item["name"] == deployment_name
+        )
+        mount = next(
+            item
+            for item in container["volumeMounts"]
+            if item["name"] == "canonical-operate-agentic-blueprint-catalog"
+        )
+        assert mount["mountPath"] == (
+            "/opt/catalog/operate-agentic-blueprint/catalog-item.yaml"
+        )
+        volume = next(
+            item
+            for item in pod_spec["volumes"]
+            if item["name"] == "canonical-operate-agentic-blueprint-catalog"
+        )
+        assert volume["configMap"]["name"] == (
+            "canonical-operate-agentic-blueprint-catalog"
+        )

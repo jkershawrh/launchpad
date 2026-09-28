@@ -20,6 +20,9 @@ configMapGenerator:
   - name: canonical-smoke-test-catalog
     files:
       - catalog-item.yaml=smoke-test/catalog-item.yaml
+  - name: canonical-operate-agentic-blueprint-catalog
+    files:
+      - catalog-item.yaml=operate-agentic-blueprint/catalog-item.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
