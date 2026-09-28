@@ -1,0 +1,61 @@
+{
+  "schema": "launchpad.redhat.com/public-catalog-certification-evidence/v1",
+  "run_id": "operate-agentic-blueprint-flightpath-public-one-seat-r11-20260928",
+  "result": "GREEN-live",
+  "completed_at": "2026-09-28T06:13:16Z",
+  "catalog_item_id": "operate-agentic-blueprint",
+  "catalog_status": "draft",
+  "cluster_ref": "flightpath",
+  "exposure_policy": "public_code",
+  "source": {
+    "deployment_commit": "1b9bfedec3cf8ffe07e36fc4ded068ed58ee232a",
+    "backend_source_commit": "c5dd554ec47c55e1dd917ce7a469e93f9f0a596a",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:c1135f1d9331cea796ad691c8a7986aad8660b80c6cb2f835496a9613c6d1822",
+    "backend_release_run": "https://github.com/rhpds/launchpad/actions/runs/36384211414",
+    "showroom_content_commit": "ddd7c2aab25d4c10f7738f15eece1ab101a95b15",
+    "presentation_image": "quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580",
+    "runtime_image": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661"
+  },
+  "order": {
+    "workshop_id": "f6d4419c-71de-4870-913e-55f6e0aafe11",
+    "session_id": "8a6f34ba-f02d-4783-a7af-757eb4cca29a",
+    "seat_id": "3bd0aa8b-bb56-410f-ae2e-ab1fbea251e3",
+    "namespace": "launchpad-flightpath-candida-agentic-ops-3bd0aa",
+    "seat_count": 1,
+    "status_before_reclaim": "ready",
+    "status_after_reclaim": "completed"
+  },
+  "public_checks": {
+    "trusted_hostname": true,
+    "branded_keycloak_login": true,
+    "email_and_code_claim": true,
+    "participant_landing": true,
+    "instructions_same_origin_http_200": true,
+    "instructions_iframe_path": "/showroom/www/modules/index.html",
+    "presentation_loaded": true,
+    "terminal_loaded": true,
+    "workspace_loaded": true,
+    "live_workflow_completed": true,
+    "live_workflow_seconds": 12.20,
+    "configured_model": "granite-3.2-8b-tools",
+    "supporting_evidence_returned": true,
+    "human_review_boundary_visible": true
+  },
+  "cleanup": {
+    "workshop_completed": true,
+    "namespace_count": 0,
+    "argocd_application_count": 0,
+    "zero_residue": true
+  },
+  "regression_evidence": {
+    "red": "Flat Antora contract was first absent from ShowroomSeat and then dropped during provisioning-plan generation.",
+    "green_tests": 85,
+    "internal_six_stage_evidence": "evidence/runs/catalog/operate-agentic-blueprint-flightpath-durable-one-seat-r8-20260928.json",
+    "sensitive_values_recorded": false
+  },
+  "release_decision": {
+    "one_seat_public_certification": "pass",
+    "catalog_promotion": "blocked",
+    "reason": "The catalog remains draft until its documented activation blockers and five- and twenty-five-seat certification stages pass."
+  }
+}
