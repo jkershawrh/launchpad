@@ -1,0 +1,131 @@
+{
+  "schema": "launchpad.redhat.com/catalog-activation-audit/v1",
+  "catalog_item_id": "operate-agentic-blueprint",
+  "audited_at": "2026-09-28",
+  "source_commit": "f2c10a83c9ae3ee7090e2e674cc5fd28ac20914d",
+  "decision": "SCALE_GREEN_ACTIVATION_GATED",
+  "certified_scale": {
+    "cluster_ref": "flightpath",
+    "internal_workshop_seats": 25,
+    "public_workshop_seats": 1,
+    "consecutive_green_runs": 3,
+    "result": "GREEN-live",
+    "zero_residue": true,
+    "evidence": [
+      {
+        "path": "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r4-20260928.json",
+        "sha256": "3639f012802246081468eb7f4dc307a9b7840f4bf60e816af4813a0ed9c9e1f9"
+      },
+      {
+        "path": "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r5-20260928.json",
+        "sha256": "8121a1033c71395f66d0a2a3f7d87ffd4eefbf230a4a7ee7b00506011f17c0a3"
+      },
+      {
+        "path": "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r6-20260928.json",
+        "sha256": "ca91c277beab93ff1d892d3a3ec84f33d20b46831d0f7ee43f230f242b028823"
+      }
+    ]
+  },
+  "activation_gates": [
+    {
+      "id": "same-origin-live-policy",
+      "status": "AMBER",
+      "proved": [
+        "same-origin presentation route returned HTTP 200 for every certified seat",
+        "server-side proxy authentication passed",
+        "no client token was exposed",
+        "rehearsal policy was never presented as live"
+      ],
+      "missing": [
+        "runtime policy endpoint returned HTTP 404",
+        "all 25 seats correctly reported policy mode as rehearsal"
+      ],
+      "next_proof": "Publish and certify a namespace-scoped live policy endpoint through the authenticated same-origin proxy."
+    },
+    {
+      "id": "journey-correlation-v1",
+      "status": "RED",
+      "proved": [
+        "participant UI reported one bounded workflow history entry"
+      ],
+      "missing": [
+        "journey_id",
+        "investigation_id",
+        "request_id",
+        "event_id",
+        "occurred_at",
+        "component_id"
+      ],
+      "next_proof": "Emit and validate every required agentic-journey-telemetry-v1 correlation field across the runtime path."
+    },
+    {
+      "id": "independent-outage-recovery",
+      "status": "AMBER",
+      "proved": [
+        "guardrails denied all three workflow steps",
+        "learner policy rollback restored the baseline"
+      ],
+      "missing": [
+        "independent guardrail dependency outage and recovery",
+        "independent inference dependency outage and recovery",
+        "proof that recovery does not rely on restarting a co-located process"
+      ],
+      "next_proof": "Inject each dependency outage independently, prove fail-closed behavior, restore it, and resume the same correlated journey."
+    },
+    {
+      "id": "opentelemetry-correlated-trace",
+      "status": "RED",
+      "proved": [
+        "presentation health described tracing as active"
+      ],
+      "missing": [
+        "trace_id",
+        "span_id",
+        "certified OpenTelemetry collector evidence",
+        "learner-visible correlated trace with redaction proof"
+      ],
+      "next_proof": "Collect a redacted trace through a certified OpenTelemetry path and expose its safe correlation view to the learner."
+    },
+    {
+      "id": "gitops-drift-and-pipeline-evaluation",
+      "status": "RED",
+      "proved": [
+        "a namespace-scoped learner ConfigMap change and rollback passed"
+      ],
+      "missing": [
+        "GitOps drift detection evidence",
+        "GitOps reconciliation evidence",
+        "pipeline-based evaluation evidence"
+      ],
+      "next_proof": "Run namespace-scoped drift, reconciliation, and pipeline evaluation without granting cluster-wide authority."
+    },
+    {
+      "id": "approved-intel-xeon-telemetry",
+      "status": "AMBER",
+      "proved": [
+        "granite-3.2-8b-tools completed the workflow on all certified seats",
+        "workflow, routing, and guardrail latency were recorded"
+      ],
+      "missing": [
+        "approved endpoint-level inference latency source",
+        "token usage",
+        "CPU allocation",
+        "source identity and provenance for those measurements"
+      ],
+      "next_proof": "Publish latency, token usage, and CPU allocation from an approved telemetry source with provenance."
+    }
+  ],
+  "production_gates": [
+    {
+      "id": "organization-owned-workload-image",
+      "status": "RED",
+      "current": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661"
+    },
+    {
+      "id": "organization-owned-presentation-image",
+      "status": "RED",
+      "current": "quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580"
+    }
+  ],
+  "release_boundary": "The catalog item is certified for internal 25-seat provisioning on Flightpath but remains draft. Public scale remains one seat. No activation or production blocker is closed by scale evidence alone."
+}

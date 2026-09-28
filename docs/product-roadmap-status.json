@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-28T01:43:36Z",
+  "updated_at": "2026-09-28T16:18:40Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -774,6 +774,9 @@
         "cbt": "green-local"
       },
       "evidence": [
+        "catalog/operate-agentic-blueprint/catalog-item.yaml",
+        "certification/catalog/operate-agentic-blueprint.yaml",
+        "docs/agentic-blueprint-401-handoff.md",
         "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json",
         "evidence/runs/catalog-intake-agent-reliability/validation-9f1cb2e.json",
         "evidence/runs/catalog-intake-candidates/jkershawrh-readonly-20260921.json",
@@ -782,12 +785,13 @@
         "evidence/runs/catalog-intake-quality/manifest.json",
         "evidence/runs/catalog-intake-readme-source/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json",
-        "catalog/operate-agentic-blueprint/catalog-item.yaml",
-        "certification/catalog/operate-agentic-blueprint.yaml",
-        "docs/agentic-blueprint-401-handoff.md",
+        "evidence/runs/catalog/operate-agentic-blueprint-activation-gate-audit-20260928.json",
+        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r4-20260928.json",
+        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r5-20260928.json",
+        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r6-20260928.json",
         "evidence/runs/convergence/operate-agentic-blueprint-flightpath-preflight-blocked-20260927.json"
       ],
-      "note": "The deterministic intake covers the learning-level taxonomy and now includes the Intel AI 401 Operate Evidence-Backed Multi-Agent Systems candidate. Its canonical runtime and presentation are source-revision and digest pinned, public Linux/AMD64 GHCR artifacts with successful tests, SBOM/provenance, keyless signatures, GitHub attestations, exact-digest inspection, and an explicit one-seat Flightpath certification contract. The opt-in presentation workload leaves the existing 301 render unchanged and keeps the seat token server-side. The candidate remains draft, internal-only for certification, one-seat, and blocked on private Flightpath API/DNS reachability plus its exact live lifecycle/reclaim proof; the stable public gateway returned HTTP 200 and no live catalog or workshop was changed."
+      "note": "The deterministic intake now includes the Intel AI 401 candidate through a complete catalog package, digest-pinned runtime and presentation, Flightpath deployment, one- and five-seat certification, and three consecutive 25-seat GREEN-live internal runs with zero residue. This proves the generated candidate can advance through measured scale while remaining fail-closed: the item is still draft, public capacity remains one seat, and six capability activation plus two organization-ownership production gates remain open in the machine-readable activation audit. The reusable intake task remains GREEN-local until another independent Quickstart completes the same end-to-end path and ownership/support automation is proven."
     },
     "LP-T099": {
       "state": "green-local",

@@ -137,6 +137,13 @@ exists.
 
 ## Activation blockers
 
+The machine-readable post-scale audit is
+[`../evidence/runs/catalog/operate-agentic-blueprint-activation-gate-audit-20260928.json`](../evidence/runs/catalog/operate-agentic-blueprint-activation-gate-audit-20260928.json).
+It records `SCALE_GREEN_ACTIVATION_GATED`: internal 25-seat provisioning is
+certified, public scale remains one seat, and the item remains draft. The audit
+deliberately marks partial proof `AMBER` and missing proof `RED`; scale evidence
+does not close a capability or production gate.
+
 The catalog item records these gates:
 
 1. Certify the authenticated same-origin proxy and prove that live and
