@@ -103,6 +103,23 @@ oc_exec_json() {
   return 4
 }
 
+wait_for_http_200() {
+  local url="${1:?URL is required}"
+  local http_attempt status
+
+  for http_attempt in {1..6}; do
+    status="$(curl -sSk -o /dev/null -w '%{http_code}' "$url" || true)"
+    if [[ "$status" == "200" ]]; then
+      return 0
+    fi
+    if [[ "$http_attempt" -lt 6 ]]; then
+      sleep "$((http_attempt * 2))"
+    fi
+  done
+  echo "route did not return HTTP 200 after bounded retries: ${url}" >&2
+  return 6
+}
+
 stage="cluster-identity"
 actual_cluster="$(
   oc get namespace "$namespace" \
@@ -126,8 +143,8 @@ fi
 stage="participant-routes"
 ui_host="$(oc get route multi-agent-ui -n "$namespace" -o jsonpath='{.spec.host}')"
 showroom_host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
-[[ "$(curl -fsSk -o /dev/null -w '%{http_code}' "https://${ui_host}/")" == "200" ]]
-[[ "$(curl -fsSk -o /dev/null -w '%{http_code}' "https://${showroom_host}/www/modules/index.html")" == "200" ]]
+wait_for_http_200 "https://${ui_host}/"
+wait_for_http_200 "https://${showroom_host}/www/modules/index.html"
 showroom_index="$(curl -fsSk "https://${showroom_host}/www/modules/index.html")"
 grep -Fq "$showroom_marker" <<<"$showroom_index"
 

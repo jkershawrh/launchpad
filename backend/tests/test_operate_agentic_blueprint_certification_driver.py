@@ -59,6 +59,19 @@ def test_shared_driver_retries_terminal_scope_during_concurrent_certification():
     assert '[[ "$terminal_scope_valid" == "true" ]]' in source
 
 
+def test_shared_driver_retries_participant_routes_at_scale():
+    source = BASE_DRIVER.read_text()
+
+    assert "wait_for_http_200()" in source
+    assert "for http_attempt in {1..6}; do" in source
+    assert 'sleep "$((http_attempt * 2))"' in source
+    assert 'wait_for_http_200 "https://${ui_host}/"' in source
+    assert (
+        'wait_for_http_200 "https://${showroom_host}/www/modules/index.html"'
+        in source
+    )
+
+
 def test_401_certification_records_the_earned_twenty_five_seat_limit():
     contract = load_certification_contract(CERTIFICATION)
     intake = load_intake(INTAKE)
