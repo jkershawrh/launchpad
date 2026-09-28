@@ -19,6 +19,9 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["learning_stage"] == "Operate"
     assert metadata["journey_role"] == "core"
     assert metadata["shared_blueprint"] == "red-hat-intel-agentic-v1"
+    assert metadata["max_workshop_seats"] == 5
+    assert metadata["public_max_workshop_seats"] == 1
+    assert metadata["promotion_sequence"] == [1, 5, 25]
     assert metadata["package_base_commit"] == (
         "272bcea5889ef761a3e1cb54103861534b69e807"
     )

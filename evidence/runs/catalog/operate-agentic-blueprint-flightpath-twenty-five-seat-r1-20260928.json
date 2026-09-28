@@ -1,0 +1,184 @@
+{
+  "capacity_preview": {
+    "can_provision": false,
+    "catalog_seat_limit": 1,
+    "certification_override": false,
+    "certification_target_seats": null,
+    "estimated_resources": {
+      "cpu_millicores": 0,
+      "memory_mib": 0,
+      "pods": 0
+    },
+    "placement_reason": "catalog certification limit",
+    "reason": "Workshop certification override permits only the next promotion target of 5 seat(s)",
+    "resource_breakdown": null,
+    "seats_requested": 25,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "operate-agentic-blueprint",
+  "cleanup": {
+    "model_keys_revoked": false,
+    "resource_counts": {
+      "applications.argoproj.io": -1,
+      "namespaces": -1,
+      "persistentvolumeclaims": -1,
+      "persistentvolumes": -1,
+      "rolebindings.rbac.authorization.k8s.io": -1,
+      "routes.route.openshift.io": -1,
+      "secrets": -1
+    },
+    "seconds": null,
+    "status": "not-started"
+  },
+  "completed_at": "2026-09-28T12:29:55.681102Z",
+  "contract": {
+    "catalog_version": "0.1.0",
+    "git_commit": "932db148c3518b6eb553278a5b9e238e10d8da8d",
+    "intake_path": "catalog-onboarding/operate-agentic-blueprint.yaml",
+    "path": "certification/catalog/operate-agentic-blueprint.yaml",
+    "sha256": "a8bac0886799d7f6ba09ba6309e2f10259c3ae775cd330151c1730181d128116"
+  },
+  "errors": [
+    "RuntimeError: Capacity preview rejected the run: Workshop certification override permits only the next promotion target of 5 seat(s)"
+  ],
+  "gates": {
+    "all_seats_ready": false,
+    "capacity_passed": false,
+    "cleanup_completed": false,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": false,
+    "namespace_isolation_passed": false,
+    "presentation_live_passed": false,
+    "ready_within_limit": false,
+    "seat_probes_passed": false,
+    "sensitive_values_absent": false,
+    "server_side_proxy_auth_passed": false,
+    "showroom_pages_passed": false,
+    "single_cluster_assignment": false,
+    "zero_residue_cleanup": false
+  },
+  "order": {
+    "cluster_ref": null,
+    "namespaces": [],
+    "ready_seconds": null,
+    "seat_count": 25,
+    "session_ids": [],
+    "status_before_reclaim": null,
+    "workshop_id": null
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "operate-agentic-blueprint",
+    "certification_override": true,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 5,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 1200,
+    "maximum_ready_seconds": 2400,
+    "mutates_cluster": true,
+    "next_promotion_target": 25,
+    "probe_concurrency": 10,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 3,
+    "seat_probe_count": 25,
+    "seats": 25,
+    "showroom_pages_per_seat": 7,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 0,
+    "eligible": false,
+    "required_consecutive_runs": 3
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "RED-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent",
+          "server_side_proxy_auth_passed"
+        ],
+        "weight": 20
+      },
+      "cleanup": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 20
+      },
+      "contract_integrity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 15
+      },
+      "participant_function": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed",
+          "presentation_live_passed"
+        ],
+        "weight": 25
+      },
+      "provisioning_readiness": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": false,
+    "required": 100,
+    "score": 15
+  },
+  "run_id": "operate-agentic-blueprint-flightpath-twenty-five-seat-r1-20260928",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-28T12:29:55.188398Z",
+  "validation_matrix": {
+    "all_seats_ready": "RED-live",
+    "capacity_passed": "RED-live",
+    "cleanup_completed": "RED-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "RED-live",
+    "namespace_isolation_passed": "RED-live",
+    "presentation_live_passed": "RED-live",
+    "ready_within_limit": "RED-live",
+    "seat_probes_passed": "RED-live",
+    "sensitive_values_absent": "RED-live",
+    "server_side_proxy_auth_passed": "RED-live",
+    "showroom_pages_passed": "RED-live",
+    "single_cluster_assignment": "RED-live",
+    "zero_residue_cleanup": "RED-live"
+  }
+}

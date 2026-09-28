@@ -49,7 +49,8 @@ metadata:
   onboarding_managed: false
   certification_stage: content-candidate
   certification_proof_contract: certification/catalog/operate-agentic-blueprint.yaml
-  max_workshop_seats: 1
+  max_workshop_seats: 5
+  public_max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5
@@ -61,7 +62,7 @@ metadata:
     - Add certified OpenTelemetry collection and a learner-visible correlated trace without exposing secrets or hidden model reasoning.
     - Validate namespace-scoped GitOps drift detection and pipeline-based evaluation before presenting those operator capabilities as live.
     - Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation through an approved telemetry source.
-    - Complete one-, five-, and twenty-five-seat certification with zero-residue reclaim evidence.
+    - Complete three consecutive twenty-five-seat certifications with zero-residue reclaim evidence.
   production_blockers:
     - Use an organization-owned digest-pinned workload image before general availability.
     - Use an organization-owned digest-pinned presentation image before general availability.
