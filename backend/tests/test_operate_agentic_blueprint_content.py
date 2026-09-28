@@ -29,8 +29,11 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     presentation = metadata["presentation"]
     assert re.fullmatch(r"[0-9a-f]{40}", presentation["revision"])
     assert re.fullmatch(r"sha256:[0-9a-f]{64}", presentation["image"]["digest"])
-    assert presentation["revision"] == "c2a72e7865bae7aebc913a49f91601647a95efbb"
-    assert presentation["image"]["repository"].startswith("ghcr.io/jkershawrh/")
+    assert presentation["revision"] == "9cec3cebe7972b92385c55174674532eeb895f97"
+    assert presentation["image"] == {
+        "repository": "quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation",
+        "digest": "sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580",
+    }
     assert presentation["runtime_configuration"] == {
         "api_mode": "same-origin-proxy",
         "api_path": "/api",
@@ -41,6 +44,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         "enabled": True,
         "image": presentation["image"],
         "apiUpstream": "http://multi-agent:8000",
+        "ingressDomain": "apps.flightpath.fm2aihpcsed.com",
     }
     assert metadata["workload_routes"]["presentation"] == (
         "agentic-operations-presentation"
@@ -50,9 +54,10 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     )
     assert presentation_tab["source"] == "workload.route.presentation"
     assert metadata["seat_pods"] == 3
-    assert metadata["workload_helm_values"]["image"]["repository"] == (
-        "ghcr.io/jkershawrh/multi-agent-quickstart"
-    )
+    assert metadata["workload_helm_values"]["image"] == {
+        "repository": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart",
+        "digest": "sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661",
+    }
     assert metadata["activation_blockers"]
 
 

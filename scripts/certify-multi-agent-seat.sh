@@ -139,6 +139,36 @@ if [[ "$presentation_required" == "true" ]]; then
     curl -fsSk -o /dev/null -w '%{http_code}' "https://${presentation_host}/"
   )"
   [[ "$presentation_root_status" == "200" ]]
+  presentation_html="$(curl -fsSk "https://${presentation_host}/")"
+  presentation_asset="$(
+    sed -nE 's#.*<script[^>]+src="([^"]+\.js)".*#\1#p' <<<"$presentation_html" | head -1
+  )"
+  [[ -n "$presentation_asset" ]]
+  presentation_bundle="$(curl -fsSk "https://${presentation_host}${presentation_asset}")"
+  for marker in \
+    'The Risk' \
+    'Guided Architecture' \
+    'Live Agent Journey' \
+    'Why It Works' \
+    'Close' \
+    'source-live' \
+    'source-rehearsal' \
+    'source-offline'; do
+    grep -Fq "$marker" <<<"$presentation_bundle"
+  done
+
+  stage="presentation-lab-handoff"
+  presentation_runtime="$(curl -fsSk "https://${presentation_host}/launchpad-runtime.js")"
+  grep -Fq "link.href = '/lab'" <<<"$presentation_runtime"
+  lab_handoff_headers="$(curl -sSkI "https://${presentation_host}/lab")"
+  lab_handoff_status="$(awk 'NR == 1 {print $2}' <<<"$lab_handoff_headers")"
+  lab_handoff_location="$(
+    awk 'BEGIN {IGNORECASE=1} /^location:/ {sub(/\r$/, ""); sub(/^[^:]+:[[:space:]]*/, ""); print; exit}' \
+      <<<"$lab_handoff_headers"
+  )"
+  [[ "$lab_handoff_status" == "302" ]]
+  [[ "$lab_handoff_location" == "https://${showroom_host}/" ]]
+  [[ "$(curl -fsSk -o /dev/null -w '%{http_code}' "$lab_handoff_location")" == "200" ]]
 
   stage="presentation-live-health"
   presentation_health="$(curl -fsSk "https://${presentation_host}/health")"
@@ -158,15 +188,37 @@ if [[ "$presentation_required" == "true" ]]; then
     and (.reviewer_profile | length) > 0
     and .authority == "recommend_only"
   ' >/dev/null
+
+  stage="presentation-live-workflow"
+  presentation_workflow="$(
+    curl -fsSk -X POST "https://${presentation_host}/api/v1/workflow" \
+      -H 'Content-Type: application/json' \
+      --data '{"query":"Investigate INC-1042 and prepare, but do not execute, a remediation.","workflow_type":"comprehensive"}'
+  )"
+  printf '%s' "$presentation_workflow" | jq -e '
+    (.steps | length) == 3
+    and (.agents_involved | length) == 3
+    and ([.steps[].result | startswith("Error:")] | any | not)
+  ' >/dev/null
   presentation="$(
     jq -cn \
       --argjson health "$presentation_health" \
       --argjson policy "$presentation_policy" \
+      --argjson workflow "$presentation_workflow" \
+      --arg handoff_location "$lab_handoff_location" \
       '{
         required: true,
         root_http_status: 200,
+        navigation_markers: 5,
+        labeling: {live: true, rehearsal: true, offline: true},
         health: $health,
         policy: $policy,
+        workflow: {
+          steps: ($workflow.steps | length),
+          agents: ($workflow.agents_involved | length),
+          errors: ([$workflow.steps[].result | select(startswith("Error:"))] | length)
+        },
+        handoff: {http_status: 302, location: $handoff_location, target_http_status: 200},
         client_token_exposed: false
       }'
   )"
@@ -314,6 +366,11 @@ runtime_keys="$(
     | jq -c '.data | keys | sort'
 )"
 [[ "$runtime_keys" == '["AGENT_AUTH_TOKEN","MODEL_API_KEY","MODEL_ENDPOINT","MODEL_NAME"]' ]]
+model_name="$(
+  oc get secret multi-agent-runtime -n "$namespace" \
+    -o go-template='{{index .data "MODEL_NAME" | base64decode}}'
+)"
+[[ "$model_name" == "granite-3.2-8b-tools" ]]
 
 stage="argocd-application"
 application="$(
@@ -344,6 +401,7 @@ jq -cn \
   --argjson presentation "$presentation" \
   --arg terminal_scope "$terminal_scope" \
   --argjson runtime_keys "$runtime_keys" \
+  --arg model_name "$model_name" \
   --argjson contains_sensitive_values "$contains_sensitive_values" \
   '{
     result: "GREEN-live-internal-seat",
@@ -358,6 +416,11 @@ jq -cn \
     presentation: $presentation,
     terminal_scope: ($terminal_scope | split("\n")),
     runtime_secret_keys: $runtime_keys,
+    intel_xeon_inference: {
+      configured_model: $model_name,
+      workflow_completed: (($journey.errors | length) == 0),
+      semantic_route_completed: (($semantic.errors | length) == 0)
+    },
     contains_sensitive_values: $contains_sensitive_values,
     showroom_http_status: 200,
     participant_ui_http_status: 200

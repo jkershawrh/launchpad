@@ -29,6 +29,8 @@ def test_shared_driver_proves_the_live_presentation_and_policy_proxy():
     assert "agentic-operations-presentation" in source
     assert '"https://${presentation_host}/api/v1/policy"' in source
     assert '"https://${presentation_host}/health"' in source
+    assert '"https://${presentation_host}/lab"' in source
+    assert '"https://${presentation_host}/api/v1/workflow"' in source
     assert '.authority == "recommend_only"' in source
     assert 'presentation: $presentation' in source
 
@@ -69,3 +71,9 @@ def test_401_certification_is_one_seat_flightpath_and_requires_live_presentation
     assert assertions["presentation.required"]["equals"] is True
     assert assertions["presentation.policy.authority"]["equals"] == "recommend_only"
     assert assertions["presentation.client_token_exposed"]["equals"] is False
+    assert assertions["presentation.navigation_markers"]["equals"] == 5
+    assert assertions["presentation.handoff.http_status"]["equals"] == 302
+    assert assertions["presentation.workflow.errors"]["equals"] == 0
+    assert assertions["intel_xeon_inference.configured_model"]["equals"] == (
+        "granite-3.2-8b-tools"
+    )

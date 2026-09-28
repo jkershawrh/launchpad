@@ -73,10 +73,10 @@ metadata:
   showroom_content_start_path: content-operate-agentic-blueprint
   presentation:
     repo_url: "https://github.com/jkershawrh/multi-agent-quickstart.git"
-    revision: c2a72e7865bae7aebc913a49f91601647a95efbb
+    revision: 9cec3cebe7972b92385c55174674532eeb895f97
     image:
-      repository: ghcr.io/jkershawrh/operate-agentic-blueprint-presentation
-      digest: sha256:7d48b3e1c9d8dde414259add960e09bacbeb9bf7bb61013c78527b19c0c05f0b
+      repository: quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation
+      digest: sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
     runtime_configuration:
       api_mode: same-origin-proxy
       api_path: /api
@@ -119,14 +119,15 @@ metadata:
   workload_release_name: multi-agent
   workload_helm_values:
     image:
-      repository: ghcr.io/jkershawrh/multi-agent-quickstart
-      digest: sha256:bf48f40f29b88c985adb2f6e1522dbbcdd999d2d5ff6f6911e48b2737f320767
+      repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
+      digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
     presentation:
       enabled: true
       image:
-        repository: ghcr.io/jkershawrh/operate-agentic-blueprint-presentation
-        digest: sha256:7d48b3e1c9d8dde414259add960e09bacbeb9bf7bb61013c78527b19c0c05f0b
+        repository: quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation
+        digest: sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
       apiUpstream: http://multi-agent:8000
+      ingressDomain: apps.flightpath.fm2aihpcsed.com
   workload_ignore_differences: []
   workload_runtime_secret_name: multi-agent-runtime
   workload_runtime_secret_sources:

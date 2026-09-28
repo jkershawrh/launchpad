@@ -24,6 +24,9 @@ presentation:
     digest: ""
     pullPolicy: IfNotPresent
   apiUpstream: http://multi-agent:8000
+  # Cluster-specific application domain used to construct the deterministic
+  # per-seat Showroom Route. Required whenever the presentation is enabled.
+  ingressDomain: ""
   resources:
     requests: {cpu: 25m, memory: 32Mi}
     limits: {cpu: 200m, memory: 128Mi}

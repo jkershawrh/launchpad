@@ -100,6 +100,8 @@ def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_orig
             f"presentation.image.repository={PRESENTATION_REPOSITORY}",
             "--set",
             f"presentation.image.digest={PRESENTATION_DIGEST}",
+            "--set",
+            "presentation.ingressDomain=apps.flightpath.fm2aihpcsed.com",
         ]
     )
     resources = {(item["kind"], item["metadata"]["name"]): item for item in documents}
@@ -124,7 +126,19 @@ def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_orig
     assert "proxy_pass http://multi-agent:8000;" in nginx
     assert 'proxy_set_header Authorization "Bearer ${AGENT_AUTH_TOKEN}";' in nginx
     assert "location = /health" in nginx
+    assert "location = /lab" in nginx
+    assert (
+        "https://showroom-launchpad-cert-multi-agent-123456."
+        "apps.flightpath.fm2aihpcsed.com/" in nginx
+    )
+    assert 'sub_filter \'</body>\'' in nginx
     assert "try_files $uri $uri/ /index.html;" in nginx
+    runtime_script = resources[("ConfigMap", "agentic-operations-presentation-nginx")][
+        "data"
+    ]["launchpad-runtime.js"]
+    assert "data-launchpad-lab-handoff" in runtime_script
+    assert "launchpadLabHandoff" in runtime_script
+    assert "link.href = '/lab'" in runtime_script
     presentation_env = _env(container)
     assert presentation_env["AGENT_AUTH_TOKEN"]["valueFrom"]["secretKeyRef"] == {
         "name": "multi-agent-runtime",
@@ -155,6 +169,8 @@ def test_operations_presentation_fails_closed_without_an_immutable_digest():
             "presentation.enabled=true",
             "--set",
             f"presentation.image.repository={PRESENTATION_REPOSITORY}",
+            "--set",
+            "presentation.ingressDomain=apps.flightpath.fm2aihpcsed.com",
             *IDENTITY_ARGS,
         ],
         check=False,

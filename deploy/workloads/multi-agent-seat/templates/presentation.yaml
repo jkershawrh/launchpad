@@ -6,6 +6,24 @@ metadata:
   labels:
     {{- include "multiAgent.presentationLabels" . | nindent 4 }}
 data:
+  launchpad-runtime.js: |
+    (() => {
+      const installHandoff = () => {
+        const handoff = document.querySelector('.guided-handoff');
+        if (!handoff || handoff.querySelector('[data-launchpad-lab-handoff]')) return;
+        const link = document.createElement('a');
+        link.className = 'button button-primary';
+        link.href = '/lab';
+        link.textContent = 'Begin guided experience →';
+        link.dataset.launchpadLabHandoff = 'true';
+        handoff.appendChild(link);
+      };
+      new MutationObserver(installHandoff).observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+      });
+      installHandoff();
+    })();
   default.conf.template: |
     server {
       listen 8080;
@@ -32,7 +50,13 @@ data:
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       }
 
+      location = /lab {
+        return 302 https://showroom-{{ .Release.Namespace }}.{{ required "presentation.ingressDomain is required" .Values.presentation.ingressDomain }}/;
+      }
+
       location / {
+        sub_filter '</body>' '<script src="/launchpad-runtime.js"></script></body>';
+        sub_filter_once on;
         try_files $uri $uri/ /index.html;
       }
     }
@@ -89,6 +113,7 @@ spec:
             {{- toYaml .Values.presentation.resources | nindent 12 }}
           volumeMounts:
             - {name: nginx-template, mountPath: /etc/nginx/templates/default.conf.template, subPath: default.conf.template, readOnly: true}
+            - {name: nginx-template, mountPath: /usr/share/nginx/html/launchpad-runtime.js, subPath: launchpad-runtime.js, readOnly: true}
             - {name: nginx-runtime-config, mountPath: /etc/nginx/conf.d}
             - {name: nginx-cache, mountPath: /var/cache/nginx}
             - {name: runtime-tmp, mountPath: /tmp}

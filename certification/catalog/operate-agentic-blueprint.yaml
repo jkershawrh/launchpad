@@ -65,12 +65,32 @@ spec:
         equals: true
       - path: presentation.root_http_status
         equals: 200
+      - path: presentation.navigation_markers
+        equals: 5
+      - path: presentation.labeling.live
+        equals: true
+      - path: presentation.labeling.rehearsal
+        equals: true
+      - path: presentation.labeling.offline
+        equals: true
       - path: presentation.health.agents_discovered
         equals: 3
       - path: presentation.policy.authority
         equals: recommend_only
       - path: presentation.client_token_exposed
         equals: false
+      - path: presentation.workflow.steps
+        equals: 3
+      - path: presentation.workflow.errors
+        equals: 0
+      - path: presentation.handoff.http_status
+        equals: 302
+      - path: presentation.handoff.target_http_status
+        equals: 200
+      - path: intel_xeon_inference.configured_model
+        equals: granite-3.2-8b-tools
+      - path: intel_xeon_inference.workflow_completed
+        equals: true
       - path: terminal_scope
         contains: own_edit=yes
       - path: terminal_scope
