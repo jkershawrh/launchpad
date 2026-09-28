@@ -45,6 +45,33 @@ def test_guided_catalog_item_adds_showroom_to_plan():
     assert plan.required_resources["workspace_path"] == "/try-it"
 
 
+def test_showroom_plan_preserves_catalog_antora_layout_contract():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._overlay_path = "/tmp/demo"
+    item = _guided_item().model_copy(
+        update={
+            "metadata": {
+                **_guided_item().metadata,
+                "showroom_antora_name": "custom-component",
+                "showroom_antora_version": "v2",
+                "showroom_antora_flat": True,
+            }
+        }
+    )
+    request = LabRequest(
+        tenant_id="partner-a",
+        requester_id="user-a",
+        catalog_item_id=item.catalog_item_id,
+        requested_mode=CatalogCategory.GUIDED_BUILD,
+    )
+
+    plan = adapter.create_plan(request, item)
+
+    assert plan.required_resources["showroom_antora_name"] == "custom-component"
+    assert plan.required_resources["showroom_antora_version"] == "v2"
+    assert plan.required_resources["showroom_antora_flat"] is True
+
+
 def test_demo_database_secret_uses_unpredictable_generated_password():
     adapter = object.__new__(OpenShiftProvisioningAdapter)
     adapter._core_v1 = MagicMock()

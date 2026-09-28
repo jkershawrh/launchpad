@@ -210,6 +210,9 @@ class OpenShiftProvisioningAdapter:
                     "showroom_content_ref", os.environ.get("SHOWROOM_CONTENT_REF", "main")
                 ),
                 "showroom_content_playbook": meta.get("showroom_content_playbook", "site.yml"),
+                "showroom_antora_name": meta.get("showroom_antora_name", ""),
+                "showroom_antora_version": meta.get("showroom_antora_version", "main"),
+                "showroom_antora_flat": bool(meta.get("showroom_antora_flat", False)),
                 "showroom_tabs": meta.get("showroom_tabs", []),
                 "showroom_support_images": dict(
                     getattr(getattr(self, "_target", None), "image_references", {})
