@@ -149,6 +149,7 @@ metadata:
   labels:
     {{- include "multiAgent.presentationLabels" . | nindent 4 }}
 spec:
+  host: agentic-story-{{ trunc 8 .Values.identity.sessionId }}.{{ required "presentation.ingressDomain is required" .Values.presentation.ingressDomain }}
   to: {kind: Service, name: agentic-operations-presentation}
   port: {targetPort: http}
   tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}

@@ -68,7 +68,7 @@ metadata:
     - public_code
   showroom_journey: operate-agentic-blueprint
   showroom_title: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
-  namespace_slug: agentic-operations
+  namespace_slug: agentic-ops
   showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
   showroom_content_ref: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
   showroom_content_playbook: site-operate-agentic-blueprint.yml
@@ -132,6 +132,7 @@ metadata:
       ingressDomain: apps.flightpath.fm2aihpcsed.com
   workload_ignore_differences: []
   workload_runtime_secret_name: multi-agent-runtime
+  workload_image_pull_secret_name: launchpad-registry-pull
   workload_runtime_secret_sources:
     MODEL_ENDPOINT:
       source: maas_api_url

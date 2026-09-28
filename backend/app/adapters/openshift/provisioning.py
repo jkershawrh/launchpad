@@ -223,6 +223,9 @@ class OpenShiftProvisioningAdapter:
                 "workload_helm_values": meta.get("workload_helm_values", {}),
                 "workload_ignore_differences": meta.get("workload_ignore_differences", []),
                 "workload_runtime_secret_name": meta.get("workload_runtime_secret_name", ""),
+                "workload_image_pull_secret_name": meta.get(
+                    "workload_image_pull_secret_name", ""
+                ),
                 "workload_runtime_secret_sources": meta.get("workload_runtime_secret_sources", {}),
                 "workload_runtime_secret_value_path": meta.get(
                     "workload_runtime_secret_value_path", ""
@@ -337,6 +340,30 @@ class OpenShiftProvisioningAdapter:
 
         workload_app = None
         if workload_enabled:
+            image_pull_secret_name = str(
+                res.get("workload_image_pull_secret_name", "")
+            ).strip()
+            if image_pull_secret_name:
+                self._copy_workload_image_pull_secret(
+                    image_pull_secret_name,
+                    target_namespace=demo_namespace,
+                    labels={
+                        "app.kubernetes.io/managed-by": "launchpad",
+                        "launchpad.redhat.com/workshop-id": str(
+                            res.get("workshop_id", plan.request_id)
+                        ),
+                        "launchpad.redhat.com/seat-id": str(
+                            res.get("seat_id", plan.request_id)
+                        ),
+                        "launchpad.redhat.com/session-id": str(
+                            res.get("session_id", plan.request_id)
+                        ),
+                        "launchpad.redhat.com/tenant": tenant_id,
+                        "launchpad.redhat.com/cluster-id": str(
+                            plan.target_cluster or "oberon"
+                        ),
+                    },
+                )
             runtime_secret_name = str(res.get("workload_runtime_secret_name", "")).strip()
             if runtime_secret_name:
                 runtime_data = self._resolve_workload_runtime_secret(
@@ -1081,6 +1108,70 @@ http {{
                 name,
             )
 
+    @staticmethod
+    def _in_cluster_namespace() -> str:
+        configured = os.environ.get("LAUNCHPAD_CONTROL_NAMESPACE", "").strip()
+        if configured:
+            return configured
+        namespace_path = Path("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+        if namespace_path.is_file():
+            namespace = namespace_path.read_text().strip()
+            if namespace:
+                return namespace
+        raise ValueError(
+            "LAUNCHPAD_CONTROL_NAMESPACE is required outside an in-cluster runtime"
+        )
+
+    def _copy_workload_image_pull_secret(
+        self,
+        name: str,
+        *,
+        target_namespace: str,
+        labels: dict[str, str],
+    ) -> None:
+        """Copy one approved registry credential into the owned seat namespace."""
+        source_namespace = self._in_cluster_namespace()
+        try:
+            source = self._control_core_v1.read_namespaced_secret(
+                name, source_namespace
+            )
+        except ApiException as exc:
+            raise ValueError(
+                f"Required workload image pull Secret '{name}' is unavailable"
+            ) from exc
+        source_type = source.get("type") if isinstance(source, dict) else source.type
+        source_data = source.get("data") if isinstance(source, dict) else source.data
+        if source_type != "kubernetes.io/dockerconfigjson" or not (
+            source_data or {}
+        ).get(".dockerconfigjson"):
+            raise ValueError(
+                f"Workload image pull Secret '{name}' is not a docker config Secret"
+            )
+        body = {
+            "apiVersion": "v1",
+            "kind": "Secret",
+            "metadata": {
+                "name": name,
+                "namespace": target_namespace,
+                "labels": dict(labels),
+            },
+            "type": source_type,
+            "data": {".dockerconfigjson": source_data[".dockerconfigjson"]},
+        }
+        try:
+            self._core_v1.create_namespaced_secret(target_namespace, body=body)
+        except ApiException as exc:
+            if exc.status != 409:
+                raise ValueError(
+                    f"Failed to create workload image pull Secret '{name}'"
+                ) from exc
+            self._core_v1.patch_namespaced_secret(name, target_namespace, body=body)
+        for service_account in ("default", "multi-agent"):
+            self._core_v1.patch_namespaced_service_account(
+                service_account,
+                target_namespace,
+                body={"imagePullSecrets": [{"name": name}]},
+            )
     def _apply_model_ca_bundle(
         self,
         namespace: str,

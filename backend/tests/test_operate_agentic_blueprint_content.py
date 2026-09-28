@@ -27,6 +27,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     )
     assert metadata["prerequisites"] == ["multi-agent-quickstart"]
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
+    assert metadata["namespace_slug"] == "agentic-ops"
     assert re.fullmatch(r"[0-9a-f]{40}", metadata["workload_revision"])
     assert metadata["workload_revision"] != "5292234017bf3f538767e6b6a3c627d146fca086"
     assert metadata["workload_helm_values"]["image"]["digest"].startswith("sha256:")

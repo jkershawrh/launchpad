@@ -114,6 +114,9 @@ def test_operations_presentation_is_digest_pinned_and_proxies_live_api_same_orig
         {"name": "http", "port": 8080, "targetPort": "http"}
     ]
     route = resources[("Route", "agentic-operations-presentation")]
+    assert route["spec"]["host"] == (
+        "agentic-story-session-.apps.flightpath.fm2aihpcsed.com"
+    )
     assert route["spec"]["tls"] == {
         "termination": "edge",
         "insecureEdgeTerminationPolicy": "Redirect",

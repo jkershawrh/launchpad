@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import pytest
 import yaml
@@ -238,3 +238,68 @@ def test_runtime_secret_retry_rejects_a_secret_owned_by_another_seat():
 
     with pytest.raises(ValueError, match="owned by another seat"):
         adapter._apply_workload_runtime_secret(secret)
+
+
+def test_private_workload_pull_secret_is_copied_without_entering_gitops(monkeypatch):
+    from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
+
+    monkeypatch.setenv("LAUNCHPAD_CONTROL_NAMESPACE", "launchpad-control")
+    adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
+    adapter._control_core_v1 = MagicMock()
+    adapter._core_v1 = MagicMock()
+    adapter._control_core_v1.read_namespaced_secret.return_value = SimpleNamespace(
+        type="kubernetes.io/dockerconfigjson",
+        data={".dockerconfigjson": "opaque-base64-config"},
+    )
+    labels = {
+        "app.kubernetes.io/managed-by": "launchpad",
+        "launchpad.redhat.com/session-id": "session-1",
+    }
+
+    adapter._copy_workload_image_pull_secret(
+        "launchpad-registry-pull",
+        target_namespace="launchpad-seat-1",
+        labels=labels,
+    )
+
+    adapter._control_core_v1.read_namespaced_secret.assert_called_once_with(
+        "launchpad-registry-pull", "launchpad-control"
+    )
+    body = adapter._core_v1.create_namespaced_secret.call_args.kwargs["body"]
+    assert body["metadata"] == {
+        "name": "launchpad-registry-pull",
+        "namespace": "launchpad-seat-1",
+        "labels": labels,
+    }
+    assert body["data"] == {".dockerconfigjson": "opaque-base64-config"}
+    assert adapter._core_v1.patch_namespaced_service_account.call_args_list == [
+        call(
+            "default",
+            "launchpad-seat-1",
+            body={"imagePullSecrets": [{"name": "launchpad-registry-pull"}]},
+        ),
+        call(
+            "multi-agent",
+            "launchpad-seat-1",
+            body={"imagePullSecrets": [{"name": "launchpad-registry-pull"}]},
+        ),
+    ]
+
+
+def test_private_workload_pull_secret_fails_closed_when_source_is_missing(monkeypatch):
+    from app.adapters.openshift.provisioning import OpenShiftProvisioningAdapter
+
+    monkeypatch.setenv("LAUNCHPAD_CONTROL_NAMESPACE", "launchpad-control")
+    adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
+    adapter._control_core_v1 = MagicMock()
+    adapter._core_v1 = MagicMock()
+    adapter._control_core_v1.read_namespaced_secret.side_effect = ApiException(status=404)
+
+    with pytest.raises(ValueError, match="image pull Secret.*unavailable"):
+        adapter._copy_workload_image_pull_secret(
+            "launchpad-registry-pull",
+            target_namespace="launchpad-seat-1",
+            labels={"app.kubernetes.io/managed-by": "launchpad"},
+        )
+
+    adapter._core_v1.create_namespaced_secret.assert_not_called()
