@@ -1,0 +1,1162 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 1,
+    "certification_override": true,
+    "certification_target_seats": 5,
+    "estimated_resources": {
+      "cpu_millicores": 6000,
+      "memory_mib": 10240,
+      "pods": 15
+    },
+    "placement_reason": "Entire workshop assigned to flightpath; seats will not be split",
+    "reason": "Cluster can support 68 seats (CPU: 333, Memory: 392, Pods: 68; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 1200,
+        "memory_mib": 2048,
+        "pods": 3
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 5,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "operate-agentic-blueprint",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 101.455,
+    "status": "completed"
+  },
+  "completed_at": "2026-09-28T12:22:38.843486Z",
+  "contract": {
+    "catalog_version": "0.1.0",
+    "git_commit": "0ebde0ede338af4b1787a86034bc178352e4a323",
+    "intake_path": "catalog-onboarding/operate-agentic-blueprint.yaml",
+    "path": "certification/catalog/operate-agentic-blueprint.yaml",
+    "sha256": "b9b971d44d20d86f4264924f355869d6a34a4838b174ca4ad76cfea16f8eae95"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "presentation_live_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "server_side_proxy_auth_passed": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [
+      "launchpad-flightpath-candida-agentic-ops-fbd16a",
+      "launchpad-flightpath-candida-agentic-ops-1390a0",
+      "launchpad-flightpath-candida-agentic-ops-9fa31f",
+      "launchpad-flightpath-candida-agentic-ops-2541dd",
+      "launchpad-flightpath-candida-agentic-ops-5ae0e9"
+    ],
+    "ready_seconds": 264.384,
+    "seat_count": 5,
+    "session_ids": [
+      "b945cd21-c255-4348-bb50-35136f306ae2",
+      "b6db3866-d660-44bd-8d82-0029f1735716",
+      "aa58aa2d-2206-4a85-9add-44850e140762",
+      "5dedddf0-ad8c-4f6d-9c3c-8978eac99480",
+      "6e44ef1b-fa64-49f3-b4fc-d33448e0e7e4"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "cc1ac94a-96ec-436f-bf5e-bcbbf4d6e957"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "operate-agentic-blueprint",
+    "certification_override": true,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 1,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 900,
+    "maximum_ready_seconds": 1200,
+    "mutates_cluster": true,
+    "next_promotion_target": 5,
+    "probe_concurrency": 5,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 5,
+    "seats": 5,
+    "showroom_pages_per_seat": 7,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 1,
+    "eligible": true,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent",
+          "server_side_proxy_auth_passed"
+        ],
+        "weight": 20
+      },
+      "cleanup": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 20
+      },
+      "contract_integrity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 15
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed",
+          "presentation_live_passed"
+        ],
+        "weight": 25
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "operate-agentic-blueprint-flightpath-five-seat-r2-20260928",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-agentic-ops-fbd16a",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 189.446,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "guardrails": {
+            "blocked_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "latency_ms": 89.2
+          },
+          "intel_xeon_inference": {
+            "configured_model": "granite-3.2-8b-tools",
+            "semantic_route_completed": true,
+            "workflow_completed": true
+          },
+          "learner_policy": {
+            "applied_max_tokens": 48,
+            "configmap_removed": true,
+            "rollback_restored_baseline": true,
+            "workflow_passed": true
+          },
+          "multi_agent_journey": {
+            "agents": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "errors": [],
+            "latency_ms": 24432.72,
+            "mcp_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "steps": 3
+          },
+          "namespace": "launchpad-flightpath-candida-agentic-ops-fbd16a",
+          "participant_ui_http_status": 200,
+          "participant_ui_journey": {
+            "event_count": 4,
+            "executor_present": true,
+            "history_count": 1,
+            "http_error": false,
+            "step_count_one": true
+          },
+          "presentation": {
+            "client_token_exposed": false,
+            "handoff": {
+              "http_status": 302,
+              "location": "https://showroom-launchpad-flightpath-candida-agentic-ops-fbd16a.apps.flightpath.fm2aihpcsed.com/",
+              "target_http_status": 200
+            },
+            "health": {
+              "agent_names": [
+                "research",
+                "analyst",
+                "executor"
+              ],
+              "agents_discovered": 3,
+              "semantic_routing": "llm-fallback",
+              "status": "healthy",
+              "tracing": "active"
+            },
+            "labeling": {
+              "live": true,
+              "offline": true,
+              "rehearsal": true
+            },
+            "navigation_markers": 5,
+            "policy": {
+              "authority": "recommend_only",
+              "endpoint_http_status": 404,
+              "mode": "rehearsal",
+              "presented_as_live": false
+            },
+            "required": true,
+            "root_http_status": 200,
+            "workflow": {
+              "agents": 3,
+              "errors": 0,
+              "steps": 3
+            }
+          },
+          "readiness": {
+            "agent_names": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "agents_discovered": 3,
+            "agents_expected": 3,
+            "http_status": 200,
+            "status": "ready"
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "AGENT_AUTH_TOKEN",
+            "MODEL_API_KEY",
+            "MODEL_ENDPOINT",
+            "MODEL_NAME"
+          ],
+          "semantic_routing": {
+            "classification_status": "ok",
+            "classifier": "llm-fallback",
+            "errors": [],
+            "latency_ms": 13681.24,
+            "selected_model": "simple",
+            "selected_workflow": "standard",
+            "steps": 2
+          },
+          "showroom_http_status": 200,
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-agentic-ops-fbd16a",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "fbd16ae5-514e-4dff-a6f0-5fa35620a090",
+      "seat_number": 1,
+      "session_id": "b945cd21-c255-4348-bb50-35136f306ae2",
+      "showroom": [
+        {
+          "duration_seconds": 0.511,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.336,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-1-baseline"
+        },
+        {
+          "duration_seconds": 0.288,
+          "http_status": 200,
+          "id": "correlate",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-2-correlate"
+        },
+        {
+          "duration_seconds": 0.317,
+          "http_status": 200,
+          "id": "policy",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-3-policy"
+        },
+        {
+          "duration_seconds": 0.279,
+          "http_status": 200,
+          "id": "recovery",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-4-recovery"
+        },
+        {
+          "duration_seconds": 0.3,
+          "http_status": 200,
+          "id": "change",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-5-change"
+        },
+        {
+          "duration_seconds": 0.253,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-6-proof-package"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-agentic-ops-1390a0",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 188.531,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "guardrails": {
+            "blocked_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "latency_ms": 97.67
+          },
+          "intel_xeon_inference": {
+            "configured_model": "granite-3.2-8b-tools",
+            "semantic_route_completed": true,
+            "workflow_completed": true
+          },
+          "learner_policy": {
+            "applied_max_tokens": 48,
+            "configmap_removed": true,
+            "rollback_restored_baseline": true,
+            "workflow_passed": true
+          },
+          "multi_agent_journey": {
+            "agents": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "errors": [],
+            "latency_ms": 24410.99,
+            "mcp_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "steps": 3
+          },
+          "namespace": "launchpad-flightpath-candida-agentic-ops-1390a0",
+          "participant_ui_http_status": 200,
+          "participant_ui_journey": {
+            "event_count": 4,
+            "executor_present": true,
+            "history_count": 1,
+            "http_error": false,
+            "step_count_one": true
+          },
+          "presentation": {
+            "client_token_exposed": false,
+            "handoff": {
+              "http_status": 302,
+              "location": "https://showroom-launchpad-flightpath-candida-agentic-ops-1390a0.apps.flightpath.fm2aihpcsed.com/",
+              "target_http_status": 200
+            },
+            "health": {
+              "agent_names": [
+                "research",
+                "analyst",
+                "executor"
+              ],
+              "agents_discovered": 3,
+              "semantic_routing": "llm-fallback",
+              "status": "healthy",
+              "tracing": "active"
+            },
+            "labeling": {
+              "live": true,
+              "offline": true,
+              "rehearsal": true
+            },
+            "navigation_markers": 5,
+            "policy": {
+              "authority": "recommend_only",
+              "endpoint_http_status": 404,
+              "mode": "rehearsal",
+              "presented_as_live": false
+            },
+            "required": true,
+            "root_http_status": 200,
+            "workflow": {
+              "agents": 3,
+              "errors": 0,
+              "steps": 3
+            }
+          },
+          "readiness": {
+            "agent_names": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "agents_discovered": 3,
+            "agents_expected": 3,
+            "http_status": 200,
+            "status": "ready"
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "AGENT_AUTH_TOKEN",
+            "MODEL_API_KEY",
+            "MODEL_ENDPOINT",
+            "MODEL_NAME"
+          ],
+          "semantic_routing": {
+            "classification_status": "ok",
+            "classifier": "llm-fallback",
+            "errors": [],
+            "latency_ms": 13786.48,
+            "selected_model": "simple",
+            "selected_workflow": "standard",
+            "steps": 2
+          },
+          "showroom_http_status": 200,
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-agentic-ops-1390a0",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "1390a0f6-9b5d-4e5b-a6c6-bd379757ee5f",
+      "seat_number": 2,
+      "session_id": "b6db3866-d660-44bd-8d82-0029f1735716",
+      "showroom": [
+        {
+          "duration_seconds": 0.512,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.327,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-1-baseline"
+        },
+        {
+          "duration_seconds": 0.286,
+          "http_status": 200,
+          "id": "correlate",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-2-correlate"
+        },
+        {
+          "duration_seconds": 0.287,
+          "http_status": 200,
+          "id": "policy",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-3-policy"
+        },
+        {
+          "duration_seconds": 0.26,
+          "http_status": 200,
+          "id": "recovery",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-4-recovery"
+        },
+        {
+          "duration_seconds": 0.289,
+          "http_status": 200,
+          "id": "change",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-5-change"
+        },
+        {
+          "duration_seconds": 0.269,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-6-proof-package"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-agentic-ops-9fa31f",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 187.267,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "guardrails": {
+            "blocked_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "latency_ms": 82.28
+          },
+          "intel_xeon_inference": {
+            "configured_model": "granite-3.2-8b-tools",
+            "semantic_route_completed": true,
+            "workflow_completed": true
+          },
+          "learner_policy": {
+            "applied_max_tokens": 48,
+            "configmap_removed": true,
+            "rollback_restored_baseline": true,
+            "workflow_passed": true
+          },
+          "multi_agent_journey": {
+            "agents": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "errors": [],
+            "latency_ms": 24413.93,
+            "mcp_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "steps": 3
+          },
+          "namespace": "launchpad-flightpath-candida-agentic-ops-9fa31f",
+          "participant_ui_http_status": 200,
+          "participant_ui_journey": {
+            "event_count": 4,
+            "executor_present": true,
+            "history_count": 1,
+            "http_error": false,
+            "step_count_one": true
+          },
+          "presentation": {
+            "client_token_exposed": false,
+            "handoff": {
+              "http_status": 302,
+              "location": "https://showroom-launchpad-flightpath-candida-agentic-ops-9fa31f.apps.flightpath.fm2aihpcsed.com/",
+              "target_http_status": 200
+            },
+            "health": {
+              "agent_names": [
+                "research",
+                "analyst",
+                "executor"
+              ],
+              "agents_discovered": 3,
+              "semantic_routing": "llm-fallback",
+              "status": "healthy",
+              "tracing": "active"
+            },
+            "labeling": {
+              "live": true,
+              "offline": true,
+              "rehearsal": true
+            },
+            "navigation_markers": 5,
+            "policy": {
+              "authority": "recommend_only",
+              "endpoint_http_status": 404,
+              "mode": "rehearsal",
+              "presented_as_live": false
+            },
+            "required": true,
+            "root_http_status": 200,
+            "workflow": {
+              "agents": 3,
+              "errors": 0,
+              "steps": 3
+            }
+          },
+          "readiness": {
+            "agent_names": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "agents_discovered": 3,
+            "agents_expected": 3,
+            "http_status": 200,
+            "status": "ready"
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "AGENT_AUTH_TOKEN",
+            "MODEL_API_KEY",
+            "MODEL_ENDPOINT",
+            "MODEL_NAME"
+          ],
+          "semantic_routing": {
+            "classification_status": "ok",
+            "classifier": "llm-fallback",
+            "errors": [],
+            "latency_ms": 13883.01,
+            "selected_model": "simple",
+            "selected_workflow": "standard",
+            "steps": 2
+          },
+          "showroom_http_status": 200,
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-agentic-ops-9fa31f",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "9fa31f79-5a3c-4afd-a823-a747503e6497",
+      "seat_number": 3,
+      "session_id": "aa58aa2d-2206-4a85-9add-44850e140762",
+      "showroom": [
+        {
+          "duration_seconds": 0.605,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.292,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-1-baseline"
+        },
+        {
+          "duration_seconds": 0.329,
+          "http_status": 200,
+          "id": "correlate",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-2-correlate"
+        },
+        {
+          "duration_seconds": 0.295,
+          "http_status": 200,
+          "id": "policy",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-3-policy"
+        },
+        {
+          "duration_seconds": 0.276,
+          "http_status": 200,
+          "id": "recovery",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-4-recovery"
+        },
+        {
+          "duration_seconds": 0.292,
+          "http_status": 200,
+          "id": "change",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-5-change"
+        },
+        {
+          "duration_seconds": 0.214,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-6-proof-package"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-agentic-ops-2541dd",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 191.255,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "guardrails": {
+            "blocked_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "latency_ms": 82.5
+          },
+          "intel_xeon_inference": {
+            "configured_model": "granite-3.2-8b-tools",
+            "semantic_route_completed": true,
+            "workflow_completed": true
+          },
+          "learner_policy": {
+            "applied_max_tokens": 48,
+            "configmap_removed": true,
+            "rollback_restored_baseline": true,
+            "workflow_passed": true
+          },
+          "multi_agent_journey": {
+            "agents": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "errors": [],
+            "latency_ms": 24260.09,
+            "mcp_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "steps": 3
+          },
+          "namespace": "launchpad-flightpath-candida-agentic-ops-2541dd",
+          "participant_ui_http_status": 200,
+          "participant_ui_journey": {
+            "event_count": 4,
+            "executor_present": true,
+            "history_count": 1,
+            "http_error": false,
+            "step_count_one": true
+          },
+          "presentation": {
+            "client_token_exposed": false,
+            "handoff": {
+              "http_status": 302,
+              "location": "https://showroom-launchpad-flightpath-candida-agentic-ops-2541dd.apps.flightpath.fm2aihpcsed.com/",
+              "target_http_status": 200
+            },
+            "health": {
+              "agent_names": [
+                "research",
+                "analyst",
+                "executor"
+              ],
+              "agents_discovered": 3,
+              "semantic_routing": "llm-fallback",
+              "status": "healthy",
+              "tracing": "active"
+            },
+            "labeling": {
+              "live": true,
+              "offline": true,
+              "rehearsal": true
+            },
+            "navigation_markers": 5,
+            "policy": {
+              "authority": "recommend_only",
+              "endpoint_http_status": 404,
+              "mode": "rehearsal",
+              "presented_as_live": false
+            },
+            "required": true,
+            "root_http_status": 200,
+            "workflow": {
+              "agents": 3,
+              "errors": 0,
+              "steps": 3
+            }
+          },
+          "readiness": {
+            "agent_names": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "agents_discovered": 3,
+            "agents_expected": 3,
+            "http_status": 200,
+            "status": "ready"
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "AGENT_AUTH_TOKEN",
+            "MODEL_API_KEY",
+            "MODEL_ENDPOINT",
+            "MODEL_NAME"
+          ],
+          "semantic_routing": {
+            "classification_status": "ok",
+            "classifier": "llm-fallback",
+            "errors": [],
+            "latency_ms": 13520.17,
+            "selected_model": "simple",
+            "selected_workflow": "standard",
+            "steps": 2
+          },
+          "showroom_http_status": 200,
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-agentic-ops-2541dd",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "2541ddab-832c-4536-8732-e0569fc1281f",
+      "seat_number": 4,
+      "session_id": "5dedddf0-ad8c-4f6d-9c3c-8978eac99480",
+      "showroom": [
+        {
+          "duration_seconds": 0.55,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.338,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-1-baseline"
+        },
+        {
+          "duration_seconds": 0.339,
+          "http_status": 200,
+          "id": "correlate",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-2-correlate"
+        },
+        {
+          "duration_seconds": 0.269,
+          "http_status": 200,
+          "id": "policy",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-3-policy"
+        },
+        {
+          "duration_seconds": 0.274,
+          "http_status": 200,
+          "id": "recovery",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-4-recovery"
+        },
+        {
+          "duration_seconds": 0.296,
+          "http_status": 200,
+          "id": "change",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-5-change"
+        },
+        {
+          "duration_seconds": 0.289,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-6-proof-package"
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-agentic-ops-5ae0e9",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 189.387,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "guardrails": {
+            "blocked_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "latency_ms": 86.46
+          },
+          "intel_xeon_inference": {
+            "configured_model": "granite-3.2-8b-tools",
+            "semantic_route_completed": true,
+            "workflow_completed": true
+          },
+          "learner_policy": {
+            "applied_max_tokens": 48,
+            "configmap_removed": true,
+            "rollback_restored_baseline": true,
+            "workflow_passed": true
+          },
+          "multi_agent_journey": {
+            "agents": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "errors": [],
+            "latency_ms": 24370.36,
+            "mcp_steps": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "steps": 3
+          },
+          "namespace": "launchpad-flightpath-candida-agentic-ops-5ae0e9",
+          "participant_ui_http_status": 200,
+          "participant_ui_journey": {
+            "event_count": 4,
+            "executor_present": true,
+            "history_count": 1,
+            "http_error": false,
+            "step_count_one": true
+          },
+          "presentation": {
+            "client_token_exposed": false,
+            "handoff": {
+              "http_status": 302,
+              "location": "https://showroom-launchpad-flightpath-candida-agentic-ops-5ae0e9.apps.flightpath.fm2aihpcsed.com/",
+              "target_http_status": 200
+            },
+            "health": {
+              "agent_names": [
+                "research",
+                "analyst",
+                "executor"
+              ],
+              "agents_discovered": 3,
+              "semantic_routing": "llm-fallback",
+              "status": "healthy",
+              "tracing": "active"
+            },
+            "labeling": {
+              "live": true,
+              "offline": true,
+              "rehearsal": true
+            },
+            "navigation_markers": 5,
+            "policy": {
+              "authority": "recommend_only",
+              "endpoint_http_status": 404,
+              "mode": "rehearsal",
+              "presented_as_live": false
+            },
+            "required": true,
+            "root_http_status": 200,
+            "workflow": {
+              "agents": 3,
+              "errors": 0,
+              "steps": 3
+            }
+          },
+          "readiness": {
+            "agent_names": [
+              "research",
+              "analyst",
+              "executor"
+            ],
+            "agents_discovered": 3,
+            "agents_expected": 3,
+            "http_status": 200,
+            "status": "ready"
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "AGENT_AUTH_TOKEN",
+            "MODEL_API_KEY",
+            "MODEL_ENDPOINT",
+            "MODEL_NAME"
+          ],
+          "semantic_routing": {
+            "classification_status": "ok",
+            "classifier": "llm-fallback",
+            "errors": [],
+            "latency_ms": 13684.9,
+            "selected_model": "simple",
+            "selected_workflow": "standard",
+            "steps": 2
+          },
+          "showroom_http_status": 200,
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-agentic-ops-5ae0e9",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "5ae0e939-05bb-4dc0-af1e-0caa56bf8a14",
+      "seat_number": 5,
+      "session_id": "6e44ef1b-fa64-49f3-b4fc-d33448e0e7e4",
+      "showroom": [
+        {
+          "duration_seconds": 0.511,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.333,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-1-baseline"
+        },
+        {
+          "duration_seconds": 0.281,
+          "http_status": 200,
+          "id": "correlate",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-2-correlate"
+        },
+        {
+          "duration_seconds": 0.313,
+          "http_status": 200,
+          "id": "policy",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-3-policy"
+        },
+        {
+          "duration_seconds": 0.278,
+          "http_status": 200,
+          "id": "recovery",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-4-recovery"
+        },
+        {
+          "duration_seconds": 0.296,
+          "http_status": 200,
+          "id": "change",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-5-change"
+        },
+        {
+          "duration_seconds": 0.237,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": "stage-6-proof-package"
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-28T12:13:13.111226Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "presentation_live_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "server_side_proxy_auth_passed": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}
