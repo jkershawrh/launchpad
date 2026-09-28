@@ -24,21 +24,27 @@ spec:
         path: /www/modules/index.html
         marker: "Operate Evidence-Backed Multi-Agent Systems"
       - id: baseline
+        track_id: stage-1-baseline
         path: /www/modules/01-baseline.html
         marker: "Establish the Operational Baseline"
       - id: correlate
+        track_id: stage-2-correlate
         path: /www/modules/02-correlate.html
         marker: "Correlate the Journey"
       - id: policy
+        track_id: stage-3-policy
         path: /www/modules/03-policy.html
         marker: "Inspect Evidence and Policy"
       - id: recovery
+        track_id: stage-4-recovery
         path: /www/modules/04-failure-recovery.html
         marker: "Prove Safe Denial and Recovery"
       - id: change
+        track_id: stage-5-change
         path: /www/modules/05-change-proof.html
         marker: "Change, Compare, and Restore"
       - id: conclusion
+        track_id: stage-6-proof-package
         path: /www/modules/99-conclusion.html
         marker: "Operational Proof Package"
 
