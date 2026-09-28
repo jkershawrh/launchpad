@@ -1,0 +1,14 @@
+name: modules
+version: master
+title: "Scale and Certify Agentic Systems"
+start_page: index.adoc
+nav:
+  - modules/ROOT/nav.adoc
+
+asciidoc:
+  attributes:
+    user: '%user%'
+    guid: '%guid%'
+    project_name: '%namespace%'
+    maas_model: '%maas_model%'
+

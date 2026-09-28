@@ -1,0 +1,33 @@
+= Define Success Before Scale
+
+== State the Business Workload
+
+Use the same fictional service-incident workflow from 401. Record the workload
+revision, assigned namespace, configured model, and the business outcome: a
+supported recommendation for human review, never an automatic production
+action.
+
+== Declare the Measures
+
+Before running load, record the provisional limits for journey success, p95
+latency, inference latency, queue time, evidence provenance, policy agreement,
+unsupported claims, and recovery time. These values come from the versioned
+workload contract; they are hypotheses until the reviewed baseline approves or
+revises them.
+
+Separate the measurements into two source classes:
+
+* request-attributed evidence: model, tokens, inference latency, and queue time;
+* shared Intel Xeon endpoint evidence: CPU model, allocation, utilization, and
+  aggregate throughput.
+
+Shared endpoint CPU utilization is never labeled as consumption by one request.
+
+== Success Checkpoint
+
+You can explain what success means, who retains authority, which metrics belong
+to one request, and which describe the shared inference endpoint.
+
+[.next-nav]
+xref:02-trace-baseline.adoc[Next: Trace the Baseline ->]
+

@@ -1,0 +1,31 @@
+= Scale One Workload Dimension at a Time
+
+== Baseline, Sustained, Pressure
+
+[cols="1,1,1,2",options="header"]
+|===
+| Profile | Agent replicas | Concurrent journeys | Purpose
+| Baseline | 1 | 1 | Establish the known-good reference
+| Sustained | 2 | 5 | Measure normal parallel operation
+| Pressure | 3 | 10 | Find the first bounded constraint
+|===
+
+Changing every dimension at once hides causality. First increase replicas while
+holding concurrency constant. Then increase concurrency. Finally observe the
+resulting pressure on the shared inference endpoint.
+
+At every checkpoint, verify readiness, journey correlation, queue depth, error
+rate, p50/p95 latency, and policy evaluation. Stop rather than advancing if the
+current profile is not understood.
+
+NOTE: This is workload scale inside one namespace. Launchpad's separate
+1-, 5-, and 25-participant delivery certification is not a learner exercise.
+
+== Scale Checkpoint
+
+You can identify which dimension changed and which measured component became
+the first constraint.
+
+[.next-nav]
+xref:05-quality-policy.adoc[Next: Protect Quality and Policy ->]
+

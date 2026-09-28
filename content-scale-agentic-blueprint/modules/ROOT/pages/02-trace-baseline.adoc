@@ -1,0 +1,32 @@
+= Trace the Certified Baseline
+
+== Observe One Complete Journey
+
+Run one recognizable incident through the single-replica baseline. Follow the
+same journey ID through intake, orchestrator, research agent, analyst agent,
+executor agent, MCP evidence, deterministic policy, Intel Xeon inference, and
+the review-required state.
+
+For every boundary, record the source state, timestamp, component identity,
+latency, and evidence reference. The LLM may explain a supported conclusion;
+it does not own evidence, policy, or action authority.
+
+== Explain the Architecture While It Runs
+
+The learner-visible trace must answer:
+
+* Which agent handled this stage?
+* Which MCP evidence was collected, and where did it originate?
+* Which policy version evaluated the evidence?
+* What prompt entered the model and what bounded response returned?
+* Which measurements are request-attributed and which are shared?
+* Why does the result still require human review?
+
+== Baseline Trace Checkpoint
+
+One journey is completely correlated with no missing boundary and no hidden
+automatic action.
+
+[.next-nav]
+xref:03-evaluate-baseline.adoc[Next: Evaluate the Baseline ->]
+

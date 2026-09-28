@@ -1,0 +1,25 @@
+= Prove Safe Failure and Recovery
+
+== Exercise One Boundary at a Time
+
+Under declared sustained load, test agent pod loss, MCP unavailability,
+inference timeout, policy denial, overload backpressure, and incomplete
+evidence. Each fault must be independently addressable and reversible.
+
+For each scenario, record the injected boundary, affected journey IDs, visible
+safe state, prohibited actions count, recovery start, recovery completion, and
+post-recovery validation. Do not use broad namespace deletion as a substitute
+for a bounded dependency failure.
+
+The expected outcome is not that every request succeeds. The expected outcome
+is explicit backpressure or failure, no unsupported action, measured recovery,
+and healthy subsequent journeys.
+
+== Recovery Checkpoint
+
+Every fault has a visible safe state, bounded recovery evidence, and a clean
+post-recovery journey.
+
+[.next-nav]
+xref:07-operating-envelope.adoc[Next: Define the Operating Envelope ->]
+

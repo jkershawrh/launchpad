@@ -1,0 +1,26 @@
+= Workload Operating-Envelope Package
+
+== What the Learner Proves
+
+The final package contains:
+
+* immutable workload, contract, and evaluation-set revisions;
+* one fully correlated baseline journey;
+* baseline, sustained, and pressure measurements;
+* request-attributed latency, tokens, queues, and model identity;
+* separately labeled shared Intel Xeon CPU and throughput evidence;
+* case-by-case quality, evidence, policy, and review-state comparison;
+* safe-state and recovery evidence for each supported fault;
+* the first measured constraint and supported operating envelope; and
+* proof that the workload returned to its known-good baseline.
+
+This report certifies a measured workload envelope. It does not certify
+Launchpad's ability to deliver the lab to 25 participants; that is separate
+platform release evidence.
+
+== Current Activation Boundary
+
+This content remains a draft until 401 is certified and the live adapter,
+quality scorer, correlated telemetry, Intel Xeon evidence source, safe fault
+drivers, immutable artifacts, and workload certification runs are complete.
+

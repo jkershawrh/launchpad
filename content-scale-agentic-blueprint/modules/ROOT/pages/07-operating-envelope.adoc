@@ -1,0 +1,26 @@
+= Define the Supported Operating Envelope
+
+== Identify the First Constraint
+
+Compare baseline, sustained, and pressure results. Determine whether the first
+constraint occurred in orchestration, agent execution, MCP evidence, policy,
+model queueing, Intel Xeon inference, or OpenShift scheduling.
+
+State the largest profile that met every performance, quality, policy, and
+recovery requirement. Do not call the pressure profile certified merely because
+it completed.
+
+== Restore the Baseline
+
+Return the workload to one replica and one concurrent journey. Run one clean
+case and confirm that readiness, evidence, policy, inference, and review state
+match the starting baseline.
+
+== Envelope Checkpoint
+
+You can state the supported profile, first measured limit, known uncertainties,
+and the evidence required before raising that limit.
+
+[.next-nav]
+xref:99-conclusion.adoc[Next: Assemble the Workload Proof Package ->]
+

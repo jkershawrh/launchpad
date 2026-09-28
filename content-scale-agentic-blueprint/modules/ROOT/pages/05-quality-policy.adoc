@@ -1,0 +1,27 @@
+= Protect Quality and Policy Under Load
+
+== Compare the Same Cases
+
+Run the immutable cases under sustained and pressure profiles. Compare each
+result with its baseline case rather than comparing unrelated requests.
+
+Performance alone cannot pass this lab. The workload must preserve supported
+decisions, complete evidence provenance, deterministic policy attribution,
+review-required state, and zero unsupported claims. A faster answer with weaker
+evidence is a regression.
+
+== Review the Exceptions
+
+Inspect every denied and inconclusive case plus a representative sample of
+supported cases. Confirm that policy denial remains deterministic and that
+missing evidence produces an inconclusive result or human escalation—not a
+confident model guess.
+
+== Quality Checkpoint
+
+You can show whether quality or policy changed as load increased and identify
+the exact case and architecture boundary responsible for any regression.
+
+[.next-nav]
+xref:06-failure-recovery.adoc[Next: Prove Safe Recovery ->]
+

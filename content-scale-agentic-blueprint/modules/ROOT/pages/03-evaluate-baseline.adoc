@@ -1,0 +1,26 @@
+= Evaluate the Baseline
+
+== Use the Immutable Cases
+
+The versioned evaluation set contains 30 synthetic cases balanced across
+simple, medium, and complex work. It also balances availability, performance,
+deployment, security, and data incidents.
+
+Run every case at the baseline profile. Capture the selected workflow, required
+agents, evidence completeness, policy result, supported disposition,
+review-required state, journey latency, inference latency, tokens, and queue
+time.
+
+The complete set is machine-scored. A learner manually reviews at least five
+representative cases plus every denied or inconclusive case. Review-required
+does not mean a human must manually approve all future load-test requests; it
+means none may execute an action automatically.
+
+== Baseline Evaluation Checkpoint
+
+The baseline has an immutable evidence hash and measured quality, policy, and
+performance values. These—not projected numbers—become the comparison point.
+
+[.next-nav]
+xref:04-scale-workload.adoc[Next: Scale the Workload ->]
+
