@@ -61,6 +61,27 @@ def test_intel_xeon_proof_is_part_of_the_end_to_end_journey():
     assert intel["shared_metrics_must_not_be_presented_as_per_journey"] is True
 
 
+def test_agent_sandbox_governs_execution_and_keeps_kata_optional():
+    contract = _load(WORKLOAD_CONTRACT_PATH)
+    sandbox = contract["agent_sandbox"]
+
+    assert {
+        "dedicated_service_account",
+        "least_privilege_rbac",
+        "allowlisted_mcp_tools",
+        "namespace_network_boundary",
+        "no_direct_model_action_authority",
+        "allowed_and_denied_request_audit",
+    } <= set(sandbox["required_controls"])
+    assert sandbox["optional_stronger_isolation"]["technology"] == (
+        "openshift_sandboxed_containers"
+    )
+    assert sandbox["optional_stronger_isolation"]["runtime_class"] == "kata"
+    assert sandbox["optional_stronger_isolation"][
+        "unavailable_must_not_be_presented_as_active"
+    ] is True
+
+
 def test_resilience_proves_safe_state_and_recovery():
     contract = _load(WORKLOAD_CONTRACT_PATH)
     scenarios = contract["resilience_scenarios"]

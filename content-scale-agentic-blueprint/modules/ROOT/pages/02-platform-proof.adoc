@@ -1,6 +1,6 @@
-= Open the Red Hat Proof Surfaces
+= Prove the Governed Agent Runtime
 
-== One Journey, Three Views in the OpenShift Sandbox
+== One Journey, Three Proof Views
 
 Use the three learner views together. They are different views of the same
 workload and the same journey ID—not separate product exercises.
@@ -8,7 +8,7 @@ workload and the same journey ID—not separate product exercises.
 [cols="1,2,2",options="header"]
 |===
 | View | Use it to answer | Do not use it for
-| OpenShift Sandbox terminal | Which namespace, pods, replicas, revisions, and bounded
+| OpenShift terminal | Which namespace, pods, replicas, revisions, and bounded
   workload controls are active? | Editing cluster-wide resources or bypassing
   the lab controls
 | OpenShift Console | Is the workload healthy, scheduled, scaling, or recovering?
@@ -19,17 +19,36 @@ workload and the same journey ID—not separate product exercises.
   credentials, hidden reasoning, or unredacted sensitive prompts
 |===
 
-== OpenShift Sandbox Session: Establish Workload Identity
+== Agent Sandbox: Govern Every Execution
 
-Open the terminal supplied inside the learner's OpenShift Sandbox. Confirm the
-assigned namespace before running any command. Inspect only namespace-scoped
-workload resources and record the deployment revision, current agent replica
-count, and readiness state.
+The agent sandbox is a governance layer around each specialized agent. It sits
+between orchestration and external access so an agent cannot reach tools,
+networks, files, credentials, or compute merely because a model requested it.
 
-The sandbox is the controlled implementation surface for later scale and
-recovery steps. It is not a generic cluster-administration session. Any command that
-changes replicas or introduces a fault must be supplied by the versioned lab and
-must have a matching restore operation.
+For one running agent, verify the sandbox contract:
+
+* a dedicated workload identity and least-privilege service account;
+* allowlisted MCP tools and read-only access by default;
+* namespace and network boundaries around reachable services;
+* read-only root filesystem, dropped Linux capabilities, seccomp, and bounded
+  CPU and memory where the workload supports them;
+* no direct production action path from model output; and
+* an audit event for every allowed or denied external request.
+
+Where the cluster provides OpenShift Sandboxed Containers, the lab may add the
+`kata` runtime class as a stronger workload-isolation boundary. This runs the
+agent workload in a lightweight virtual machine. It complements the logical
+agent policy; it does not replace tool authorization, deterministic policy, or
+human authority. If Kata is not installed and certified for this environment,
+label that control `UNAVAILABLE` and evaluate the standard OpenShift isolation
+controls without claiming VM-backed isolation.
+
+== Terminal Session: Inspect the Sandbox Contract
+
+Open the supplied terminal and confirm the assigned namespace. Inspect the
+agent workload identity, security context, network policy, resource limits,
+runtime class, and approved tool configuration. Record the observed values and
+their source state. Do not mutate cluster-wide policy from the learner session.
 
 == OpenShift Console Session: See Platform State
 
@@ -56,9 +75,9 @@ not substitute screenshots or generated examples.
 
 == Platform Proof Checkpoint
 
-You can move between the OpenShift Sandbox terminal, OpenShift Console, and
-OpenTelemetry using one namespace and one correlation identity, and you can
-explain what each surface proves.
+You can trace one agent request across its governed sandbox, OpenShift runtime,
+MCP boundary, Intel Xeon inference request, and human-review boundary using one
+correlation identity.
 
 [.next-nav]
 xref:02-trace-baseline.adoc[Next: Trace the Baseline ->]

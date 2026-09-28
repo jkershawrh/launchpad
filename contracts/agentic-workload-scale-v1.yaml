@@ -15,6 +15,30 @@ truth_boundary:
   lab_completion_accepts_source_state: live
   threshold_changes_require: [contract_revision, rationale, reviewer, approval_timestamp]
 
+agent_sandbox:
+  purpose: >-
+    Govern each agent's identity, tools, network, filesystem, resources, and
+    external effects independently of model output.
+  required_controls:
+    - dedicated_service_account
+    - least_privilege_rbac
+    - allowlisted_mcp_tools
+    - read_only_tools_by_default
+    - namespace_network_boundary
+    - restricted_security_context
+    - bounded_cpu_and_memory
+    - no_direct_model_action_authority
+    - allowed_and_denied_request_audit
+  optional_stronger_isolation:
+    technology: openshift_sandboxed_containers
+    runtime_class: kata
+    availability_must_be_observed: true
+    unavailable_must_not_be_presented_as_active: true
+    does_not_replace:
+      - tool_authorization
+      - deterministic_policy
+      - human_action_authority
+
 prerequisites:
   catalog_item: operate-agentic-blueprint
   required_state: certified

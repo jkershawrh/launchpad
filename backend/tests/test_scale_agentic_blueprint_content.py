@@ -34,7 +34,10 @@ def test_scale_content_follows_the_workload_journey_without_launchpad_seat_steps
     assert "Pressure | 3 | 10" in guide
     assert "25 participants" in guide
     assert "not a learner exercise" in guide
-    assert "OpenShift Sandbox terminal" in guide
+    assert "Agent Sandbox: Govern Every Execution" in guide
+    assert "OpenShift Sandboxed Containers" in guide
+    assert "kata" in guide
+    assert "does not replace tool authorization" in guide
     assert "OpenShift Console" in guide
     assert "OpenTelemetry trace" in guide
     assert "same journey ID" in guide

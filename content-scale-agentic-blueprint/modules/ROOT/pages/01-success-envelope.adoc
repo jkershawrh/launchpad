@@ -29,4 +29,4 @@ You can explain what success means, who retains authority, which metrics belong
 to one request, and which describe the shared inference endpoint.
 
 [.next-nav]
-xref:02-platform-proof.adoc[Next: Open the Red Hat Proof Surfaces ->]
+xref:02-platform-proof.adoc[Next: Prove the Governed Agent Runtime ->]

@@ -62,10 +62,10 @@ metadata:
     - policy_consistency
     - recovery_time
   learner_proof_surfaces:
-    - openshift_sandbox
     - openshift_terminal
     - openshift_console
     - opentelemetry_trace
+    - agent_execution_sandbox
   required_proof:
     - End-to-end correlation from request through human review.
     - Measured p50 and p95 journey and inference latency under declared load.

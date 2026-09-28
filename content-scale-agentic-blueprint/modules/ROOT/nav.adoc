@@ -1,7 +1,7 @@
 .Scale One Agentic Workload
 * xref:index.adoc[Welcome]
 * xref:01-success-envelope.adoc[1. Define Success]
-* xref:02-platform-proof.adoc[2. Open the Proof Surfaces]
+* xref:02-platform-proof.adoc[2. Prove the Governed Runtime]
 * xref:02-trace-baseline.adoc[3. Trace the Baseline]
 * xref:03-evaluate-baseline.adoc[4. Evaluate the Baseline]
 * xref:04-scale-workload.adoc[5. Scale the Workload]

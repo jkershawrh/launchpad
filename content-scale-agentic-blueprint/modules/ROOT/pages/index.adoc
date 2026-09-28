@@ -28,7 +28,7 @@ examples as live results. A completed 501 lab accepts only measurements marked
 |===
 | Step | Learner outcome | Target time
 | 1 | Declare success and the human-authority boundary | 10 min
-| 2 | Connect the OpenShift Sandbox, Console, and OpenTelemetry proof | 10 min
+| 2 | Prove the agent sandbox, OpenShift runtime, and OpenTelemetry path | 15 min
 | 3 | Trace one complete baseline journey | 15 min
 | 4 | Establish the immutable quality and policy baseline | 15 min
 | 5 | Scale replicas, concurrency, and inference pressure separately | 25 min
