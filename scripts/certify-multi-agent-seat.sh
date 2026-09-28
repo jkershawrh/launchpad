@@ -188,20 +188,32 @@ if [[ "$presentation_required" == "true" ]]; then
     and (.agent_names | length) == 3
   ' >/dev/null
 
-  stage="presentation-policy-rehearsal-boundary"
-  presentation_policy_http_status="$(
-    curl -sSk -o /dev/null -w '%{http_code}' "https://${presentation_host}/api/v1/policy"
+  stage="presentation-live-policy"
+  presentation_policy_response="$(
+    curl -fsSk -w $'\n%{http_code}' "https://${presentation_host}/api/v1/policy"
   )"
-  [[ "$presentation_policy_http_status" == "404" ]]
+  presentation_policy_http_status="${presentation_policy_response##*$'\n'}"
+  presentation_policy_body="${presentation_policy_response%$'\n'*}"
+  [[ "$presentation_policy_http_status" == "200" ]]
+  printf '%s' "$presentation_policy_body" | jq -e '
+    (.name | type == "string" and length > 0)
+    and (.approval_tools | type == "array")
+    and (.reviewer_profile | type == "string" and length > 0)
+    and .authority == "recommend_only"
+  ' >/dev/null
   grep -Fq '/api/v1/policy' <<<"$presentation_bundle"
   presentation_policy="$(
     jq -cn \
+      --argjson body "$presentation_policy_body" \
       --arg endpoint_http_status "$presentation_policy_http_status" \
       '{
-        mode: "rehearsal",
+        mode: "live",
         endpoint_http_status: ($endpoint_http_status | tonumber),
-        authority: "recommend_only",
-        presented_as_live: false
+        name: $body.name,
+        approval_tools: $body.approval_tools,
+        reviewer_profile: $body.reviewer_profile,
+        authority: $body.authority,
+        presented_as_live: true
       }'
   )"
 

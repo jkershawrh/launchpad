@@ -25,7 +25,7 @@ def test_operations_driver_selects_401_contract_without_duplicating_runtime_prob
     assert 'exec "$script_dir/certify-multi-agent-seat.sh" "$@"' in source
 
 
-def test_shared_driver_proves_live_presentation_and_truthful_policy_fallback():
+def test_shared_driver_proves_live_presentation_and_policy_endpoint():
     source = BASE_DRIVER.read_text()
 
     assert "PRESENTATION_REQUIRED" in source
@@ -36,9 +36,10 @@ def test_shared_driver_proves_live_presentation_and_truthful_policy_fallback():
     assert '"https://${presentation_host}/api/v1/workflow"' in source
     assert 'stage="presentation-navigation-bundle"' in source
     assert 'stage="presentation-mode-labels"' in source
-    assert 'stage="presentation-policy-rehearsal-boundary"' in source
-    assert '[[ "$presentation_policy_http_status" == "404" ]]' in source
-    assert 'presented_as_live: false' in source
+    assert 'stage="presentation-live-policy"' in source
+    assert '[[ "$presentation_policy_http_status" == "200" ]]' in source
+    assert '.authority == "recommend_only"' in source
+    assert 'presented_as_live: true' in source
     assert 'presentation: $presentation' in source
 
 
@@ -112,10 +113,10 @@ def test_401_certification_records_the_earned_twenty_five_seat_limit():
         item["path"]: item for item in spec["seat_probe"]["json_assertions"]
     }
     assert assertions["presentation.required"]["equals"] is True
-    assert assertions["presentation.policy.mode"]["equals"] == "rehearsal"
-    assert assertions["presentation.policy.endpoint_http_status"]["equals"] == 404
+    assert assertions["presentation.policy.mode"]["equals"] == "live"
+    assert assertions["presentation.policy.endpoint_http_status"]["equals"] == 200
     assert assertions["presentation.policy.authority"]["equals"] == "recommend_only"
-    assert assertions["presentation.policy.presented_as_live"]["equals"] is False
+    assert assertions["presentation.policy.presented_as_live"]["equals"] is True
     assert assertions["presentation.client_token_exposed"]["equals"] is False
     assert assertions["presentation.navigation_markers"]["equals"] == 5
     assert assertions["presentation.handoff.http_status"]["equals"] == 302

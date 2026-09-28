@@ -102,13 +102,13 @@ spec:
       - path: presentation.health.agents_discovered
         equals: 3
       - path: presentation.policy.mode
-        equals: rehearsal
+        equals: live
       - path: presentation.policy.endpoint_http_status
-        equals: 404
+        equals: 200
       - path: presentation.policy.authority
         equals: recommend_only
       - path: presentation.policy.presented_as_live
-        equals: false
+        equals: true
       - path: presentation.client_token_exposed
         equals: false
       - path: presentation.workflow.steps

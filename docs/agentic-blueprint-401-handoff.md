@@ -75,12 +75,12 @@ The live scale gates are encoded at
 runtime digest, including three consecutive 25-seat passing runs. Every gate runs
 `scripts/certify-operate-agentic-blueprint-seat.sh`, which inherits the
 certified 301 functional and isolation journey and additionally proves the
-presentation route, live health and workflow responses, explicitly labeled
-policy rehearsal boundary, human authority boundary, and absence of a
-browser-visible service token. The exact runtime image does not publish
-`/api/v1/policy`; certification therefore requires HTTP 404 at that path and
-requires the presentation to label the resulting fixture as rehearsal rather
-than presenting it as live evidence.
+presentation route, live health, workflow, and read-only policy responses,
+human authority boundary, and absence of a browser-visible service token. The
+runtime publishes an authenticated `/api/v1/policy` description through the
+presentation's same-origin server-side proxy. Certification requires HTTP 200,
+the fixed `recommend_only` authority, and complete policy metadata before the
+presentation may label that evidence live.
 
 Immutable runtime artifact:
 
@@ -184,7 +184,7 @@ Presentation visual checks: 9 passed at presentation, laptop, and rehearsal widt
 Runtime and presentation images: published publicly to GHCR for linux/amd64
 Runtime and presentation images: exact-digest pull and OCI source/revision labels verified
 Runtime and presentation images: GitHub build attestations verified
-Published runtime policy endpoint: intentionally absent; presentation fallback is labeled rehearsal
+Published runtime policy endpoint: live, authenticated through the same-origin server-side proxy, and constrained to recommend-only authority
 Presentation chart contract: digest-pinned, opt-in, same-origin API proxy, and namespace-owned
 git diff --check: clean
 ```
