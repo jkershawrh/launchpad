@@ -34,7 +34,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert re.fullmatch(r"[0-9a-f]{40}", metadata["workload_revision"])
     assert metadata["workload_revision"] != "5292234017bf3f538767e6b6a3c627d146fca086"
     assert metadata["runtime_source_revision"] == (
-        "de864e8a97c89d43138af338ca38df16bdf0577a"
+        "4b632337242817aa1698b7c27a3f4830ef72ba74"
     )
     assert metadata["workload_helm_values"]["image"]["digest"].startswith("sha256:")
     assert re.fullmatch(r"[0-9a-f]{40}", metadata["showroom_content_ref"])
@@ -68,7 +68,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["seat_pods"] == 3
     assert metadata["workload_helm_values"]["image"] == {
         "repository": "ghcr.io/jkershawrh/multi-agent-quickstart",
-        "digest": "sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea",
+        "digest": "sha256:5b98f0206d0223172ff0441dd3adaa221fa80a218b06248c67f2b710d8431b2e",
     }
     assert metadata["workload_helm_values"]["imagePullSecrets"] == [
         {"name": "launchpad-registry-pull"}

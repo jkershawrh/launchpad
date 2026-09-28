@@ -85,7 +85,7 @@ than presenting it as live evidence.
 Immutable runtime artifact:
 
 ```text
-ghcr.io/jkershawrh/multi-agent-quickstart@sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea
+ghcr.io/jkershawrh/multi-agent-quickstart@sha256:5b98f0206d0223172ff0441dd3adaa221fa80a218b06248c67f2b710d8431b2e
 ```
 
 Immutable presentation artifact:
@@ -158,9 +158,11 @@ The catalog item records these gates:
    twenty-five-seat zero-residue evidence attached to subsequent releases.
 
 The previous runtime digest earned 25-seat internal scale. Runtime source
-`de864e8a97c89d43138af338ca38df16bdf0577a` adds native correlation and is
+`4b632337242817aa1698b7c27a3f4830ef72ba74` adds native correlation and keeps
+the Kubernetes readiness boundary unauthenticated while workflow APIs remain
+protected. It is
 published as
-`ghcr.io/jkershawrh/multi-agent-quickstart@sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea`.
+`ghcr.io/jkershawrh/multi-agent-quickstart@sha256:5b98f0206d0223172ff0441dd3adaa221fa80a218b06248c67f2b710d8431b2e`.
 Because this is a new immutable release, the catalog ceiling is reset to one
 seat until the one-, five-, and 25-seat gates are earned again. Historical
 scale evidence remains valid only for the digest it tested.
@@ -219,8 +221,8 @@ GREEN-live runs (`r4`, `r5`, and `r6`), each with 25/25 participant probes,
 1. Review the 401 learning flow and commands for the intended participant
    persona.
 2. Build the Showroom package and visually inspect every page.
-3. Build, attest, deploy, and certify the native journey-correlation source at
-   `multi-agent-quickstart` commit `de864e8`. All six required correlation
+3. Deploy and certify the native journey-correlation source at
+   `multi-agent-quickstart` commit `4b63233`. All six required correlation
    fields are `GREEN-local`; the certified Flightpath image remains unchanged,
    so the live activation gate remains open.
 4. Add an independently addressable guardrail boundary so failure injection

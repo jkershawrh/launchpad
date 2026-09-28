@@ -116,7 +116,7 @@ metadata:
   workshop_node_required_labels: {}
   workload_repo: "https://github.com/rhpds/launchpad.git"
   workload_revision: d7c7e686d6513a77de685569b27863c9269c990f
-  runtime_source_revision: de864e8a97c89d43138af338ca38df16bdf0577a
+  runtime_source_revision: 4b632337242817aa1698b7c27a3f4830ef72ba74
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: deploy/workloads/multi-agent-seat
@@ -128,7 +128,7 @@ metadata:
       - name: launchpad-registry-pull
     image:
       repository: ghcr.io/jkershawrh/multi-agent-quickstart
-      digest: sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea
+      digest: sha256:5b98f0206d0223172ff0441dd3adaa221fa80a218b06248c67f2b710d8431b2e
     presentation:
       enabled: true
       image:
