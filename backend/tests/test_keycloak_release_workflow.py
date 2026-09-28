@@ -17,7 +17,8 @@ def test_keycloak_release_is_manual_exact_revision_and_immutable():
 
     assert "workflow_dispatch" in workflow[True]
     assert "expected_sha" in workflow[True]["workflow_dispatch"]["inputs"]
-    assert 'test "${{ github.sha }}" = "${{ inputs.expected_sha }}"' in source
+    assert 'test "$(git rev-parse HEAD)" = "${{ inputs.expected_sha }}"' in source
+    assert 'test "${{ github.sha }}" = "${{ inputs.expected_sha }}"' not in source
     assert "ghcr.io/${{ github.repository_owner }}/launchpad-keycloak" in source
     assert "digest_ref" in source
     assert "sha256:[0-9a-f]{64}" in source

@@ -35,7 +35,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "${{ github.sha }}" = "${{ inputs.expected_sha }}"
           test "$(git rev-parse HEAD)" = "${{ inputs.expected_sha }}"
           test -z "$(git status --porcelain)"
           [[ "${{ inputs.expected_sha }}" =~ ^[0-9a-f]{40}$ ]]
