@@ -53,7 +53,7 @@ runtime:
 
 certification:
   stage: content-candidate
-  max_workshop_seats: 25
+  max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5

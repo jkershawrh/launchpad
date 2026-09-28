@@ -36,7 +36,9 @@ def test_activation_audit_preserves_scale_and_activation_boundary():
     assert audit["certified_scale"]["consecutive_green_runs"] == 3
     assert audit["certified_scale"]["zero_residue"] is True
     assert catalog["status"] == "draft"
-    assert catalog["metadata"]["max_workshop_seats"] == 25
+    # The audit belongs to the prior immutable digest. The new correlation
+    # candidate correctly resets earned scale until it is recertified.
+    assert catalog["metadata"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["public_max_workshop_seats"] == 1
     assert len(catalog["metadata"]["activation_blockers"]) == 6
 

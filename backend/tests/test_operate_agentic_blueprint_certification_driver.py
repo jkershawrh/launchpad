@@ -99,15 +99,15 @@ def test_401_certification_records_the_earned_twenty_five_seat_limit():
     plan = build_certification_plan(
         contract,
         intake=intake,
-        seats=25,
+        seats=5,
         exposure_policy="internal",
     )
-    assert plan["current_certified_seats"] == 25
-    assert plan["next_promotion_target"] is None
-    assert plan["certification_override"] is False
+    assert plan["current_certified_seats"] == 1
+    assert plan["next_promotion_target"] == 5
+    assert plan["certification_override"] is True
     assert plan["execution_eligible"] is True
-    assert plan["probe_concurrency"] == 10
-    assert plan["required_consecutive_runs"] == 3
+    assert plan["probe_concurrency"] == 5
+    assert plan["required_consecutive_runs"] == 1
     assertions = {
         item["path"]: item for item in spec["seat_probe"]["json_assertions"]
     }
@@ -120,6 +120,10 @@ def test_401_certification_records_the_earned_twenty_five_seat_limit():
     assert assertions["presentation.navigation_markers"]["equals"] == 5
     assert assertions["presentation.handoff.http_status"]["equals"] == 302
     assert assertions["presentation.workflow.errors"]["equals"] == 0
+    assert assertions["correlation.fields_present"]["equals"] is True
+    assert assertions["correlation.stable"]["equals"] is True
+    assert assertions["correlation.unique_event_ids"]["equals"] is True
+    assert assertions["correlation.response_matches"]["equals"] is True
     assert assertions["intel_xeon_inference.configured_model"]["equals"] == (
         "granite-3.2-8b-tools"
     )

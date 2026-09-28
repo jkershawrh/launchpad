@@ -7,11 +7,14 @@ expected_cluster="${2:?usage: certify-multi-agent-seat.sh <namespace> <cluster-i
 : "${CONTROL_KUBECONFIG:=$KUBECONFIG}"
 showroom_marker="${SHOWROOM_MARKER:-Build Multi-Agent AI Systems}"
 presentation_required="${PRESENTATION_REQUIRED:-false}"
+correlation_required="${CORRELATION_REQUIRED:-false}"
 
-if [[ "$presentation_required" != "true" && "$presentation_required" != "false" ]]; then
-  echo "PRESENTATION_REQUIRED must be true or false" >&2
-  exit 64
-fi
+for boolean_setting in presentation_required correlation_required; do
+  if [[ "${!boolean_setting}" != "true" && "${!boolean_setting}" != "false" ]]; then
+    echo "${boolean_setting^^} must be true or false" >&2
+    exit 64
+  fi
+done
 
 # Keep the live target explicit even for commands nested inside this driver.
 # ``command`` bypasses this wrapper and invokes the real OpenShift CLI.
@@ -252,7 +255,7 @@ printf '%s' "$readiness" | jq -e '
 stage="multi-agent-workflow"
 journey="$(
   oc_exec_json orchestrator \
-    'import os,httpx,json; r=httpx.post("http://127.0.0.1:8000/api/v1/workflow",headers={"Authorization":"Bearer "+os.environ["AGENT_AUTH_TOKEN"]},json={"query":"Look up record REC-001 and recommend next steps","workflow_type":"comprehensive"},timeout=500); r.raise_for_status(); x=r.json(); print(json.dumps({"agents":x.get("agents_involved"),"steps":len(x.get("steps",[])),"mcp_steps":[s["agent"] for s in x.get("steps",[]) if "[MCP tool data retrieved]" in s.get("result","")],"errors":[s["result"] for s in x.get("steps",[]) if s.get("result","").startswith("Error:")],"latency_ms":x.get("total_latency_ms")}))'
+    'import os,httpx,json; ids={"journey_id":"cert-journey","investigation_id":"cert-investigation","request_id":"cert-request"}; r=httpx.post("http://127.0.0.1:8000/api/v1/workflow/stream",headers={"Authorization":"Bearer "+os.environ["AGENT_AUTH_TOKEN"]},json={"query":"Look up record REC-001 and recommend next steps","workflow_type":"comprehensive",**ids},timeout=500); r.raise_for_status(); events=[json.loads(line) for line in r.text.splitlines() if line.strip()]; x=events[-1]["response"]; required=("journey_id","investigation_id","request_id","event_id","occurred_at","component_id"); correlation={"required":True,"fields_present":all(all(e.get(key) for key in required) for e in events),"stable":all(all(e.get(key)==value for e in events) for key,value in ids.items()),"unique_event_ids":len({e.get("event_id") for e in events})==len(events),"response_matches":all(x.get(key)==value for key,value in ids.items()),"event_count":len(events),"component_ids":sorted({e.get("component_id") for e in events})}; print(json.dumps({"agents":x.get("agents_involved"),"steps":len(x.get("steps",[])),"mcp_steps":[s["agent"] for s in x.get("steps",[]) if "[MCP tool data retrieved]" in s.get("result","")],"errors":[s["result"] for s in x.get("steps",[]) if s.get("result","").startswith("Error:")],"latency_ms":x.get("total_latency_ms"),"correlation":correlation}))'
 )"
 printf '%s' "$journey" | jq -e '
   .agents == ["research", "analyst", "executor"]
@@ -260,6 +263,16 @@ printf '%s' "$journey" | jq -e '
   and (.mcp_steps | length) == 3
   and (.errors | length) == 0
 ' >/dev/null
+if [[ "$correlation_required" == "true" ]]; then
+  printf '%s' "$journey" | jq -e '
+    .correlation.required == true
+    and .correlation.fields_present == true
+    and .correlation.stable == true
+    and .correlation.unique_event_ids == true
+    and .correlation.response_matches == true
+    and .correlation.component_ids == ["multi-agent-orchestrator"]
+  ' >/dev/null
+fi
 
 stage="participant-ui-workflow"
 participant_ui_journey="$(
@@ -435,6 +448,7 @@ jq -cn \
     cluster_ref: $cluster,
     readiness: $readiness,
     multi_agent_journey: $journey,
+    correlation: $journey.correlation,
     participant_ui_journey: $participant_ui_journey,
     learner_policy: $learner_policy,
     guardrails: $guardrails,

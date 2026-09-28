@@ -19,7 +19,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["learning_stage"] == "Operate"
     assert metadata["journey_role"] == "core"
     assert metadata["shared_blueprint"] == "red-hat-intel-agentic-v1"
-    assert metadata["max_workshop_seats"] == 25
+    assert metadata["max_workshop_seats"] == 1
     assert metadata["public_max_workshop_seats"] == 1
     assert metadata["promotion_sequence"] == [1, 5, 25]
     assert metadata["package_base_commit"] == (
@@ -33,6 +33,9 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["namespace_slug"] == "agentic-ops"
     assert re.fullmatch(r"[0-9a-f]{40}", metadata["workload_revision"])
     assert metadata["workload_revision"] != "5292234017bf3f538767e6b6a3c627d146fca086"
+    assert metadata["runtime_source_revision"] == (
+        "de864e8a97c89d43138af338ca38df16bdf0577a"
+    )
     assert metadata["workload_helm_values"]["image"]["digest"].startswith("sha256:")
     assert re.fullmatch(r"[0-9a-f]{40}", metadata["showroom_content_ref"])
     assert metadata["source_content_revision"] == metadata["showroom_content_ref"]
@@ -64,8 +67,8 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert presentation_tab["source"] == "workload.route.presentation"
     assert metadata["seat_pods"] == 3
     assert metadata["workload_helm_values"]["image"] == {
-        "repository": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart",
-        "digest": "sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661",
+        "repository": "ghcr.io/jkershawrh/multi-agent-quickstart",
+        "digest": "sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea",
     }
     assert metadata["workload_helm_values"]["imagePullSecrets"] == [
         {"name": "launchpad-registry-pull"}

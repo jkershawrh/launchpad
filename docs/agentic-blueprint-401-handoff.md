@@ -71,8 +71,8 @@ The catalog pins that chart contract to Launchpad commit
 
 The live scale gates are encoded at
 `certification/catalog/operate-agentic-blueprint.yaml`. One-, five-, and
-25-seat internal Flightpath certification are complete, including three
-consecutive 25-seat passing runs. Every gate runs
+25-seat internal Flightpath certification are complete for the prior immutable
+runtime digest, including three consecutive 25-seat passing runs. Every gate runs
 `scripts/certify-operate-agentic-blueprint-seat.sh`, which inherits the
 certified 301 functional and isolation journey and additionally proves the
 presentation route, live health and workflow responses, explicitly labeled
@@ -85,7 +85,7 @@ than presenting it as live evidence.
 Immutable runtime artifact:
 
 ```text
-quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+ghcr.io/jkershawrh/multi-agent-quickstart@sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea
 ```
 
 Immutable presentation artifact:
@@ -156,6 +156,14 @@ The catalog item records these gates:
 6. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
 7. Keep the immutable content provenance and completed one-, five-, and
    twenty-five-seat zero-residue evidence attached to subsequent releases.
+
+The previous runtime digest earned 25-seat internal scale. Runtime source
+`de864e8a97c89d43138af338ca38df16bdf0577a` adds native correlation and is
+published as
+`ghcr.io/jkershawrh/multi-agent-quickstart@sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea`.
+Because this is a new immutable release, the catalog ceiling is reset to one
+seat until the one-, five-, and 25-seat gates are earned again. Historical
+scale evidence remains valid only for the digest it tested.
 
 ## Validation already completed
 

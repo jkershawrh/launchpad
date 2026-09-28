@@ -77,6 +77,16 @@ spec:
         equals: 3
       - path: multi_agent_journey.errors
         length_equals: 0
+      - path: correlation.required
+        equals: true
+      - path: correlation.fields_present
+        equals: true
+      - path: correlation.stable
+        equals: true
+      - path: correlation.unique_event_ids
+        equals: true
+      - path: correlation.response_matches
+        equals: true
       - path: presentation.required
         equals: true
       - path: presentation.root_http_status

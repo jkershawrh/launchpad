@@ -49,7 +49,7 @@ metadata:
   onboarding_managed: false
   certification_stage: content-candidate
   certification_proof_contract: certification/catalog/operate-agentic-blueprint.yaml
-  max_workshop_seats: 25
+  max_workshop_seats: 1
   public_max_workshop_seats: 1
   promotion_sequence:
     - 1
@@ -116,6 +116,7 @@ metadata:
   workshop_node_required_labels: {}
   workload_repo: "https://github.com/rhpds/launchpad.git"
   workload_revision: d7c7e686d6513a77de685569b27863c9269c990f
+  runtime_source_revision: de864e8a97c89d43138af338ca38df16bdf0577a
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: deploy/workloads/multi-agent-seat
@@ -126,8 +127,8 @@ metadata:
     imagePullSecrets:
       - name: launchpad-registry-pull
     image:
-      repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
-      digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+      repository: ghcr.io/jkershawrh/multi-agent-quickstart
+      digest: sha256:72bf1862421846f8d0ed1cd56e5b10d4241d009e9624dcfd948dd42e59ec01ea
     presentation:
       enabled: true
       image:
