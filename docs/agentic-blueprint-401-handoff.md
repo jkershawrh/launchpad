@@ -60,7 +60,7 @@ Files:
 The candidate reuses the digest-pinned `multi-agent-seat` chart and workload
 image from `multi-agent-quickstart`. It remains `status: draft` and is not
 ready for participant ordering. Its current immutable runtime has earned an
-internal certification limit of five seats while its public limit remains one
+internal certification limit of 25 seats while its public limit remains one
 seat.
 
 The chart now has an opt-in presentation runtime contract. When the 401
@@ -166,9 +166,8 @@ with its seat-scoped key. It is
 published as
 `ghcr.io/jkershawrh/multi-agent-quickstart@sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86`.
 Because this is a new immutable release, historical scale evidence remains
-valid only for the digest it tested. This release has now earned its one- and
-five-seat gates; the 25-seat gate still requires three consecutive passing
-runs.
+valid only for the digest it tested. This release has now earned its one-,
+five-, and 25-seat gates, including three consecutive passing 25-seat runs.
 
 ## Validation already completed
 
@@ -191,7 +190,7 @@ Presentation chart contract: digest-pinned, opt-in, same-origin API proxy, and n
 git diff --check: clean
 ```
 
-Flightpath one-seat and five-seat live certification are complete for runtime
+Flightpath one-seat, five-seat, and 25-seat live certification are complete for runtime
 digest `sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86`.
 The five-seat run created one workshop with five independently scoped
 namespaces, waited for the common readiness barrier, and ran all five
@@ -210,6 +209,18 @@ scored 100/100 without disabling TLS verification. Evidence:
 - `evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-one-seat-r2-20260928.json`
 - `evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-five-seat-r1-20260928.json`
 
+The current authenticated and correlated runtime then completed three
+consecutive 25-seat GREEN-live runs. Runs `r2`, `r3`, and `r4` each passed all
+25 participant probes and scored 100/100. Their readiness times were 1251.055,
+1304.43, and 1231.743 seconds; cleanup completed in 171.795, 171.974, and
+171.869 seconds respectively. Every run revoked its seat model keys and left
+zero namespaces, Routes, RoleBindings, Secrets, PVCs, PVs, or Argo CD
+Applications.
+
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-twenty-five-seat-r2-20260928.json`
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-twenty-five-seat-r3-20260928.json`
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-twenty-five-seat-r4-20260928.json`
+
 The previous immutable runtime's 25-seat gate is also retained as historical
 evidence. A concurrent terminal-scope check exposed a
 transient OpenShift API failure and was first preserved as RED evidence. A
@@ -227,8 +238,8 @@ GREEN-live runs (`r4`, `r5`, and `r6`), each with 25/25 participant probes,
 1. Review the 401 learning flow and commands for the intended participant
    persona.
 2. Build the Showroom package and visually inspect every page.
-3. Run three consecutive 25-seat certifications for the current authenticated,
-   correlated runtime before raising its internal ceiling above five.
+3. Preserve the current authenticated runtime and repeat the scale gate after
+   any workload, presentation, chart, model-route, or probe-contract change.
 4. Add an independently addressable guardrail boundary so failure injection
    can be tested without terminating the compact workload pod.
 5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with

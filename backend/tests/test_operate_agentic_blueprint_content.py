@@ -19,7 +19,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["learning_stage"] == "Operate"
     assert metadata["journey_role"] == "core"
     assert metadata["shared_blueprint"] == "red-hat-intel-agentic-v1"
-    assert metadata["max_workshop_seats"] == 5
+    assert metadata["max_workshop_seats"] == 25
     assert metadata["public_max_workshop_seats"] == 1
     assert metadata["promotion_sequence"] == [1, 5, 25]
     assert metadata["package_base_commit"] == (
@@ -74,7 +74,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         {"name": "launchpad-registry-pull"}
     ]
     assert metadata["activation_blockers"]
-    assert metadata["certification_stage"] == "five-seat-certified"
+    assert metadata["certification_stage"] == "twenty-five-seat-certified"
     assert len(metadata["activation_blockers"]) == 4
     assert not any(
         "same-origin" in blocker or "correlation fields" in blocker

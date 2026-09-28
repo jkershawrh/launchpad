@@ -788,12 +788,12 @@
         "evidence/runs/catalog-intake-readme-source/manifest.json",
         "evidence/runs/catalog-intake-review-journey/manifest.json",
         "evidence/runs/catalog/operate-agentic-blueprint-activation-gate-audit-20260928.json",
-        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r4-20260928.json",
-        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r5-20260928.json",
-        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-twenty-five-seat-r6-20260928.json",
+        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-twenty-five-seat-r2-20260928.json",
+        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-twenty-five-seat-r3-20260928.json",
+        "evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-twenty-five-seat-r4-20260928.json",
         "evidence/runs/convergence/operate-agentic-blueprint-flightpath-preflight-blocked-20260927.json"
       ],
-      "note": "The deterministic intake now includes the Intel AI 401 candidate through a complete catalog package, digest-pinned runtime and presentation, Flightpath deployment, one- and five-seat certification, and three consecutive 25-seat GREEN-live internal runs with zero residue. This proves the generated candidate can advance through measured scale while remaining fail-closed: the item is still draft, public capacity remains one seat, and six capability activation plus two organization-ownership production gates remain open in the machine-readable activation audit. The reusable intake task remains GREEN-local until another independent Quickstart completes the same end-to-end path and ownership/support automation is proven."
+      "note": "The deterministic intake now includes the Intel AI 401 candidate through a complete catalog package, digest-pinned runtime and presentation, Flightpath deployment, one- and five-seat certification, and three consecutive 25-seat GREEN-live internal runs with zero residue. This proves the generated candidate can advance through measured scale while remaining fail-closed: the item is still draft, public capacity remains one seat, and four capability activation plus two organization-ownership production gates remain open. The reusable intake task remains GREEN-local until another independent Quickstart completes the same end-to-end path and ownership/support automation is proven."
     },
     "LP-T099": {
       "state": "green-local",

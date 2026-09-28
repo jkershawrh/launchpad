@@ -47,9 +47,9 @@ metadata:
   operator_workshop: true
   content_only: false
   onboarding_managed: false
-  certification_stage: five-seat-certified
+  certification_stage: twenty-five-seat-certified
   certification_proof_contract: certification/catalog/operate-agentic-blueprint.yaml
-  max_workshop_seats: 5
+  max_workshop_seats: 25
   public_max_workshop_seats: 1
   promotion_sequence:
     - 1
