@@ -33,7 +33,7 @@ sources:
     start_path: content-operate-agentic-blueprint
   workload:
     repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: a59984f4c45e260bbe9e786ff55057c59f307fda
+    revision: b7c69bb4fc5b3e9958403ad600b12c151ae831f0
     deploy_path: deploy/workloads/multi-agent-seat
 
 runtime:
