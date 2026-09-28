@@ -9,9 +9,10 @@ spec:
   governing_contract: contracts/agentic-workload-scale-v1.yaml
   evaluation_set: evaluation/agentic-scale-v1.yaml
   scorer: scripts/agentic_scale_score.py
+  adapter: scripts/agentic_scale_adapter.py
   profiles: [baseline, sustained, pressure]
   execution_blockers:
     - The 401 prerequisite is not yet certified.
-    - The live workload adapter is not implemented.
+    - The runtime proof envelope does not yet provide complete evaluated policy and evidence fields required by the fail-closed adapter.
     - Approved correlated traces and Intel Xeon telemetry are not connected.
     - Safe fault drivers and recovery assertions are not implemented.
