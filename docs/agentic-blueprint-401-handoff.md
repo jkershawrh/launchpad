@@ -211,8 +211,10 @@ GREEN-live runs (`r4`, `r5`, and `r6`), each with 25/25 participant probes,
 1. Review the 401 learning flow and commands for the intended participant
    persona.
 2. Build the Showroom package and visually inspect every page.
-3. Implement native journey correlation in the canonical multi-agent workload
-   rather than synthesizing it in the guide.
+3. Build, attest, deploy, and certify the native journey-correlation source at
+   `multi-agent-quickstart` commit `de864e8`. All six required correlation
+   fields are `GREEN-local`; the certified Flightpath image remains unchanged,
+   so the live activation gate remains open.
 4. Add an independently addressable guardrail boundary so failure injection
    can be tested without terminating the compact workload pod.
 5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with

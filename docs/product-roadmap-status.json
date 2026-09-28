@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-28T16:18:40Z",
+  "updated_at": "2026-09-28T16:22:57Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -276,13 +276,15 @@
     "LP-T095": {
       "state": "green-local",
       "methods": {
-        "cdd": "green-local"
+        "cdd": "green-local",
+        "tdd": "green-local"
       },
       "evidence": [
         "docs/product-delivery-roadmap.md",
-        "docs/stargate-product-telemetry-contract.md"
+        "docs/stargate-product-telemetry-contract.md",
+        "evidence/runs/catalog/operate-agentic-blueprint-correlation-green-local-20260928.json"
       ],
-      "note": "The privacy-safe guided-step event family, correlation fields, execution semantics, and prohibited payloads are specified. Producer, durable delivery, consumer, journey, and live-scale proof remain open."
+      "note": "The privacy-safe guided-step event family and correlation contract are specified, and the canonical multi-agent source now emits all six required correlation fields with generated-or-preserved identities under unit, contract, integration, and pre-commit proof at commit de864e8. The certified Flightpath image remains unchanged. Image publication, durable delivery, consumer receipts, learner-visible correlation, and repeated live-scale certification remain open, so this task stays GREEN-local."
     },
     "LP-T008": {
       "state": "green-local",

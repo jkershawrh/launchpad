@@ -1,0 +1,44 @@
+{
+  "schema": "launchpad.redhat.com/catalog-capability-proof/v1",
+  "catalog_item_id": "operate-agentic-blueprint",
+  "capability": "agentic-journey-telemetry-v1-correlation",
+  "stage": "GREEN-local",
+  "source": {
+    "repository": "https://github.com/jkershawrh/multi-agent-quickstart.git",
+    "branch": "codex/launchpad-401-onboarding",
+    "commit": "de864e8",
+    "full_commit": "de864e8a97c89d43138af338ca38df16bdf0577a"
+  },
+  "contract": "contracts/agentic-journey-telemetry-v1.yaml",
+  "implemented_fields": [
+    "journey_id",
+    "investigation_id",
+    "request_id",
+    "event_id",
+    "occurred_at",
+    "component_id"
+  ],
+  "compatibility": {
+    "caller_supplied_ids_preserved": true,
+    "missing_ids_generated_server_side": true,
+    "server_run_id_remains_distinct": true,
+    "existing_case_id_preserved": true,
+    "stream_and_non_stream_routes_supported": true
+  },
+  "validation": {
+    "unit_contract_and_integration_tests": {
+      "passed": 91,
+      "skipped": 15,
+      "failed": 0
+    },
+    "pre_commit": "passed",
+    "python_compile": "passed"
+  },
+  "deployment": {
+    "image_built": false,
+    "flightpath_deployed": false,
+    "catalog_digest_changed": false,
+    "live_certification_run": false
+  },
+  "release_boundary": "This proves the correlation producer locally. It does not change the certified Flightpath image and does not close the RED live activation gate until a new immutable image is built, deployed to a new candidate revision, and the full one-, five-, and 25-seat certification sequence is repeated."
+}
