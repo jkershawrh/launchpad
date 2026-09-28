@@ -17,7 +17,7 @@
         "scripts/tests/test_backend_release_workflow.py"
       ],
       "risk_flags": [],
-      "sha256": "3a6cef5efb658b6364d427537a4f0b95fbce2812e6ad1698f4b30e1327c3a102"
+      "sha256": "8dcdb5ec90a31f39486d2903ad950216726ed35fc73c63677984c9d94b666005"
     },
     {
       "area": ".github",
@@ -45,7 +45,7 @@
         "scripts/tests/test_write_ci_test_receipt.py"
       ],
       "risk_flags": [],
-      "sha256": "4f5ada820b7ffcc581e7ce7f0b0a7ceec0a21ddef7464b9fc603e380dd51e8ca"
+      "sha256": "40af7582c2efcbcb66570ea4237761e49470f3d34b18d56c40346bcbdc7243d1"
     },
     {
       "area": ".github",
@@ -76,6 +76,25 @@
       "environment_markers": [],
       "kinds": [],
       "owner": "quality-engineering-owner",
+      "path": ".github/workflows/keycloak-release.yml",
+      "proposed_disposition": "preserve-test-or-delivery-input",
+      "protection_class": "test-or-delivery-input",
+      "reference_count": 2,
+      "referenced_by": [
+        "backend/tests/test_keycloak_release_workflow.py",
+        "docs/flightpath-keycloak-release-runbook.md"
+      ],
+      "risk_flags": [],
+      "sha256": "0e098b2dde9e3f7d3d137c0f30039c664ee5c54a70fc0d42aae3ef83f7c0bb88"
+    },
+    {
+      "area": ".github",
+      "classification": "ci",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "quality-engineering-owner",
       "path": ".github/workflows/portal-release.yml",
       "proposed_disposition": "preserve-test-or-delivery-input",
       "protection_class": "test-or-delivery-input",
@@ -84,7 +103,7 @@
         "scripts/tests/test_portal_release_workflow.py"
       ],
       "risk_flags": [],
-      "sha256": "400a7930d4ae74f7a7ce74da21fce7c16cade7dee95733087a294112bd949227"
+      "sha256": "fd090036edbac841b8014eb8cb8b99eb0143a80ef5396b3209cbe689bfc6bf03"
     },
     {
       "area": ".github",
@@ -211,16 +230,17 @@
       "path": "catalog-onboarding/agent-reliability.yaml",
       "proposed_disposition": "preserve-release-input",
       "protection_class": "catalog-release-input",
-      "reference_count": 3,
+      "reference_count": 4,
       "referenced_by": [
         "catalog/agent-reliability/catalog-item.yaml",
+        "deploy/launchpad/overlays/flightpath-candidate/agent-reliability.catalog-item.yaml",
         "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json",
         "evidence/runs/catalog-intake-agent-reliability/discovery-9f1cb2e.json"
       ],
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "0cf9bdcfa97b02d793d9d7ef71db23c42468ccf6e45a0f6493824866f55b0911"
+      "sha256": "b8cbe7c76ad27648cab8e9486fefb889474c66b70ffddb8670682141ddc3b299"
     },
     {
       "area": "catalog-onboarding",
@@ -250,7 +270,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "3830d67154d9a3d65c96cfbd8f00115f7f76a77ba0552823222be6149ac60376"
+      "sha256": "7bd20e7ead305e7663f4491d1d85bac4919c9ea19cef150a999bd1cae64085d2"
     },
     {
       "area": "catalog-onboarding",
@@ -280,7 +300,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "327985fbd9c428d4131e4b8299dedc9476c8ad2854007f4f52de367402af6457"
+      "sha256": "60407a3afa3e1882a1ffe341164463d8f74ca15cd737458a48be6bf65312eb08"
     },
     {
       "area": "catalog-onboarding",
@@ -313,7 +333,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "dafa33b1e3468a15218a74b63e264d33a7181ac6d021f44e657c3408cb78f949"
+      "sha256": "e4668899339bb7d186d9222b2151adf8f6f761edfea70c651f60346f64edf379"
     },
     {
       "area": "catalog-onboarding",
@@ -347,7 +367,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "51bab1f1acf505bea91651b772f2bf8a234aa579027dc4e17507a9c58dc8cee1"
+      "sha256": "cd5b0f43d6c716efe7df63cc02456d4375c5b194af37433fc0aef11fb1382bd4"
     },
     {
       "area": "catalog-onboarding",
@@ -397,14 +417,16 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "f41d49d0fd4b324d47b2cf089a3746b047de2b10d40231c7f26a568ee6f7351a"
+      "sha256": "23a3b8b55dcadfe1859dbea985fba76f023e84a4e7de59bbfee2da0d217e198e"
     },
     {
       "area": "catalog-onboarding",
       "classification": "generated-intake",
       "deletion_eligible": false,
       "dependency_flags": [],
-      "environment_markers": [],
+      "environment_markers": [
+        "flightpath"
+      ],
       "kinds": [],
       "owner": "catalog-release-owner",
       "path": "catalog-onboarding/network-operations-agent.yaml",
@@ -416,9 +438,10 @@
         "deploy/launchpad/overlays/flightpath-candidate/network-operations-agent.catalog-item.yaml"
       ],
       "risk_flags": [
-        "status-field-review-required"
+        "status-field-review-required",
+        "environment-specific"
       ],
-      "sha256": "f4a6950cfb46c2311cab859d67c6fba4cad705fb5c12dad8045b9fe3db165340"
+      "sha256": "32a4b5f9c521ad297796d516bfb01bb3bf4d8868ebb100545b8bfe23cb43f4e9"
     },
     {
       "area": "catalog",
@@ -436,7 +459,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "2b4cc5a305379caf501a9dc5d281f7e447179c290315947839dffaeb27ed5942"
+      "sha256": "7ac01ec2dc506dc5961114fe0b142994c7a46d2d77ef22c9ba301c496bc51cef"
     },
     {
       "area": "catalog",
@@ -465,7 +488,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "4b99cde86c6eff35e9e86fcd4321b56007b9b41e4c911eb72ccaec7da20b5575"
+      "sha256": "267f49e5ae438c1b85c58c8f292c8351b025b3267818432c8348b1b0540c43d7"
     },
     {
       "area": "catalog",
@@ -488,7 +511,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "4242624c833e5bcfe9c9872277dd6e16791e7bffa94e4967eac3c220f695451a"
+      "sha256": "f447139be3fca944f7a20ae1cc257f7d2bc736130fe095648a6a2a793eab3536"
     },
     {
       "area": "catalog",
@@ -508,7 +531,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "8becf83e0a5ffb5045e65069bd2fadbebbaf52d4338894ccb790647b83b41a06"
+      "sha256": "025864123c98914df907b5e262f6f4998d3e62b7547033ccaaadb92f67bad598"
     },
     {
       "area": "catalog",
@@ -530,7 +553,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "66e6fdf73eab4e4aa29df314f00ca23f24f237c37c3f5ce8d65bfcf180369425"
+      "sha256": "0a8feee109b062102c1075e965ceead28c5194e7e4b2779ddb0e12ed86cb757c"
     },
     {
       "area": "catalog",
@@ -553,7 +576,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "cb7fe2e43df3982fd1eca5fb696238dca643ad67c72480ca71bb3cbeb30f6b5d"
+      "sha256": "8df81f20fd8f600c3241e9c327f6e9719f0b0bf12bd24efcb3c2569207144a42"
     },
     {
       "area": "catalog",
@@ -591,7 +614,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "0c0f171b2afb4041f2fdef8b5249140848a46dbbd01e068956fff1b9a2dc05d0"
+      "sha256": "014b6e938931fada9bd8407d619d6f8dd03bf7b5011d1d3d31364a3d68d8e1cc"
     },
     {
       "area": "catalog",
@@ -618,7 +641,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "7ffd61596f17beb6cbe75b4ed7d16fdb9b03969169922ffda9460d77a9f920a8"
+      "sha256": "638979f95c9ceb5a55838d92c7f0016f5ee23ce24c38b3ae6cc7c33fb9863701"
     },
     {
       "area": "catalog",
@@ -649,7 +672,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "7f55d5d459b366941009c68b10eab2d7716cb644319b615b23baa0b081fef40b"
+      "sha256": "d51a960d119a11fe1ec9cc6b6a2b67cf9f9b3b1003c22f21887fde765ec475aa"
     },
     {
       "area": "catalog",
@@ -698,7 +721,7 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "d2dc5822d61d138309328e00e67e6404614b0cefdc9536bf6ebef0ea0ea7086a"
+      "sha256": "1b94ed9d161eb48d75dafd5ddb975d501898cc2a435a4f7e8c33512535f99761"
     },
     {
       "area": "catalog",
@@ -716,7 +739,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "4862051c547d7bc5c0bdb651b8e498c329c60510459d4a719865f472ee87fcb5"
+      "sha256": "309cb81829d450bce3e4ddd6a84321b3433ca4a1e2fe8b7318f94c5943a3bfa1"
     },
     {
       "area": "catalog",
@@ -742,7 +765,33 @@
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "8085ac83a06981d22d0bdef8a5f794c1b005ae19cbf48025e4ff5bf4fce670df"
+      "sha256": "34dda62937b1749c22c20283d1b79eeda2566d052d2ac87ac4418c5bca5b7c8a"
+    },
+    {
+      "area": "catalog",
+      "classification": "catalog-source",
+      "deletion_eligible": false,
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "catalog-release-owner",
+      "path": "catalog/operate-agentic-blueprint/catalog-item.yaml",
+      "proposed_disposition": "preserve-release-input",
+      "protection_class": "catalog-release-input",
+      "reference_count": 5,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_operate_agentic_blueprint_content.py",
+        "docs/agentic-blueprint-401-handoff.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "status-field-review-required"
+      ],
+      "sha256": "4754e9fe2277408c10281b5120aec4f3fbdacd50fe202486f1d59906cbce81bf"
     },
     {
       "area": "catalog",
@@ -762,7 +811,7 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "32aa3c382cd1ea77e80df98679ae96963d261cb11488d5175c93aa4439eabe06"
+      "sha256": "40a9b591dfb370aff47fba93652a013c3d999f98b71c3be6d37e119e1c995597"
     },
     {
       "area": "catalog",
@@ -782,7 +831,31 @@
       "risk_flags": [
         "status-field-review-required"
       ],
-      "sha256": "50d074fa3beb59f67d9229943bfb30827b954a3a697a60434e3639e253c49e4f"
+      "sha256": "7b26cbfbf5a38bd6f16039e31487345749d872a8f564210adaff50308f0c6214"
+    },
+    {
+      "area": "certification",
+      "classification": "evidence",
+      "deletion_eligible": false,
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [],
+      "owner": "evidence-governance-owner",
+      "path": "certification/candidates/flightpath-candidate-04-compatible-rollback.yaml",
+      "proposed_disposition": "preserve-history",
+      "protection_class": "immutable-evidence",
+      "reference_count": 1,
+      "referenced_by": [
+        "certification/releases/flightpath-candidate-04/bundle.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "8b81d8eea8ce892f4612c7dc9a26cba9bdfe41d5bc503428edbcca82ef55dbc7"
     },
     {
       "area": "certification",
@@ -852,6 +925,31 @@
         "environment-specific"
       ],
       "sha256": "8e8b502f8dbd3d69cb9ae446afae41afc069135997cca7d78f3d34b5ff3fd537"
+    },
+    {
+      "area": "certification",
+      "classification": "evidence",
+      "deletion_eligible": false,
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [],
+      "owner": "evidence-governance-owner",
+      "path": "certification/candidates/staging-candidate-20260925-04.yaml",
+      "proposed_disposition": "preserve-history",
+      "protection_class": "immutable-evidence",
+      "reference_count": 2,
+      "referenced_by": [
+        "certification/releases/flightpath-candidate-04/bundle.yaml",
+        "scripts/tests/test_validate_convergence_candidate.py"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "a0ca1b9fd8ebba4df017b9f88c000f1ccef13aebc389549a51eea6ed495d0804"
     },
     {
       "area": "certification",
@@ -971,6 +1069,35 @@
       "classification": "evidence",
       "deletion_eligible": false,
       "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "CatalogCertification"
+      ],
+      "owner": "evidence-governance-owner",
+      "path": "certification/catalog/operate-agentic-blueprint.yaml",
+      "proposed_disposition": "preserve-history",
+      "protection_class": "immutable-evidence",
+      "reference_count": 6,
+      "referenced_by": [
+        "admin/public/roadmap/index.html",
+        "backend/tests/test_operate_agentic_blueprint_certification_driver.py",
+        "catalog/operate-agentic-blueprint/catalog-item.yaml",
+        "docs/agentic-blueprint-401-handoff.md",
+        "docs/product-roadmap-dashboard.html",
+        "docs/product-roadmap-status.json"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "26472256d1ac17f5d9ea83e4cc9a601af65a047dfba37700be12029872ed061c"
+    },
+    {
+      "area": "certification",
+      "classification": "evidence",
+      "deletion_eligible": false,
+      "dependency_flags": [],
       "environment_markers": [],
       "kinds": [
         "ConvergenceMatrix"
@@ -1014,6 +1141,52 @@
         "environment-specific"
       ],
       "sha256": "4109e9c85186809d4e6297b7c037f129acbccf5336421ae2b31118026aa0e736"
+    },
+    {
+      "area": "certification",
+      "classification": "evidence",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [],
+      "owner": "evidence-governance-owner",
+      "path": "certification/releases/flightpath-candidate-04/bundle.yaml",
+      "proposed_disposition": "preserve-history",
+      "protection_class": "immutable-evidence",
+      "reference_count": 2,
+      "referenced_by": [
+        "docs/flightpath-candidate-04-canary-runbook.md",
+        "scripts/tests/test_validate_flightpath_promotion_bundle.py"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "ead7ed0a877412fb7054b6af72fa18f7e4998d974f48f21657df175f43a89257"
+    },
+    {
+      "area": "certification",
+      "classification": "evidence",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [],
+      "owner": "evidence-governance-owner",
+      "path": "certification/releases/flightpath-candidate-04/canary-plan.yaml",
+      "proposed_disposition": "preserve-history",
+      "protection_class": "immutable-evidence",
+      "reference_count": 1,
+      "referenced_by": [
+        "certification/releases/flightpath-candidate-04/bundle.yaml"
+      ],
+      "risk_flags": [
+        "status-field-review-required",
+        "environment-specific"
+      ],
+      "sha256": "b77ae4a54bdc44a3a374df6745d4dabf76c768bc383e16440b751301e5d277b9"
     },
     {
       "area": "config",
@@ -1501,6 +1674,22 @@
       "sha256": "cd17e9d13037cea85d75ba17c1efb85824d59bb3fdc872b116fde7397297bd9b"
     },
     {
+      "area": "content-operate-agentic-blueprint",
+      "classification": "content-source",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "experience-content-owner",
+      "path": "content-operate-agentic-blueprint/antora.yml",
+      "proposed_disposition": "preserve-content-input",
+      "protection_class": "participant-content-input",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [],
+      "sha256": "c8dc4e60d90d67b5a09a51e70e7a074c8146aa899cfa2beca21a1300ec1a8893"
+    },
+    {
       "area": "content-operators",
       "classification": "content-source",
       "deletion_eligible": false,
@@ -1575,6 +1764,48 @@
         "status-field-review-required"
       ],
       "sha256": "560d86125855f3f8ced45633ef6c5b30b6176895899d0f78f7d2a98b9a331b83"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "contract-governance-owner",
+      "path": "contracts/agentic-blueprint-v1.yaml",
+      "proposed_disposition": "preserve-authoritative",
+      "protection_class": "authoritative-contract",
+      "reference_count": 4,
+      "referenced_by": [
+        "catalog/operate-agentic-blueprint/catalog-item.yaml",
+        "docs/agentic-blueprint-401-handoff.md",
+        "docs/catalog-learning-progression.md",
+        "docs/red-hat-intel-agentic-blueprint.md"
+      ],
+      "risk_flags": [],
+      "sha256": "7a8ebd249c8dcda782f9c9118d94d62608d57ee4091d51257363534794644ec5"
+    },
+    {
+      "area": "contracts",
+      "classification": "contract",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "contract-governance-owner",
+      "path": "contracts/agentic-journey-telemetry-v1.yaml",
+      "proposed_disposition": "preserve-authoritative",
+      "protection_class": "authoritative-contract",
+      "reference_count": 4,
+      "referenced_by": [
+        "catalog/operate-agentic-blueprint/catalog-item.yaml",
+        "docs/agentic-blueprint-401-handoff.md",
+        "docs/catalog-learning-progression.md",
+        "docs/journey-telemetry-contract.md"
+      ],
+      "risk_flags": [],
+      "sha256": "6b156bf25ce3bf8cf40ec21dcfcb9058b5ebd8f57c6a3369ad6108b61f82b779"
     },
     {
       "area": "contracts",
@@ -1943,12 +2174,13 @@
       "path": "contracts/catalog-learning-progression-v1.yaml",
       "proposed_disposition": "preserve-authoritative",
       "protection_class": "authoritative-contract",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
+        "docs/agentic-blueprint-401-handoff.md",
         "docs/catalog-learning-progression.md"
       ],
       "risk_flags": [],
-      "sha256": "2428a338b93d7287ef23869581562af1c57e37a0c212da21dbb0824ccb180089"
+      "sha256": "74d500cc918ce79e844dc72f136dcaf6cc47cb838e851ba369e323f0f6d60aaf"
     },
     {
       "area": "contracts",
@@ -6329,6 +6561,28 @@
       "sha256": "ee7a21cef5d257e6591dd9fca0a067c29aa985645bf9ce9cb3c02f31b9c450ee"
     },
     {
+      "area": "deploy/launchpad/overlays/flightpath-candidate-04-rollback",
+      "classification": "deployment-source",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Kustomization"
+      ],
+      "owner": "platform-release-owner",
+      "path": "deploy/launchpad/overlays/flightpath-candidate-04-rollback/kustomization.yaml",
+      "proposed_disposition": "preserve-runtime-input",
+      "protection_class": "runtime-or-deployment-input",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "1089b5fe8d390177c2e70bbc252920111c78a26726f51dfa3431348b50f2016a"
+    },
+    {
       "area": "deploy/launchpad/overlays/flightpath-candidate-bootstrap",
       "classification": "deployment-source",
       "deletion_eligible": false,
@@ -6430,6 +6684,30 @@
       "environment_markers": [
         "flightpath"
       ],
+      "kinds": [],
+      "owner": "platform-release-owner",
+      "path": "deploy/launchpad/overlays/flightpath-candidate/agent-reliability.catalog-item.yaml",
+      "proposed_disposition": "preserve-runtime-input",
+      "protection_class": "runtime-or-deployment-input",
+      "reference_count": 2,
+      "referenced_by": [
+        "certification/candidates/staging-candidate-20260925-04.yaml",
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "status-field-review-required",
+        "environment-specific"
+      ],
+      "sha256": "9b1c91c1f5e7ee6f3f0148479b2b179d5820253208ad35484aa3368a9ff00e3f"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-candidate",
+      "classification": "deployment-source",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
       "kinds": [
         "ConfigMap"
       ],
@@ -6446,7 +6724,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "ea352d824b260e28d53664823d201465d871a3b36f88bc59dcdd97faa4cf6360"
+      "sha256": "1f177a2d61dbe305ccf16e0d728bc5588cd17f72b0bd08c62ab607f6b76d9e5e"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -6500,7 +6778,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "5410c5016092a83ea568d8f1a4399e69cd74870f2269c5f1d7f243a6a9fd9835"
+      "sha256": "1fd530e977afd3a5f93c4aef3cc2da83eea830fc2cf48ed6d8b2ad1d723f1f68"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -6515,15 +6793,16 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/hybrid-fraud-detection.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
+        "certification/candidates/staging-candidate-20260925-04.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
       ],
       "risk_flags": [
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "0665072b1d25e4b022667c2e98d624d7f3f17ebce0fd37fe2ecf1de8c95fc799"
+      "sha256": "51d02e409e777732eae1515876d69f6b304f723f37568b6b8b7b4beded7c7a99"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -6540,11 +6819,12 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/intel-llm-cpu-serving.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 5,
+      "reference_count": 6,
       "referenced_by": [
         "certification/candidates/staging-candidate-20260922-02.yaml",
         "certification/candidates/staging-candidate-20260922.yaml",
         "certification/candidates/staging-candidate-20260923-03.yaml",
+        "certification/candidates/staging-candidate-20260925-04.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
         "evidence/repository-sanitization/inventory-v1.json"
       ],
@@ -6569,11 +6849,12 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/intel-xeon6-agent-201.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 5,
+      "reference_count": 6,
       "referenced_by": [
         "certification/candidates/staging-candidate-20260922-02.yaml",
         "certification/candidates/staging-candidate-20260922.yaml",
         "certification/candidates/staging-candidate-20260923-03.yaml",
+        "certification/candidates/staging-candidate-20260925-04.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
         "evidence/repository-sanitization/inventory-v1.json"
       ],
@@ -6598,14 +6879,15 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-candidate-04-rollback/kustomization.yaml",
         "deploy/launchpad/overlays/flightpath-candidate-bootstrap/kustomization.yaml"
       ],
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "327af66d74aca76ef445aeffecb038cb94d00111a2b097fc113a160b6294f190"
+      "sha256": "628b204fa24652e4d75775382e0758f380fcda7fe22c2000609a2cdfcbf0e181"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -6622,11 +6904,12 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/multi-agent-quickstart.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 5,
+      "reference_count": 6,
       "referenced_by": [
         "certification/candidates/staging-candidate-20260922-02.yaml",
         "certification/candidates/staging-candidate-20260922.yaml",
         "certification/candidates/staging-candidate-20260923-03.yaml",
+        "certification/candidates/staging-candidate-20260925-04.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml",
         "evidence/repository-sanitization/inventory-v1.json"
       ],
@@ -6649,15 +6932,16 @@
       "path": "deploy/launchpad/overlays/flightpath-candidate/network-operations-agent.catalog-item.yaml",
       "proposed_disposition": "preserve-runtime-input",
       "protection_class": "runtime-or-deployment-input",
-      "reference_count": 1,
+      "reference_count": 2,
       "referenced_by": [
+        "certification/candidates/staging-candidate-20260925-04.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
       ],
       "risk_flags": [
         "status-field-review-required",
         "environment-specific"
       ],
-      "sha256": "0a559b0ed96dad15b590d12f7188bce23b062239f2846a2cfcf984ef2bcc1716"
+      "sha256": "6e2f1142e432a50ccd03a6a3914e7245297d429cbc27902f81970329d14023b3"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -6684,7 +6968,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "e70c55af703b8955525e69687ddfdbaf1d0a8d69c2728738a89f115f42adef56"
+      "sha256": "9e4103708e03215742ce09eb257c758c6c9538876daa5d2462fe38148708b9d0"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-candidate",
@@ -6807,7 +7091,31 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "f86b2731c5592284485ccd2a607b6a1b43d8f676ba499d5dbb93c63208c7ac68"
+      "sha256": "76d6e624cb3ba2149b3fb086a40c6e6729cfc6f8e3a05268774d68e2034696d4"
+    },
+    {
+      "area": "deploy/launchpad/overlays/flightpath-candidate",
+      "classification": "deployment-source",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "PodDisruptionBudget"
+      ],
+      "owner": "platform-release-owner",
+      "path": "deploy/launchpad/overlays/flightpath-candidate/public-access-ha.yaml",
+      "proposed_disposition": "preserve-runtime-input",
+      "protection_class": "runtime-or-deployment-input",
+      "reference_count": 1,
+      "referenced_by": [
+        "deploy/launchpad/overlays/flightpath-candidate/kustomization.yaml"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "87e873ba8d34859ec8d2461fddeb18540807dbb86166ecddef75cb3b27525b5a"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-dr-gitops",
@@ -7163,7 +7471,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "2f4394947001981b61479adc03ddf83264cb0144d3c8d9ad2f5c29761c5615d7"
+      "sha256": "912974d6f232075497d11137b00712671e4a7ad782bcec59265fad1fbbf83c19"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-stage",
@@ -7259,7 +7567,7 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "262ec96909927875c9f80eb87cab3315f5482b998c2bbd96d4aa2d2e0070740a"
+      "sha256": "3b1c8fd35c8a2e3e46d994da8bac78e220827d4466b7e6e0862ca919fc63f062"
     },
     {
       "area": "deploy/launchpad/overlays/flightpath-stage",
@@ -8413,7 +8721,33 @@
       "risk_flags": [
         "environment-specific"
       ],
-      "sha256": "b076aca782d77e7daebc5812889df17f14bd36a95907286b2f05dcb45db4af82"
+      "sha256": "ab65ad05e74952a6d04a0c8883e0f1f68a7866f9f2ac5cbb1a96d4d1e11335c8"
+    },
+    {
+      "area": "deploy",
+      "classification": "deployment-source",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [
+        "Deployment",
+        "PodDisruptionBudget",
+        "ServiceAccount"
+      ],
+      "owner": "platform-release-owner",
+      "path": "deploy/tunnel-oncluster/flightpath-deployment.yaml",
+      "proposed_disposition": "preserve-runtime-input",
+      "protection_class": "runtime-or-deployment-input",
+      "reference_count": 1,
+      "referenced_by": [
+        "backend/tests/test_public_tunnel_contract.py"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "d2bfc4abb2106b96f4f32a7158c7d39a33958ee91d5970f09ce4239069b20d89"
     },
     {
       "area": "deploy",
@@ -8688,7 +9022,29 @@
       "reference_count": 0,
       "referenced_by": [],
       "risk_flags": [],
-      "sha256": "789260ca776ed539850a6899438bb72d82a1d2f14485a65b50f12c5bc6504a72"
+      "sha256": "42ab5e10c0ffc70f066a6244c3a256480e50c730227f5f750e88cac0d1c8d8e7"
+    },
+    {
+      "area": "deploy/workloads/multi-agent-seat",
+      "classification": "deployment-template",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [],
+      "kinds": [
+        "ConfigMap",
+        "Deployment",
+        "NetworkPolicy",
+        "Route",
+        "Service"
+      ],
+      "owner": "platform-release-owner",
+      "path": "deploy/workloads/multi-agent-seat/templates/presentation.yaml",
+      "proposed_disposition": "preserve-runtime-input",
+      "protection_class": "runtime-or-deployment-input",
+      "reference_count": 0,
+      "referenced_by": [],
+      "risk_flags": [],
+      "sha256": "e23e937a757616a11598534919153464d630dfad5c196e4a2455973db58b796e"
     },
     {
       "area": "deploy/workloads/multi-agent-seat",
@@ -8726,7 +9082,7 @@
       "reference_count": 0,
       "referenced_by": [],
       "risk_flags": [],
-      "sha256": "268af972599854fd13d1750c339aa973f41c3a3f252ffa92be5687d8b4a7139f"
+      "sha256": "599bcaf53b9cee3df336209b0d539dd877156bef26563d48f6cdd1217f22fba5"
     },
     {
       "area": "docker-compose.yml",
@@ -8853,6 +9209,28 @@
         "environment-specific"
       ],
       "sha256": "723c797f38287344dc8a3a723e91ac7e2da9994e78242ea4bb56372dd022dcd7"
+    },
+    {
+      "area": "evidence",
+      "classification": "evidence",
+      "deletion_eligible": false,
+      "dependency_flags": [],
+      "environment_markers": [
+        "flightpath"
+      ],
+      "kinds": [],
+      "owner": "evidence-governance-owner",
+      "path": "evidence/public-access/green-live-flightpath-public-access-2026-09-24.yaml",
+      "proposed_disposition": "preserve-history",
+      "protection_class": "immutable-evidence",
+      "reference_count": 1,
+      "referenced_by": [
+        "evidence/public-access/green-live-flightpath-public-access-2026-09-24.yaml.sha256"
+      ],
+      "risk_flags": [
+        "environment-specific"
+      ],
+      "sha256": "906abb2f6829655bb13e00fbd785c07a4a030c7469326be0357fca05e1337f8e"
     },
     {
       "area": "evidence",
@@ -9665,6 +10043,28 @@
       "sha256": "ec787cdcea53042698a8ce0c23b6ea3cf2f359c3bfd97056b212d80785f0399e"
     },
     {
+      "area": "site-operate-agentic-blueprint.yml",
+      "classification": "content-source",
+      "deletion_eligible": false,
+      "dependency_flags": [
+        "rhpds-git-dependency"
+      ],
+      "environment_markers": [],
+      "kinds": [],
+      "owner": "experience-content-owner",
+      "path": "site-operate-agentic-blueprint.yml",
+      "proposed_disposition": "preserve-content-input",
+      "protection_class": "participant-content-input",
+      "reference_count": 3,
+      "referenced_by": [
+        "backend/tests/test_operate_agentic_blueprint_content.py",
+        "catalog/operate-agentic-blueprint/catalog-item.yaml",
+        "docs/agentic-blueprint-401-handoff.md"
+      ],
+      "risk_flags": [],
+      "sha256": "4fa8affda8f1d3bc5ddbde91222cea5d73ddebefe1eeccd1ff215edda256d525"
+    },
+    {
       "area": "site.yml",
       "classification": "content-source",
       "deletion_eligible": false,
@@ -9677,7 +10077,7 @@
       "path": "site.yml",
       "proposed_disposition": "preserve-content-input",
       "protection_class": "participant-content-input",
-      "reference_count": 20,
+      "reference_count": 21,
       "referenced_by": [
         "backend/app/adapters/openshift/provisioning.py",
         "backend/app/adapters/openshift/showroom_gitops.py",
@@ -9693,6 +10093,7 @@
         "catalog/agent-reliability/catalog-item.yaml",
         "catalog/guided-rag-on-xeon/catalog-item.yaml",
         "catalog/hybrid-fraud-detection/catalog-item.yaml",
+        "deploy/launchpad/overlays/flightpath-candidate/agent-reliability.catalog-item.yaml",
         "deploy/launchpad/overlays/flightpath-candidate/hybrid-fraud-detection.catalog-item.yaml",
         "evidence/repository-sanitization/inventory-v1.json",
         "evidence/runs/catalog-intake-agent-reliability/discovery-88bcef3.json",
@@ -9922,19 +10323,19 @@
   ],
   "safety_boundary": "Discovery only. No record authorizes deletion, movement, secret rotation, deployment, GitOps sync, catalog activation, or live mutation.",
   "schema_version": 1,
-  "source_commit": "159ac46b4f43a8089ce03fe2713c7c84c16cf761",
+  "source_commit": "86eedca74a7cb4dd0703f9fc27e4d33e640de60a",
   "source_state": "working-tree",
   "summary": {
     "classification_counts": {
-      "catalog-source": 15,
-      "ci": 5,
+      "catalog-source": 16,
+      "ci": 6,
       "configuration": 11,
-      "content-source": 18,
-      "contract": 50,
+      "content-source": 20,
+      "contract": 52,
       "demo-source": 110,
-      "deployment-source": 157,
-      "deployment-template": 11,
-      "evidence": 26,
+      "deployment-source": 161,
+      "deployment-template": 12,
+      "evidence": 32,
       "fixture": 20,
       "generated-intake": 7,
       "repository-configuration": 10,
@@ -9945,29 +10346,29 @@
       "agnostic-automation-dependency": 4,
       "redhat-gpte-image-dependency": 10,
       "rhdp-service-dependency": 2,
-      "rhpds-git-dependency": 27,
+      "rhpds-git-dependency": 31,
       "rhpds-image-dependency": 4
     },
-    "files_without_detected_repository_reference": 136,
-    "preserved_pending_review": 450,
+    "files_without_detected_repository_reference": 139,
+    "preserved_pending_review": 467,
     "protection_class_counts": {
-      "authoritative-contract": 50,
-      "catalog-release-input": 22,
-      "immutable-evidence": 26,
-      "participant-content-input": 128,
+      "authoritative-contract": 52,
+      "catalog-release-input": 23,
+      "immutable-evidence": 32,
+      "participant-content-input": 130,
       "repository-governance-input": 10,
-      "runtime-or-deployment-input": 189,
-      "test-or-delivery-input": 25
+      "runtime-or-deployment-input": 194,
+      "test-or-delivery-input": 26
     },
     "risk_flag_counts": {
-      "environment-specific": 164,
+      "environment-specific": 175,
       "mutable-latest-image": 19,
       "possible-cluster-export-metadata": 1,
       "secret-object-review-required": 6,
-      "status-field-review-required": 62
+      "status-field-review-required": 65
     },
-    "tracked_yaml_files": 450,
+    "tracked_yaml_files": 467,
     "unassigned_owners": 0
   },
-  "tracked_changes_present": true
+  "tracked_changes_present": false
 }

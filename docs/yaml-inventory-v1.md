@@ -14,28 +14,28 @@ CLI, documentation, and human consumers must be checked before disposition.
 
 ## Summary
 
-- Tracked YAML/YML files: **450**
+- Tracked YAML/YML files: **467**
 - Owner assignment still required: **0**
-- Preserved pending owner review: **450**
+- Preserved pending owner review: **467**
 - Deletion eligible: **0**
-- No repository reference detected: **136**
-- Base source commit: `159ac46b4f43a8089ce03fe2713c7c84c16cf761`
+- No repository reference detected: **139**
+- Base source commit: `86eedca74a7cb4dd0703f9fc27e4d33e640de60a`
 - Source state: **working-tree**; tracked changes present:
-  **true**
+  **false**
 
 ## Classification
 
 | Classification | Files |
 |---|---:|
-| `catalog-source` | 15 |
-| `ci` | 5 |
+| `catalog-source` | 16 |
+| `ci` | 6 |
 | `configuration` | 11 |
-| `content-source` | 18 |
-| `contract` | 50 |
+| `content-source` | 20 |
+| `contract` | 52 |
 | `demo-source` | 110 |
-| `deployment-source` | 157 |
-| `deployment-template` | 11 |
-| `evidence` | 26 |
+| `deployment-source` | 161 |
+| `deployment-template` | 12 |
+| `evidence` | 32 |
 | `fixture` | 20 |
 | `generated-intake` | 7 |
 | `repository-configuration` | 10 |
@@ -48,11 +48,11 @@ example, a domain contract may legitimately contain a `status` field.
 
 | Flag | Files |
 |---|---:|
-| `environment-specific` | 164 |
+| `environment-specific` | 175 |
 | `mutable-latest-image` | 19 |
 | `possible-cluster-export-metadata` | 1 |
 | `secret-object-review-required` | 6 |
-| `status-field-review-required` | 62 |
+| `status-field-review-required` | 65 |
 
 ## Red Hat-hosted and RHDP dependency review
 
@@ -68,7 +68,7 @@ prove each active consumer before changing it.
 | `agnostic-automation-dependency` | 4 |
 | `redhat-gpte-image-dependency` | 10 |
 | `rhdp-service-dependency` | 2 |
-| `rhpds-git-dependency` | 27 |
+| `rhpds-git-dependency` | 31 |
 | `rhpds-image-dependency` | 4 |
 
 ## Protection classes
@@ -79,13 +79,13 @@ review; it is not named-human acceptance.
 
 | Protection class | Files |
 |---|---:|
-| `authoritative-contract` | 50 |
-| `catalog-release-input` | 22 |
-| `immutable-evidence` | 26 |
-| `participant-content-input` | 128 |
+| `authoritative-contract` | 52 |
+| `catalog-release-input` | 23 |
+| `immutable-evidence` | 32 |
+| `participant-content-input` | 130 |
 | `repository-governance-input` | 10 |
-| `runtime-or-deployment-input` | 189 |
-| `test-or-delivery-input` | 25 |
+| `runtime-or-deployment-input` | 194 |
+| `test-or-delivery-input` | 26 |
 
 ## Priority review queues
 
