@@ -27,7 +27,7 @@ def test_patched_dependency_graphs_and_keycloak_candidate_are_pinned():
 
     pom = ElementTree.parse(ROOT / "keycloak-authenticator/pom.xml").getroot()
     namespace = {"m": "http://maven.apache.org/POM/4.0.0"}
-    assert pom.findtext("m:properties/m:keycloak.version", namespaces=namespace) == "26.7.2"
+    assert pom.findtext("m:properties/m:keycloak.version", namespaces=namespace) == "26.7.4"
     jackson = next(
         dependency
         for dependency in pom.findall("m:dependencies/m:dependency", namespace)
