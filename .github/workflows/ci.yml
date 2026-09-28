@@ -19,10 +19,41 @@ jobs:
       # narrow allowlist in .gitleaks.toml. On pull requests and pushes the
       # action scans the event's commit range, catching a secret even if a
       # later commit deletes it.
-      - name: Scan commit range with Gitleaks
-        uses: gitleaks/gitleaks-action@v2
+      - name: Install checksum-verified Gitleaks
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="8.21.2"
+          archive="gitleaks_${version}_linux_x64.tar.gz"
+          expected="5bc41815076e6ed6ef8fbecc9d9b75bcae31f39029ceb55da08086315316e3ba"
+          curl --fail --silent --show-error --location \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${version}/${archive}" \
+            --output "$RUNNER_TEMP/$archive"
+          printf '%s  %s\n' "$expected" "$RUNNER_TEMP/$archive" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" version
+
+      - name: Scan the complete event commit range with Gitleaks
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            log_range="${BASE_SHA}..${HEAD_SHA}"
+          elif [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" =~ ^0+$ ]]; then
+            log_range="${HEAD_SHA}^!"
+          else
+            log_range="${BEFORE_SHA}..${HEAD_SHA}"
+          fi
+          "$RUNNER_TEMP/gitleaks" git \
+            --config .gitleaks.toml \
+            --redact \
+            --log-opts="$log_range" \
+            .
 
   test:
     name: Tests + Lint
