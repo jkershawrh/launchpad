@@ -3,15 +3,18 @@ from pathlib import Path
 import yaml
 
 from app.services.catalog_certification import (
+    build_certification_plan,
     load_certification_contract,
     validate_certification_contract,
 )
+from app.services.catalog_onboarding import load_intake
 
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE_DRIVER = ROOT / "scripts/certify-multi-agent-seat.sh"
 OPERATIONS_DRIVER = ROOT / "scripts/certify-operate-agentic-blueprint-seat.sh"
 CERTIFICATION = ROOT / "certification/catalog/operate-agentic-blueprint.yaml"
+INTAKE = ROOT / "catalog-onboarding/operate-agentic-blueprint.yaml"
 
 
 def test_operations_driver_selects_401_contract_without_duplicating_runtime_probe():
@@ -46,8 +49,9 @@ def test_shared_driver_keeps_301_behavior_as_the_default():
     assert 'PRESENTATION_REQUIRED:-false' in source
 
 
-def test_401_certification_is_one_seat_flightpath_and_requires_live_presentation():
+def test_401_certification_advances_from_one_to_five_seats_on_flightpath():
     contract = load_certification_contract(CERTIFICATION)
+    intake = load_intake(INTAKE)
     assert validate_certification_contract(
         contract,
         repo_root=ROOT,
@@ -64,11 +68,29 @@ def test_401_certification_is_one_seat_flightpath_and_requires_live_presentation
             "probe_concurrency": 1,
             "maximum_ready_seconds": 900,
             "maximum_cleanup_seconds": 600,
-        }
+        },
+        {
+            "seats": 5,
+            "required_consecutive_runs": 1,
+            "probe_concurrency": 5,
+            "maximum_ready_seconds": 1200,
+            "maximum_cleanup_seconds": 900,
+        },
     ]
     assert spec["seat_probe"]["argv"][1] == (
         "scripts/certify-operate-agentic-blueprint-seat.sh"
     )
+    plan = build_certification_plan(
+        contract,
+        intake=intake,
+        seats=5,
+        exposure_policy="internal",
+    )
+    assert plan["current_certified_seats"] == 1
+    assert plan["next_promotion_target"] == 5
+    assert plan["certification_override"] is True
+    assert plan["execution_eligible"] is True
+    assert plan["probe_concurrency"] == 5
     assertions = {
         item["path"]: item for item in spec["seat_probe"]["json_assertions"]
     }
