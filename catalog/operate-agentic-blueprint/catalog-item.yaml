@@ -47,7 +47,7 @@ metadata:
   operator_workshop: true
   content_only: false
   onboarding_managed: false
-  certification_stage: content-candidate
+  certification_stage: one-seat-certified
   certification_proof_contract: certification/catalog/operate-agentic-blueprint.yaml
   max_workshop_seats: 1
   public_max_workshop_seats: 1
@@ -56,8 +56,6 @@ metadata:
     - 5
     - 25
   activation_blockers:
-    - Certify the same-origin presentation API proxy as live, authenticated, namespace-scoped, and visibly distinct from rehearsal fallback.
-    - Implement and validate the agentic-journey-telemetry-v1 correlation fields in the workload runtime.
     - Prove independent guardrail and inference outage tests, fail-closed behavior, and recovery without relying on co-located-process restarts.
     - Add certified OpenTelemetry collection and a learner-visible correlated trace without exposing secrets or hidden model reasoning.
     - Validate namespace-scoped GitOps drift detection and pipeline-based evaluation before presenting those operator capabilities as live.

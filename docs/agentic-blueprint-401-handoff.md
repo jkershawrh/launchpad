@@ -137,24 +137,24 @@ exists.
 
 ## Activation blockers
 
-The machine-readable post-scale audit is
+The historical machine-readable post-scale audit is
 [`../evidence/runs/catalog/operate-agentic-blueprint-activation-gate-audit-20260928.json`](../evidence/runs/catalog/operate-agentic-blueprint-activation-gate-audit-20260928.json).
 It records `SCALE_GREEN_ACTIVATION_GATED`: internal 25-seat provisioning is
 certified, public scale remains one seat, and the item remains draft. The audit
 deliberately marks partial proof `AMBER` and missing proof `RED`; scale evidence
-does not close a capability or production gate.
+does not close a capability or production gate. The subsequent immutable
+runtime release closed the same-origin live-policy and journey-correlation
+gates with a 100/100 one-seat proof and zero residue:
+[`../evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-one-seat-r2-20260928.json`](../evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-one-seat-r2-20260928.json).
 
 The catalog item records these gates:
 
-1. Certify the authenticated same-origin proxy and prove that live and
-   rehearsal modes cannot be confused.
-2. Implement `agentic-journey-telemetry-v1` correlation in the runtime.
-3. Prove independent guardrail and inference outages, fail-closed behavior,
+1. Prove independent guardrail and inference outages, fail-closed behavior,
    and recovery.
-4. Add certified OpenTelemetry collection and a learner-visible trace.
-5. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
-6. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
-7. Keep the immutable content provenance and completed one-, five-, and
+2. Add certified OpenTelemetry collection and a learner-visible trace.
+3. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
+4. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
+5. Keep the immutable content provenance and completed one-, five-, and
    twenty-five-seat zero-residue evidence attached to subsequent releases.
 
 The previous runtime digest earned 25-seat internal scale. Runtime source

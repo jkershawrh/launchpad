@@ -40,7 +40,9 @@ def test_activation_audit_preserves_scale_and_activation_boundary():
     # candidate correctly resets earned scale until it is recertified.
     assert catalog["metadata"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["public_max_workshop_seats"] == 1
-    assert len(catalog["metadata"]["activation_blockers"]) == 6
+    # Two gates were subsequently closed by the correlation/live-policy
+    # one-seat release; this historical audit remains immutable.
+    assert len(catalog["metadata"]["activation_blockers"]) == 4
 
 
 def test_activation_audit_references_immutable_green_evidence():

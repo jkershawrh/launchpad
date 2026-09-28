@@ -74,6 +74,12 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         {"name": "launchpad-registry-pull"}
     ]
     assert metadata["activation_blockers"]
+    assert metadata["certification_stage"] == "one-seat-certified"
+    assert len(metadata["activation_blockers"]) == 4
+    assert not any(
+        "same-origin" in blocker or "correlation fields" in blocker
+        for blocker in metadata["activation_blockers"]
+    )
 
 
 def test_operate_blueprint_content_is_a_linear_evidence_journey():
