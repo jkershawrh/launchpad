@@ -28,15 +28,15 @@ examples as live results. A completed 501 lab accepts only measurements marked
 |===
 | Step | Learner outcome | Target time
 | 1 | Declare success and the human-authority boundary | 10 min
-| 2 | Trace one complete baseline journey | 15 min
-| 3 | Establish the immutable quality and policy baseline | 15 min
-| 4 | Scale replicas, concurrency, and inference pressure separately | 25 min
-| 5 | Compare performance without losing quality or policy | 15 min
-| 6 | Prove safe failure and measured recovery | 20 min
-| 7 | Define the supported operating envelope | 15 min
-| 8 | Produce the workload proof package and restore baseline | 10 min
+| 2 | Connect the OpenShift Sandbox, Console, and OpenTelemetry proof | 10 min
+| 3 | Trace one complete baseline journey | 15 min
+| 4 | Establish the immutable quality and policy baseline | 15 min
+| 5 | Scale replicas, concurrency, and inference pressure separately | 25 min
+| 6 | Compare performance without losing quality or policy | 15 min
+| 7 | Prove safe failure and measured recovery | 20 min
+| 8 | Define the supported operating envelope | 15 min
+| 9 | Produce the workload proof package and restore baseline | 10 min
 |===
 
 [.next-nav]
 xref:01-success-envelope.adoc[Start: Define Success ->]
-

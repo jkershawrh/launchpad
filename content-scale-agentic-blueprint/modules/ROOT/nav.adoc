@@ -1,11 +1,11 @@
 .Scale One Agentic Workload
 * xref:index.adoc[Welcome]
 * xref:01-success-envelope.adoc[1. Define Success]
-* xref:02-trace-baseline.adoc[2. Trace the Baseline]
-* xref:03-evaluate-baseline.adoc[3. Evaluate the Baseline]
-* xref:04-scale-workload.adoc[4. Scale the Workload]
-* xref:05-quality-policy.adoc[5. Protect Quality and Policy]
-* xref:06-failure-recovery.adoc[6. Prove Safe Recovery]
-* xref:07-operating-envelope.adoc[7. Define the Operating Envelope]
+* xref:02-platform-proof.adoc[2. Open the Proof Surfaces]
+* xref:02-trace-baseline.adoc[3. Trace the Baseline]
+* xref:03-evaluate-baseline.adoc[4. Evaluate the Baseline]
+* xref:04-scale-workload.adoc[5. Scale the Workload]
+* xref:05-quality-policy.adoc[6. Protect Quality and Policy]
+* xref:06-failure-recovery.adoc[7. Prove Safe Recovery]
+* xref:07-operating-envelope.adoc[8. Define the Operating Envelope]
 * xref:99-conclusion.adoc[Workload Proof Package]
-

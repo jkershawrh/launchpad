@@ -1,0 +1,64 @@
+= Open the Red Hat Proof Surfaces
+
+== One Journey, Three Views in the OpenShift Sandbox
+
+Use the three learner views together. They are different views of the same
+workload and the same journey ID—not separate product exercises.
+
+[cols="1,2,2",options="header"]
+|===
+| View | Use it to answer | Do not use it for
+| OpenShift Sandbox terminal | Which namespace, pods, replicas, revisions, and bounded
+  workload controls are active? | Editing cluster-wide resources or bypassing
+  the lab controls
+| OpenShift Console | Is the workload healthy, scheduled, scaling, or recovering?
+  Which deployment and pod changed? | Replacing correlated journey evidence
+  with a visual assumption
+| OpenTelemetry trace | Where did time and failure occur from intake through
+  agents, MCP, policy, Intel Xeon inference, and human review? | Exposing
+  credentials, hidden reasoning, or unredacted sensitive prompts
+|===
+
+== OpenShift Sandbox Session: Establish Workload Identity
+
+Open the terminal supplied inside the learner's OpenShift Sandbox. Confirm the
+assigned namespace before running any command. Inspect only namespace-scoped
+workload resources and record the deployment revision, current agent replica
+count, and readiness state.
+
+The sandbox is the controlled implementation surface for later scale and
+recovery steps. It is not a generic cluster-administration session. Any command that
+changes replicas or introduces a fault must be supplied by the versioned lab and
+must have a matching restore operation.
+
+== OpenShift Console Session: See Platform State
+
+Open the OpenShift Console in the supplied namespace. Locate the orchestrator,
+specialized agents, MCP service, and presentation/workspace routes. Relate each
+deployed resource to the agentic blueprint before changing load.
+
+Keep this view open during the baseline and pressure runs. Pod readiness,
+restart count, placement, and replica transitions explain platform behavior;
+they do not prove the quality of an agent decision.
+
+== OpenTelemetry Session: Follow the Journey
+
+Open the lab-provided trace view and search by the journey ID created in the
+next step. A complete trace must correlate intake, orchestration, every agent,
+MCP evidence collection, deterministic policy, Intel Xeon inference, and the
+review-required boundary.
+
+The trace should expose component identity, timestamps, status, and approved
+latency attributes. Model prompt and response fields must follow the lab's
+redaction policy. If the collector, trace backend, or correlation fields are
+unavailable, label the trace `UNAVAILABLE` and stop the certification path; do
+not substitute screenshots or generated examples.
+
+== Platform Proof Checkpoint
+
+You can move between the OpenShift Sandbox terminal, OpenShift Console, and
+OpenTelemetry using one namespace and one correlation identity, and you can
+explain what each surface proves.
+
+[.next-nav]
+xref:02-trace-baseline.adoc[Next: Trace the Baseline ->]

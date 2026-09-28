@@ -12,6 +12,7 @@ def test_scale_content_follows_the_workload_journey_without_launchpad_seat_steps
     expected = [
         "index.adoc",
         "01-success-envelope.adoc",
+        "02-platform-proof.adoc",
         "02-trace-baseline.adoc",
         "03-evaluate-baseline.adoc",
         "04-scale-workload.adoc",
@@ -33,6 +34,10 @@ def test_scale_content_follows_the_workload_journey_without_launchpad_seat_steps
     assert "Pressure | 3 | 10" in guide
     assert "25 participants" in guide
     assert "not a learner exercise" in guide
+    assert "OpenShift Sandbox terminal" in guide
+    assert "OpenShift Console" in guide
+    assert "OpenTelemetry trace" in guide
+    assert "same journey ID" in guide
 
 
 def test_scale_content_preserves_truth_and_authority_boundaries():
