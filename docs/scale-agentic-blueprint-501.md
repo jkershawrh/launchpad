@@ -49,8 +49,14 @@ cannot be reinterpreted after a run to manufacture a pass.
 
 `certification/catalog/scale-agentic-blueprint.yaml` is intentionally marked
 `execution_enabled: false`. It becomes executable only after the 401
-prerequisite, immutable artifacts, load generator, evaluation set, telemetry,
+prerequisite, immutable artifacts, live load adapter, evaluation set, telemetry,
 and fault boundaries are ready.
+
+The initial measurement harness is `scripts/agentic_scale_harness.py`. It can
+produce deterministic, hashed run plans for all three profiles from the
+balanced 30-case set in `evaluation/agentic-scale-v1.yaml`. Live execution is
+fail-closed while the certification charter is disabled; the planner does not
+make network calls or manufacture results.
 
 ## Future specialty episodes
 

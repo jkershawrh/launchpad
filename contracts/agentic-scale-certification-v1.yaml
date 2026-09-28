@@ -24,6 +24,7 @@ prerequisites:
   required_contracts:
     - contracts/agentic-blueprint-v1.yaml
     - contracts/agentic-journey-telemetry-v1.yaml
+    - contracts/agentic-scale-evaluation-set-v1.yaml
 
 load_profiles:
   - id: baseline-one-seat
@@ -74,6 +75,7 @@ quality_gate:
     immutable_revision_required: true
     minimum_cases: 30
     domain_balance_required: true
+    canonical_set: evaluation/agentic-scale-v1.yaml
   minimum_supported_decision_rate_percent: 95
   maximum_degradation_from_one_seat_percentage_points: 2
   deterministic_policy_agreement_percent: 100

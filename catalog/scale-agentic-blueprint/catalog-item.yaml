@@ -69,11 +69,11 @@ metadata:
     - One-, five-, and twenty-five-seat certification with zero-residue reclaim.
   activation_blockers:
     - Certify operate-agentic-blueprint at one seat before implementing this lab.
-    - Define versioned load profiles and pass/fail service-level objectives.
+    - Approve or revise the provisional service-level objectives from a reviewed one-seat baseline.
     - Deploy approved OpenTelemetry collection with learner-visible correlated traces.
     - Expose approved Intel Xeon utilization and inference telemetry.
     - Prove independently addressable dependency failure and recovery paths.
-    - Implement quality evaluation that detects degradation under load.
+    - Implement the live execution adapter and quality scorer for the versioned evaluation set.
     - Produce immutable workload, content, and presentation artifacts.
     - Complete one-, five-, and twenty-five-seat certification with zero residue.
   production_blockers:
@@ -86,5 +86,9 @@ metadata:
       path: contracts/agentic-journey-telemetry-v1.yaml
     scale_certification_contract:
       path: contracts/agentic-scale-certification-v1.yaml
+    evaluation_set_contract:
+      path: contracts/agentic-scale-evaluation-set-v1.yaml
+    canonical_evaluation_set:
+      path: evaluation/agentic-scale-v1.yaml
     charter:
       path: docs/scale-agentic-blueprint-501.md

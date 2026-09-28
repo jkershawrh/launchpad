@@ -28,7 +28,7 @@ spec:
   execution_blockers:
     - The 401 prerequisite is not yet certified.
     - No immutable 501 content or workload artifact exists.
-    - The versioned load generator and immutable evaluation set do not exist.
+    - The load planner and evaluation set exist, but no reviewed live execution adapter is implemented.
     - Approved OpenTelemetry and Intel Xeon telemetry are not connected.
     - Fault injection boundaries and automated recovery assertions are not implemented.
 
@@ -56,4 +56,3 @@ spec:
       - id: lifecycle
         weight: 15
         requires: [all_seats_ready, cleanup_within_limit, zero_residue_cleanup]
-

@@ -1,0 +1,41 @@
+api_version: launchpad.redhat.com/agentic-scale-evaluation-set/v1
+contract_id: red-hat-intel-agentic-evaluation-v1
+purpose: >-
+  Define immutable, balanced cases for measuring routing, evidence, policy,
+  supported conclusions, and human-review behavior without hidden reasoning.
+required_top_level_fields:
+  - api_version
+  - evaluation_set_id
+  - revision
+  - blueprint_id
+  - domains
+  - cases
+case_contract:
+  required_fields:
+    - id
+    - domain
+    - complexity
+    - prompt
+    - expected_workflow
+    - required_agents
+    - required_evidence
+    - expected_policy_result
+    - expected_disposition
+    - human_review_required
+  allowed_complexity: [simple, medium, complex]
+  allowed_workflows: [lightweight, comprehensive]
+  allowed_policy_results: [allow_recommendation, deny, require_review]
+  allowed_dispositions: [supported, inconclusive, denied]
+balance:
+  minimum_cases: 30
+  equal_complexity_groups: true
+  minimum_domains: 5
+security:
+  synthetic_scenarios_only: true
+  secrets_prohibited: true
+  personal_data_prohibited: true
+  hidden_reasoning_prohibited: true
+integrity:
+  immutable_revision_required: true
+  sha256_required_in_run_plan: true
+
