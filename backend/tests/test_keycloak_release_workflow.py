@@ -28,6 +28,8 @@ def test_keycloak_release_runs_contracts_and_supply_chain_gates():
 
     assert "test_keycloak_authenticator_contract.py" in source
     assert "test_public_gateway_availability_contract.py" in source
+    assert "actions/setup-java@" in source
+    assert 'java-version: "17"' in source
     assert "mvn -B -f keycloak-authenticator/pom.xml package" in source
     assert "only-fixed: true" in source
     assert "sbom.spdx.json" in source
