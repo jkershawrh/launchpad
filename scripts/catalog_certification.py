@@ -52,6 +52,39 @@ def _contract_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _presentation_gates(
+    seat_results: list[dict[str, Any]],
+    *,
+    seat_count: int,
+    seat_probes_passed: bool,
+) -> tuple[bool, bool]:
+    """Derive presentation and proxy-auth gates from asserted seat evidence."""
+    if not seat_probes_passed or len(seat_results) != seat_count:
+        return False, False
+    presentations = [
+        result.get("probe", {}).get("result", {}).get("presentation")
+        for result in seat_results
+    ]
+    if not all(isinstance(presentation, dict) for presentation in presentations):
+        return False, False
+    presentation_live_passed = all(
+        presentation.get("required") is True
+        and presentation.get("root_http_status") == 200
+        and presentation.get("health", {}).get("agents_discovered") == 3
+        and presentation.get("workflow", {}).get("steps") == 3
+        and presentation.get("workflow", {}).get("errors") == 0
+        and presentation.get("handoff", {}).get("http_status") == 302
+        and presentation.get("handoff", {}).get("target_http_status") == 200
+        and presentation.get("policy", {}).get("presented_as_live") is False
+        for presentation in presentations
+    )
+    server_side_proxy_auth_passed = all(
+        presentation.get("client_token_exposed") is False
+        for presentation in presentations
+    )
+    return presentation_live_passed, server_side_proxy_auth_passed
+
+
 def _git_value(*args: str) -> str:
     result = subprocess.run(
         ["git", *args],
@@ -705,6 +738,11 @@ def _run_command(args: argparse.Namespace) -> int:
         result["probe"]["result"].get("contains_sensitive_values") is False
         for result in seat_results
     )
+    presentation_live_passed, server_side_proxy_auth_passed = _presentation_gates(
+        seat_results,
+        seat_count=args.seats,
+        seat_probes_passed=seat_probes_passed,
+    )
     zero_residue = bool(cleanup_counts) and all(
         count == 0 for count in cleanup_counts.values()
     )
@@ -726,6 +764,15 @@ def _run_command(args: argparse.Namespace) -> int:
         "zero_residue_cleanup": zero_residue,
         "model_keys_revoked": model_keys_revoked,
     }
+    rubric_gate_names = {
+        gate
+        for category in contract["spec"]["rubric"]["categories"]
+        for gate in category["requires"]
+    }
+    if "presentation_live_passed" in rubric_gate_names:
+        gates["presentation_live_passed"] = presentation_live_passed
+    if "server_side_proxy_auth_passed" in rubric_gate_names:
+        gates["server_side_proxy_auth_passed"] = server_side_proxy_auth_passed
     rubric = score_rubric(contract, gates)
     result = "GREEN-live" if rubric["passed"] and not errors else "RED-live"
     history = _load_history(

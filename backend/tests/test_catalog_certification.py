@@ -34,6 +34,29 @@ def _runner_module():
     return module
 
 
+def test_presentation_gates_are_derived_from_asserted_live_seat_evidence():
+    runner = _runner_module()
+    presentation = {
+        "required": True,
+        "root_http_status": 200,
+        "health": {"agents_discovered": 3},
+        "workflow": {"steps": 3, "errors": 0},
+        "handoff": {"http_status": 302, "target_http_status": 200},
+        "policy": {"mode": "rehearsal", "presented_as_live": False},
+        "client_token_exposed": False,
+    }
+    seats = [{"probe": {"passed": True, "result": {"presentation": presentation}}}]
+
+    assert runner._presentation_gates(
+        seats, seat_count=1, seat_probes_passed=True
+    ) == (True, True)
+
+    presentation["policy"]["presented_as_live"] = True
+    assert runner._presentation_gates(
+        seats, seat_count=1, seat_probes_passed=True
+    ) == (False, True)
+
+
 def test_multi_agent_is_the_reference_reusable_certification_contract():
     contract = load_certification_contract(CONTRACT_PATH)
     intake = load_intake(INTAKE_PATH)
