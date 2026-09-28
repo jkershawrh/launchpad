@@ -22,6 +22,7 @@ prerequisites:
     - contracts/agentic-blueprint-v1.yaml
     - contracts/agentic-journey-telemetry-v1.yaml
     - contracts/agentic-scale-evaluation-set-v1.yaml
+    - contracts/agentic-workload-result-v1.yaml
 
 workload_profiles:
   - id: baseline
@@ -111,4 +112,3 @@ learner_evidence_package:
     sha256_manifest_required: true
     immutable_raw_evidence_required: true
     secrets_and_sensitive_prompts_prohibited: true
-

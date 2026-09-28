@@ -91,6 +91,8 @@ metadata:
       path: contracts/catalog-scale-delivery-certification-v1.yaml
     evaluation_set_contract:
       path: contracts/agentic-scale-evaluation-set-v1.yaml
+    workload_result_contract:
+      path: contracts/agentic-workload-result-v1.yaml
     canonical_evaluation_set:
       path: evaluation/agentic-scale-v1.yaml
     draft_showroom_content:

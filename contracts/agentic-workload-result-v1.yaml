@@ -1,0 +1,58 @@
+api_version: launchpad.redhat.com/agentic-workload-result/v1
+contract_id: red-hat-intel-agentic-workload-result-v1
+purpose: >-
+  Define learner-visible, machine-scoreable results for one workload profile
+  without collecting hidden reasoning or misattributing shared endpoint data.
+required_top_level_fields:
+  - schema
+  - run_id
+  - profile_id
+  - source_state
+  - evaluation_set_id
+  - evaluation_set_sha256
+  - results
+allowed_source_states: [live, rehearsal, offline, unavailable]
+result_contract:
+  required_fields:
+    - case_id
+    - journey_id
+    - status
+    - selected_workflow
+    - agents_involved
+    - evidence_types
+    - policy_result
+    - disposition
+    - review_required
+    - automatic_action_executed
+    - journey_latency_ms
+    - inference_latency_ms
+    - queue_ms
+    - input_tokens
+    - output_tokens
+  allowed_status: [completed, failed, timed_out, rate_limited]
+  nonnegative_measurements:
+    - journey_latency_ms
+    - inference_latency_ms
+    - queue_ms
+    - input_tokens
+    - output_tokens
+security:
+  hidden_reasoning_prohibited: true
+  secrets_prohibited: true
+  raw_credentials_prohibited: true
+intel_boundary:
+  request_result_may_include: [model_name, model_revision, tokens, latency, queue]
+  shared_endpoint_metrics_must_be_separate: true
+scoring:
+  exact_fields:
+    - selected_workflow
+    - policy_result
+    - disposition
+    - review_required
+  subset_fields:
+    - agents_involved
+    - evidence_types
+  unsupported_claim_definition: >-
+    An observed supported disposition when the expected disposition is denied
+    or inconclusive.
+  certification_requires_source_state: live

@@ -70,6 +70,11 @@ balanced 30-case set in `evaluation/agentic-scale-v1.yaml`. Live execution is
 fail-closed while the certification charter is disabled; the planner does not
 make network calls or manufacture results.
 
+`scripts/agentic_scale_score.py` deterministically scores observed workflow,
+agent, evidence, policy, disposition, review-state, action, latency, queue, and
+token fields against those immutable cases. Rehearsal and offline payloads can
+be evaluated during development, but only `LIVE` payloads are eligible to pass.
+
 The learner scales one workload in one assigned namespace. Launchpad operators,
 outside the learner journey, separately certify delivery to 1, 5, and 25
 participant environments, including isolation, provisioning, reclaim, and zero
