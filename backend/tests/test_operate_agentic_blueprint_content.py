@@ -23,7 +23,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         "272bcea5889ef761a3e1cb54103861534b69e807"
     )
     assert metadata["flightpath_deployment_overlay_commit"] == (
-        "c1237be99d0d7f72c98420550ef9d6d03efa468f"
+        "d7c7e686d6513a77de685569b27863c9269c990f"
     )
     assert metadata["prerequisites"] == ["multi-agent-quickstart"]
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
