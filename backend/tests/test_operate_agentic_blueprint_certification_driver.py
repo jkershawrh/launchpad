@@ -100,15 +100,15 @@ def test_401_certification_records_the_earned_twenty_five_seat_limit():
     plan = build_certification_plan(
         contract,
         intake=intake,
-        seats=5,
+        seats=25,
         exposure_policy="internal",
     )
-    assert plan["current_certified_seats"] == 1
-    assert plan["next_promotion_target"] == 5
+    assert plan["current_certified_seats"] == 5
+    assert plan["next_promotion_target"] == 25
     assert plan["certification_override"] is True
     assert plan["execution_eligible"] is True
-    assert plan["probe_concurrency"] == 5
-    assert plan["required_consecutive_runs"] == 1
+    assert plan["probe_concurrency"] == 10
+    assert plan["required_consecutive_runs"] == 3
     assertions = {
         item["path"]: item for item in spec["seat_probe"]["json_assertions"]
     }

@@ -38,7 +38,7 @@ def test_activation_audit_preserves_scale_and_activation_boundary():
     assert catalog["status"] == "draft"
     # The audit belongs to the prior immutable digest. The new correlation
     # candidate correctly resets earned scale until it is recertified.
-    assert catalog["metadata"]["max_workshop_seats"] == 1
+    assert catalog["metadata"]["max_workshop_seats"] == 5
     assert catalog["metadata"]["public_max_workshop_seats"] == 1
     # Two gates were subsequently closed by the correlation/live-policy
     # one-seat release; this historical audit remains immutable.

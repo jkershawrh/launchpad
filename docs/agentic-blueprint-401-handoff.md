@@ -59,8 +59,9 @@ Files:
 
 The candidate reuses the digest-pinned `multi-agent-seat` chart and workload
 image from `multi-agent-quickstart`. It remains `status: draft` and is not
-ready for participant ordering. Its earned internal certification limit is 25
-seats while its public limit remains one seat.
+ready for participant ordering. Its current immutable runtime has earned an
+internal certification limit of five seats while its public limit remains one
+seat.
 
 The chart now has an opt-in presentation runtime contract. When the 401
 catalog item enables it, Argo CD creates a separately owned presentation
@@ -164,9 +165,10 @@ protected, and authenticates every model and semantic-classification request
 with its seat-scoped key. It is
 published as
 `ghcr.io/jkershawrh/multi-agent-quickstart@sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86`.
-Because this is a new immutable release, the catalog ceiling is reset to one
-seat until the one-, five-, and 25-seat gates are earned again. Historical
-scale evidence remains valid only for the digest it tested.
+Because this is a new immutable release, historical scale evidence remains
+valid only for the digest it tested. This release has now earned its one- and
+five-seat gates; the 25-seat gate still requires three consecutive passing
+runs.
 
 ## Validation already completed
 
@@ -189,24 +191,27 @@ Presentation chart contract: digest-pinned, opt-in, same-origin API proxy, and n
 git diff --check: clean
 ```
 
-Flightpath one-seat and five-seat live certification are complete. The
-five-seat run created one workshop with five independently scoped namespaces,
-waited for the common readiness barrier, and ran all five participant probes
-concurrently. Every probe passed the seven Showroom pages, presentation and
-handoff, real `granite-3.2-8b-tools` inference, the three-agent workflow,
-policy and recovery checks, and namespace isolation. Readiness took 264.384
-seconds. Bulk reclaim took 101.455 seconds and left zero namespaces, Routes,
-RoleBindings, Secrets, PVCs, PVs, Argo CD Applications, or model keys.
+Flightpath one-seat and five-seat live certification are complete for runtime
+digest `sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86`.
+The five-seat run created one workshop with five independently scoped
+namespaces, waited for the common readiness barrier, and ran all five
+participant probes concurrently. Every probe passed the seven Showroom pages,
+presentation and handoff, real `granite-3.2-8b-tools` inference, semantic
+routing, the three-agent workflow, live policy, correlation, guardrails, and
+namespace isolation. Readiness took 276.604 seconds. Bulk reclaim took 100.18
+seconds and left zero namespaces, Routes, RoleBindings, Secrets, PVCs, PVs,
+Argo CD Applications, or model keys.
 
 The first five-seat attempt is retained as RED evidence: all functional probes
 passed, but the out-of-band Showroom verifier did not trust Flightpath's
 private ingress CA. The GREEN rerun supplied the cluster ingress CA bundle and
 scored 100/100 without disabling TLS verification. Evidence:
 
-- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-five-seat-r1-20260928.json`
-- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-five-seat-r2-20260928.json`
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-one-seat-r2-20260928.json`
+- `evidence/runs/catalog/operate-agentic-blueprint-flightpath-live-policy-five-seat-r1-20260928.json`
 
-The 25-seat gate is also complete. A concurrent terminal-scope check exposed a
+The previous immutable runtime's 25-seat gate is also retained as historical
+evidence. A concurrent terminal-scope check exposed a
 transient OpenShift API failure and was first preserved as RED evidence. A
 bounded retry/backoff regression fix then completed three consecutive
 GREEN-live runs (`r4`, `r5`, and `r6`), each with 25/25 participant probes,
@@ -222,10 +227,8 @@ GREEN-live runs (`r4`, `r5`, and `r6`), each with 25/25 participant probes,
 1. Review the 401 learning flow and commands for the intended participant
    persona.
 2. Build the Showroom package and visually inspect every page.
-3. Deploy and certify the native journey-correlation source at
-   `multi-agent-quickstart` commit `4b63233`. All six required correlation
-   fields are `GREEN-local`; the certified Flightpath image remains unchanged,
-   so the live activation gate remains open.
+3. Run three consecutive 25-seat certifications for the current authenticated,
+   correlated runtime before raising its internal ceiling above five.
 4. Add an independently addressable guardrail boundary so failure injection
    can be tested without terminating the compact workload pod.
 5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with

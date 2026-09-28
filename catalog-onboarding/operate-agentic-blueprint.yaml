@@ -52,8 +52,8 @@ runtime:
     - {id: stage-6-proof-package, title: Operational Proof Package}
 
 certification:
-  stage: content-candidate
-  max_workshop_seats: 1
+  stage: five-seat-certified
+  max_workshop_seats: 5
   promotion_sequence:
     - 1
     - 5
