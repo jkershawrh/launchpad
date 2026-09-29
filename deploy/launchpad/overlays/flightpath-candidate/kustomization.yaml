@@ -40,7 +40,7 @@ images:
     digest: sha256:ac64cfd16555ec7a2c495a8894892cc2fce497a14002712da531711384ac12e4
   - name: partner-portal
     newName: ghcr.io/rhpds/launchpad-portal
-    digest: sha256:f6778b456d7e737fd5483f3338205c15b5003faa475fafb1ecdb712c6928c9d1
+    digest: sha256:613e400dbf5969aa84e6e2280b28a98cc2c38b339ebbaf6e4e0d2d5c22c3109d
   - name: admin
     newName: ghcr.io/rhpds/launchpad-admin
     digest: sha256:9808230f3ad7686a1f3413004ef24f0d3eabf33a71243252b6368dcc643c44ce
