@@ -598,7 +598,11 @@ def claim_oidc_identity(body: IdentityClaimRequest, x_access_broker_key: str = H
         ),
         None,
     )
-    if not policy or not policy.enabled or not identity or identity.disabled_at:
+    # A disabled participant identity is dormant after its last entitlement
+    # expires; possession of a valid code for a new order may reactivate that
+    # same identity. PublicAccessService.claim performs the code/expiry checks
+    # and clears disabled_at atomically with the claim.
+    if not policy or not policy.enabled or not identity:
         raise HTTPException(403, "Access request cannot be completed")
     try:
         result = public_access_service.claim(
@@ -625,7 +629,9 @@ def claim_oidc_identity_by_code(
         ),
         None,
     )
-    if not identity or identity.disabled_at:
+    # Keep the stable identity reusable across non-overlapping labs. The claim
+    # service reactivates it only after validating a unique, active code.
+    if not identity:
         raise HTTPException(403, "Access request cannot be completed")
     now = datetime.utcnow()
     matches = [

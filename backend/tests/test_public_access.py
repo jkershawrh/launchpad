@@ -1100,3 +1100,121 @@ def test_claiming_a_later_lab_reactivates_the_ephemeral_identity():
     resumed = access.claim("next", "person@example.com", next_code, "192.0.2.30")
     assert resumed.identity.participant_id == first.identity.participant_id
     assert resumed.identity.disabled_at is None
+
+
+def test_existing_oidc_session_can_claim_a_new_lab_after_last_entitlement_expired(
+    monkeypatch,
+):
+    """A disabled identity is dormant, not forbidden from a valid new claim."""
+    identity = SimpleNamespace(
+        keycloak_username="lp-returning",
+        normalized_email="person@example.com",
+        disabled_at=datetime.utcnow(),
+    )
+    policy = SimpleNamespace(order_id="next-order", enabled=True)
+    result = SimpleNamespace(entitlement=SimpleNamespace(seat_ref="next-seat"))
+    monkeypatch.setattr(
+        public_access_router.public_access_service,
+        "get_policy_by_request",
+        lambda *_args: policy,
+    )
+    monkeypatch.setattr(
+        public_access_router.public_access_service,
+        "_identities",
+        {identity.normalized_email: identity},
+    )
+    claimed = []
+
+    def claim(order_id, email, code, source):
+        claimed.append((order_id, email, code, source))
+        identity.disabled_at = None
+        return result
+
+    monkeypatch.setattr(public_access_router.public_access_service, "claim", claim)
+    monkeypatch.setattr(public_access_router, "_require_broker", lambda _key: None)
+    monkeypatch.setattr(
+        public_access_router,
+        "_bind_claim_or_fail_closed",
+        lambda _order_id, _result: None,
+    )
+
+    response = public_access_router.claim_oidc_identity(
+        public_access_router.IdentityClaimRequest(
+            host="labs.example.io",
+            public_path="/labs/next-order",
+            username="lp-returning",
+            code="valid-code",
+        ),
+        x_access_broker_key="broker",
+    )
+
+    assert response == {"order_id": "next-order", "seat_ref": "next-seat"}
+    assert claimed == [
+        ("next-order", "person@example.com", "valid-code", "oidc-gateway")
+    ]
+    assert identity.disabled_at is None
+
+
+def test_participant_hub_can_reactivate_a_dormant_identity_with_a_valid_code(
+    monkeypatch,
+):
+    identity = SimpleNamespace(
+        keycloak_username="lp-returning",
+        normalized_email="person@example.com",
+        disabled_at=datetime.utcnow(),
+    )
+    policy = SimpleNamespace(
+        order_id="next-order",
+        enabled=True,
+        expires_at=datetime.utcnow() + timedelta(hours=1),
+        public_url="https://labs.example.io/labs/next-order",
+    )
+    result = SimpleNamespace(entitlement=SimpleNamespace(seat_ref="next-seat"))
+    monkeypatch.setattr(
+        public_access_router.public_access_service,
+        "_identities",
+        {identity.normalized_email: identity},
+    )
+    monkeypatch.setattr(
+        public_access_router.public_access_service,
+        "_policies",
+        {policy.order_id: policy},
+    )
+    monkeypatch.setattr(
+        public_access_router.public_access_service,
+        "_verify",
+        lambda candidate, code: candidate is policy and code == "valid-code",
+    )
+
+    def claim(order_id, email, code, source):
+        assert (order_id, email, code, source) == (
+            "next-order",
+            "person@example.com",
+            "valid-code",
+            "participant-hub",
+        )
+        identity.disabled_at = None
+        return result
+
+    monkeypatch.setattr(public_access_router.public_access_service, "claim", claim)
+    monkeypatch.setattr(public_access_router, "_require_broker", lambda _key: None)
+    monkeypatch.setattr(
+        public_access_router,
+        "_bind_claim_or_fail_closed",
+        lambda _order_id, _result: None,
+    )
+
+    response = public_access_router.claim_oidc_identity_by_code(
+        public_access_router.IdentityCodeClaimRequest(
+            username="lp-returning",
+            code="valid-code",
+        ),
+        x_access_broker_key="broker",
+    )
+
+    assert response == {
+        "order_id": "next-order",
+        "seat_ref": "next-seat",
+        "public_url": "https://labs.example.io/labs/next-order",
+    }
+    assert identity.disabled_at is None
