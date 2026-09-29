@@ -115,14 +115,14 @@ metadata:
       image:
         repository: ghcr.io/jkershawrh/sovereign-ai-201-adapter
         tag: ''
-        digest: sha256:9b1eb7bb0c5b6bf2888f02566070b6140d4c6b049c31151bf4eac9a1beba1708
+        digest: sha256:3d79b40ac8f2dd349eab5b51e1133cd205eb29fc772c7640e7cd367038db5889
         pullPolicy: IfNotPresent
     presentation:
       enabled: true
       image:
         repository: ghcr.io/jkershawrh/sovereign-ai-201-presentation
         tag: ''
-        digest: sha256:f13a56fb7530c16309098270f3399a8ecc5b59d60481595ea7bd181a7424ca31
+        digest: sha256:6ed2b935156cd3aedfb2083de3618354ffa4bd3cd865916f0cb7c2fd197b0d5f
         pullPolicy: IfNotPresent
   workload_ignore_differences: []
   workload_runtime_secret_name: sovereign-ai-201-model-runtime
