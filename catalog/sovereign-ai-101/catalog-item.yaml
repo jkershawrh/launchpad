@@ -4,7 +4,7 @@ description: Trace a governed inference request through classification, determin
   policy, advisory model dispatch, evidence receipts, refusal states, and human authority.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -39,28 +39,18 @@ metadata:
   solution_family: sovereign_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-101.git
-  showroom_content_ref: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+  showroom_content_ref: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/sovereign-ai-101.yaml
-  certification_stage: factory-source-qualified
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - The immutable images and factory journey are REHEARSAL only; no live model or
-    Intel CPU placement is claimed.
-  - OpenShift admission, NetworkPolicy enforcement, Route behavior, and one-seat reclaim
-    remain unverified in a destination cluster.
-  - The single local resource snapshot is not a capacity claim; one, five, and twenty-five-seat
-    qualification remain independent Launchpad gates.
-  - Launchpad source approval, trusted render, artifact review, live seat certification,
-    and promotion remain required.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/sovereign-ai-101.yaml
   allowed_exposure_policies:
   - internal
@@ -72,9 +62,6 @@ metadata:
   - id: story
     title: Story
     source: workload.route.ui
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -94,7 +81,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-101.git
-  workload_revision: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+  workload_revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
   workload_deploy_type: kustomize
   workload_deployment_scope: seat
   workload_deploy_path: deploy/openshift/base
@@ -113,8 +100,9 @@ metadata:
   workload_runtime_secret_sources: {}
   workload_runtime_secret_value_path: ''
   workload_identity_value_path: ''
-  workload_routes: {}
+  workload_routes:
+    ui: sovereign-presentation
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-101.git
-  source_content_revision: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+  source_content_revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
   source_references: {}

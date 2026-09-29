@@ -7,7 +7,7 @@ catalog:
     authority.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '101'
   learning_stage: Learn
@@ -25,13 +25,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
-    revision: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+    revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
     playbook: site.yml
     start_path: showroom
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-101.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
-    revision: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+    revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
     deploy_path: deploy/openshift/base
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-101.git
 runtime:
@@ -60,9 +60,6 @@ runtime:
   - id: story
     title: Story
     source: workload.route.ui
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -82,22 +79,20 @@ runtime:
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
+    routes:
+      ui: sovereign-presentation
     readiness: []
 certification:
-  stage: factory-source-qualified
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - The immutable images and factory journey are REHEARSAL only; no live model or
-    Intel CPU placement is claimed.
-  - OpenShift admission, NetworkPolicy enforcement, Route behavior, and one-seat reclaim
-    remain unverified in a destination cluster.
-  - The single local resource snapshot is not a capacity claim; one, five, and twenty-five-seat
-    qualification remain independent Launchpad gates.
-  - Launchpad source approval, trusted render, artifact review, live seat certification,
-    and promotion remain required.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
+  certification_scope:
+  - One internal seat is certified on Flightpath with trusted render, participant
+    probes, namespace isolation, normal reclaim, and zero residue.
+  - The immutable experience is explicitly REHEARSAL; it makes no live-model or
+    Intel CPU placement claim.
+  - Certification is limited to one seat. Higher scale gates remain independent.
   proof_contract: certification/catalog/sovereign-ai-101.yaml
