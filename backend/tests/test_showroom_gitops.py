@@ -43,6 +43,22 @@ def test_showroom_uses_immutable_git_cloner_that_marks_repo_safe_before_entering
     )
     values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
     assert values["git_cloner"]["image"] == SHOWROOM_GIT_CLONER_IMAGE
+    assert "ignoreDifferences" not in app["spec"]
+
+    ssh_app = build_showroom_application(
+        ShowroomSeat(
+            namespace="launchpad-seat-agentops-1",
+            workshop_id="workshop-1",
+            seat_id="seat-1",
+            participant_id="lp-user-1",
+            workspace_url="",
+            content_repo_url="git@github.com:example/showroom.git",
+            content_ref="b" * 40,
+            apps_domain="apps.arena.example.com",
+            git_ssh_mount=True,
+        )
+    )
+    assert ssh_app["spec"]["ignoreDifferences"][0]["kind"] == "Deployment"
 
 
 def test_showroom_uses_cluster_specific_immutable_support_images():

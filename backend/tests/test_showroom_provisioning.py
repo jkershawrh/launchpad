@@ -219,6 +219,50 @@ def test_helm_workload_plan_carries_only_declarative_non_secret_contract():
         adapter.provision(plan)
 
 
+def test_kustomize_plan_keeps_its_contract_and_certified_helm_seats_stay_charts():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._overlay_path = "/tmp/demo"
+
+    def plan_for(catalog_id: str, source_kind: str, images: list[str] | None = None):
+        item = CatalogItem(
+            catalog_item_id=catalog_id,
+            display_name=catalog_id,
+            category=CatalogCategory.GUIDED_BUILD,
+            status=CatalogStatus.DRAFT,
+            provisioner_refs=["helm-workload"],
+            metadata={
+                "workload_repo": "git@github.com:example/lab.git",
+                "workload_revision": "b" * 40,
+                "workload_deploy_path": "deploy/openshift/base",
+                "workload_source_kind": source_kind,
+                "workload_kustomize_images": images or [],
+            },
+        )
+        request = LabRequest(
+            tenant_id="partner-a",
+            requester_id="user-a",
+            catalog_item_id=catalog_id,
+            requested_mode=CatalogCategory.GUIDED_BUILD,
+        )
+        return adapter.create_plan(request, item).required_resources
+
+    kustomize = plan_for(
+        "sovereign-ai-101",
+        "kustomize",
+        [
+            "registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/example/rehearsal@sha256:"
+            + "a" * 64
+        ],
+    )
+    assert kustomize["workload_source_kind"] == "kustomize"
+    assert kustomize["workload_kustomize_images"][0].endswith("a" * 64)
+
+    for source_kind in ("chart", "helm", "launchpad-seat-chart"):
+        resources = plan_for(f"lab-{source_kind}", source_kind, ["not-an-image"])
+        assert resources["workload_source_kind"] == "chart"
+        assert resources["workload_kustomize_images"] == []
+
+
 def test_resolves_declared_showroom_tabs_from_cluster_and_workload_contract():
     tabs = OpenShiftProvisioningAdapter._resolve_showroom_tabs(
         [

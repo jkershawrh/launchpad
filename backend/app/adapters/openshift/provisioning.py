@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import logging
@@ -81,6 +82,14 @@ HEALTH_INTERVAL = 5
 
 WATCHED_DEPLOYMENTS = ["backend", "partner-portal", "admin"]
 logger = logging.getLogger("launchpad.openshift.provisioning")
+
+
+def _workload_source_kind(value: object) -> str:
+    """Keep existing Helm seats on the chart path they were certified with."""
+    kind = str(value or "chart").strip() or "chart"
+    if kind in {"chart", "helm", "launchpad-seat-chart"}:
+        return "chart"
+    return kind
 
 
 class OpenShiftProvisioningAdapter:
@@ -223,6 +232,12 @@ class OpenShiftProvisioningAdapter:
                 "workload_revision": meta.get("workload_revision", ""),
                 "workload_deploy_path": meta.get("workload_deploy_path", ""),
                 "workload_release_name": meta.get("workload_release_name", "workload"),
+                "workload_source_kind": _workload_source_kind(meta.get("workload_source_kind")),
+                "workload_kustomize_images": (
+                    list(meta.get("workload_kustomize_images") or [])
+                    if _workload_source_kind(meta.get("workload_source_kind")) == "kustomize"
+                    else []
+                ),
                 "workload_helm_values": meta.get("workload_helm_values", {}),
                 "workload_ignore_differences": meta.get("workload_ignore_differences", []),
                 "workload_runtime_secret_name": meta.get("workload_runtime_secret_name", ""),
@@ -516,12 +531,19 @@ class OpenShiftProvisioningAdapter:
                         )
                     ),
                     tool_tabs=tool_tabs,
+                    git_ssh_mount=str(res["showroom_content_repo_url"]).startswith("git@"),
                 ),
                 argocd_namespace=os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd"),
                 argocd_project=os.environ.get("SHOWROOM_ARGOCD_PROJECT", "default"),
                 chart_version=os.environ.get("SHOWROOM_CHART_VERSION", "2.2.*"),
             )
             self._showroom_gitops.apply(showroom_app)
+            if str(res["showroom_content_repo_url"]).startswith("git@"):
+                self._mount_showroom_git_ssh(
+                    repo_url=str(res["showroom_content_repo_url"]),
+                    namespace=demo_namespace,
+                    argocd_namespace=os.environ.get("SHOWROOM_ARGOCD_NAMESPACE", "argocd"),
+                )
             routes = self._wait_for_showroom_route(demo_namespace)
 
         if workload_enabled:
@@ -897,6 +919,106 @@ http {{
         if target_port:
             route["spec"]["port"] = {"targetPort": target_port}
         return route
+
+    def _mount_showroom_git_ssh(
+        self, *, repo_url: str, namespace: str, argocd_namespace: str
+    ) -> None:
+        """Give the stock Showroom cloner the deploy key Argo already uses.
+
+        HTTPS labs never call this. The upstream chart has no SSH volume, so
+        the seat keeps the chart render and only the git-cloner mount is added.
+        """
+        key = self._read_repo_ssh_key(repo_url, argocd_namespace)
+        if not key:
+            raise ValueError(f"No SSH deploy key is available for {repo_url}")
+        known_hosts = self._read_git_known_hosts(argocd_namespace)
+        secret = client.V1Secret(
+            metadata=client.V1ObjectMeta(name="showroom-git-ssh", namespace=namespace),
+            type="Opaque",
+            string_data={"id_rsa": key, "known_hosts": known_hosts},
+        )
+        try:
+            self._core_v1.create_namespaced_secret(namespace, secret)
+        except ApiException as exc:
+            if getattr(exc, "status", None) != 409:
+                raise
+            self._core_v1.patch_namespaced_secret("showroom-git-ssh", namespace, secret)
+
+        deadline = time.time() + 90
+        while time.time() < deadline:
+            try:
+                self._apps_v1.read_namespaced_deployment("showroom", namespace)
+                break
+            except ApiException as exc:
+                if getattr(exc, "status", None) != 404:
+                    raise
+                time.sleep(2)
+        else:
+            raise ValueError(f"Showroom deployment was not created in {namespace}")
+        wrapper = (
+            "mkdir -p /tmp/git-ssh && "
+            "cp /mnt/git-ssh/id_rsa /mnt/git-ssh/known_hosts /tmp/git-ssh/ && "
+            "chmod 0400 /tmp/git-ssh/id_rsa && "
+            "export GIT_SSH_COMMAND='ssh -i /tmp/git-ssh/id_rsa "
+            "-o UserKnownHostsFile=/tmp/git-ssh/known_hosts -o IdentitiesOnly=yes' && "
+            "exec /entrypoint.sh"
+        )
+        self._apps_v1.patch_namespaced_deployment(
+            "showroom",
+            namespace,
+            {
+                "spec": {
+                    "template": {
+                        "spec": {
+                            "volumes": [
+                                {
+                                    "name": "showroom-git-ssh",
+                                    "secret": {
+                                        "secretName": "showroom-git-ssh",
+                                        "defaultMode": 256,
+                                    },
+                                }
+                            ],
+                            "initContainers": [
+                                {
+                                    "name": "git-cloner",
+                                    "command": ["/bin/bash", "-c"],
+                                    "args": [wrapper],
+                                    "volumeMounts": [
+                                        {
+                                            "name": "showroom-git-ssh",
+                                            "mountPath": "/mnt/git-ssh",
+                                            "readOnly": True,
+                                        }
+                                    ],
+                                }
+                            ],
+                        }
+                    }
+                }
+            },
+        )
+
+    def _read_repo_ssh_key(self, repo_url: str, namespace: str) -> str:
+        listed = self._control_core_v1.list_namespaced_secret(namespace)
+        for item in listed.items:
+            data = item.data or {}
+            raw_url = data.get("url")
+            raw_key = data.get("sshPrivateKey")
+            if not raw_url or not raw_key:
+                continue
+            if base64.b64decode(raw_url).decode() == repo_url:
+                return base64.b64decode(raw_key).decode()
+        return ""
+
+    def _read_git_known_hosts(self, namespace: str) -> str:
+        config_map = self._control_core_v1.read_namespaced_config_map(
+            "argocd-ssh-known-hosts-cm", namespace
+        )
+        hosts = str((config_map.data or {}).get("ssh_known_hosts", ""))
+        if not hosts.strip():
+            raise ValueError("Git host keys are not available")
+        return hosts
 
     def _apply_showroom_same_origin_routes(
         self,

@@ -100,6 +100,7 @@ class ShowroomSeat:
     terminal_storage_enabled: bool = True
     terminal_image: str = SHOWROOM_TERMINAL_IMAGE
     git_cloner_image: str = SHOWROOM_GIT_CLONER_IMAGE
+    git_ssh_mount: bool = False
 
     def __post_init__(self) -> None:
         if not self.content_ref.strip():
@@ -219,7 +220,7 @@ def build_showroom_application(
         # The chart otherwise enables its separate wetty container by default.
         # The supported /terminal service already supplies this seat's shell.
         values["wetty"] = {"setup": "false"}
-    return {
+    application = {
         "apiVersion": f"{ARGO_GROUP}/{ARGO_VERSION}",
         "kind": "Application",
         "metadata": {
@@ -245,6 +246,21 @@ def build_showroom_application(
             },
         },
     }
+    if seat.git_ssh_mount:
+        application["spec"]["ignoreDifferences"] = [
+            {
+                "group": "apps",
+                "kind": "Deployment",
+                "name": "showroom",
+                "jqPathExpressions": [
+                    '.spec.template.spec.volumes[] | select(.name == "showroom-git-ssh")',
+                    '.spec.template.spec.initContainers[] | select(.name == "git-cloner") | .command',
+                    '.spec.template.spec.initContainers[] | select(.name == "git-cloner") | .args',
+                    '.spec.template.spec.initContainers[] | select(.name == "git-cloner") | .volumeMounts[] | select(.name == "showroom-git-ssh")',
+                ],
+            }
+        ]
+    return application
 
 
 class ShowroomGitOpsAdapter:
