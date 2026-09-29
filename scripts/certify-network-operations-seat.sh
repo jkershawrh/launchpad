@@ -36,7 +36,10 @@ stage="readiness"
 readiness="$(curl "${curl_options[@]}" "https://${app_host}/ready")"
 jq -e '.status == "ready"' <<<"$readiness" >/dev/null
 stage="workspace-http"
-workspace_status="$(curl "${http_status_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/workspace")"
+# The Showroom/public gateway exposes this tool at /workspace and rewrites that
+# same-origin path to the workload Route root. Probe the actual workload root
+# here; probing /workspace directly bypasses the gateway rewrite and is a 404.
+workspace_status="$(curl "${http_status_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/")"
 if [[ "$workspace_status" != "200" ]]; then
   printf 'semantic_response=workspace_http_status:%s\n' "$workspace_status" >&2
   false

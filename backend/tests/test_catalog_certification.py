@@ -778,6 +778,8 @@ def test_network_probe_distinguishes_workspace_and_story_failures():
     assert 'stage="workspace-http"' in probe
     assert 'stage="story-http"' in probe
     assert "http_status_options=(-sSkL" in probe
+    assert '"https://${app_host}/")"' in probe
+    assert '"https://${app_host}/workspace")"' not in probe
     assert "semantic_response=workspace_http_status:" in probe
     assert "semantic_response=story_http_status:" in probe
 
