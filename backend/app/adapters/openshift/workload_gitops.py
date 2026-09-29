@@ -105,12 +105,19 @@ class WorkloadSeat:
         if self.runtime_secret_name and not DNS_LABEL.fullmatch(self.runtime_secret_name):
             raise ValueError("Runtime Secret name must be a DNS label")
         if self.runtime_secret_value_path:
+            path_parts = self.runtime_secret_value_path.split(".")
             leaf = re.sub(
                 r"[^a-z0-9]+",
                 "",
-                self.runtime_secret_value_path.rsplit(".", 1)[-1].lower(),
+                path_parts[-1].lower(),
             )
-            if leaf not in {"existingsecret", "existingsecretname", "secretname"}:
+            parent_declares_secret = any(
+                "secret" in re.sub(r"[^a-z0-9]+", "", part.lower())
+                for part in path_parts[:-1]
+            )
+            if leaf not in {"existingsecret", "existingsecretname", "secretname"} and not (
+                leaf == "name" and parent_declares_secret
+            ):
                 raise ValueError(
                     "Runtime Secret Helm value path must be an existing-Secret reference"
                 )
@@ -147,6 +154,27 @@ def _set_value_path(values: dict[str, Any], path: str, value: Any) -> None:
     current[parts[-1]] = value
 
 
+def helm_value_files(helm_values: dict[str, Any], deploy_path: str) -> list[str]:
+    """Return chart-relative Helm value files declared by a catalog overlay."""
+    overlay = helm_values.get("values_overlay")
+    if overlay in (None, ""):
+        return []
+    if not isinstance(overlay, str):
+        raise ValueError("Helm values overlay must be a chart file path")
+    relative = overlay.strip()
+    prefix = deploy_path.strip("/") + "/"
+    if relative.startswith(prefix):
+        relative = relative[len(prefix):]
+    if (
+        not relative
+        or relative.startswith("/")
+        or ".." in relative.split("/")
+        or not relative.endswith((".yaml", ".yml"))
+    ):
+        raise ValueError("Helm values overlay must be a safe chart-relative YAML file")
+    return [relative]
+
+
 def build_workload_application(
     seat: WorkloadSeat,
     *,
@@ -155,6 +183,8 @@ def build_workload_application(
 ) -> dict[str, Any]:
     """Build a secret-free, cluster-aware Argo CD Application for one seat."""
     helm_values = copy.deepcopy(seat.helm_values)
+    value_files = helm_value_files(helm_values, seat.deploy_path)
+    helm_values.pop("values_overlay", None)
     if seat.runtime_secret_name:
         _set_value_path(helm_values, seat.runtime_secret_value_path, seat.runtime_secret_name)
     if seat.identity_value_path:
@@ -193,10 +223,13 @@ def build_workload_application(
     if seat.source_kind == "kustomize":
         source["kustomize"] = {"images": list(seat.kustomize_images)}
     else:
-        source["helm"] = {
+        helm_source: dict[str, Any] = {
             "releaseName": seat.release_name,
             "values": yaml.safe_dump(helm_values, sort_keys=False),
         }
+        if value_files:
+            helm_source["valueFiles"] = value_files
+        source["helm"] = helm_source
 
     spec: dict[str, Any] = {
         "project": argocd_project,

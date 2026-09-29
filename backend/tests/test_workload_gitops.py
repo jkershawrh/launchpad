@@ -8,6 +8,7 @@ from app.adapters.openshift.workload_gitops import (
     WorkloadSeat,
     build_runtime_secret,
     build_workload_application,
+    helm_value_files,
     workload_application_name,
 )
 from kubernetes.client.exceptions import ApiException
@@ -127,6 +128,15 @@ def test_rejects_mutable_revision_and_sensitive_helm_values():
 
     with pytest.raises(ValueError, match="existing-Secret"):
         _seat(runtime_secret_value_path="secrets.LLM_API_KEY")
+
+
+def test_accepts_named_existing_secret_under_an_explicit_secret_mapping():
+    seat = _seat(runtime_secret_value_path="adapter.model.apiKeySecret.name")
+
+    app = build_workload_application(seat)
+    values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
+
+    assert values["adapter"]["model"]["apiKeySecret"]["name"] == "example-runtime"
 
 
 def test_runtime_secret_is_namespaced_labeled_and_separate_from_argocd():
@@ -312,3 +322,25 @@ def test_private_workload_pull_secret_fails_closed_when_source_is_missing(monkey
         )
 
     adapter._core_v1.create_namespaced_secret.assert_not_called()
+
+
+def test_published_values_overlay_becomes_a_chart_relative_helm_value_file():
+    app = build_workload_application(
+        _seat(
+            deploy_path="charts/sovereign-ai-301",
+            helm_values={
+                "values_overlay": "charts/sovereign-ai-301/values.published.yaml",
+                "presentation_image": "ghcr.io/example/presentation@sha256:" + "a" * 64,
+            },
+            runtime_secret_name="",
+            runtime_secret_value_path="",
+            identity_value_path="",
+        )
+    )
+
+    helm = app["spec"]["source"]["helm"]
+    assert helm["valueFiles"] == ["values.published.yaml"]
+    values = yaml.safe_load(helm["values"])
+    assert "values_overlay" not in values
+    assert values["presentation_image"].startswith("ghcr.io/example/presentation@sha256:")
+    assert helm_value_files({}, "charts/example") == []
