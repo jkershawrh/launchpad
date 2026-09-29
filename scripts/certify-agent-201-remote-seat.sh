@@ -5,6 +5,9 @@ namespace="${1:?usage: certify-agent-201-remote-seat.sh <namespace> <cluster-id>
 expected_cluster="${2:?usage: certify-agent-201-remote-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
+stage="cluster-identity"
+trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
+
 actual_cluster="$(
   oc get namespace "$namespace" \
     -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}'
@@ -15,6 +18,7 @@ if [[ "$actual_cluster" != "$expected_cluster" ]]; then
 fi
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+stage="showroom-contract"
 host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
 curl_options=(-fsSk)
 if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
@@ -32,6 +36,7 @@ if [[ -z "$endpoint" || -z "$model" ]]; then
   exit 3
 fi
 
+stage="connection-config"
 oc create configmap racmaas-connection \
   --from-literal="api-base=${endpoint}" \
   --dry-run=client -o yaml \
@@ -42,6 +47,7 @@ oc create configmap racmaas-connection \
 # `oc exec` process does not inherit values exported dynamically by the
 # terminal entrypoint, so reading `$MAAS_API_KEY` there can silently create an
 # empty Secret. This pipeline never decodes or prints the credential locally.
+stage="model-key-binding"
 oc --kubeconfig "$KUBECONFIG" get secret launchpad-participant-runtime \
   --namespace "$namespace" -o json \
   | jq --arg namespace "$namespace" '{
@@ -57,6 +63,7 @@ test -n "$(
     --namespace "$namespace" -o jsonpath='{.data.api-key}'
 )"
 
+stage="workload-apply"
 for manifest in \
   advisor-prompt-configmap.yaml \
   solution-tools.yaml \
@@ -68,11 +75,13 @@ do
     < "$repo_root/content-intel-xeon6-agent-201/manifests/$manifest" >/dev/null
 done
 
+stage="workload-model-config"
 oc exec -n "$namespace" deploy/showroom -c terminal -- \
   oc set env -n "$namespace" deployment/solution-agent \
   --containers=solution-agent \
   "ADVISOR_MODEL=${model}" >/dev/null
 
+stage="workload-readiness"
 for deployment in solution-agent solution-ui; do
   oc exec -n "$namespace" deploy/showroom -c terminal -- \
     oc rollout status -n "$namespace" "deployment/${deployment}" \
