@@ -129,8 +129,10 @@ metadata:
 spec:
   runPolicy: Serial
   source:
-    type: Binary
-    binary: {}
+    type: Git
+    git:
+      uri: https://github.com/rhpds/launchpad.git
+      ref: 93dcdf0775e3aea31c605e918493f57be7c15ea6
   strategy:
     type: Docker
     dockerStrategy:
@@ -138,5 +140,5 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: launchpad-certification-runner:e2d78de
+      name: launchpad-certification-runner:93dcdf0
   triggers: []

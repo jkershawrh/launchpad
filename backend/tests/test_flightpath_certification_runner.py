@@ -17,10 +17,13 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
     kinds = {(x["kind"], x["metadata"]["name"]): x for x in docs}
     pvc = kinds[("PersistentVolumeClaim", "launchpad-certification-evidence")]
     role = kinds[("ClusterRole", "launchpad-flightpath-certification-runner")]
+    build = kinds[("BuildConfig", "launchpad-certification-runner")]
     assert pvc["spec"]["accessModes"] == ["ReadWriteMany"]
     flattened = {(r["apiGroups"][0], tuple(r["resources"]), tuple(r["verbs"])) for r in role["rules"]}
     assert not any("delete" in verbs and "namespaces" in resources for _, resources, verbs in flattened)
     assert not any("create" in verbs and "secrets" in resources for _, resources, verbs in flattened)
+    assert build["spec"]["source"]["type"] == "Git"
+    assert len(build["spec"]["source"]["git"]["ref"]) == 40
 
 
 def test_job_is_fail_closed_and_binds_candidate_identity() -> None:
