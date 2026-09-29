@@ -3,6 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DRIVER = ROOT / "scripts/certify-agent-201-via-control-plane.py"
+CATALOG_SEAT_PROBE = ROOT / "scripts/certify-agent-201-catalog-seat.sh"
 
 
 def test_remote_certifier_uses_persisted_cluster_client_without_kubeconfig_or_exec():
@@ -48,3 +49,32 @@ def test_remote_certifier_proves_participant_scope_and_sanitizes_evidence():
     assert "node_list_denied" in source
     assert '"contains_plaintext_credentials": False' in source
     assert "MAAS_API_KEY}" not in source
+
+
+def test_catalog_seat_probe_reports_bounded_failure_stages():
+    source = CATALOG_SEAT_PROBE.read_text()
+
+    for stage in (
+        "route-discovery",
+        "tools-health",
+        "agent-health",
+        "app-health",
+        "tools-contract",
+        "model-request",
+        "response-contract",
+        "response-brief",
+        "response-requirements",
+        "response-hardware-options",
+        "response-platform-capabilities",
+        "response-architecture",
+        "response-inference-errors",
+        "response-hardware-tool",
+        "response-platform-tool",
+        "response-architecture-tool",
+    ):
+        assert f'stage="{stage}"' in source
+    assert "semantic_response=brief_type:" in source
+    assert "brief_length:" in source
+    assert "top_level_keys:" in source
+    assert "inference_error_count:" in source
+    assert "inference_http_statuses:" in source

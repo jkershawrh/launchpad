@@ -1,17 +1,15 @@
 catalog_item_id: scale-agentic-blueprint
-display_name: "Intel AI 501: Scale and Certify Agentic Systems"
+display_name: "Intel AI 501: Production Multi-Agent Blueprint"
 description: >-
   Extend the Red Hat and Intel evidence-backed agentic blueprint from one
   trustworthy operational journey to a measured, resilient, and certified
   deployment envelope on OpenShift and Intel Xeon infrastructure.
 category: guided_build
-version: "0.1.0"
+version: "0.2.0-flightpath.1"
 status: draft
 required_capabilities:
   - openshift
   - showroom
-  - model_endpoint
-  - observability
 default_hardware_profile: xeon-basic
 default_quota_profile: large
 default_ttl: "6h"
@@ -21,7 +19,6 @@ provisioner_refs:
 validation_refs:
   - pod-ready
   - route-accessible
-  - inference-health
   - multi-agent-journey
   - zero-residue
 observability_profile: agentic-blueprint-scale
@@ -42,11 +39,12 @@ metadata:
   shared_blueprint: red-hat-intel-agentic-v1
   solution_family: operations_reliability
   publication_gate: certified
-  showroom: false
-  operator_workshop: false
-  content_only: true
-  onboarding_managed: false
-  certification_stage: charter
+  showroom: true
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/scale-agentic-blueprint.yaml
+  certification_stage: factory-development-verified
   certification_proof_contract: certification/catalog/scale-agentic-blueprint.yaml
   learner_workload_charter: certification/workload/scale-agentic-blueprint.yaml
   max_workshop_seats: 1
@@ -74,17 +72,82 @@ metadata:
     - Quality and policy-compliance comparison before and during scale.
     - One-, five-, and twenty-five-seat certification with zero-residue reclaim.
   activation_blockers:
-    - Certify operate-agentic-blueprint at one seat before implementing this lab.
-    - Approve or revise the provisional service-level objectives from a reviewed one-seat baseline.
-    - Deploy approved OpenTelemetry collection with learner-visible correlated traces.
-    - Expose approved Intel Xeon utilization and inference telemetry.
-    - Prove independently addressable dependency failure and recovery paths.
-    - Implement the live execution adapter and quality scorer for the versioned evaluation set.
-    - Produce immutable workload, content, and presentation artifacts.
-    - Complete one-, five-, and twenty-five-seat certification with zero residue.
+    - Complete trusted render and destination artifact qualification on Flightpath.
+    - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry before activation.
+    - Complete one- and five-seat certification with zero-residue reclaim before activation.
+    - Complete three consecutive twenty-five-seat runs before any twenty-five-seat promotion.
+    - Complete human authority review before promotion.
   production_blockers:
     - Use organization-owned digest-pinned images and content revisions.
     - Complete security, capacity, resilience, and operational-owner review.
+  allowed_exposure_policies:
+    - internal
+  showroom_journey: scale-agentic-blueprint
+  showroom_title: "Intel AI 501: Production Multi-Agent Blueprint"
+  namespace_slug: agentic-scale
+  showroom_content_repo_url: https://github.com/jkershawrh/agentic-scale-501.git
+  showroom_content_ref: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+  showroom_content_playbook: site.yml
+  showroom_content_start_path: showroom
+  showroom_terminal_storage: false
+  showroom_tabs:
+    - id: story
+      title: Production Blueprint Story
+      source: workload.route.presentation
+    - id: terminal
+      title: Terminal
+      source: showroom.terminal
+    - id: qualification
+      title: Qualification Evidence
+      source: workload.route.qualifier
+      path: /api/v1/status
+    - id: openshift-console
+      title: OpenShift Console
+      source: cluster.console_url
+  required_models: []
+  inference_endpoint: none
+  seat_cpu_millicores: 125
+  seat_memory_mib: 160
+  seat_pods: 2
+  seat_storage_gib: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  workload_repo: https://github.com/jkershawrh/agentic-scale-501.git
+  workload_revision: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: charts/agentic-scale-501
+  workload_source_kind: chart
+  workload_gitops_ready: true
+  workload_release_name: agentic-scale-501
+  workload_helm_values:
+    images:
+      presentation:
+        repository: ghcr.io/jkershawrh/agentic-scale-501-presentation
+        digest: sha256:4d67e5d73f8207498b96172b0c5eeaf736686652dc2de1caa21aeb4fea806615
+      qualifier:
+        repository: ghcr.io/jkershawrh/agentic-scale-501-qualifier
+        digest: sha256:fe29325bbfdc34466fdfa2a77050282e1e2ec0d6b21d9e0115fe416288d8e431
+    routes:
+      enabled: true
+      ingressDomain: apps.flightpath.fm2aihpcsed.com
+    qualifier:
+      evidenceSource: rehearsal
+      live:
+        enabled: false
+        secretName: agentic-scale-501-live
+  workload_ignore_differences: []
+  workload_runtime_secret_name: ''
+  workload_runtime_secret_sources: {}
+  workload_runtime_secret_value_path: ''
+  workload_identity_value_path: ''
+  workload_routes:
+    presentation: agentic-scale-501-presentation
+    qualifier: agentic-scale-501-qualifier
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/agentic-scale-501.git
+  source_content_revision: 5413bb24b25e67e7fba9d2025c4e4b070e324878
   source_references:
     canonical_blueprint:
       path: contracts/agentic-blueprint-v1.yaml

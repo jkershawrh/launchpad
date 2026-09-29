@@ -29,8 +29,25 @@ spec:
                 -e 's/_get_llm(max_tokens=512)/_get_llm(max_tokens=int(os.environ.get("REQUIREMENTS_MAX_TOKENS", "192")))/' \
                 -e 's/_get_llm(max_tokens=2048)/_get_llm(max_tokens=int(os.environ.get("BRIEF_MAX_TOKENS", "512")))/' \
                 /workdir/graph.py
+              python - <<'PY'
+              from pathlib import Path
+
+              graph = Path("/workdir/graph.py")
+              source = graph.read_text()
+              old = 'base_url=f"{LITELLM_API_BASE}/v1",'
+              new = (
+                  'base_url=(LITELLM_API_BASE.rstrip("/") '
+                  'if LITELLM_API_BASE.rstrip("/").endswith("/v1") '
+                  'else f"{LITELLM_API_BASE.rstrip(\'/\')}/v1"),'
+              )
+              if old not in source:
+                  raise SystemExit("expected LiteLLM base URL expression was not found")
+              source = source.replace(old, new)
+              graph.write_text(source)
+              PY
               grep -F 'REQUIREMENTS_MAX_TOKENS' /workdir/graph.py
               grep -F 'BRIEF_MAX_TOKENS' /workdir/graph.py
+              grep -F 'endswith("/v1")' /workdir/graph.py
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

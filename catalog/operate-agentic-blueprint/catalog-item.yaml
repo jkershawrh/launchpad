@@ -1,42 +1,41 @@
 catalog_item_id: operate-agentic-blueprint
-display_name: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
-description: >-
-  Operate the same Red Hat and Intel multi-agent blueprint built at level 301:
-  correlate requests with agents, MCP evidence, deterministic policy, Intel
-  Xeon inference, and human review; exercise safe denial and recovery; and
-  prove a controlled configuration change on OpenShift.
+display_name: 'Intel AI 401: Operate Evidence-Backed Multi-Agent Systems'
+description: 'Operate the same Red Hat and Intel multi-agent blueprint built at level
+  301: correlate requests with agents, MCP evidence, deterministic policy, Intel Xeon
+  inference, and human review; exercise safe denial and recovery; and prove a controlled
+  configuration change on OpenShift.'
 category: guided_build
-version: "0.1.0"
+version: 0.1.0
 status: draft
 required_capabilities:
-  - openshift
-  - showroom
-  - model_endpoint
+- openshift
+- showroom
+- model_endpoint
 default_hardware_profile: xeon-basic
 default_quota_profile: large
-default_ttl: "4h"
+default_ttl: 4h
 provisioner_refs:
-  - helm-workload
-  - showroom
+- helm-workload
+- showroom
 validation_refs:
-  - pod-ready
-  - route-accessible
-  - inference-health
-  - multi-agent-journey
+- pod-ready
+- route-accessible
+- inference-health
+- multi-agent-journey
 observability_profile: agentic-blueprint-core
 supported_branding:
-  - redhat-intel-default
-  - intel-internal
+- redhat-intel-default
+- intel-internal
 metadata:
   package_base_commit: 272bcea5889ef761a3e1cb54103861534b69e807
   flightpath_deployment_overlay_commit: d7c7e686d6513a77de685569b27863c9269c990f
-  learning_level: "401"
+  learning_level: '401'
   learning_stage: Operate
   experience_type: blueprint_operations
   prerequisites:
-    - multi-agent-quickstart
+  - multi-agent-quickstart
   recommended_next_items:
-    - scale-agentic-blueprint
+  - scale-agentic-blueprint
   journey_role: core
   specialty_family: null
   branches_from: null
@@ -47,35 +46,39 @@ metadata:
   operator_workshop: true
   content_only: false
   onboarding_managed: false
-  certification_stage: twenty-five-seat-certified
+  certification_stage: 5-seat-certified
   certification_proof_contract: certification/catalog/operate-agentic-blueprint.yaml
-  max_workshop_seats: 25
+  max_workshop_seats: 5
   public_max_workshop_seats: 1
   promotion_sequence:
-    - 1
-    - 5
-    - 25
+  - 1
+  - 5
+  - 25
   activation_blockers:
-    - Prove independent guardrail and inference outage tests, fail-closed behavior, and recovery without relying on co-located-process restarts.
-    - Add certified OpenTelemetry collection and a learner-visible correlated trace without exposing secrets or hidden model reasoning.
-    - Validate namespace-scoped GitOps drift detection and pipeline-based evaluation before presenting those operator capabilities as live.
-    - Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation through an approved telemetry source.
+  - Prove independent guardrail and inference outage tests, fail-closed behavior,
+    and recovery without relying on co-located-process restarts.
+  - Add certified OpenTelemetry collection and a learner-visible correlated trace
+    without exposing secrets or hidden model reasoning.
+  - Validate namespace-scoped GitOps drift detection and pipeline-based evaluation
+    before presenting those operator capabilities as live.
+  - Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation
+    through an approved telemetry source.
   production_blockers:
-    - Use an organization-owned digest-pinned workload image before general availability.
-    - Use an organization-owned digest-pinned presentation image before general availability.
+  - Use an organization-owned digest-pinned workload image before general availability.
+  - Use an organization-owned digest-pinned presentation image before general availability.
   allowed_exposure_policies:
-    - internal
-    - public_code
+  - internal
+  - public_code
   showroom_journey: operate-agentic-blueprint
-  showroom_title: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
+  showroom_title: 'Intel AI 401: Operate Evidence-Backed Multi-Agent Systems'
   namespace_slug: agentic-ops
-  showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
+  showroom_content_repo_url: https://github.com/rhpds/launchpad.git
   showroom_content_ref: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
   showroom_content_playbook: site-operate-agentic-blueprint.yml
   showroom_content_start_path: content-operate-agentic-blueprint
   showroom_antora_flat: true
   presentation:
-    repo_url: "https://github.com/jkershawrh/multi-agent-quickstart.git"
+    repo_url: https://github.com/jkershawrh/multi-agent-quickstart.git
     revision: 9cec3cebe7972b92385c55174674532eeb895f97
     image:
       repository: quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation
@@ -88,20 +91,20 @@ metadata:
     status: candidate
   showroom_terminal_storage: false
   showroom_tabs:
-    - id: presentation
-      title: Live Operations Story
-      source: workload.route.presentation
-    - id: terminal
-      title: Terminal
-      source: showroom.terminal
-    - id: workspace
-      title: Multi-Agent Workspace
-      source: workload.route.ui
-    - id: openshift-console
-      title: OpenShift Console
-      source: cluster.console_url
+  - id: presentation
+    title: Live Operations Story
+    source: workload.route.presentation
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: workspace
+    title: Multi-Agent Workspace
+    source: workload.route.ui
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   required_models:
-    - granite-3.2-8b-tools
+  - granite-3.2-8b-tools
   inference_endpoint: litellm
   seat_cpu_millicores: 1200
   seat_memory_mib: 2048
@@ -112,7 +115,7 @@ metadata:
   workshop_node_min_ready_seconds: 900
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: "https://github.com/rhpds/launchpad.git"
+  workload_repo: https://github.com/rhpds/launchpad.git
   workload_revision: d7c7e686d6513a77de685569b27863c9269c990f
   runtime_source_revision: 43889bc9444f9ef07f5b1a88e7de534af9647264
   workload_deploy_type: helm
@@ -123,7 +126,7 @@ metadata:
   workload_release_name: multi-agent
   workload_helm_values:
     imagePullSecrets:
-      - name: launchpad-registry-pull
+    - name: launchpad-registry-pull
     image:
       repository: ghcr.io/jkershawrh/multi-agent-quickstart
       digest: sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86
@@ -154,7 +157,7 @@ metadata:
     orchestrator: multi-agent
     presentation: story
   workload_readiness: []
-  source_content_repo: "https://github.com/rhpds/launchpad.git"
+  source_content_repo: https://github.com/rhpds/launchpad.git
   source_content_revision: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
   source_references:
     canonical_blueprint:

@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-311:latest
+FROM registry.access.redhat.com/ubi9/python-311@sha256:7b6cb58d3ff034df7b300800bd89a469d9bd2f739d43250d76b9c9e805307ab5
 
 LABEL name="ai-sandbox" \
       version="1.0.0" \
@@ -27,7 +27,7 @@ RUN ssh-keygen -A \
     && echo "Port 2222" >> /etc/ssh/sshd_config
 
 RUN useradd -m -s /bin/bash lab-user \
-    && echo "lab-user:launchpad" | chpasswd
+    && passwd -l lab-user
 
 # Install MaaS client stack — inference is remote, keep image lean
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel \

@@ -221,6 +221,14 @@ def test_candidate_keeps_one_shot_migration_out_of_steady_state() -> None:
     ]
 
 
+def test_public_gateway_uses_the_candidate_registry_credential() -> None:
+    documents = _render()
+    deployment = _one(documents, "Deployment", "public-access-gateway")
+    assert deployment["spec"]["template"]["spec"]["imagePullSecrets"] == [
+        {"name": "launchpad-registry-pull"}
+    ]
+
+
 def test_bootstrap_has_an_explicit_database_migration_gate() -> None:
     documents = _render_bootstrap()
     migration = next(
@@ -290,7 +298,7 @@ def test_candidate_isolates_agent_201_on_flightpath() -> None:
     metadata = catalog["metadata"]
     assert catalog["catalog_item_id"] == "intel-xeon6-agent-201"
     assert metadata["workshop_cluster_ref"] == "flightpath"
-    assert metadata["certification_stage"] == "one-seat-candidate"
+    assert metadata["certification_stage"] == "thirty-seat-certified"
     assert metadata["showroom_content_repo_url"] == (
         "https://github.com/jkershawrh/launchpad.git"
     )
@@ -324,7 +332,7 @@ def test_candidate_isolates_multi_agent_on_flightpath() -> None:
     metadata = catalog["metadata"]
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert metadata["workshop_cluster_ref"] == "flightpath"
-    assert metadata["certification_stage"] == "one-seat-candidate"
+    assert metadata["certification_stage"] == "twenty-five-seat-certified"
     assert metadata["showroom_content_repo_url"] == (
         "https://github.com/jkershawrh/launchpad.git"
     )
@@ -362,8 +370,8 @@ def test_candidate_isolates_hybrid_fraud_on_flightpath() -> None:
     metadata = catalog["metadata"]
     assert catalog["status"] == "active"
     assert metadata["workshop_cluster_ref"] == "flightpath"
-    assert metadata["certification_stage"] == "twenty-five-seat-candidate"
-    assert metadata["max_workshop_seats"] == 25
+    assert metadata["certification_stage"] == "five-seat-certified"
+    assert metadata["max_workshop_seats"] == 5
     assert metadata["inference_endpoint"] == "litellm_virtual_key_candidate"
     assert metadata["seat_cpu_millicores"] == 700
     assert metadata["seat_memory_mib"] == 1280

@@ -1,0 +1,72 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+
+metadata:
+  catalog_item_id: network-operations-agent
+  display_name: "Build an Evidence-Backed Network Operations Agent"
+
+spec:
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies: [internal]
+
+  scale_profiles:
+    - seats: 1
+      required_consecutive_runs: 1
+      probe_concurrency: 1
+      maximum_ready_seconds: 900
+      maximum_cleanup_seconds: 600
+    - seats: 5
+      required_consecutive_runs: 1
+      probe_concurrency: 5
+      maximum_ready_seconds: 1500
+      maximum_cleanup_seconds: 900
+  showroom:
+    pages:
+      - {id: welcome, path: /www/network-operations-agent/main/index.html, marker: "Evidence-Backed Network Operations Lab"}
+      - {id: architecture, path: /www/network-operations-agent/main/00-mission-and-architecture.html, marker: "Mission and architecture"}
+      - {id: baseline, path: /www/network-operations-agent/main/01-baseline.html, marker: "Establish the baseline"}
+      - {id: qualify, path: /www/network-operations-agent/main/06-qualify.html, marker: "Qualify reliability"}
+      - {id: conclusion, path: /www/network-operations-agent/main/conclusion.html, marker: "Conclusion"}
+
+  seat_probe:
+    argv: [bash, scripts/certify-network-operations-seat.sh, "{namespace}", "{cluster_ref}"]
+    timeout_seconds: 600
+    result_format: json
+    json_assertions:
+      - {path: result, equals: GREEN-live-internal-seat}
+      - {path: cluster_ref, equals: flightpath}
+      - {path: readiness.health, equals: true}
+      - {path: readiness.mcp_ready, equals: true}
+      - {path: readiness.workspace_http_status, equals: 200}
+      - {path: readiness.story_http_status, equals: 200}
+      - {path: investigation.cause, equals: hardware_timing}
+      - {path: investigation.live_model, equals: true}
+      - {path: investigation.human_approval, equals: true}
+      - {path: investigation.action_executed, equals: false}
+      - {path: qualification.result, equals: pass}
+      - {path: qualification.scenarios, equals: 5}
+      - {path: terminal_scope, contains: own_edit=yes}
+      - {path: terminal_scope, contains: cross_namespace=DENIED}
+      - {path: terminal_scope, contains: node_list=DENIED}
+      - {path: contains_sensitive_values, equals: false}
+
+  cleanup:
+    resources:
+      - namespaces
+      - applications.argoproj.io
+      - rolebindings.rbac.authorization.k8s.io
+      - persistentvolumeclaims
+      - persistentvolumes
+      - routes.route.openshift.io
+      - secrets
+
+  rubric:
+    required_score: 100
+    categories:
+      - {id: contract_integrity, weight: 10, requires: [contract_valid, evidence_hashed]}
+      - {id: placement_capacity, weight: 15, requires: [capacity_passed, single_cluster_assignment]}
+      - {id: provisioning_readiness, weight: 20, requires: [all_seats_ready, ready_within_limit]}
+      - {id: participant_function, weight: 25, requires: [showroom_pages_passed, seat_probes_passed]}
+      - {id: authorization, weight: 15, requires: [namespace_isolation_passed, sensitive_values_absent]}
+      - {id: cleanup, weight: 15, requires: [cleanup_completed, zero_residue_cleanup, model_keys_revoked]}

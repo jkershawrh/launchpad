@@ -1,0 +1,152 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+
+metadata:
+  catalog_item_id: multi-agent-quickstart
+  display_name: "Build Multi-Agent AI Systems with Open Protocols"
+
+spec:
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies:
+    - internal
+    - public_code
+
+  # Every profile creates one workshop order. Launchpad's catalog contract
+  # controls staggered seat provisioning; this runner starts functional probes
+  # only after every requested seat reaches the common readiness barrier.
+  scale_profiles:
+    - seats: 1
+      required_consecutive_runs: 1
+      probe_concurrency: 1
+      maximum_ready_seconds: 600
+      maximum_cleanup_seconds: 600
+    - seats: 5
+      required_consecutive_runs: 1
+      probe_concurrency: 5
+      maximum_ready_seconds: 1200
+      maximum_cleanup_seconds: 900
+    - seats: 25
+      required_consecutive_runs: 3
+      probe_concurrency: 10
+      maximum_ready_seconds: 2400
+      maximum_cleanup_seconds: 1200
+    - seats: 30
+      required_consecutive_runs: 3
+      probe_concurrency: 10
+      maximum_ready_seconds: 3000
+      maximum_cleanup_seconds: 1500
+
+  showroom:
+    pages:
+      - id: track-chooser
+        path: /www/modules/index.html
+        marker: "One Lab, One Guided Journey"
+      - id: track-1-local
+        track_id: track-1-local
+        path: /www/modules/track-1-local.html
+        marker: "Track 1: Understand the Application Pattern"
+      - id: track-2-openshift
+        track_id: track-2-openshift
+        path: /www/modules/track-2-openshift.html
+        marker: "Track 2: Build and Operate on OpenShift"
+      - id: track-3-blueprint
+        track_id: track-3-blueprint
+        path: /www/modules/track-3-blueprint.html
+        marker: "Track 3: Advanced Blueprint Alignment"
+
+  # The per-lab probe owns only domain behavior. Workshop orchestration,
+  # concurrency, evidence, rubric scoring, and cleanup stay in the generic
+  # catalog runner.
+  seat_probe:
+    argv:
+      - bash
+      - scripts/certify-multi-agent-seat.sh
+      - "{namespace}"
+      - "{cluster_ref}"
+    timeout_seconds: 600
+    result_format: json
+    json_assertions:
+      - path: result
+        equals: GREEN-live-internal-seat
+      - path: cluster_ref
+        equals: flightpath
+      - path: readiness.agents_discovered
+        equals: 3
+      - path: readiness.agents_expected
+        equals: 3
+      - path: multi_agent_journey.steps
+        equals: 3
+      - path: multi_agent_journey.mcp_steps
+        length_equals: 3
+      - path: multi_agent_journey.errors
+        length_equals: 0
+      - path: participant_ui_journey.http_error
+        equals: false
+      - path: participant_ui_journey.executor_present
+        equals: true
+      - path: participant_ui_journey.step_count_one
+        equals: true
+      - path: learner_policy.applied_max_tokens
+        equals: 48
+      - path: learner_policy.workflow_passed
+        equals: true
+      - path: learner_policy.rollback_restored_baseline
+        equals: true
+      - path: learner_policy.configmap_removed
+        equals: true
+      - path: guardrails.blocked_steps
+        length_equals: 3
+      - path: terminal_scope
+        contains: own_edit=yes
+      - path: terminal_scope
+        contains: cross_namespace=DENIED
+      - path: terminal_scope
+        contains: node_list=DENIED
+      - path: contains_sensitive_values
+        equals: false
+
+  cleanup:
+    resources:
+      - namespaces
+      - applications.argoproj.io
+      - rolebindings.rbac.authorization.k8s.io
+      - persistentvolumeclaims
+      - persistentvolumes
+      - routes.route.openshift.io
+      - secrets
+
+  rubric:
+    required_score: 100
+    categories:
+      - id: contract_integrity
+        weight: 10
+        requires:
+          - contract_valid
+          - evidence_hashed
+      - id: placement_capacity
+        weight: 15
+        requires:
+          - capacity_passed
+          - single_cluster_assignment
+      - id: provisioning_readiness
+        weight: 20
+        requires:
+          - all_seats_ready
+          - ready_within_limit
+      - id: participant_function
+        weight: 25
+        requires:
+          - showroom_pages_passed
+          - seat_probes_passed
+      - id: authorization
+        weight: 15
+        requires:
+          - namespace_isolation_passed
+          - sensitive_values_absent
+      - id: cleanup
+        weight: 15
+        requires:
+          - cleanup_completed
+          - zero_residue_cleanup
+          - model_keys_revoked

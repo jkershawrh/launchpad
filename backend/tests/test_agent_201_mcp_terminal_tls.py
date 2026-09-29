@@ -2,6 +2,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PAGE = ROOT / "content-intel-xeon6-agent-201/modules/ROOT/pages/02-deploy-tools.adoc"
+AGENT_MANIFEST = ROOT / "content-intel-xeon6-agent-201/manifests/solution-agent.yaml"
 
 
 def test_terminal_mcp_exercises_use_namespace_service_without_route_tls() -> None:
@@ -12,3 +13,12 @@ def test_terminal_mcp_exercises_use_namespace_service_without_route_tls() -> Non
     assert "curl -k" not in content
     assert "curl --insecure" not in content
     assert "keeps the exercise inside your assigned namespace" in content
+
+
+def test_solution_agent_normalizes_versioned_and_unversioned_maas_base_urls() -> None:
+    content = AGENT_MANIFEST.read_text()
+
+    assert 'endswith("/v1")' in content
+    assert 'LITELLM_API_BASE.rstrip("/")' in content
+    assert 'source.replace(old, new)' in content
+    assert "expected LiteLLM base URL expression was not found" in content

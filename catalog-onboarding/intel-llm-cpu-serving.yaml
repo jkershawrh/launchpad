@@ -8,7 +8,7 @@ catalog:
     Explore CPU inference through a shared model endpoint, then build and test
     a namespace-isolated RAG assistant on OpenShift.
   category: guided_build
-  version: "1.0.11"
+  version: "1.0.12-flightpath.1"
   status: active
   supported_branding:
     - redhat-intel-default
@@ -31,8 +31,8 @@ learning:
 
 sources:
   showroom:
-    repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "5292234017bf3f538767e6b6a3c627d146fca086"
+    repo_url: "https://github.com/jkershawrh/launchpad.git"
+    revision: "9526ede61b5c31949f3a1bedd133b5a17e554178"
     playbook: site-intel-llm-cpu-serving.yml
     start_path: content-intel-llm-cpu-serving
   workload:
@@ -42,7 +42,7 @@ sources:
 
 runtime:
   namespace_slug: intel-llm-cpu-serving
-  workshop_cluster_ref: arena
+  workshop_cluster_ref: flightpath
   deployment_type: manifests
   deployment_scope: seat
   showroom_terminal_storage: false
@@ -57,12 +57,13 @@ runtime:
   default_hardware_profile: xeon-basic
   default_quota_profile: standard
   default_ttl: "4h"
-  inference_endpoint: litellm
+  inference_endpoint: direct_vllm_candidate
   required_capabilities:
     - openshift
     - showroom
     - model_endpoint
   required_models:
+    - granite-3.2-8b-tools
     - granite-2b-cpu
   allowed_exposure_policies:
     - internal
@@ -71,7 +72,7 @@ runtime:
     cpu_millicores: 665
     memory_mib: 1488
     pods: 2
-    storage_gib: 0
+    storage_gib: 2
   workshop_provision_concurrency: 5
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
@@ -84,14 +85,12 @@ runtime:
       title: OpenShift Console
 
 certification:
-  stage: thirty-seat-certified
-  max_workshop_seats: 30
+  stage: five-seat-certified
+  max_workshop_seats: 5
   proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
   promotion_sequence:
     - 1
     - 5
-    - 25
-    - 30
   activation_blockers: []
   production_blockers:
     - >-

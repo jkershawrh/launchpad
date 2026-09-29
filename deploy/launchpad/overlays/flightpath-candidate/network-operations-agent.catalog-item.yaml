@@ -19,9 +19,9 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/network-operations-agent.yaml
-  certification_stage: twenty-five-seat-certified
-  max_workshop_seats: 25
-  promotion_sequence: [1, 5, 25]
+  certification_stage: five-seat-certified
+  max_workshop_seats: 5
+  promotion_sequence: [1, 5]
   activation_blockers: []
   # Public access is enabled first as a one-seat Flightpath certification gate.
   # Multi-seat public promotion remains separately evidence-gated.

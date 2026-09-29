@@ -6,29 +6,89 @@ metadata:
   display_name: "Scale and Certify Agentic Systems"
 
 spec:
-  state: charter
-  execution_enabled: false
+  state: destination-qualification
+  execution_enabled: true
   prerequisite_catalog_item: operate-agentic-blueprint
   governing_contract: contracts/catalog-scale-delivery-certification-v1.yaml
   learner_workload_charter: certification/workload/scale-agentic-blueprint.yaml
-  target_cluster: null
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
   allowed_exposure_policies:
     - internal
 
   scale_profiles:
     - seats: 1
-      required_consecutive_runs: 3
+      required_consecutive_runs: 1
+      probe_concurrency: 1
+      maximum_ready_seconds: 900
+      maximum_cleanup_seconds: 600
     - seats: 5
       required_consecutive_runs: 3
+      probe_concurrency: 5
+      maximum_ready_seconds: 1200
+      maximum_cleanup_seconds: 900
     - seats: 25
       required_consecutive_runs: 3
+      probe_concurrency: 10
+      maximum_ready_seconds: 2400
+      maximum_cleanup_seconds: 1200
 
   execution_blockers:
-    - The 401 prerequisite is not yet certified.
-    - No immutable 501 content or workload artifact exists.
-    - The workload planner and evaluation set exist, but no reviewed live execution adapter is implemented.
+    - The destination run proves rehearsal-mode deployment only and must not be represented as live inference certification.
     - Approved OpenTelemetry and Intel Xeon telemetry are not connected.
-    - Fault injection boundaries and automated recovery assertions are not implemented.
+    - Live dependency fault injection and recovery assertions remain unverified on Flightpath.
+
+  showroom:
+    pages:
+      - id: welcome
+        path: /www/modules/index.html
+        marker: "Agentic AI 501"
+
+  seat_probe:
+    argv:
+      - bash
+      - scripts/certify-scale-agentic-blueprint-seat.sh
+      - "{namespace}"
+      - "{cluster_ref}"
+    timeout_seconds: 900
+    result_format: json
+    json_assertions:
+      - path: result
+        equals: GREEN-destination-rehearsal-seat
+      - path: cluster_ref
+        equals: flightpath
+      - path: evidence_source
+        equals: rehearsal
+      - path: live_claim
+        equals: false
+      - path: qualification.attempted_journeys
+        equals: 3
+      - path: qualification.completed_journeys
+        equals: 3
+      - path: qualification.correlation_complete
+        equals: 3
+      - path: qualification.automated_promotion
+        equals: false
+      - path: qualification.human_review_required
+        equals: true
+      - path: terminal_scope
+        contains: own_edit=yes
+      - path: terminal_scope
+        contains: cross_namespace=DENIED
+      - path: terminal_scope
+        contains: node_list=DENIED
+      - path: contains_sensitive_values
+        equals: false
+
+  cleanup:
+    resources:
+      - namespaces
+      - applications.argoproj.io
+      - rolebindings.rbac.authorization.k8s.io
+      - persistentvolumeclaims
+      - persistentvolumes
+      - routes.route.openshift.io
+      - secrets
 
   rubric:
     required_score: 100

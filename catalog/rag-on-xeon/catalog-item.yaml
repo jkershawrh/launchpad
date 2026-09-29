@@ -1,39 +1,79 @@
 catalog_item_id: rag-on-xeon
-display_name: "Intel AI 101: RAG on Intel Xeon"
-description: "Retrieval-augmented generation chatbot running entirely on CPU. Uses Granite 2B for generation and vector search for document retrieval."
-category: quick_start
-version: "1.0.0"
+display_name: 'Intel AI 101: RAG on Intel Xeon'
+description: 'A compatibility entry for the Flightpath Serve LLMs journey: build and
+  validate a namespace-isolated RAG assistant backed by shared Intel Xeon inference.'
+category: guided_build
+version: 1.0.1-flightpath.1
 status: active
 required_capabilities:
-  - openshift
-  - model_endpoint
+- openshift
+- showroom
+- model_endpoint
 default_hardware_profile: xeon-basic
 default_quota_profile: standard
-default_ttl: "4h"
+default_ttl: 4h
 provisioner_refs:
-  - helm-provisioner
+- openshift-provisioner
+- showroom
 validation_refs:
-  - pod-ready
-  - route-accessible
+- pod-ready
+- route-accessible
+- inference-health
 supported_branding:
-  - intel-internal
+- redhat-intel-default
+- intel-internal
 metadata:
-  learning_level: "101"
+  learning_level: '101'
   learning_stage: Learn
   experience_type: foundational_rag
   prerequisites: []
   recommended_next_items:
-    - guided-rag-on-xeon
-    - intel-xeon6-agent-201
+  - intel-xeon6-agent-201
   journey_role: specialty
   specialty_family: data
   branches_from: ai-sandbox
   returns_to: intel-xeon6-agent-201
   shared_blueprint: red-hat-intel-agentic-v1
   solution_family: generative_ai
-  deploy_method: helm
-  deploy_path: demos/quickstarts/rag/deploy/helm/rag
+  migration_mode: compatibility_alias
+  canonical_item_id: intel-llm-cpu-serving
+  showroom: true
+  operator_workshop: true
+  content_only: true
+  workshop_cluster_ref: flightpath
+  certification_stage: 5-seat-certified
+  max_workshop_seats: 5
+  promotion_sequence:
+  - 1
+  - 5
+  onboarding_contract: catalog-onboarding/rag-on-xeon.yaml
+  certification_proof_contract: certification/catalog/rag-on-xeon.yaml
+  showroom_journey: intel-llm-cpu-serving
+  showroom_title: RAG on Intel Xeon
+  workspace_route_name: rag
+  workspace_title: RAG Assistant
+  showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
+  showroom_content_ref: 9526ede61b5c31949f3a1bedd133b5a17e554178
+  showroom_content_playbook: site-intel-llm-cpu-serving.yml
   required_models:
-    - smollm2-360m
-  inference_endpoint: litellm
-  cpu_only: true
+  - granite-3.2-8b-tools
+  - granite-2b-cpu
+  required_model_capabilities:
+  - chat
+  - streaming
+  - tool_calling
+  inference_endpoint: direct_vllm_candidate
+  maas_rpm_limit: 60
+  seat_cpu_millicores: 665
+  seat_memory_mib: 1488
+  seat_pods: 2
+  seat_storage_gib: 2
+  workshop_node_spread: true
+  workshop_node_min_ready_seconds: 900
+  showroom_steps:
+  - title: Connect to inference
+    description: Verify the shared Intel Xeon model endpoint.
+  - title: Load documents
+    description: Chunk and embed the supplied document set.
+  - title: Validate grounding
+    description: Compare grounded and ungrounded answers with evidence.

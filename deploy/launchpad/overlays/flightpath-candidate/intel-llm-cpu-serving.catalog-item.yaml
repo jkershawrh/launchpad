@@ -26,13 +26,11 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: five-seat-candidate
-  max_workshop_seats: 30
+  certification_stage: five-seat-certified
+  max_workshop_seats: 5
   promotion_sequence:
     - 1
     - 5
-    - 25
-    - 30
   onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
   certification_proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
   showroom_journey: intel-llm-cpu-serving

@@ -1,0 +1,119 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+
+metadata:
+  catalog_item_id: agentic-ai-601
+  display_name: "Agentic AI 601 — Earn the Right to Act"
+
+spec:
+  state: prerequisite-gated
+  execution_enabled: false
+  prerequisite_catalog_items:
+    - operate-agentic-blueprint
+    - scale-agentic-blueprint
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies:
+    - internal
+
+  scale_profiles:
+    - seats: 1
+      required_consecutive_runs: 1
+      probe_concurrency: 1
+      maximum_ready_seconds: 900
+      maximum_cleanup_seconds: 600
+    - seats: 5
+      required_consecutive_runs: 3
+      probe_concurrency: 5
+      maximum_ready_seconds: 1200
+      maximum_cleanup_seconds: 900
+    - seats: 25
+      required_consecutive_runs: 3
+      probe_concurrency: 10
+      maximum_ready_seconds: 2400
+      maximum_cleanup_seconds: 1200
+
+  execution_blockers:
+    - Agentic AI 401 has five-seat evidence but has not completed activation review.
+    - Agentic AI 501 has not completed live destination certification.
+    - The current 601 runtime is synthetic rehearsal and must not be represented as production execution authority.
+    - Class-specific thresholds and human authority review remain unapproved.
+
+  showroom:
+    pages:
+      - id: welcome
+        path: /www/modules/index.html
+        marker: "Agentic AI 601"
+
+  seat_probe:
+    argv:
+      - bash
+      - scripts/certify-agentic-ai-601-seat.sh
+      - "{namespace}"
+      - "{cluster_ref}"
+    timeout_seconds: 900
+    result_format: json
+    json_assertions:
+      - path: result
+        equals: GREEN-destination-rehearsal-seat
+      - path: cluster_ref
+        equals: flightpath
+      - path: source_state
+        equals: rehearsal
+      - path: execution_authority_enabled
+        equals: false
+      - path: governed_loop.signal_observed
+        equals: true
+      - path: governed_loop.unapproved_action_denied
+        equals: true
+      - path: governed_loop.single_use_approval_enforced
+        equals: true
+      - path: governed_loop.idempotent_replay
+        equals: true
+      - path: governed_loop.rollback_and_demotion
+        equals: true
+      - path: governed_loop.emergency_stop_precedes_action
+        equals: true
+      - path: governed_loop.evidence_chain_valid
+        equals: true
+      - path: governed_loop.automated_promotion
+        equals: false
+      - path: governed_loop.human_review_required
+        equals: true
+      - path: terminal_scope
+        contains: own_edit=yes
+      - path: terminal_scope
+        contains: cross_namespace=DENIED
+      - path: terminal_scope
+        contains: node_list=DENIED
+      - path: contains_sensitive_values
+        equals: false
+
+  cleanup:
+    resources:
+      - namespaces
+      - applications.argoproj.io
+      - rolebindings.rbac.authorization.k8s.io
+      - persistentvolumeclaims
+      - persistentvolumes
+      - routes.route.openshift.io
+      - secrets
+
+  rubric:
+    required_score: 100
+    categories:
+      - id: contract_and_provenance
+        weight: 15
+        requires: [contract_valid, evidence_hashed]
+      - id: provisioning_and_capacity
+        weight: 20
+        requires: [all_seats_ready, ready_within_limit, capacity_admitted]
+      - id: governed_loop
+        weight: 25
+        requires: [representative_probe_passed_per_seat, routes_ready]
+      - id: isolation_and_authority
+        weight: 20
+        requires: [namespace_isolation_passed, cross_namespace_denied, secrets_absent]
+      - id: lifecycle
+        weight: 20
+        requires: [cleanup_within_limit, zero_residue_cleanup, model_keys_revoked]

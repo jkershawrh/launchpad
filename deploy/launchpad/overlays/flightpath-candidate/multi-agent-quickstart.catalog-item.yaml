@@ -30,8 +30,8 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/multi-agent-quickstart.yaml
-  certification_stage: one-seat-candidate
-  max_workshop_seats: 30
+  certification_stage: twenty-five-seat-certified
+  max_workshop_seats: 25
   promotion_sequence: [1, 5, 25, 30]
   activation_blockers: []
   certification_proof_contract: certification/catalog/multi-agent-quickstart.yaml

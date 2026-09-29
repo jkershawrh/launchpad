@@ -1,0 +1,71 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+
+metadata:
+  catalog_item_id: agent-reliability
+  display_name: "Engineer Reliable Agentic Workflows"
+
+spec:
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies: [internal]
+
+  scale_profiles:
+    - seats: 1
+      required_consecutive_runs: 1
+      probe_concurrency: 1
+      maximum_ready_seconds: 1200
+      maximum_cleanup_seconds: 600
+    - seats: 5
+      required_consecutive_runs: 1
+      probe_concurrency: 5
+      maximum_ready_seconds: 1800
+      maximum_cleanup_seconds: 900
+  showroom:
+    pages:
+      - {id: welcome, path: /www/agent-reliability-quickstart/main/index.html, marker: "When Agents Fail"}
+      - {id: healthy, path: /www/agent-reliability-quickstart/main/01-healthy-agent.html, marker: "Establish the healthy baseline"}
+      - {id: prompt-injection, path: /www/agent-reliability-quickstart/main/03-prompt-injection.html, marker: "Contain prompt injection"}
+      - {id: authorization, path: /www/agent-reliability-quickstart/main/04-tool-authorization.html, marker: "Deny an unauthorized tool"}
+      - {id: inference-disruption, path: /www/agent-reliability-quickstart/main/05-inference-disruption.html, marker: "Degrade safely during inference disruption"}
+      - {id: recovery, path: /www/agent-reliability-quickstart/main/06-prove-recover.html, marker: "Prove, recover, and reuse the pattern"}
+
+  seat_probe:
+    argv: [bash, scripts/certify-agent-reliability-seat.sh, "{namespace}", "{cluster_ref}"]
+    timeout_seconds: 900
+    result_format: json
+    json_assertions:
+      - {path: result, equals: GREEN-live-internal-seat}
+      - {path: cluster_ref, equals: flightpath}
+      - {path: readiness.health, equals: true}
+      - {path: readiness.workspace_http_status, equals: 200}
+      - {path: reliability_journey.healthy, equals: recommended}
+      - {path: reliability_journey.prompt_injection, equals: abstained}
+      - {path: reliability_journey.unauthorized_tool, equals: denied}
+      - {path: reliability_journey.inference_timeout, equals: degraded}
+      - {path: reliability_journey.evidence_records, equals: 3}
+      - {path: reliability_journey.human_approval_required, equals: true}
+      - {path: terminal_scope, contains: own_edit=yes}
+      - {path: terminal_scope, contains: cross_namespace=DENIED}
+      - {path: terminal_scope, contains: node_list=DENIED}
+      - {path: contains_sensitive_values, equals: false}
+
+  cleanup:
+    resources:
+      - namespaces
+      - applications.argoproj.io
+      - rolebindings.rbac.authorization.k8s.io
+      - persistentvolumeclaims
+      - persistentvolumes
+      - routes.route.openshift.io
+      - secrets
+
+  rubric:
+    required_score: 100
+    categories:
+      - {id: contract_integrity, weight: 10, requires: [contract_valid, evidence_hashed]}
+      - {id: placement_capacity, weight: 15, requires: [capacity_passed, single_cluster_assignment]}
+      - {id: provisioning_readiness, weight: 20, requires: [all_seats_ready, ready_within_limit]}
+      - {id: participant_function, weight: 25, requires: [showroom_pages_passed, seat_probes_passed]}
+      - {id: authorization, weight: 15, requires: [namespace_isolation_passed, sensitive_values_absent]}
+      - {id: cleanup, weight: 15, requires: [cleanup_completed, zero_residue_cleanup, model_keys_revoked]}

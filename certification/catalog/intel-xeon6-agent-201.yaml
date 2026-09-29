@@ -6,8 +6,8 @@ metadata:
   display_name: "Intel Xeon 6 201: Building an AI Agent"
 
 spec:
-  target_cluster: brutus
-  kubeconfig_server: https://api.brutus.fm2aihpcsed.com:6443
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
   allowed_exposure_policies:
     - internal
     - public_code
@@ -61,7 +61,7 @@ spec:
       - path: result
         equals: GREEN-live-internal-seat
       - path: cluster_ref
-        equals: brutus
+        equals: flightpath
       - path: setup_passed
         equals: true
       - path: agent_journey.functional_agent

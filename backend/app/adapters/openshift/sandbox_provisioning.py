@@ -453,6 +453,13 @@ class OpenShiftSandboxProvisioner:
     def _create_routes(self, namespace: str, access_methods: List[str]) -> Dict[str, str]:
         routes = {}
         route_defs = []
+        target = getattr(self, "_target", None)
+        ingress_domain = (
+            target.ingress_domain
+            if target and target.ingress_domain
+            else os.environ.get("OPENSHIFT_INGRESS_DOMAIN", "apps.cluster.example.com")
+        )
+        seat_suffix = namespace.rsplit("-", 1)[-1]
 
         if "jupyter" in access_methods:
             route_defs.append({
@@ -476,11 +483,15 @@ class OpenShiftSandboxProvisioner:
             })
 
         for rd in route_defs:
+            # OpenShift's generated host includes the full namespace and can
+            # exceed the DNS 63-character label limit for workshop tenants.
+            route_host = f"{rd['name'].removeprefix('sandbox-')}-{seat_suffix}.{ingress_domain}"
             route_body = {
                 "apiVersion": "route.openshift.io/v1",
                 "kind": "Route",
                 "metadata": {"name": rd["name"], "namespace": namespace},
                 "spec": {
+                    "host": route_host,
                     "to": {"kind": "Service", "name": "sandbox"},
                     "port": {"targetPort": rd["port"]},
                     "tls": {
@@ -500,11 +511,9 @@ class OpenShiftSandboxProvisioner:
                 )
                 host = result.get("spec", {}).get("host", result.get("status", {}).get("ingress", [{}])[0].get("host", ""))
                 if not host:
-                    ingress_domain = os.environ.get("OPENSHIFT_INGRESS_DOMAIN", "apps.cluster.example.com")
-                    host = f"{rd['name']}-{namespace}.{ingress_domain}"
+                    host = route_host
                 routes[rd["name"]] = host
             except ApiException:
-                ingress_domain = os.environ.get("OPENSHIFT_INGRESS_DOMAIN", "apps.cluster.example.com")
-                routes[rd["name"]] = f"{rd['name']}-{namespace}.{ingress_domain}"
+                routes[rd["name"]] = route_host
 
         return routes

@@ -23,6 +23,24 @@ from app.services.catalog_onboarding import load_intake
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = ROOT / "certification/catalog/multi-agent-quickstart.yaml"
 INTAKE_PATH = ROOT / "catalog-onboarding/multi-agent-quickstart.yaml"
+FLIGHTPATH_MULTI_AGENT_CONTRACT_PATH = (
+    ROOT / "certification/catalog/multi-agent-quickstart-flightpath.yaml"
+)
+FLIGHTPATH_MULTI_AGENT_INTAKE_PATH = (
+    ROOT / "catalog-onboarding/multi-agent-quickstart-flightpath.yaml"
+)
+AGENT_201_CONTRACT_PATH = (
+    ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
+)
+AGENT_201_INTAKE_PATH = (
+    ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
+)
+CPU_SERVING_CONTRACT_PATH = (
+    ROOT / "certification/catalog/intel-llm-cpu-serving.yaml"
+)
+CPU_SERVING_INTAKE_PATH = (
+    ROOT / "catalog-onboarding/intel-llm-cpu-serving.yaml"
+)
 
 
 def _runner_module():
@@ -98,6 +116,84 @@ def test_multi_agent_is_the_reference_reusable_certification_contract():
     )
 
 
+def test_agent_201_certification_targets_exact_flightpath_candidate_release():
+    contract = load_certification_contract(AGENT_201_CONTRACT_PATH)
+    intake = load_intake(AGENT_201_INTAKE_PATH)
+
+    assert validate_certification_contract(
+        contract,
+        intake=intake,
+        repo_root=ROOT,
+        contract_path=AGENT_201_CONTRACT_PATH,
+    ) == []
+    assert contract["spec"]["target_cluster"] == "flightpath"
+    assert contract["spec"]["kubeconfig_server"] == (
+        "https://api.flightpath.fm2aihpcsed.com:6443"
+    )
+    assert {
+        assertion["equals"]
+        for assertion in contract["spec"]["seat_probe"]["json_assertions"]
+        if assertion["path"] == "cluster_ref"
+    } == {"flightpath"}
+    assert intake["catalog"]["version"] == "1.0.8-flightpath.1"
+    assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
+    assert intake["certification"]["stage"] == "thirty-seat-certified"
+    assert intake["certification"]["max_workshop_seats"] == 30
+
+
+def test_multi_agent_certification_targets_exact_flightpath_candidate_release():
+    contract = load_certification_contract(FLIGHTPATH_MULTI_AGENT_CONTRACT_PATH)
+    intake = load_intake(FLIGHTPATH_MULTI_AGENT_INTAKE_PATH)
+
+    assert validate_certification_contract(
+        contract,
+        intake=intake,
+        repo_root=ROOT,
+        contract_path=FLIGHTPATH_MULTI_AGENT_CONTRACT_PATH,
+    ) == []
+    assert contract["spec"]["target_cluster"] == "flightpath"
+    assert contract["spec"]["kubeconfig_server"] == (
+        "https://api.flightpath.fm2aihpcsed.com:6443"
+    )
+    assert {
+        assertion["equals"]
+        for assertion in contract["spec"]["seat_probe"]["json_assertions"]
+        if assertion["path"] == "cluster_ref"
+    } == {"flightpath"}
+    assert intake["catalog"]["version"] == "0.2.15-flightpath.1"
+    assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
+    assert intake["runtime"]["inference_endpoint"] == "direct_vllm_candidate"
+    assert intake["certification"]["stage"] == "twenty-five-seat-certified"
+    assert intake["certification"]["max_workshop_seats"] == 25
+
+
+def test_cpu_serving_certification_targets_exact_flightpath_candidate_release():
+    contract = load_certification_contract(CPU_SERVING_CONTRACT_PATH)
+    intake = load_intake(CPU_SERVING_INTAKE_PATH)
+
+    assert validate_certification_contract(
+        contract,
+        intake=intake,
+        repo_root=ROOT,
+        contract_path=CPU_SERVING_CONTRACT_PATH,
+    ) == []
+    assert contract["spec"]["target_cluster"] == "flightpath"
+    assert contract["spec"]["kubeconfig_server"] == (
+        "https://api.flightpath.fm2aihpcsed.com:6443"
+    )
+    assert {
+        assertion["equals"]
+        for assertion in contract["spec"]["seat_probe"]["json_assertions"]
+        if assertion["path"] == "cluster_ref"
+    } == {"flightpath"}
+    assert intake["catalog"]["version"] == "1.0.12-flightpath.1"
+    assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
+    assert intake["runtime"]["inference_endpoint"] == "direct_vllm_candidate"
+    assert intake["certification"]["stage"] == "five-seat-certified"
+    assert intake["certification"]["max_workshop_seats"] == 5
+    assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1, 5]
+
+
 def test_twenty_five_seat_plan_is_one_order_on_one_cluster():
     contract = load_certification_contract(CONTRACT_PATH)
     intake = load_intake(INTAKE_PATH)
@@ -152,6 +248,47 @@ def test_only_certified_or_next_scale_profile_can_execute():
     assert thirty["execution_eligible"] is True
     assert thirty["certification_override"] is False
     assert thirty["next_promotion_target"] is None
+
+
+def test_flightpath_candidate_uses_its_destination_certification_state():
+    contract = load_certification_contract(
+        ROOT / "certification/catalog/intel-llm-tool-calling.yaml"
+    )
+    intake = load_intake(ROOT / "catalog-onboarding/intel-llm-tool-calling.yaml")
+
+    one = build_certification_plan(
+        contract, intake=intake, seats=1, exposure_policy="internal"
+    )
+    five = build_certification_plan(
+        contract, intake=intake, seats=5, exposure_policy="internal"
+    )
+
+    assert one["cluster_ref"] == "flightpath"
+    assert one["current_certified_seats"] == 5
+    assert one["next_promotion_target"] is None
+    assert one["certification_override"] is False
+    assert one["execution_eligible"] is True
+    assert five["current_certified_seats"] == 5
+    assert five["certification_override"] is False
+    assert five["execution_eligible"] is True
+
+
+def test_seat_probe_only_contract_can_certify_a_non_showroom_environment():
+    contract = load_certification_contract(CONTRACT_PATH)
+    contract["spec"]["showroom"] = {"seat_probe_only": True, "pages": []}
+
+    errors = validate_certification_contract(contract)
+
+    assert errors == []
+
+
+def test_empty_showroom_pages_fail_without_explicit_probe_only_mode():
+    contract = load_certification_contract(CONTRACT_PATH)
+    contract["spec"]["showroom"] = {"pages": []}
+
+    errors = validate_certification_contract(contract)
+
+    assert any("seat_probe_only" in error for error in errors)
 
 
 def test_contract_rejects_unsafe_or_nonrepeatable_configuration():

@@ -56,6 +56,14 @@ spec:
               mountPath: /opt/catalog/operate-agentic-blueprint/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: canonical-scale-agentic-blueprint-catalog
+              mountPath: /opt/catalog/scale-agentic-blueprint/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-agentic-ai-601-catalog
+              mountPath: /opt/catalog/agentic-ai-601/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
             - name: canonical-ai-sandbox-catalog
               mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
               subPath: catalog-item.yaml
@@ -109,6 +117,12 @@ spec:
         - name: canonical-operate-agentic-blueprint-catalog
           configMap:
             name: canonical-operate-agentic-blueprint-catalog
+        - name: canonical-scale-agentic-blueprint-catalog
+          configMap:
+            name: canonical-scale-agentic-blueprint-catalog
+        - name: canonical-agentic-ai-601-catalog
+          configMap:
+            name: canonical-agentic-ai-601-catalog
         - name: canonical-ai-sandbox-catalog
           configMap:
             name: canonical-ai-sandbox-catalog
@@ -178,6 +192,14 @@ spec:
               mountPath: /opt/catalog/operate-agentic-blueprint/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: canonical-scale-agentic-blueprint-catalog
+              mountPath: /opt/catalog/scale-agentic-blueprint/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-agentic-ai-601-catalog
+              mountPath: /opt/catalog/agentic-ai-601/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
             - name: canonical-ai-sandbox-catalog
               mountPath: /opt/catalog/ai-sandbox/catalog-item.yaml
               subPath: catalog-item.yaml
@@ -228,6 +250,12 @@ spec:
         - name: canonical-operate-agentic-blueprint-catalog
           configMap:
             name: canonical-operate-agentic-blueprint-catalog
+        - name: canonical-scale-agentic-blueprint-catalog
+          configMap:
+            name: canonical-scale-agentic-blueprint-catalog
+        - name: canonical-agentic-ai-601-catalog
+          configMap:
+            name: canonical-agentic-ai-601-catalog
         - name: canonical-ai-sandbox-catalog
           configMap:
             name: canonical-ai-sandbox-catalog
@@ -284,6 +312,8 @@ spec:
   replicas: 2
   template:
     spec:
+      imagePullSecrets:
+        - name: launchpad-registry-pull
       volumes:
         - name: cluster-ca-bundle
           configMap:

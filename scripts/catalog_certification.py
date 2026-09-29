@@ -311,15 +311,19 @@ def _seat_probe(
         "showroom": [],
         "probe": {"passed": False, "assertion_failures": []},
     }
-    if not namespace or not showroom_url:
-        result["error"] = "seat is missing namespace or Showroom URL"
+    showroom_pages = spec["showroom"]["pages"]
+    if not namespace:
+        result["error"] = "seat is missing namespace"
         return result
-
-    result["showroom"] = _showroom_checks(
-        showroom_url,
-        spec["showroom"]["pages"],
-        verify=verify,
-    )
+    if showroom_pages:
+        if not showroom_url:
+            result["error"] = "seat is missing Showroom URL"
+            return result
+        result["showroom"] = _showroom_checks(
+            showroom_url,
+            showroom_pages,
+            verify=verify,
+        )
     probe = spec["seat_probe"]
     argv = _format_probe_argv(
         probe["argv"],

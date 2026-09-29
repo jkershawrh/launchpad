@@ -1,0 +1,80 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/openshift-operators-workshop.yaml
+catalog:
+  catalog_item_id: openshift-operators-workshop
+  display_name: 'OpenShift AI 201: Operator Workshop'
+  description: Use a namespace-scoped OpenShift console and terminal to discover shared
+    platform operators, deploy a workload, expose it, and observe it.
+  category: guided_build
+  version: 1.0.1-flightpath.1
+  status: active
+  supported_branding:
+  - redhat-intel-default
+  - intel-internal
+learning:
+  learning_level: '201'
+  learning_stage: Build
+  experience_type: platform_operations_build
+  prerequisites:
+  - ai-sandbox
+  recommended_next_items:
+  - intel-llm-cpu-serving
+  journey_role: specialty
+  specialty_family: platform
+  branches_from: ai-sandbox
+  returns_to: intel-llm-cpu-serving
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: platform_foundations
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/launchpad.git
+    revision: 079f4829938cb01ee491198001e68db04282d05a
+    playbook: site-openshift-operators.yml
+    start_path: content-operators
+  workload:
+    repo_url: https://github.com/jkershawrh/launchpad.git
+    revision: 079f4829938cb01ee491198001e68db04282d05a
+    deploy_path: content-operators
+runtime:
+  namespace_slug: openshift-operators
+  workshop_cluster_ref: flightpath
+  deployment_type: manifests
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  provisioner_refs:
+  - openshift-provisioner
+  - showroom
+  validation_refs:
+  - pod-ready
+  - route-accessible
+  default_hardware_profile: xeon-basic
+  default_quota_profile: standard
+  default_ttl: 4h
+  inference_endpoint: none
+  required_capabilities:
+  - openshift
+  - showroom
+  required_models: []
+  allowed_exposure_policies:
+  - internal
+  - public_code
+  seat_resources:
+    cpu_millicores: 165
+    memory_mib: 464
+    pods: 1
+    storage_gib: 0
+  workshop_provision_concurrency: 5
+  tabs:
+  - id: terminal
+    title: Terminal
+  - id: openshift-console
+    title: OpenShift Console
+certification:
+  stage: 5-seat-certified
+  certified_seats: 5
+  max_workshop_seats: 5
+  proof_contract: certification/catalog/openshift-operators-workshop.yaml
+  promotion_sequence:
+  - 1
+  - 5
+  activation_blockers: []

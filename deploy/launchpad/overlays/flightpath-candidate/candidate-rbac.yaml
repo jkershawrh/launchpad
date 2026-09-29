@@ -72,6 +72,11 @@ rules:
   - apiGroups: [route.openshift.io]
     resources: [routes]
     verbs: [get, list, watch, create, update, patch, delete]
+  # Explicit bounded hosts are required when a generated Route hostname would
+  # exceed OpenShift's 63-character limit for per-seat namespaces.
+  - apiGroups: ["", route.openshift.io]
+    resources: [routes/custom-host]
+    verbs: [create, update]
   - apiGroups: [networking.k8s.io]
     resources: [networkpolicies, ingresses]
     verbs: [get, list, watch, create, update, patch, delete]

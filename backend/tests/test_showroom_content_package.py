@@ -20,6 +20,8 @@ INTEL_GUIDED_LABS = [
         "workspace_route": "app",
         # Immutable commit behind the Agent 201 pilot fix release.
         "content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
+        "status": "active",
+        "content_repo": "https://github.com/rhpds/launchpad.git",
         "max_workshop_seats": 30,
         "certification_stage": "thirty-seat-certified",
     },
@@ -33,6 +35,8 @@ INTEL_GUIDED_LABS = [
         "models": ["granite-3.2-8b-tools", "granite-2b-cpu"],
         "workspace_route": "rag",
         "content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
+        "status": "active",
+        "content_repo": "https://github.com/rhpds/launchpad.git",
         "max_workshop_seats": 30,
         "certification_stage": "thirty-seat-certified",
     },
@@ -44,9 +48,11 @@ INTEL_GUIDED_LABS = [
         "title": "Enable AI Tool Calling on OpenShift",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "",
-        "content_ref": "pilot-2026-09-17-showroom-execute-v1.0.1",
-        "max_workshop_seats": 25,
-        "certification_stage": "twenty-five-seat",
+        "content_ref": "079f4829938cb01ee491198001e68db04282d05a",
+        "status": "active",
+        "content_repo": "https://github.com/jkershawrh/launchpad.git",
+        "max_workshop_seats": 5,
+        "certification_stage": "5-seat-certified",
     },
 ]
 
@@ -159,7 +165,7 @@ def test_intel_guided_lab_is_native_launchpad_content(lab):
     assert catalog["catalog_item_id"] == lab["catalog_id"]
     assert catalog["display_name"] == lab["display_name"]
     assert catalog["category"] == "guided_build"
-    assert catalog["status"] == "active"
+    assert catalog["status"] == lab["status"]
     assert set(catalog["required_capabilities"]) >= {
         "openshift",
         "showroom",
@@ -179,7 +185,7 @@ def test_intel_guided_lab_is_native_launchpad_content(lab):
     assert metadata["max_workshop_seats"] == lab["max_workshop_seats"]
     assert metadata["certification_stage"] == lab["certification_stage"]
     assert metadata["required_models"] == lab.get("models", [lab["model"]])
-    assert metadata["showroom_content_repo_url"] == ("https://github.com/rhpds/launchpad.git")
+    assert metadata["showroom_content_repo_url"] == lab["content_repo"]
     assert metadata["showroom_content_ref"] == lab["content_ref"]
     assert metadata["showroom_content_playbook"] == lab["playbook"]
     assert metadata.get("workspace_route_name", "") == lab["workspace_route"]

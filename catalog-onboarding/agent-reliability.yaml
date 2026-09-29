@@ -7,8 +7,8 @@ catalog:
     teams to contain prompt injection, deny unauthorized MCP tools, prove
     evidence-backed recommendations, and degrade safely when inference is unavailable.
   category: guided_build
-  version: 0.1.0
-  status: draft
+  version: 0.1.0-flightpath.1
+  status: active
 learning:
   learning_level: "301"
   learning_stage: Engineer
@@ -25,18 +25,19 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 99146600cbf3507527d59b73e569fbb642321721
+    revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 99146600cbf3507527d59b73e569fbb642321721
+    revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
     deploy_path: chart
 runtime:
+  workshop_cluster_ref: flightpath
   deployment_type: helm
   namespace_slug: agent-reliability
   deployment_scope: seat
-  inference_endpoint: litellm
+  inference_endpoint: litellm_virtual_key_candidate
   required_capabilities:
   - openshift
   - showroom
@@ -73,7 +74,7 @@ runtime:
         source: maas_api_key
     helm_values:
       image:
-        repository: quay.io/rh-ee-jkershaw/agent-reliability-quickstart
+        repository: ghcr.io/jkershawrh/agent-reliability-quickstart
         digest: sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
       route:
         enabled: true
@@ -85,32 +86,13 @@ runtime:
   allowed_exposure_policies:
   - internal
 certification:
-  stage: one-seat-candidate
-  max_workshop_seats: 1
+  stage: five-seat-certified
+  max_workshop_seats: 5
+  proof_contract: certification/catalog/agent-reliability.yaml
   promotion_sequence:
   - 1
   - 5
-  - 25
-  activation_blockers:
-  - Re-run the complete one-seat browser, inference, guardrail outage, and reclaim
-    journey against source revision 99146600cbf3507527d59b73e569fbb642321721
-    and image digest sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb.
-  - Treat the documented prior 1/5/25-seat certification as historical evidence;
-    do not transfer its green status to this corrected source and image.
-  - Produce scan, SBOM, signature, and provenance evidence for the candidate image.
-  - Prove that the selected Launchpad MaaS gateway enforces the generated per-seat
-    key and that the model Secret is never exposed through Git values or participant access.
-  - Prove strict fail-closed behavior while the RHOAI NeMo Guardrails service is
-    unavailable, then prove recovery after restoration.
-  - Prove idempotent reclaim, MaaS-key revocation, GitOps cleanup, namespace deletion,
-    and zero residual resources for the exact candidate revision.
-  - Re-certify five and twenty-five seats before increasing max_workshop_seats.
-  - Resolve every repository discovery warning before activation.
-  - Review every unparsed manifest; templating or invalid YAML prevents complete static
-    discovery.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
-  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
-  - 'Resolve Quickstart requirement with approved target evidence: manifest-unparsed'
+  activation_blockers: []
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

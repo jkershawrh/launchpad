@@ -6,8 +6,8 @@ metadata:
   display_name: "Intel AI Quickstart: Serve LLMs on Intel Xeon CPUs"
 
 spec:
-  target_cluster: arena
-  kubeconfig_server: https://api.arena.fm2aihpcsed.com:6443
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
   allowed_exposure_policies:
     - internal
     - public_code
@@ -23,17 +23,6 @@ spec:
       probe_concurrency: 5
       maximum_ready_seconds: 1500
       maximum_cleanup_seconds: 900
-    - seats: 25
-      required_consecutive_runs: 3
-      probe_concurrency: 10
-      maximum_ready_seconds: 2700
-      maximum_cleanup_seconds: 1200
-    - seats: 30
-      required_consecutive_runs: 3
-      probe_concurrency: 10
-      maximum_ready_seconds: 3300
-      maximum_cleanup_seconds: 1500
-
   showroom:
     pages:
       - id: welcome
@@ -61,7 +50,7 @@ spec:
       - path: result
         equals: GREEN-live-internal-seat
       - path: cluster_ref
-        equals: arena
+        equals: flightpath
       - path: setup_passed
         equals: true
       - path: rag_journey.grounded_answer

@@ -38,14 +38,24 @@ oc create configmap racmaas-connection \
   | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
       oc apply -n "$namespace" -f - >/dev/null
 
-# Keep the short-lived model credential inside the participant terminal. The
-# driver verifies only that it exists and never copies it through local stdout.
-oc exec -n "$namespace" deploy/showroom -c terminal -- bash -lc '
-  test -n "$MAAS_API_KEY"
-  oc create secret generic litellm-api-key \
-    --from-literal=api-key="$MAAS_API_KEY" \
-    --dry-run=client -o yaml | oc apply -f - >/dev/null
-'
+# Copy the already-issued key between namespace Secrets as base64 data. An
+# `oc exec` process does not inherit values exported dynamically by the
+# terminal entrypoint, so reading `$MAAS_API_KEY` there can silently create an
+# empty Secret. This pipeline never decodes or prints the credential locally.
+oc --kubeconfig "$KUBECONFIG" get secret launchpad-participant-runtime \
+  --namespace "$namespace" -o json \
+  | jq --arg namespace "$namespace" '{
+      apiVersion: "v1",
+      kind: "Secret",
+      metadata: {name: "litellm-api-key", namespace: $namespace},
+      type: "Opaque",
+      data: {"api-key": .data.MAAS_API_KEY}
+    }' \
+  | oc --kubeconfig "$KUBECONFIG" apply -f - >/dev/null
+test -n "$(
+  oc --kubeconfig "$KUBECONFIG" get secret litellm-api-key \
+    --namespace "$namespace" -o jsonpath='{.data.api-key}'
+)"
 
 for manifest in \
   advisor-prompt-configmap.yaml \

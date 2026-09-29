@@ -1,0 +1,90 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/agentic-ai-601.yaml
+catalog:
+  catalog_item_id: agentic-ai-601
+  display_name: "Intel AI 601: Earn the Right to Act"
+  description: >-
+    Qualify a governed, reversible agentic control loop without granting the
+    runtime production execution or promotion authority.
+  category: guided_build
+  version: "0.1.0-flightpath.1"
+  status: draft
+learning:
+  learning_level: "601"
+  learning_stage: Qualify
+  experience_type: system_qualification
+  prerequisites:
+    - operate-agentic-blueprint
+    - scale-agentic-blueprint
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: earned_authority
+  branches_from: scale-agentic-blueprint
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: agentic_ai
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/agentic-ai-601.git
+    revision: a40f01396adcccdb93c240b8c5b5b45cf418c317
+    playbook: site.yml
+    start_path: showroom
+  workload:
+    repo_url: https://github.com/jkershawrh/agentic-ai-601.git
+    revision: a40f01396adcccdb93c240b8c5b5b45cf418c317
+    deploy_path: charts/agentic-ai-601
+runtime:
+  namespace_slug: agentic-ai-601
+  workshop_cluster_ref: flightpath
+  deployment_type: helm
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  required_capabilities: [openshift, showroom]
+  required_models: []
+  seat_resources:
+    cpu_millicores: 125
+    memory_mib: 160
+    pods: 2
+    storage_gib: 0
+  tabs:
+    - {id: story, title: Earned Authority Story, source: workload.route.presentation}
+    - {id: terminal, title: Terminal, source: showroom.terminal}
+    - {id: qualification, title: Qualification Evidence, source: workload.route.qualifier, path: /api/v1/status}
+    - {id: openshift-console, title: OpenShift Console, source: cluster.console_url}
+  allowed_exposure_policies: [internal]
+  workload:
+    helm_values:
+      images:
+        presentation:
+          repository: ghcr.io/jkershawrh/agentic-ai-601-presentation
+          digest: sha256:3fac7a38520699eaff96e25bbbff6c311a1e509133f8c4f19ee9843600d0bdcc
+        qualifier:
+          repository: ghcr.io/jkershawrh/agentic-ai-601-qualifier
+          digest: sha256:d2979d7cb90104c9b76d083502659c5cdfcc1868bf8d957d47bc38618b490223
+      routes:
+        enabled: true
+        ingressDomain: apps.flightpath.fm2aihpcsed.com
+      qualifier:
+        sourceState: rehearsal
+        authorityExecutionEnabled: false
+certification:
+  stage: source-qualified
+  certified_seats: 0
+  max_workshop_seats: 1
+  promotion_sequence: [1, 5, 25]
+  proof_contract: certification/catalog/agentic-ai-601.yaml
+  activation_blockers:
+    - Complete Agentic AI 401 activation review.
+    - Complete Agentic AI 501 live destination certification and activation review.
+    - Complete trusted render and artifact qualification on Flightpath.
+    - Complete one- and five-seat destination certification and zero-residue reclaim.
+    - Complete human authority review.
+factory_receipt:
+  schema_version: demo-story.redhat-intel.com/launchpad-handoff/v1
+  handoff_path: /Users/jkershaw/Documents/agentic-ai-601/handoff/launchpad-handoff.yaml
+  source_revision: a40f01396adcccdb93c240b8c5b5b45cf418c317
+  artifact_source_revision: d88f12ebf1e8a20582cb9324c7369063294b3d4c
+  evidence_mode: rehearsal
+  orderable: false
+  certified: false
+  promotion_eligible: false

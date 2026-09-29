@@ -8,7 +8,7 @@ catalog:
     Build and tune a namespace-isolated AI solution advisor with LangGraph,
     MCP tools, and shared Intel Xeon inference.
   category: guided_build
-  version: "1.0.7"
+  version: "1.0.8-flightpath.1"
   status: active
   supported_branding:
     - redhat-intel-default
@@ -32,18 +32,18 @@ learning:
 
 sources:
   showroom:
-    repo_url: "https://github.com/rhpds/launchpad.git"
-    revision: "5292234017bf3f538767e6b6a3c627d146fca086"
+    repo_url: "https://github.com/jkershawrh/launchpad.git"
+    revision: "9526ede61b5c31949f3a1bedd133b5a17e554178"
     playbook: site-intel-xeon6-agent-201.yml
     start_path: content-intel-xeon6-agent-201
   workload:
     repo_url: "https://github.com/rhpds/triforce.git"
-    revision: "2f94711efc01384ee4c334caa1720e2962180b14"
+    revision: "201-v1.0.0"
     deploy_path: .
 
 runtime:
   namespace_slug: intel-xeon6-agent-201
-  workshop_cluster_ref: brutus
+  workshop_cluster_ref: flightpath
   deployment_type: manifests
   deployment_scope: seat
   showroom_terminal_storage: false
@@ -58,7 +58,7 @@ runtime:
   default_hardware_profile: xeon-basic
   default_quota_profile: standard
   default_ttl: "4h"
-  inference_endpoint: litellm
+  inference_endpoint: direct_vllm_candidate
   required_capabilities:
     - openshift
     - showroom

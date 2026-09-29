@@ -6,8 +6,8 @@ catalog:
   description: Repository-discovered onboarding draft for Hybrid Fraud Detection on
     Intel Xeon.
   category: guided_build
-  version: 0.1.0
-  status: draft
+  version: 0.1.1-flightpath.2
+  status: active
 learning:
   learning_level: "201"
   learning_stage: Build
@@ -25,19 +25,24 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
+    revision: 14fad40be5904e293c5061bdaa09f8be31db7f7f
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: 8f774c1dd1a37aebf3c40551ceb11ee1a9b501ef
+    revision: 14fad40be5904e293c5061bdaa09f8be31db7f7f
     deploy_path: chart
 runtime:
+  namespace_slug: fraud
+  workshop_cluster_ref: flightpath
   deployment_type: helm
+  deployment_scope: seat
+  showroom_terminal_storage: true
+  inference_endpoint: litellm_virtual_key_candidate
   workload:
     helm_values:
       app:
-        image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:80ddeab0ffab077c64f3dbce7e90482fc02f3d32ea45cb755279f7dcdb5b10c0
+        image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:f217fccd35f5a3508ca142671941180fae6a0a1b031ec6a8f045473ad2bae237
       model:
         endpointFromSecret: true
     runtime_secret_name: fraud-model-runtime
@@ -53,40 +58,31 @@ runtime:
   required_capabilities:
   - openshift
   - showroom
+  - model_endpoint
   required_models:
   - granite-3.2-8b-tools
   seat_resources:
-    cpu_millicores: 0
-    memory_mib: 0
-    pods: 0
-    storage_gib: 0
+    cpu_millicores: 700
+    memory_mib: 1280
+    pods: 2
+    storage_gib: 2
   tabs:
   - id: terminal
     title: Terminal
+    source: showroom.terminal
+  - id: workspace
+    title: Fraud Scoring Workspace
+    source: workload.route.ui
   allowed_exposure_policies:
   - internal
 certification:
-  stage: repository-discovery
-  max_workshop_seats: 1
+  stage: five-seat-certified
+  max_workshop_seats: 5
+  proof_contract: certification/catalog/hybrid-fraud-detection.yaml
   promotion_sequence:
   - 1
   - 5
-  - 25
-  activation_blockers:
-  - Replace zero resource placeholders with measured per-seat resource measurements.
-  - Review required capabilities, models, participant tabs, routes, identity, and
-    runtime Secret sources.
-  - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
-    before activation.
-  - Review every unparsed manifest; templating or invalid YAML prevents complete static
-    discovery.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
-  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
-  - 'Resolve Quickstart requirement with approved target evidence: manifest-unparsed'
-  - Prove that the target model gateway enforces the generated per-seat key; the
-    direct internal Granite route used by the chart canary did not prove this.
-  - Preserve the Launchpad-managed namespace label needed by Arena model ingress
-    policy and prove seat-scoped access during a full lifecycle run.
+  activation_blockers: []
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

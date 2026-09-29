@@ -1,63 +1,67 @@
 api_version: launchpad.redhat.com/v1alpha1
 onboarding_contract: catalog-onboarding/operate-agentic-blueprint.yaml
-
 catalog:
   catalog_item_id: operate-agentic-blueprint
-  display_name: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
-  description: >-
-    Operate the Red Hat and Intel agentic blueprint through correlated evidence,
-    deterministic policy, Intel Xeon inference, human review, recovery, and a
-    bounded configuration change.
+  display_name: 'Intel AI 401: Operate Evidence-Backed Multi-Agent Systems'
+  description: Operate the Red Hat and Intel agentic blueprint through correlated
+    evidence, deterministic policy, Intel Xeon inference, human review, recovery,
+    and a bounded configuration change.
   category: guided_build
-  version: "0.1.0"
+  version: 0.1.0
   status: draft
-
 learning:
-  learning_level: "401"
+  learning_level: '401'
   learning_stage: Operate
   experience_type: blueprint_operations
   prerequisites:
-    - multi-agent-quickstart
+  - multi-agent-quickstart
   recommended_next_items:
-    - scale-agentic-blueprint
+  - scale-agentic-blueprint
   journey_role: core
   specialty_family: null
   branches_from: null
   returns_to: null
   shared_blueprint: red-hat-intel-agentic-v1
   solution_family: operations_reliability
-
 sources:
   showroom:
-    repo_url: "https://github.com/rhpds/launchpad.git"
+    repo_url: https://github.com/rhpds/launchpad.git
     revision: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
     playbook: site-operate-agentic-blueprint.yml
     start_path: content-operate-agentic-blueprint
   workload:
-    repo_url: "https://github.com/rhpds/launchpad.git"
+    repo_url: https://github.com/rhpds/launchpad.git
     revision: d7c7e686d6513a77de685569b27863c9269c990f
     deploy_path: deploy/workloads/multi-agent-seat
-
 runtime:
   workshop_cluster_ref: flightpath
   workshop_provision_concurrency: 1
   allowed_exposure_policies:
-    - internal
+  - internal
   learning_tracks:
-    - {id: stage-1-baseline, title: Establish the Operational Baseline}
-    - {id: stage-2-correlate, title: Correlate the Journey}
-    - {id: stage-3-policy, title: Inspect Evidence and Policy}
-    - {id: stage-4-recovery, title: Prove Safe Denial and Recovery}
-    - {id: stage-5-change, title: Change, Compare, and Restore}
-    - {id: stage-6-proof-package, title: Operational Proof Package}
-
+  - id: stage-1-baseline
+    title: Establish the Operational Baseline
+  - id: stage-2-correlate
+    title: Correlate the Journey
+  - id: stage-3-policy
+    title: Inspect Evidence and Policy
+  - id: stage-4-recovery
+    title: Prove Safe Denial and Recovery
+  - id: stage-5-change
+    title: Change
+    Compare: null
+    and Restore: null
+  - id: stage-6-proof-package
+    title: Operational Proof Package
 certification:
-  stage: five-seat-certified
+  stage: 5-seat-certified
+  certified_seats: 5
   max_workshop_seats: 5
   promotion_sequence:
-    - 1
-    - 5
-    - 25
+  - 1
+  - 5
+  - 25
   proof_contract: certification/catalog/operate-agentic-blueprint.yaml
   activation_blockers:
-    - Resolve the remaining non-scale activation blockers recorded in the catalog item before changing draft status.
+  - Resolve the remaining non-scale activation blockers recorded in the catalog item
+    before changing draft status.

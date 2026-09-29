@@ -1,29 +1,31 @@
 catalog_item_id: openshift-operators-workshop
-display_name: "OpenShift AI 201: Operator Workshop"
-description: "A guided, seat-isolated OpenShift workshop using the web console and terminal to explore Red Hat AI, application, observability, and Intel operators on Oberon."
+display_name: 'OpenShift AI 201: Operator Workshop'
+description: A guided, seat-isolated OpenShift workshop using the web console and
+  terminal to explore Red Hat AI, application, observability, and Intel operators
+  on Flightpath.
 category: guided_build
-version: "1.0.0"
+version: 1.0.1-flightpath.1
 status: active
 required_capabilities:
-  - openshift
-  - showroom
+- openshift
+- showroom
 default_hardware_profile: xeon-basic
 default_quota_profile: standard
-default_ttl: "4h"
+default_ttl: 4h
 provisioner_refs:
-  - openshift-provisioner
-  - showroom
+- openshift-provisioner
+- showroom
 validation_refs:
-  - pod-ready
-  - route-accessible
+- pod-ready
+- route-accessible
 supported_branding:
-  - intel-internal
+- intel-internal
 metadata:
-  learning_level: "201"
+  learning_level: '201'
   learning_stage: Build
   experience_type: platform_operations_build
   prerequisites:
-    - ai-sandbox
+  - ai-sandbox
   recommended_next_items: []
   journey_role: specialty
   specialty_family: platform
@@ -34,17 +36,29 @@ metadata:
   showroom: true
   showroom_journey: openshift-operators
   operator_workshop: true
+  content_only: true
+  workshop_cluster_ref: flightpath
+  certification_stage: 5-seat-certified
+  max_workshop_seats: 5
+  promotion_sequence:
+  - 1
+  - 5
+  onboarding_contract: catalog-onboarding/openshift-operators-workshop.yaml
+  certification_proof_contract: certification/catalog/openshift-operators-workshop.yaml
   seat_cpu_millicores: 165
   seat_memory_mib: 464
   seat_pods: 1
-  showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
-  showroom_content_ref: "main"
-  showroom_content_playbook: "site-openshift-operators.yml"
-  showroom_title: "OpenShift AI 201: Operator Workshop"
+  showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
+  showroom_content_ref: 079f4829938cb01ee491198001e68db04282d05a
+  showroom_content_playbook: site-openshift-operators.yml
+  showroom_title: 'OpenShift AI 201: Operator Workshop'
   operator_capabilities:
-    - openshift-ai
-    - openshift-serverless
-    - openshift-service-mesh
-    - cluster-observability
-    - openshift-gitops
-    - intel-device-plugins
+  - openshift-ai
+  - openshift-serverless
+  - openshift-service-mesh
+  - cluster-observability
+  - openshift-gitops
+  - intel-device-plugins
+  allowed_exposure_policies:
+  - internal
+  - public_code

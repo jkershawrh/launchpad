@@ -23,6 +23,12 @@ configMapGenerator:
   - name: canonical-operate-agentic-blueprint-catalog
     files:
       - catalog-item.yaml=operate-agentic-blueprint/catalog-item.yaml
+  - name: canonical-scale-agentic-blueprint-catalog
+    files:
+      - catalog-item.yaml=scale-agentic-blueprint/catalog-item.yaml
+  - name: canonical-agentic-ai-601-catalog
+    files:
+      - catalog-item.yaml=agentic-ai-601/catalog-item.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

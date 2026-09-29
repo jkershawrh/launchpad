@@ -1,15 +1,16 @@
 catalog_item_id: network-operations-agent
 display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
-description: Repository-discovered onboarding draft for Evidence-Backed Network Operations
-  Agent.
+description: Investigate a simulated telecom network alarm with an evidence-backed
+  agent, internal MCP diagnostics, and shared CPU model inference.
 category: guided_build
-version: 0.1.0
-status: draft
+version: 0.2.0-flightpath.10
+status: active
 required_capabilities:
 - openshift
 - showroom
+- model_endpoint
 default_hardware_profile: xeon-basic
-default_quota_profile: large
+default_quota_profile: small
 default_ttl: 4h
 provisioner_refs:
 - helm-workload
@@ -38,72 +39,81 @@ metadata:
   solution_family: industry_solutions
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
-  showroom_content_ref: c3965bb8c6d38d47abc70f79b9d3dbe03f0d9573
+  showroom_content_ref: 287bffcca9c90336ed199ab2156d4471377b2c3e
   showroom_content_playbook: site-lab.yml
   showroom_content_start_path: showroom-lab
   operator_workshop: true
   content_only: false
+  workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/network-operations-agent.yaml
-  certification_stage: repository-discovery
-  max_workshop_seats: 1
+  certification_stage: five-seat-certified
+  max_workshop_seats: 5
   promotion_sequence:
   - 1
   - 5
-  - 25
-  activation_blockers:
-  - Replace zero resource placeholders with measured per-seat resource measurements.
-  - Review required capabilities, models, participant tabs, routes, identity, and
-    runtime Secret sources.
-  - Complete source, one-seat, five-seat, and twenty-five-seat certification gates
-    before activation.
-  - Review every unparsed manifest; templating or invalid YAML prevents complete static
-    discovery.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
-  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
-  - 'Resolve Quickstart requirement with approved target evidence: manifest-unparsed'
-  - Prove that the selected Launchpad MaaS gateway enforces the generated per-seat
-    key; never point this intake at an unauthenticated direct model route.
-  - Render and review the opt-in application Route while confirming that the internal
-    MCP diagnostics Service has no Route.
+  activation_blockers: []
   allowed_exposure_policies:
   - internal
+  - public_code
+  public_access_certification_stage: one-seat-candidate
+  public_max_workshop_seats: 1
   showroom_journey: network-operations-agent
-  showroom_title: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
-  namespace_slug: network-operations-agent
+  showroom_title: Evidence-Backed Network Operations Agent
+  namespace_slug: network-ops
   showroom_terminal_storage: true
   showroom_tabs:
+  - id: story
+    title: Story
+    source: workload.route.ui
+    path: /story/
+    same_origin_path: /story/
+    public_proxy_root: true
   - id: terminal
     title: Terminal
+    source: showroom.terminal
   - id: workspace
     title: Network Operations Workspace
+    source: workload.route.ui
+    same_origin_path: /workspace
+    rewrite_target: /
+    proxy_paths:
+    - path: /api
+    - path: /health
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  workspace_route_name: netops
+  workspace_title: Network Operations Workspace
   required_models:
   - granite-3.2-8b-tools
-  inference_endpoint: litellm
-  seat_cpu_millicores: 0
-  seat_memory_mib: 0
-  seat_pods: 0
-  seat_storage_gib: 0
-  workshop_provision_concurrency: 5
+  inference_endpoint: litellm_virtual_key_candidate
+  seat_cpu_millicores: 100
+  seat_memory_mib: 256
+  seat_pods: 2
+  seat_storage_gib: 2
+  workshop_provision_concurrency: 1
   workshop_node_spread: false
-  workshop_node_min_ready_seconds: 900
+  workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/network-operations-agent.git
-  workload_revision: c3965bb8c6d38d47abc70f79b9d3dbe03f0d9573
+  workload_revision: 287bffcca9c90336ed199ab2156d4471377b2c3e
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
   workload_source_kind: chart
-  workload_gitops_ready: false
+  workload_gitops_ready: true
   workload_release_name: network-operations-agent
   workload_helm_values:
     image:
-      repository: quay.io/rh-ee-jkershaw/network-operations-agent
-      digest: sha256:8595d9a490b6d300ca9d821249e97b5d5634239012c91decede7995f60228bbb
+      repository: ghcr.io/jkershawrh/network-operations-agent
+      digest: sha256:74afaf7d26791327fe4d1d7e5f302c7532b644f8d902daf1e914f9c2c4e5faf1
     route:
       enabled: true
       name: netops
+    lab:
+      enabled: true
   workload_ignore_differences: []
   workload_runtime_secret_name: network-operations-model-runtime
   workload_runtime_secret_sources:
@@ -116,10 +126,11 @@ metadata:
       source: maas_api_key
   workload_runtime_secret_value_path: model.existingSecret
   workload_identity_value_path: ''
-  workload_routes: {}
+  workload_routes:
+    ui: netops
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/network-operations-agent.git
-  source_content_revision: c3965bb8c6d38d47abc70f79b9d3dbe03f0d9573
+  source_content_revision: 287bffcca9c90336ed199ab2156d4471377b2c3e
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1

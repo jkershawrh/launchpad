@@ -156,8 +156,11 @@ def validate_certification_contract(
         errors.append("spec.showroom must be a mapping")
         showroom = {}
     pages = showroom.get("pages")
-    if not isinstance(pages, list) or not pages:
-        errors.append("spec.showroom.pages must be a non-empty list")
+    seat_probe_only = showroom.get("seat_probe_only") is True
+    if not isinstance(pages, list) or (not pages and not seat_probe_only):
+        errors.append(
+            "spec.showroom.pages must be non-empty unless seat_probe_only is true"
+        )
         pages = []
     page_ids: list[str] = []
     track_ids: list[str] = []
@@ -341,7 +344,15 @@ def build_certification_plan(
             f"Exposure policy {exposure_policy} is not certified for this catalog item"
         )
     profile = _profile_for_seats(contract, seats)
-    current_certified_seats = int(intake["certification"]["max_workshop_seats"])
+    # ``max_workshop_seats`` is the ceiling this contract is allowed to prove,
+    # not evidence that the target cluster has already passed that profile.
+    # Migration candidates must be able to declare a 5-seat run while starting
+    # from zero Flightpath-certified seats.
+    current_certified_seats = int(
+        intake["certification"].get(
+            "certified_seats", intake["certification"]["max_workshop_seats"]
+        )
+    )
     promotion_sequence = list(intake["certification"]["promotion_sequence"])
     next_targets = [value for value in promotion_sequence if value > current_certified_seats]
     next_promotion_target = next_targets[0] if next_targets else None

@@ -21,7 +21,9 @@ def test_remote_agent_drivers_exercise_the_participant_boundary_and_tools():
 
     assert "deploy/showroom -c terminal" in seat
     assert "litellm-api-key" in seat
-    assert '--from-literal=api-key="$MAAS_API_KEY"' in seat
+    assert "launchpad-participant-runtime" in seat
+    assert 'data: {"api-key": .data.MAAS_API_KEY}' in seat
+    assert '--from-literal=api-key="$MAAS_API_KEY"' not in seat
     assert 'api_key="$(printf' not in seat
     assert "ADVISOR_MODEL" in seat
     assert 'select(.error != null)' in journey

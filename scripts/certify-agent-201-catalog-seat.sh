@@ -30,7 +30,7 @@ setup_result="$(
     "$namespace" "$expected_cluster"
 )"
 
-stage="agent-journey"
+stage="route-discovery"
 tools_host="$(
   oc --kubeconfig "$KUBECONFIG" get route tools -n "$namespace" \
     -o jsonpath='{.spec.host}'
@@ -44,10 +44,14 @@ app_host="$(
     -o jsonpath='{.spec.host}'
 )"
 curl_options=(-fsSk --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
+stage="tools-health"
 [[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${tools_host}/health")" == "200" ]]
+stage="agent-health"
 [[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${agent_host}/health")" == "200" ]]
+stage="app-health"
 [[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/")" == "200" ]]
 
+stage="tools-contract"
 tools_result="$(
   curl "${curl_options[@]}" -X POST "https://${tools_host}/mcp" \
     -H 'Content-Type: application/json' \
@@ -63,22 +67,48 @@ printf '%s' "$tools_result" | jq -e '
   ]))
 ' >/dev/null
 
+stage="model-request"
 agent_result="$(
   curl "${curl_options[@]}" -X POST "https://${agent_host}/api/v1/advise" \
     -H 'Content-Type: application/json' \
     --data '{"query":"A retail chain needs real-time inventory prediction across 500 stores on an on-premises OpenShift platform. Recommend a sourced Intel and Red Hat architecture with a migration path."}'
 )"
-printf '%s' "$agent_result" | jq -e '
-  (.brief | type == "string" and length > 100)
-  and (.requirements != null)
-  and (.hardware_options != null)
-  and (.platform_capabilities != null)
-  and (.architecture != null)
-  and ([.inference_log[] | select(.error != null)] | length == 0)
-  and ([.inference_log[] | select(.tool == "intel_hardware_lookup")] | length >= 1)
-  and ([.inference_log[] | select(.tool == "openshift_capabilities")] | length >= 1)
-  and ([.inference_log[] | select(.tool == "reference_architectures")] | length >= 1)
-' >/dev/null
+stage="response-contract"
+printf '%s' "$agent_result" | jq -e 'type == "object"' >/dev/null
+stage="response-inference-errors"
+inference_error_count="$(printf '%s' "$agent_result" | jq '[.inference_log[] | select(.error != null)] | length')"
+if [[ "$inference_error_count" -ne 0 ]]; then
+  inference_http_statuses="$(printf '%s' "$agent_result" | jq -r '[.inference_log[] | .error? // empty | if contains("404") then "404" elif contains("401") then "401" elif contains("403") then "403" elif contains("429") then "429" elif contains("500") then "500" elif contains("502") then "502" elif contains("503") then "503" elif contains("504") then "504" else empty end] | unique | join(",")' 2>/dev/null || true)"
+  printf 'semantic_response=inference_error_count:%s inference_http_statuses:%s\n' \
+    "$inference_error_count" "${inference_http_statuses:-unknown}" >&2
+  false
+fi
+stage="response-brief"
+brief_type="$(printf '%s' "$agent_result" | jq -r '.brief | type')"
+brief_length="$(printf '%s' "$agent_result" | jq -r 'if (.brief | type) == "string" then (.brief | length) else 0 end')"
+top_level_keys="$(printf '%s' "$agent_result" | jq -r 'keys | sort | join(",")')"
+if [[ "$brief_type" != "string" || "$brief_length" -le 100 ]]; then
+  brief_failure_class="$(printf '%s' "$agent_result" | jq -r '.brief // ""' | sed -n 's/^Brief generation failed (\([^,)]*\).*/\1/p')"
+  brief_failure_status="$(printf '%s' "$agent_result" | jq -r '.brief // ""' | sed -n 's/^Brief generation failed ([^,]*, status=\([^)]*\)).*/\1/p')"
+  printf 'semantic_response=brief_type:%s brief_length:%s failure_class:%s failure_status:%s top_level_keys:%s\n' \
+    "$brief_type" "$brief_length" "${brief_failure_class:-none}" \
+    "${brief_failure_status:-none}" "$top_level_keys" >&2
+  false
+fi
+stage="response-requirements"
+printf '%s' "$agent_result" | jq -e '.requirements != null' >/dev/null
+stage="response-hardware-options"
+printf '%s' "$agent_result" | jq -e '.hardware_options != null' >/dev/null
+stage="response-platform-capabilities"
+printf '%s' "$agent_result" | jq -e '.platform_capabilities != null' >/dev/null
+stage="response-architecture"
+printf '%s' "$agent_result" | jq -e '.architecture != null' >/dev/null
+stage="response-hardware-tool"
+printf '%s' "$agent_result" | jq -e '[.inference_log[] | select(.tool == "intel_hardware_lookup")] | length >= 1' >/dev/null
+stage="response-platform-tool"
+printf '%s' "$agent_result" | jq -e '[.inference_log[] | select(.tool == "openshift_capabilities")] | length >= 1' >/dev/null
+stage="response-architecture-tool"
+printf '%s' "$agent_result" | jq -e '[.inference_log[] | select(.tool == "reference_architectures")] | length >= 1' >/dev/null
 journey_result="functional-agent=true"
 
 stage="terminal-scope"

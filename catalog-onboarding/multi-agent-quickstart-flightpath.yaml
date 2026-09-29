@@ -1,0 +1,156 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/multi-agent-quickstart-flightpath.yaml
+
+catalog:
+  catalog_item_id: multi-agent-quickstart
+  display_name: "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
+  description: >-
+    Investigate a fictional service incident with specialized agents, produce
+    an evidence-backed response package for human review, operate the workload
+    on OpenShift, and explore its advanced blueprint alignment with A2A, MCP,
+    Kagenti, OpenTelemetry, guardrails, and service authentication on Intel
+    infrastructure.
+  category: guided_build
+  version: "0.2.15-flightpath.1"
+  status: active
+  supported_branding:
+    - redhat-intel-default
+    - intel-internal
+
+learning:
+  learning_level: "301"
+  learning_stage: Engineer
+  experience_type: system_engineering
+  prerequisites:
+    - intel-xeon6-agent-201
+    - intel-llm-tool-calling
+  recommended_next_items:
+    - operate-agentic-blueprint
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: agentic_ai
+
+sources:
+  showroom:
+    repo_url: "https://github.com/jkershawrh/launchpad.git"
+    revision: "2302acddb0e696ff72b647677049b7de529060e3"
+    playbook: site-multi-agent-quickstart.yml
+    start_path: content-multi-agent-quickstart
+  workload:
+    repo_url: "https://github.com/jkershawrh/launchpad.git"
+    revision: "2302acddb0e696ff72b647677049b7de529060e3"
+    deploy_path: deploy/workloads/multi-agent-seat
+
+references:
+  original_lab:
+    repo_url: "https://github.com/jkershawrh/multi-agent-quickstart.git"
+    revision: "159113ab9f8df39e09e08926b51c7c32da0fc1af"
+    path: .
+
+runtime:
+  namespace_slug: multi-agent
+  workshop_cluster_ref: flightpath
+  deployment_type: helm
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  provisioner_refs:
+    - helm-workload
+    - showroom
+  validation_refs:
+    - pod-ready
+    - route-accessible
+    - inference-health
+    - multi-agent-journey
+  observability_profile: multi-agent-open-protocols
+  default_hardware_profile: xeon-basic
+  default_quota_profile: large
+  default_ttl: "4h"
+  inference_endpoint: direct_vllm_candidate
+  required_capabilities:
+    - openshift
+    - showroom
+    - model_endpoint
+  required_models:
+    - granite-3.2-8b-tools
+  allowed_exposure_policies:
+    - internal
+    - public_code
+  single_environment: true
+  learning_tracks:
+    - id: track-1-local
+      title: "Understand the application pattern"
+      showroom_page: track-1-local.adoc
+      delivery_mode: source-guided
+      certification_status: content-present
+    - id: track-2-openshift
+      title: "Build and operate on OpenShift"
+      showroom_page: track-2-openshift.adoc
+      delivery_mode: live-runtime
+      certification_status: twenty-five-seat-certified
+    - id: track-3-blueprint
+      title: "Advanced blueprint alignment"
+      showroom_page: track-3-blueprint.adoc
+      delivery_mode: architecture-and-manifest-exploration
+      certification_status: content-present
+  seat_resources:
+    # One seven-container workload pod plus one Showroom pod. The envelope
+    # includes measured Showroom requests and headroom above the chart's 800m.
+    cpu_millicores: 1200
+    memory_mib: 2048
+    pods: 2
+    storage_gib: 0
+  workshop_provision_concurrency: 2
+  workshop_node_spread: true
+  tabs:
+    - id: terminal
+      title: Terminal
+      source: showroom.terminal
+    - id: workspace
+      title: Multi-Agent Workspace
+      source: workload.route.ui
+    - id: openshift-console
+      title: OpenShift Console
+      source: cluster.console_url
+  workload:
+    source_kind: launchpad-seat-chart
+    gitops_ready: true
+    release_name: multi-agent
+    identity_value_path: identity
+    runtime_secret_name: multi-agent-runtime
+    runtime_secret_value_path: runtime.existingSecret
+    runtime_secret_sources:
+      MODEL_ENDPOINT: {source: maas_api_url}
+      MODEL_API_KEY: {source: maas_api_key}
+      MODEL_NAME: {source: requested_model}
+      AGENT_AUTH_TOKEN: {source: generated_password, length: 48}
+    helm_values:
+      image:
+        repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
+        digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+    routes:
+      ui: multi-agent-ui
+      orchestrator: multi-agent
+
+certification:
+  stage: twenty-five-seat-certified
+  max_workshop_seats: 25
+  proof_contract: certification/catalog/multi-agent-quickstart-flightpath.yaml
+  promotion_sequence:
+    - 1
+    - 5
+    - 25
+    - 30
+  activation_blockers: []
+  production_blockers:
+    - >-
+      Transfer the digest-pinned pilot mirror from the maintainer Quay
+      namespace to an organization-owned registry before general availability.
+      The current external mirror is sufficient for the September pilot and
+      cross-cluster certification.
+    - >-
+      Track 3 is currently an architecture and manifest exploration path;
+      certify Kagenti and OpenTelemetry runtime integrations before presenting
+      those optional blueprint components as deployed services.

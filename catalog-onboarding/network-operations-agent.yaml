@@ -3,11 +3,11 @@ onboarding_contract: catalog-onboarding/network-operations-agent.yaml
 catalog:
   catalog_item_id: network-operations-agent
   display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
-  description: Repository-discovered onboarding draft for Evidence-Backed Network
-    Operations Agent.
+  description: Investigate a simulated telecom network alarm with an evidence-backed
+    agent, internal MCP diagnostics, and shared CPU model inference.
   category: guided_build
-  version: 0.2.0
-  status: candidate
+  version: 0.2.0-flightpath.10
+  status: active
 learning:
   learning_level: "301"
   learning_stage: Engineer
@@ -33,6 +33,8 @@ sources:
     deploy_path: chart
 runtime:
   deployment_type: helm
+  workshop_cluster_ref: flightpath
+  inference_endpoint: litellm_virtual_key_candidate
   workload:
     helm_values:
       image:
@@ -81,26 +83,13 @@ runtime:
   - internal
   - public_code
 certification:
-  stage: twenty-five-seat-certified
-  max_workshop_seats: 25
+  stage: five-seat-certified
+  max_workshop_seats: 5
+  proof_contract: certification/catalog/network-operations-agent.yaml
   promotion_sequence:
   - 1
   - 5
-  - 25
-  activation_blockers:
-  - Complete the one-seat Flightpath public browser journey before promoting
-    public workshops beyond one participant.
-  - Certify concurrent workshops and production SLOs before treating this
-    single-workshop result as production capacity.
-  - Review every unparsed manifest; templating or invalid YAML prevents complete static
-    discovery.
-  - Quickstart quality profile has unresolved required checks; review quality.gate.blocking_findings.
-  - 'Resolve Quickstart requirement with approved target evidence: model-endpoint-unresolved'
-  - 'Resolve Quickstart requirement with approved target evidence: manifest-unparsed'
-  - Prove that the selected Launchpad MaaS gateway enforces the generated per-seat
-    key; never point this intake at an unauthenticated direct model route.
-  - Render and review the opt-in application Route while confirming that the internal
-    MCP diagnostics Service has no Route.
+  activation_blockers: []
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

@@ -1,0 +1,105 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/scale-agentic-blueprint.yaml
+catalog:
+  catalog_item_id: scale-agentic-blueprint
+  display_name: 'Intel AI 501: Production Multi-Agent Blueprint'
+  description: Qualify a production-shaped multi-agent architecture through correlated
+    evidence, deterministic policy, resilience trials, and human-controlled promotion.
+  category: guided_build
+  version: 0.2.0-flightpath.1
+  status: draft
+learning:
+  learning_level: '501'
+  learning_stage: Scale
+  experience_type: system_qualification
+  prerequisites:
+  - operate-agentic-blueprint
+  recommended_next_items:
+  - agentic-ai-601
+  journey_role: advanced_blueprint
+  specialty_family: production_multi_agent
+  branches_from: operate-agentic-blueprint
+  returns_to: agentic-ai-601
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: agentic_ai
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/agentic-scale-501.git
+    revision: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+    playbook: site.yml
+    start_path: showroom
+  workload:
+    repo_url: https://github.com/jkershawrh/agentic-scale-501.git
+    revision: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+    deploy_path: charts/agentic-scale-501
+runtime:
+  namespace_slug: agentic-scale
+  workshop_cluster_ref: flightpath
+  deployment_type: helm
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  required_capabilities:
+  - openshift
+  - showroom
+  required_models: []
+  seat_resources:
+    cpu_millicores: 125
+    memory_mib: 160
+    pods: 2
+    storage_gib: 0
+  tabs:
+  - id: story
+    title: Production Blueprint Story
+    source: workload.route.presentation
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: qualification
+    title: Qualification Evidence
+    source: workload.route.qualifier
+    path: /api/v1/status
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  allowed_exposure_policies:
+  - internal
+  workload:
+    helm_values:
+      images:
+        presentation:
+          repository: ghcr.io/jkershawrh/agentic-scale-501-presentation
+          digest: sha256:4d67e5d73f8207498b96172b0c5eeaf736686652dc2de1caa21aeb4fea806615
+        qualifier:
+          repository: ghcr.io/jkershawrh/agentic-scale-501-qualifier
+          digest: sha256:fe29325bbfdc34466fdfa2a77050282e1e2ec0d6b21d9e0115fe416288d8e431
+      routes:
+        enabled: true
+        ingressDomain: apps.flightpath.fm2aihpcsed.com
+      qualifier:
+        evidenceSource: rehearsal
+        live:
+          enabled: false
+          secretName: agentic-scale-501-live
+certification:
+  stage: factory-development-verified
+  certified_seats: 0
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  - 5
+  - 25
+  proof_contract: certification/catalog/scale-agentic-blueprint.yaml
+  activation_blockers:
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry before activation.
+  - Complete one- and five-seat certification with zero-residue reclaim before activation.
+  - Complete human authority review before promotion.
+factory_receipt:
+  schema_version: demo-story.redhat-intel.com/launchpad-handoff/v1
+  handoff_path: /Users/jkershaw/Documents/agentic-scale-501/handoff/launchpad-handoff.yaml
+  source_revision: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+  artifact_source_revision: 0a882005514cbee787f3ab085bf91101cb88a56a
+  evidence_mode: rehearsal
+  orderable: false
+  certified: false
+  promotion_eligible: false

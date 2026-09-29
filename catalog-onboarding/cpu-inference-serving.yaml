@@ -1,0 +1,87 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/cpu-inference-serving.yaml
+catalog:
+  catalog_item_id: cpu-inference-serving
+  display_name: 'Intel AI 101: CPU Inference Serving on Xeon'
+  description: Order the proven Flightpath Serve LLMs and RAG journey through the
+    legacy CPU Inference catalog identity.
+  category: guided_build
+  version: 1.0.1-flightpath.1
+  status: active
+  supported_branding:
+  - redhat-intel-default
+  - intel-internal
+learning:
+  learning_level: '101'
+  learning_stage: Learn
+  experience_type: foundational_inference
+  prerequisites: []
+  recommended_next_items:
+  - intel-llm-tool-calling
+  - intel-xeon6-agent-201
+  journey_role: specialty
+  specialty_family: inference
+  branches_from: ai-sandbox
+  returns_to: intel-xeon6-agent-201
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: inference
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/launchpad.git
+    revision: 9526ede61b5c31949f3a1bedd133b5a17e554178
+    playbook: site-intel-llm-cpu-serving.yml
+    start_path: content-intel-llm-cpu-serving
+  workload:
+    repo_url: https://github.com/rh-ai-quickstart/llm-cpu-serving.git
+    revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
+    deploy_path: .
+runtime:
+  namespace_slug: cpu-inference-serving
+  workshop_cluster_ref: flightpath
+  deployment_type: manifests
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  provisioner_refs:
+  - openshift-provisioner
+  - showroom
+  validation_refs:
+  - pod-ready
+  - route-accessible
+  - inference-health
+  default_hardware_profile: xeon-basic
+  default_quota_profile: standard
+  default_ttl: 4h
+  inference_endpoint: direct_vllm_candidate
+  required_capabilities:
+  - openshift
+  - showroom
+  - model_endpoint
+  required_models:
+  - granite-3.2-8b-tools
+  - granite-2b-cpu
+  allowed_exposure_policies:
+  - internal
+  - public_code
+  seat_resources:
+    cpu_millicores: 665
+    memory_mib: 1488
+    pods: 2
+    storage_gib: 2
+  workshop_provision_concurrency: 5
+  tabs:
+  - id: terminal
+    title: Terminal
+  - id: workspace
+    title: RAG Assistant
+  - id: openshift-console
+    title: OpenShift Console
+  compatibility_alias_of: intel-llm-cpu-serving
+certification:
+  stage: 5-seat-certified
+  certified_seats: 5
+  max_workshop_seats: 5
+  proof_contract: certification/catalog/cpu-inference-serving.yaml
+  promotion_sequence:
+  - 1
+  - 5
+  activation_blockers: []

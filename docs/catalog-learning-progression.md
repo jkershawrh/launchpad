@@ -29,7 +29,8 @@ when presentation metadata changes.
 
 The intended progression is:
 
-1. `ai-sandbox` — explore OpenShift and shared Intel CPU inference.
+1. `ai-sandbox` — explore OpenShift and shared Intel CPU inference; currently
+   draft pending a Flightpath-native runtime and certification contract.
 2. `intel-llm-cpu-serving` — learn shared CPU inference.
 3. `intel-xeon6-agent-201` — build a bounded agent and MCP tools.
 4. `multi-agent-quickstart` — engineer the canonical multi-agent system.
@@ -64,5 +65,5 @@ not the planned 401 runtime and does not define the canonical architecture.
 - Draft and deprecated items can appear in the progression contract without
   becoming participant-orderable.
 - Journey role never overrides lifecycle status or certification.
-- `smoke-test` is classified as 001 platform validation but remains an
-  internal operational item rather than participant curriculum.
+- `smoke-test` is classified as 001 platform validation but remains a draft
+  internal operational fixture rather than participant curriculum.

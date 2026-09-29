@@ -1,0 +1,89 @@
+api_version: launchpad.redhat.com/v1alpha1
+onboarding_contract: catalog-onboarding/ai-sandbox.yaml
+catalog:
+  catalog_item_id: ai-sandbox
+  display_name: 'Intel AI 001: OpenShift Developer Sandbox'
+  description: Explore OpenShift through a namespace-scoped console, web terminal,
+    browser IDE, and a shared Intel CPU model endpoint.
+  category: open_sandbox
+  version: 1.0.1-flightpath.1
+  status: active
+  supported_branding:
+  - redhat-intel-default
+  - intel-internal
+learning:
+  learning_level: '001'
+  learning_stage: Explore
+  experience_type: open_exploration
+  prerequisites: []
+  recommended_next_items:
+  - intel-llm-cpu-serving
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: platform_foundations
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/launchpad.git
+    revision: 079f4829938cb01ee491198001e68db04282d05a
+    playbook: site-openshift-operators.yml
+    start_path: content-operators
+  workload:
+    repo_url: https://github.com/jkershawrh/launchpad.git
+    revision: 079f4829938cb01ee491198001e68db04282d05a
+    deploy_path: demos/containers/sandbox
+runtime:
+  namespace_slug: ai-sandbox
+  workshop_cluster_ref: flightpath
+  deployment_type: sandbox
+  deployment_scope: seat
+  showroom_terminal_storage: false
+  provisioner_refs:
+  - sandbox-provisioner
+  validation_refs:
+  - pod-ready
+  - route-accessible
+  - inference-health
+  default_hardware_profile: xeon-basic
+  default_quota_profile: standard
+  default_ttl: 8h
+  inference_endpoint: litellm_virtual_key_candidate
+  required_capabilities:
+  - openshift
+  - model_endpoint
+  required_models:
+  - granite-2b-cpu
+  allowed_exposure_policies:
+  - internal
+  - public_code
+  seat_resources:
+    cpu_millicores: 500
+    memory_mib: 1024
+    pods: 1
+    storage_gib: 20
+  workshop_provision_concurrency: 5
+  access_methods:
+  - openshift_console
+  - web_terminal
+  - vscode
+  image:
+    repository: ghcr.io/jkershawrh/launchpad-sandbox
+    digest: sha256:5fe2a362fe8e751b5e1fd200e7ba48118cf9e1d2141cdcfcee15075af5cc825c
+  tabs:
+  - id: web-terminal
+    title: Web Terminal
+  - id: browser-ide
+    title: Browser IDE
+  - id: openshift-console
+    title: OpenShift Console
+certification:
+  stage: 5-seat-certified
+  certified_seats: 5
+  max_workshop_seats: 5
+  proof_contract: certification/catalog/ai-sandbox.yaml
+  promotion_sequence:
+  - 1
+  - 5
+  activation_blockers: []
