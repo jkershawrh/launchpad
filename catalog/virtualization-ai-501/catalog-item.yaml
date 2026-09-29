@@ -84,7 +84,7 @@ metadata:
     source: cluster.console_url
   workshop_cluster_ref: flightpath
   required_models:
-  - runtime-declared
+  - granite-3.2-8b-tools
   inference_endpoint: litellm
   seat_cpu_millicores: 1625
   seat_memory_mib: 1696
@@ -114,6 +114,7 @@ metadata:
   workload_runtime_secret_name: virtualization-ai-501-inference
   workload_runtime_secret_sources:
     endpoint: maas_endpoint
+    model: requested_model
     api-key: maas_api_key
   workload_runtime_secret_value_path: qualificationAdapter.inference.secretName
   workload_identity_value_path: ''

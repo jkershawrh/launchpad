@@ -43,7 +43,7 @@ runtime:
   - showroom
   - approved-model-endpoint
   required_models:
-  - approved-openai-compatible-intel-cpu-model
+  - granite-3.2-8b-tools
   seat_resources:
     cpu_millicores: 125
     memory_mib: 160

@@ -85,7 +85,7 @@ metadata:
     source: cluster.console_url
   workshop_cluster_ref: flightpath
   required_models:
-  - approved-openai-compatible-xeon-cpu-model
+  - granite-3.2-8b-tools
   inference_endpoint: litellm
   seat_cpu_millicores: 1125
   seat_memory_mib: 1184

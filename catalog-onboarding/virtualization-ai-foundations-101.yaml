@@ -42,7 +42,7 @@ runtime:
   - openshift-virtualization
   - model-endpoint
   required_models:
-  - approved-openai-compatible-xeon-cpu-model
+  - granite-3.2-8b-tools
   seat_resources:
     cpu_millicores: 1125
     memory_mib: 1184

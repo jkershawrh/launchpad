@@ -43,7 +43,7 @@ runtime:
   - correlated-telemetry
   - inference-endpoint
   required_models:
-  - runtime-declared
+  - granite-3.2-8b-tools
   seat_resources:
     cpu_millicores: 1625
     memory_mib: 1696
@@ -85,6 +85,7 @@ runtime:
     runtime_secret_value_path: qualificationAdapter.inference.secretName
     runtime_secret_sources:
       endpoint: maas_endpoint
+      model: requested_model
       api-key: maas_api_key
     readiness: []
 certification:
