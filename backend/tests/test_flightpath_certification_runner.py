@@ -34,7 +34,7 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
     assert len(build["spec"]["source"]["git"]["ref"]) == 40
     assert build["spec"]["output"]["to"] == {
         "kind": "DockerImage",
-        "name": "quay.io/rh-ee-jkershaw/launchpad-certification-runner:c581ddb",
+        "name": "quay.io/rh-ee-jkershaw/launchpad-certification-runner:f817818",
     }
     assert build["spec"]["output"]["pushSecret"]["name"] == "launchpad-registry-pull"
     source = db_policy["spec"]["ingress"][0]["from"][0]["podSelector"]["matchLabels"]
