@@ -23,6 +23,9 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
     flattened = {(r["apiGroups"][0], tuple(r["resources"]), tuple(r["verbs"])) for r in role["rules"]}
     assert not any("delete" in verbs and "namespaces" in resources for _, resources, verbs in flattened)
     assert not any("create" in verbs and "secrets" in resources for _, resources, verbs in flattened)
+    configmap_rule = next(r for r in role["rules"] if r["resources"] == ["configmaps"])
+    assert configmap_rule["resourceNames"] == ["default-ingress-cert"]
+    assert configmap_rule["verbs"] == ["get"]
     assert build["spec"]["source"]["type"] == "Git"
     assert len(build["spec"]["source"]["git"]["ref"]) == 40
     assert build["spec"]["output"]["to"] == {
@@ -39,11 +42,15 @@ def test_job_is_fail_closed_and_binds_candidate_identity() -> None:
     spec = job["spec"]
     pod = spec["template"]["spec"]
     container = pod["containers"][0]
+    init = pod["initContainers"][0]
     env = {x["name"]: x for x in container["env"]}
     assert spec["backoffLimit"] == 0
     assert pod["serviceAccountName"] == "launchpad-certification-runner"
     assert pod["imagePullSecrets"] == [{"name": "launchpad-registry-pull"}]
     assert container["image"] == "__CERTIFICATION_RUNNER_IMAGE__"
+    assert init["image"] == "__CERTIFICATION_RUNNER_IMAGE__"
+    assert "default-ingress-cert" in init["args"][0]
+    assert env["LAUNCHPAD_CA_BUNDLE"]["value"] == "/trust/ca-bundle.crt"
     assert env["LAUNCHPAD_CANDIDATE_GIT_COMMIT"]["value"].startswith("e2d78de")
     assert len(env["LAUNCHPAD_CANDIDATE_MANIFEST_SHA256"]["value"]) == 64
     assert env["LAUNCHPAD_ADMIN_API_KEY"]["valueFrom"]["secretKeyRef"]["name"] == "launchpad-api-keys"

@@ -24,6 +24,25 @@ spec:
       securityContext:
         runAsNonRoot: true
         seccompProfile: {type: RuntimeDefault}
+      initContainers:
+        - name: ingress-ca-bundle
+          image: __CERTIFICATION_RUNNER_IMAGE__
+          imagePullPolicy: IfNotPresent
+          command: [/bin/bash, -ceu]
+          args:
+            - |
+              cat /etc/pki/tls/certs/ca-bundle.crt > /trust/ca-bundle.crt
+              oc -n openshift-config-managed get configmap default-ingress-cert \
+                -o jsonpath='{.data.ca-bundle\.crt}' >> /trust/ca-bundle.crt
+              test -s /trust/ca-bundle.crt
+          resources:
+            requests: {cpu: "25m", memory: 64Mi}
+            limits: {cpu: "250m", memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: trust, mountPath: /trust}
       containers:
         - name: certification-runner
           image: __CERTIFICATION_RUNNER_IMAGE__
@@ -40,6 +59,7 @@ spec:
             - {name: LAUNCHPAD_CANDIDATE_MANIFEST_SHA256, value: "c2aaac7b3805bd4adf3edf6f4996e30bddb11d6f16fa7eb37b42fb19477306cb"}
             - {name: LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE, value: "__CERTIFICATION_RUNNER_IMAGE__"}
             - {name: LAUNCHPAD_RUN_PREFIX, value: "flightpath-e2d78de"}
+            - {name: LAUNCHPAD_CA_BUNDLE, value: "/trust/ca-bundle.crt"}
           resources:
             requests: {cpu: "500m", memory: 512Mi}
             limits: {cpu: "2", memory: 2Gi}
@@ -48,6 +68,9 @@ spec:
             capabilities: {drop: [ALL]}
           volumeMounts:
             - {name: evidence, mountPath: /evidence}
+            - {name: trust, mountPath: /trust, readOnly: true}
       volumes:
         - name: evidence
           persistentVolumeClaim: {claimName: launchpad-certification-evidence}
+        - name: trust
+          emptyDir: {}

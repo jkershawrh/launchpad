@@ -13,6 +13,7 @@ owner_id="${LAUNCHPAD_CERTIFICATION_OWNER:-flightpath-native-certifier}"
 evidence_dir="${LAUNCHPAD_EVIDENCE_DIR:-/evidence/catalog}"
 run_prefix="${LAUNCHPAD_RUN_PREFIX:-flightpath-staging}"
 cluster_api="${LAUNCHPAD_CLUSTER_API:-https://api.flightpath.fm2aihpcsed.com:6443}"
+ca_bundle="${LAUNCHPAD_CA_BUNDLE:-}"
 matrix="${LAUNCHPAD_CERTIFICATION_MATRIX:-agent-reliability ai-sandbox cpu-inference-serving hybrid-fraud-detection intel-llm-cpu-serving intel-llm-tool-calling intel-xeon6-agent-201 multi-agent-quickstart-flightpath network-operations-agent openshift-operators-workshop rag-on-xeon}"
 run_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -50,6 +51,10 @@ for contract_name in ${matrix}; do
   fi
   run_id="${run_prefix}-${catalog_id}-five-seat"
   output="${evidence_dir}/${run_id}.json"
+  ca_args=()
+  if [[ -n "${ca_bundle}" ]]; then
+    ca_args=(--ca-bundle "${ca_bundle}")
+  fi
   echo "certification_start catalog=${catalog_id} candidate=${LAUNCHPAD_CANDIDATE_GIT_COMMIT}"
   if ! python scripts/catalog_certification.py run \
       "${contract}" \
@@ -62,6 +67,7 @@ for contract_name in ${matrix}; do
       --ttl 2h \
       --run-id "${run_id}" \
       --output "${output}" \
+      "${ca_args[@]}" \
       --poll-interval 5; then
     failed+=("${catalog_id}")
   fi
