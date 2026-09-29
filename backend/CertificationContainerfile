@@ -19,6 +19,7 @@ RUN dnf -y upgrade \
 COPY backend/app/ ./backend/app/
 COPY scripts/catalog_certification.py ./scripts/catalog_certification.py
 COPY scripts/certify-*-seat.sh ./scripts/
+COPY scripts/certify-cpu-serving-rag.sh ./scripts/
 COPY scripts/run_flightpath_certification_matrix.sh ./scripts/
 COPY scripts/verify_staging_zero_residue.py ./scripts/
 COPY certification/ ./certification/

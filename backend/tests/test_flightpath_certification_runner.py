@@ -79,6 +79,7 @@ def test_certification_container_contains_the_proof_inputs() -> None:
     assert "COPY certification/" in text
     assert "COPY catalog-onboarding/" in text
     assert "COPY scripts/certify-*-seat.sh" in text
+    assert "COPY scripts/certify-cpu-serving-rag.sh" in text
     assert "run_flightpath_certification_matrix.sh" in text
 
 
