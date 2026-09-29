@@ -191,6 +191,26 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
             "name": "launchpad-cluster-ca-bundle",
             "optional": False,
         }
+        for catalog_id in (
+            "sovereign-ai-101",
+            "sovereign-ai-201",
+            "sovereign-ai-301",
+            "sovereign-ai-401",
+            "sovereign-ai-501",
+            "virtualization-ai-foundations-101",
+            "virtualization-ai-201",
+            "virtualization-ai-301",
+            "virtualization-ai-401",
+            "virtualization-ai-501",
+        ):
+            volume_name = f"canonical-{catalog_id}-catalog"
+            assert mounts[volume_name] == {
+                "name": volume_name,
+                "mountPath": f"/opt/catalog/{catalog_id}/catalog-item.yaml",
+                "subPath": "catalog-item.yaml",
+                "readOnly": True,
+            }
+            assert volumes[volume_name]["configMap"] == {"name": volume_name}
 
 
 def test_candidate_uses_immutable_images() -> None:

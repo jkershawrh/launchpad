@@ -88,6 +88,46 @@ spec:
               mountPath: /opt/catalog/smoke-test/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: canonical-sovereign-ai-101-catalog
+              mountPath: /opt/catalog/sovereign-ai-101/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-201-catalog
+              mountPath: /opt/catalog/sovereign-ai-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-301-catalog
+              mountPath: /opt/catalog/sovereign-ai-301/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-401-catalog
+              mountPath: /opt/catalog/sovereign-ai-401/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-501-catalog
+              mountPath: /opt/catalog/sovereign-ai-501/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-foundations-101-catalog
+              mountPath: /opt/catalog/virtualization-ai-foundations-101/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-201-catalog
+              mountPath: /opt/catalog/virtualization-ai-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-301-catalog
+              mountPath: /opt/catalog/virtualization-ai-301/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-401-catalog
+              mountPath: /opt/catalog/virtualization-ai-401/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-501-catalog
+              mountPath: /opt/catalog/virtualization-ai-501/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-targets
           configMap:
@@ -141,6 +181,36 @@ spec:
         - name: canonical-smoke-test-catalog
           configMap:
             name: canonical-smoke-test-catalog
+        - name: canonical-sovereign-ai-101-catalog
+          configMap:
+            name: canonical-sovereign-ai-101-catalog
+        - name: canonical-sovereign-ai-201-catalog
+          configMap:
+            name: canonical-sovereign-ai-201-catalog
+        - name: canonical-sovereign-ai-301-catalog
+          configMap:
+            name: canonical-sovereign-ai-301-catalog
+        - name: canonical-sovereign-ai-401-catalog
+          configMap:
+            name: canonical-sovereign-ai-401-catalog
+        - name: canonical-sovereign-ai-501-catalog
+          configMap:
+            name: canonical-sovereign-ai-501-catalog
+        - name: canonical-virtualization-ai-foundations-101-catalog
+          configMap:
+            name: canonical-virtualization-ai-foundations-101-catalog
+        - name: canonical-virtualization-ai-201-catalog
+          configMap:
+            name: canonical-virtualization-ai-201-catalog
+        - name: canonical-virtualization-ai-301-catalog
+          configMap:
+            name: canonical-virtualization-ai-301-catalog
+        - name: canonical-virtualization-ai-401-catalog
+          configMap:
+            name: canonical-virtualization-ai-401-catalog
+        - name: canonical-virtualization-ai-501-catalog
+          configMap:
+            name: canonical-virtualization-ai-501-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -224,6 +294,46 @@ spec:
               mountPath: /opt/catalog/smoke-test/catalog-item.yaml
               subPath: catalog-item.yaml
               readOnly: true
+            - name: canonical-sovereign-ai-101-catalog
+              mountPath: /opt/catalog/sovereign-ai-101/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-201-catalog
+              mountPath: /opt/catalog/sovereign-ai-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-301-catalog
+              mountPath: /opt/catalog/sovereign-ai-301/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-401-catalog
+              mountPath: /opt/catalog/sovereign-ai-401/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-sovereign-ai-501-catalog
+              mountPath: /opt/catalog/sovereign-ai-501/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-foundations-101-catalog
+              mountPath: /opt/catalog/virtualization-ai-foundations-101/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-201-catalog
+              mountPath: /opt/catalog/virtualization-ai-201/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-301-catalog
+              mountPath: /opt/catalog/virtualization-ai-301/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-401-catalog
+              mountPath: /opt/catalog/virtualization-ai-401/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
+            - name: canonical-virtualization-ai-501-catalog
+              mountPath: /opt/catalog/virtualization-ai-501/catalog-item.yaml
+              subPath: catalog-item.yaml
+              readOnly: true
       volumes:
         - name: cluster-ca-bundle
           configMap:
@@ -274,6 +384,36 @@ spec:
         - name: canonical-smoke-test-catalog
           configMap:
             name: canonical-smoke-test-catalog
+        - name: canonical-sovereign-ai-101-catalog
+          configMap:
+            name: canonical-sovereign-ai-101-catalog
+        - name: canonical-sovereign-ai-201-catalog
+          configMap:
+            name: canonical-sovereign-ai-201-catalog
+        - name: canonical-sovereign-ai-301-catalog
+          configMap:
+            name: canonical-sovereign-ai-301-catalog
+        - name: canonical-sovereign-ai-401-catalog
+          configMap:
+            name: canonical-sovereign-ai-401-catalog
+        - name: canonical-sovereign-ai-501-catalog
+          configMap:
+            name: canonical-sovereign-ai-501-catalog
+        - name: canonical-virtualization-ai-foundations-101-catalog
+          configMap:
+            name: canonical-virtualization-ai-foundations-101-catalog
+        - name: canonical-virtualization-ai-201-catalog
+          configMap:
+            name: canonical-virtualization-ai-201-catalog
+        - name: canonical-virtualization-ai-301-catalog
+          configMap:
+            name: canonical-virtualization-ai-301-catalog
+        - name: canonical-virtualization-ai-401-catalog
+          configMap:
+            name: canonical-virtualization-ai-401-catalog
+        - name: canonical-virtualization-ai-501-catalog
+          configMap:
+            name: canonical-virtualization-ai-501-catalog
 ---
 apiVersion: apps/v1
 kind: Deployment
