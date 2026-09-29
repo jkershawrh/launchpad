@@ -41,9 +41,10 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
-  showroom_content_ref: 6e6f5a3637f79b0806efdd2e137a8253a3d92518
+  showroom_content_ref: 7962185a06e4d556b2afb0c7a917334b17fcc8e8
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
+  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:546f5e43a71b2043793187ed4ad2540ecb2e3f75a0d512e32538ef63c1d9cfae
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -99,7 +100,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-201.git
-  workload_revision: 6e6f5a3637f79b0806efdd2e137a8253a3d92518
+  workload_revision: 7962185a06e4d556b2afb0c7a917334b17fcc8e8
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-201
@@ -127,5 +128,5 @@ metadata:
     ui: virt-ai-201
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-201.git
-  source_content_revision: 6e6f5a3637f79b0806efdd2e137a8253a3d92518
+  source_content_revision: 7962185a06e4d556b2afb0c7a917334b17fcc8e8
   source_references: {}

@@ -150,6 +150,7 @@ def test_demo_story_handoff_normalizes_to_a_private_one_seat_draft() -> None:
                     "revision": "a" * 40,
                     "playbook": "site.yml",
                     "start_path": "showroom",
+                    "content_image": "ghcr.io/example/showroom-content@sha256:" + "b" * 64,
                 },
                 "workload": {
                     "repo_url": "https://github.com/jkershawrh/sovereign-ai-101",
@@ -191,6 +192,76 @@ def test_demo_story_handoff_normalizes_to_a_private_one_seat_draft() -> None:
     assert intake["certification"]["promotion_sequence"] == [1]
     assert intake["sources"]["workload"]["gitops_repo_url"] == (
         "git@github.com:jkershawrh/sovereign-ai-101.git"
+    )
+    rendered = build_catalog_item(intake)
+    assert rendered["metadata"]["showroom_content_image"] == (
+        "ghcr.io/example/showroom-content@sha256:" + "b" * 64
+    )
+
+
+def test_showroom_content_image_rejects_mutable_tags() -> None:
+    intake = normalize_demo_story_handoff(
+        {
+            "factory_receipt": {},
+            "proposed_launchpad_intake": {
+                "catalog": {
+                    "catalog_item_id": "immutable-content-test",
+                    "display_name": "Immutable Content Test",
+                    "description": "Proves mutable content cannot enter the catalog.",
+                    "category": "guided_build",
+                    "version": "0.1.0",
+                    "status": "draft",
+                },
+                "learning": {
+                    "learning_level": "101",
+                    "learning_stage": "Learn",
+                    "experience_type": "guided_foundations",
+                    "prerequisites": [],
+                    "recommended_next_items": [],
+                    "journey_role": "foundation",
+                    "specialty_family": None,
+                    "branches_from": None,
+                    "returns_to": None,
+                    "shared_blueprint": "immutable-content-test-v1",
+                    "solution_family": "agentic_ai",
+                },
+                "sources": {
+                    "showroom": {
+                        "repo_url": "https://github.com/example/lab",
+                        "revision": "a" * 40,
+                        "playbook": "showroom/default-site.yml",
+                        "start_path": "showroom/content",
+                        "content_image": "ghcr.io/example/showroom-content:latest",
+                    },
+                    "workload": {
+                        "repo_url": "https://github.com/example/lab",
+                        "revision": "a" * 40,
+                        "deploy_path": "charts/lab",
+                    },
+                },
+                "runtime": {
+                    "deployment_type": "helm",
+                    "deployment_scope": "seat",
+                    "required_capabilities": ["openshift", "showroom"],
+                    "required_models": [],
+                    "resources": {
+                        "steady_per_seat": {
+                            "cpu_millicores": 100,
+                            "memory_mib": 160,
+                            "pods": 2,
+                            "storage_gib": 0,
+                        }
+                    },
+                    "tabs": [{"id": "terminal", "title": "Terminal"}],
+                    "workload": {"helm_values": {}},
+                },
+            },
+        }
+    )
+
+    assert (
+        "sources.showroom.content_image must be an immutable image digest"
+        in validate_intake(intake)["errors"]
     )
 
 

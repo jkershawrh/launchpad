@@ -40,9 +40,10 @@ metadata:
   solution_family: sovereign_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
-  showroom_content_ref: 69e7dff5b70afc65d4bb4185f71645c078450343
+  showroom_content_ref: 048fd05c66aabf5e5481dcb1329e5e6693988edc
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
+  showroom_content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:3c2f7bf861eaf7c3988a14a65743a884236469ff1acbd17f2568b96b737fd84f
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -98,7 +99,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-201.git
-  workload_revision: 69e7dff5b70afc65d4bb4185f71645c078450343
+  workload_revision: 048fd05c66aabf5e5481dcb1329e5e6693988edc
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-201
@@ -139,5 +140,5 @@ metadata:
     ui: sovereign-ai-201
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-201.git
-  source_content_revision: 69e7dff5b70afc65d4bb4185f71645c078450343
+  source_content_revision: 048fd05c66aabf5e5481dcb1329e5e6693988edc
   source_references: {}

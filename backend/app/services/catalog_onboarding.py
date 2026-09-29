@@ -1344,6 +1344,11 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "showroom_content_ref": showroom["revision"],
             "showroom_content_playbook": showroom["playbook"],
             "showroom_content_start_path": showroom["start_path"],
+            **(
+                {"showroom_content_image": showroom["content_image"]}
+                if showroom.get("content_image")
+                else {}
+            ),
         }
     if certification.get("proof_contract"):
         certification_metadata["certification_proof_contract"] = certification[
@@ -1623,6 +1628,11 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
             errors.append(
                 f"sources.{source_name}.revision must be an immutable 40-character Git SHA"
             )
+    content_image = showroom.get("content_image")
+    if content_image is not None and not IMMUTABLE_IMAGE.fullmatch(str(content_image)):
+        errors.append(
+            "sources.showroom.content_image must be an immutable image digest"
+        )
 
     references = intake.get("references", {})
     if references and not isinstance(references, dict):

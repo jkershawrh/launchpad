@@ -222,9 +222,16 @@ class OpenShiftProvisioningAdapter:
                 "showroom_antora_version": meta.get("showroom_antora_version", "main"),
                 "showroom_antora_flat": bool(meta.get("showroom_antora_flat", False)),
                 "showroom_tabs": meta.get("showroom_tabs", []),
-                "showroom_support_images": dict(
-                    getattr(getattr(self, "_target", None), "image_references", {})
-                ),
+                "showroom_support_images": {
+                    **dict(
+                        getattr(getattr(self, "_target", None), "image_references", {})
+                    ),
+                    **(
+                        {"showroom_git_cloner": str(meta["showroom_content_image"])}
+                        if meta.get("showroom_content_image")
+                        else {}
+                    ),
+                },
                 "workload_enabled": "helm-workload" in catalog_item.provisioner_refs,
                 "workload_gitops_ready": bool(meta.get("workload_gitops_ready", False)),
                 "workload_repo": meta.get("workload_repo", ""),

@@ -22,13 +22,14 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 68e3980d0a1df4ff20d36e6e76f8518781345239
+    revision: 6a9026f0471d56c9ae73def74a745cdaf1d79b97
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
+    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:9087369013858ae9c7a71fee7b7174daf0913f1b3e9694e438a42688ee3ea1a0
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 85604d1a88a5742739209aea0a07a95c2263dc69
+    revision: 6a9026f0471d56c9ae73def74a745cdaf1d79b97
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:

@@ -124,6 +124,40 @@ def test_remote_showroom_plan_carries_target_specific_support_images():
     assert plan.required_resources["showroom_support_images"] == adapter._target.image_references
 
 
+def test_catalog_showroom_content_image_overrides_only_the_git_cloner():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._overlay_path = "/tmp/demo"
+    adapter._target = SimpleNamespace(
+        cluster_id="flightpath",
+        image_references={
+            "showroom_terminal": "quay.io/example/terminal@sha256:" + "a" * 64,
+            "showroom_git_cloner": "quay.io/example/default-cloner@sha256:" + "b" * 64,
+        },
+    )
+    content_image = "ghcr.io/example/lab-showroom-content@sha256:" + "c" * 64
+    item = _guided_item().model_copy(
+        update={
+            "metadata": {
+                **_guided_item().metadata,
+                "showroom_content_image": content_image,
+            }
+        }
+    )
+    request = LabRequest(
+        tenant_id="partner-a",
+        requester_id="user-a",
+        catalog_item_id=item.catalog_item_id,
+        requested_mode=CatalogCategory.GUIDED_BUILD,
+    )
+
+    plan = adapter.create_plan(request, item)
+
+    assert plan.required_resources["showroom_support_images"] == {
+        "showroom_terminal": adapter._target.image_references["showroom_terminal"],
+        "showroom_git_cloner": content_image,
+    }
+
+
 def test_operator_workshop_plan_skips_generic_demo_runtime():
     adapter = object.__new__(OpenShiftProvisioningAdapter)
     adapter._overlay_path = "/tmp/demo"

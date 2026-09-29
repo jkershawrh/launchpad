@@ -24,13 +24,14 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
-    revision: 6e6f5a3637f79b0806efdd2e137a8253a3d92518
+    revision: 7962185a06e4d556b2afb0c7a917334b17fcc8e8
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
+    content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:546f5e43a71b2043793187ed4ad2540ecb2e3f75a0d512e32538ef63c1d9cfae
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
-    revision: 6e6f5a3637f79b0806efdd2e137a8253a3d92518
+    revision: 7962185a06e4d556b2afb0c7a917334b17fcc8e8
     deploy_path: charts/virtualization-ai-201
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
 runtime:
