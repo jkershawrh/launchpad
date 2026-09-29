@@ -103,7 +103,7 @@ runtime:
         value: Intel Xeon
       api-key: maas_api_key
     routes:
-      ui: sovereign-ai-201
+      ui: lab
     readiness: []
 certification:
   stage: factory-source-qualified

@@ -29,7 +29,7 @@ sources:
     content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:6b798d379715971009ff8f12a2ecdcf4c0874efb5d2ff3ce7cf8474bdd997bf0
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: da1cf6e48c5843242cfd7ccb7c72d2af49c5faba
+    revision: a6dd6c3018ac7c81aabe8d450149d4a7f774e9ab
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:

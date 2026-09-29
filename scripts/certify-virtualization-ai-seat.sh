@@ -28,7 +28,7 @@ case "$catalog_id" in
   virtualization-ai-foundations-101)
     vm_names=(operations-vm); service=ai-analysis; route=lab; endpoint=/api/v1/analyze ;;
   virtualization-ai-201)
-    vm_names=(contract-author-vm); service=virtualization-ai-201-adapter; route=virt-ai-201; endpoint=/api/v1/qualify ;;
+    vm_names=(contract-author-vm); service=virtualization-ai-201-adapter; route=lab; endpoint=/api/v1/qualify ;;
   virtualization-ai-301)
     vm_names=(modernization-client); service=virtualization-ai-301-adapter; route=virtualization-ai-301; endpoint=/api/v1/modernize ;;
   virtualization-ai-401)
@@ -64,10 +64,10 @@ case "$catalog_id" in
   virtualization-ai-foundations-101)
     request="$(jq -cn --arg ns "$namespace" '{schema_version:"analysis-request/v1",request_id:"11111111-1111-4111-8111-111111111111",origin:{kind:"virtual-machine",namespace:$ns,vm_name:"operations-vm",guest_hostname:"operations-vm"},note:"Synthetic operations note for certification.",allowed_categories:["inspect","schedule-maintenance","escalate"],condition:"healthy"}')"
     response="$(post "$endpoint" "$request")"
-    jq -e '.source_state == "REHEARSAL" and .validation.schema_valid == true and .authority.final_decision_owner == "human operator" and (.authority.actions_permitted | length) == 0' <<<"$response" >/dev/null
+    jq -e '.source_state == "LIVE" and .ai_participated == true and .model.hardware == "Intel Xeon CPU" and .validation.schema_valid == true and .validation.category_valid == true and .authority.final_decision_owner == "human operator" and (.authority.actions_permitted | length) == 0' <<<"$response" >/dev/null
     evidence="$(curl -fsS "http://127.0.0.1:18080/api/v1/evidence/11111111-1111-4111-8111-111111111111")"
     jq -e '.request_id == "11111111-1111-4111-8111-111111111111"' <<<"$evidence" >/dev/null
-    outcome=advisory-only ;;
+    outcome=live-advisory ;;
   virtualization-ai-201)
     request="$(jq -cn --arg ns "$namespace" '{schema_version:"virtualization-ai.redhat-intel.com/qualification-request/v1",correlation_id:"11111111-1111-4111-8111-111111111111",guest:{name:"contract-author-vm",namespace:$ns},task:"classify-operations-note",note:"The Service resolves but the downstream model boundary is unavailable.",allowed_categories:["application","capacity","connectivity","unknown"]}')"
     response="$(post "$endpoint" "$request")"
@@ -111,4 +111,4 @@ grep -qx node_list=DENIED <<<"$terminal_scope"
 
 jq -cn --arg namespace "$namespace" --arg cluster_ref "$expected_cluster" --arg catalog_id "$catalog_id" \
   --arg outcome "$outcome" --arg terminal_scope "$terminal_scope" --argjson vm_count "$vm_count" --argjson vmi_count "$vmi_count" \
-  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:"REHEARSAL",outcome:$outcome,human_authority_preserved:true},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'
+  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:(if $catalog_id == "virtualization-ai-foundations-101" then "LIVE" else "REHEARSAL" end),outcome:$outcome,human_authority_preserved:true},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'

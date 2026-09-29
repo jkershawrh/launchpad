@@ -91,7 +91,7 @@ runtime:
         value: Intel Xeon
       api-key: maas_api_key
     routes:
-      ui: virt-ai-201
+      ui: lab
     readiness: []
 certification:
   stage: factory-source-qualified

@@ -137,7 +137,7 @@ metadata:
   workload_runtime_secret_value_path: adapter.model.secretName
   workload_identity_value_path: ''
   workload_routes:
-    ui: sovereign-ai-201
+    ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-201.git
   source_content_revision: 048fd05c66aabf5e5481dcb1329e5e6693988edc

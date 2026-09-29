@@ -98,7 +98,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-foundations.git
-  workload_revision: da1cf6e48c5843242cfd7ccb7c72d2af49c5faba
+  workload_revision: a6dd6c3018ac7c81aabe8d450149d4a7f774e9ab
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-foundations

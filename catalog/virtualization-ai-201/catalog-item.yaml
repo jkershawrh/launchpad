@@ -125,7 +125,7 @@ metadata:
   workload_runtime_secret_value_path: adapter.model.secretName
   workload_identity_value_path: ''
   workload_routes:
-    ui: virt-ai-201
+    ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-201.git
   source_content_revision: 7962185a06e4d556b2afb0c7a917334b17fcc8e8

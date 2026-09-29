@@ -29,7 +29,7 @@ request_json() {
 }
 
 stage="route-discovery"
-app_host="$(oc --kubeconfig "$KUBECONFIG" get route sovereign-ai-201 -n "$namespace" -o jsonpath='{.spec.host}')"
+app_host="$(oc --kubeconfig "$KUBECONFIG" get route lab -n "$namespace" -o jsonpath='{.spec.host}')"
 [[ -n "$app_host" ]]
 base_url="https://${app_host}"
 
