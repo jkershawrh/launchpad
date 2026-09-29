@@ -70,9 +70,25 @@ for manifest in \
   solution-ui.yaml
 do
   stage="workload-apply-${manifest%.yaml}"
-  oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
-    oc apply -n "$namespace" -f - \
-    < "$repo_root/content-intel-xeon6-agent-201/manifests/$manifest" >/dev/null
+  if apply_output="$(
+    oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
+      oc apply -n "$namespace" -f - \
+      < "$repo_root/content-intel-xeon6-agent-201/manifests/$manifest" 2>&1
+  )"; then
+    :
+  else
+    failure_class="unknown"
+    case "$apply_output" in
+      *Forbidden*|*forbidden*) failure_class="forbidden" ;;
+      *Invalid*|*invalid*) failure_class="invalid" ;;
+      *NotFound*|*"not found"*) failure_class="not-found" ;;
+      *Unauthorized*|*unauthorized*) failure_class="unauthorized" ;;
+      *timeout*|*Timeout*) failure_class="timeout" ;;
+    esac
+    printf 'semantic_response=workload_apply_failure manifest:%s failure_class=%s\n' \
+      "${manifest%.yaml}" "$failure_class" >&2
+    false
+  fi
 done
 
 stage="workload-model-config"

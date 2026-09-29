@@ -35,9 +35,17 @@ stage="readiness"
 readiness="$(curl "${curl_options[@]}" "https://${app_host}/ready")"
 jq -e '.status == "ready"' <<<"$readiness" >/dev/null
 stage="workspace-http"
-[[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/workspace")" == "200" ]]
+workspace_status="$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/workspace")"
+if [[ "$workspace_status" != "200" ]]; then
+  printf 'semantic_response=workspace_http_status:%s\n' "$workspace_status" >&2
+  false
+fi
 stage="story-http"
-[[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/story/")" == "200" ]]
+story_status="$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/story/")"
+if [[ "$story_status" != "200" ]]; then
+  printf 'semantic_response=story_http_status:%s\n' "$story_status" >&2
+  false
+fi
 
 stage="live-investigation"
 investigation="$({ curl "${curl_options[@]}" -X POST "https://${app_host}/api/investigate" \

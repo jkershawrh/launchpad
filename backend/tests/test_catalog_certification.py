@@ -764,6 +764,9 @@ def test_agent_201_remote_probe_reports_bounded_failure_stages_without_secrets()
         "solution-ui.yaml",
     ):
         assert manifest in probe
+    assert "semantic_response=workload_apply_failure" in probe
+    assert 'failure_class="forbidden"' in probe
+    assert 'failure_class="invalid"' in probe
     assert "BASH_COMMAND" not in probe
 
 
@@ -772,6 +775,8 @@ def test_network_probe_distinguishes_workspace_and_story_failures():
 
     assert 'stage="workspace-http"' in probe
     assert 'stage="story-http"' in probe
+    assert "semantic_response=workspace_http_status:" in probe
+    assert "semantic_response=story_http_status:" in probe
 
 
 def test_generic_runner_places_probes_after_the_all_seat_barrier_and_reclaims(
