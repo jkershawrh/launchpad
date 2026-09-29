@@ -39,10 +39,10 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
-  showroom_content_ref: 864f77776ce1bd798bf3d68f656a21e3a7af9799
+  showroom_content_ref: 26e38241a7acbd629ad28b29b952f76390f62b8a
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
-  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:fd5a8d70eef138a5b1dad1ad96f53db4ce663f8b9f46bc514f1d2eb4cdae5b33
+  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:6b798d379715971009ff8f12a2ecdcf4c0874efb5d2ff3ce7cf8474bdd997bf0
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -98,7 +98,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-foundations.git
-  workload_revision: 864f77776ce1bd798bf3d68f656a21e3a7af9799
+  workload_revision: 26e38241a7acbd629ad28b29b952f76390f62b8a
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-foundations
@@ -107,8 +107,8 @@ metadata:
   workload_release_name: virtualization-ai-foundations-101
   workload_helm_values:
     values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:f3b8de72777ac2d73ad0409c72f2badb46b531f86d22e41a824a3330f8e69358
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:0c3c83176fed8f9b611c42c06ea518ec355f4a65ae6577b3d5e46371f34ac5b5
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:79e11ab488ed160ed158f0b1a58fcfbc72d125b26d8458673d5a8daa4e741a55
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:587b8c09e33b197de0659c46f74d4b27b125c6b0107e358e9e9622d26ba262ed
     presentation_enabled: true
   workload_ignore_differences: []
   workload_runtime_secret_name: virtualization-ai-model-runtime
@@ -122,5 +122,5 @@ metadata:
     ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-foundations.git
-  source_content_revision: 864f77776ce1bd798bf3d68f656a21e3a7af9799
+  source_content_revision: 26e38241a7acbd629ad28b29b952f76390f62b8a
   source_references: {}
