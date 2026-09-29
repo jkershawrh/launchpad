@@ -1,0 +1,51 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+metadata:
+  catalog_item_id: sovereign-ai-501
+  display_name: "Sovereign AI 501 — Qualify a Confidential AI Fleet"
+spec:
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies: [internal]
+  scale_profiles:
+    - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 900, maximum_cleanup_seconds: 600}
+  showroom:
+    pages:
+      - {id: welcome, path: /www/sovereign-ai-501/main/index.html, marker: "Qualify a confidential AI fleet"}
+      - {id: rollout, path: /www/sovereign-ai-501/main/02-challenge.html, marker: "Roll policy and reference values"}
+      - {id: capacity, path: /www/sovereign-ai-501/main/06-infer.html, marker: "Exercise admission limits"}
+      - {id: review, path: /www/sovereign-ai-501/main/08-verify.html, marker: "Human review and zero residue"}
+  seat_probe:
+    argv: [bash, scripts/certify-sovereign-ai-501-seat.sh, "{namespace}", "{cluster_ref}"]
+    timeout_seconds: 600
+    result_format: json
+    json_assertions:
+      - {path: result, equals: GREEN-live-internal-seat}
+      - {path: cluster_ref, equals: flightpath}
+      - {path: readiness.qualifier_health, equals: true}
+      - {path: readiness.presentation_http_status, equals: 200}
+      - {path: journey.mode, equals: REHEARSAL}
+      - {path: journey.live_fleet_observed, equals: false}
+      - {path: journey.baseline_path, equals: QUALIFIED_REHEARSAL}
+      - {path: journey.false_live_path, equals: REFUSE_PROMOTION}
+      - {path: journey.fleet_rollout_consistent, equals: true}
+      - {path: journey.live_capacity_measured, equals: false}
+      - {path: journey.protected_resources_released, equals: 0}
+      - {path: journey.model_executions, equals: 0}
+      - {path: journey.evidence_chain_valid, equals: true}
+      - {path: journey.human_authority_retained, equals: true}
+      - {path: terminal_scope, contains: own_edit=yes}
+      - {path: terminal_scope, contains: cross_namespace=DENIED}
+      - {path: terminal_scope, contains: node_list=DENIED}
+      - {path: contains_sensitive_values, equals: false}
+  cleanup:
+    resources: [namespaces, applications.argoproj.io, rolebindings.rbac.authorization.k8s.io, persistentvolumeclaims, persistentvolumes, routes.route.openshift.io, secrets]
+  rubric:
+    required_score: 100
+    categories:
+      - {id: contract_integrity, weight: 10, requires: [contract_valid, evidence_hashed]}
+      - {id: placement_capacity, weight: 15, requires: [capacity_passed, single_cluster_assignment]}
+      - {id: provisioning_readiness, weight: 20, requires: [all_seats_ready, ready_within_limit]}
+      - {id: participant_function, weight: 25, requires: [showroom_pages_passed, seat_probes_passed]}
+      - {id: authorization, weight: 15, requires: [namespace_isolation_passed, sensitive_values_absent]}
+      - {id: cleanup, weight: 15, requires: [cleanup_completed, zero_residue_cleanup, model_keys_revoked]}

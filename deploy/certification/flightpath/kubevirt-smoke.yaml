@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: launchpad-kubevirt-smoke
+  labels:
+    app.kubernetes.io/managed-by: launchpad-certification
+    launchpad.redhat.com/cluster: flightpath
+---
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: flightpath-kvm-smoke
+  namespace: launchpad-kubevirt-smoke
+  labels:
+    app.kubernetes.io/managed-by: launchpad-certification
+spec:
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: flightpath-kvm-smoke
+    spec:
+      domain:
+        cpu:
+          cores: 1
+        devices:
+          disks:
+            - name: rootdisk
+              disk:
+                bus: virtio
+            - name: cloudinit
+              disk:
+                bus: virtio
+          interfaces:
+            - name: default
+              masquerade: {}
+        resources:
+          requests:
+            memory: 1Gi
+          limits:
+            memory: 1Gi
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: rootdisk
+          containerDisk:
+            image: quay.io/containerdisks/fedora@sha256:ae48475e213bd3d34415e8f123f5a79166b1eb142fdf851654e3adb9d02fb73f
+        - name: cloudinit
+          cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              hostname: flightpath-kvm-smoke

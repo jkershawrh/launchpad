@@ -1,0 +1,46 @@
+apiVersion: launchpad.redhat.com/v1
+kind: PublicExposureCertificationContract
+metadata:
+  name: one-seat-public-exposure
+spec:
+  schema: launchpad.redhat.com/public-exposure-certification-evidence/v1
+  prerequisite:
+    evidenceSchema: launchpad.redhat.com/catalog-certification-evidence/v1
+    result: GREEN-live
+    minimumInternalCertifiedSeats: 1
+  order:
+    seats: 1
+    exposurePolicy: public_code
+    certificationOverride: false
+  gates:
+    identityAndClaim:
+    - one_time_code_disclosed_once
+    - claim_succeeded
+    - same_identity_recovered_same_seat
+    participantJourney:
+    - landing
+    - showroom
+    - declared_tools
+    - logout_and_resume
+    authorization:
+    - assigned_namespace_edit
+    - cross_namespace_denied
+    - unauthenticated_denied
+    edge:
+    - trusted_tls
+    - external_browser
+    abuseControls:
+    - uniform_denial
+    - rate_limit_enforced
+    cleanup:
+    - identity_disabled_after_final_entitlement
+    - model_keys_revoked
+    - zero_resource_counts
+  privacy:
+    plaintextCodePersisted: false
+    participantEmailExported: false
+    plaintextCredentialsInEvidence: false
+  result: GREEN-live-public-exposure
+  promotion:
+    scaleCertificationChanged: false
+    publicCertifiedSeats: 1

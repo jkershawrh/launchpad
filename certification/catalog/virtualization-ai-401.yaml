@@ -1,0 +1,42 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+metadata: {catalog_item_id: virtualization-ai-401, display_name: "Virtualization + AI 401: Operate Hybrid VM and AI Workloads"}
+spec:
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies: [internal]
+  scale_profiles:
+    - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 1200, maximum_cleanup_seconds: 600}
+  showroom:
+    pages:
+      - {id: welcome, path: /www/virtualization-ai-401/master/index.html, marker: "Operate Hybrid VM and AI Workloads"}
+      - {id: preflight, path: /www/virtualization-ai-401/master/02-preflight.html, marker: "PREFLIGHT"}
+      - {id: validate, path: /www/virtualization-ai-401/master/06-validate.html, marker: "VALIDATE"}
+  seat_probe:
+    argv: [bash, scripts/certify-virtualization-ai-seat.sh, virtualization-ai-401, "{namespace}", "{cluster_ref}"]
+    timeout_seconds: 900
+    result_format: json
+    json_assertions:
+      - {path: result, equals: GREEN-live-internal-seat}
+      - {path: cluster_ref, equals: flightpath}
+      - {path: readiness.vms_running, equals: 1}
+      - {path: readiness.vmis_ready, equals: 1}
+      - {path: readiness.presentation_http_status, equals: 200}
+      - {path: readiness.adapter_health, equals: true}
+      - {path: journey.outcome, equals: ALLOW_REVIEW}
+      - {path: journey.human_authority_preserved, equals: true}
+      - {path: terminal_scope, contains: own_edit=yes}
+      - {path: terminal_scope, contains: cross_namespace=DENIED}
+      - {path: terminal_scope, contains: node_list=DENIED}
+      - {path: contains_sensitive_values, equals: false}
+  cleanup:
+    resources: [namespaces, applications.argoproj.io, rolebindings.rbac.authorization.k8s.io, persistentvolumeclaims, persistentvolumes, routes.route.openshift.io, secrets]
+  rubric:
+    required_score: 100
+    categories:
+      - {id: contract_integrity, weight: 10, requires: [contract_valid, evidence_hashed]}
+      - {id: placement_capacity, weight: 15, requires: [capacity_passed, single_cluster_assignment]}
+      - {id: provisioning_readiness, weight: 20, requires: [all_seats_ready, ready_within_limit]}
+      - {id: participant_function, weight: 25, requires: [showroom_pages_passed, seat_probes_passed]}
+      - {id: authorization, weight: 15, requires: [namespace_isolation_passed, sensitive_values_absent]}
+      - {id: cleanup, weight: 15, requires: [cleanup_completed, zero_residue_cleanup, model_keys_revoked]}
