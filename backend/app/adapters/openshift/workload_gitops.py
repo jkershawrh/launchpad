@@ -67,7 +67,9 @@ class WorkloadSeat:
     revision: str
     deploy_path: str
     release_name: str
+    source_kind: str = "chart"
     helm_values: dict[str, Any] = field(default_factory=dict)
+    kustomize_images: tuple[str, ...] = ()
     runtime_secret_name: str = ""
     runtime_secret_value_path: str = ""
     identity_value_path: str = ""
@@ -76,12 +78,28 @@ class WorkloadSeat:
     def __post_init__(self) -> None:
         if not IMMUTABLE_GIT_SHA.fullmatch(self.revision):
             raise ValueError("Workload revision must be an immutable 40-character Git SHA")
-        if not self.repo_url.startswith("https://"):
-            raise ValueError("Workload repository must use HTTPS")
+        if not (
+            self.repo_url.startswith("https://github.com/")
+            or self.repo_url.startswith("git@github.com:")
+        ):
+            raise ValueError("Workload repository must use GitHub HTTPS or SSH transport")
         if not self.deploy_path.strip() or ".." in self.deploy_path.split("/"):
             raise ValueError("Workload deploy path must be a safe repository-relative path")
         if not DNS_LABEL.fullmatch(self.release_name):
             raise ValueError("Workload release name must be a DNS label")
+        if self.source_kind not in {"chart", "helm", "kustomize"}:
+            raise ValueError("Workload source kind must be chart, helm, or kustomize")
+        if self.source_kind == "kustomize" and (
+            self.runtime_secret_name or self.identity_value_path
+        ):
+            raise ValueError(
+                "Kustomize workloads cannot use Helm runtime Secret or identity value paths"
+            )
+        for image in self.kustomize_images:
+            if "=" not in image or "@sha256:" not in image:
+                raise ValueError(
+                    "Kustomize image overrides must map a source name to an immutable digest"
+                )
         if bool(self.runtime_secret_name) != bool(self.runtime_secret_value_path):
             raise ValueError("Runtime Secret name and Helm value path must be declared together")
         if self.runtime_secret_name and not DNS_LABEL.fullmatch(self.runtime_secret_name):
@@ -167,17 +185,22 @@ def build_workload_application(
         "launchpad.redhat.com/tenant": seat.tenant_id,
         "launchpad.redhat.com/cluster-id": seat.cluster_id,
     }
+    source: dict[str, Any] = {
+        "repoURL": seat.repo_url,
+        "targetRevision": seat.revision,
+        "path": seat.deploy_path,
+    }
+    if seat.source_kind == "kustomize":
+        source["kustomize"] = {"images": list(seat.kustomize_images)}
+    else:
+        source["helm"] = {
+            "releaseName": seat.release_name,
+            "values": yaml.safe_dump(helm_values, sort_keys=False),
+        }
+
     spec: dict[str, Any] = {
         "project": argocd_project,
-        "source": {
-            "repoURL": seat.repo_url,
-            "targetRevision": seat.revision,
-            "path": seat.deploy_path,
-            "helm": {
-                "releaseName": seat.release_name,
-                "values": yaml.safe_dump(helm_values, sort_keys=False),
-            },
-        },
+        "source": source,
         "destination": {
             "server": seat.destination_server,
             "namespace": seat.namespace,

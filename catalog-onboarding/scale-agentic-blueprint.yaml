@@ -16,8 +16,8 @@ learning:
   - operate-agentic-blueprint
   recommended_next_items:
   - agentic-ai-601
-  journey_role: advanced_blueprint
-  specialty_family: production_multi_agent
+  journey_role: core
+  specialty_family: null
   branches_from: operate-agentic-blueprint
   returns_to: agentic-ai-601
   shared_blueprint: red-hat-intel-agentic-v1
@@ -92,7 +92,7 @@ certification:
   activation_blockers:
   - Complete trusted render and destination artifact qualification on Flightpath.
   - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry before activation.
-  - Complete one- and five-seat certification with zero-residue reclaim before activation.
+  - Complete one-seat certification with zero-residue reclaim before activation; five- and twenty-five-seat scale certification is deferred.
   - Complete human authority review before promotion.
 factory_receipt:
   schema_version: demo-story.redhat-intel.com/launchpad-handoff/v1

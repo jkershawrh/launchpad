@@ -11,6 +11,7 @@ from app.services.catalog_onboarding import (
     build_catalog_item,
     discover_quickstart_repo,
     load_intake,
+    normalize_demo_story_handoff,
     validate_intake,
 )
 
@@ -85,6 +86,111 @@ def test_agentops_cannot_be_activated_while_intake_blockers_remain():
     assert adapter.validate_item("agentops-observability") is False
     with pytest.raises(ValueError, match="activation blocker"):
         adapter.set_status("agentops-observability", CatalogStatus.ACTIVE)
+
+
+def test_private_source_can_use_matching_read_only_gitops_transport() -> None:
+    intake = load_intake(ROOT / "catalog-onboarding/agentic-ai-601.yaml")
+    validation = validate_intake(intake)
+    generated = build_catalog_item(intake)["metadata"]
+
+    assert not [
+        error for error in validation["errors"] if "gitops_repo_url" in error
+    ]
+    assert generated["showroom_content_repo_url"] == (
+        "git@github.com:jkershawrh/agentic-ai-601.git"
+    )
+    assert generated["workload_repo"] == (
+        "git@github.com:jkershawrh/agentic-ai-601.git"
+    )
+    assert generated["source_content_repo"] == (
+        "https://github.com/jkershawrh/agentic-ai-601.git"
+    )
+
+
+def test_gitops_transport_must_match_the_provenance_repository() -> None:
+    intake = load_intake(ROOT / "catalog-onboarding/agentic-ai-601.yaml")
+    intake["sources"]["workload"]["gitops_repo_url"] = (
+        "git@github.com:jkershawrh/a-different-repository.git"
+    )
+
+    assert any(
+        "sources.workload.gitops_repo_url" in error
+        for error in validate_intake(intake)["errors"]
+    )
+
+
+def test_demo_story_handoff_normalizes_to_a_private_one_seat_draft() -> None:
+    handoff = {
+        "factory_receipt": {"known_blockers": ["Independent review required."]},
+        "proposed_launchpad_intake": {
+            "catalog": {
+                "catalog_item_id": "sovereign-ai-101",
+                "display_name": "Sovereign AI 101: Understand Governed Inference",
+                "description": "Trace one governed inference request.",
+                "category": "guided_build",
+                "version": "0.1.0",
+                "status": "draft",
+            },
+            "learning": {
+                "learning_level": "101",
+                "learning_stage": "Understand",
+                "experience_type": "guided_foundations",
+                "prerequisites": [],
+                "recommended_next_items": [],
+                "journey_role": "foundation",
+                "specialty_family": "sovereign_ai",
+                "branches_from": None,
+                "returns_to": None,
+                "shared_blueprint": "red-hat-intel-sovereign-ai-v1",
+                "solution_family": "sovereign_ai",
+            },
+            "sources": {
+                "showroom": {
+                    "repo_url": "https://github.com/jkershawrh/sovereign-ai-101",
+                    "revision": "a" * 40,
+                    "playbook": "site.yml",
+                    "start_path": "showroom",
+                },
+                "workload": {
+                    "repo_url": "https://github.com/jkershawrh/sovereign-ai-101",
+                    "revision": "a" * 40,
+                    "deploy_path": "charts/sovereign-ai-101",
+                },
+            },
+            "runtime": {
+                "deployment_type": "helm",
+                "deployment_scope": "participant_namespace",
+                "required_capabilities": ["openshift", "showroom"],
+                "required_models": [],
+                "resources": {
+                    "steady_per_seat": {
+                        "cpu_millicores": 100,
+                        "memory_mib": 160,
+                        "pods": 2,
+                        "storage_gib": 0,
+                    },
+                },
+                "tabs": [{"id": "terminal", "title": "Terminal"}],
+                "workload": {"helm_values": {}},
+            },
+            "certification_proposal": {
+                "proof_contract_draft": "handoff/catalog-certification.proposed.yaml"
+            },
+        },
+    }
+
+    intake = normalize_demo_story_handoff(handoff)
+    validation = validate_intake(intake)
+
+    assert validation["errors"] == []
+    assert intake["catalog"]["status"] == "draft"
+    assert intake["learning"]["learning_stage"] == "Learn"
+    assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
+    assert intake["certification"]["max_workshop_seats"] == 1
+    assert intake["certification"]["promotion_sequence"] == [1]
+    assert intake["sources"]["workload"]["gitops_repo_url"] == (
+        "git@github.com:jkershawrh/sovereign-ai-101.git"
+    )
 
 
 def test_agentops_intake_captures_the_large_lab_runtime_contract():

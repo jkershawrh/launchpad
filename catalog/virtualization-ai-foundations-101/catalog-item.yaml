@@ -1,0 +1,127 @@
+catalog_item_id: virtualization-ai-foundations-101
+display_name: 'Virtualization + AI 101: Trace a VM to Governed AI'
+description: Trace one attributable request from an OpenShift Virtualization VM through
+  platform networking to governed Intel Xeon CPU inference and human authority.
+category: guided_trace
+version: 0.1.0
+status: draft
+required_capabilities:
+- openshift
+- showroom
+- openshift-virtualization
+- model-endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: 4h
+provisioner_refs:
+- helm-workload
+- showroom
+validation_refs:
+- pod-ready
+- route-accessible
+- inference-health
+- agentops-journey
+observability_profile: agentops-full-stack
+supported_branding:
+- redhat-intel-default
+- intel-internal
+metadata:
+  learning_level: '101'
+  learning_stage: Learn
+  experience_type: guided_trace
+  prerequisites: []
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-virtualization-ai-v1
+  solution_family: virtualization_ai
+  showroom: true
+  showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
+  showroom_content_ref: 68e3980d0a1df4ff20d36e6e76f8518781345239
+  showroom_content_playbook: showroom/default-site.yml
+  showroom_content_start_path: showroom/content
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/virtualization-ai-foundations-101.yaml
+  certification_stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - Published GHCR candidates are digest-pinned, signed, attested, and exact-pull
+    verified, but Launchpad must still approve the registry destination, evidence
+    retention, and rollback policy.
+  - No approved OpenShift cluster and managed Intel Xeon CPU model endpoint were available
+    for the live VM-origin journey.
+  - Declared chart resources have not been measured at one, five, or twenty-five seats.
+  - OpenShift reclaim and zero-residue evidence remain independent Launchpad gates;
+    the factory receipt covers only the local container smoke environment.
+  - Launchpad source approval, trusted render, artifact review, live seat certification,
+    and promotion remain required.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  certification_proof_contract: certification/catalog/virtualization-ai-foundations-101.yaml
+  allowed_exposure_policies:
+  - internal
+  showroom_journey: virtualization-ai-foundations-101
+  showroom_title: 'Virtualization + AI 101: Trace a VM to Governed AI'
+  namespace_slug: virtualization-ai-foundations-101
+  showroom_terminal_storage: true
+  showroom_tabs:
+  - id: story
+    title: Story
+    source: workload.route.ui
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  workshop_cluster_ref: flightpath
+  required_models:
+  - approved-openai-compatible-xeon-cpu-model
+  inference_endpoint: litellm
+  seat_cpu_millicores: 1125
+  seat_memory_mib: 1184
+  seat_pods: 3
+  seat_storage_gib: 0
+  workshop_shared_cpu_millicores: 0
+  workshop_shared_memory_mib: 0
+  workshop_shared_pods: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: git@github.com:jkershawrh/virtualization-ai-foundations.git
+  workload_revision: 7d0d88d61dcfa1a1ab97f7d187249c7fc29f13da
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: charts/virtualization-ai-foundations
+  workload_source_kind: chart
+  workload_gitops_ready: true
+  workload_release_name: virtualization-ai-foundations-101
+  workload_helm_values:
+    values_overlay: charts/virtualization-ai-foundations/values.published.yaml
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:429d27ecd1eaaec98be8e8d252925fe8dd6b0f525d0c5f06f65d1a6adba6d9a9
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:fb4869e465beb513636ad574d9ee1974d82431b226099e6d8933f24263b9d61c
+    presentation_enabled: true
+  workload_ignore_differences: []
+  workload_runtime_secret_name: virtualization-ai-model-runtime
+  workload_runtime_secret_sources:
+    endpoint: maas_endpoint
+    name: requested_model
+    api-key: maas_api_key
+  workload_runtime_secret_value_path: adapter.model.apiKeySecret.name
+  workload_identity_value_path: ''
+  workload_routes: {}
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/virtualization-ai-foundations.git
+  source_content_revision: 68e3980d0a1df4ff20d36e6e76f8518781345239
+  source_references: {}

@@ -89,3 +89,12 @@ def test_matrix_uses_unique_attempt_prefix_for_idempotent_retries() -> None:
     assert 'run_series="${LAUNCHPAD_RUN_PREFIX:-flightpath-staging}"' in text
     assert "LAUNCHPAD_RUN_ATTEMPT" in text
     assert 'run_prefix="${run_series}-${run_attempt}"' in text
+
+
+def test_matrix_defaults_to_one_seat_and_requires_an_explicit_scale_override() -> None:
+    text = (ROOT / "scripts/run_flightpath_certification_matrix.sh").read_text()
+
+    assert 'certification_seats="${LAUNCHPAD_CERTIFICATION_SEATS:-1}"' in text
+    assert '--seats "${certification_seats}"' in text
+    assert '--seats 5' not in text
+    assert 'run_id="${run_prefix}-${catalog_id}-${certification_seats}-seat"' in text

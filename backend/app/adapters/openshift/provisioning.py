@@ -398,7 +398,9 @@ class OpenShiftProvisioningAdapter:
                     revision=str(res.get("workload_revision", "")),
                     deploy_path=str(res.get("workload_deploy_path", "")),
                     release_name=str(res.get("workload_release_name", "workload")),
+                    source_kind=str(res.get("workload_source_kind", "chart")),
                     helm_values=dict(res.get("workload_helm_values", {})),
+                    kustomize_images=tuple(res.get("workload_kustomize_images", [])),
                     runtime_secret_name=runtime_secret_name,
                     runtime_secret_value_path=str(
                         res.get("workload_runtime_secret_value_path", "")

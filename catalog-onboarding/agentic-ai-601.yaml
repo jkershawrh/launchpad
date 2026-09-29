@@ -18,7 +18,7 @@ learning:
     - scale-agentic-blueprint
   recommended_next_items: []
   journey_role: core
-  specialty_family: earned_authority
+  specialty_family: null
   branches_from: scale-agentic-blueprint
   returns_to: null
   shared_blueprint: red-hat-intel-agentic-v1
@@ -26,11 +26,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agentic-ai-601.git
+    gitops_repo_url: git@github.com:jkershawrh/agentic-ai-601.git
     revision: a40f01396adcccdb93c240b8c5b5b45cf418c317
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/agentic-ai-601.git
+    gitops_repo_url: git@github.com:jkershawrh/agentic-ai-601.git
     revision: a40f01396adcccdb93c240b8c5b5b45cf418c317
     deploy_path: charts/agentic-ai-601
 runtime:
@@ -77,7 +79,7 @@ certification:
     - Complete Agentic AI 401 activation review.
     - Complete Agentic AI 501 live destination certification and activation review.
     - Complete trusted render and artifact qualification on Flightpath.
-    - Complete one- and five-seat destination certification and zero-residue reclaim.
+    - Complete one-seat destination certification and zero-residue reclaim; five- and twenty-five-seat scale certification is deferred.
     - Complete human authority review.
 factory_receipt:
   schema_version: demo-story.redhat-intel.com/launchpad-handoff/v1

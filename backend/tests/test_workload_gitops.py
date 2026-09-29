@@ -69,6 +69,29 @@ def test_builds_git_pinned_cluster_aware_workload_application():
     }
 
 
+def test_builds_private_git_pinned_kustomize_application_with_immutable_images():
+    app = build_workload_application(
+        _seat(
+            repo_url="git@github.com:example/private-workload.git",
+            deploy_path="deploy/openshift/base",
+            source_kind="kustomize",
+            helm_values={},
+            runtime_secret_name="",
+            runtime_secret_value_path="",
+            identity_value_path="",
+            kustomize_images=(
+                "registry.invalid/example/app=ghcr.io/example/app@sha256:" + "b" * 64,
+            ),
+        )
+    )
+
+    source = app["spec"]["source"]
+    assert "helm" not in source
+    assert source["kustomize"]["images"] == [
+        "registry.invalid/example/app=ghcr.io/example/app@sha256:" + "b" * 64
+    ]
+
+
 def test_references_precreated_runtime_secret_without_argocd_owning_its_data():
     app = build_workload_application(_seat())
     rendered = yaml.safe_dump(app)

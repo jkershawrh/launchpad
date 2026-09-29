@@ -19,7 +19,48 @@ levels:
     name: Scale
     description: Scale, upgrade, secure, recover, and certify a production architecture.
     publication_gate: certified
+  "601":
+    name: Qualify
+    description: Prove governed autonomy and earn the right for an agentic system to act.
+    publication_gate: certified
+learning_tracks:
+  agentic_ai:
+    label: Agentic AI
+    entries:
+      "101": {title: Understand Agentic Workflows, lifecycle: planned}
+      "201": {title: Build an AI Agent on Intel Xeon 6, lifecycle: active, catalog_id: intel-xeon6-agent-201}
+      "301": {title: Build Multi-Agent Systems, lifecycle: active, catalog_id: multi-agent-quickstart}
+      "401": {title: Operate Evidence-Backed Agents, lifecycle: draft, catalog_id: operate-agentic-blueprint}
+      "501": {title: Scale and Certify Agentic Systems, lifecycle: draft, catalog_id: scale-agentic-blueprint}
+      "601": {title: Earn the Right to Act, lifecycle: draft, catalog_id: agentic-ai-601}
+  sovereign_ai:
+    label: Sovereign AI
+    entries:
+      "101": {title: Understand Sovereign AI, lifecycle: planned}
+      "201": {title: Build a Governed Sovereign Workload, lifecycle: planned}
+      "301": {title: Govern Models, Data, and Agents, lifecycle: planned}
+      "401": {title: Confidential AI with Intel TDX, lifecycle: planned}
+      "501": {title: Prove and Certify Sovereign AI, lifecycle: planned}
+  virtualization_ai:
+    label: Virtualization + AI
+    entries:
+      "101": {title: Understand VM and AI Coexistence, lifecycle: planned}
+      "201": {title: Connect a VM to AI, lifecycle: planned}
+      "301": {title: Modernize VMs with AI, lifecycle: planned}
+      "401": {title: Operate Hybrid VM and AI Workloads, lifecycle: planned}
+      "501": {title: Scale Governed AI Modernization, lifecycle: planned}
+track_rules:
+  missing_entry_behavior: not_offered
+  planned_entries_are_orderable: false
+  draft_entries_are_orderable: false
+  active_entries_require_current_certification: true
+  sales_enablement_is_a_separate_persona_axis: true
+  sales_track_titles: pending_product_owner_definition
 canonical_blueprint: red-hat-intel-agentic-v1
+canonical_blueprints:
+  agentic_ai: red-hat-intel-agentic-v1
+  sovereign_ai: red-hat-intel-sovereign-ai-v1
+  virtualization_ai: red-hat-intel-virtualization-ai-v1
 journey_roles:
   core: The recommended progression that incrementally builds the canonical blueprint.
   specialty: A bounded domain, platform, data, or reliability episode that branches from and may return to the core journey.
@@ -36,6 +77,8 @@ solution_families:
   inference: Model serving, hardware placement, and inference optimization.
   generative_ai: Generative AI, retrieval, grounding, and content workflows.
   agentic_ai: Tool-using agents, multi-agent systems, and open agent protocols.
+  sovereign_ai: Governed, confidential, and jurisdiction-aware AI workloads.
+  virtualization_ai: Virtual-machine and AI coexistence, modernization, and operations.
   operations_reliability: Observability, policy, resilience, scale, and certification.
   industry_solutions: Domain-specific applications of the shared architecture.
   platform_validation: Internal platform verification rather than a learner journey.

@@ -1,0 +1,120 @@
+catalog_item_id: sovereign-ai-101
+display_name: 'Sovereign AI 101: Understand Governed Inference'
+description: Trace a governed inference request through classification, deterministic
+  policy, advisory model dispatch, evidence receipts, refusal states, and human authority.
+category: guided_build
+version: 0.1.0
+status: draft
+required_capabilities:
+- openshift
+- showroom
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: 4h
+provisioner_refs:
+- helm-workload
+- showroom
+validation_refs:
+- pod-ready
+- route-accessible
+- inference-health
+- agentops-journey
+observability_profile: agentops-full-stack
+supported_branding:
+- redhat-intel-default
+- intel-internal
+metadata:
+  learning_level: '101'
+  learning_stage: Learn
+  experience_type: guided_foundations
+  prerequisites:
+  - intel-llm-cpu-serving
+  recommended_next_items:
+  - sovereign-ai-201
+  journey_role: core
+  specialty_family: null
+  branches_from: intel-llm-cpu-serving
+  returns_to: null
+  shared_blueprint: red-hat-intel-sovereign-ai-v1
+  solution_family: sovereign_ai
+  showroom: true
+  showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-101.git
+  showroom_content_ref: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+  showroom_content_playbook: site.yml
+  showroom_content_start_path: showroom
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/sovereign-ai-101.yaml
+  certification_stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - The immutable images and factory journey are REHEARSAL only; no live model or
+    Intel CPU placement is claimed.
+  - OpenShift admission, NetworkPolicy enforcement, Route behavior, and one-seat reclaim
+    remain unverified in a destination cluster.
+  - The single local resource snapshot is not a capacity claim; one, five, and twenty-five-seat
+    qualification remain independent Launchpad gates.
+  - Launchpad source approval, trusted render, artifact review, live seat certification,
+    and promotion remain required.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  certification_proof_contract: certification/catalog/sovereign-ai-101.yaml
+  allowed_exposure_policies:
+  - internal
+  showroom_journey: sovereign-ai-101
+  showroom_title: 'Sovereign AI 101: Understand Governed Inference'
+  namespace_slug: sovereign-ai-101
+  showroom_terminal_storage: true
+  showroom_tabs:
+  - id: story
+    title: Story
+    source: workload.route.ui
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  workshop_cluster_ref: flightpath
+  required_models: []
+  inference_endpoint: litellm
+  seat_cpu_millicores: 100
+  seat_memory_mib: 160
+  seat_pods: 2
+  seat_storage_gib: 0
+  workshop_shared_cpu_millicores: 0
+  workshop_shared_memory_mib: 0
+  workshop_shared_pods: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: git@github.com:jkershawrh/sovereign-ai-101.git
+  workload_revision: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+  workload_deploy_type: kustomize
+  workload_deployment_scope: seat
+  workload_deploy_path: deploy/openshift/base
+  workload_source_kind: kustomize
+  workload_gitops_ready: true
+  workload_release_name: sovereign-ai-101
+  workload_helm_values:
+    workload_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:400e2bdd94e8e2a71a0bee42fbdc2d3a59ad623aff16f140107a79b5dd364895
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:eb4d58c71716d9e1a3f3bd446d9e66a1a2c278ad1fe5696830b51c551c5df91e
+    source_state: REHEARSAL
+  workload_kustomize_images:
+  - registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:400e2bdd94e8e2a71a0bee42fbdc2d3a59ad623aff16f140107a79b5dd364895
+  - registry.invalid/sovereign-ai-101/presentation=ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:eb4d58c71716d9e1a3f3bd446d9e66a1a2c278ad1fe5696830b51c551c5df91e
+  workload_ignore_differences: []
+  workload_runtime_secret_name: ''
+  workload_runtime_secret_sources: {}
+  workload_runtime_secret_value_path: ''
+  workload_identity_value_path: ''
+  workload_routes: {}
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/sovereign-ai-101.git
+  source_content_revision: 5d601b46ba3a7d10deff6c2849eb22af2631a8ef
+  source_references: {}

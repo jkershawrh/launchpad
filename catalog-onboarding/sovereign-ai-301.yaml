@@ -1,0 +1,100 @@
+api_version: launchpad.redhat.com/v1alpha1
+catalog:
+  catalog_item_id: sovereign-ai-301
+  display_name: "Sovereign AI 301 \u2014 Confidential Inference and Intel TDX Foundations"
+  description: Trace capability, challenge-bound workload identity, evidence appraisal,
+    resource policy, independent inference authorization, refusal states, and human
+    authority.
+  category: guided_build
+  version: 0.1.0
+  status: draft
+learning:
+  learning_level: '301'
+  learning_stage: Engineer
+  experience_type: guided_build
+  prerequisites:
+  - sovereign-ai-101
+  - sovereign-ai-201
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: null
+  branches_from: sovereign-ai-201
+  returns_to: null
+  shared_blueprint: red-hat-intel-sovereign-ai-v1
+  solution_family: sovereign_ai
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
+    revision: d46625e8e1eb89e35c0a93385a47564d825a8115
+    playbook: showroom/default-site.yml
+    start_path: showroom/content
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
+  workload:
+    repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
+    revision: d46625e8e1eb89e35c0a93385a47564d825a8115
+    deploy_path: charts/sovereign-ai-301
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
+runtime:
+  namespace_slug: sovereign-ai-301
+  workshop_cluster_ref: flightpath
+  deployment_type: helm
+  deployment_scope: seat
+  required_capabilities:
+  - openshift
+  - showroom
+  required_models: []
+  seat_resources:
+    cpu_millicores: 25
+    memory_mib: 48
+    pods: 1
+    storage_gib: 0
+  workshop_shared_resources:
+    cpu_millicores: 0
+    memory_mib: 0
+    pods: 0
+    storage_gib: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  tabs:
+  - id: story
+    title: Story
+    source: workload.route.ui
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  allowed_exposure_policies:
+  - internal
+  workload:
+    source_kind: chart
+    gitops_ready: true
+    release_name: sovereign-ai-301
+    helm_values:
+      values_overlay: charts/sovereign-ai-301/values.published.yaml
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-301-qualifier@sha256:bb75ed470221e0e3b3490f82f980418d4d4890dded52db1d1fce26f58ef52edb
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-301-presentation@sha256:1f28dbb880a349bd05cb44c0233f9c6f869d6b371a66d8589c600cb1c117fb9f
+      confidential_runtime_enabled: false
+    runtime_secret_name: ''
+    runtime_secret_value_path: ''
+    runtime_secret_sources: {}
+    readiness: []
+certification:
+  stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - No approved Intel Xeon TDX host or current hardware-rooted quote is attached.
+  - No live OpenShift Sandboxed Containers workload placement is verified.
+  - No reviewed live Trustee verifier, KBS, reference values, or resource policy is
+    attached.
+  - Sovereign AI 101 and 201 remain independent prerequisites and are not certified
+    by this handoff.
+  - One, five, and twenty-five seat certification, reclaim, rollback, and trusted
+    rendering remain independent Launchpad gates.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  proof_contract: certification/catalog/sovereign-ai-301.yaml

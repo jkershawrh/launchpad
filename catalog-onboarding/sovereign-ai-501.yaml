@@ -1,0 +1,117 @@
+api_version: launchpad.redhat.com/v1alpha1
+catalog:
+  catalog_item_id: sovereign-ai-501
+  display_name: "Sovereign AI 501 \u2014 Qualify a Confidential AI Fleet"
+  description: Qualify a multi-node confidential AI fleet across policy rollout, attestation
+    freshness, revocation, dependency failure, admission limits, correlated evidence,
+    and retained human authority.
+  category: guided_build
+  version: 0.1.0
+  status: draft
+learning:
+  learning_level: '501'
+  learning_stage: Scale
+  experience_type: system_qualification
+  prerequisites:
+  - sovereign-ai-401
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: null
+  branches_from: sovereign-ai-401
+  returns_to: null
+  shared_blueprint: red-hat-intel-sovereign-ai-v1
+  solution_family: sovereign_ai
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/sovereign-ai-501.git
+    revision: bc3583c7c9f3342f0c4eeb79637fe9223cf8ddff
+    playbook: site.yml
+    start_path: showroom
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-501.git
+  workload:
+    repo_url: https://github.com/jkershawrh/sovereign-ai-501.git
+    revision: bc3583c7c9f3342f0c4eeb79637fe9223cf8ddff
+    deploy_path: charts/sovereign-ai-501
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-501.git
+runtime:
+  namespace_slug: sovereign-ai-501
+  workshop_cluster_ref: flightpath
+  deployment_type: helm
+  deployment_scope: seat
+  required_capabilities:
+  - openshift
+  - showroom
+  - intel-xeon-tdx-review-required
+  - trustee-review-required
+  required_models: []
+  seat_resources:
+    cpu_millicores: 50
+    memory_mib: 80
+    pods: 2
+    storage_gib: 0
+  workshop_shared_resources:
+    cpu_millicores: 0
+    memory_mib: 0
+    pods: 0
+    storage_gib: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  tabs:
+  - id: story
+    title: Story
+    source: presentation.route
+    path: /
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: qualification
+    title: Fleet Evidence
+    source: workload.service
+    path: /api/v1/scenarios
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  allowed_exposure_policies:
+  - internal
+  workload:
+    source_kind: chart
+    gitops_ready: true
+    release_name: sovereign-ai-501
+    helm_values:
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-501-qualifier@sha256:cc3b3cfc19697b57d03347491523b6d72524fdb7890c591344ca714bbc4bca57
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-501-presentation@sha256:cd739547778feaaa5c0d86af26032a1b5962e95fe5447ec0b477730020daae64
+      source_state: REHEARSAL
+      confidential_runtime_enabled: false
+      live_tdx_claimed: false
+    runtime_secret_name: ''
+    runtime_secret_value_path: ''
+    runtime_secret_sources: {}
+    readiness: []
+certification:
+  stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - No approved Intel Xeon TDX confidential fleet or current hardware-rooted quotes
+    are attached.
+  - No live OpenShift Sandboxed Containers confidential guest placement is verified.
+  - No reviewed live Trustee verifier, KBS, reference values, or protected-resource
+    release is attached.
+  - No model execution is observed; the factory journey is REHEARSAL and makes no
+    latency, throughput, or production-capacity claim.
+  - The local resource observation used an Arm host emulating Linux AMD64 and is not
+    a destination capacity result.
+  - Sovereign AI remains a proposed Launchpad taxonomy and lower-level prerequisites
+    require independent approval.
+  - Destination admission, NetworkPolicy, Route, registry, one-seat, scale, reclaim,
+    and zero-residue gates remain unverified.
+  - Launchpad source approval, trusted rendering, artifact review, live-seat certification,
+    scale graduation, promotion, and publication remain required.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  proof_contract: certification/catalog/sovereign-ai-501.yaml

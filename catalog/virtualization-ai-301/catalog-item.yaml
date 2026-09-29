@@ -1,0 +1,121 @@
+catalog_item_id: virtualization-ai-301
+display_name: "Virtualization + AI 301 \u2014 Modernize VMs with Governed AI"
+description: Governed VM modernization factory candidate awaiting independent Launchpad
+  discovery and review.
+category: guided_build
+version: 0.1.0
+status: draft
+required_capabilities:
+- openshift
+- openshift_virtualization
+- showroom
+- optional_model_endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: 4h
+provisioner_refs:
+- helm-workload
+- showroom
+validation_refs:
+- pod-ready
+- route-accessible
+- inference-health
+- agentops-journey
+observability_profile: agentops-full-stack
+supported_branding:
+- redhat-intel-default
+- intel-internal
+metadata:
+  learning_level: '301'
+  learning_stage: Engineer
+  experience_type: system_engineering
+  prerequisites:
+  - virtualization-ai-201
+  recommended_next_items:
+  - virtualization-ai-401
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-virtualization-ai-v1
+  solution_family: virtualization_ai
+  showroom: true
+  showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-301.git
+  showroom_content_ref: 91e30a4af72bb4a15a4e5dfe2f29abb5692c698f
+  showroom_content_playbook: showroom/default-site.yml
+  showroom_content_start_path: showroom
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/virtualization-ai-301.yaml
+  certification_stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - Launchpad source approval, trusted rendering, destination artifact review, live-seat
+    certification, capacity graduation, reclaim verification, promotion, and publication
+    remain required.
+  - Factory resource values are chart requests, not observed capacity evidence; maximum
+    certified seats remains zero.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  certification_proof_contract: certification/catalog/virtualization-ai-301.yaml
+  allowed_exposure_policies:
+  - internal
+  showroom_journey: virtualization-ai-301
+  showroom_title: "Virtualization + AI 301 \u2014 Modernize VMs with Governed AI"
+  namespace_slug: virtualization-ai-301
+  showroom_terminal_storage: true
+  showroom_tabs:
+  - id: story
+    title: Story
+    source: workload.route.ui
+    path: /
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  workshop_cluster_ref: flightpath
+  required_models: []
+  inference_endpoint: litellm
+  seat_cpu_millicores: 625
+  seat_memory_mib: 672
+  seat_pods: 3
+  seat_storage_gib: 0
+  workshop_shared_cpu_millicores: 0
+  workshop_shared_memory_mib: 0
+  workshop_shared_pods: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: git@github.com:jkershawrh/virtualization-ai-301.git
+  workload_revision: 91e30a4af72bb4a15a4e5dfe2f29abb5692c698f
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: charts/virtualization-ai-301
+  workload_source_kind: chart
+  workload_gitops_ready: true
+  workload_release_name: virtualization-ai-301
+  workload_helm_values:
+    adapter_image: ghcr.io/jkershawrh/virtualization-ai-301-adapter@sha256:6da66231992bd9db8a31cdc08b3912b7d6c797e1ed42a064c06eea686d579d07
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-301-presentation@sha256:012c22404725b03c5c5b3d8bb3234e608da334af72762e10e158031b505506fa
+    presentation_enabled: true
+    default_source_state: REHEARSAL
+  workload_ignore_differences: []
+  workload_runtime_secret_name: ''
+  workload_runtime_secret_sources: {}
+  workload_runtime_secret_value_path: ''
+  workload_identity_value_path: ''
+  workload_routes: {}
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/virtualization-ai-301.git
+  source_content_revision: 91e30a4af72bb4a15a4e5dfe2f29abb5692c698f
+  source_references: {}

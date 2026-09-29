@@ -1,0 +1,114 @@
+api_version: launchpad.redhat.com/v1alpha1
+catalog:
+  catalog_item_id: virtualization-ai-201
+  display_name: 'Virtualization + AI 201: Author and Qualify the Contract'
+  description: Author and qualify a VM-to-AI contract across schema, guest client,
+    Secret reference, Service, NetworkPolicy, adapter validation, fail-closed behavior,
+    evidence, human authority, and reclaim.
+  category: guided_build
+  version: 0.1.0
+  status: draft
+learning:
+  learning_level: '201'
+  learning_stage: Build
+  experience_type: guided_build
+  prerequisites:
+  - virtualization-ai-foundations-101
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: null
+  branches_from: virtualization-ai-foundations-101
+  returns_to: null
+  shared_blueprint: red-hat-intel-virtualization-ai-v1
+  solution_family: virtualization_ai
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
+    revision: 7928d13b9b00820e81f6c96ec047e3c22ec26e3f
+    playbook: showroom/default-site.yml
+    start_path: showroom/content
+    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
+  workload:
+    repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
+    revision: 7928d13b9b00820e81f6c96ec047e3c22ec26e3f
+    deploy_path: charts/virtualization-ai-201
+    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
+runtime:
+  namespace_slug: virtualization-ai-201
+  workshop_cluster_ref: flightpath
+  deployment_type: helm
+  deployment_scope: seat
+  required_capabilities:
+  - openshift
+  - showroom
+  - openshift-virtualization
+  - model-endpoint
+  required_models:
+  - approved-openai-compatible-xeon-cpu-model
+  seat_resources:
+    cpu_millicores: 625
+    memory_mib: 672
+    pods: 3
+    storage_gib: 0
+  workshop_shared_resources:
+    cpu_millicores: 0
+    memory_mib: 0
+    pods: 0
+    storage_gib: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  tabs:
+  - id: story
+    title: Story
+    source: workload.route.ui
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  allowed_exposure_policies:
+  - internal
+  workload:
+    source_kind: chart
+    gitops_ready: true
+    release_name: virtualization-ai-201
+    helm_values:
+      values_overlay: charts/virtualization-ai-201/values.published.yaml
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:f17a7cc9c708e58186bd38878630dc563b853f78e1535be3435c0c8aec34eedb
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:9f58d0a74d58201156547d21be2bc8a6b30f9d00619206dcce337d03e0ea4569
+      presentation_enabled: true
+    runtime_secret_name: virtualization-ai-model-runtime
+    runtime_secret_value_path: adapter.model.secretName
+    runtime_secret_sources:
+      endpoint: maas_endpoint
+      model: requested_model
+      provider:
+        value: litellm
+      hardware:
+        value: Intel Xeon
+      api-key: maas_api_key
+    readiness: []
+certification:
+  stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - Published GHCR candidates are digest-pinned, signed, attested, and exact-pull
+    verified, but Launchpad must still approve the registry destination, evidence
+    retention, and rollback policy.
+  - No approved OpenShift cluster and managed Intel Xeon CPU model endpoint were available
+    for the live VM-origin journey.
+  - Declared chart resources have not been measured at one, five, or twenty-five seats.
+  - OpenShift reclaim and zero-residue evidence remain independent Launchpad gates;
+    the factory receipt covers only the local container smoke environment.
+  - Launchpad source approval, trusted render, artifact review, live seat certification,
+    and promotion remain required.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  proof_contract: certification/catalog/virtualization-ai-201.yaml

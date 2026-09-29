@@ -21,6 +21,7 @@ from app.services.catalog_onboarding import (
     build_catalog_item,
     discover_quickstart_repo,
     load_intake,
+    normalize_demo_story_handoff,
     validate_intake,
 )
 
@@ -81,6 +82,20 @@ def _draft(args: argparse.Namespace) -> int:
     receipt = json.loads(Path(args.receipt).read_text())
     catalog = build_catalog_draft_from_receipt(receipt)
     rendered = yaml.safe_dump(catalog, sort_keys=False)
+    if args.output:
+        Path(args.output).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.output).write_text(rendered)
+    else:
+        print(rendered, end="")
+    return 0
+
+
+def _import_handoff(args: argparse.Namespace) -> int:
+    handoff = yaml.safe_load(Path(args.handoff).read_text())
+    if not isinstance(handoff, dict):
+        raise TypeError("Demo Story handoff must be a YAML mapping")
+    intake = normalize_demo_story_handoff(handoff, cluster_ref=args.cluster_ref)
+    rendered = yaml.safe_dump(intake, sort_keys=False)
     if args.output:
         Path(args.output).parent.mkdir(parents=True, exist_ok=True)
         Path(args.output).write_text(rendered)
@@ -223,6 +238,15 @@ def _parser() -> argparse.ArgumentParser:
     draft.add_argument("receipt", type=Path)
     draft.add_argument("--output", type=Path)
     draft.set_defaults(handler=_draft)
+
+    handoff = subparsers.add_parser(
+        "import-handoff",
+        help="normalize a Demo Story factory handoff into a fail-closed intake",
+    )
+    handoff.add_argument("handoff", type=Path)
+    handoff.add_argument("--cluster-ref", default="flightpath")
+    handoff.add_argument("--output", type=Path)
+    handoff.set_defaults(handler=_import_handoff)
 
     validate = subparsers.add_parser(
         "validate", help="validate intake, source repositories, build, and catalog drift"

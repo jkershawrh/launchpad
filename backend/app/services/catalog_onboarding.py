@@ -9,6 +9,8 @@ from typing import Any
 import yaml
 
 IMMUTABLE_GIT_SHA = re.compile(r"^[0-9a-f]{40}$")
+GITHUB_HTTPS_REPO = re.compile(r"^https://github\.com/([^/]+)/([^/]+?)(?:\.git)?$")
+GITHUB_SSH_REPO = re.compile(r"^git@github\.com:([^/]+)/([^/]+?)\.git$")
 DISCOVERY_RECEIPT_VERSION = "launchpad.redhat.com/catalog-discovery-receipt/v1"
 CATALOG_ID = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 IMAGE_REF = re.compile(r"image::([^\[]+)\[")
@@ -60,6 +62,170 @@ def load_intake(path: Path | str) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise TypeError(f"Catalog onboarding intake must be a YAML mapping: {path}")
     return data
+
+
+def _gitops_repo_url(source: dict[str, Any]) -> str:
+    """Return a bounded GitOps transport without changing source provenance."""
+    return str(source.get("gitops_repo_url") or source["repo_url"])
+
+
+def _valid_gitops_repo_url(source: dict[str, Any]) -> bool:
+    gitops_url = source.get("gitops_repo_url")
+    if gitops_url is None:
+        return True
+    source_match = GITHUB_HTTPS_REPO.fullmatch(str(source.get("repo_url", "")))
+    gitops_match = GITHUB_SSH_REPO.fullmatch(str(gitops_url))
+    return bool(
+        source_match
+        and gitops_match
+        and source_match.groups() == gitops_match.groups()
+    )
+
+
+def normalize_demo_story_handoff(
+    handoff: dict[str, Any], *, cluster_ref: str = "flightpath"
+) -> dict[str, Any]:
+    """Translate a factory handoff into Launchpad's fail-closed intake schema.
+
+    Factory evidence remains source authority. This adapter normalizes naming
+    and runtime shape only; it never marks a lab certified or active.
+    """
+    proposal = copy.deepcopy(handoff.get("proposed_launchpad_intake"))
+    if not isinstance(proposal, dict):
+        raise ValueError("handoff must contain proposed_launchpad_intake")
+    factory = handoff.get("factory_receipt") or {}
+    known_blockers = factory.get("known_blockers") or []
+    if not isinstance(known_blockers, list):
+        raise ValueError("factory_receipt.known_blockers must be a list")
+
+    catalog = copy.deepcopy(proposal.get("catalog") or {})
+    catalog["status"] = "draft"
+    catalog_id = str(catalog.get("catalog_item_id", ""))
+    learning = copy.deepcopy(proposal.get("learning") or {})
+    level = str(learning.get("learning_level", "")).zfill(3)
+    stages = {
+        "001": "Explore",
+        "101": "Learn",
+        "201": "Build",
+        "301": "Engineer",
+        "401": "Operate",
+        "501": "Scale",
+        "601": "Qualify",
+    }
+    if level not in stages:
+        raise ValueError("handoff learning level is unsupported")
+    learning.update(
+        {
+            "learning_level": level,
+            "learning_stage": stages[level],
+            "journey_role": "core",
+            "specialty_family": None,
+        }
+    )
+
+    sources = copy.deepcopy(proposal.get("sources") or {})
+    for source_name in ("showroom", "workload"):
+        source = sources.get(source_name)
+        if not isinstance(source, dict):
+            raise ValueError(f"handoff sources.{source_name} must be a mapping")
+        match = GITHUB_HTTPS_REPO.fullmatch(str(source.get("repo_url", "")))
+        if not match:
+            raise ValueError(f"handoff sources.{source_name} must use GitHub HTTPS")
+        owner, repository = match.groups()
+        source["repo_url"] = f"https://github.com/{owner}/{repository}.git"
+        source["gitops_repo_url"] = f"git@github.com:{owner}/{repository}.git"
+
+    proposed_runtime = copy.deepcopy(proposal.get("runtime") or {})
+    resources = proposed_runtime.get("resources") or {}
+    workload = copy.deepcopy(proposed_runtime.get("workload") or {})
+    helm_values = workload.get("helm_values") or workload.get("deployment_values") or {}
+    runtime_secret_sources = copy.deepcopy(workload.get("runtime_secret_sources") or {})
+    source_aliases = {
+        "model_endpoint": "maas_endpoint",
+        "model_api_key": "maas_api_key",
+        "inference_endpoint": "maas_endpoint",
+        "inference_api_key": "maas_api_key",
+    }
+    runtime_secret_sources = {
+        key: source_aliases.get(value, value)
+        for key, value in runtime_secret_sources.items()
+    }
+    if not runtime_secret_sources and workload.get("runtime_secret_keys"):
+        defaults = {
+            "endpoint": "maas_endpoint",
+            "model": "requested_model",
+            "provider": {"value": "litellm"},
+            "hardware": {"value": "Intel Xeon"},
+            "api-key": "maas_api_key",
+        }
+        runtime_secret_sources = {
+            key: defaults[key]
+            for key in workload["runtime_secret_keys"]
+            if key in defaults
+        }
+    runtime_secret_path = workload.get("runtime_secret_value_path") or workload.get(
+        "runtime_secret_reference_path", ""
+    )
+    deployment_type = proposed_runtime.get("deployment_type")
+    runtime = {
+        "namespace_slug": catalog_id,
+        "workshop_cluster_ref": cluster_ref,
+        "deployment_type": deployment_type,
+        "deployment_scope": "seat",
+        "required_capabilities": copy.deepcopy(
+            proposed_runtime.get("required_capabilities") or []
+        ),
+        "required_models": copy.deepcopy(proposed_runtime.get("required_models") or []),
+        "seat_resources": copy.deepcopy(resources.get("steady_per_seat") or {}),
+        "workshop_shared_resources": copy.deepcopy(
+            resources.get("workshop_shared") or {}
+        ),
+        "workshop_provision_concurrency": 1,
+        "workshop_node_spread": False,
+        "workshop_node_min_ready_seconds": 0,
+        "tabs": copy.deepcopy(proposed_runtime.get("tabs") or []),
+        "allowed_exposure_policies": ["internal"],
+        "workload": {
+            "source_kind": "chart" if deployment_type == "helm" else deployment_type,
+            "gitops_ready": True,
+            "release_name": catalog_id,
+            "helm_values": copy.deepcopy(helm_values),
+            "runtime_secret_name": workload.get("runtime_secret_name", ""),
+            "runtime_secret_value_path": runtime_secret_path,
+            "runtime_secret_sources": runtime_secret_sources,
+            "readiness": [],
+        },
+    }
+    if not runtime["workshop_shared_resources"]:
+        runtime.pop("workshop_shared_resources")
+
+    blockers = [str(item) for item in known_blockers if str(item).strip()]
+    blockers.extend(
+        [
+            "Complete trusted render and destination artifact qualification on Flightpath.",
+            "Complete one-seat live certification and zero-residue reclaim before activation.",
+        ]
+    )
+    certification = {
+        "stage": "factory-source-qualified",
+        "max_workshop_seats": 1,
+        "promotion_sequence": [1],
+        "activation_blockers": list(dict.fromkeys(blockers)),
+    }
+    proof = (proposal.get("certification_proposal") or {}).get(
+        "proof_contract_draft"
+    )
+    if proof:
+        certification["proof_contract"] = f"certification/catalog/{catalog_id}.yaml"
+
+    return {
+        "api_version": "launchpad.redhat.com/v1alpha1",
+        "catalog": catalog,
+        "learning": learning,
+        "sources": sources,
+        "runtime": runtime,
+        "certification": certification,
+    }
 
 
 def _repository_path(root: Path, path: Path) -> str:
@@ -1172,7 +1338,7 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
     else:
         showroom_metadata = {
             "showroom": True,
-            "showroom_content_repo_url": showroom["repo_url"],
+            "showroom_content_repo_url": _gitops_repo_url(showroom),
             "showroom_content_ref": showroom["revision"],
             "showroom_content_playbook": showroom["playbook"],
             "showroom_content_start_path": showroom["start_path"],
@@ -1288,7 +1454,7 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "workshop_node_required_labels": dict(
                 runtime.get("workshop_node_required_labels", {}) or {}
             ),
-            "workload_repo": workload["repo_url"],
+            "workload_repo": _gitops_repo_url(workload),
             "workload_revision": workload["revision"],
             "workload_deploy_type": runtime["deployment_type"],
             "workload_deployment_scope": runtime.get("deployment_scope", "seat"),
@@ -1299,6 +1465,15 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
                 "release_name", catalog["catalog_item_id"]
             ),
             "workload_helm_values": workload_contract.get("helm_values", {}),
+            **(
+                {
+                    "workload_kustomize_images": workload_contract[
+                        "kustomize_images"
+                    ]
+                }
+                if workload_contract.get("kustomize_images")
+                else {}
+            ),
             "workload_ignore_differences": workload_contract.get(
                 "ignore_differences", []
             ),
@@ -1361,11 +1536,12 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                 "301": "Engineer",
                 "401": "Operate",
                 "501": "Scale",
+                "601": "Qualify",
             }
             level = str(learning.get("learning_level", "")).zfill(3)
             if level not in levels:
                 errors.append(
-                    "learning.learning_level must be 001, 101, 201, 301, 401, or 501"
+                    "learning.learning_level must be 001, 101, 201, 301, 401, 501, or 601"
                 )
             elif learning.get("learning_stage") != levels[level]:
                 errors.append("learning.learning_stage must match learning.learning_level")
@@ -1382,7 +1558,14 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
             if role not in {"core", "specialty", "reference"}:
                 errors.append("learning.journey_role must be core, specialty, or reference")
             family = learning.get("specialty_family")
-            families = {"domain", "platform", "data", "inference", "tooling", "reliability"}
+            families = {
+                "domain",
+                "platform",
+                "data",
+                "inference",
+                "tooling",
+                "reliability",
+            }
             if family is not None and family not in families:
                 errors.append("learning.specialty_family is not recognized")
             if role == "specialty" and (family is None or not learning.get("branches_from")):
@@ -1396,12 +1579,15 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                 ):
                     errors.append(f"learning.{field} must be null or a catalog ID")
             blueprint = learning.get("shared_blueprint")
-            if blueprint not in {None, "red-hat-intel-agentic-v1"}:
-                errors.append(
-                    "learning.shared_blueprint must be red-hat-intel-agentic-v1 or null"
-                )
-            if role == "core" and blueprint != "red-hat-intel-agentic-v1":
-                errors.append("core learning requires the canonical shared_blueprint")
+            canonical_blueprints = {
+                "agentic_ai": "red-hat-intel-agentic-v1",
+                "sovereign_ai": "red-hat-intel-sovereign-ai-v1",
+                "virtualization_ai": "red-hat-intel-virtualization-ai-v1",
+            }
+            if blueprint is not None and blueprint not in set(
+                canonical_blueprints.values()
+            ):
+                errors.append("learning.shared_blueprint is not recognized")
             solution_family = learning.get("solution_family")
             solution_families = {
                 "platform_foundations",
@@ -1411,13 +1597,25 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                 "operations_reliability",
                 "industry_solutions",
                 "platform_validation",
+                "sovereign_ai",
+                "virtualization_ai",
             }
             if solution_family is not None and solution_family not in solution_families:
                 errors.append("learning.solution_family is not recognized")
+            expected_blueprint = canonical_blueprints.get(solution_family)
+            if role == "core" and expected_blueprint and blueprint != expected_blueprint:
+                errors.append(
+                    "core learning requires the canonical solution-family blueprint"
+                )
 
     for source_name, source in (("showroom", showroom), ("workload", workload)):
         if not str(source.get("repo_url", "")).startswith("https://github.com/"):
             errors.append(f"sources.{source_name}.repo_url must be an HTTPS GitHub URL")
+        if not _valid_gitops_repo_url(source):
+            errors.append(
+                f"sources.{source_name}.gitops_repo_url must be the matching "
+                "git@github.com:<owner>/<repo>.git URL"
+            )
         revision = str(source.get("revision", ""))
         if not IMMUTABLE_GIT_SHA.fullmatch(revision):
             errors.append(

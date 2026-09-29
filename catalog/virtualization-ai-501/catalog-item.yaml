@@ -1,0 +1,124 @@
+catalog_item_id: virtualization-ai-501
+display_name: "Virtualization + AI 501 \u2014 Qualify a Governed VM Inference Fleet"
+description: Non-orderable factory candidate for fleet-scale VM inference qualification.
+category: guided_build
+version: 0.1.0
+status: draft
+required_capabilities:
+- openshift
+- kubevirt
+- persistent-storage
+- correlated-telemetry
+- inference-endpoint
+default_hardware_profile: xeon-basic
+default_quota_profile: large
+default_ttl: 4h
+provisioner_refs:
+- helm-workload
+- showroom
+validation_refs:
+- pod-ready
+- route-accessible
+- inference-health
+- agentops-journey
+observability_profile: agentops-full-stack
+supported_branding:
+- redhat-intel-default
+- intel-internal
+metadata:
+  learning_level: '501'
+  learning_stage: Scale
+  experience_type: system_qualification
+  prerequisites:
+  - virtualization-ai-401
+  recommended_next_items: []
+  journey_role: core
+  specialty_family: null
+  branches_from: virtualization-ai-401
+  returns_to: null
+  shared_blueprint: red-hat-intel-virtualization-ai-v1
+  solution_family: virtualization_ai
+  showroom: true
+  showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
+  showroom_content_ref: 14799e38d587f48b850aab283016dd3da16a8acc
+  showroom_content_playbook: showroom/default-site.yml
+  showroom_content_start_path: showroom/content
+  operator_workshop: true
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/virtualization-ai-501.yaml
+  certification_stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - Live OpenShift, KubeVirt, VM migration, Intel Xeon placement, inference execution,
+    and correlated telemetry have not been observed.
+  - Resource values are a chart-derived proposal, not destination-measured live-seat
+    capacity; the recorded largest run is the single local REHEARSAL factory journey.
+  - Launchpad source approval, trusted rendering, live-seat capacity, reclaim, certification,
+    and promotion remain required.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  certification_proof_contract: certification/catalog/virtualization-ai-501.yaml
+  allowed_exposure_policies:
+  - internal
+  showroom_journey: virtualization-ai-501
+  showroom_title: "Virtualization + AI 501 \u2014 Qualify a Governed VM Inference\
+    \ Fleet"
+  namespace_slug: virtualization-ai-501
+  showroom_terminal_storage: true
+  showroom_tabs:
+  - id: story
+    title: Story
+    source: workload.route.ui
+    path: /
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  workshop_cluster_ref: flightpath
+  required_models:
+  - runtime-declared
+  inference_endpoint: litellm
+  seat_cpu_millicores: 1625
+  seat_memory_mib: 1696
+  seat_pods: 5
+  seat_storage_gib: 1
+  workshop_shared_cpu_millicores: 0
+  workshop_shared_memory_mib: 0
+  workshop_shared_pods: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: git@github.com:jkershawrh/virtualization-ai-501.git
+  workload_revision: 14799e38d587f48b850aab283016dd3da16a8acc
+  workload_deploy_type: helm
+  workload_deployment_scope: seat
+  workload_deploy_path: charts/virtualization-ai-501
+  workload_source_kind: chart
+  workload_gitops_ready: true
+  workload_release_name: virtualization-ai-501
+  workload_helm_values:
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:757226a0dd2e57f295705213acff51b3d09e5d4c1b8a8245cb0640866206e660
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:6df327b493b701f14f1facc19dd9aa2085b080edf2342318770829de63a2d5d1
+    presentation_enabled: true
+  workload_ignore_differences: []
+  workload_runtime_secret_name: virtualization-ai-501-inference
+  workload_runtime_secret_sources:
+    endpoint: maas_endpoint
+    api-key: maas_api_key
+  workload_runtime_secret_value_path: qualificationAdapter.inference.secretName
+  workload_identity_value_path: ''
+  workload_routes: {}
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/virtualization-ai-501.git
+  source_content_revision: 14799e38d587f48b850aab283016dd3da16a8acc
+  source_references: {}

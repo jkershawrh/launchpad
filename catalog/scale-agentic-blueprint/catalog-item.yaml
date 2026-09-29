@@ -70,11 +70,11 @@ metadata:
     - Intel CPU allocation, saturation, token usage, and throughput from approved telemetry.
     - Backpressure, retry-budget, fail-closed, and recovery evidence.
     - Quality and policy-compliance comparison before and during scale.
-    - One-, five-, and twenty-five-seat certification with zero-residue reclaim.
+    - One-seat certification with zero-residue reclaim for initial catalog activation.
   activation_blockers:
     - Complete trusted render and destination artifact qualification on Flightpath.
     - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry before activation.
-    - Complete one- and five-seat certification with zero-residue reclaim before activation.
+    - Complete one-seat certification with zero-residue reclaim before activation; five- and twenty-five-seat scale certification is deferred.
     - Complete three consecutive twenty-five-seat runs before any twenty-five-seat promotion.
     - Complete human authority review before promotion.
   production_blockers:

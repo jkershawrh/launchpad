@@ -1,0 +1,116 @@
+api_version: launchpad.redhat.com/v1alpha1
+catalog:
+  catalog_item_id: sovereign-ai-401
+  display_name: "Sovereign AI 401 \u2014 Operate Confidential AI with Intel TDX"
+  description: Operate a fail-closed confidential AI trust lifecycle from capability
+    discovery through attestation, appraisal, authorization, revocation, and verification.
+  category: guided_build
+  version: 0.1.0
+  status: draft
+learning:
+  learning_level: '401'
+  learning_stage: Operate
+  experience_type: system_qualification
+  prerequisites:
+  - sovereign-ai-101
+  - sovereign-ai-201
+  - sovereign-ai-301
+  recommended_next_items:
+  - sovereign-ai-501
+  journey_role: core
+  specialty_family: null
+  branches_from: sovereign-ai-301
+  returns_to: sovereign-ai-501
+  shared_blueprint: red-hat-intel-sovereign-ai-v1
+  solution_family: sovereign_ai
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
+    revision: 2bb27416e353280eef8da002fa0162b5bbf64f4c
+    playbook: site.yml
+    start_path: showroom
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
+  workload:
+    repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
+    revision: 2bb27416e353280eef8da002fa0162b5bbf64f4c
+    deploy_path: charts/sovereign-ai-401
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
+runtime:
+  namespace_slug: sovereign-ai-401
+  workshop_cluster_ref: flightpath
+  deployment_type: helm
+  deployment_scope: seat
+  required_capabilities:
+  - openshift
+  - showroom
+  - intel-xeon-tdx-review-required
+  - trustee-review-required
+  required_models: []
+  seat_resources:
+    cpu_millicores: 50
+    memory_mib: 80
+    pods: 2
+    storage_gib: 0
+  workshop_shared_resources:
+    cpu_millicores: 0
+    memory_mib: 0
+    pods: 0
+    storage_gib: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  tabs:
+  - id: story
+    title: Story
+    source: presentation.route
+    path: /
+  - id: guide
+    title: Lab Guide
+    source: showroom.guide
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: qualification
+    title: Trust Evidence
+    source: workload.service
+    path: /api/v1/scenarios
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  allowed_exposure_policies:
+  - internal
+  workload:
+    source_kind: chart
+    gitops_ready: true
+    release_name: sovereign-ai-401
+    helm_values:
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:6618e601513a468a807eda1762c124e567c322e89c04a11c067da80bd8ff6721
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:3406d439643ee0022f0f8b7b33cd32b09ea081fe068879b1e6ed88c8e282bc71
+      source_state: REHEARSAL
+      confidential_runtime_enabled: false
+      live_tdx_claimed: false
+    runtime_secret_name: ''
+    runtime_secret_value_path: ''
+    runtime_secret_sources: {}
+    readiness: []
+certification:
+  stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - No approved Intel Xeon TDX host or current quote is attached.
+  - No live OpenShift Sandboxed Containers confidential guest placement is verified.
+  - No reviewed live Trustee verifier, KBS, reference values, or protected resource
+    policy are attached.
+  - The immutable images and factory journey use REHEARSAL evidence; no confidential
+    guest, key release, model invocation, or LIVE TDX is claimed.
+  - Sovereign AI 101, 201, and 301 are prerequisites but their independent certification
+    state is not promoted by this handoff.
+  - OpenShift admission, NetworkPolicy enforcement, Route behavior, destination registry
+    policy, and one-seat reclaim remain unverified in a destination cluster.
+  - Launchpad source approval, trusted render, artifact review, live-seat certification,
+    scale graduation, reclaim, and promotion remain required.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  proof_contract: certification/catalog/sovereign-ai-401.yaml
