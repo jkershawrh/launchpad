@@ -41,10 +41,10 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
-  showroom_content_ref: 0f4573619736807b42aa009ec5788539ae720a7d
+  showroom_content_ref: cadea43ce5b81d89f3d854d954d2d1da95e6abdb
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
-  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:8e74d653b3609b5a95cf14c7d3c6ae427070aa66cc6ae36d68eb7132b4cb61fa
+  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:4ebf1a6cfd90fa65e271c91fdf390b4f59a161e02458e2f9e1becc5e5223d9ba
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -100,7 +100,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-201.git
-  workload_revision: 0f4573619736807b42aa009ec5788539ae720a7d
+  workload_revision: cadea43ce5b81d89f3d854d954d2d1da95e6abdb
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-201
@@ -109,8 +109,8 @@ metadata:
   workload_release_name: virtualization-ai-201
   workload_helm_values:
     values_overlay: charts/virtualization-ai-201/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:916ba69ce86a2444b6d172ee959720cd270f1697d6f3ba63973822184a72b4eb
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:9e991316fa22bf1d19fe86447a3f00e9c4fbc1fcd30b85cc3a1c4a131c6fdbf0
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:64dceb6d1c61af9acd823ae34ae2ab8399812db02dfe177de84de4edf88a3a4f
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:47f23d1667a33d87300626695ae6e5facc88bbd21cc7ff58b8cb09da74a8338f
     presentation_enabled: true
   workload_ignore_differences: []
   workload_runtime_secret_name: virtualization-ai-model-runtime
@@ -128,5 +128,5 @@ metadata:
     ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-201.git
-  source_content_revision: 0f4573619736807b42aa009ec5788539ae720a7d
+  source_content_revision: cadea43ce5b81d89f3d854d954d2d1da95e6abdb
   source_references: {}
