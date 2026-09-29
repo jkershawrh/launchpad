@@ -823,7 +823,14 @@ def _run_command(args: argparse.Namespace) -> int:
             "sha256": contract_sha256,
             "intake_path": str(intake_path.relative_to(REPO_ROOT)),
             "catalog_version": intake["catalog"]["version"],
-            "git_commit": _git_value("rev-parse", "HEAD"),
+            "git_commit": os.environ.get("LAUNCHPAD_CANDIDATE_GIT_COMMIT")
+            or _git_value("rev-parse", "HEAD"),
+            "platform_manifest_sha256": os.environ.get(
+                "LAUNCHPAD_CANDIDATE_MANIFEST_SHA256", ""
+            ),
+            "certification_runner_image": os.environ.get(
+                "LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE", ""
+            ),
         },
         "plan": plan,
         "capacity_preview": capacity,

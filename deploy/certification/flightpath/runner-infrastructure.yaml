@@ -1,0 +1,142 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: launchpad-certification-runner
+  namespace: launchpad-flightpath-candidate
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: launchpad-flightpath-certification-runner
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+rules:
+  - apiGroups: [""]
+    resources: [namespaces, nodes, pods, services, secrets, persistentvolumeclaims, persistentvolumes]
+    verbs: [get, list, watch]
+  - apiGroups: [""]
+    resources: [pods/exec]
+    verbs: [create]
+  - apiGroups: [apps]
+    resources: [deployments]
+    verbs: [get, list, watch]
+  - apiGroups: [route.openshift.io]
+    resources: [routes]
+    verbs: [get, list, watch]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [rolebindings]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [clusterroles]
+    resourceNames: [edit]
+    verbs: [bind]
+  - apiGroups: [argoproj.io]
+    resources: [applications]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: launchpad-flightpath-certification-runner
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: launchpad-flightpath-certification-runner
+subjects:
+  - kind: ServiceAccount
+    name: launchpad-certification-runner
+    namespace: launchpad-flightpath-candidate
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: launchpad-flightpath-certification-rolebinding-boundary
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [rbac.authorization.k8s.io]
+        apiVersions: [v1]
+        operations: [CREATE, UPDATE, DELETE]
+        resources: [rolebindings]
+        scope: Namespaced
+  validations:
+    - expression: >-
+        request.userInfo.username !=
+        'system:serviceaccount:launchpad-flightpath-candidate:launchpad-certification-runner'
+        || (request.namespace.startsWith('launchpad-')
+          && (request.operation == 'DELETE' ? oldObject.metadata.name : object.metadata.name)
+            == 'launchpad-certification-probe'
+          && (request.operation == 'DELETE' ? oldObject.roleRef.kind : object.roleRef.kind)
+            == 'ClusterRole'
+          && (request.operation == 'DELETE' ? oldObject.roleRef.name : object.roleRef.name)
+            == 'edit')
+      message: The certification runner may bind only the edit probe inside Launchpad seat namespaces.
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: launchpad-flightpath-certification-rolebinding-boundary
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  policyName: launchpad-flightpath-certification-rolebinding-boundary
+  validationActions: [Deny]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: launchpad-certification-evidence
+  namespace: launchpad-flightpath-candidate
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  accessModes: [ReadWriteMany]
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: launchpad-certification-runner
+  namespace: launchpad-flightpath-candidate
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: launchpad-certification-runner
+  namespace: launchpad-flightpath-candidate
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+spec:
+  runPolicy: Serial
+  source:
+    type: Binary
+    binary: {}
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: backend/CertificationContainerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: launchpad-certification-runner:e2d78de
+  triggers: []

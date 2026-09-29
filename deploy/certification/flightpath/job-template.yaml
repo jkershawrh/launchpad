@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: launchpad-five-seat-matrix-
+  namespace: launchpad-flightpath-candidate
+  labels:
+    app.kubernetes.io/name: launchpad-certification-runner
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    launchpad.redhat.com/candidate-commit: e2d78de
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 21600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: launchpad-certification-runner
+        app.kubernetes.io/part-of: partner-ai-launchpad
+    spec:
+      restartPolicy: Never
+      serviceAccountName: launchpad-certification-runner
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: certification-runner
+          image: CERTIFICATION_RUNNER_IMAGE
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LAUNCHPAD_ADMIN_API_KEY
+              valueFrom:
+                secretKeyRef: {name: launchpad-api-keys, key: ADMIN_API_KEYS}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: {name: launchpad-db-secret, key: DATABASE_URL}
+            - {name: LAUNCHPAD_API_BASE_URL, value: "http://backend:8000"}
+            - {name: LAUNCHPAD_CANDIDATE_GIT_COMMIT, value: "e2d78de667096c7be6e277ec01bf6c29a4a1ffb4"}
+            - {name: LAUNCHPAD_CANDIDATE_MANIFEST_SHA256, value: "c2aaac7b3805bd4adf3edf6f4996e30bddb11d6f16fa7eb37b42fb19477306cb"}
+            - {name: LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE, value: "CERTIFICATION_RUNNER_IMAGE"}
+            - {name: LAUNCHPAD_RUN_PREFIX, value: "flightpath-e2d78de"}
+          resources:
+            requests: {cpu: "500m", memory: 512Mi}
+            limits: {cpu: "2", memory: 2Gi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+          volumeMounts:
+            - {name: evidence, mountPath: /evidence}
+      volumes:
+        - name: evidence
+          persistentVolumeClaim: {claimName: launchpad-certification-evidence}

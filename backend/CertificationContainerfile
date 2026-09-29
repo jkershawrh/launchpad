@@ -1,0 +1,35 @@
+FROM registry.access.redhat.com/ubi9/python-311:latest
+
+LABEL name="launchpad-certification-runner" \
+      description="Flightpath-native Launchpad catalog certification runner"
+
+WORKDIR /opt/launchpad
+
+USER 0
+ARG OPENSHIFT_CLIENT_VERSION=4.22.14
+RUN dnf -y upgrade \
+    && dnf -y install git jq \
+    && dnf clean all \
+    && curl --fail --silent --show-error --location \
+      "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OPENSHIFT_CLIENT_VERSION}/openshift-client-linux.tar.gz" \
+    | tar xz -C /usr/local/bin oc \
+    && chmod +x /usr/local/bin/oc \
+    && pip install --no-cache-dir pydantic pyyaml requests psycopg2-binary
+
+COPY backend/app/ ./backend/app/
+COPY scripts/catalog_certification.py ./scripts/catalog_certification.py
+COPY scripts/certify-*-seat.sh ./scripts/
+COPY scripts/run_flightpath_certification_matrix.sh ./scripts/
+COPY scripts/verify_staging_zero_residue.py ./scripts/
+COPY certification/ ./certification/
+COPY catalog-onboarding/ ./catalog-onboarding/
+
+RUN chmod 0555 scripts/*.sh scripts/*.py \
+    && mkdir -p /evidence/catalog \
+    && chgrp -R 0 /evidence \
+    && chmod -R g=u /evidence
+
+ENV PYTHONPATH=/opt/launchpad/backend
+USER 1001
+
+ENTRYPOINT ["/opt/launchpad/scripts/run_flightpath_certification_matrix.sh"]
