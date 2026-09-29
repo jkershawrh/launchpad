@@ -24,7 +24,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: certification-runner
-          image: CERTIFICATION_RUNNER_IMAGE
+          image: __CERTIFICATION_RUNNER_IMAGE__
           imagePullPolicy: IfNotPresent
           env:
             - name: LAUNCHPAD_ADMIN_API_KEY
@@ -36,7 +36,7 @@ spec:
             - {name: LAUNCHPAD_API_BASE_URL, value: "http://backend:8000"}
             - {name: LAUNCHPAD_CANDIDATE_GIT_COMMIT, value: "e2d78de667096c7be6e277ec01bf6c29a4a1ffb4"}
             - {name: LAUNCHPAD_CANDIDATE_MANIFEST_SHA256, value: "c2aaac7b3805bd4adf3edf6f4996e30bddb11d6f16fa7eb37b42fb19477306cb"}
-            - {name: LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE, value: "CERTIFICATION_RUNNER_IMAGE"}
+            - {name: LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE, value: "__CERTIFICATION_RUNNER_IMAGE__"}
             - {name: LAUNCHPAD_RUN_PREFIX, value: "flightpath-e2d78de"}
           resources:
             requests: {cpu: "500m", memory: 512Mi}

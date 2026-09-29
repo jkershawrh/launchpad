@@ -39,7 +39,7 @@ def test_job_is_fail_closed_and_binds_candidate_identity() -> None:
     env = {x["name"]: x for x in container["env"]}
     assert spec["backoffLimit"] == 0
     assert pod["serviceAccountName"] == "launchpad-certification-runner"
-    assert container["image"] == "CERTIFICATION_RUNNER_IMAGE"
+    assert container["image"] == "__CERTIFICATION_RUNNER_IMAGE__"
     assert env["LAUNCHPAD_CANDIDATE_GIT_COMMIT"]["value"].startswith("e2d78de")
     assert len(env["LAUNCHPAD_CANDIDATE_MANIFEST_SHA256"]["value"]) == 64
     assert env["LAUNCHPAD_ADMIN_API_KEY"]["valueFrom"]["secretKeyRef"]["name"] == "launchpad-api-keys"
