@@ -160,7 +160,7 @@ spec:
     type: Git
     git:
       uri: https://github.com/rhpds/launchpad.git
-      ref: f81781825021c1631258a329faf3a5ee370e064c
+      ref: 0e0d947d1079724541680438ba327662c487d330
   strategy:
     type: Docker
     dockerStrategy:
@@ -168,7 +168,7 @@ spec:
   output:
     to:
       kind: DockerImage
-      name: quay.io/rh-ee-jkershaw/launchpad-certification-runner:f817818
+      name: quay.io/rh-ee-jkershaw/launchpad-certification-runner:0e0d947
     pushSecret:
       name: launchpad-registry-pull
   triggers: []
