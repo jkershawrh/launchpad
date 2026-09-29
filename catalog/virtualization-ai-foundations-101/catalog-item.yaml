@@ -110,6 +110,12 @@ metadata:
     workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:79e11ab488ed160ed158f0b1a58fcfbc72d125b26d8458673d5a8daa4e741a55
     presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:587b8c09e33b197de0659c46f74d4b27b125c6b0107e358e9e9622d26ba262ed
     presentation_enabled: true
+    adapter:
+      mode: live
+      model:
+        apiBase: http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1
+        name: granite-3.2-8b-tools
+        provider: openai-compatible
   workload_ignore_differences: []
   workload_runtime_secret_name: virtualization-ai-model-runtime
   workload_runtime_secret_sources:
