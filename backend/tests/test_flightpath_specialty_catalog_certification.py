@@ -129,6 +129,7 @@ def test_network_operations_current_release_is_limited_to_its_exact_proof():
     for expected in (
         "/api/investigate",
         "/api/lab/qualify",
+        "curl_options=(-fsSkL",
         "unverified_draft_for_human_review",
         "cross_namespace=DENIED",
         "network-operations-model-runtime",

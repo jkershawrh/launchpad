@@ -22,7 +22,11 @@ oc --kubeconfig "$KUBECONFIG" create rolebinding "$probe_binding" \
 
 stage="route-discovery"
 app_host="$(oc --kubeconfig "$KUBECONFIG" get route netops -n "$namespace" -o jsonpath='{.spec.host}')"
-curl_options=(-fsSk --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
+# The participant-facing workspace and story paths are allowed to normalize a
+# missing trailing slash. Browsers follow that redirect, so the certification
+# probe must validate the final page instead of treating the safe redirect as a
+# functional failure.
+curl_options=(-fsSkL --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
 
 stage="health"
 health="$(curl "${curl_options[@]}" "https://${app_host}/health")"
