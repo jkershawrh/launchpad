@@ -686,6 +686,25 @@ def test_multi_agent_probe_retries_remote_json_and_reports_failure_stage():
     assert 'seat_probe_failure stage=${stage} exit_code=${rc}' in probe
 
 
+def test_cpu_rag_probe_reports_bounded_failure_stages_without_secrets():
+    probe = (ROOT / "scripts/certify-cpu-serving-rag.sh").read_text()
+
+    assert 'seat_probe_failure stage=%s exit_code=%s' in probe
+    for stage in (
+        "route-discovery",
+        "frame-policy",
+        "route-readiness",
+        "api-token",
+        "api-auth",
+        "workspace-create",
+        "document-load",
+        "grounded-query",
+        "grounded-assertions",
+    ):
+        assert f'stage="{stage}"' in probe
+    assert "BASH_COMMAND" not in probe
+
+
 def test_generic_runner_places_probes_after_the_all_seat_barrier_and_reclaims(
     tmp_path: Path, monkeypatch, capsys
 ):

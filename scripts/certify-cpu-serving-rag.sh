@@ -5,6 +5,9 @@ namespace="${1:?usage: certify-cpu-serving-rag.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-cpu-serving-rag.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
+stage="cluster-identity"
+trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
+
 oc() {
   command oc --kubeconfig "$KUBECONFIG" "$@"
 }
@@ -18,6 +21,7 @@ if [[ "$actual_cluster" != "$expected_cluster" ]]; then
   exit 2
 fi
 
+stage="route-discovery"
 host="$(oc get route rag -n "$namespace" -o jsonpath='{.spec.host}')"
 base_url="https://${host}"
 showroom_host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
@@ -26,6 +30,7 @@ apps_domain="$(
   oc get ingresses.config.openshift.io cluster -o jsonpath='{.spec.domain}'
 )"
 cluster_showroom_origin="https://*.${apps_domain}"
+stage="frame-policy"
 configured_frame_ancestor="$(
   oc get deployment anythingllm -n "$namespace" -o json \
     | jq -r '.spec.template.spec.containers[]
@@ -61,6 +66,7 @@ wait_for_route() {
   return 1
 }
 
+stage="route-readiness"
 wait_for_route
 run_id="${CERTIFICATION_RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$}"
 run_id="$(printf '%s' "$run_id" | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')"
@@ -79,6 +85,7 @@ fi
 if [[ -n "${LAUNCHPAD_INGRESS_IP:-}" ]]; then
   curl_options+=(--resolve "${host}:443:${LAUNCHPAD_INGRESS_IP}")
 fi
+stage="frame-headers"
 response_headers="$(curl "${curl_options[@]}" -D - -o /dev/null "${base_url}/")"
 if printf '%s\n' "$response_headers" | tr -d '\r' | grep -qi '^x-frame-options:'; then
   echo "Unexpected X-Frame-Options prevents the RAG Assistant from loading in Showroom" >&2
@@ -96,6 +103,7 @@ if [[ "$content_security_policy" != *"frame-ancestors"* ]] \
   echo "RAG Assistant does not allow its Showroom origin: ${showroom_origin}" >&2
   exit 5
 fi
+stage="api-token"
 api_token="$({
   curl "${curl_options[@]}" \
     -H 'Content-Type: application/json' \
@@ -108,10 +116,12 @@ if [[ -z "$api_token" || "$api_token" == "null" ]]; then
   exit 3
 fi
 
+stage="api-auth"
 auth_ok="$(curl "${curl_options[@]}" -H "Authorization: Bearer ${api_token}" \
   "${base_url}/api/v1/auth" | jq -r '.authenticated')"
 [[ "$auth_ok" == "true" ]]
 
+stage="workspace-create"
 curl "${curl_options[@]}" \
   -H "Authorization: Bearer ${api_token}" \
   -H 'Content-Type: application/json' \
@@ -119,6 +129,7 @@ curl "${curl_options[@]}" \
   --data "$(jq -nc --arg name "$workspace_slug" '{name:$name,chatMode:"query",openAiTemp:0,openAiHistory:10,topN:4}')" \
   | jq -e --arg slug "$workspace_slug" '.workspace.slug == $slug' >/dev/null
 
+stage="document-load"
 curl "${curl_options[@]}" \
   -H "Authorization: Bearer ${api_token}" \
   -H 'Content-Type: application/json' \
@@ -127,6 +138,7 @@ curl "${curl_options[@]}" \
   | jq -e '.success == true and .documents[0].title == "orion-leave-policy.txt"' \
   >/dev/null
 
+stage="grounded-query"
 result="$(curl "${curl_options[@]}" \
   -w $'\n%{http_code}\t%{time_total}\n' \
   -H "Authorization: Bearer ${api_token}" \
@@ -136,6 +148,7 @@ result="$(curl "${curl_options[@]}" \
 response="$(printf '%s\n' "$result" | head -1)"
 metadata="$(printf '%s\n' "$result" | tail -1)"
 
+stage="grounded-assertions"
 printf '%s' "$response" | jq -e '
   .type == "textResponse"
   and (.textResponse | contains("17"))
