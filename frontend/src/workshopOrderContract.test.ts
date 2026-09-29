@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   MAX_WORKSHOP_SEATS,
+  certifiedSeatLimit,
+  initialSeatCount,
   reclaimActionLabel,
   validateSeatCount,
   workshopProgressLabel,
@@ -26,6 +28,21 @@ describe('workshop order contract', () => {
   it('enforces a catalog certification seat ceiling', () => {
     expect(validateSeatCount(1, 1)).toBeNull();
     expect(validateSeatCount(2, 1)).toMatch(/between 1 and 1/);
+  });
+
+  it('uses the exposure-specific certification ceiling', () => {
+    const metadata = {
+      max_workshop_seats: 25,
+      public_max_workshop_seats: 1,
+    };
+
+    expect(certifiedSeatLimit(metadata, 'internal')).toBe(25);
+    expect(certifiedSeatLimit(metadata, 'public_code')).toBe(1);
+  });
+
+  it('starts within the selected catalog certification ceiling', () => {
+    expect(initialSeatCount(25, 1)).toBe(1);
+    expect(initialSeatCount(5, 25)).toBe(5);
   });
 
   it('calculates instructor readiness', () => {

@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import type { CatalogItem, Tenant, Workshop, WorkshopCapacityPreview } from '../api/types';
-import { MAX_WORKSHOP_SEATS, validateSeatCount } from '../workshopOrderContract';
+import { allowedExposurePolicies } from '../catalogVisibility';
+import {
+  certifiedSeatLimit,
+  initialSeatCount,
+  validateSeatCount,
+  type WorkshopExposurePolicy,
+} from '../workshopOrderContract';
 
 export default function WorkshopOrderForm({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
@@ -19,21 +25,36 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
 
   useEffect(() => {
     Promise.all([api.listCatalog(), api.listTenants(), api.getCurrentIdentity()]).then(([items, tenantItems, identity]) => {
-      setCatalog(items.filter((item) => item.category !== 'open_sandbox' && item.status === 'active'));
+      const orderable = items.filter((item) => item.category !== 'open_sandbox' && item.status === 'active');
+      setCatalog(orderable);
       setTenants(tenantItems.filter((tenant) => tenant.status === 'active'));
-      setForm((current) => ({ ...current, owner_id: identity.username }));
+      setForm((current) => {
+        const selected = orderable.find((item) => item.catalog_item_id === current.catalog_item_id)
+          ?? orderable[0];
+        const exposurePolicies = allowedExposurePolicies(selected);
+        const exposurePolicy = exposurePolicies.includes(current.exposure_policy as WorkshopExposurePolicy)
+          ? current.exposure_policy as WorkshopExposurePolicy
+          : exposurePolicies[0];
+        const seatLimit = certifiedSeatLimit(selected?.metadata, exposurePolicy);
+        return {
+          ...current,
+          owner_id: identity.username,
+          catalog_item_id: selected?.catalog_item_id ?? '',
+          exposure_policy: exposurePolicy,
+          num_users: initialSeatCount(current.num_users, seatLimit),
+        };
+      });
     });
   }, []);
 
   const selectedCatalogItem = catalog.find(
     (item) => item.catalog_item_id === form.catalog_item_id,
   );
-  const configuredCatalogLimit = Number(
-    selectedCatalogItem?.metadata?.max_workshop_seats ?? MAX_WORKSHOP_SEATS,
+  const exposurePolicies = allowedExposurePolicies(selectedCatalogItem);
+  const catalogSeatLimit = certifiedSeatLimit(
+    selectedCatalogItem?.metadata,
+    form.exposure_policy as WorkshopExposurePolicy,
   );
-  const catalogSeatLimit = Number.isInteger(configuredCatalogLimit)
-    ? Math.min(MAX_WORKSHOP_SEATS, Math.max(1, configuredCatalogLimit))
-    : MAX_WORKSHOP_SEATS;
   const seatError = validateSeatCount(form.num_users, catalogSeatLimit);
   const checkCapacity = async () => {
     if (seatError) return setError(seatError);
@@ -71,12 +92,12 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
     <div className="space-y-6">
       <label className={label}>Signed-in owner<input required readOnly aria-readonly="true" className={`${field} cursor-not-allowed bg-[#292929] text-[#B8BBBE]`} value={form.owner_id} /><span className="mt-1 block text-xs font-normal text-[#6A6E73]">Workshop ownership is bound to the authenticated identity.</span></label>
       <label className={label}>Tenant<select required className={field} value={form.tenant_id} onChange={(e) => setForm({...form, tenant_id:e.target.value})}><option value="">Select a tenant...</option>{tenants.map((t)=><option key={t.tenant_id} value={t.tenant_id}>{t.display_name}</option>)}</select></label>
-      <label className={label}>Lab<select className={field} value={form.catalog_item_id} onChange={(e) => { const catalog_item_id = e.target.value; const item = catalog.find((candidate) => candidate.catalog_item_id === catalog_item_id); const configured = Number(item?.metadata?.max_workshop_seats ?? MAX_WORKSHOP_SEATS); const maximum = Number.isInteger(configured) ? Math.min(MAX_WORKSHOP_SEATS, Math.max(1, configured)) : MAX_WORKSHOP_SEATS; setForm({...form, catalog_item_id, num_users: Math.min(form.num_users, maximum)}); setPreview(null); }}>{catalog.map((c)=><option key={c.catalog_item_id} value={c.catalog_item_id}>{c.display_name}</option>)}</select></label>
+      <label className={label}>Lab<select className={field} value={form.catalog_item_id} onChange={(e) => { const catalog_item_id = e.target.value; const item = catalog.find((candidate) => candidate.catalog_item_id === catalog_item_id); const allowed = allowedExposurePolicies(item); const exposurePolicy = allowed.includes(form.exposure_policy as WorkshopExposurePolicy) ? form.exposure_policy as WorkshopExposurePolicy : allowed[0]; const maximum = certifiedSeatLimit(item?.metadata, exposurePolicy); setForm({...form, catalog_item_id, num_users: initialSeatCount(form.num_users, maximum), exposure_policy: exposurePolicy}); setPreview(null); }}>{catalog.map((c)=><option key={c.catalog_item_id} value={c.catalog_item_id}>{c.display_name}</option>)}</select></label>
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className={label}>Participant seats<input type="number" min="1" max={catalogSeatLimit} className={field} value={form.num_users} onChange={(e) => setForm({...form, num_users:Number(e.target.value)})} /><span className="mt-1 block text-xs font-normal text-[#6A6E73]">Maximum {catalogSeatLimit} seat{catalogSeatLimit === 1 ? '' : 's'} for this lab's current certification stage.</span></label>
+        <label className={label}>Participant seats<input type="number" min="1" max={catalogSeatLimit} className={field} value={form.num_users} onChange={(e) => setForm({...form, num_users:Number(e.target.value)})} /><span className="mt-1 block text-xs font-normal text-[#6A6E73]">Maximum {catalogSeatLimit} seat{catalogSeatLimit === 1 ? '' : 's'} for this lab's current certification stage.</span>{seatError && <span role="alert" className="mt-1 block text-xs font-normal text-red-300">{seatError}</span>}</label>
         <label className={label}>Duration<select className={field} value={form.ttl} onChange={(e) => setForm({...form, ttl:e.target.value})}><option value="4h">4 hours</option><option value="8h">8 hours</option><option value="1d">1 day</option></select></label>
       </div>
-      <label className={label}>Access<select className={field} value={form.exposure_policy} onChange={(e) => setForm({...form, exposure_policy:e.target.value})}><option value="internal">Internal access</option><option value="public_code">Public link + instructor code</option></select><span className="mt-1 block text-xs font-normal text-[#6A6E73]">Email is an unverified label. The shared instructor code is the only secret, and access ends at the workshop TTL.</span></label>
+      <label className={label}>Access<select className={field} value={form.exposure_policy} onChange={(e) => { const exposure_policy = e.target.value as WorkshopExposurePolicy; const maximum = certifiedSeatLimit(selectedCatalogItem?.metadata, exposure_policy); setForm({...form, exposure_policy, num_users: initialSeatCount(form.num_users, maximum)}); setPreview(null); }}>{exposurePolicies.includes('internal') && <option value="internal">Internal access</option>}{exposurePolicies.includes('public_code') && <option value="public_code">Public link + instructor code</option>}</select><span className="mt-1 block text-xs font-normal text-[#6A6E73]">{exposurePolicies.includes('public_code') ? 'Email is an unverified label. The shared instructor code is the only secret, and access ends at the workshop TTL.' : 'This catalog release is currently certified for internal access only.'}</span></label>
     </div>
 
     <button disabled={busy || !form.tenant_id || !form.owner_id || !!seatError} onClick={checkCapacity} className="mt-6 w-full rounded-md bg-[#EE0000] px-5 py-3 font-semibold text-white transition hover:bg-[#CC0000] disabled:cursor-not-allowed disabled:opacity-40">{busy ? 'Checking capacity…' : 'Check capacity'}</button>

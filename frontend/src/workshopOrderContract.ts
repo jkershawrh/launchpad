@@ -1,5 +1,25 @@
 export const MAX_WORKSHOP_SEATS = 30;
 
+export type WorkshopExposurePolicy = 'internal' | 'public_code';
+
+export function certifiedSeatLimit(
+  metadata: Record<string, unknown> | undefined,
+  exposurePolicy: WorkshopExposurePolicy,
+): number {
+  const generalLimit = metadata?.max_workshop_seats;
+  const configuredLimit = exposurePolicy === 'public_code'
+    ? metadata?.public_max_workshop_seats ?? generalLimit
+    : generalLimit;
+  const numericLimit = Number(configuredLimit ?? MAX_WORKSHOP_SEATS);
+  return Number.isInteger(numericLimit)
+    ? Math.min(MAX_WORKSHOP_SEATS, Math.max(1, numericLimit))
+    : MAX_WORKSHOP_SEATS;
+}
+
+export function initialSeatCount(preferred: number, maximum: number): number {
+  return Math.min(Math.max(1, preferred), maximum);
+}
+
 export function validateSeatCount(value: number, maximum = MAX_WORKSHOP_SEATS): string | null {
   if (!Number.isInteger(value)) return 'Seat count must be a whole number.';
   if (value < 1 || value > maximum) {
