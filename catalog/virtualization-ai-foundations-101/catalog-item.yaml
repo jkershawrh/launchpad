@@ -2,7 +2,7 @@ catalog_item_id: virtualization-ai-foundations-101
 display_name: 'Virtualization + AI 101: Trace a VM to Governed AI'
 description: Trace one attributable request from an OpenShift Virtualization VM through
   platform networking to governed Intel Xeon CPU inference and human authority.
-category: guided_trace
+category: guided_build
 version: 0.1.0
 status: draft
 required_capabilities:

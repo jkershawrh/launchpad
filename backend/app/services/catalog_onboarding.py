@@ -100,6 +100,8 @@ def normalize_demo_story_handoff(
 
     catalog = copy.deepcopy(proposal.get("catalog") or {})
     catalog["status"] = "draft"
+    if catalog.get("category") not in {"quick_start", "guided_build", "open_sandbox"}:
+        catalog["category"] = "guided_build"
     catalog_id = str(catalog.get("catalog_item_id", ""))
     learning = copy.deepcopy(proposal.get("learning") or {})
     level = str(learning.get("learning_level", "")).zfill(3)

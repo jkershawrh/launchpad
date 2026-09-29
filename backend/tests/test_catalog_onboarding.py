@@ -127,7 +127,7 @@ def test_demo_story_handoff_normalizes_to_a_private_one_seat_draft() -> None:
                 "catalog_item_id": "sovereign-ai-101",
                 "display_name": "Sovereign AI 101: Understand Governed Inference",
                 "description": "Trace one governed inference request.",
-                "category": "guided_build",
+                "category": "guided_trace",
                 "version": "0.1.0",
                 "status": "draft",
             },
@@ -184,6 +184,7 @@ def test_demo_story_handoff_normalizes_to_a_private_one_seat_draft() -> None:
 
     assert validation["errors"] == []
     assert intake["catalog"]["status"] == "draft"
+    assert intake["catalog"]["category"] == "guided_build"
     assert intake["learning"]["learning_stage"] == "Learn"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
     assert intake["certification"]["max_workshop_seats"] == 1
