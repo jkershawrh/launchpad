@@ -24,6 +24,7 @@ COPY scripts/run_flightpath_certification_matrix.sh ./scripts/
 COPY scripts/verify_staging_zero_residue.py ./scripts/
 COPY certification/ ./certification/
 COPY catalog-onboarding/ ./catalog-onboarding/
+COPY content-intel-xeon6-agent-201/manifests/ ./content-intel-xeon6-agent-201/manifests/
 
 RUN chmod 0555 scripts/*.sh scripts/*.py \
     && mkdir -p /evidence/catalog \
