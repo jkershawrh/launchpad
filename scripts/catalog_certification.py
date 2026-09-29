@@ -112,6 +112,23 @@ def _git_value(*args: str) -> str:
     return result.stdout.strip()
 
 
+def _immutable_candidate_identity() -> dict[str, str] | None:
+    identity = {
+        "git_commit": os.environ.get("LAUNCHPAD_CANDIDATE_GIT_COMMIT", ""),
+        "manifest_sha256": os.environ.get("LAUNCHPAD_CANDIDATE_MANIFEST_SHA256", ""),
+        "runner_image": os.environ.get("LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE", ""),
+    }
+    if not any(identity.values()):
+        return None
+    if not re.fullmatch(r"[0-9a-f]{40}", identity["git_commit"]):
+        raise ValueError("LAUNCHPAD_CANDIDATE_GIT_COMMIT must be a full SHA-1 commit")
+    if not re.fullmatch(r"[0-9a-f]{64}", identity["manifest_sha256"]):
+        raise ValueError("LAUNCHPAD_CANDIDATE_MANIFEST_SHA256 must be a SHA-256 digest")
+    if not re.fullmatch(r"[^\s]+@sha256:[0-9a-f]{64}", identity["runner_image"]):
+        raise ValueError("LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE must be digest pinned")
+    return identity
+
+
 def _kubeconfig_server(kubeconfig: str) -> str:
     result = subprocess.run(
         [
@@ -579,11 +596,13 @@ def _run_command(args: argparse.Namespace) -> int:
             f"KUBECONFIG targets {actual_server!r}; expected {plan['kubeconfig_server']!r}"
         )
 
-    tracked_changes = _git_value("status", "--porcelain", "--untracked-files=no")
-    if tracked_changes and not args.allow_dirty:
-        raise ValueError(
-            "Tracked repository files are dirty; commit the proof contract before a live run"
-        )
+    immutable_identity = _immutable_candidate_identity()
+    if immutable_identity is None:
+        tracked_changes = _git_value("status", "--porcelain", "--untracked-files=no")
+        if tracked_changes and not args.allow_dirty:
+            raise ValueError(
+                "Tracked repository files are dirty; commit the proof contract before a live run"
+            )
 
     verify: bool | str = True
     if args.insecure:
@@ -823,14 +842,15 @@ def _run_command(args: argparse.Namespace) -> int:
             "sha256": contract_sha256,
             "intake_path": str(intake_path.relative_to(REPO_ROOT)),
             "catalog_version": intake["catalog"]["version"],
-            "git_commit": os.environ.get("LAUNCHPAD_CANDIDATE_GIT_COMMIT")
-            or _git_value("rev-parse", "HEAD"),
-            "platform_manifest_sha256": os.environ.get(
-                "LAUNCHPAD_CANDIDATE_MANIFEST_SHA256", ""
-            ),
-            "certification_runner_image": os.environ.get(
-                "LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE", ""
-            ),
+            "git_commit": immutable_identity["git_commit"]
+            if immutable_identity
+            else _git_value("rev-parse", "HEAD"),
+            "platform_manifest_sha256": immutable_identity["manifest_sha256"]
+            if immutable_identity
+            else "",
+            "certification_runner_image": immutable_identity["runner_image"]
+            if immutable_identity
+            else "",
         },
         "plan": plan,
         "capacity_preview": capacity,

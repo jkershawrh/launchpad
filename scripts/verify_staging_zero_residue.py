@@ -60,7 +60,7 @@ def main() -> int:
             }
         )
 
-    with psycopg2.connect(os.environ["DATABASE_URL"]) as connection:
+    with psycopg2.connect(os.environ["DATABASE_URL"], connect_timeout=10) as connection:
         connection.set_session(readonly=True, autocommit=False)
         with connection.cursor() as cursor:
             global_queries = {

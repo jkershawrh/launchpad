@@ -9,6 +9,8 @@ from copy import deepcopy
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from app.services.catalog_certification import (
     build_certification_plan,
     evaluate_json_assertions,
@@ -50,6 +52,28 @@ def _runner_module():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def test_immutable_cluster_runner_identity_replaces_worktree_dependency(monkeypatch):
+    runner = _runner_module()
+    monkeypatch.setenv("LAUNCHPAD_CANDIDATE_GIT_COMMIT", "a" * 40)
+    monkeypatch.setenv("LAUNCHPAD_CANDIDATE_MANIFEST_SHA256", "b" * 64)
+    monkeypatch.setenv(
+        "LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE",
+        "quay.io/example/runner@sha256:" + "c" * 64,
+    )
+    assert runner._immutable_candidate_identity() == {
+        "git_commit": "a" * 40,
+        "manifest_sha256": "b" * 64,
+        "runner_image": "quay.io/example/runner@sha256:" + "c" * 64,
+    }
+
+
+def test_partial_cluster_runner_identity_fails_closed(monkeypatch):
+    runner = _runner_module()
+    monkeypatch.setenv("LAUNCHPAD_CANDIDATE_GIT_COMMIT", "a" * 40)
+    with pytest.raises(ValueError, match="MANIFEST_SHA256"):
+        runner._immutable_candidate_identity()
 
 
 def test_presentation_gates_are_derived_from_asserted_live_seat_evidence():

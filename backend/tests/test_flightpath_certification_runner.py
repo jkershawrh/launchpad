@@ -18,6 +18,7 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
     pvc = kinds[("PersistentVolumeClaim", "launchpad-certification-evidence")]
     role = kinds[("ClusterRole", "launchpad-flightpath-certification-runner")]
     build = kinds[("BuildConfig", "launchpad-certification-runner")]
+    db_policy = kinds[("NetworkPolicy", "launchpad-certification-postgres-ingress")]
     assert pvc["spec"]["accessModes"] == ["ReadWriteMany"]
     flattened = {(r["apiGroups"][0], tuple(r["resources"]), tuple(r["verbs"])) for r in role["rules"]}
     assert not any("delete" in verbs and "namespaces" in resources for _, resources, verbs in flattened)
@@ -29,6 +30,8 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
         "name": "quay.io/rh-ee-jkershaw/launchpad-certification-runner:93dcdf0",
     }
     assert build["spec"]["output"]["pushSecret"]["name"] == "launchpad-registry-pull"
+    source = db_policy["spec"]["ingress"][0]["from"][0]["podSelector"]["matchLabels"]
+    assert source == {"app.kubernetes.io/name": "launchpad-certification-runner"}
 
 
 def test_job_is_fail_closed_and_binds_candidate_identity() -> None:
