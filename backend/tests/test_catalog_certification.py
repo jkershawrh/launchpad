@@ -76,6 +76,41 @@ def test_partial_cluster_runner_identity_fails_closed(monkeypatch):
         runner._immutable_candidate_identity()
 
 
+def test_cluster_runner_probe_access_is_bounded_to_declared_service_account(monkeypatch):
+    runner = _runner_module()
+    monkeypatch.setenv(
+        "LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT",
+        "launchpad-flightpath-candidate:launchpad-certification-runner",
+    )
+
+    manifest = runner._probe_access_manifest("launchpad-seat-one")
+
+    assert manifest["metadata"] == {
+        "name": "launchpad-certification-probe",
+        "namespace": "launchpad-seat-one",
+    }
+    assert manifest["roleRef"] == {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "ClusterRole",
+        "name": "edit",
+    }
+    assert manifest["subjects"] == [
+        {
+            "kind": "ServiceAccount",
+            "name": "launchpad-certification-runner",
+            "namespace": "launchpad-flightpath-candidate",
+        }
+    ]
+
+
+def test_cluster_runner_probe_access_rejects_malformed_subject(monkeypatch):
+    runner = _runner_module()
+    monkeypatch.setenv("LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT", "not-qualified")
+
+    with pytest.raises(ValueError, match="<namespace>:<name>"):
+        runner._probe_access_manifest("launchpad-seat-one")
+
+
 def test_presentation_gates_are_derived_from_asserted_live_seat_evidence():
     runner = _runner_module()
     presentation = {

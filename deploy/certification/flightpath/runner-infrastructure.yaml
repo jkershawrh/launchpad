@@ -88,7 +88,14 @@ spec:
           && (request.operation == 'DELETE' ? oldObject.roleRef.kind : object.roleRef.kind)
             == 'ClusterRole'
           && (request.operation == 'DELETE' ? oldObject.roleRef.name : object.roleRef.name)
-            == 'edit')
+            == 'edit'
+          && (request.operation == 'DELETE' ? oldObject.subjects : object.subjects).size() == 1
+          && (request.operation == 'DELETE' ? oldObject.subjects[0].kind : object.subjects[0].kind)
+            == 'ServiceAccount'
+          && (request.operation == 'DELETE' ? oldObject.subjects[0].namespace : object.subjects[0].namespace)
+            == 'launchpad-flightpath-candidate'
+          && (request.operation == 'DELETE' ? oldObject.subjects[0].name : object.subjects[0].name)
+            == 'launchpad-certification-runner')
       message: The certification runner may bind only the edit probe inside Launchpad seat namespaces.
 ---
 apiVersion: admissionregistration.k8s.io/v1

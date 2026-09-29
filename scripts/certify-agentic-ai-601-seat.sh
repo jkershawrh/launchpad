@@ -8,6 +8,7 @@ expected_cluster="${2:?usage: certify-agentic-ai-601-seat.sh <namespace> <cluste
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
 probe_binding="launchpad-certification-probe"
+probe_serviceaccount="${LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT:-partner-ai-launchpad:launchpad-provisioner}"
 cleanup_probe_access() {
   oc --kubeconfig "$KUBECONFIG" delete rolebinding "$probe_binding" \
     --namespace "$namespace" --ignore-not-found >/dev/null 2>&1 || true
@@ -15,7 +16,7 @@ cleanup_probe_access() {
 trap cleanup_probe_access EXIT
 oc --kubeconfig "$KUBECONFIG" create rolebinding "$probe_binding" \
   --clusterrole=edit \
-  --serviceaccount=partner-ai-launchpad:launchpad-provisioner \
+  --serviceaccount="$probe_serviceaccount" \
   --namespace "$namespace" --dry-run=client -o yaml \
   | oc --kubeconfig "$KUBECONFIG" apply -f - >/dev/null
 

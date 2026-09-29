@@ -410,6 +410,77 @@ def _seat_probe(
     return result
 
 
+def _probe_access_manifest(namespace: str) -> dict[str, Any] | None:
+    subject = os.environ.get("LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT", "").strip()
+    if not subject:
+        return None
+    parts = subject.split(":", 1)
+    if len(parts) != 2 or not all(parts):
+        raise ValueError(
+            "LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT must be <namespace>:<name>"
+        )
+    subject_namespace, subject_name = parts
+    return {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+            "name": "launchpad-certification-probe",
+            "namespace": namespace,
+        },
+        "roleRef": {
+            "apiGroup": "rbac.authorization.k8s.io",
+            "kind": "ClusterRole",
+            "name": "edit",
+        },
+        "subjects": [
+            {
+                "kind": "ServiceAccount",
+                "name": subject_name,
+                "namespace": subject_namespace,
+            }
+        ],
+    }
+
+
+def _set_probe_access(
+    namespaces: list[str], *, kubeconfig: str, present: bool
+) -> None:
+    for namespace in namespaces:
+        manifest = _probe_access_manifest(namespace)
+        if manifest is None:
+            return
+        if present:
+            completed = subprocess.run(
+                ["oc", "--kubeconfig", kubeconfig, "apply", "-f", "-"],
+                input=json.dumps(manifest),
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        else:
+            completed = subprocess.run(
+                [
+                    "oc",
+                    "--kubeconfig",
+                    kubeconfig,
+                    "delete",
+                    "rolebinding",
+                    "launchpad-certification-probe",
+                    "-n",
+                    namespace,
+                    "--ignore-not-found",
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        if completed.returncode != 0:
+            action = "grant" if present else "revoke"
+            raise RuntimeError(
+                f"Unable to {action} bounded certification access in {namespace}"
+            )
+
+
 def _resource_counts(
     resources: list[str],
     *,
@@ -689,34 +760,39 @@ def _run_command(args: argparse.Namespace) -> int:
                 )
             sessions.append(session)
 
-        # Every seat is ready before any functional workload starts. The
-        # executor then supplies a bounded, simultaneous participant load.
-        with ThreadPoolExecutor(max_workers=profile["probe_concurrency"]) as executor:
-            futures = {
-                executor.submit(
-                    _seat_probe,
-                    seat=seat,
-                    session=session,
-                    contract=contract,
-                    verify=verify,
-                ): int(seat["seat_number"])
-                for seat, session in zip(ready_seats, sessions, strict=True)
-            }
-            for future in as_completed(futures):
-                seat_number = futures[future]
-                try:
-                    seat_results.append(future.result())
-                # A third-party lab probe may raise any Python exception. Keep
-                # the other seat results and, most importantly, reach reclaim.
-                except Exception as exc:  # noqa: BLE001
-                    seat_results.append(
-                        {
-                            "seat_number": seat_number,
-                            "showroom": [],
-                            "probe": {"passed": False, "assertion_failures": []},
-                            "error": f"{type(exc).__name__}: {exc}",
-                        }
-                    )
+        namespaces = [str(session["namespace"]) for session in sessions]
+        _set_probe_access(namespaces, kubeconfig=kubeconfig, present=True)
+        try:
+            # Every seat is ready before any functional workload starts. The
+            # executor then supplies a bounded, simultaneous participant load.
+            with ThreadPoolExecutor(max_workers=profile["probe_concurrency"]) as executor:
+                futures = {
+                    executor.submit(
+                        _seat_probe,
+                        seat=seat,
+                        session=session,
+                        contract=contract,
+                        verify=verify,
+                    ): int(seat["seat_number"])
+                    for seat, session in zip(ready_seats, sessions, strict=True)
+                }
+                for future in as_completed(futures):
+                    seat_number = futures[future]
+                    try:
+                        seat_results.append(future.result())
+                    # A third-party lab probe may raise any Python exception. Keep
+                    # the other seat results and, most importantly, reach reclaim.
+                    except Exception as exc:  # noqa: BLE001
+                        seat_results.append(
+                            {
+                                "seat_number": seat_number,
+                                "showroom": [],
+                                "probe": {"passed": False, "assertion_failures": []},
+                                "error": f"{type(exc).__name__}: {exc}",
+                            }
+                        )
+        finally:
+            _set_probe_access(namespaces, kubeconfig=kubeconfig, present=False)
         seat_results.sort(key=lambda item: item["seat_number"])
     # Evidence and cleanup must survive failures from APIs, subprocesses, and
     # future lab-specific probes, including exception types not known here.
