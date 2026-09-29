@@ -36,6 +36,21 @@ if [[ -z "$endpoint" || -z "$model" ]]; then
   exit 3
 fi
 
+stage="terminal-readiness"
+terminal_ready="false"
+for attempt in $(seq 1 30); do
+  if oc exec -n "$namespace" deploy/showroom -c terminal -- \
+    oc project -q >/dev/null 2>&1; then
+    terminal_ready="true"
+    break
+  fi
+  sleep 2
+done
+if [[ "$terminal_ready" != "true" ]]; then
+  printf 'semantic_response=terminal_readiness:false attempts:30\n' >&2
+  false
+fi
+
 stage="connection-config"
 oc create configmap racmaas-connection \
   --from-literal="api-base=${endpoint}" \

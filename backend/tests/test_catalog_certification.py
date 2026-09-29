@@ -750,6 +750,7 @@ def test_agent_201_remote_probe_reports_bounded_failure_stages_without_secrets()
     for stage in (
         "cluster-identity",
         "showroom-contract",
+        "terminal-readiness",
         "connection-config",
         "model-key-binding",
         "workload-model-config",
@@ -767,6 +768,7 @@ def test_agent_201_remote_probe_reports_bounded_failure_stages_without_secrets()
     assert "semantic_response=workload_apply_failure" in probe
     assert 'failure_class="forbidden"' in probe
     assert 'failure_class="invalid"' in probe
+    assert "for attempt in $(seq 1 30)" in probe
     assert "BASH_COMMAND" not in probe
 
 
@@ -775,6 +777,7 @@ def test_network_probe_distinguishes_workspace_and_story_failures():
 
     assert 'stage="workspace-http"' in probe
     assert 'stage="story-http"' in probe
+    assert "http_status_options=(-sSkL" in probe
     assert "semantic_response=workspace_http_status:" in probe
     assert "semantic_response=story_http_status:" in probe
 

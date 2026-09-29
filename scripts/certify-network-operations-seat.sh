@@ -27,6 +27,7 @@ app_host="$(oc --kubeconfig "$KUBECONFIG" get route netops -n "$namespace" -o js
 # probe must validate the final page instead of treating the safe redirect as a
 # functional failure.
 curl_options=(-fsSkL --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
+http_status_options=(-sSkL --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
 
 stage="health"
 health="$(curl "${curl_options[@]}" "https://${app_host}/health")"
@@ -35,13 +36,13 @@ stage="readiness"
 readiness="$(curl "${curl_options[@]}" "https://${app_host}/ready")"
 jq -e '.status == "ready"' <<<"$readiness" >/dev/null
 stage="workspace-http"
-workspace_status="$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/workspace")"
+workspace_status="$(curl "${http_status_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/workspace")"
 if [[ "$workspace_status" != "200" ]]; then
   printf 'semantic_response=workspace_http_status:%s\n' "$workspace_status" >&2
   false
 fi
 stage="story-http"
-story_status="$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/story/")"
+story_status="$(curl "${http_status_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/story/")"
 if [[ "$story_status" != "200" ]]; then
   printf 'semantic_response=story_http_status:%s\n' "$story_status" >&2
   false
