@@ -677,6 +677,44 @@ def test_failed_seat_probe_preserves_safe_stage_diagnostic(monkeypatch):
     assert "transport details" not in json.dumps(result)
 
 
+def test_failed_nested_seat_probe_preserves_innermost_stage_and_safe_chain(monkeypatch):
+    runner = _runner_module()
+    contract = load_certification_contract(CONTRACT_PATH)
+
+    monkeypatch.setattr(
+        runner,
+        "_showroom_checks",
+        lambda *_args, **_kwargs: [{"id": "track-chooser", "passed": True}],
+    )
+    monkeypatch.setattr(
+        runner.subprocess,
+        "run",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            returncode=127,
+            stdout="",
+            stderr=(
+                "seat_probe_failure stage=api-token exit_code=127\n"
+                "seat_probe_failure stage=rag-journey exit_code=127\n"
+            ),
+        ),
+    )
+
+    result = runner._seat_probe(
+        seat={
+            "seat_number": 2,
+            "seat_id": "seat-2",
+            "session_id": "session-2",
+            "showroom_url": "https://showroom.example",
+        },
+        session={"namespace": "seat-2", "cluster_ref": "arena"},
+        contract=contract,
+        verify=True,
+    )
+
+    assert result["probe"]["failure_stage"] == "api-token"
+    assert result["probe"]["failure_stage_chain"] == ["api-token", "rag-journey"]
+
+
 def test_multi_agent_probe_retries_remote_json_and_reports_failure_stage():
     probe = (ROOT / "scripts/certify-multi-agent-seat.sh").read_text()
 

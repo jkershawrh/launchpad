@@ -40,7 +40,8 @@ TERMINAL_CLEANUP_STATUSES = {"completed", "cleanup_failed"}
 CLUSTER_SCOPED_RESOURCES = {"namespaces", "persistentvolumes"}
 CONTROL_PLANE_RESOURCES = {"applications.argoproj.io"}
 PROBE_FAILURE_STAGE = re.compile(
-    r"(?:^|\s)seat_probe_failure stage=([a-z0-9-]+) exit_code=\d+(?:\s|$)"
+    r"^seat_probe_failure stage=([a-z0-9-]+) exit_code=\d+$",
+    re.MULTILINE,
 )
 
 
@@ -370,7 +371,12 @@ def _seat_probe(
             }
             stages = PROBE_FAILURE_STAGE.findall(completed.stderr or "")
             if stages:
-                failed_probe["failure_stage"] = stages[-1]
+                # Nested probes report before their parent wrapper. Preserve the
+                # deepest actionable stage while retaining the bounded wrapper
+                # chain; never persist arbitrary stderr in certification evidence.
+                failed_probe["failure_stage"] = stages[0]
+                if len(stages) > 1:
+                    failed_probe["failure_stage_chain"] = stages
             safe_diagnostics = [
                 line
                 for line in (completed.stderr or "").splitlines()
