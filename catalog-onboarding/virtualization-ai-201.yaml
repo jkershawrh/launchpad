@@ -24,14 +24,14 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
-    revision: 7962185a06e4d556b2afb0c7a917334b17fcc8e8
+    revision: cab65326259a670048757d40653a1d27bb4afc56
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
-    content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:546f5e43a71b2043793187ed4ad2540ecb2e3f75a0d512e32538ef63c1d9cfae
+    content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:332ebdb57462cc910b679e70cc8e092dcc03e44b66ae192db476d95e566d039f
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
-    revision: 7962185a06e4d556b2afb0c7a917334b17fcc8e8
+    revision: cab65326259a670048757d40653a1d27bb4afc56
     deploy_path: charts/virtualization-ai-201
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
 runtime:
@@ -77,8 +77,8 @@ runtime:
     release_name: virtualization-ai-201
     helm_values:
       values_overlay: charts/virtualization-ai-201/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:ff9c6bd189955ebfee6e97714e62908d53824a39fac50c3a78b27466e7825e62
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:b6b7cf41d5044c005f84bbade273edad0daed061060094e11d202b24c95c0ee3
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:1ffb7c118792203c63f2fb30e07729a259da98ce128ec7bb449b36740b09f274
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:b3083581e671a13c0ec3827aeaa0d4d99d00b88fce6bf713a531353b3128514c
       presentation_enabled: true
     runtime_secret_name: virtualization-ai-model-runtime
     runtime_secret_value_path: adapter.model.secretName

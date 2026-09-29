@@ -40,10 +40,10 @@ metadata:
   solution_family: sovereign_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
-  showroom_content_ref: 048fd05c66aabf5e5481dcb1329e5e6693988edc
+  showroom_content_ref: 4362c13b0309a0fb1de416b5d40cd27699a23fc8
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
-  showroom_content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:3c2f7bf861eaf7c3988a14a65743a884236469ff1acbd17f2568b96b737fd84f
+  showroom_content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:d84d894dd2df3503451b5fd3cb07f70c3ffbce9f6a8378cb5a5c626020e9e40d
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -99,7 +99,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-201.git
-  workload_revision: 048fd05c66aabf5e5481dcb1329e5e6693988edc
+  workload_revision: 4362c13b0309a0fb1de416b5d40cd27699a23fc8
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-201
@@ -108,8 +108,8 @@ metadata:
   workload_release_name: sovereign-ai-201
   workload_helm_values:
     values_overlay: charts/sovereign-ai-201/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:868e1ced53d28cf07b02007849356b4f1ff78ff17d1d1dd0c2b04fedd6a20f6f
-    presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:2baef1ba00a221d223f205d8179a8a6cb1ca3113539b6c2e53364c484fe7545a
+    workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:3d79b40ac8f2dd349eab5b51e1133cd205eb29fc772c7640e7cd367038db5889
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:6ed2b935156cd3aedfb2083de3618354ffa4bd3cd865916f0cb7c2fd197b0d5f
     presentation_enabled: true
     adapter:
       image:
@@ -140,5 +140,5 @@ metadata:
     ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-201.git
-  source_content_revision: 048fd05c66aabf5e5481dcb1329e5e6693988edc
+  source_content_revision: 4362c13b0309a0fb1de416b5d40cd27699a23fc8
   source_references: {}
