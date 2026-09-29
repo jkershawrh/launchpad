@@ -80,3 +80,10 @@ def test_certification_container_contains_the_proof_inputs() -> None:
     assert "COPY catalog-onboarding/" in text
     assert "COPY scripts/certify-*-seat.sh" in text
     assert "run_flightpath_certification_matrix.sh" in text
+
+
+def test_matrix_uses_unique_attempt_prefix_for_idempotent_retries() -> None:
+    text = (ROOT / "scripts/run_flightpath_certification_matrix.sh").read_text()
+    assert 'run_series="${LAUNCHPAD_RUN_PREFIX:-flightpath-staging}"' in text
+    assert "LAUNCHPAD_RUN_ATTEMPT" in text
+    assert 'run_prefix="${run_series}-${run_attempt}"' in text
