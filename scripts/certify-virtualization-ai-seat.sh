@@ -26,7 +26,7 @@ oc --kubeconfig "$KUBECONFIG" create rolebinding "$probe_binding" --clusterrole=
 
 case "$catalog_id" in
   virtualization-ai-foundations-101)
-    vm_names=(operations-vm); service=ai-analysis; route=virtualization-ai-presentation; endpoint=/api/v1/analyze ;;
+    vm_names=(operations-vm); service=ai-analysis; route=lab; endpoint=/api/v1/analyze ;;
   virtualization-ai-201)
     vm_names=(contract-author-vm); service=virtualization-ai-201-adapter; route=virt-ai-201; endpoint=/api/v1/qualify ;;
   virtualization-ai-301)

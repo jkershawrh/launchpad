@@ -29,7 +29,7 @@ sources:
     content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:9087369013858ae9c7a71fee7b7174daf0913f1b3e9694e438a42688ee3ea1a0
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 6a9026f0471d56c9ae73def74a745cdaf1d79b97
+    revision: fb9e66bf1f0ef354acc5785afde514c1cf30cb7a
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:
@@ -85,7 +85,7 @@ runtime:
       name: requested_model
       api-key: maas_api_key
     routes:
-      ui: virtualization-ai-presentation
+      ui: lab
     readiness: []
 certification:
   stage: factory-source-qualified
