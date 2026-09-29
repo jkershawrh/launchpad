@@ -11,6 +11,9 @@ replacement for that architecture. Active defects and features are tracked in
 The bounded Intel handoff and repository-manifest cleanup sequence is defined in
 [`yaml-cleanup-plan.md`](yaml-cleanup-plan.md); that plan does not authorize
 changes to active labs or live GitOps sources.
+The current proof-accounting audit, staging boundary, remaining production
+gates, and closure rules are maintained in
+[`roadmap-convergence-20260929.md`](roadmap-convergence-20260929.md).
 
 Dates below are planning targets beginning after the September 17, 2026 pilot.
 They assume agentic software delivery: multiple bounded implementation,
@@ -338,6 +341,30 @@ an order.**
 - **Gate:** cold-node and registry-restart tests succeed on every certified
   execution cluster.
 
+**LP-S038 — As a content owner, I can correct and promote Showroom content
+without rebuilding or fully recertifying an unchanged lab runtime.**
+
+- `LP-T196` Package Showroom/Antora content as an independently immutable,
+  signed bundle and record separate `runtime_digest` and
+  `showroom_content_digest` release identities.
+- `LP-T197` Define editorial, instructional, behavioral, and runtime-affecting
+  content classes with mandatory evidence and approval requirements.
+- `LP-T198` Build an isolated preview that validates Antora/UI configuration,
+  links, navigation, code blocks, variables, embedded tabs, branding,
+  accessibility, and responsive rendering before promotion.
+- `LP-T199` Permit editorial changes to promote through automated content
+  checks without reprovisioning seats; require a one-seat journey for changed
+  instructions and affected five-seat certification for changed behavior.
+- `LP-T200` Deliver content bundles through a durable origin and atomic refresh
+  mechanism that does not restart or mutate participant workloads.
+- `LP-T201` Display runtime and content identities, change class, approval,
+  preview, rollback, and current deployment status in requester and admin views.
+- `LP-T202` Prove content rollback, concurrent active-seat refresh, stale-cache
+  recovery, integrity verification, and preservation of the certified runtime.
+- **Gate:** a typo/style correction reaches active Showrooms without workload
+  reprovisioning, an instructional change passes its bounded journey, and a
+  behavioral change cannot bypass affected live certification.
+
 ### LP-E019 — Automated lab intake and certification
 
 **LP-S025 — As a solution owner, I can submit one immutable quickstart
@@ -437,6 +464,31 @@ repository and receive a safe, reviewable, certified catalog draft.**
   approval, and promotion remain locked.
 - **Gate:** a new quickstart progresses from immutable repository revision to a
   certified draft and approved promotion without a bespoke platform code edit.
+
+**LP-S037 — As a release owner, I can recertify only the labs affected by a
+change while retaining an auditable full-catalog staging gate.**
+
+- `LP-T189` Bind every certification result to independent platform, runtime,
+  Showroom-content, model, dataset, prompt, and certification-runner digests.
+- `LP-T190` Build a machine-readable dependency and impact graph that maps a
+  changed artifact or contract to the exact catalogs and proof dimensions that
+  must be rerun.
+- `LP-T191` Define risk classes for editorial, instructional, behavioral,
+  runtime, platform, security, and cluster changes; fail closed when a change
+  cannot be classified.
+- `LP-T192` Reuse unexpired immutable evidence only when all dependency digests,
+  target-cluster facts, policies, and required proof dimensions are unchanged.
+- `LP-T193` Run independent affected-catalog certification Jobs concurrently
+  within reserved capacity, with isolated evidence paths and unique
+  idempotency identities.
+- `LP-T194` Add targeted five-seat recertification, scheduled full-catalog
+  regression, and an explicit rule that targeted evidence cannot replace the
+  final unchanged-candidate staging matrix.
+- `LP-T195` Publish certification duration, queue time, cache reuse, rerun
+  reason, affected dependency path, and zero-residue results in the admin UI.
+- **Gate:** an editorial-only change avoids live reprovisioning; a behavioral
+  change reruns only affected five-seat catalogs; an unchanged candidate still
+  passes the complete staging matrix with no stale evidence accepted.
 
 ### LP-E022 — Parallel convergence and earned promotion
 
@@ -640,6 +692,57 @@ each lab.**
   or justified dedicated capacity.
 - **Gate:** each promoted catalog records its deployment-class decision and
   evidence; ordinary namespace labs do not create clusters per seat.
+
+**LP-S036 — As a fleet operator, I can onboard a compatible OpenShift cluster
+quickly through one bounded, evidence-producing workflow.**
+
+- `LP-T183` Define a versioned cluster-registration contract containing API and
+  ingress identity, console, storage, registry, credential Secret reference,
+  capabilities, models, locality, cost class, compliance, and enabled state.
+- `LP-T184` Bootstrap or verify a least-privilege Launchpad service account,
+  network reachability, trust roots, and cleanup authority without retaining
+  kubeadmin credentials.
+- `LP-T185` Discover allocatable and currently available CPU, memory, pod,
+  storage, route, image, model, and operator capacity with provenance and
+  freshness timestamps.
+- `LP-T186` Run fail-closed preflights for API, ingress, DNS/TLS, registry pull,
+  storage, Console/OAuth, GitOps destination, model endpoints, and evidence
+  collection.
+- `LP-T187` Execute a canary provision, participant journey, namespace-isolation
+  probe, reclaim, and zero-residue certification before enabling placement.
+- `LP-T188` Add maintenance, quarantine, requalification, credential rotation,
+  and retirement actions with audit and rollback evidence.
+- **Gate:** a compatible cluster can move from approved credentials to
+  placement-eligible in under one operator hour, while any missing critical
+  dependency leaves it ineligible with an actionable reason.
+
+**LP-S039 — As a platform owner, I can operate one governed Launchpad service
+across on-premises, edge, disconnected, and public-cloud execution capacity.**
+
+- `LP-T203` Extend the cluster profile with provider, region, connectivity,
+  residency, sovereignty, egress, cost, disconnected, accelerator, and failure
+  domain facts without encoding provider-specific logic in catalog content.
+- `LP-T204` Adopt pull-based GitOps/ACM fleet registration and policy where it
+  improves consistency, while Launchpad remains the lifecycle and placement
+  authority.
+- `LP-T205` Define portable abstractions for ingress, storage, registry mirror,
+  identity, secrets, observability, model gateway, and cleanup across providers.
+- `LP-T206` Add deterministic placement constraints for locality, residency,
+  latency, egress cost, provider health, compliance, capacity, and workshop
+  affinity; AI may recommend but cannot create eligibility.
+- `LP-T207` Preserve the persisted `cluster_ref` through provisioning,
+  authorization, evidence, expiration, reclaim, retry, and disaster recovery;
+  never silently migrate an active seat or split a workshop.
+- `LP-T208` Prove registry, model, identity, DNS, storage, and telemetry behavior
+  during cross-provider dependency loss and degraded connectivity.
+- `LP-T209` Add provider-aware FinOps, carbon/locality reporting, quotas, and
+  explainable placement evidence without exposing participant PII.
+- `LP-T210` Certify at least two distinct provider/failure domains through
+  provision, participant journey, active-use fault, reclaim, failover, and
+  zero-residue proof.
+- **Gate:** one unchanged release operates across two materially different
+  providers with deterministic placement, retained authorization boundaries,
+  explainable cost/residency decisions, and no cross-cluster cleanup errors.
 
 ### LP-E009 — Governed AI-serving and semantic routing plane
 
@@ -1172,9 +1275,12 @@ Every story must include, as applicable:
 
 ## Immediate backlog conversion
 
-The first planning session should create tracked work for `LP-S001` through
-`LP-S006` and map every open S1 item in the pilot issue register to those
-stories. `LP-S007` onward should remain sequenced roadmap work until an owner,
-funding, and capacity allocation are recorded. This prevents the production
-architecture from displacing the immediate work needed to make the current
-catalogs repeatable.
+All 210 roadmap tasks now have explicit fail-closed status records. Immediate
+execution is governed by the ordered queue in
+[`roadmap-convergence-20260929.md`](roadmap-convergence-20260929.md): finish the
+unchanged-candidate Flightpath matrix, resolve and rerun affected five-seat
+catalogs, prove zero residue, deliver rapid cluster onboarding, impact-based
+recertification, and independently promotable Showroom content, then rerun the
+complete staging matrix. Production and hybrid-cloud work remains sequenced
+behind that earned gate unless it can proceed as a bounded stream without
+changing the candidate or consuming certification capacity.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-28T16:22:57Z",
+  "updated_at": "2026-09-29T11:16:49Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -26,6 +26,42 @@
       ],
       "note": "The retained-seat inventory is captured; immutable event closeout and approved reclaim remain open."
     },
+    "LP-T002": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T003": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T004": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
     "LP-T005": {
       "state": "green-local",
       "methods": {
@@ -45,6 +81,36 @@
         "docs/pilot-issue-feature-register-20260917.md"
       ],
       "note": "All 26 pilot items now have an accountable role, target horizon, and proof lane. Named human acceptance and explicit dependency confirmation remain open."
+    },
+    "LP-T007": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T008": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/tests/test_catalog_supply_chain.py",
+        "config/catalog-artifact-policy.yaml",
+        "evidence/runs/pilot-h0/PILOT-BUG-001-green-local.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-001-red.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json",
+        "scripts/validate_catalog_artifacts.py",
+        "evidence/runs/artifact-registry/duplicate-yaml-keys-green-local-20260921.json"
+      ],
+      "note": "A fail-closed policy now covers the three pilot catalogs, immutable Showroom commits, and five digest-pinned images. Mutable tags, unapproved repositories, missing artifacts, execution-cluster-local registries, and duplicate YAML keys (including nested keys) are rejected. Signing, SBOMs, organization-owned registry transfer, cross-cluster cold pulls, fresh-seat BDD, and GREEN-live proof remain open; retained workshops were not changed."
     },
     "LP-T009": {
       "state": "green-local",
@@ -109,6 +175,139 @@
         "content-intel-xeon6-agent-201/manifests/advisor-prompt-configmap.yaml"
       ],
       "note": "Future content selects the 8B tools model, bounds generation to 192/512 tokens, and aligns the requested brief to 350 words. Immutable content promotion, fresh-seat BDD, exact-concurrency performance evidence, and GREEN-live certification remain open; retained workshops were not changed."
+    },
+    "LP-T013": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "docs/catalog-onboarding.md",
+        "catalog-onboarding/intel-llm-cpu-serving.yaml",
+        "backend/tests/test_catalog_onboarding.py",
+        "backend/tests/test_catalog_onboarding_cli.py"
+      ],
+      "note": "The repository-owned catalog package contract defines immutable workload and Showroom sources, deployment manifests and class, image digests, model/capability requirements, participant journeys, resource envelopes, cleanup scope, certification ceilings, and supported-target evidence. Local schema and rendering tests enforce it. This closes the contract-definition task locally; promotion of a new package through the full pipeline remains open under LP-T015 and the LP-S004 gate."
+    },
+    "LP-T014": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "red",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/catalog-intake-rendered-output-v2.yaml",
+        "contracts/catalog-intake-render-attestation-v1.yaml",
+        "backend/app/services/catalog_intake_render_attestation.py",
+        "backend/tests/test_catalog_intake_render_attestation.py",
+        "scripts/check_catalog_intake_candidate.py"
+      ],
+      "note": "The catalog-intake slice now binds exact source, Helm values, manifest, renderer image, and persisted review hashes to an externally keyed authenticated producer claim. Tampering, unknown producers, weak keys, mismatched bindings, and unverified isolation fail closed. This is only GREEN-local contract/component proof: no trusted renderer identity or key is provisioned, no authentic candidate receipt exists, and the broader task still requires build, scan, SBOM, image/content signing, provenance, and live verification."
+    },
+    "LP-T015": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T016": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T017": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "edd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        ".github/workflows/ci.yml",
+        "Makefile",
+        "evidence/runs/pilot-h1/PILOT-FEAT-001-green-local.xml",
+        "evidence/runs/pilot-h1/PILOT-FEAT-001-red.xml",
+        "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json",
+        "evidence/runs/artifact-registry/release-subject-binding-green-local-20260921.json",
+        "evidence/runs/artifact-registry/release-sbom-scan-binding-green-local-20260921.json",
+        "scripts/validate_catalog_artifacts.py"
+      ],
+      "note": "The artifact subset of the promotion gate is GREEN-local: CI and local gates reject mutable, missing, unapproved, execution-cluster-local, wrong-component, dirty-source, and credential-bearing releases. A versioned receipt requires vulnerability, SBOM, signature, provenance, license, architecture, builder, and retention evidence. Scan, SBOM, signature, and provenance subjects must match the exact release image; provenance source/build fields must match the release receipt; missing or malformed critical/high scan counts cannot pass as zero. These are declared-field consistency checks, not authentic artifact or cryptographic verification. Secret and supported-model gates plus authentic publication, signing, restore, cross-cluster cold-pull, rollback, and GREEN-live proof remain open; retained workshops were not changed."
+    },
+    "LP-T018": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/artifact-registry/contract-green-local-20260920.json",
+        "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json"
+      ],
+      "note": "Quay is selected as the provisional authoritative image origin with dedicated component repositories, scoped credential roles, immutable-release controls, retention guards, a source-to-image evidence contract, destination qualification requirements, and fail-closed validators. A read-only check found local Quay authentication but no readable release tags at the six proposed component paths; repository existence and administrative rights were not inferred. Production remains ineligible until organization ownership, dedicated repository grants, signing identity, authentic SBOM/provenance, restore evidence, and exact-digest cold-pull/cache-loss certification are GREEN-live on each eligible cluster."
+    },
+    "LP-T019": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/artifact-registry/destination-qualification-green-local-20260920.json"
+      ],
+      "note": "A versioned offline destination-qualification contract now rejects missing or failed credential, certificate, architecture, signature, exact-digest, cold-pull, and cache-loss proof. It also rejects mutable or wrong-origin images, unsupported architectures, and receipts containing credential values. This is GREEN-local contract evidence only: Arena, Brutus, Flightpath, and Oberon remain RED until authentic integration and GREEN-live receipts are captured."
+    },
+    "LP-T020": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/artifact-registry/prepull-contract-green-local-20260920.json",
+        "backend/tests/test_artifact_prepull.py",
+        "contracts/event-artifact-prepull-v1.yaml",
+        "backend/app/services/artifact_prepull_attestation.py",
+        "backend/tests/test_artifact_prepull_attestation.py",
+        "contracts/event-artifact-prepull-attestation-v1.yaml",
+        "docs/event-artifact-prepull-attestation.md",
+        "backend/app/services/artifact_prepull_evidence.py",
+        "backend/tests/test_artifact_prepull_evidence.py",
+        "contracts/event-artifact-prepull-evidence-v1.yaml",
+        "docs/event-artifact-prepull-evidence.md"
+      ],
+      "note": "A versioned offline scheduled-event pre-pull contract creates an immutable, deduplicated exact-digest plan by assigned cluster. Local adapters verify a designated producer MAC, bounded per-node proof bytes and hashes, claim identity, separately supplied node-roster source and freshness, and observation timing. The producer and roster are not independently deployed or authenticated here, and proof bytes can still contain false claims. This remains GREEN-local only: no pull ran, no live producer or admission wiring exists, and authentic integration/live cache-loss recovery remain open."
     },
     "LP-T021": {
       "state": "green-local",
@@ -206,337 +405,6 @@
         "fixtures/events/september-17-2026.yaml"
       ],
       "note": "The v1.5 event contract uses a server-owned catalog-by-cluster certification matrix and records both its immutable ID and SHA-256 source digest in every preview and persisted decision. The file provider accepts only versioned evidence with two distinct approvers, a timezone-aware approval timestamp, and unique evidence references; absent configuration yields unconfigured zero capacity, while an explicitly configured missing or invalid document returns 503. The manifest explicitly versions the current single_cluster_per_workshop policy. A bounded deterministic allocator treats every cohort x lab pair as one atomic workshop and enforces exact releases, named model IDs, capabilities, exposure, catalog-cell ceilings, and cluster ceilings. A catalog's model requirement cannot be omitted from the approved event, and an exact model missing from the selected cluster blocks preview and reservation. Disabled, DR-reserved, and uncertified capacity remain non-placeable. The admin-only read-only Events surface includes a multidimensional admission forecast comparing approved demand with active holds; it blocks evidence drift, stale fleet snapshots, expired holds, missing releases/capabilities, and overcommit without creating reservations. Model-dependent reservations require fresh server-owned runtime model health. Local components now include a signed promoted-release adapter, eligible-node adapter, future-only event namespace identity, a read-only Kubernetes inventory observer, and a fail-closed in-flight collector boundary, plus a pure guard seam tested under ledger locks. Current registry policy remains provisional; trusted placement-policy, model-slot, persisted-workshop, and live inventory evidence producers remain absent, and current live seat namespaces lack consistent reservation/seat identity labels. The collector CLI intentionally writes nothing. Artifact/in-flight gates and the guard are NOT enabled for orders; live proof remains open. Current labs were not touched."
-    },
-    "LP-T069": {
-      "state": "green-local",
-      "methods": {
-        "edd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "docs/active-seat-inventory-20260917.md",
-        "backend/tests/test_reclaim_readiness.py",
-        "backend/app/services/reclaim_inventory_collector.py",
-        "backend/tests/test_reclaim_inventory_collector.py",
-        "docs/reclaim-inventory-collector-local.md",
-        "backend/app/services/reclaim_paginated_source.py",
-        "backend/tests/test_reclaim_paginated_source.py",
-        "docs/reclaim-paginated-source-contract.md",
-        "evidence/runs/pilot-closeout/retained-workshops-20260921.json",
-        "backend/app/services/retained_inventory_evidence.py",
-        "backend/tests/test_retained_inventory_evidence.py",
-        "evidence/runs/pilot-closeout/retained-evidence-validation-20260921.json",
-        "backend/app/services/reclaim_live_source.py",
-        "backend/tests/test_reclaim_live_source.py",
-        "evidence/runs/pilot-closeout/reclaim-live-source-local-20260921.json",
-        "evidence/runs/staging-convergence/local-streams-20260921.json"
-      ],
-      "note": "The September 21 interim refresh count-balanced nine retained workshops and 270 ready sessions against 270 workshop-labeled namespaces; 196 entitlements were active. Exact read-only matching passed for all 240 Arena and Flightpath seats. Brutus's 30 remain unverified because its API refused connections from both operator and control plane. The new local-only source reads a PostgreSQL repeatable-read, read-only roster and twice scans paginated namespaces through target-specific clients, emitting no partial inventory on failure; its focused and regression tests pass. It is not wired to any scheduler, API, or reclaim action and has not passed a live whole-fleet run. Independent T-30 resource/entitlement/orphan evidence and approval remain required after retention expires."
-    },
-    "LP-T070": {
-      "state": "green-local",
-      "methods": {
-        "edd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "docs/active-seat-inventory-20260917.md",
-        "backend/app/services/reclaim_readiness.py",
-        "backend/tests/test_reclaim_readiness.py",
-        "docs/reclaim-readiness-local-contract.md",
-        "evidence/runs/pilot-closeout/retained-workshops-20260921.json"
-      ],
-      "note": "The September 17 claims, expiry, readiness, routes, restarts, models, and resource counts were captured. The September 21 interim refresh recorded 196 active entitlements and current persisted expiration timestamps without modifying retained labs. The local balance check and interim refresh are not a fresh T-30 inventory, reclaim authorization, or zero-residue proof; the approved lifecycle test remains open."
-    },
-    "LP-T084": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "cdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "evidence/runs/pilot-h0/PILOT-BUG-013-red.xml",
-        "evidence/runs/pilot-h0/PILOT-BUG-013-green-local.xml",
-        "backend/tests/test_multi_agent_seat_chart.py",
-        "deploy/launchpad/overlays/arena/buildconfig.yaml"
-      ],
-      "note": "The future-image build now authenticates agent discovery and fails closed when the patch is absent. Upstream source correction, image promotion, fresh-seat BDD, concurrent proof, and GREEN-live certification remain open; retained workshops were not changed."
-    },
-    "LP-T085": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local"
-      },
-      "evidence": [
-        "docs/product-delivery-roadmap.md"
-      ],
-      "note": "The initial Experience Wardrobe contract is specified; implementation and participant proof remain open."
-    },
-    "LP-T095": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local",
-        "tdd": "green-local"
-      },
-      "evidence": [
-        "docs/product-delivery-roadmap.md",
-        "docs/stargate-product-telemetry-contract.md",
-        "evidence/runs/catalog/operate-agentic-blueprint-correlation-green-local-20260928.json"
-      ],
-      "note": "The privacy-safe guided-step event family and correlation contract are specified, and the canonical multi-agent source now emits all six required correlation fields with generated-or-preserved identities under unit, contract, integration, and pre-commit proof at commit de864e8. The certified Flightpath image remains unchanged. Image publication, durable delivery, consumer receipts, learner-visible correlation, and repeated live-scale certification remain open, so this task stays GREEN-local."
-    },
-    "LP-T008": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "cdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "backend/tests/test_catalog_supply_chain.py",
-        "config/catalog-artifact-policy.yaml",
-        "evidence/runs/pilot-h0/PILOT-BUG-001-green-local.xml",
-        "evidence/runs/pilot-h0/PILOT-BUG-001-red.xml",
-        "evidence/runs/pilot-h0/PILOT-BUG-001-supply-chain-report.json",
-        "scripts/validate_catalog_artifacts.py",
-        "evidence/runs/artifact-registry/duplicate-yaml-keys-green-local-20260921.json"
-      ],
-      "note": "A fail-closed policy now covers the three pilot catalogs, immutable Showroom commits, and five digest-pinned images. Mutable tags, unapproved repositories, missing artifacts, execution-cluster-local registries, and duplicate YAML keys (including nested keys) are rejected. Signing, SBOMs, organization-owned registry transfer, cross-cluster cold pulls, fresh-seat BDD, and GREEN-live proof remain open; retained workshops were not changed."
-    },
-    "LP-T017": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "cdd": "green-local",
-        "edd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        ".github/workflows/ci.yml",
-        "Makefile",
-        "evidence/runs/pilot-h1/PILOT-FEAT-001-green-local.xml",
-        "evidence/runs/pilot-h1/PILOT-FEAT-001-red.xml",
-        "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json",
-        "evidence/runs/artifact-registry/release-subject-binding-green-local-20260921.json",
-        "evidence/runs/artifact-registry/release-sbom-scan-binding-green-local-20260921.json",
-        "scripts/validate_catalog_artifacts.py"
-      ],
-      "note": "The artifact subset of the promotion gate is GREEN-local: CI and local gates reject mutable, missing, unapproved, execution-cluster-local, wrong-component, dirty-source, and credential-bearing releases. A versioned receipt requires vulnerability, SBOM, signature, provenance, license, architecture, builder, and retention evidence. Scan, SBOM, signature, and provenance subjects must match the exact release image; provenance source/build fields must match the release receipt; missing or malformed critical/high scan counts cannot pass as zero. These are declared-field consistency checks, not authentic artifact or cryptographic verification. Secret and supported-model gates plus authentic publication, signing, restore, cross-cluster cold-pull, rollback, and GREEN-live proof remain open; retained workshops were not changed."
-    },
-    "LP-T114": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "contracts/delivery-streams-v1.yaml",
-        "docs/parallel-agentic-delivery.md",
-        "evidence/runs/delivery-governance/red.xml",
-        "evidence/runs/delivery-governance/green-local.xml"
-      ],
-      "note": "Fourteen bounded streams, a four-stream initial WIP limit, entry/exit gates, unique ownership, and live-mutation prohibitions are executable and GREEN-local. Human owner assignment and integration use remain open."
-    },
-    "LP-T115": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "contracts/delivery-streams-v1.yaml",
-        "scripts/tests/test_validate_delivery_governance.py",
-        "evidence/runs/delivery-governance/report.json"
-      ],
-      "note": "Fourteen shared contracts have one owner, registered consumers, versions, and repository authorities; live consumer compatibility remains open."
-    },
-    "LP-T116": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "certification/convergence-matrix-v1.yaml",
-        "scripts/validate_delivery_governance.py",
-        "evidence/runs/delivery-governance/report.json"
-      ],
-      "note": "Twenty-three cross-stream scenarios join all five proof methods with usability, security, capacity, performance, operability, data governance, organizational readiness, OSS readiness, fault, cleanup, observability, and release dimensions. All scenarios correctly remain RED pending implementation evidence."
-    },
-    "LP-T117": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "contracts/delivery-streams-v1.yaml",
-        "docs/parallel-agentic-delivery.md",
-        "scripts/validate_delivery_governance.py"
-      ],
-      "note": "Stream-local, contract, product/capacity, and emergency/live pivots have stable required records and approval boundaries. A real pivot exercise remains open."
-    },
-    "LP-T118": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        ".github/workflows/ci.yml",
-        "Makefile",
-        "scripts/validate_delivery_governance.py",
-        "scripts/tests/test_validate_delivery_governance.py",
-        "evidence/runs/delivery-governance/green-local.xml",
-        "evidence/runs/catalog-intake-ci-receipt/green-local-20260921.json"
-      ],
-      "note": "The local fail-closed governance gate and CI step are defined. Every registered contract requires a focused producer-consumer convergence scenario; the omnibus release scenario alone cannot satisfy it. The backend CI test receipt now uses the exact test run's JUnit XML and outcome, failing closed for missing, failed, invalid, or all-skipped evidence instead of rerunning a different suite and hard-coding zero failures. Remote CI execution and deployed integration proof are required before GREEN-integration."
-    },
-    "LP-T120": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local"
-      },
-      "evidence": [
-        "contracts/production-readiness-v1.yaml",
-        "certification/convergence-matrix-v1.yaml"
-      ],
-      "note": "The production test profile and fail-closed release rules are versioned. Service-specific thresholds, harnesses, and executed evidence remain open."
-    },
-    "LP-T128": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local"
-      },
-      "evidence": [
-        "contracts/sre-operating-model-v1.yaml",
-        "certification/convergence-matrix-v1.yaml"
-      ],
-      "note": "The SLI, SLO, error-budget, synthetic, incident, telemetry, and ownership contract is versioned. Implemented service levels and game-day evidence remain open."
-    },
-    "LP-T136": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local"
-      },
-      "evidence": [
-        "contracts/data-ai-governance-v1.yaml",
-        "certification/convergence-matrix-v1.yaml"
-      ],
-      "note": "The data, AI, legal, licensing, privacy, and responsible-use control contract is versioned. Inventory, owner acceptance, and executed controls remain open."
-    },
-    "LP-T144": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local"
-      },
-      "evidence": [
-        "contracts/gtm-value-attribution-v1.yaml",
-        "certification/convergence-matrix-v1.yaml"
-      ],
-      "note": "The privacy-safe GTM entity, funnel, attribution, commercialization, and claim contract is versioned. CRM ownership, consent implementation, and field proof remain open."
-    },
-    "LP-T154": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local"
-      },
-      "evidence": [
-        "contracts/organizational-readiness-v1.yaml",
-        "certification/convergence-matrix-v1.yaml"
-      ],
-      "note": "The organizational ownership, qualification, knowledge continuity, workforce, and non-author proof contract is versioned. Named owners, curricula, staffing, drills, and live continuity evidence remain open."
-    },
-    "LP-T163": {
-      "state": "green-local",
-      "methods": {
-        "cdd": "green-local"
-      },
-      "evidence": [
-        "contracts/oss-distribution-v1.yaml",
-        "certification/convergence-matrix-v1.yaml"
-      ],
-      "note": "The public/private boundary, sanitation, legal, community, reproducibility, and enterprise-compatibility contract is versioned. Repository sanitation, legal review, public release assets, and executed compatibility proof remain open."
-    },
-    "LP-T036": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "backend/tests/test_acm_placement_adapter.py",
-        "contracts/acm-placement-v1.yaml",
-        "docs/acm-launchpad-architecture-decision.md",
-        "evidence/runs/acm-placement-adapter/green-local.xml",
-        "evidence/runs/acm-placement-adapter/red-local.xml"
-      ],
-      "note": "The local ACM v1 adapter contract establishes Red Hat Advanced Cluster Management as the fleet candidate and governance boundary without replacing Launchpad admission. It reads v1beta1 PlacementDecisions and v1 ManagedClusters, requires both availability and hub acceptance, deduplicates shards, records labels/claims/rejections, hashes the exact observed decision inputs, and excludes credentials and certified seat capacity. ACM candidates must still be intersected with the approved Launchpad capacity matrix and reservations. Local RED/GREEN evidence exists; hub installation, managed-cluster import, policy deployment, GitOps integration, stale-snapshot policy, integration proof, and live proof remain open."
-    },
-    "LP-T038": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "backend/app/services/event_admission.py",
-        "backend/tests/test_event_reservation_api.py",
-        "backend/tests/test_event_reservation_workshop_bridge.py",
-        "docs/acm-launchpad-architecture-decision.md",
-        "evidence/runs/acm-capacity-intersection/green-local.xml",
-        "evidence/runs/acm-capacity-intersection/red-local.xml",
-        "evidence/runs/event-reservation-api/green-local.xml",
-        "evidence/runs/event-reservation-consumption/green-local.xml"
-      ],
-      "note": "The local admission join persists final cluster_ref and the lifecycle bridge now refuses to recalculate or change that target. Reserved workshop creation and pre-provision validation bind the deterministic workshop ID, catalog release, seat count, and selected cluster; a 30-seat synthetic run placed every session on the persisted target. Ranking/scoring policy, event-wide queue integration, ACM hub integration, and GREEN-live proof remain open; no active workshop was changed."
-    },
-    "LP-T037": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "backend/app/services/event_reservations.py",
-        "backend/tests/test_event_reservation_api.py",
-        "backend/tests/test_event_reservation_workshop_bridge.py",
-        "contracts/event-reservation-v1.yaml",
-        "docs/event-capacity-matrix.md",
-        "evidence/runs/event-reservation-api/green-local.xml",
-        "evidence/runs/event-reservation-api/red-local.xml",
-        "evidence/runs/event-reservation-consumption/green-local.xml",
-        "evidence/runs/event-reservation-consumption/red-local.xml",
-        "evidence/runs/event-reservation-ledger/green-local.xml",
-        "evidence/runs/event-reservation-ledger/red-local.xml"
-      ],
-      "note": "The Git-local reservation boundary now covers approval, aggregate holds, one-to-one lifecycle consumption, and cleanup-evidenced release. A held allocation binds idempotently to one deterministic workshop only when event, immutable catalog release, seats, and cluster_ref match. Expired, released, cross-cluster, changed-seat, changed-release, or differently bound consumption fails closed. Consumed holds remain capacity-consuming until cleanup proof. Local RED/GREEN, PostgreSQL adapter component, tamper, and 30-seat synthetic lifecycle evidence exists. Real PostgreSQL concurrency, event-wide orchestration/recovery, reconciliation, and GREEN-live proof remain open; no live workshops were changed."
     },
     "LP-T022": {
       "state": "green-local",
@@ -649,6 +517,90 @@
       ],
       "note": "HA readiness rejects process-local state, and keyed workshop creation now uses a PostgreSQL transaction-scoped advisory lock plus the existing tenant/key uniqueness constraint. Concurrent API service instances converge on one workshop ID; conflicting payloads return an idempotency conflict. Focused local contracts are green and a PostgreSQL concurrency test is present but awaits EVENT_TEST_DATABASE_URL execution. Live multi-replica fault injection and failure-domain certification remain open."
     },
+    "LP-T026": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T027": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T028": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T029": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T030": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T031": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T032": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
     "LP-T033": {
       "state": "green-integration",
       "methods": {
@@ -681,41 +633,31 @@
       ],
       "note": "Flightpath isolated stage proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. The September 27 read-only staging audit found no participant namespaces and all 341 session records reclaimed, but also found five enabled expired access policies and two expired entitlements still marked active. A new GREEN-local, idempotent reconciliation sweep disables expired policies, expires entitlements, revokes final sessions, and disables identities even when no active session remains; 55 focused public-access and lifecycle tests pass. It is not deployed, so the stale live counts remain open. A GREEN-local participant gateway contract returns retryable 503 on upstream transport failure rather than a false empty-labs state. This remains GREEN-integration: deploy the cleanup sweep and prove zero stale records, complete realm/client/browser and namespace-RBAC journeys, correct candidate admin DNS, publish a dependency-policy-compliant Keycloak image, certify PostgreSQL HA, and complete external load, live failover, and soak."
     },
-    "LP-T018": {
-      "state": "green-local",
+    "LP-T034": {
+      "state": "red",
       "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
       },
-      "evidence": [
-        "evidence/runs/artifact-registry/contract-green-local-20260920.json",
-        "evidence/runs/artifact-registry/release-evidence-green-local-20260921.json"
-      ],
-      "note": "Quay is selected as the provisional authoritative image origin with dedicated component repositories, scoped credential roles, immutable-release controls, retention guards, a source-to-image evidence contract, destination qualification requirements, and fail-closed validators. A read-only check found local Quay authentication but no readable release tags at the six proposed component paths; repository existence and administrative rights were not inferred. Production remains ineligible until organization ownership, dedicated repository grants, signing identity, authentic SBOM/provenance, restore evidence, and exact-digest cold-pull/cache-loss certification are GREEN-live on each eligible cluster."
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
-    "LP-T097": {
-      "state": "green-local",
+    "LP-T035": {
+      "state": "red",
       "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
       },
-      "evidence": [
-        "evidence/runs/catalog-intake-discovery-bridge/manifest.json",
-        "evidence/runs/catalog-intake-discovery-worker/manifest.json",
-        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
-        "evidence/runs/catalog-intake-quality/manifest.json",
-        "evidence/runs/catalog-intake-readme-source/manifest.json",
-        "evidence/runs/catalog-intake/static-inventory-green-local-20260920.json"
-      ],
-      "note": "The generic Quickstart discovery path now has a corrected first new-repository proof: hybrid-fraud-detection at immutable candidate revision aa5c4e1c686bbecd70b17f4c4e27d26f033966e4 passed credential-free remote discovery, Showroom build, and contract validation. Source authoring is GREEN-local with 55 tests, lint, Helm render, container build, Antora build, local UI/scorer smoke, secret scan, and all eight GitHub workflow jobs passing. It remains a non-orderable internal one-seat draft until image, resource, runtime, and live certification gates are earned; the source default branch and all live environments remain unchanged."
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
-    "LP-T102": {
+    "LP-T036": {
       "state": "green-local",
       "methods": {
         "tdd": "green-local",
@@ -725,9 +667,288 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "evidence/runs/event-capacity-reconciliation/manifest.json"
+        "backend/tests/test_acm_placement_adapter.py",
+        "contracts/acm-placement-v1.yaml",
+        "docs/acm-launchpad-architecture-decision.md",
+        "evidence/runs/acm-placement-adapter/green-local.xml",
+        "evidence/runs/acm-placement-adapter/red-local.xml"
       ],
-      "note": "The September 17 manifest and recorded postmortem now reconcile through a versioned offline contract: 3 cohorts, 90 participants, 9 workshops, and 270 seat-environments forecast and provisioned, with 191 claimed and 79 unclaimed. Missing reservation, resource, model, queue, and cache measurements remain explicitly unavailable rather than being represented as zero. This is GREEN-local recorded-data evidence only; live measurement, atomic reservation, admission, and capacity release remain open."
+      "note": "The local ACM v1 adapter contract establishes Red Hat Advanced Cluster Management as the fleet candidate and governance boundary without replacing Launchpad admission. It reads v1beta1 PlacementDecisions and v1 ManagedClusters, requires both availability and hub acceptance, deduplicates shards, records labels/claims/rejections, hashes the exact observed decision inputs, and excludes credentials and certified seat capacity. ACM candidates must still be intersected with the approved Launchpad capacity matrix and reservations. Local RED/GREEN evidence exists; hub installation, managed-cluster import, policy deployment, GitOps integration, stale-snapshot policy, integration proof, and live proof remain open."
+    },
+    "LP-T037": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/app/services/event_reservations.py",
+        "backend/tests/test_event_reservation_api.py",
+        "backend/tests/test_event_reservation_workshop_bridge.py",
+        "contracts/event-reservation-v1.yaml",
+        "docs/event-capacity-matrix.md",
+        "evidence/runs/event-reservation-api/green-local.xml",
+        "evidence/runs/event-reservation-api/red-local.xml",
+        "evidence/runs/event-reservation-consumption/green-local.xml",
+        "evidence/runs/event-reservation-consumption/red-local.xml",
+        "evidence/runs/event-reservation-ledger/green-local.xml",
+        "evidence/runs/event-reservation-ledger/red-local.xml"
+      ],
+      "note": "The Git-local reservation boundary now covers approval, aggregate holds, one-to-one lifecycle consumption, and cleanup-evidenced release. A held allocation binds idempotently to one deterministic workshop only when event, immutable catalog release, seats, and cluster_ref match. Expired, released, cross-cluster, changed-seat, changed-release, or differently bound consumption fails closed. Consumed holds remain capacity-consuming until cleanup proof. Local RED/GREEN, PostgreSQL adapter component, tamper, and 30-seat synthetic lifecycle evidence exists. Real PostgreSQL concurrency, event-wide orchestration/recovery, reconciliation, and GREEN-live proof remain open; no live workshops were changed."
+    },
+    "LP-T038": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "backend/app/services/event_admission.py",
+        "backend/tests/test_event_reservation_api.py",
+        "backend/tests/test_event_reservation_workshop_bridge.py",
+        "docs/acm-launchpad-architecture-decision.md",
+        "evidence/runs/acm-capacity-intersection/green-local.xml",
+        "evidence/runs/acm-capacity-intersection/red-local.xml",
+        "evidence/runs/event-reservation-api/green-local.xml",
+        "evidence/runs/event-reservation-consumption/green-local.xml"
+      ],
+      "note": "The local admission join persists final cluster_ref and the lifecycle bridge now refuses to recalculate or change that target. Reserved workshop creation and pre-provision validation bind the deterministic workshop ID, catalog release, seat count, and selected cluster; a 30-seat synthetic run placed every session on the persisted target. Ranking/scoring policy, event-wide queue integration, ACM hub integration, and GREEN-live proof remain open; no active workshop was changed."
+    },
+    "LP-T039": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T040": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T041": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T042": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T043": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T044": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T045": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T046": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T047": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T048": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T049": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T050": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T051": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T052": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T053": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T054": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T055": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T056": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T057": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/security-threat-model/evidence.json"
+      ],
+      "note": "The repository-owned threat model now validates all seven required surfaces, eight trust boundaries, nine assets, twelve controls, fourteen threats, twenty-one verification cases, fifty evidence links, ownership, and unresolved-risk gates. Six high risks and five planned verifications correctly keep release ineligible; independent review and live security certification remain open."
     },
     "LP-T058": {
       "state": "green-local",
@@ -752,7 +973,501 @@
       ],
       "note": "Local requester and operations response contracts redact credential-shaped and diagnostic metadata keys in request, session, workshop, and nested seat records without changing persisted data. Validation, cleanup, seat, admin observability, endpoint-probe, capacity, and cluster-inspection provider errors use stable public messages; service exception bodies use status-preserving generic text, and the unused raw container-log browser API is denied. One-time instructor codes remain creation-only. The pilot operator log-access boundary is documented, but a future support UI is not implemented. This remains GREEN-local: other telemetry, credential rotation, durable audit controls, signing, live policy enforcement, independent review, and abuse tests remain release-blocking."
     },
-    "LP-T019": {
+    "LP-T059": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T060": {
+      "state": "red",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "red",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/vef-aggregate-receipt-v1.yaml",
+        "backend/app/services/vef_telemetry_aggregation.py",
+        "backend/tests/test_vef_telemetry_aggregation.py"
+      ],
+      "note": "VEF can ingest and reconcile sanitized aggregate lifecycle, usage, and cost receipts, but Launchpad does not yet meter authoritative consumed CPU, memory, storage, network, artifact, public-edge, or per-model usage. The task remains RED; the new work establishes only the fail-closed receiving contract."
+    },
+    "LP-T061": {
+      "state": "red",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "red",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "schemas/vef/launchpad-pilot-input.v1alpha2.schema.json",
+        "schemas/vef/launchpad-pilot-claim.v1alpha2.schema.json",
+        "scripts/vef_export_pilot.py",
+        "backend/tests/test_vef_pilot.py",
+        "docs/vef-pilot.md"
+      ],
+      "note": "VEF v1alpha2 now separates shared platform, delivery, allocated inference, and unallocated cost and fails closed on unknown allocation, missing cost-center mapping, or absent finance approval. No approved rate card, budget, quota, cost-center mapping, invoice reconciliation, or chargeback policy exists, so the task remains RED."
+    },
+    "LP-T062": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T063": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T064": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T065": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T066": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T067": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T068": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T069": {
+      "state": "green-local",
+      "methods": {
+        "edd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "docs/active-seat-inventory-20260917.md",
+        "backend/tests/test_reclaim_readiness.py",
+        "backend/app/services/reclaim_inventory_collector.py",
+        "backend/tests/test_reclaim_inventory_collector.py",
+        "docs/reclaim-inventory-collector-local.md",
+        "backend/app/services/reclaim_paginated_source.py",
+        "backend/tests/test_reclaim_paginated_source.py",
+        "docs/reclaim-paginated-source-contract.md",
+        "evidence/runs/pilot-closeout/retained-workshops-20260921.json",
+        "backend/app/services/retained_inventory_evidence.py",
+        "backend/tests/test_retained_inventory_evidence.py",
+        "evidence/runs/pilot-closeout/retained-evidence-validation-20260921.json",
+        "backend/app/services/reclaim_live_source.py",
+        "backend/tests/test_reclaim_live_source.py",
+        "evidence/runs/pilot-closeout/reclaim-live-source-local-20260921.json",
+        "evidence/runs/staging-convergence/local-streams-20260921.json"
+      ],
+      "note": "The September 21 interim refresh count-balanced nine retained workshops and 270 ready sessions against 270 workshop-labeled namespaces; 196 entitlements were active. Exact read-only matching passed for all 240 Arena and Flightpath seats. Brutus's 30 remain unverified because its API refused connections from both operator and control plane. The new local-only source reads a PostgreSQL repeatable-read, read-only roster and twice scans paginated namespaces through target-specific clients, emitting no partial inventory on failure; its focused and regression tests pass. It is not wired to any scheduler, API, or reclaim action and has not passed a live whole-fleet run. Independent T-30 resource/entitlement/orphan evidence and approval remain required after retention expires."
+    },
+    "LP-T070": {
+      "state": "green-local",
+      "methods": {
+        "edd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "docs/active-seat-inventory-20260917.md",
+        "backend/app/services/reclaim_readiness.py",
+        "backend/tests/test_reclaim_readiness.py",
+        "docs/reclaim-readiness-local-contract.md",
+        "evidence/runs/pilot-closeout/retained-workshops-20260921.json"
+      ],
+      "note": "The September 17 claims, expiry, readiness, routes, restarts, models, and resource counts were captured. The September 21 interim refresh recorded 196 active entitlements and current persisted expiration timestamps without modifying retained labs. The local balance check and interim refresh are not a fresh T-30 inventory, reclaim authorization, or zero-residue proof; the approved lifecycle test remains open."
+    },
+    "LP-T071": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T072": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T073": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T074": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "red",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/vef-receipt-ledger-v1.yaml",
+        "backend/app/services/vef_receipt_ledger.py",
+        "backend/tests/test_vef_receipt_ledger.py"
+      ],
+      "note": "A local SQLite component proves atomic complete-batch persistence, exact idempotent replay, conflicting-replay rejection, and externally keyed tamper-evident chaining for sanitized VEF receipts. It is not the required production outbox: multi-replica fencing, PostgreSQL, publisher receipts, cursors, retries, dead-letter handling, retention, restore, and failure injection remain open."
+    },
+    "LP-T075": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T076": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T077": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T078": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T079": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T080": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T081": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T082": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T083": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T084": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/pilot-h0/PILOT-BUG-013-red.xml",
+        "evidence/runs/pilot-h0/PILOT-BUG-013-green-local.xml",
+        "backend/tests/test_multi_agent_seat_chart.py",
+        "deploy/launchpad/overlays/arena/buildconfig.yaml"
+      ],
+      "note": "The future-image build now authenticates agent discovery and fails closed when the patch is absent. Upstream source correction, image promotion, fresh-seat BDD, concurrent proof, and GREEN-live certification remain open; retained workshops were not changed."
+    },
+    "LP-T085": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "docs/product-delivery-roadmap.md"
+      ],
+      "note": "The initial Experience Wardrobe contract is specified; implementation and participant proof remain open."
+    },
+    "LP-T086": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T087": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T088": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T089": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T090": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T091": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T092": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T093": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T094": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T095": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local",
+        "tdd": "green-local"
+      },
+      "evidence": [
+        "docs/product-delivery-roadmap.md",
+        "docs/stargate-product-telemetry-contract.md",
+        "evidence/runs/catalog/operate-agentic-blueprint-correlation-green-local-20260928.json"
+      ],
+      "note": "The privacy-safe guided-step event family and correlation contract are specified, and the canonical multi-agent source now emits all six required correlation fields with generated-or-preserved identities under unit, contract, integration, and pre-commit proof at commit de864e8. The certified Flightpath image remains unchanged. Image publication, durable delivery, consumer receipts, learner-visible correlation, and repeated live-scale certification remain open, so this task stays GREEN-local."
+    },
+    "LP-T096": {
+      "state": "green-integration",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-integration",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "evidence/runs/admin-catalog-intake-ui/manifest.json",
+        "evidence/runs/catalog-intake-durability/green-integration.json",
+        "evidence/runs/catalog-intake-pipeline/manifest.json",
+        "evidence/runs/catalog-intake-submission/green-local.json"
+      ],
+      "note": "Pinned Quickstart submissions now persist as durable, content-addressed PostgreSQL drafts and are visible through a repo-first admin workflow and read-only gated pipeline. Disposable PostgreSQL proved restart persistence and four-way concurrent convergence. Repository discovery execution and promotion remain disabled."
+    },
+    "LP-T097": {
       "state": "green-local",
       "methods": {
         "tdd": "green-local",
@@ -762,9 +1477,14 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "evidence/runs/artifact-registry/destination-qualification-green-local-20260920.json"
+        "evidence/runs/catalog-intake-discovery-bridge/manifest.json",
+        "evidence/runs/catalog-intake-discovery-worker/manifest.json",
+        "evidence/runs/catalog-intake-hybrid-fraud/green-local.json",
+        "evidence/runs/catalog-intake-quality/manifest.json",
+        "evidence/runs/catalog-intake-readme-source/manifest.json",
+        "evidence/runs/catalog-intake/static-inventory-green-local-20260920.json"
       ],
-      "note": "A versioned offline destination-qualification contract now rejects missing or failed credential, certificate, architecture, signature, exact-digest, cold-pull, and cache-loss proof. It also rejects mutable or wrong-origin images, unsupported architectures, and receipts containing credential values. This is GREEN-local contract evidence only: Arena, Brutus, Flightpath, and Oberon remain RED until authentic integration and GREEN-live receipts are captured."
+      "note": "The generic Quickstart discovery path now has a corrected first new-repository proof: hybrid-fraud-detection at immutable candidate revision aa5c4e1c686bbecd70b17f4c4e27d26f033966e4 passed credential-free remote discovery, Showroom build, and contract validation. Source authoring is GREEN-local with 55 tests, lint, Helm render, container build, Antora build, local UI/scorer smoke, secret scan, and all eight GitHub workflow jobs passing. It remains a non-orderable internal one-seat draft until image, resource, runtime, and live certification gates are earned; the source default branch and all live environments remain unchanged."
     },
     "LP-T098": {
       "state": "green-local",
@@ -829,89 +1549,25 @@
       ],
       "note": "Fail-closed intake behavior is now proven for Agent Reliability: immutable source revisions and digest-pinned workload, draft status, internal-only exposure, one-seat ceiling, explicit model/capability contract, exact activation blockers, and no catalog drift. Historical 1/5/25 evidence is retained only as context and does not promote the corrected candidate. Static model-endpoint and unparsed Helm findings remain blocking until isolated target render and one-seat live evidence are captured."
     },
-    "LP-T104": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "evidence/runs/capacity-admission-postgres/manifest.json",
-        "evidence/runs/capacity-admission/manifest.json"
-      ],
-      "note": "Whole-workshop admission is proven locally for infrastructure and exact model-release envelopes, stable idempotency, atomic rejection, and evidence-gated release. PostgreSQL serializable transactions and advisory locks additionally prove cross-process competing orders, durable accepted/rejected decisions, idempotent retries, and capacity reuse against a disposable database. Production migration, API/lifecycle wiring, live supply, failover, provisioning, and reclaim certification remain open."
-    },
-    "LP-T106": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "evidence/runs/capacity-admission/manifest.json"
-      ],
-      "note": "The offline aggregate admission contract proves whole-workshop accept/reject, infrastructure and exact model-release envelopes, stable idempotency, thread-level concurrent overbook protection, evidence-gated capacity release, and dimensioned reconciliation. This is GREEN-local only: the ledger is process-local, supply is test input, and durable database serialization, live collectors, provisioning joins, actual usage, and runtime model queues remain open."
-    },
-    "LP-T057": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "evidence/runs/security-threat-model/evidence.json"
-      ],
-      "note": "The repository-owned threat model now validates all seven required surfaces, eight trust boundaries, nine assets, twelve controls, fourteen threats, twenty-one verification cases, fifty evidence links, ownership, and unresolved-risk gates. Six high risks and five planned verifications correctly keep release ineligible; independent review and live security certification remain open."
-    },
-    "LP-T020": {
-      "state": "green-local",
-      "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "green-local",
-        "cbt": "green-local"
-      },
-      "evidence": [
-        "evidence/runs/artifact-registry/prepull-contract-green-local-20260920.json",
-        "backend/tests/test_artifact_prepull.py",
-        "contracts/event-artifact-prepull-v1.yaml",
-        "backend/app/services/artifact_prepull_attestation.py",
-        "backend/tests/test_artifact_prepull_attestation.py",
-        "contracts/event-artifact-prepull-attestation-v1.yaml",
-        "docs/event-artifact-prepull-attestation.md",
-        "backend/app/services/artifact_prepull_evidence.py",
-        "backend/tests/test_artifact_prepull_evidence.py",
-        "contracts/event-artifact-prepull-evidence-v1.yaml",
-        "docs/event-artifact-prepull-evidence.md"
-      ],
-      "note": "A versioned offline scheduled-event pre-pull contract creates an immutable, deduplicated exact-digest plan by assigned cluster. Local adapters verify a designated producer MAC, bounded per-node proof bytes and hashes, claim identity, separately supplied node-roster source and freshness, and observation timing. The producer and roster are not independently deployed or authenticated here, and proof bytes can still contain false claims. This remains GREEN-local only: no pull ran, no live producer or admission wiring exists, and authentic integration/live cache-loss recovery remain open."
-    },
-    "LP-T096": {
+    "LP-T100": {
       "state": "green-integration",
       "methods": {
-        "tdd": "green-local",
+        "tdd": "green-integration",
         "edd": "green-integration",
-        "cdd": "green-local",
+        "cdd": "green-integration",
         "bdd": "green-local",
-        "cbt": "green-local"
+        "cbt": "green-integration"
       },
       "evidence": [
-        "evidence/runs/admin-catalog-intake-ui/manifest.json",
-        "evidence/runs/catalog-intake-durability/green-integration.json",
-        "evidence/runs/catalog-intake-pipeline/manifest.json",
-        "evidence/runs/catalog-intake-submission/green-local.json"
+        "evidence/runs/catalog-intake-discovery-worker/manifest.json",
+        "evidence/runs/catalog-intake-worker-safety/evidence.json",
+        "evidence/runs/catalog-intake-arena-live-20260920.json",
+        "evidence/runs/catalog-intake-faults-arena-live-20260920.json",
+        "evidence/runs/catalog-intake-render-review/green-local-20260921.json",
+        "evidence/runs/catalog-intake-render-network-green-local-20260921.json",
+        "evidence/runs/catalog-intake-render-structure-green-local-20260921.json"
       ],
-      "note": "Pinned Quickstart submissions now persist as durable, content-addressed PostgreSQL drafts and are visible through a repo-first admin workflow and read-only gated pipeline. Disposable PostgreSQL proved restart persistence and four-way concurrent convergence. Repository discovery execution and promotion remain disabled."
+      "note": "Arena proves the tokenless/read-only runtime, allowlisted proxy egress, denial of direct GitHub/API/database access, sanitized scanner failure, and pod removal after timeout/cancellation. Local and integration proof bounds retry to three attempts, preserves idempotency, requires verified cleanup, and rejects scanner/policy failures. A GREEN-local rendered-output receiving contract binds source identity and manifest digest and rejects unsafe resources, but cannot certify or publish. The task remains effectively GREEN-local because BDD has not advanced and release remains blocked on an isolated renderer, trusted collector and forced-termination receipts, signed image/SBOM, and one passing canonical Quickstart."
     },
     "LP-T101": {
       "state": "green-integration",
@@ -938,74 +1594,86 @@
       ],
       "note": "Admin Intake conditionally exposes source approval and discovery only when prerequisites pass, renders execution state and the versioned Quickstart quality profile, and now displays each certification gate's evidence requirements and blockers. A generated draft with no static findings still explains why artifact/security review is blocked. Certification, publication, provisioning, and live mutation remain disabled; historical v1.0 evidence remains unchanged."
     },
-    "LP-T182": {
+    "LP-T102": {
       "state": "green-local",
       "methods": {
         "tdd": "green-local",
+        "edd": "green-local",
         "cdd": "green-local",
+        "bdd": "green-local",
         "cbt": "green-local"
       },
       "evidence": [
-        "scripts/validate_permanent_home_intake.py",
-        "scripts/tests/test_permanent_home_intake.py",
-        "docs/permanent-home-intake-contract.md",
-        "evidence/runs/staging-convergence/local-streams-20260921.json"
+        "evidence/runs/event-capacity-reconciliation/manifest.json"
       ],
-      "note": "Only the fail-closed offline prerequisite contract is GREEN-local. It requires complete signed intake evidence for 13 categories and an immutable release digest, emits no submitted secrets, and never authorizes cutover. No permanent-home candidate has been accepted, bootstrapped, restored, or cut over; the full LP-T182 task remains open for live proof."
+      "note": "The September 17 manifest and recorded postmortem now reconcile through a versioned offline contract: 3 cohorts, 90 participants, 9 workshops, and 270 seat-environments forecast and provisioned, with 191 claimed and 79 unclaimed. Missing reservation, resource, model, queue, and cache measurements remain explicitly unavailable rather than being represented as zero. This is GREEN-local recorded-data evidence only; live measurement, atomic reservation, admission, and capacity release remain open."
     },
-    "LP-T014": {
+    "LP-T103": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T104": {
       "state": "green-local",
       "methods": {
         "tdd": "green-local",
-        "edd": "red",
+        "edd": "green-local",
         "cdd": "green-local",
-        "bdd": "red",
+        "bdd": "green-local",
         "cbt": "green-local"
       },
       "evidence": [
-        "contracts/catalog-intake-rendered-output-v2.yaml",
-        "contracts/catalog-intake-render-attestation-v1.yaml",
-        "backend/app/services/catalog_intake_render_attestation.py",
-        "backend/tests/test_catalog_intake_render_attestation.py",
-        "scripts/check_catalog_intake_candidate.py"
+        "evidence/runs/capacity-admission-postgres/manifest.json",
+        "evidence/runs/capacity-admission/manifest.json"
       ],
-      "note": "The catalog-intake slice now binds exact source, Helm values, manifest, renderer image, and persisted review hashes to an externally keyed authenticated producer claim. Tampering, unknown producers, weak keys, mismatched bindings, and unverified isolation fail closed. This is only GREEN-local contract/component proof: no trusted renderer identity or key is provisioned, no authentic candidate receipt exists, and the broader task still requires build, scan, SBOM, image/content signing, provenance, and live verification."
+      "note": "Whole-workshop admission is proven locally for infrastructure and exact model-release envelopes, stable idempotency, atomic rejection, and evidence-gated release. PostgreSQL serializable transactions and advisory locks additionally prove cross-process competing orders, durable accepted/rejected decisions, idempotent retries, and capacity reuse against a disposable database. Production migration, API/lifecycle wiring, live supply, failover, provisioning, and reclaim certification remain open."
     },
-    "LP-T060": {
+    "LP-T105": {
       "state": "red",
       "methods": {
-        "tdd": "green-local",
+        "tdd": "red",
         "edd": "red",
-        "cdd": "green-local",
+        "cdd": "red",
         "bdd": "red",
-        "cbt": "green-local"
+        "cbt": "red"
       },
-      "evidence": [
-        "contracts/vef-aggregate-receipt-v1.yaml",
-        "backend/app/services/vef_telemetry_aggregation.py",
-        "backend/tests/test_vef_telemetry_aggregation.py"
-      ],
-      "note": "VEF can ingest and reconcile sanitized aggregate lifecycle, usage, and cost receipts, but Launchpad does not yet meter authoritative consumed CPU, memory, storage, network, artifact, public-edge, or per-model usage. The task remains RED; the new work establishes only the fail-closed receiving contract."
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
-    "LP-T061": {
-      "state": "red",
+    "LP-T106": {
+      "state": "green-local",
       "methods": {
         "tdd": "green-local",
-        "edd": "red",
+        "edd": "green-local",
         "cdd": "green-local",
-        "bdd": "red",
+        "bdd": "green-local",
         "cbt": "green-local"
       },
       "evidence": [
-        "schemas/vef/launchpad-pilot-input.v1alpha2.schema.json",
-        "schemas/vef/launchpad-pilot-claim.v1alpha2.schema.json",
-        "scripts/vef_export_pilot.py",
-        "backend/tests/test_vef_pilot.py",
-        "docs/vef-pilot.md"
+        "evidence/runs/capacity-admission/manifest.json"
       ],
-      "note": "VEF v1alpha2 now separates shared platform, delivery, allocated inference, and unallocated cost and fails closed on unknown allocation, missing cost-center mapping, or absent finance approval. No approved rate card, budget, quota, cost-center mapping, invoice reconciliation, or chargeback policy exists, so the task remains RED."
+      "note": "The offline aggregate admission contract proves whole-workshop accept/reject, infrastructure and exact model-release envelopes, stable idempotency, thread-level concurrent overbook protection, evidence-gated capacity release, and dimensioned reconciliation. This is GREEN-local only: the ledger is process-local, supply is test input, and durable database serialization, live collectors, provisioning joins, actual usage, and runtime model queues remain open."
     },
-    "LP-T074": {
+    "LP-T107": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T108": {
       "state": "green-local",
       "methods": {
         "tdd": "green-local",
@@ -1015,11 +1683,321 @@
         "cbt": "green-local"
       },
       "evidence": [
-        "contracts/vef-receipt-ledger-v1.yaml",
-        "backend/app/services/vef_receipt_ledger.py",
-        "backend/tests/test_vef_receipt_ledger.py"
+        "docs/permanent-home-intake-contract.md",
+        "scripts/validate_permanent_home_intake.py",
+        "scripts/tests/test_validate_permanent_home_intake.py"
       ],
-      "note": "A local SQLite component proves atomic complete-batch persistence, exact idempotent replay, conflicting-replay rejection, and externally keyed tamper-evident chaining for sanitized VEF receipts. It is not the required production outbox: multi-replica fencing, PostgreSQL, publisher receipts, cursors, retries, dead-letter handling, retention, restore, and failure injection remain open."
+      "note": "The fail-closed permanent-home intake contract defines portable prerequisites for hardware/failure domains, OpenShift, storage, registry, DNS/TLS, ingress/egress, identity, secrets, backup/restore, observability, ownership/support, and execution connectivity without granting an execution cluster control-plane authority. This closes prerequisite definition locally; bootstrap, restore, migration, fencing, cutover, rollback, and live qualification remain open under LP-T109 through LP-T113."
+    },
+    "LP-T109": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T110": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T111": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T112": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T113": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T114": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/delivery-streams-v1.yaml",
+        "docs/parallel-agentic-delivery.md",
+        "evidence/runs/delivery-governance/red.xml",
+        "evidence/runs/delivery-governance/green-local.xml"
+      ],
+      "note": "Fourteen bounded streams, a four-stream initial WIP limit, entry/exit gates, unique ownership, and live-mutation prohibitions are executable and GREEN-local. Human owner assignment and integration use remain open."
+    },
+    "LP-T115": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/delivery-streams-v1.yaml",
+        "scripts/tests/test_validate_delivery_governance.py",
+        "evidence/runs/delivery-governance/report.json"
+      ],
+      "note": "Fourteen shared contracts have one owner, registered consumers, versions, and repository authorities; live consumer compatibility remains open."
+    },
+    "LP-T116": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "certification/convergence-matrix-v1.yaml",
+        "scripts/validate_delivery_governance.py",
+        "evidence/runs/delivery-governance/report.json"
+      ],
+      "note": "Twenty-three cross-stream scenarios join all five proof methods with usability, security, capacity, performance, operability, data governance, organizational readiness, OSS readiness, fault, cleanup, observability, and release dimensions. All scenarios correctly remain RED pending implementation evidence."
+    },
+    "LP-T117": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        "contracts/delivery-streams-v1.yaml",
+        "docs/parallel-agentic-delivery.md",
+        "scripts/validate_delivery_governance.py"
+      ],
+      "note": "Stream-local, contract, product/capacity, and emergency/live pivots have stable required records and approval boundaries. A real pivot exercise remains open."
+    },
+    "LP-T118": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "edd": "green-local",
+        "cdd": "green-local",
+        "bdd": "green-local",
+        "cbt": "green-local"
+      },
+      "evidence": [
+        ".github/workflows/ci.yml",
+        "Makefile",
+        "scripts/validate_delivery_governance.py",
+        "scripts/tests/test_validate_delivery_governance.py",
+        "evidence/runs/delivery-governance/green-local.xml",
+        "evidence/runs/catalog-intake-ci-receipt/green-local-20260921.json"
+      ],
+      "note": "The local fail-closed governance gate and CI step are defined. Every registered contract requires a focused producer-consumer convergence scenario; the omnibus release scenario alone cannot satisfy it. The backend CI test receipt now uses the exact test run's JUnit XML and outcome, failing closed for missing, failed, invalid, or all-skipped evidence instead of rerunning a different suite and hard-coding zero failures. Remote CI execution and deployed integration proof are required before GREEN-integration."
+    },
+    "LP-T119": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T120": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "contracts/production-readiness-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The production test profile and fail-closed release rules are versioned. Service-specific thresholds, harnesses, and executed evidence remain open."
+    },
+    "LP-T121": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T122": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T123": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T124": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T125": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T126": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T127": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T128": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "contracts/sre-operating-model-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The SLI, SLO, error-budget, synthetic, incident, telemetry, and ownership contract is versioned. Implemented service levels and game-day evidence remain open."
+    },
+    "LP-T129": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T130": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T131": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T132": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
     "LP-T133": {
       "state": "green-local",
@@ -1037,6 +2015,65 @@
         "backend/app/services/vef_receipt_ledger.py"
       ],
       "note": "VEF now has versioned aggregate receipt types, exact field bounds, explicit unknown/partial/authoritative states, outcome reconciliation, duplicate detection, and tamper-evident local persistence. Authentic producer lineage, freshness windows, data-quality SLOs, schema registry compatibility, backfill controls, and production monitoring remain open."
+    },
+    "LP-T134": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T135": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T136": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "contracts/data-ai-governance-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The data, AI, legal, licensing, privacy, and responsible-use control contract is versioned. Inventory, owner acceptance, and executed controls remain open."
+    },
+    "LP-T137": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T138": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
     "LP-T139": {
       "state": "green-local",
@@ -1056,38 +2093,410 @@
       ],
       "note": "The VEF boundary rejects prompts, responses, email, participant identifiers, namespaces, clusters, credentials, secrets, and API keys and persists no incomplete or sensitive batch. This is GREEN-local only for VEF; platform-wide prevention, uploaded-document controls, trace/log scanning, retention/deletion, and live privacy testing remain open."
     },
-    "LP-T013": {
-      "state": "green-local",
+    "LP-T140": {
+      "state": "red",
       "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
         "bdd": "red",
-        "cbt": "green-local"
+        "cbt": "red"
       },
-      "evidence": [
-        "docs/catalog-onboarding.md",
-        "catalog-onboarding/intel-llm-cpu-serving.yaml",
-        "backend/tests/test_catalog_onboarding.py",
-        "backend/tests/test_catalog_onboarding_cli.py"
-      ],
-      "note": "The repository-owned catalog package contract defines immutable workload and Showroom sources, deployment manifests and class, image digests, model/capability requirements, participant journeys, resource envelopes, cleanup scope, certification ceilings, and supported-target evidence. Local schema and rendering tests enforce it. This closes the contract-definition task locally; promotion of a new package through the full pipeline remains open under LP-T015 and the LP-S004 gate."
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
-    "LP-T108": {
+    "LP-T141": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T142": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T143": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T144": {
       "state": "green-local",
       "methods": {
-        "tdd": "green-local",
-        "edd": "green-local",
-        "cdd": "green-local",
-        "bdd": "red",
-        "cbt": "green-local"
+        "cdd": "green-local"
       },
       "evidence": [
-        "docs/permanent-home-intake-contract.md",
-        "scripts/validate_permanent_home_intake.py",
-        "scripts/tests/test_validate_permanent_home_intake.py"
+        "contracts/gtm-value-attribution-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
       ],
-      "note": "The fail-closed permanent-home intake contract defines portable prerequisites for hardware/failure domains, OpenShift, storage, registry, DNS/TLS, ingress/egress, identity, secrets, backup/restore, observability, ownership/support, and execution connectivity without granting an execution cluster control-plane authority. This closes prerequisite definition locally; bootstrap, restore, migration, fencing, cutover, rollback, and live qualification remain open under LP-T109 through LP-T113."
+      "note": "The privacy-safe GTM entity, funnel, attribution, commercialization, and claim contract is versioned. CRM ownership, consent implementation, and field proof remain open."
+    },
+    "LP-T145": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T146": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T147": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T148": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T149": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T150": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T151": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T152": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T153": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T154": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "contracts/organizational-readiness-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The organizational ownership, qualification, knowledge continuity, workforce, and non-author proof contract is versioned. Named owners, curricula, staffing, drills, and live continuity evidence remain open."
+    },
+    "LP-T155": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T156": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T157": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T158": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T159": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T160": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T161": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T162": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T163": {
+      "state": "green-local",
+      "methods": {
+        "cdd": "green-local"
+      },
+      "evidence": [
+        "contracts/oss-distribution-v1.yaml",
+        "certification/convergence-matrix-v1.yaml"
+      ],
+      "note": "The public/private boundary, sanitation, legal, community, reproducibility, and enterprise-compatibility contract is versioned. Repository sanitation, legal review, public release assets, and executed compatibility proof remain open."
+    },
+    "LP-T164": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T165": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T166": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T167": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T168": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T169": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T170": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T171": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T172": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T173": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
     "LP-T174": {
       "state": "green-local",
@@ -1104,25 +2513,440 @@
       ],
       "note": "The versioned AI gateway contract defines scoped attribution and credentials, OpenAI-compatible chat/responses plus embeddings/reranking/tools/streaming, timeout/retry/idempotency/circuit-breaker/error behavior, and audit/telemetry fields. This is contract-only closure: provider/consumer tests, an implemented gateway, credential brokering, routing, security, load, failure, recovery, and rollback evidence remain open."
     },
-    "LP-T100": {
-      "state": "green-integration",
+    "LP-T175": {
+      "state": "red",
       "methods": {
-        "tdd": "green-integration",
-        "edd": "green-integration",
-        "cdd": "green-integration",
-        "bdd": "green-local",
-        "cbt": "green-integration"
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T176": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T177": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T178": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T179": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T180": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T181": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T182": {
+      "state": "green-local",
+      "methods": {
+        "tdd": "green-local",
+        "cdd": "green-local",
+        "cbt": "green-local"
       },
       "evidence": [
-        "evidence/runs/catalog-intake-discovery-worker/manifest.json",
-        "evidence/runs/catalog-intake-worker-safety/evidence.json",
-        "evidence/runs/catalog-intake-arena-live-20260920.json",
-        "evidence/runs/catalog-intake-faults-arena-live-20260920.json",
-        "evidence/runs/catalog-intake-render-review/green-local-20260921.json",
-        "evidence/runs/catalog-intake-render-network-green-local-20260921.json",
-        "evidence/runs/catalog-intake-render-structure-green-local-20260921.json"
+        "scripts/validate_permanent_home_intake.py",
+        "scripts/tests/test_permanent_home_intake.py",
+        "docs/permanent-home-intake-contract.md",
+        "evidence/runs/staging-convergence/local-streams-20260921.json"
       ],
-      "note": "Arena proves the tokenless/read-only runtime, allowlisted proxy egress, denial of direct GitHub/API/database access, sanitized scanner failure, and pod removal after timeout/cancellation. Local and integration proof bounds retry to three attempts, preserves idempotency, requires verified cleanup, and rejects scanner/policy failures. A GREEN-local rendered-output receiving contract binds source identity and manifest digest and rejects unsafe resources, but cannot certify or publish. The task remains effectively GREEN-local because BDD has not advanced and release remains blocked on an isolated renderer, trusted collector and forced-termination receipts, signed image/SBOM, and one passing canonical Quickstart."
+      "note": "Only the fail-closed offline prerequisite contract is GREEN-local. It requires complete signed intake evidence for 13 categories and an immutable release digest, emits no submitted secrets, and never authorizes cutover. No permanent-home candidate has been accepted, bootstrapped, restored, or cut over; the full LP-T182 task remains open for live proof."
+    },
+    "LP-T183": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T184": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T185": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T186": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T187": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T188": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T189": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T190": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T191": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T192": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T193": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T194": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T195": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T196": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T197": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T198": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T199": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T200": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T201": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T202": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T203": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T204": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T205": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T206": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T207": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T208": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T209": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+    },
+    "LP-T210": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     }
   },
   "rubric": [

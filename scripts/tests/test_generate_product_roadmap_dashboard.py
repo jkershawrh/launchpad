@@ -27,8 +27,8 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
         "2027-01-29",
     ]
     assert len(model["epics"]) == 29
-    assert len(model["stories"]) == 35
-    assert len(model["tasks"]) == 182
+    assert len(model["stories"]) == 39
+    assert len(model["tasks"]) == 210
     assert "LP-T095" in model["tasks"]
     assert "lab.step.executed" in model["tasks"]["LP-T095"]["title"]
     assert model["tasks"]["LP-T084"]["epic_id"] == "LP-E002"
@@ -45,6 +45,18 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     assert model["tasks"]["LP-T172"]["epic_id"] == "LP-E028"
     assert model["tasks"]["LP-T181"]["epic_id"] == "LP-E029"
     assert model["tasks"]["LP-T182"]["epic_id"] == "LP-E021"
+    assert model["tasks"]["LP-T183"]["story_id"] == "LP-S036"
+    assert model["tasks"]["LP-T189"]["story_id"] == "LP-S037"
+    assert model["tasks"]["LP-T196"]["story_id"] == "LP-S038"
+    assert model["tasks"]["LP-T203"]["story_id"] == "LP-S039"
+
+
+def test_every_roadmap_task_has_an_explicit_status_record():
+    module = load_module()
+    model = module.parse_roadmap(ROOT / "docs" / "product-delivery-roadmap.md")
+    status = module.load_status(ROOT / "docs" / "product-roadmap-status.json")
+
+    assert set(status["tasks"]) == set(model["tasks"])
 
 
 def test_status_rollup_requires_all_five_proof_methods(tmp_path: Path):
@@ -118,6 +130,10 @@ def test_render_is_self_contained_and_exposes_required_views():
     assert "Organizational readiness and knowledge continuity" in html
     assert "Governed open-source distribution" in html
     assert "Governed AI control plane and gateway" in html
+    assert "onboard a compatible OpenShift cluster" in html
+    assert "recertify only the labs affected" in html
+    assert "correct and promote Showroom content" in html
+    assert "across on-premises, edge, disconnected" in html
     assert "Full production readiness milestone" in html
     assert "January 29, 2027" in html
     assert "On receipt of the permanent-home environment" in html
