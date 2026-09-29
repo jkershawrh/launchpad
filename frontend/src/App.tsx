@@ -20,6 +20,7 @@ import EnvironmentRequest from './pages/EnvironmentRequest';
 import { getAppSurface } from './appSurface';
 import PublicAccess from './pages/PublicAccess';
 import Observability from './pages/Observability';
+import LearningPaths from './pages/LearningPaths';
 
 export default function App() {
   const surface = getAppSurface(
@@ -47,6 +48,7 @@ export default function App() {
             ) : (
               <>
                 <Route path="/catalog" element={<Catalog />} />
+                <Route path="/paths" element={<LearningPaths />} />
                 <Route path="/demos" element={<Demos />} />
                 <Route path="/sandbox" element={<Sandbox />} />
                 <Route path="/request" element={<EnvironmentRequest />} />

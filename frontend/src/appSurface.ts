@@ -8,6 +8,7 @@ export interface NavigationItem {
 const PORTAL_NAVIGATION: NavigationItem[] = [
   { path: '/', label: 'Dashboard' },
   { path: '/catalog', label: 'Catalog' },
+  { path: '/paths', label: 'Learning Paths' },
   { path: '/request', label: 'Request Environment' },
   { path: '/workshops', label: 'Workshops' },
   { path: '/sessions', label: 'My Labs' },

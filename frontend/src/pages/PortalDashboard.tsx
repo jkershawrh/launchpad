@@ -45,8 +45,8 @@ export default function PortalDashboard() {
             Start from a validated catalog experience, follow provisioning progress, and manage active environments from one place.
           </p>
         </div>
-        <Link to="/request" className="rounded bg-[#EE0000] px-5 py-3 text-sm font-semibold text-white hover:bg-[#B80000]">
-          Request environment
+        <Link to="/paths" className="rounded bg-[#EE0000] px-5 py-3 text-sm font-semibold text-white hover:bg-[#B80000]">
+          Choose a learning path
         </Link>
       </section>
 
@@ -96,6 +96,12 @@ export default function PortalDashboard() {
         </section>
 
         <section className="space-y-4">
+          <div className="rounded border border-[#0068B5]/60 bg-[#0068B5]/10 p-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#73BCF7]">Recommended entry point</p>
+            <h2 className="mt-1 font-semibold text-white">Start with an outcome, not infrastructure</h2>
+            <p className="mt-2 text-sm leading-6 text-[#A3A3A3]">Select Agentic AI, Sovereign AI, or Virtualization + AI, then choose the certified learning level that matches the customer conversation.</p>
+            <Link to="/paths" className="mt-4 inline-block text-sm font-semibold text-[#73BCF7] hover:underline">Choose a learning path</Link>
+          </div>
           <div className="rounded border border-[#333] bg-[#212121] p-5">
             <h2 className="font-semibold text-white">Start with the catalog</h2>
             <p className="mt-2 text-sm leading-6 text-[#A3A3A3]">Choose quick starts, guided builds, or configurable sandboxes matched to available capacity.</p>

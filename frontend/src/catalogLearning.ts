@@ -1,6 +1,6 @@
 import type { CatalogItem } from './api/types';
 
-export const LEARNING_LEVELS = ['001', '101', '201', '301', '401', '501'] as const;
+export const LEARNING_LEVELS = ['001', '101', '201', '301', '401', '501', '601'] as const;
 export type LearningLevel = typeof LEARNING_LEVELS[number];
 
 export const LEARNING_STAGE: Record<LearningLevel, string> = {
@@ -10,6 +10,7 @@ export const LEARNING_STAGE: Record<LearningLevel, string> = {
   '301': 'Engineer',
   '401': 'Operate',
   '501': 'Scale',
+  '601': 'Qualify',
 };
 
 const LEGACY_CATALOG_LEVEL: Record<string, LearningLevel> = {
@@ -39,7 +40,7 @@ export function learningLevel(item: CatalogItem): LearningLevel | undefined {
   const normalized = typeof value === 'number' ? String(value).padStart(3, '0') : value;
   const declared = LEARNING_LEVELS.find((level) => level === normalized);
   if (declared) return declared;
-  const titleLevel = item.display_name.match(/(?:AI\s+)?(001|101|201|301|401|501)\b/)?.[1];
+  const titleLevel = item.display_name.match(/(?:AI\s+)?(001|101|201|301|401|501|601)\b/)?.[1];
   return LEARNING_LEVELS.find((level) => level === titleLevel)
     ?? LEGACY_CATALOG_LEVEL[item.catalog_item_id];
 }

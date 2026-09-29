@@ -4,7 +4,7 @@ import { api } from '../api/client';
 import { useBranding } from '../context/useBranding';
 import type { AvailableModel, BrandingProfile, CatalogItem, Tenant } from '../api/types';
 import { defaultModelSelection, toggleModelSelection } from '../modelAccessContract';
-import { participantCatalog } from '../catalogVisibility';
+import { allowedExposurePolicies, participantCatalog } from '../catalogVisibility';
 
 export default function LabRequestForm({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
@@ -70,11 +70,14 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
           };
         });
       }
-    );
+    ).catch((err: unknown) => {
+      setError(err instanceof Error ? err.message : 'Unable to load the ordering form');
+    }).finally(() => setLoading(false));
   }, []);
 
   const selectedCatalog = catalogs.find((c) => c.catalog_item_id === form.catalog_item_id);
   const isSandbox = selectedCatalog?.category === 'open_sandbox';
+  const exposurePolicies = allowedExposurePolicies(selectedCatalog);
 
   useEffect(() => {
     if (!isSandbox) return;
@@ -161,6 +164,9 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
                 catalog_item_id: e.target.value,
                 hardware_profile: item?.default_hardware_profile || form.hardware_profile,
                 ttl: item?.default_ttl || form.ttl,
+                exposure_policy: allowedExposurePolicies(item).includes(form.exposure_policy)
+                  ? form.exposure_policy
+                  : allowedExposurePolicies(item)[0],
               });
             }}
             className="w-full border border-[#D2D2D2] rounded-md px-3 py-2 text-sm"
@@ -234,8 +240,11 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
         </div>
         <div>
           <label className="block text-sm font-medium text-[#3C3F42] mb-1">Access</label>
-          <select value={form.exposure_policy} onChange={(e) => setForm({...form, exposure_policy:e.target.value as 'internal' | 'public_code'})} className="w-full border border-[#D2D2D2] rounded-md px-3 py-2 text-sm"><option value="internal">Internal access</option><option value="public_code">Public link + instructor code</option></select>
-          <p className="mt-1 text-xs text-[#6A6E73]">Public access uses unverified email plus the instructor code and expires with the lab.</p>
+          <select value={form.exposure_policy} onChange={(e) => setForm({...form, exposure_policy:e.target.value as 'internal' | 'public_code'})} className="w-full border border-[#D2D2D2] rounded-md px-3 py-2 text-sm">
+            {exposurePolicies.includes('internal') && <option value="internal">Internal access</option>}
+            {exposurePolicies.includes('public_code') && <option value="public_code">Public link + instructor code</option>}
+          </select>
+          <p className="mt-1 text-xs text-[#6A6E73]">{exposurePolicies.includes('public_code') ? 'Public access uses unverified email plus the instructor code and expires with the lab.' : 'This catalog release is currently certified for internal access only.'}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">

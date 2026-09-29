@@ -56,7 +56,8 @@ describe('external portal dashboard', () => {
     render(<MemoryRouter><PortalDashboard /></MemoryRouter>);
 
     expect(screen.getByRole('heading', { name: /build, launch, and manage/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /request environment/i })).toHaveAttribute('href', '/request');
+    expect(screen.getAllByRole('link', { name: /choose a learning path/i })[0]).toHaveAttribute('href', '/paths');
+    expect(screen.getByText(/start with an outcome, not infrastructure/i)).toBeInTheDocument();
 
     await waitFor(() => expect(screen.getByText('42')).toBeInTheDocument());
     expect(screen.getByText('smoke-test')).toBeInTheDocument();

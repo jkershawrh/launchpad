@@ -33,6 +33,7 @@ const CATEGORY_BORDER: Record<string, string> = {
 export default function Catalog() {
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [query, setQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const filter = searchParams.get('category') || 'all';
@@ -40,10 +41,10 @@ export default function Catalog() {
   const familyFilter = searchParams.get('family') || 'all';
 
   useEffect(() => {
-    api.listCatalog().then((data) => {
-      setItems(participantCatalog(data));
-      setLoading(false);
-    });
+    api.listCatalog()
+      .then((data) => setItems(participantCatalog(data)))
+      .catch(() => setLoadError('The live catalog is temporarily unavailable. Ordering remains disabled until it can be verified.'))
+      .finally(() => setLoading(false));
   }, []);
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -75,7 +76,7 @@ export default function Catalog() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#73BCF7]">Order an environment</p>
           <h1 className="mt-1 text-3xl font-bold text-white" style={{ fontFamily: 'Red Hat Display' }}>AI learning catalog</h1>
-          <p className="mt-2 max-w-2xl text-sm text-[#8A8D90]">Choose by how you will use AI, then follow the 001–501 progression within that solution family. Every card below is currently available to order.</p>
+          <p className="mt-2 max-w-2xl text-sm text-[#8A8D90]">Choose by how you will use AI, then follow the 001–601 progression within that solution family. Every card below is currently available to order.</p>
         </div>
         <div className="rounded-lg border border-[#3c3f42] bg-[#212121] px-4 py-3 text-right">
           <strong className="block text-2xl text-white">{items.length}</strong>
@@ -115,6 +116,8 @@ export default function Catalog() {
           <span className="ml-auto text-xs text-[#6A6E73]">Showing {filtered.length} of {items.length}</span>
         </div>
       </div>
+
+      {loadError && <div role="alert" className="rounded border border-[#F0AB00]/60 bg-[#F0AB00]/10 p-4 text-sm text-[#F8C95E]">{loadError}</div>}
 
       {loading ? (
         <div className="space-y-3">

@@ -24,7 +24,7 @@ export default function EnvironmentRequest() {
       </button>
       <button role="tab" aria-selected={workshopMode} onClick={() => selectMode('workshop')} className={`rounded px-4 py-3 text-sm font-semibold transition ${workshopMode ? 'bg-[#0071C5] text-white' : 'text-[#B8BBBE] hover:bg-white/5 hover:text-white'}`}>
         Multi-seat Workshop
-        <span className="mt-1 block text-xs font-normal opacity-75">One order · up to 25 seats</span>
+        <span className="mt-1 block text-xs font-normal opacity-75">One order · certified seat limit shown below</span>
       </button>
     </div>
 

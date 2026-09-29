@@ -28,6 +28,7 @@ describe('catalog learning progression', () => {
     expect(learningLevel(item('intro', '001'))).toBe('001');
     expect(learningStage(item('advanced', '301'))).toBe('Engineer');
     expect(learningStage(item('scale', '501'))).toBe('Scale');
+    expect(learningStage(item('authority', '601'))).toBe('Qualify');
     expect(learningLevel(item('unknown', '999'))).toBeUndefined();
   });
 

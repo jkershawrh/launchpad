@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { CatalogItem, Tenant, Workshop, WorkshopCapacityPreview } from '../api/types';
 import { allowedExposurePolicies } from '../catalogVisibility';
@@ -12,6 +12,8 @@ import {
 
 export default function WorkshopOrderForm({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const requestedCatalogItem = searchParams.get('catalog_item') || '';
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [preview, setPreview] = useState<WorkshopCapacityPreview | null>(null);
@@ -29,7 +31,8 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
       setCatalog(orderable);
       setTenants(tenantItems.filter((tenant) => tenant.status === 'active'));
       setForm((current) => {
-        const selected = orderable.find((item) => item.catalog_item_id === current.catalog_item_id)
+        const selected = orderable.find((item) => item.catalog_item_id === requestedCatalogItem)
+          ?? orderable.find((item) => item.catalog_item_id === current.catalog_item_id)
           ?? orderable[0];
         const exposurePolicies = allowedExposurePolicies(selected);
         const exposurePolicy = exposurePolicies.includes(current.exposure_policy as WorkshopExposurePolicy)
@@ -45,7 +48,7 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
         };
       });
     });
-  }, []);
+  }, [requestedCatalogItem]);
 
   const selectedCatalogItem = catalog.find(
     (item) => item.catalog_item_id === form.catalog_item_id,
