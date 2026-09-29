@@ -40,7 +40,7 @@ metadata:
   solution_family: sovereign_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
-  showroom_content_ref: d46625e8e1eb89e35c0a93385a47564d825a8115
+  showroom_content_ref: 257823c9f00820e6f563e0c161fc852f77fabef9
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
@@ -95,7 +95,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-301.git
-  workload_revision: d46625e8e1eb89e35c0a93385a47564d825a8115
+  workload_revision: 257823c9f00820e6f563e0c161fc852f77fabef9
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-301
@@ -115,5 +115,5 @@ metadata:
   workload_routes: {}
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-301.git
-  source_content_revision: d46625e8e1eb89e35c0a93385a47564d825a8115
+  source_content_revision: 257823c9f00820e6f563e0c161fc852f77fabef9
   source_references: {}

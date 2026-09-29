@@ -43,7 +43,7 @@ metadata:
   showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-301.git
   showroom_content_ref: 91e30a4af72bb4a15a4e5dfe2f29abb5692c698f
   showroom_content_playbook: showroom/default-site.yml
-  showroom_content_start_path: showroom
+  showroom_content_start_path: showroom/content
   operator_workshop: true
   content_only: false
   onboarding_managed: true

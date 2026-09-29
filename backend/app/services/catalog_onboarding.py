@@ -1916,12 +1916,23 @@ def _validate_showroom(
 
     playbook = yaml.safe_load(playbook_path.read_text())
     sources = ((playbook or {}).get("content") or {}).get("sources") or []
-    if not any(
+    antora_packaging = (playbook or {}).get("antora")
+    selects_start_path = any(
         isinstance(entry, dict)
-        and entry.get("url") == "."
-        and entry.get("start_path") == showroom.get("start_path")
+        and str(entry.get("url", ".")).startswith(".")
+        and (
+            playbook_path.parent
+            / str(entry.get("url", "."))
+            / str(entry.get("start_path", "."))
+        ).resolve()
+        == content_root.resolve()
         for entry in sources
-    ):
+    ) or (
+        isinstance(antora_packaging, dict)
+        and isinstance(antora_packaging.get("modules"), list)
+        and "ROOT" in antora_packaging["modules"]
+    )
+    if not selects_start_path:
         errors.append("Showroom playbook does not select the declared local start_path")
 
     ui_bundle = (((playbook or {}).get("ui") or {}).get("bundle") or {}).get("url")

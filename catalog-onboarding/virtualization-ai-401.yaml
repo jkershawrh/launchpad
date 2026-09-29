@@ -26,7 +26,7 @@ sources:
     repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
     revision: 255e6ba2ff6f8fd4734a9af7c0de3d6130abfd81
     playbook: showroom/default-site.yml
-    start_path: showroom
+    start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-401.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
