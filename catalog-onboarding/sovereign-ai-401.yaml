@@ -95,6 +95,7 @@ runtime:
     readiness: []
 certification:
   stage: factory-source-qualified
+  certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:
   - 1
