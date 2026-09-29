@@ -26,6 +26,10 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
     configmap_rule = next(r for r in role["rules"] if r["resources"] == ["configmaps"])
     assert configmap_rule["resourceNames"] == ["default-ingress-cert"]
     assert configmap_rule["verbs"] == ["get"]
+    ingress_rule = next(r for r in role["rules"] if r["resources"] == ["ingresses"])
+    assert ingress_rule["apiGroups"] == ["config.openshift.io"]
+    assert ingress_rule["resourceNames"] == ["cluster"]
+    assert ingress_rule["verbs"] == ["get"]
     assert build["spec"]["source"]["type"] == "Git"
     assert len(build["spec"]["source"]["git"]["ref"]) == 40
     assert build["spec"]["output"]["to"] == {
