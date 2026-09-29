@@ -1279,8 +1279,9 @@ All 210 roadmap tasks now have explicit fail-closed status records. Immediate
 execution is governed by the ordered queue in
 [`roadmap-convergence-20260929.md`](roadmap-convergence-20260929.md): finish the
 unchanged-candidate Flightpath matrix, resolve and rerun affected five-seat
-catalogs, prove zero residue, deliver rapid cluster onboarding, impact-based
-recertification, and independently promotable Showroom content, then rerun the
-complete staging matrix. Production and hybrid-cloud work remains sequenced
-behind that earned gate unless it can proceed as a bounded stream without
-changing the candidate or consuming certification capacity.
+catalogs, prove the complete manual requester/admin/participant frontend and
+ordering journeys, prove zero residue, then rerun the complete staging matrix.
+Rapid cluster onboarding, impact-based recertification, independently
+promotable Showroom content, production gates, and hybrid-cloud work are pinned
+until staging evidence is complete and the product owner explicitly resumes
+them.

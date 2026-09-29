@@ -12,15 +12,23 @@ The staging-to-production sequence is:
 1. finish the current unchanged-candidate five-seat Flightpath matrix;
 2. fix or classify every RED-live result and rerun only affected five-seat
    catalogs;
-3. prove complete reclaim and zero residue;
-4. complete rapid cluster onboarding, impact-based recertification, and
-   independently promotable Showroom content;
+3. prove that every certified lab is visible, manually orderable, observable,
+   openable, reclaimable, and truthfully represented across requester, admin,
+   participant, workshop, session, catalog, and evidence views;
+4. prove complete reclaim and zero residue;
 5. rerun the complete unchanged-candidate staging matrix and accept the staging
    gate;
-6. advance through security, HA/DR, production-load, operational ownership,
+6. hold an explicit product decision before beginning production gates;
+7. advance through security, HA/DR, production-load, operational ownership,
    governance, commercial, and production-home gates;
-7. deliver hybrid-cloud federation as a production-scale capability, not as an
+8. deliver hybrid-cloud federation as a production-scale capability, not as an
    excuse to delay a truthful single-home staging candidate.
+
+Rapid cluster onboarding, impact-based/quick recertification, independently
+promotable Showroom content, and hybrid-cloud federation are **pinned and
+deferred**. Their contracts remain on the roadmap, but they are not authorized
+implementation work before the current manual ordering, frontend, lab
+certification, and staging evidence are complete.
 
 ## Proof accounting snapshot
 
@@ -53,10 +61,17 @@ requirements are satisfied.
   credentials, and inactive identities after reclaim.
 - Cluster-native certification runner with bounded authority and durable,
   hashable evidence.
-- Rapid cluster onboarding contract and canary/eligibility workflow.
-- Impact graph, risk classification, and targeted five-seat recertification.
-- Independent Showroom content identity, preview, bounded promotion, and
-  rollback without participant-workload reprovisioning for editorial changes.
+- Requester catalog and request forms show only truthful, orderable releases and
+  return actionable validation/capacity errors rather than generic failures.
+- Admin catalog, sessions, workshops, fleet, evidence, and reclaim views load,
+  reconcile with backend state, and support the bounded operational actions
+  required for the candidate.
+- Participant claim, My Labs, Open Lab, Showroom, workspace, terminal,
+  namespace-scoped Console, resume, add-lab, and logout journeys pass in the
+  supported internal and public exposure modes.
+- Frontend/backend CDD contracts, component tests, browser BDD journeys,
+  accessibility/responsive checks, failure states, and screenshots are bound
+  to the unchanged candidate.
 - Complete full-catalog regression of the final unchanged staging candidate.
 
 ### May remain open at staging but blocks production
@@ -80,6 +95,9 @@ requirements are satisfied.
   claims.
 - Repository ownership cleanup, modular release boundaries, and any eventual
   OSS distribution gate.
+- Rapid cluster onboarding implementation and one-hour onboarding proof.
+- Impact-based/quick recertification and bounded evidence reuse.
+- Independent live Showroom content promotion and rollback.
 
 ### Production-scale roadmap, not a Flightpath staging blocker
 
@@ -145,9 +163,11 @@ recommend but never creates eligibility.
    platform defect is proven, create a new candidate rather than mutating the
    current one.
 6. Rerun affected five-seat catalogs and prove reclaim.
-7. Implement LP-S036, LP-S037, and LP-S038 behind contracts and tests.
+7. Run the manual requester → order → workshop/session → participant → lab →
+   reclaim journey for every viable catalog and close all frontend/API contract
+   gaps with TDD, CDD, BDD, CBT, and evidence.
 8. Run the final complete unchanged-candidate matrix and assemble the staging
    evidence manifest.
 9. Request explicit staging acceptance.
-10. Begin the production-gate backlog, with hybrid cloud running as a bounded
-    parallel production-scale stream.
+10. Stop for product-owner review. Do not start LP-S036, LP-S037, LP-S038,
+    LP-S039, or the broader production-gate backlog without a new decision.

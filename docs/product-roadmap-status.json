@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-29T11:16:49Z",
+  "updated_at": "2026-09-29T11:19:00Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -2622,7 +2622,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T184": {
       "state": "red",
@@ -2634,7 +2634,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T185": {
       "state": "red",
@@ -2646,7 +2646,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T186": {
       "state": "red",
@@ -2658,7 +2658,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T187": {
       "state": "red",
@@ -2670,7 +2670,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T188": {
       "state": "red",
@@ -2682,7 +2682,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T189": {
       "state": "red",
@@ -2694,7 +2694,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T190": {
       "state": "red",
@@ -2706,7 +2706,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T191": {
       "state": "red",
@@ -2718,7 +2718,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T192": {
       "state": "red",
@@ -2730,7 +2730,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T193": {
       "state": "red",
@@ -2742,7 +2742,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T194": {
       "state": "red",
@@ -2754,7 +2754,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T195": {
       "state": "red",
@@ -2766,7 +2766,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T196": {
       "state": "red",
@@ -2778,7 +2778,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T197": {
       "state": "red",
@@ -2790,7 +2790,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T198": {
       "state": "red",
@@ -2802,7 +2802,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T199": {
       "state": "red",
@@ -2814,7 +2814,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T200": {
       "state": "red",
@@ -2826,7 +2826,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T201": {
       "state": "red",
@@ -2838,7 +2838,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T202": {
       "state": "red",
@@ -2850,7 +2850,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T203": {
       "state": "red",
@@ -2862,7 +2862,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T204": {
       "state": "red",
@@ -2874,7 +2874,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T205": {
       "state": "red",
@@ -2886,7 +2886,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T206": {
       "state": "red",
@@ -2898,7 +2898,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T207": {
       "state": "red",
@@ -2910,7 +2910,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T208": {
       "state": "red",
@@ -2922,7 +2922,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T209": {
       "state": "red",
@@ -2934,7 +2934,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     },
     "LP-T210": {
       "state": "red",
@@ -2946,7 +2946,7 @@
         "cbt": "red"
       },
       "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
     }
   },
   "rubric": [
