@@ -24,13 +24,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
-    revision: 7928d13b9b00820e81f6c96ec047e3c22ec26e3f
+    revision: 6e6f5a3637f79b0806efdd2e137a8253a3d92518
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
-    revision: 7928d13b9b00820e81f6c96ec047e3c22ec26e3f
+    revision: 6e6f5a3637f79b0806efdd2e137a8253a3d92518
     deploy_path: charts/virtualization-ai-201
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
 runtime:
@@ -62,9 +62,6 @@ runtime:
   - id: story
     title: Story
     source: workload.route.ui
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -79,8 +76,8 @@ runtime:
     release_name: virtualization-ai-201
     helm_values:
       values_overlay: charts/virtualization-ai-201/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:f17a7cc9c708e58186bd38878630dc563b853f78e1535be3435c0c8aec34eedb
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:9f58d0a74d58201156547d21be2bc8a6b30f9d00619206dcce337d03e0ea4569
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:ff9c6bd189955ebfee6e97714e62908d53824a39fac50c3a78b27466e7825e62
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:b6b7cf41d5044c005f84bbade273edad0daed061060094e11d202b24c95c0ee3
       presentation_enabled: true
     runtime_secret_name: virtualization-ai-model-runtime
     runtime_secret_value_path: adapter.model.secretName
@@ -92,6 +89,8 @@ runtime:
       hardware:
         value: Intel Xeon
       api-key: maas_api_key
+    routes:
+      ui: virt-ai-201
     readiness: []
 certification:
   stage: factory-source-qualified

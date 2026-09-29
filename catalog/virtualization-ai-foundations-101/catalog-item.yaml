@@ -74,9 +74,6 @@ metadata:
   - id: story
     title: Story
     source: workload.route.ui
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -100,7 +97,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-foundations.git
-  workload_revision: 7d0d88d61dcfa1a1ab97f7d187249c7fc29f13da
+  workload_revision: 85604d1a88a5742739209aea0a07a95c2263dc69
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-foundations
@@ -109,8 +106,8 @@ metadata:
   workload_release_name: virtualization-ai-foundations-101
   workload_helm_values:
     values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:429d27ecd1eaaec98be8e8d252925fe8dd6b0f525d0c5f06f65d1a6adba6d9a9
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:fb4869e465beb513636ad574d9ee1974d82431b226099e6d8933f24263b9d61c
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:3d90ef4b3ef0d3c7c09f5126f967070ca4c1496621a50867e28facdb34b49dd5
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:a9a287880850d678d2cfebaf9909e4d975181df49fcc3b712ab0e480bc14e8b5
     presentation_enabled: true
   workload_ignore_differences: []
   workload_runtime_secret_name: virtualization-ai-model-runtime
@@ -120,7 +117,8 @@ metadata:
     api-key: maas_api_key
   workload_runtime_secret_value_path: adapter.model.apiKeySecret.name
   workload_identity_value_path: ''
-  workload_routes: {}
+  workload_routes:
+    ui: virtualization-ai-presentation
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-foundations.git
   source_content_revision: 68e3980d0a1df4ff20d36e6e76f8518781345239

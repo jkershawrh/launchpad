@@ -40,7 +40,7 @@ metadata:
   solution_family: sovereign_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
-  showroom_content_ref: 0f8c6d875a1336b2c142648a0c4549d73c99c201
+  showroom_content_ref: 69e7dff5b70afc65d4bb4185f71645c078450343
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
@@ -75,9 +75,6 @@ metadata:
   - id: story
     title: Story
     source: workload.route.ui
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -101,7 +98,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-201.git
-  workload_revision: 0f8c6d875a1336b2c142648a0c4549d73c99c201
+  workload_revision: 69e7dff5b70afc65d4bb4185f71645c078450343
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-201
@@ -110,9 +107,22 @@ metadata:
   workload_release_name: sovereign-ai-201
   workload_helm_values:
     values_overlay: charts/sovereign-ai-201/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:9b1eb7bb0c5b6bf2888f02566070b6140d4c6b049c31151bf4eac9a1beba1708
-    presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:f13a56fb7530c16309098270f3399a8ecc5b59d60481595ea7bd181a7424ca31
+    workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:868e1ced53d28cf07b02007849356b4f1ff78ff17d1d1dd0c2b04fedd6a20f6f
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:2baef1ba00a221d223f205d8179a8a6cb1ca3113539b6c2e53364c484fe7545a
     presentation_enabled: true
+    adapter:
+      image:
+        repository: ghcr.io/jkershawrh/sovereign-ai-201-adapter
+        tag: ''
+        digest: sha256:9b1eb7bb0c5b6bf2888f02566070b6140d4c6b049c31151bf4eac9a1beba1708
+        pullPolicy: IfNotPresent
+    presentation:
+      enabled: true
+      image:
+        repository: ghcr.io/jkershawrh/sovereign-ai-201-presentation
+        tag: ''
+        digest: sha256:f13a56fb7530c16309098270f3399a8ecc5b59d60481595ea7bd181a7424ca31
+        pullPolicy: IfNotPresent
   workload_ignore_differences: []
   workload_runtime_secret_name: sovereign-ai-201-model-runtime
   workload_runtime_secret_sources:
@@ -125,8 +135,9 @@ metadata:
     api-key: maas_api_key
   workload_runtime_secret_value_path: adapter.model.secretName
   workload_identity_value_path: ''
-  workload_routes: {}
+  workload_routes:
+    ui: sovereign-ai-201
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-201.git
-  source_content_revision: 0f8c6d875a1336b2c142648a0c4549d73c99c201
+  source_content_revision: 69e7dff5b70afc65d4bb4185f71645c078450343
   source_references: {}

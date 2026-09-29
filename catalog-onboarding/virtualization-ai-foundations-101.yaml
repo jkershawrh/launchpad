@@ -28,7 +28,7 @@ sources:
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 7d0d88d61dcfa1a1ab97f7d187249c7fc29f13da
+    revision: 85604d1a88a5742739209aea0a07a95c2263dc69
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:
@@ -60,9 +60,6 @@ runtime:
   - id: story
     title: Story
     source: workload.route.ui
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -77,8 +74,8 @@ runtime:
     release_name: virtualization-ai-foundations-101
     helm_values:
       values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:429d27ecd1eaaec98be8e8d252925fe8dd6b0f525d0c5f06f65d1a6adba6d9a9
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:fb4869e465beb513636ad574d9ee1974d82431b226099e6d8933f24263b9d61c
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:3d90ef4b3ef0d3c7c09f5126f967070ca4c1496621a50867e28facdb34b49dd5
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:a9a287880850d678d2cfebaf9909e4d975181df49fcc3b712ab0e480bc14e8b5
       presentation_enabled: true
     runtime_secret_name: virtualization-ai-model-runtime
     runtime_secret_value_path: adapter.model.apiKeySecret.name
@@ -86,6 +83,8 @@ runtime:
       endpoint: maas_endpoint
       name: requested_model
       api-key: maas_api_key
+    routes:
+      ui: virtualization-ai-presentation
     readiness: []
 certification:
   stage: factory-source-qualified
