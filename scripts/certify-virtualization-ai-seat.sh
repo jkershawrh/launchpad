@@ -73,7 +73,7 @@ case "$catalog_id" in
     response="$(post "$endpoint" "$request")"
     jq -e '.source_state == "REHEARSAL" and .authority == "HUMAN_REVIEW_REQUIRED" and .advisory.category == "connectivity"' <<<"$response" >/dev/null
     evidence_id="$(jq -r .evidence_id <<<"$response")"
-    curl -fsS "http://127.0.0.1:18080/api/v1/evidence/$evidence_id" | jq -e '.request_hash and (.raw_note == null)' >/dev/null
+    curl -fsS "http://127.0.0.1:18080/api/v1/evidence/$evidence_id" | jq -e '.request_sha256 and (.raw_note == null)' >/dev/null
     outcome=qualified ;;
   virtualization-ai-301)
     request="$(jq -cn --arg ns "$namespace" '{schema_version:"virtualization-ai.redhat-intel.com/modernization-request/v1",correlation_id:"30100000-0000-4000-8000-000000000001",task:"review-vm-modernization",note:"Synthetic certification request.",allowed_categories:["identity","connectivity","placement","operations","unknown"],declared:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client"},destination:{service:"virtualization-ai-301-adapter",port:8080},placement:{architecture:"amd64",required_labels:{"feature.node.kubernetes.io/cpu-model.vendor_id":"Intel"}}},observed:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client",vmi_uid:"cert-vmi"},destination:{service:"virtualization-ai-301-adapter",port:8080,network_policy:"ENFORCED",endpoints_ready:true},placement:{node_name:"flightpath-worker",architecture:"amd64",required_labels:{},labels:{"feature.node.kubernetes.io/cpu-model.vendor_id":"Intel"}},observability:{correlation_id:"30100000-0000-4000-8000-000000000001",collected_at:"2026-09-29T12:00:00Z",events_available:true}}}')"
