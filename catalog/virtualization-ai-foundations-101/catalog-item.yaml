@@ -98,7 +98,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-foundations.git
-  workload_revision: 26e38241a7acbd629ad28b29b952f76390f62b8a
+  workload_revision: da1cf6e48c5843242cfd7ccb7c72d2af49c5faba
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-foundations
@@ -116,6 +116,8 @@ metadata:
         apiBase: http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1
         name: granite-3.2-8b-tools
         provider: openai-compatible
+        egressNamespace: launchpad-flightpath-candidate
+        egressPort: 4000
   workload_ignore_differences: []
   workload_runtime_secret_name: virtualization-ai-model-runtime
   workload_runtime_secret_sources:

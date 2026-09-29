@@ -29,7 +29,7 @@ sources:
     content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:6b798d379715971009ff8f12a2ecdcf4c0874efb5d2ff3ce7cf8474bdd997bf0
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 26e38241a7acbd629ad28b29b952f76390f62b8a
+    revision: da1cf6e48c5843242cfd7ccb7c72d2af49c5faba
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:
@@ -84,6 +84,8 @@ runtime:
           apiBase: http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1
           name: granite-3.2-8b-tools
           provider: openai-compatible
+          egressNamespace: launchpad-flightpath-candidate
+          egressPort: 4000
     runtime_secret_name: virtualization-ai-model-runtime
     runtime_secret_value_path: adapter.model.apiKeySecret.name
     runtime_secret_sources:
