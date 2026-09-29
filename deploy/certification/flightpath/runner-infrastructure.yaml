@@ -109,15 +109,6 @@ spec:
     requests:
       storage: 5Gi
 ---
-apiVersion: image.openshift.io/v1
-kind: ImageStream
-metadata:
-  name: launchpad-certification-runner
-  namespace: launchpad-flightpath-candidate
-  labels:
-    app.kubernetes.io/name: launchpad-certification-runner
-    app.kubernetes.io/part-of: partner-ai-launchpad
----
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
@@ -139,6 +130,8 @@ spec:
       dockerfilePath: backend/CertificationContainerfile
   output:
     to:
-      kind: ImageStreamTag
-      name: launchpad-certification-runner:93dcdf0
+      kind: DockerImage
+      name: quay.io/rh-ee-jkershaw/launchpad-certification-runner:93dcdf0
+    pushSecret:
+      name: launchpad-registry-pull
   triggers: []

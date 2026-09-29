@@ -24,6 +24,11 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
     assert not any("create" in verbs and "secrets" in resources for _, resources, verbs in flattened)
     assert build["spec"]["source"]["type"] == "Git"
     assert len(build["spec"]["source"]["git"]["ref"]) == 40
+    assert build["spec"]["output"]["to"] == {
+        "kind": "DockerImage",
+        "name": "quay.io/rh-ee-jkershaw/launchpad-certification-runner:93dcdf0",
+    }
+    assert build["spec"]["output"]["pushSecret"]["name"] == "launchpad-registry-pull"
 
 
 def test_job_is_fail_closed_and_binds_candidate_identity() -> None:
