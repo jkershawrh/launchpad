@@ -19,6 +19,8 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: launchpad-certification-runner
+      imagePullSecrets:
+        - name: launchpad-registry-pull
       securityContext:
         runAsNonRoot: true
         seccompProfile: {type: RuntimeDefault}
