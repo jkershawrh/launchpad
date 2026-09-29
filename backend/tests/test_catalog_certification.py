@@ -752,12 +752,26 @@ def test_agent_201_remote_probe_reports_bounded_failure_stages_without_secrets()
         "showroom-contract",
         "connection-config",
         "model-key-binding",
-        "workload-apply",
         "workload-model-config",
         "workload-readiness",
     ):
         assert f'stage="{stage}"' in probe
+    assert 'stage="workload-apply-${manifest%.yaml}"' in probe
+    for manifest in (
+        "advisor-prompt-configmap.yaml",
+        "solution-tools.yaml",
+        "solution-agent.yaml",
+        "solution-ui.yaml",
+    ):
+        assert manifest in probe
     assert "BASH_COMMAND" not in probe
+
+
+def test_network_probe_distinguishes_workspace_and_story_failures():
+    probe = (ROOT / "scripts/certify-network-operations-seat.sh").read_text()
+
+    assert 'stage="workspace-http"' in probe
+    assert 'stage="story-http"' in probe
 
 
 def test_generic_runner_places_probes_after_the_all_seat_barrier_and_reclaims(

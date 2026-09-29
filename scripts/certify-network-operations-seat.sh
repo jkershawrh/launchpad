@@ -34,8 +34,9 @@ jq -e '.status == "ok" and .lab_mode == true' <<<"$health" >/dev/null
 stage="readiness"
 readiness="$(curl "${curl_options[@]}" "https://${app_host}/ready")"
 jq -e '.status == "ready"' <<<"$readiness" >/dev/null
-stage="workspace"
+stage="workspace-http"
 [[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/workspace")" == "200" ]]
+stage="story-http"
 [[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${app_host}/story/")" == "200" ]]
 
 stage="live-investigation"

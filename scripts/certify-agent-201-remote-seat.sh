@@ -63,13 +63,13 @@ test -n "$(
     --namespace "$namespace" -o jsonpath='{.data.api-key}'
 )"
 
-stage="workload-apply"
 for manifest in \
   advisor-prompt-configmap.yaml \
   solution-tools.yaml \
   solution-agent.yaml \
   solution-ui.yaml
 do
+  stage="workload-apply-${manifest%.yaml}"
   oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
     oc apply -n "$namespace" -f - \
     < "$repo_root/content-intel-xeon6-agent-201/manifests/$manifest" >/dev/null
