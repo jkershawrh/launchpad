@@ -48,3 +48,21 @@ def test_virtualization_301_overrides_chart_images_with_immutable_candidates() -
     assert catalog["metadata"]["workload_revision"] == "2fb50bfb5f597591e3851735706e9cef77534ab5"
     assert catalog["metadata"]["workload_routes"]["ui"] == "virt301"
     assert catalog["metadata"]["showroom_content_repo_url"].startswith("https://")
+
+    onboarding = yaml.safe_load(
+        (REPO_ROOT / "catalog-onboarding/virtualization-ai-301.yaml").read_text()
+    )
+    assert onboarding["runtime"]["workload"]["routes"]["ui"] == "virt301"
+
+    certification = yaml.safe_load(
+        (REPO_ROOT / "certification/catalog/virtualization-ai-301.yaml").read_text()
+    )
+    paths = [page["path"] for page in certification["spec"]["showroom"]["pages"]]
+    assert paths == [
+        "/www/virtualization-ai-301/index.html",
+        "/www/virtualization-ai-301/04-compare.html",
+        "/www/virtualization-ai-301/05-refuse.html",
+    ]
+
+    probe = (REPO_ROOT / "scripts/certify-virtualization-ai-seat.sh").read_text()
+    assert "service=virtualization-ai-301-adapter; route=virt301;" in probe

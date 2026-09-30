@@ -9,9 +9,9 @@ spec:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 1200, maximum_cleanup_seconds: 600}
   showroom:
     pages:
-      - {id: welcome, path: /www/virtualization-ai-301/master/index.html, marker: "Modernize VMs with Governed AI"}
-      - {id: compare, path: /www/virtualization-ai-301/master/04-compare.html, marker: "Compare and allow review"}
-      - {id: refuse, path: /www/virtualization-ai-301/master/05-refuse.html, marker: "Exercise refusal and abstention"}
+      - {id: welcome, path: /www/virtualization-ai-301/index.html, marker: "Modernize VMs with Governed AI"}
+      - {id: compare, path: /www/virtualization-ai-301/04-compare.html, marker: "Compare and allow review"}
+      - {id: refuse, path: /www/virtualization-ai-301/05-refuse.html, marker: "Exercise refusal and abstention"}
   seat_probe:
     argv: [bash, scripts/certify-virtualization-ai-seat.sh, virtualization-ai-301, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 900

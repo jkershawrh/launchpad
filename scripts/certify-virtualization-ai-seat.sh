@@ -30,7 +30,7 @@ case "$catalog_id" in
   virtualization-ai-201)
     vm_names=(contract-author-vm); service=virtualization-ai-201-adapter; route=lab; endpoint=/api/v1/qualify ;;
   virtualization-ai-301)
-    vm_names=(modernization-client); service=virtualization-ai-301-adapter; route=virtualization-ai-301; endpoint=/api/v1/modernize ;;
+    vm_names=(modernization-client); service=virtualization-ai-301-adapter; route=virt301; endpoint=/api/v1/modernize ;;
   virtualization-ai-401)
     vm_names=(operations-client); service=virtualization-ai-401-operations-adapter; route=virtualization-ai-401; endpoint=/api/v1/operations ;;
   virtualization-ai-501)

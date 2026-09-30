@@ -96,7 +96,7 @@ runtime:
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
     routes:
-      ui: virtualization-ai-301
+      ui: virt301
     readiness: []
 certification:
   stage: factory-source-qualified
