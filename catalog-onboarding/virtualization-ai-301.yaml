@@ -62,9 +62,6 @@ runtime:
     title: Story
     source: workload.route.ui
     path: /
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -85,6 +82,8 @@ runtime:
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
+    routes:
+      ui: virtualization-ai-301
     readiness: []
 certification:
   stage: factory-source-qualified

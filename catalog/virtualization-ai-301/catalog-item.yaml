@@ -72,9 +72,6 @@ metadata:
     title: Story
     source: workload.route.ui
     path: /
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -114,7 +111,8 @@ metadata:
   workload_runtime_secret_sources: {}
   workload_runtime_secret_value_path: ''
   workload_identity_value_path: ''
-  workload_routes: {}
+  workload_routes:
+    ui: virtualization-ai-301
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-301.git
   source_content_revision: 91e30a4af72bb4a15a4e5dfe2f29abb5692c698f
