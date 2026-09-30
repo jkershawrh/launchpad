@@ -21,11 +21,16 @@ def test_sandbox_base_and_release_path_are_immutable_and_public_registry_ready()
     workflow = (ROOT / ".github/workflows/sandbox-release.yml").read_text()
 
     assert "registry.access.redhat.com/ubi9/python-311@sha256:" in containerfile
+    assert "expected_sha:" in workflow
+    assert "ref: ${{ inputs.expected_sha }}" in workflow
+    assert 'test "$(git rev-parse HEAD)" = "${{ inputs.expected_sha }}"' in workflow
     assert "platforms: linux/amd64" in workflow
-    assert "push: true" in workflow
-    assert "ghcr.io/${{ github.repository_owner }}/launchpad-sandbox:${{ github.sha }}" in workflow
-    assert "sbom: true" in workflow
+    assert "Full vulnerability inventory" in workflow
+    assert "Block fixable high and critical vulnerabilities" in workflow
+    assert "Generate the SBOM" in workflow
+    assert "Sign the published digest with GitHub OIDC" in workflow
     assert "attest-build-provenance" in workflow
+    assert "image-digest.txt" in workflow
 
 
 def test_flightpath_uses_the_exact_published_sandbox_digest():
