@@ -53,7 +53,7 @@ spec:
           emptyDir: {}
       containers:
         - name: router
-          image: ghcr.io/rhpds/launchpad-backend@sha256:b3bd70e2502962261d82f672bcf6493bee4007a7100463be0d96e5219697d678
+          image: ghcr.io/rhpds/launchpad-backend@sha256:a01b936642b04c998ec0549d34b89e62dfde80d34e14babbbf1beb145dea4e76
           imagePullPolicy: IfNotPresent
           command: [uvicorn]
           # The shared public origin carries the participant, Keycloak, and
