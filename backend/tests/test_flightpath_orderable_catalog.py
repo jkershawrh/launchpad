@@ -43,7 +43,9 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
         "intel-llm-cpu-serving",
         "network-operations-agent",
         "rag-on-xeon",
+        "sovereign-ai-101",
         "virtualization-ai-401",
+        "virtualization-ai-501",
     }
 
 
@@ -61,12 +63,15 @@ def test_specialty_catalog_status_matches_certification_evidence():
     assert {catalog_id: items[catalog_id]["status"] for catalog_id in expected} == expected
 
 
-def test_rebuilt_sovereign_101_is_pinned_but_not_orderable_before_recertification():
+def test_rebuilt_sovereign_101_is_one_seat_certified_and_internal_only():
     item = _effective_flightpath_items()["sovereign-ai-101"]
     metadata = item["metadata"]
 
-    assert item["status"] == "draft"
-    assert metadata["certification_stage"] == "immutable-source-published"
+    assert item["status"] == "active"
+    assert metadata["certification_stage"] == "1-seat-certified"
+    assert metadata["max_workshop_seats"] == 1
+    assert metadata["allowed_exposure_policies"] == ["internal"]
+    assert metadata["activation_blockers"] == []
     assert metadata["showroom_content_ref"] == (
         "6d7c6f267407d42ca465b8a381d841d8b5b77567"
     )
@@ -77,7 +82,6 @@ def test_rebuilt_sovereign_101_is_pinned_but_not_orderable_before_recertificatio
     assert metadata["workload_helm_values"]["presentation_image"].endswith(
         "@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d"
     )
-    assert metadata["activation_blockers"]
 
 
 def test_agentic_501_is_mounted_as_a_fail_closed_destination_qualification_draft():

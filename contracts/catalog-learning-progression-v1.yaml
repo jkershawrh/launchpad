@@ -36,7 +36,7 @@ learning_tracks:
   sovereign_ai:
     label: Sovereign AI
     entries:
-      "101": {title: Understand Sovereign AI, lifecycle: draft, catalog_id: sovereign-ai-101}
+      "101": {title: Understand Sovereign AI, lifecycle: active, catalog_id: sovereign-ai-101}
       "201": {title: Build a Governed Sovereign Workload, lifecycle: draft, catalog_id: sovereign-ai-201}
       "301": {title: Govern Models, Data, and Agents, lifecycle: draft, catalog_id: sovereign-ai-301}
       "401": {title: Confidential AI with Intel TDX, lifecycle: draft, catalog_id: sovereign-ai-401}

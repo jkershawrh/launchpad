@@ -1,15 +1,14 @@
 catalog_item_id: virtualization-ai-501
 display_name: "Virtualization + AI 501 \u2014 Qualify a Governed VM Inference Fleet"
-description: Non-orderable factory candidate for fleet-scale VM inference qualification.
+description: Guided one-seat experience for qualifying a governed virtual-machine
+  inference fleet with evidence-backed human review.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
-- kubevirt
-- persistent-storage
-- correlated-telemetry
-- inference-endpoint
+- openshift-virtualization
+- showroom
 default_hardware_profile: xeon-basic
 default_quota_profile: large
 default_ttl: 4h
@@ -39,34 +38,26 @@ metadata:
   shared_blueprint: red-hat-intel-virtualization-ai-v1
   solution_family: virtualization_ai
   showroom: true
-  showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
-  showroom_content_ref: 5df91a725568d459474436a14160bc38fcda9c22
-  showroom_content_playbook: showroom/default-site.yml
+  showroom_content_repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
+  showroom_content_ref: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
+  showroom_content_playbook: default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-501.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Live OpenShift, KubeVirt, VM migration, Intel Xeon placement, inference execution,
-    and correlated telemetry have not been observed.
-  - Resource values are a chart-derived proposal, not destination-measured live-seat
-    capacity; the recorded largest run is the single local REHEARSAL factory journey.
-  - Launchpad source approval, trusted rendering, live-seat capacity, reclaim, certification,
-    and promotion remain required.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/virtualization-ai-501.yaml
   allowed_exposure_policies:
   - internal
   showroom_journey: virtualization-ai-501
   showroom_title: "Virtualization + AI 501 \u2014 Qualify a Governed VM Inference\
     \ Fleet"
-  namespace_slug: virtualization-ai-501
+  namespace_slug: v501
   showroom_terminal_storage: true
   showroom_tabs:
   - id: story
@@ -94,8 +85,8 @@ metadata:
   workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: git@github.com:jkershawrh/virtualization-ai-501.git
-  workload_revision: 5df91a725568d459474436a14160bc38fcda9c22
+  workload_repo: https://github.com/jkershawrh/virtualization-ai-501.git
+  workload_revision: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-501
@@ -103,9 +94,10 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: virtualization-ai-501
   workload_helm_values:
-    workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:126ead4ea79bbbe62f16f7a7211f384429199d814c263bcd6375ef1d0b7b9078
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:21dee7878a1aece34e567d859e95f3da2141944c77cb17ce65eb60993e9f73b8
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:e14a5dc17dfb1a63321a99d4e76ad904dd271e5fb57b359c62c263891b8173bf
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:06e5e51b88f561bd401dd634acdcc07e3c6112caf4316fb46c989ac8baf3f762
     presentation_enabled: true
+    storage_class: nfs-storage
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
   workload_runtime_secret_sources: {}
@@ -115,5 +107,5 @@ metadata:
     ui: virtualization-ai-501
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-501.git
-  source_content_revision: 5df91a725568d459474436a14160bc38fcda9c22
+  source_content_revision: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
   source_references: {}

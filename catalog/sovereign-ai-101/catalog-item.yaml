@@ -1,10 +1,11 @@
 catalog_item_id: sovereign-ai-101
 display_name: 'Sovereign AI 101: Understand Governed Inference'
 description: Trace a governed rehearsal request through classification, deterministic
-  policy, bounded response dispatch, evidence receipts, refusal states, and human authority.
+  policy, bounded response dispatch, evidence receipts, refusal states, and human
+  authority.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -46,17 +47,14 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/sovereign-ai-101.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Certify the newly published revision in one Flightpath seat.
-  - Verify the Interactive Story, all eight guided stages, Terminal, participant isolation, and zero-residue reclaim.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/sovereign-ai-101.yaml
   allowed_exposure_policies:
   - internal
-  - public_code
   showroom_journey: sovereign-ai-101
   showroom_title: 'Sovereign AI 101: Understand Governed Inference'
   namespace_slug: sovereign-ai-101

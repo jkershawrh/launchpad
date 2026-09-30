@@ -235,10 +235,10 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
             "presentation": "sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e",
             "workload": "sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc",
         },
-            "virtualization-ai-501": {
-                "revision": "5df91a725568d459474436a14160bc38fcda9c22",
-                "presentation": "sha256:21dee7878a1aece34e567d859e95f3da2141944c77cb17ce65eb60993e9f73b8",
-                "workload": "sha256:126ead4ea79bbbe62f16f7a7211f384429199d814c263bcd6375ef1d0b7b9078",
+        "virtualization-ai-501": {
+            "revision": "6e65858f773e2a28a4874a2a59785e8c8ab52b07",
+            "presentation": "sha256:06e5e51b88f561bd401dd634acdcc07e3c6112caf4316fb46c989ac8baf3f762",
+            "workload": "sha256:e14a5dc17dfb1a63321a99d4e76ad904dd271e5fb57b359c62c263891b8173bf",
         },
         "virtualization-ai-401": {
             "revision": "f00b4bc075acf37f014b8ee55d5810625639b6b3",
@@ -256,10 +256,14 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
         )
         metadata = catalog["metadata"]
 
-        expected_status = "active" if catalog_id == "virtualization-ai-401" else "draft"
+        expected_status = (
+            "active"
+            if catalog_id in {"virtualization-ai-401", "virtualization-ai-501"}
+            else "draft"
+        )
         expected_stage = (
             "1-seat-certified"
-            if catalog_id == "virtualization-ai-401"
+            if catalog_id in {"virtualization-ai-401", "virtualization-ai-501"}
             else "immutable-source-published"
         )
         assert catalog["status"] == intake["catalog"]["status"] == expected_status
@@ -274,7 +278,7 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
         assert release["workload"] in str(metadata["workload_helm_values"])
         expected_overall = {
             "virtualization-ai-401": "one-seat-live-certified-active",
-            "virtualization-ai-501": "immutable-source-published-draft",
+            "virtualization-ai-501": "one-seat-live-certified-active",
             "agentic-ai-601": "immutable-source-published-draft",
         }[catalog_id]
         assert review["labs"][catalog_id]["overall_status"] == expected_overall
@@ -293,6 +297,17 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
         "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:7115b9332335e9ceb77f68b9dc04828b36e1f0c874deee56272556fa3001bf25",
         "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:864ad89cb5f4bae6f2b403c31604d78692e30afe9275c0d753a9eafaeae9d8ca",
     }
+
+
+def test_virtualization_501_generated_route_label_fits_openshift_limit() -> None:
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/virtualization-ai-501/catalog-item.yaml").read_text()
+    )
+    metadata = catalog["metadata"]
+    namespace = f"launchpad-flightpath-candida-{metadata['namespace_slug']}-ffffff"
+    generated_label = f"{metadata['workload_routes']['ui']}-{namespace}"
+
+    assert len(generated_label) <= 63
 
 
 def test_virtualization_401_certification_capabilities_match_flightpath() -> None:
@@ -365,6 +380,21 @@ def test_virtualization_501_truthful_rehearsal_does_not_allocate_a_model_secret(
     assert metadata["workload_runtime_secret_sources"] == {}
     assert runtime["workload"]["runtime_secret_name"] == ""
     assert runtime["workload"]["runtime_secret_sources"] == {}
+    assert catalog["required_capabilities"] == runtime["required_capabilities"] == [
+        "openshift",
+        "openshift-virtualization",
+        "showroom",
+    ]
+    assert metadata["showroom_content_repo_url"].startswith("https://github.com/")
+    assert metadata["workload_repo"].startswith("https://github.com/")
+    contract = yaml.safe_load(
+        (ROOT / "certification/catalog/virtualization-ai-501.yaml").read_text()
+    )
+    assert [page["path"] for page in contract["spec"]["showroom"]["pages"]] == [
+        "/www/virtualization-ai-501/index.html",
+        "/www/virtualization-ai-501/01-discover.html",
+        "/www/virtualization-ai-501/06-qualify.html",
+    ]
 
 
 def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> None:
@@ -442,16 +472,16 @@ def test_agent_reliability_records_verified_registry_mirror_provenance() -> None
     assert provenance["ghcr_visibility"] == "public"
 
 
-def test_sovereign_101_records_exact_published_source_without_inheriting_live_proof() -> None:
+def test_sovereign_101_records_exact_published_source_and_live_proof() -> None:
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
     lab = review["labs"]["sovereign-ai-101"]
     release = lab["release"]
 
-    assert lab["overall_status"] == "immutable-source-published-draft"
+    assert lab["overall_status"] == "one-seat-live-certified-active"
     assert lab["candidate_revision"] == (
         "6d7c6f267407d42ca465b8a381d841d8b5b77567"
     )
-    assert release["status"] == "published-not-live-certified"
+    assert release["status"] == "published-live-certified"
     assert release["workflow"].endswith("/actions/runs/36765624274")
     assert release["presentation_image"].endswith(
         "@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d"

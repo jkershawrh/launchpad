@@ -7,7 +7,7 @@ catalog:
     authority.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '101'
   learning_stage: Learn
@@ -67,7 +67,6 @@ runtime:
     source: showroom.terminal
   allowed_exposure_policies:
   - internal
-  - public_code
   workload:
     source_kind: kustomize
     gitops_ready: true
@@ -86,18 +85,16 @@ runtime:
       ui: sovereign-presentation
     readiness: []
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Certify the newly published revision in one Flightpath seat.
-  - Verify the Interactive Story, all eight guided stages, Terminal, participant isolation, and zero-residue reclaim.
+  activation_blockers: []
   certification_scope:
-  - The previous source revision was certified in one internal Flightpath seat;
-    that proof does not transfer to this newly published revision.
-  - The immutable experience is explicitly REHEARSAL; it makes no live-model or
-    Intel CPU placement claim.
+  - The previous source revision was certified in one internal Flightpath seat; that
+    proof does not transfer to this newly published revision.
+  - The immutable experience is explicitly REHEARSAL; it makes no live-model or Intel
+    CPU placement claim.
   - Certification is limited to one seat. Higher scale gates remain independent.
   proof_contract: certification/catalog/sovereign-ai-101.yaml

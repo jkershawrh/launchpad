@@ -95,7 +95,7 @@ labs:
     source_repository: https://github.com/jkershawrh/sovereign-ai-101
     candidate_branch: codex/sovereign-ai-101-lab-experience
     candidate_revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-active
     story:
       status: green-local
       evidence: internal policy assistant mission with human decision ownership
@@ -112,17 +112,17 @@ labs:
       status: green-local
       evidence: learner checkpoints are nested under Prove, covering allow, deny, fail-closed, receipt verification, decision brief, and cleanup
     story_tab:
-      status: prepared-not-deployed
-      evidence: catalog and onboarding candidates explicitly route Interactive Story to /
+      status: green-live
+      evidence: the exact presentation route returned HTTP 200 in the certified Flightpath seat
     operators:
-      status: not-required
-      evidence: this 101 experience does not claim an OpenShift operator workflow
+      status: green-live-scope
+      evidence: the participant terminal had edit in its own namespace and was denied cross-namespace and node access; this 101 experience does not claim a separate operator workflow
     inference:
-      status: rehearsal-only
-      evidence: the UI and service label the deterministic path REHEARSAL; no production model claim is made
+      status: rehearsal-certified
+      evidence: the live seat proved mode REHEARSAL, live_qualified false, and no production model claim
     cleanup:
-      status: green-local
-      evidence: session credential and participant artifacts are removed and service cleanup is verified
+      status: green-live
+      evidence: the session was removed, reclaim completed in 62.662 seconds, model keys were revoked, and all tracked resource counts reached zero
     tests:
       status: green-local
       evidence:
@@ -131,7 +131,7 @@ labs:
         - Antora build passed
         - 293 local links and anchors passed
     release:
-      status: published-not-live-certified
+      status: published-live-certified
       workflow: https://github.com/jkershawrh/sovereign-ai-101/actions/runs/36765624274
       source_revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
       presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d
@@ -142,7 +142,13 @@ labs:
         - SPDX SBOMs retained
         - exact image digests signed and attested with GitHub OIDC
         - workflow identity, SBOM attestation, and custom provenance attestation verified
-    next_action: run one-seat Flightpath certification for the exact pinned release, Story, all eight guided stages, Terminal, isolation, reclaim, and zero residue before activation
+    live_certification:
+      observed_at: "2026-09-30"
+      result: GREEN-live
+      rubric_score: 100
+      evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-101-1seat-r1.json
+      proof: "Exact immutable release, six participant pages, allow/deny/evidence journey, truthful REHEARSAL state, namespace isolation, 62.662-second reclaim, model-key revocation, and zero residue all passed."
+    next_action: retain the one-seat internal ceiling and certify public_code exposure separately
 
   sovereign-ai-201:
     display_name: "Sovereign AI 201: Build the Governed Inference Boundary"
@@ -758,25 +764,37 @@ labs:
 
   virtualization-ai-501:
     display_name: "Virtualization + AI 501 — Qualify a Governed VM Inference Fleet"
-    overall_status: immutable-source-published-draft
-    story: {status: green-local, evidence: "The candidate qualifies the evidence handed off from 401 across a distinct three-VM fleet envelope."}
-    show: {status: rehearsal-only, evidence: "No live KubeVirt fleet, migration, Xeon placement, inference execution, or correlated telemetry has been observed."}
-    learn: {status: green-local, evidence: "Discovery, baseline, migration, disruption, correlation, qualification, and handoff distinguish fleet proof from proposed capacity."}
-    do: {status: green-local, evidence: "The learner executes baseline, migration, disruption, correlation-gap, and capacity-breach scenarios using packaged fixtures."}
-    prove: {status: green-local, evidence: "ALLOW_REVIEW, REFUSE, and ABSTAIN are asserted with seven records, promotion false, and every quantitative value labeled synthetic REHEARSAL."}
-    operators: {status: conditional, evidence: "Console VM/PVC checkpoints and terminal commands are defined; destination VM views and fixture serving need one-seat proof."}
+    overall_status: one-seat-live-certified-active
+    story: {status: green-live, evidence: "The live one-seat experience qualifies the evidence handed off from 401 across a distinct three-VM fleet envelope."}
+    show: {status: green-live-truthful-rehearsal, evidence: "Flightpath ran three real KubeVirt VMs plus the presentation and qualification service; quantitative baseline, migration, and disruption trials remain explicitly labeled REHEARSAL."}
+    learn: {status: green-live, evidence: "Discovery, baseline, migration, disruption, correlation, qualification, and handoff distinguish fleet proof from proposed capacity."}
+    do: {status: green-live, evidence: "The participant path exercises the live namespace and three-VM fleet while submitting bounded baseline, migration, and disruption qualification evidence."}
+    prove: {status: green-live, evidence: "The exact release returned ALLOW_REVIEW, preserved human authority, passed all functional assertions, and earned a 100/100 one-seat rubric."}
+    operators: {status: green-live, evidence: "The scoped terminal verified own-namespace edit access, denied cross-namespace and node access, and the live fleet reached three Running VMs and three Ready VMIs."}
     inference: {status: not-claimed, evidence: "The candidate reports llm_authority NONE, makes no Intel performance or live inference claim, and Launchpad no longer allocates an unused model entitlement or runtime secret."}
-    cleanup: {status: green-local, evidence: "Participant cleanup is safe and platform reclaim remains Launchpad-owned."}
+    cleanup: {status: green-live, evidence: "Automatic reclaim revoked the model key and left zero namespaces, Argo CD Applications, PVCs, PVs, Routes, RoleBindings, or Secrets."}
     source_state:
       repository: /Users/jkershaw/Documents/virtualization-ai-501
-      published_revision: 5df91a725568d459474436a14160bc38fcda9c22
-      catalog_pinned_revision: 5df91a725568d459474436a14160bc38fcda9c22
-      publication_workflow: https://github.com/jkershawrh/virtualization-ai-501/actions/runs/36765619829
+      repository_visibility: public-after-301-blob-credential-pattern-scan
+      published_revision: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
+      catalog_pinned_revision: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
+      publication_workflow: https://github.com/jkershawrh/virtualization-ai-501/actions/runs/36771381538
       immutable_images:
-        presentation: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:21dee7878a1aece34e567d859e95f3da2141944c77cb17ce65eb60993e9f73b8
-        qualification_adapter: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:126ead4ea79bbbe62f16f7a7211f384429199d814c263bcd6375ef1d0b7b9078
-      publication_validation: "The exact source passed full qualification, immutable linux/amd64 publication, vulnerability gates, SPDX SBOM generation, signing, SLSA provenance, and verification."
-    next_action: certify the exact pinned release for VM readiness, Console/Terminal operation, fixtures, truthful REHEARSAL evidence, reclaim, and zero residue; retain live fleet claims as unproven
+        presentation: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:06e5e51b88f561bd401dd634acdcc07e3c6112caf4316fb46c989ac8baf3f762
+        qualification_adapter: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:e14a5dc17dfb1a63321a99d4e76ad904dd271e5fb57b359c62c263891b8173bf
+      publication_validation: "The pinned runtime images passed immutable linux/amd64 publication, vulnerability gates, SPDX SBOM generation, signing, SLSA provenance, and verification; the later content-only root-playbook correction passed the complete local source suite."
+      admission_attempt:
+        observed_at: "2026-09-30"
+        result: RED-live-no-mutation
+        evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-501-1seat-r1.json
+        failure: "Flightpath correctly rejected noncanonical kubevirt, persistent-storage, correlated-telemetry, and inference-endpoint capability names before creating an order."
+        remediation: "The catalog now uses deployed openshift, openshift-virtualization, and showroom capabilities, removes the unclaimed model dependency, and uses public HTTPS source transport."
+      one_seat_certification:
+        observed_at: "2026-09-30"
+        result: GREEN-live
+        evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-501-1seat-r8.json
+        proof: "100/100: public source checkout, three Running VMs and Ready VMIs, presentation and adapter health, participant guide markers, ALLOW_REVIEW outcome, namespace isolation, model-key revocation, and zero-residue reclaim. Direct internal Showroom checks explicitly tolerated Flightpath's known untrusted wildcard certificate; public exposure was not certified."
+    next_action: retain the measured internal one-seat ceiling and truthful REHEARSAL labeling; certify trusted public exposure and higher capacity separately if required
 
   smoke-test:
     display_name: "Launchpad 001: Platform Smoke Test"

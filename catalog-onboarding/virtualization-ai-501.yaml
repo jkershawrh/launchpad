@@ -2,10 +2,11 @@ api_version: launchpad.redhat.com/v1alpha1
 catalog:
   catalog_item_id: virtualization-ai-501
   display_name: "Virtualization + AI 501 \u2014 Qualify a Governed VM Inference Fleet"
-  description: Non-orderable factory candidate for fleet-scale VM inference qualification.
+  description: Guided one-seat experience for qualifying a governed virtual-machine
+    inference fleet with evidence-backed human review.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '501'
   learning_stage: Scale
@@ -22,25 +23,24 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
-    revision: 5df91a725568d459474436a14160bc38fcda9c22
-    playbook: showroom/default-site.yml
+    revision: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
+    playbook: default-site.yml
     start_path: showroom/content
-    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
+    gitops_repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
-    revision: 5df91a725568d459474436a14160bc38fcda9c22
+    revision: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
     deploy_path: charts/virtualization-ai-501
-    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
+    gitops_repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
 runtime:
-  namespace_slug: virtualization-ai-501
+  namespace_slug: v501
   workshop_cluster_ref: flightpath
   deployment_type: helm
   deployment_scope: seat
   required_capabilities:
   - openshift
-  - kubevirt
-  - persistent-storage
-  - correlated-telemetry
+  - openshift-virtualization
+  - showroom
   required_models: []
   seat_resources:
     cpu_millicores: 1625
@@ -73,9 +73,10 @@ runtime:
     gitops_ready: true
     release_name: virtualization-ai-501
     helm_values:
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:126ead4ea79bbbe62f16f7a7211f384429199d814c263bcd6375ef1d0b7b9078
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:21dee7878a1aece34e567d859e95f3da2141944c77cb17ce65eb60993e9f73b8
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:e14a5dc17dfb1a63321a99d4e76ad904dd271e5fb57b359c62c263891b8173bf
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:06e5e51b88f561bd401dd634acdcc07e3c6112caf4316fb46c989ac8baf3f762
       presentation_enabled: true
+      storage_class: nfs-storage
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
@@ -83,18 +84,10 @@ runtime:
       ui: virtualization-ai-501
     readiness: []
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Live OpenShift, KubeVirt, VM migration, Intel Xeon placement, inference execution,
-    and correlated telemetry have not been observed.
-  - Resource values are a chart-derived proposal, not destination-measured live-seat
-    capacity; the recorded largest run is the single local REHEARSAL factory journey.
-  - Launchpad source approval, trusted rendering, live-seat capacity, reclaim, certification,
-    and promotion remain required.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   proof_contract: certification/catalog/virtualization-ai-501.yaml
