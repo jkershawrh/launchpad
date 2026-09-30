@@ -1,14 +1,15 @@
 catalog_item_id: openshift-operators-workshop
-display_name: 'OpenShift AI 201: Operator Workshop'
-description: A guided, seat-isolated OpenShift workshop using the web console and
-  terminal to explore Red Hat AI, application, observability, and Intel operators
-  on Flightpath.
+display_name: 'OpenShift 201: Build an Operator-Managed Pipeline'
+description: A guided, seat-isolated OpenShift Pipelines workshop that teaches
+  participants to author namespaced custom resources, observe Operator
+  reconciliation, verify results, and prove cleanup.
 category: guided_build
-version: 1.0.1-flightpath.1
-status: active
+version: 2.0.0-candidate.2
+status: draft
 required_capabilities:
 - openshift
 - showroom
+- openshift-pipelines
 default_hardware_profile: xeon-basic
 default_quota_profile: standard
 default_ttl: 4h
@@ -23,7 +24,7 @@ supported_branding:
 metadata:
   learning_level: '201'
   learning_stage: Build
-  experience_type: platform_operations_build
+  experience_type: operator_automation_build
   prerequisites:
   - ai-sandbox
   recommended_next_items: []
@@ -34,31 +35,26 @@ metadata:
   shared_blueprint: red-hat-intel-agentic-v1
   solution_family: platform_foundations
   showroom: true
-  showroom_journey: openshift-operators
+  showroom_journey: openshift-pipelines
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: 5-seat-certified
-  max_workshop_seats: 5
+  certification_stage: source-reviewed
+  max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
   onboarding_contract: catalog-onboarding/openshift-operators-workshop.yaml
   certification_proof_contract: certification/catalog/openshift-operators-workshop.yaml
-  seat_cpu_millicores: 165
-  seat_memory_mib: 464
-  seat_pods: 1
+  seat_cpu_millicores: 265
+  seat_memory_mib: 592
+  seat_pods: 2
   showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
-  showroom_content_ref: 079f4829938cb01ee491198001e68db04282d05a
+  showroom_content_ref: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
   showroom_content_playbook: site-openshift-operators.yml
-  showroom_title: 'OpenShift AI 201: Operator Workshop'
+  showroom_title: 'OpenShift 201: Build an Operator-Managed Pipeline'
   operator_capabilities:
-  - openshift-ai
-  - openshift-serverless
-  - openshift-service-mesh
-  - cluster-observability
-  - openshift-gitops
-  - intel-device-plugins
+  - openshift-pipelines
   allowed_exposure_policies:
   - internal
   - public_code

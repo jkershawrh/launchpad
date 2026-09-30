@@ -8,7 +8,7 @@ catalog:
     Build and tune a namespace-isolated AI solution advisor with LangGraph,
     MCP tools, and shared Intel Xeon inference.
   category: guided_build
-  version: "1.0.8-flightpath.1"
+  version: "1.0.9-flightpath.1"
   status: active
   supported_branding:
     - redhat-intel-default
@@ -33,7 +33,7 @@ learning:
 sources:
   showroom:
     repo_url: "https://github.com/jkershawrh/launchpad.git"
-    revision: "9526ede61b5c31949f3a1bedd133b5a17e554178"
+    revision: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
     playbook: site-intel-xeon6-agent-201.yml
     start_path: content-intel-xeon6-agent-201
   workload:

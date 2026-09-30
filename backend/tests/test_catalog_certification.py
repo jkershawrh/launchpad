@@ -23,6 +23,16 @@ from app.services.catalog_certification import (
 from app.services.catalog_onboarding import load_intake
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_runner_treats_reclaimed_workshops_as_terminal():
+    source = (ROOT / "scripts/catalog_certification.py").read_text()
+    terminal_block = source.split("TERMINAL_WORKSHOP_STATUSES", 1)[1].split("}", 1)[0]
+    assert '"completed"' in terminal_block
+    assert '"reclaimed"' in terminal_block
+    assert '"cleanup_failed"' in terminal_block
+
+
 CONTRACT_PATH = ROOT / "certification/catalog/multi-agent-quickstart.yaml"
 INTAKE_PATH = ROOT / "catalog-onboarding/multi-agent-quickstart.yaml"
 FLIGHTPATH_MULTI_AGENT_CONTRACT_PATH = (
@@ -194,7 +204,7 @@ def test_agent_201_certification_targets_exact_flightpath_candidate_release():
         for assertion in contract["spec"]["seat_probe"]["json_assertions"]
         if assertion["path"] == "cluster_ref"
     } == {"flightpath"}
-    assert intake["catalog"]["version"] == "1.0.8-flightpath.1"
+    assert intake["catalog"]["version"] == "1.0.9-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
     assert intake["certification"]["stage"] == "thirty-seat-certified"
     assert intake["certification"]["max_workshop_seats"] == 30
@@ -245,7 +255,7 @@ def test_cpu_serving_certification_targets_exact_flightpath_candidate_release():
         for assertion in contract["spec"]["seat_probe"]["json_assertions"]
         if assertion["path"] == "cluster_ref"
     } == {"flightpath"}
-    assert intake["catalog"]["version"] == "1.0.12-flightpath.1"
+    assert intake["catalog"]["version"] == "1.0.13-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
     assert intake["runtime"]["inference_endpoint"] == "direct_vllm_candidate"
     assert intake["certification"]["stage"] == "five-seat-certified"

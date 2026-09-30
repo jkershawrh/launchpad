@@ -2,7 +2,7 @@ api_version: launchpad.redhat.com/v1alpha1
 kind: CatalogCertification
 metadata:
   catalog_item_id: openshift-operators-workshop
-  display_name: "OpenShift AI 201: Operator Workshop"
+  display_name: "OpenShift 201: Build an Operator-Managed Pipeline"
 spec:
   target_cluster: flightpath
   kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
@@ -12,9 +12,11 @@ spec:
     - {seats: 5, required_consecutive_runs: 1, probe_concurrency: 5, maximum_ready_seconds: 1500, maximum_cleanup_seconds: 900}
   showroom:
     pages:
-      - {id: welcome, path: /www/modules/index.html, marker: "OpenShift AI Operator Workshop"}
-      - {id: discover, path: /www/modules/02-operator-discovery.html, marker: "Discover Platform Operators"}
-      - {id: deploy, path: /www/modules/03-deploy-and-observe.html, marker: "Deploy and Observe a Workload"}
+      - {id: welcome, path: /www/modules/index.html, marker: "Build an Operator-Managed Pipeline"}
+      - {id: discover, path: /www/modules/02-operator-discovery.html, marker: "Discover the Operator API"}
+      - {id: author, path: /www/modules/03-deploy-and-observe.html, marker: "Author the desired state"}
+      - {id: run, path: /www/modules/04-run-and-observe.html, marker: "Run and observe reconciliation"}
+      - {id: cleanup, path: /www/modules/05-prove-and-cleanup.html, marker: "Prove cleanup and ownership"}
   seat_probe:
     argv: [bash, scripts/certify-operator-workshop-seat.sh, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 600
@@ -22,10 +24,10 @@ spec:
     json_assertions:
       - {path: result, equals: GREEN-live-internal-seat}
       - {path: cluster_ref, equals: flightpath}
-      - {path: exercise.rollout_ready, equals: true}
-      - {path: exercise.route_http_status, equals: 200}
-      - {path: exercise.response_marker, equals: true}
-      - {path: exercise.resources_removed, equals: true}
+      - {path: operator.api_available, equals: true}
+      - {path: operator.run_succeeded, equals: true}
+      - {path: operator.result_marker, equals: true}
+      - {path: operator.resources_removed, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

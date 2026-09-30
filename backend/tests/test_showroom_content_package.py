@@ -18,10 +18,9 @@ INTEL_GUIDED_LABS = [
         "title": "Intel Xeon 6 201 — Building an AI Agent",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
-        # Immutable commit behind the Agent 201 pilot fix release.
-        "content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
+        "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
         "status": "active",
-        "content_repo": "https://github.com/rhpds/launchpad.git",
+        "content_repo": "https://github.com/jkershawrh/launchpad.git",
         "max_workshop_seats": 30,
         "certification_stage": "thirty-seat-certified",
     },
@@ -34,11 +33,11 @@ INTEL_GUIDED_LABS = [
         "model": "granite-2b-cpu",
         "models": ["granite-3.2-8b-tools", "granite-2b-cpu"],
         "workspace_route": "rag",
-        "content_ref": "5292234017bf3f538767e6b6a3c627d146fca086",
+        "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
         "status": "active",
-        "content_repo": "https://github.com/rhpds/launchpad.git",
-        "max_workshop_seats": 30,
-        "certification_stage": "thirty-seat-certified",
+        "content_repo": "https://github.com/jkershawrh/launchpad.git",
+        "max_workshop_seats": 5,
+        "certification_stage": "five-seat-certified",
     },
     {
         "catalog_id": "intel-llm-tool-calling",
@@ -48,7 +47,7 @@ INTEL_GUIDED_LABS = [
         "title": "Enable AI Tool Calling on OpenShift",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "",
-        "content_ref": "079f4829938cb01ee491198001e68db04282d05a",
+        "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
         "status": "active",
         "content_repo": "https://github.com/jkershawrh/launchpad.git",
         "max_workshop_seats": 5,
@@ -118,26 +117,26 @@ def test_operator_workshop_playbook_starts_on_operator_journey():
 
     assert playbook["site"]["start_page"] == "modules::index.adoc"
     assert playbook["content"]["sources"][0]["start_path"] == "content-operators"
-    assert playbook["asciidoc"]["attributes"]["showroom_journey"] == ("openshift-operators")
+    assert playbook["asciidoc"]["attributes"]["showroom_journey"] == ("openshift-pipelines")
     assert playbook["output"]["dir"] == "./www"
 
     operator_index = ROOT / "content-operators/modules/ROOT/pages/index.adoc"
-    assert "OpenShift AI Operator Workshop" in operator_index.read_text()
+    assert "Build an Operator-Managed Pipeline" in operator_index.read_text()
     assert "Inference Overdrive" not in operator_index.read_text()
     assert "*OpenShift Console* operator tab" in operator_index.read_text()
     assert "*launchpad-public*" in operator_index.read_text()
-    assert "no separate OpenShift username" in operator_index.read_text()
-    assert "{cluster_display_name}" in operator_index.read_text()
+    assert "no separate password" in operator_index.read_text()
     assert "Oberon" not in operator_index.read_text()
 
     discovery = ROOT / "content-operators/modules/ROOT/pages/02-operator-discovery.adoc"
-    assert "{cluster_display_name}" in discovery.read_text()
+    assert "tekton.dev" in discovery.read_text()
     assert "Oberon" not in discovery.read_text()
 
     exercise = ROOT / "content-operators/modules/ROOT/pages/03-deploy-and-observe.adoc"
     exercise_text = exercise.read_text()
-    assert "quay.io/openshifttest/hello-openshift:1.2.0" in exercise_text
-    assert "curl" in exercise_text
+    assert "kind: Task" in exercise_text
+    assert "kind: Pipeline" in exercise_text
+    assert "hello-openshift" not in exercise_text
 
 
 def test_nookbag_config_has_guided_workspace_tabs():
@@ -373,9 +372,9 @@ def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass()
         for filename in ("03-wire-agent.adoc", "04-test-and-tune.adoc")
     )
 
-    assert catalog["version"] == "1.0.7"
+    assert catalog["version"] == "1.0.9-flightpath.1"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "5292234017bf3f538767e6b6a3c627d146fca086"
+        "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
     )
     assert 'ADVISOR_API_URL="http://solution-agent:8082"' in exercises
     assert exercises.count("${ADVISOR_API_URL}/api/v1/advise") == 5
@@ -490,6 +489,14 @@ def test_cpu_serving_content_uses_route_name_that_fits_launchpad_namespace():
     assert "jsonpath=" not in content
     assert 'curl -s "${MAAS_ENDPOINT}' not in content
     assert 'curl -ks "${MAAS_ENDPOINT}' in content
+    assert "$0/token" not in content
+    assert "your LiteLLM virtual key" not in content
+    assert "OpenShift Console Checkpoint" in content
+    assert "Workloads" in content
+    assert "PersistentVolumeClaims" in content
+    assert "Networking" in content
+    assert "Show the Live Model First" in content
+    assert "Served model:" in content
 
 
 def test_cpu_serving_catalog_admits_the_models_and_capabilities_used_by_the_full_journey():
@@ -664,11 +671,14 @@ def test_cpu_serving_catalog_uses_current_immutable_showroom_revision():
     catalog = yaml.safe_load(
         (ROOT / "catalog/intel-llm-cpu-serving/catalog-item.yaml").read_text()
     )
-
-    assert catalog["version"] == "1.0.12"
-    assert catalog["metadata"]["showroom_content_ref"] == (
-        "5292234017bf3f538767e6b6a3c627d146fca086"
+    intake = yaml.safe_load(
+        (ROOT / "catalog-onboarding/intel-llm-cpu-serving.yaml").read_text()
     )
+
+    assert catalog["version"] == intake["catalog"]["version"]
+    assert catalog["metadata"]["showroom_content_ref"] == intake["sources"][
+        "showroom"
+    ]["revision"]
 
 
 def test_cpu_serving_showroom_waits_for_the_external_route_to_be_ready():
@@ -677,7 +687,8 @@ def test_cpu_serving_showroom_waits_for_the_external_route_to_be_ready():
     ).read_text()
 
     assert "Wait for the Pod and Route" in page
-    assert "curl -ksS -o /dev/null -w '%{http_code}'" in page
+    # Escape the curl formatter so Antora does not consume it as an attribute.
+    assert "curl -ksS -o /dev/null -w '%\\{http_code\\}'" in page
     assert '"$ANYTHINGLLM_URL/api/ping"' in page
     assert "for attempt in {1..40}" in page
     assert "OpenShift safely coalesces ingress updates" in page
@@ -747,6 +758,26 @@ def test_cpu_serving_terminal_uses_namespace_service_for_anythingllm_api():
     assert "The browser Route is not used for terminal API calls" in load_documents
 
 
+def test_cpu_serving_troubleshooting_never_prints_runtime_secret_payloads():
+    page = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc"
+    ).read_text()
+
+    assert "oc get secret anythingllm-config" not in page
+    assert "oc describe secret anythingllm-config" in page
+    assert "Secret values are not printed" in page
+
+
+def test_cpu_serving_cleanup_removes_every_learner_created_resource():
+    conclusion = (
+        ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages/08-conclusion.adoc"
+    ).read_text()
+
+    assert "oc delete pvc anythingllm-storage" in conclusion
+    assert "oc get deployment,svc,route,secret,pvc" in conclusion
+    assert "No resources found" in conclusion
+
+
 def test_tool_calling_hardware_story_respects_participant_rbac_boundary():
     page = (
         ROOT / "content-intel-llm-tool-calling/modules/ROOT/pages/07-intel-story.adoc"
@@ -755,3 +786,45 @@ def test_tool_calling_hardware_story_respects_participant_rbac_boundary():
     assert "oc get nodes" not in page
     assert "{cluster_display_name}" in page
     assert "namespace-scoped" in page
+
+
+def test_tool_calling_journey_truthfully_consumes_platform_maas():
+    pages = ROOT / "content-intel-llm-tool-calling/modules/ROOT/pages"
+    index = (pages / "index.adoc").read_text()
+    serving = (pages / "02-serving-with-tools.adoc").read_text()
+    conclusion = (pages / "08-conclusion.adoc").read_text()
+    corpus = index + serving + conclusion
+
+    assert "to deploying a model" not in index
+    assert "Deployed vLLM with tool calling" not in conclusion
+    assert "Connected to the platform-managed vLLM endpoint" in conclusion
+    assert "$0 per token" not in corpus
+    assert "The learner does not deploy or administer the shared model server" in serving
+
+
+def test_tool_calling_console_checkpoint_and_cleanup_match_created_resources():
+    pages = ROOT / "content-intel-llm-tool-calling/modules/ROOT/pages"
+    serving = (pages / "02-serving-with-tools.adoc").read_text()
+    conclusion = (pages / "08-conclusion.adoc").read_text()
+
+    assert "Console checkpoint: Separate the seat from the model service" in serving
+    assert "No model-serving Deployment should exist in your seat namespace" in serving
+    assert "oc delete all -l app=vllm-tool-calling" not in conclusion
+    assert "No model deployment was created in this seat" in conclusion
+    assert "Launchpad reclaims the seat namespace" in conclusion
+
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/intel-llm-tool-calling/catalog-item.yaml").read_text()
+    )
+    # This flag selects the direct Showroom/content runtime rather than the
+    # generic tenant-gateway demo frontend. It does not claim that the learner
+    # administers an OpenShift Operator.
+    assert catalog["metadata"]["operator_workshop"] is True
+    assert catalog["metadata"]["showroom_tabs"] == [
+        {"id": "terminal", "title": "Terminal", "source": "showroom.terminal"},
+        {
+            "id": "openshift-console",
+            "title": "OpenShift Console",
+            "source": "cluster.console_url",
+        },
+    ]

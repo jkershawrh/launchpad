@@ -6,7 +6,7 @@ catalog:
   description: Learn the tool-calling protocol and build single- and multi-tool applications
     against shared Intel Xeon inference.
   category: guided_build
-  version: 1.0.2-flightpath.1
+  version: 1.0.3-flightpath.1
   status: active
   supported_branding:
   - redhat-intel-default
@@ -29,7 +29,7 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/launchpad.git
-    revision: 079f4829938cb01ee491198001e68db04282d05a
+    revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
     playbook: site-intel-llm-tool-calling.yml
     start_path: content-intel-llm-tool-calling
   workload:

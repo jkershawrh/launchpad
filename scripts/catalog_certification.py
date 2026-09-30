@@ -35,7 +35,17 @@ from app.services.catalog_certification import (
 )
 from app.services.catalog_onboarding import load_intake
 
-TERMINAL_WORKSHOP_STATUSES = {"ready", "active", "partially_ready", "failed"}
+TERMINAL_WORKSHOP_STATUSES = {
+    "ready",
+    "active",
+    "partially_ready",
+    "failed",
+    # A concurrent operator cancellation or lifecycle reclaim must terminate
+    # the readiness wait immediately instead of burning the full seat timeout.
+    "completed",
+    "reclaimed",
+    "cleanup_failed",
+}
 TERMINAL_CLEANUP_STATUSES = {"completed", "cleanup_failed"}
 CLUSTER_SCOPED_RESOURCES = {"namespaces", "persistentvolumes"}
 CONTROL_PLANE_RESOURCES = {"applications.argoproj.io"}

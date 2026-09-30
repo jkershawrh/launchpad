@@ -2,7 +2,7 @@ catalog_item_id: intel-llm-cpu-serving
 display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
 description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
 category: guided_build
-version: "1.0.12"
+version: "1.0.13-flightpath.1"
 status: active
 required_capabilities:
   - openshift
@@ -38,22 +38,20 @@ metadata:
   showroom: true
   operator_workshop: true
   content_only: true
-  workshop_cluster_ref: arena
-  certification_stage: thirty-seat-certified
-  max_workshop_seats: 30
+  workshop_cluster_ref: flightpath
+  certification_stage: five-seat-certified
+  max_workshop_seats: 5
   promotion_sequence:
     - 1
     - 5
-    - 25
-    - 30
   onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
   certification_proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
   showroom_journey: intel-llm-cpu-serving
   showroom_title: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
-  showroom_content_repo_url: "https://github.com/rhpds/launchpad.git"
-  showroom_content_ref: "5292234017bf3f538767e6b6a3c627d146fca086"
+  showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
+  showroom_content_ref: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
   showroom_content_playbook: "site-intel-llm-cpu-serving.yml"
   required_models:
     - granite-3.2-8b-tools
@@ -62,7 +60,7 @@ metadata:
     - chat
     - streaming
     - tool_calling
-  inference_endpoint: litellm
+  inference_endpoint: direct_vllm_candidate
   maas_rpm_limit: 60
   seat_cpu_millicores: 665
   seat_memory_mib: 1488
@@ -70,8 +68,8 @@ metadata:
   seat_storage_gib: 2
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
-  source_content_repo: "https://github.com/rhpds/showroom-intel-llm-cpu-serving.git"
-  source_content_revision: "ca1b9af736d1b5dfa80e76c0a1bd6c4638d3eaef"
+  source_content_repo: "https://github.com/jkershawrh/launchpad.git"
+  source_content_revision: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
   workload_repo: "https://github.com/rhpds/llm-cpu-serving.git"
   workload_revision: "88867e14b1eede7d9aa563069aa093c122a4a53a"
   showroom_steps:

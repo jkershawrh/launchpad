@@ -1,0 +1,148 @@
+schema_version: launchpad.redhat.com/lab-publication-queue/v1
+generated_at: '2026-09-30'
+scope:
+  - ai-sandbox
+  - openshift-operators-workshop
+  - intel-llm-cpu-serving
+  - intel-llm-tool-calling
+  - intel-xeon6-agent-201
+
+launchpad_source:
+  repository: https://github.com/jkershawrh/launchpad.git
+  branch: codex/flightpath-migration-20260922
+  reviewed_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+  remote_branch_head: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+  publication_state: reviewed-content-published
+  publication_rule: >-
+    Catalog and onboarding pins may reference only the published reviewed
+    content revision. Runtime-bearing changes still require their own released
+    image digest before certification. Never pin a working-tree HEAD.
+
+queue:
+  - catalog_item_id: ai-sandbox
+    source_repository: https://github.com/jkershawrh/launchpad.git
+    current_catalog_revision: 079f4829938cb01ee491198001e68db04282d05a
+    source_paths:
+      - demos/containers/sandbox/Containerfile
+      - demos/containers/sandbox/entrypoint.sh
+      - demos/containers/sandbox/guided-start.md
+      - demos/containers/sandbox/guided_start.py
+      - frontend/src/components/SandboxGuidedStart.tsx
+      - frontend/src/components/SandboxGuidedStart.test.tsx
+      - frontend/src/pages/SessionDetail.tsx
+    build_workflows:
+      sandbox_image: .github/workflows/sandbox-release.yml
+      participant_portal: .github/workflows/portal-release.yml
+    current_runtime_image: >-
+      ghcr.io/jkershawrh/launchpad-sandbox@sha256:5fe2a362fe8e751b5e1fd200e7ba48118cf9e1d2141cdcfcee15075af5cc825c
+    unpublished_artifacts:
+      - guided-start-capable sandbox image digest
+      - participant portal image digest containing the guided-start panel
+      - catalog and onboarding pins for both released artifacts
+    narrow_next_action: >-
+      Isolate the listed paths in one reviewed commit, publish the sandbox and
+      portal images from that exact SHA, record both immutable digests, then pin
+      the catalog/onboarding contract before a fresh one-seat certification.
+
+  - catalog_item_id: openshift-operators-workshop
+    source_repository: https://github.com/jkershawrh/launchpad.git
+    current_catalog_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    source_paths:
+      - content-operators/antora.yml
+      - content-operators/modules/ROOT/nav.adoc
+      - content-operators/modules/ROOT/pages/index.adoc
+      - content-operators/modules/ROOT/pages/02-operator-discovery.adoc
+      - content-operators/modules/ROOT/pages/03-deploy-and-observe.adoc
+      - content-operators/modules/ROOT/pages/04-run-and-observe.adoc
+      - content-operators/modules/ROOT/pages/05-prove-and-cleanup.adoc
+      - site-openshift-operators.yml
+    build_workflows:
+      showroom_validation: .github/workflows/ci.yml
+      immutable_showroom_image: null
+    unpublished_artifacts:
+      - immutable Launchpad Git revision containing the revised Antora journey
+      - matching showroom_content_ref in catalog and onboarding contracts
+    narrow_next_action: >-
+      Commit and publish the catalog/onboarding pin update for the reviewed
+      content revision, then run one-seat Flightpath certification. The Showroom
+      runtime builds the pinned Antora source; no separate content image is required.
+
+  - catalog_item_id: intel-llm-cpu-serving
+    source_repository: https://github.com/jkershawrh/launchpad.git
+    current_catalog_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    source_paths:
+      - content-intel-llm-cpu-serving/antora.yml
+      - content-intel-llm-cpu-serving/modules/ROOT/pages/index.adoc
+      - content-intel-llm-cpu-serving/modules/ROOT/pages/01-cpu-inference-fundamentals.adoc
+      - content-intel-llm-cpu-serving/modules/ROOT/pages/02-explore-maas.adoc
+      - content-intel-llm-cpu-serving/modules/ROOT/pages/03-query-the-model.adoc
+      - content-intel-llm-cpu-serving/modules/ROOT/pages/04-wire-rag-frontend.adoc
+      - content-intel-llm-cpu-serving/modules/ROOT/pages/08-conclusion.adoc
+      - site-intel-llm-cpu-serving.yml
+    unchanged_workload:
+      repository: https://github.com/rhpds/llm-cpu-serving.git
+      revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
+      advertised_ref: refs/heads/codex/align-rhpds-lab
+    build_workflows:
+      showroom_validation: .github/workflows/ci.yml
+      immutable_showroom_image: null
+    unpublished_artifacts:
+      - immutable Launchpad Git revision containing corrected lab content
+      - matching showroom_content_ref and source_content_revision
+    narrow_next_action: >-
+      Publish the catalog/onboarding pin update, retain the unchanged workload
+      SHA, then run a fresh one-seat live model, RAG workspace, Console, proof,
+      and reclaim certification.
+
+  - catalog_item_id: intel-llm-tool-calling
+    source_repository: https://github.com/jkershawrh/launchpad.git
+    current_catalog_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    source_paths:
+      - content-intel-llm-tool-calling/modules/ROOT/pages/index.adoc
+      - content-intel-llm-tool-calling/modules/ROOT/pages/02-serving-with-tools.adoc
+      - content-intel-llm-tool-calling/modules/ROOT/pages/07-intel-story.adoc
+      - content-intel-llm-tool-calling/modules/ROOT/pages/08-conclusion.adoc
+      - site-intel-llm-tool-calling.yml
+    unchanged_workload:
+      repository: https://github.com/rh-ai-quickstart/vllm-tool-calling.git
+      revision: fc6a574694b531a89c4417309c6f74c144130576
+      exact_sha_fetchable: true
+      advertised_ref: null
+    build_workflows:
+      showroom_validation: .github/workflows/ci.yml
+      immutable_showroom_image: null
+    unpublished_artifacts:
+      - immutable Launchpad Git revision containing corrected lab content
+      - matching showroom_content_ref in catalog and onboarding contracts
+    narrow_next_action: >-
+      Publish the catalog/onboarding pin update and retain the fetchable workload
+      SHA. Then certify one seat; treat the missing advertised ref as a supply-chain
+      maintenance risk, not as a reason to invent a new pin.
+
+  - catalog_item_id: intel-xeon6-agent-201
+    source_repository: https://github.com/jkershawrh/launchpad.git
+    current_catalog_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    source_paths:
+      - content-intel-xeon6-agent-201/modules/ROOT/pages/index.adoc
+      - content-intel-xeon6-agent-201/modules/ROOT/pages/03-wire-agent.adoc
+      - content-intel-xeon6-agent-201/modules/ROOT/pages/99-conclusion.adoc
+      - site-intel-xeon6-agent-201.yml
+    unchanged_workload:
+      repository: https://github.com/rhpds/triforce.git
+      configured_revision: 201-v1.0.0
+      resolved_commit: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
+      tag_object: 2f94711efc01384ee4c334caa1720e2962180b14
+      build_workflows:
+        - .github/workflows/test.yaml
+        - .github/workflows/build-images.yaml
+    build_workflows:
+      showroom_validation: .github/workflows/ci.yml
+      immutable_showroom_image: null
+    unpublished_artifacts:
+      - immutable Launchpad Git revision containing corrected lab content and proof
+      - matching showroom_content_ref in catalog and onboarding contracts
+    narrow_next_action: >-
+      Publish the catalog/onboarding pin update and prefer the resolved workload
+      commit over the movable tag at the next contract revision. Then run a fresh
+      one-seat model/tool/UI/proof/reclaim certification; earlier 30-seat evidence
+      covers the older content only.
