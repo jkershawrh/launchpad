@@ -22,3 +22,15 @@ def test_foundations_certification_requires_the_observed_live_advisory() -> None
     assertions = contract["spec"]["seat_probe"]["json_assertions"]
 
     assert {"path": "journey.source_state", "equals": "LIVE"} in assertions
+
+
+def test_virtualization_301_uses_flightpath_capability_names() -> None:
+    catalog = yaml.safe_load(
+        (REPO_ROOT / "catalog/virtualization-ai-301/catalog-item.yaml").read_text()
+    )
+
+    assert catalog["required_capabilities"] == [
+        "openshift",
+        "openshift-virtualization",
+        "showroom",
+    ]

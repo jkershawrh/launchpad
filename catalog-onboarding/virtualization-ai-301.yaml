@@ -40,9 +40,8 @@ runtime:
   deployment_scope: seat
   required_capabilities:
   - openshift
-  - openshift_virtualization
+  - openshift-virtualization
   - showroom
-  - optional_model_endpoint
   required_models: []
   seat_resources:
     cpu_millicores: 625
