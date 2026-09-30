@@ -39,10 +39,10 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
-  showroom_content_ref: a5266507d6546ba69d88da00dcd7b507bf3a668b
+  showroom_content_ref: 33de397ab442964ed1a0e37204b9515132555205
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
-  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:dcf94e1ff17aea182008ca337d5787b31282e70a46a73a01be934586964f3891
+  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:5473dff5c6339a3f04ead245ed01f866827b6e0a48acee367ca18d888fe873ca
   operator_workshop: true
   content_only: false
   onboarding_managed: true
@@ -98,7 +98,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-foundations.git
-  workload_revision: a5266507d6546ba69d88da00dcd7b507bf3a668b
+  workload_revision: 33de397ab442964ed1a0e37204b9515132555205
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-foundations
@@ -107,8 +107,8 @@ metadata:
   workload_release_name: virtualization-ai-foundations-101
   workload_helm_values:
     values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:1485ecf3a0d4a4fdc14ea51c073ec11fdf945fb7a5bb289834728d630290ab6d
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:92d418ef8b3b895712a2adb3950544e9b2a7adaf66d167dc786807ad2d2bce16
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:0d0b9d3cadf3ea19061a4b54af9aa72e517f2f4deccb6e3e6dcc5125974954c9
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:42c14c4ec952b888f79bbec669bc7485587daff73a5605ce1a8fa9ce588b092f
     presentation_enabled: true
     adapter:
       mode: live
@@ -130,5 +130,5 @@ metadata:
     ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-foundations.git
-  source_content_revision: a5266507d6546ba69d88da00dcd7b507bf3a668b
+  source_content_revision: 33de397ab442964ed1a0e37204b9515132555205
   source_references: {}
