@@ -1,10 +1,10 @@
 catalog_item_id: sovereign-ai-101
 display_name: 'Sovereign AI 101: Understand Governed Inference'
-description: Trace a governed inference request through classification, deterministic
-  policy, advisory model dispatch, evidence receipts, refusal states, and human authority.
+description: Trace a governed rehearsal request through classification, deterministic
+  policy, bounded response dispatch, evidence receipts, refusal states, and human authority.
 category: guided_build
 version: 0.1.0
-status: active
+status: draft
 required_capabilities:
 - openshift
 - showroom
@@ -39,18 +39,20 @@ metadata:
   solution_family: sovereign_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
-  showroom_content_ref: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
+  showroom_content_ref: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
-  operator_workshop: true
+  operator_workshop: false
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/sovereign-ai-101.yaml
-  certification_stage: 1-seat-certified
+  certification_stage: immutable-source-published
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers: []
+  activation_blockers:
+  - Certify the newly published revision in one Flightpath seat.
+  - Verify the Interactive Story, all eight guided stages, Terminal, participant isolation, and zero-residue reclaim.
   certification_proof_contract: certification/catalog/sovereign-ai-101.yaml
   allowed_exposure_policies:
   - internal
@@ -61,14 +63,15 @@ metadata:
   showroom_terminal_storage: true
   showroom_tabs:
   - id: story
-    title: Story
+    title: Interactive Story
     source: workload.route.ui
+    path: /
   - id: terminal
     title: Terminal
     source: showroom.terminal
   workshop_cluster_ref: flightpath
   required_models: []
-  inference_endpoint: litellm
+  inference_endpoint: none
   seat_cpu_millicores: 100
   seat_memory_mib: 160
   seat_pods: 2
@@ -82,7 +85,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/sovereign-ai-101.git
-  workload_revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
+  workload_revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
   workload_deploy_type: kustomize
   workload_deployment_scope: seat
   workload_deploy_path: deploy/openshift/base
@@ -90,12 +93,12 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: sovereign-ai-101
   workload_helm_values:
-    workload_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:400e2bdd94e8e2a71a0bee42fbdc2d3a59ad623aff16f140107a79b5dd364895
-    presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:eb4d58c71716d9e1a3f3bd446d9e66a1a2c278ad1fe5696830b51c551c5df91e
+    workload_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
     source_state: REHEARSAL
   workload_kustomize_images:
-  - registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:400e2bdd94e8e2a71a0bee42fbdc2d3a59ad623aff16f140107a79b5dd364895
-  - registry.invalid/sovereign-ai-101/presentation=ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:eb4d58c71716d9e1a3f3bd446d9e66a1a2c278ad1fe5696830b51c551c5df91e
+  - registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
+  - registry.invalid/sovereign-ai-101/presentation=ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
   workload_runtime_secret_sources: {}
@@ -105,5 +108,5 @@ metadata:
     ui: sovereign-presentation
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-101.git
-  source_content_revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
+  source_content_revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
   source_references: {}

@@ -198,6 +198,25 @@ def test_agent_reliability_records_verified_registry_mirror_provenance() -> None
     assert provenance["ghcr_visibility"] == "public"
 
 
+def test_sovereign_101_records_the_exact_published_candidate_without_inheriting_live_proof() -> None:
+    review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
+    lab = review["labs"]["sovereign-ai-101"]
+    release = lab["release"]
+
+    assert lab["overall_status"] == "immutable-source-published-draft"
+    assert lab["candidate_revision"] == (
+        "a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767"
+    )
+    assert release["status"] == "published-not-live-certified"
+    assert release["workflow"].endswith("/actions/runs/36731862663")
+    assert release["presentation_image"].endswith(
+        "@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49"
+    )
+    assert release["rehearsal_image"].endswith(
+        "@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351"
+    )
+
+
 def test_learning_pipeline_classifies_every_portfolio_item_once() -> None:
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
     tracks = review["learning_pipeline"]

@@ -19,10 +19,12 @@ spec:
 
   showroom:
     pages:
-      - {id: welcome, path: /www/sovereign-ai-101/main/index.html, marker: "Verify Local Inference Governance"}
-      - {id: evidence, path: /www/sovereign-ai-101/main/01-local-evidence.html, marker: "Inspect local model and CPU evidence"}
-      - {id: deny, path: /www/sovereign-ai-101/main/05-injection-deny.html, marker: "Injection deny"}
-      - {id: authority, path: /www/sovereign-ai-101/main/08-authority.html, marker: "Explain authority"}
+      - {id: welcome, path: /www/sovereign-ai-101/main/index.html, marker: "Govern One AI Request"}
+      - {id: session, path: /www/sovereign-ai-101/main/01-connect.html, marker: "Open a governed session"}
+      - {id: deny, path: /www/sovereign-ai-101/main/03-protect.html, marker: "Stop prompt injection before generation"}
+      - {id: evidence, path: /www/sovereign-ai-101/main/05-prove.html, marker: "Verify the evidence"}
+      - {id: decision, path: /www/sovereign-ai-101/main/06-decide.html, marker: "Make the human decision"}
+      - {id: cleanup, path: /www/sovereign-ai-101/main/07-cleanup.html, marker: "Close the session"}
 
   seat_probe:
     argv: [bash, scripts/certify-sovereign-ai-101-seat.sh, "{namespace}", "{cluster_ref}"]

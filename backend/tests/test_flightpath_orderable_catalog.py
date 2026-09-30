@@ -47,9 +47,11 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
         "intel-xeon6-agent-201",
         "multi-agent-quickstart",
         "network-operations-agent",
-        "openshift-operators-workshop",
         "rag-on-xeon",
         "ai-sandbox",
+        "sovereign-ai-201",
+        "virtualization-ai-201",
+        "virtualization-ai-301",
     }
 
 
@@ -59,12 +61,31 @@ def test_specialty_catalog_status_matches_certification_evidence():
         "ai-sandbox": "active",
         "cpu-inference-serving": "active",
         "intel-llm-tool-calling": "active",
-        "openshift-operators-workshop": "active",
+        "openshift-operators-workshop": "draft",
         "rag-on-xeon": "active",
         "smoke-test": "draft",
     }
 
     assert {catalog_id: items[catalog_id]["status"] for catalog_id in expected} == expected
+
+
+def test_rebuilt_sovereign_101_is_pinned_but_not_orderable_before_recertification():
+    item = _effective_flightpath_items()["sovereign-ai-101"]
+    metadata = item["metadata"]
+
+    assert item["status"] == "draft"
+    assert metadata["certification_stage"] == "immutable-source-published"
+    assert metadata["showroom_content_ref"] == (
+        "a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767"
+    )
+    assert metadata["workload_revision"] == metadata["showroom_content_ref"]
+    assert metadata["workload_helm_values"]["workload_image"].endswith(
+        "@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351"
+    )
+    assert metadata["workload_helm_values"]["presentation_image"].endswith(
+        "@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49"
+    )
+    assert metadata["activation_blockers"]
 
 
 def test_agentic_501_is_mounted_as_a_fail_closed_destination_qualification_draft():

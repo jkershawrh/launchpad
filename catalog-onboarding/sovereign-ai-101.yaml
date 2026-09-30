@@ -2,12 +2,12 @@ api_version: launchpad.redhat.com/v1alpha1
 catalog:
   catalog_item_id: sovereign-ai-101
   display_name: 'Sovereign AI 101: Understand Governed Inference'
-  description: Trace a governed inference request through classification, deterministic
-    policy, advisory model dispatch, evidence receipts, refusal states, and human
+  description: Trace a governed rehearsal request through classification, deterministic
+    policy, bounded response dispatch, evidence receipts, refusal states, and human
     authority.
   category: guided_build
   version: 0.1.0
-  status: active
+  status: draft
 learning:
   learning_level: '101'
   learning_stage: Learn
@@ -25,13 +25,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
-    revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
+    revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
     playbook: site.yml
     start_path: showroom
     gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
-    revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
+    revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
     deploy_path: deploy/openshift/base
     gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
 runtime:
@@ -43,6 +43,7 @@ runtime:
   - openshift
   - showroom
   required_models: []
+  inference_endpoint: none
   seat_resources:
     cpu_millicores: 100
     memory_mib: 160
@@ -58,8 +59,9 @@ runtime:
   workshop_node_min_ready_seconds: 0
   tabs:
   - id: story
-    title: Story
+    title: Interactive Story
     source: workload.route.ui
+    path: /
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -71,12 +73,12 @@ runtime:
     gitops_ready: true
     release_name: sovereign-ai-101
     helm_values:
-      workload_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:400e2bdd94e8e2a71a0bee42fbdc2d3a59ad623aff16f140107a79b5dd364895
-      presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:eb4d58c71716d9e1a3f3bd446d9e66a1a2c278ad1fe5696830b51c551c5df91e
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
       source_state: REHEARSAL
     kustomize_images:
-    - registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:400e2bdd94e8e2a71a0bee42fbdc2d3a59ad623aff16f140107a79b5dd364895
-    - registry.invalid/sovereign-ai-101/presentation=ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:eb4d58c71716d9e1a3f3bd446d9e66a1a2c278ad1fe5696830b51c551c5df91e
+    - registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
+    - registry.invalid/sovereign-ai-101/presentation=ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
@@ -84,15 +86,17 @@ runtime:
       ui: sovereign-presentation
     readiness: []
 certification:
-  stage: 1-seat-certified
-  certified_seats: 1
+  stage: immutable-source-published
+  certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers: []
+  activation_blockers:
+  - Certify the newly published revision in one Flightpath seat.
+  - Verify the Interactive Story, all eight guided stages, Terminal, participant isolation, and zero-residue reclaim.
   certification_scope:
-  - One internal seat is certified on Flightpath with trusted render, participant
-    probes, namespace isolation, normal reclaim, and zero residue.
+  - The previous source revision was certified in one internal Flightpath seat;
+    that proof does not transfer to this newly published revision.
   - The immutable experience is explicitly REHEARSAL; it makes no live-model or
     Intel CPU placement claim.
   - Certification is limited to one seat. Higher scale gates remain independent.

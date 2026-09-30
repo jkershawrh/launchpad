@@ -94,8 +94,8 @@ labs:
     display_name: "Sovereign AI 101: Understand Governed Inference"
     source_repository: https://github.com/jkershawrh/sovereign-ai-101
     candidate_branch: codex/sovereign-ai-101-lab-experience
-    candidate_revision: 43bfa90dd852e9a332051d0e438dfd5a11ff7bc1
-    overall_status: conditional
+    candidate_revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
+    overall_status: immutable-source-published-draft
     story:
       status: green-local
       evidence: internal policy assistant mission with human decision ownership
@@ -132,10 +132,18 @@ labs:
         - 6 packaging and security tests
         - full local API journey
     release:
-      status: qualified-not-published
-      blocker: publication, exact digest pinning, and one-seat certification remain
-      qualification_run: https://github.com/jkershawrh/sovereign-ai-101/actions/runs/36711421188
-    next_action: publish only after image qualification passes, then pin exact digests and run one-seat live certification
+      status: published-not-live-certified
+      workflow: https://github.com/jkershawrh/sovereign-ai-101/actions/runs/36731862663
+      source_revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
+      rehearsal_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
+      evidence:
+        - full source and journey validation passed
+        - fixable high and critical vulnerability gates passed
+        - SPDX SBOMs retained
+        - exact image digests signed and attested with GitHub OIDC
+        - workflow identity, SBOM attestation, and custom provenance attestation verified
+    next_action: deploy the exact pinned revision as a draft, then run one-seat Flightpath certification for the Story, all eight guided stages, Terminal, isolation, reclaim, and zero residue before activation
 
   sovereign-ai-201:
     display_name: "Sovereign AI 201: Build the Governed Inference Boundary"
