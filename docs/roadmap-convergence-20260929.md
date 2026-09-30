@@ -9,8 +9,9 @@ into closure.
 
 The staging-to-production sequence is:
 
-1. finish the current unchanged-candidate five-seat Flightpath matrix;
-2. fix or classify every RED-live result and rerun only affected five-seat
+1. finish one-seat certification and orderability for every currently viable
+   Flightpath catalog;
+2. fix or classify every RED-live result and rerun only affected one-seat
    catalogs;
 3. prove that every certified lab is visible, manually orderable, observable,
    openable, reclaimable, and truthfully represented across requester, admin,
@@ -53,7 +54,9 @@ requirements are satisfied.
 
 - Immutable platform candidate and independently identified catalog/runtime/
   content dependencies.
-- Every currently viable catalog certified at five seats on Flightpath.
+- Every currently viable catalog certified and manually orderable at one seat
+  on Flightpath. Five-seat proof remains retained scale evidence and is not a
+  prerequisite for the current manual certification pass.
 - Functional participant journeys, namespace isolation, model/API behavior,
   and truthful failure classification.
 - Full lifecycle proof from order through reclaim.
@@ -152,22 +155,36 @@ recommend but never creates eligibility.
 7. Archive superseded evidence; never delete or rewrite it to make the current
    candidate appear green.
 
+## Current proof gained after convergence
+
+- `sovereign-ai-101` passed public one-seat certification on Flightpath with a
+  100-point rubric, trusted external TLS, claim and same-seat recovery,
+  namespace isolation, participant journey, reclaim, and zero residue.
+- `virtualization-ai-301` passed the same public one-seat gate, including the
+  corrected content revision, Story and Terminal paths, cluster-scoped denial,
+  reclaim, and zero residue.
+- Both catalog entries are active, expose `internal` and `public_code`, and
+  remain deliberately capped at one certified seat.
+- The broader participant-path task remains open: these two passing catalogs
+  do not prove every catalog, add-lab permutation, Console path, supported
+  browser, or the final unchanged-candidate frontend sweep.
+
 ## Immediate execution queue
 
-1. Allow the active Flightpath five-seat matrix to reach a terminal state.
-2. Collect every catalog result and the final residue verifier.
-3. Build the diagnostic runner already prepared for CPU-RAG and Agent 201
-   failure-stage isolation.
-4. Run targeted five-seat diagnostics only for RED catalogs.
-5. Correct runner defects without changing the platform candidate; if a lab or
+1. Inventory every viable catalog as active/orderable, internal-only, public,
+   draft, or blocked; never let the frontend imply a higher proof state.
+2. Run one-seat certification only for viable catalogs that do not yet have
+   current evidence, and collect the final residue verifier after each run.
+3. Run targeted diagnostics only for RED catalogs.
+4. Correct runner defects without changing the platform candidate; if a lab or
    platform defect is proven, create a new candidate rather than mutating the
    current one.
-6. Rerun affected five-seat catalogs and prove reclaim.
-7. Run the manual requester → order → workshop/session → participant → lab →
+5. Rerun affected one-seat catalogs and prove reclaim.
+6. Run the manual requester → order → workshop/session → participant → lab →
    reclaim journey for every viable catalog and close all frontend/API contract
    gaps with TDD, CDD, BDD, CBT, and evidence.
-8. Run the final complete unchanged-candidate matrix and assemble the staging
+7. Run the final complete unchanged-candidate matrix and assemble the staging
    evidence manifest.
-9. Request explicit staging acceptance.
-10. Stop for product-owner review. Do not start LP-S036, LP-S037, LP-S038,
+8. Request explicit staging acceptance.
+9. Stop for product-owner review. Do not start LP-S036, LP-S037, LP-S038,
     LP-S039, or the broader production-gate backlog without a new decision.

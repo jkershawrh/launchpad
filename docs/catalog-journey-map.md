@@ -3,11 +3,33 @@
 The catalog uses two independent axes:
 
 - `solution_family` groups experiences by customer usage.
-- `learning_level` describes progression from 001 exploration through 501 certification.
+- `learning_level` describes progression from 001 exploration through 601
+  governed authority.
 
 The participant catalog groups cards by solution family and orders each group
 by learning level. A learner can filter either dimension without forcing every
 experience into one hierarchy.
+
+## Named learning tracks
+
+The frontend must present named tracks separately from catalog lifecycle. A
+track explains the path; it does not make a planned or draft lab orderable.
+Only an active release with current certification receives an order action.
+
+| Level | Agentic AI | Sovereign AI | Virtualization + AI |
+| --- | --- | --- | --- |
+| 101 | Understand Agentic Workflows — planned | Understand Governed Inference — active, public one-seat certified | Understand VM and AI Coexistence — active, internal one-seat certified |
+| 201 | Build an AI Agent on Intel Xeon 6 | Build the Governed Inference Boundary — active, internal one-seat certified | Author and Qualify the Contract — active, internal one-seat certified |
+| 301 | Build Multi-Agent Systems | Confidential Inference and Intel TDX Foundations — draft | Modernize VMs with Governed AI — active, public one-seat certified |
+| 401 | Operate Evidence-Backed Agents — draft | Confidential AI with Intel TDX — planned | Operate Hybrid VM and AI Workloads — planned |
+| 501 | Scale and Certify Agentic Systems — draft | Prove and Certify Sovereign AI — planned | Scale Governed AI Modernization — planned |
+| 601 | Earn the Right to Act — planned | Not offered | Not offered |
+
+Sales enablement is a separate persona axis over these technical tracks. Sales
+tracks may select different talk tracks, outcomes, and evidence while reusing a
+certified runtime, but they must not silently create duplicate catalog releases
+or imply technical certification. Their exact titles remain pending product
+owner definition.
 
 ## Solution families
 
@@ -52,11 +74,12 @@ Catalog lifecycle and journey role are independent:
 - Reliability: `agent-reliability`.
 
 Each episode retains its current lifecycle status. Network Operations,
-Reliability, and Hybrid Fraud Detection are active and five-seat certified on
-Flightpath. CPU Inference Serving, Tool Calling, RAG on Xeon, and the Operator
-The legacy experiences remain draft migration candidates. Their exact Flightpath runtime and
-one-seat/five-seat proof contracts are now defined, but they are not permanently
-retired or orderable until the corresponding GREEN-live runs pass.
+Reliability, and Hybrid Fraud Detection are active and retain their historical
+five-seat Flightpath evidence. CPU Inference Serving, Tool Calling, RAG on
+Xeon, the Operator Workshop, and the other legacy experiences remain draft
+migration candidates. Their exact Flightpath runtime and one-seat proof
+contracts are defined, but they are not permanently retired or orderable until
+the corresponding GREEN-live runs pass.
 
 ## Legacy-to-Flightpath approval queue
 
@@ -71,17 +94,17 @@ are intended to become orderable again:
 
 For each item, approval means that the catalog entry uses an immutable image
 and source revision, all runtime and route settings are Flightpath-native, and
-the one-seat and five-seat certification runs are GREEN-live. The five-seat
-run is the release ceiling for new certifications. It must prove the complete
-participant journey, required model calls, reclaim, and zero remaining
-resources before the item changes from `draft` to `active`.
+the one-seat certification run is GREEN-live. The current release ceiling for
+new certifications is one seat. It must prove the complete participant
+journey, required model calls, reclaim, and zero remaining resources before the
+item changes from `draft` to `active`. Five-seat and higher runs are later
+capacity-graduation gates, not a prerequisite for manual one-seat orderability.
 
 Current migration readiness:
 
-- `intel-llm-tool-calling` — source-ready; awaiting Flightpath 1-seat and
-  5-seat runs.
-- `openshift-operators-workshop` — source-ready; awaiting Flightpath 1-seat
-  and 5-seat runs.
+- `intel-llm-tool-calling` — source-ready; awaiting Flightpath one-seat proof.
+- `openshift-operators-workshop` — source-ready; awaiting Flightpath one-seat
+  proof.
 - `cpu-inference-serving` and `rag-on-xeon` — explicit compatibility entries
   on the proven Serve LLMs runtime; each still requires its own lifecycle and
   cleanup evidence.

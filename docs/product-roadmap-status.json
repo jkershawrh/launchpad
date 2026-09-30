@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-29T11:19:00Z",
+  "updated_at": "2026-09-30T10:50:17Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -637,13 +637,17 @@
       "state": "red",
       "methods": {
         "tdd": "red",
-        "edd": "red",
+        "edd": "green-live",
         "cdd": "red",
-        "bdd": "red",
+        "bdd": "green-live",
         "cbt": "red"
       },
-      "evidence": [],
-      "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
+      "evidence": [
+        "docs/certifications/flightpath-specialty-one-seat-status-20260929.md",
+        "evidence/runs/catalog/sovereign-ai-101-flightpath-public-one-seat-20260929-r1.json",
+        "evidence/runs/catalog/virtualization-ai-301-flightpath-public-one-seat-20260929-r1.json"
+      ],
+      "note": "Sovereign AI 101 and Virtualization AI 301 each have immutable GREEN-live public one-seat evidence for trusted TLS, claim and same-seat recovery, participant navigation, namespace isolation, logout/resume, reclaim, and zero residue. The broader task remains RED because these two results do not prove every supported catalog, add-lab permutation, namespace-scoped Console path, browser/accessibility target, or the final unchanged-candidate participant sweep."
     },
     "LP-T035": {
       "state": "red",
