@@ -25,7 +25,7 @@ spec:
       - {path: readiness.vmis_ready, equals: 1}
       - {path: readiness.presentation_http_status, equals: 200}
       - {path: readiness.adapter_health, equals: true}
-      - {path: journey.source_state, equals: REHEARSAL}
+      - {path: journey.source_state, equals: LIVE}
       - {path: journey.human_authority_preserved, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
