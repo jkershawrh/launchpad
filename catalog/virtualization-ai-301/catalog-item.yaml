@@ -39,7 +39,7 @@ metadata:
   shared_blueprint: red-hat-intel-virtualization-ai-v1
   solution_family: virtualization_ai
   showroom: true
-  showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-301.git
+  showroom_content_repo_url: https://github.com/jkershawrh/virtualization-ai-301.git
   showroom_content_ref: c0a7f4d60a37a2501b1a5cc841cf5d0e6e6a8fa2
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
