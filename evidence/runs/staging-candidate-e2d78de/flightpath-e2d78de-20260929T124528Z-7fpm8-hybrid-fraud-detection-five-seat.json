@@ -1,0 +1,597 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 5,
+    "certification_override": false,
+    "certification_target_seats": null,
+    "estimated_resources": {
+      "cpu_millicores": 3500,
+      "memory_mib": 6400,
+      "pods": 10
+    },
+    "placement_reason": "single-cluster placement",
+    "reason": "Cluster can support 101 seats (CPU: 570, Memory: 627, Pods: 101; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 700,
+        "memory_mib": 1280,
+        "pods": 2
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 5,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 112.72,
+    "status": "completed"
+  },
+  "completed_at": "2026-09-29T12:59:03.210618Z",
+  "contract": {
+    "catalog_version": "0.1.1-flightpath.2",
+    "certification_runner_image": "quay.io/rh-ee-jkershaw/launchpad-certification-runner@sha256:201d837d48a68025693e8c6cf89a65a67885a2e2e3d82d0411bb41227e31dea0",
+    "git_commit": "e2d78de667096c7be6e277ec01bf6c29a4a1ffb4",
+    "intake_path": "catalog-onboarding/hybrid-fraud-detection.yaml",
+    "path": "certification/catalog/hybrid-fraud-detection.yaml",
+    "platform_manifest_sha256": "c2aaac7b3805bd4adf3edf6f4996e30bddb11d6f16fa7eb37b42fb19477306cb",
+    "sha256": "33380195df6e4f1a962def171d13d48ca0c9a41744613176902d8e24a0ca886c"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [
+      "launchpad-flightpath-candida-fraud-68a917",
+      "launchpad-flightpath-candida-fraud-c76993",
+      "launchpad-flightpath-candida-fraud-22e935",
+      "launchpad-flightpath-candida-fraud-cce4ab",
+      "launchpad-flightpath-candida-fraud-da8c0a"
+    ],
+    "ready_seconds": 221.291,
+    "seat_count": 5,
+    "session_ids": [
+      "eac3c328-5d21-4241-a40f-026de7124a34",
+      "ebce034f-67a9-443c-a61e-f533c5be2c77",
+      "d2d8012e-797b-43d3-a146-e8b0a740476f",
+      "72417435-b547-49f0-87db-3f30daf3087f",
+      "afd856e6-62f9-415c-aeac-069fe2418254"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "1a83d246-96b2-4e88-a296-7cb7d21075f4"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "hybrid-fraud-detection",
+    "certification_override": false,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 5,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 900,
+    "maximum_ready_seconds": 1500,
+    "mutates_cluster": true,
+    "next_promotion_target": null,
+    "probe_concurrency": 5,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 5,
+    "seats": 5,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 2,
+    "eligible": true,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "flightpath-e2d78de-20260929T124528Z-7fpm8-hybrid-fraud-detection-five-seat",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-fraud-68a917",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 8.226,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "hybrid_journey": {
+            "bounded_input": true,
+            "live_model": true,
+            "llm_score": 90.0,
+            "model": "granite-3.2-8b-tools",
+            "risk_score": 54.0
+          },
+          "namespace": "launchpad-flightpath-candida-fraud-68a917",
+          "readiness": {
+            "health": true,
+            "model_ready": true,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-fraud-68a917",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "68a917c5-cdc8-4bf6-bd1f-09f6ce231fc7",
+      "seat_number": 1,
+      "session_id": "eac3c328-5d21-4241-a40f-026de7124a34",
+      "showroom": [
+        {
+          "duration_seconds": 0.054,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.046,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.031,
+          "http_status": 200,
+          "id": "conditional-inference",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.022,
+          "http_status": 200,
+          "id": "governance",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-fraud-c76993",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 8.139,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "hybrid_journey": {
+            "bounded_input": true,
+            "live_model": true,
+            "llm_score": 85.0,
+            "model": "granite-3.2-8b-tools",
+            "risk_score": 52.0
+          },
+          "namespace": "launchpad-flightpath-candida-fraud-c76993",
+          "readiness": {
+            "health": true,
+            "model_ready": true,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-fraud-c76993",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "c7699347-7d1e-411a-ba6b-0ab8a1f8c122",
+      "seat_number": 2,
+      "session_id": "ebce034f-67a9-443c-a61e-f533c5be2c77",
+      "showroom": [
+        {
+          "duration_seconds": 0.057,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.018,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.026,
+          "http_status": 200,
+          "id": "conditional-inference",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.02,
+          "http_status": 200,
+          "id": "governance",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-fraud-22e935",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 7.803,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "hybrid_journey": {
+            "bounded_input": true,
+            "live_model": true,
+            "llm_score": 85.0,
+            "model": "granite-3.2-8b-tools",
+            "risk_score": 52.0
+          },
+          "namespace": "launchpad-flightpath-candida-fraud-22e935",
+          "readiness": {
+            "health": true,
+            "model_ready": true,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-fraud-22e935",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "22e93572-e154-4192-a2e7-649e762cac76",
+      "seat_number": 3,
+      "session_id": "d2d8012e-797b-43d3-a146-e8b0a740476f",
+      "showroom": [
+        {
+          "duration_seconds": 0.051,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.042,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.03,
+          "http_status": 200,
+          "id": "conditional-inference",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.035,
+          "http_status": 200,
+          "id": "governance",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-fraud-cce4ab",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 7.803,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "hybrid_journey": {
+            "bounded_input": true,
+            "live_model": true,
+            "llm_score": 85.0,
+            "model": "granite-3.2-8b-tools",
+            "risk_score": 52.0
+          },
+          "namespace": "launchpad-flightpath-candida-fraud-cce4ab",
+          "readiness": {
+            "health": true,
+            "model_ready": true,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-fraud-cce4ab",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "cce4ab62-47cf-46d9-92bf-2c343a383efa",
+      "seat_number": 4,
+      "session_id": "72417435-b547-49f0-87db-3f30daf3087f",
+      "showroom": [
+        {
+          "duration_seconds": 0.055,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.048,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.024,
+          "http_status": 200,
+          "id": "conditional-inference",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.025,
+          "http_status": 200,
+          "id": "governance",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-fraud-da8c0a",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 8.122,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "hybrid_journey": {
+            "bounded_input": true,
+            "live_model": true,
+            "llm_score": 90.0,
+            "model": "granite-3.2-8b-tools",
+            "risk_score": 54.0
+          },
+          "namespace": "launchpad-flightpath-candida-fraud-da8c0a",
+          "readiness": {
+            "health": true,
+            "model_ready": true,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-fraud-da8c0a",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "da8c0afb-43b9-43f3-9ca0-6fc91dc58399",
+      "seat_number": 5,
+      "session_id": "afd856e6-62f9-415c-aeac-069fe2418254",
+      "showroom": [
+        {
+          "duration_seconds": 0.05,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.022,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.034,
+          "http_status": 200,
+          "id": "conditional-inference",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.03,
+          "http_status": 200,
+          "id": "governance",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-29T12:53:15.936619Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

@@ -22,7 +22,7 @@ def test_foundation_publication_queue_is_immutable_and_complete() -> None:
         "reviewed-content-published"
     )
     assert len(queue["launchpad_source"]["reviewed_content_revision"]) == 40
-    assert len(queue["launchpad_source"]["remote_branch_head"]) == 40
+    assert len(queue["launchpad_source"]["published_pin_revision"]) == 40
 
     for item in queue["queue"]:
         assert item["source_repository"].startswith("https://github.com/")

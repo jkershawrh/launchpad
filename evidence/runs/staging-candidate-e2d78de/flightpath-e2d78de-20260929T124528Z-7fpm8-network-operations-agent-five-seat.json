@@ -1,0 +1,667 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 5,
+    "certification_override": false,
+    "certification_target_seats": null,
+    "estimated_resources": {
+      "cpu_millicores": 500,
+      "memory_mib": 1280,
+      "pods": 10
+    },
+    "placement_reason": "single-cluster placement",
+    "reason": "Cluster can support 101 seats (CPU: 3994, Memory: 3135, Pods: 101; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 100,
+        "memory_mib": 256,
+        "pods": 2
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 5,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "network-operations-agent",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 115.622,
+    "status": "completed"
+  },
+  "completed_at": "2026-09-29T13:19:43.507278Z",
+  "contract": {
+    "catalog_version": "0.2.0-flightpath.10",
+    "certification_runner_image": "quay.io/rh-ee-jkershaw/launchpad-certification-runner@sha256:201d837d48a68025693e8c6cf89a65a67885a2e2e3d82d0411bb41227e31dea0",
+    "git_commit": "e2d78de667096c7be6e277ec01bf6c29a4a1ffb4",
+    "intake_path": "catalog-onboarding/network-operations-agent.yaml",
+    "path": "certification/catalog/network-operations-agent.yaml",
+    "platform_manifest_sha256": "c2aaac7b3805bd4adf3edf6f4996e30bddb11d6f16fa7eb37b42fb19477306cb",
+    "sha256": "552864906d40124e05781c126cdc40144fbff96a1cef1cf0ae7c67818816fbaa"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [
+      "launchpad-flightpath-candida-network-ops-fc0231",
+      "launchpad-flightpath-candida-network-ops-5a2255",
+      "launchpad-flightpath-candida-network-ops-96e468",
+      "launchpad-flightpath-candida-network-ops-41e205",
+      "launchpad-flightpath-candida-network-ops-54dd60"
+    ],
+    "ready_seconds": 185.922,
+    "seat_count": 5,
+    "session_ids": [
+      "76b9d406-1668-4649-b464-7a747514593c",
+      "4c67c25b-54fa-4a5d-9566-b7affd5be75b",
+      "a355c3dc-e204-4220-9c3d-701615948aad",
+      "69944d82-ac56-466f-a3a6-c59fa66d631a",
+      "e95c8842-46f6-4aa0-95bb-28749b851707"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "b22f4fb4-2fb8-42ad-875f-09dc4e633026"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "network-operations-agent",
+    "certification_override": false,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 5,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 900,
+    "maximum_ready_seconds": 1500,
+    "mutates_cluster": true,
+    "next_promotion_target": null,
+    "probe_concurrency": 5,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 5,
+    "seats": 5,
+    "showroom_pages_per_seat": 5,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 2,
+    "eligible": true,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "flightpath-e2d78de-20260929T124528Z-7fpm8-network-operations-agent-five-seat",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-network-ops-fc0231",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 17.084,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "investigation": {
+            "action_executed": false,
+            "cause": "hardware_timing",
+            "human_approval": true,
+            "live_model": true,
+            "model": "granite-3.2-8b-tools"
+          },
+          "namespace": "launchpad-flightpath-candida-network-ops-fc0231",
+          "qualification": {
+            "qualification_id": "bfb894d9147a",
+            "result": "pass",
+            "scenarios": 5
+          },
+          "readiness": {
+            "health": true,
+            "mcp_ready": true,
+            "story_http_status": 200,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-network-ops-fc0231",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "fc02315a-3af5-4292-b4f5-2c7b1fe2d7a2",
+      "seat_number": 1,
+      "session_id": "76b9d406-1668-4649-b464-7a747514593c",
+      "showroom": [
+        {
+          "duration_seconds": 0.031,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.045,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.023,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.021,
+          "http_status": 200,
+          "id": "qualify",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.023,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-network-ops-5a2255",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 17.183,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "investigation": {
+            "action_executed": false,
+            "cause": "hardware_timing",
+            "human_approval": true,
+            "live_model": true,
+            "model": "granite-3.2-8b-tools"
+          },
+          "namespace": "launchpad-flightpath-candida-network-ops-5a2255",
+          "qualification": {
+            "qualification_id": "bfb894d9147a",
+            "result": "pass",
+            "scenarios": 5
+          },
+          "readiness": {
+            "health": true,
+            "mcp_ready": true,
+            "story_http_status": 200,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-network-ops-5a2255",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "5a22557f-5045-4416-8220-320f1fdc4de0",
+      "seat_number": 2,
+      "session_id": "4c67c25b-54fa-4a5d-9566-b7affd5be75b",
+      "showroom": [
+        {
+          "duration_seconds": 0.023,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.036,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.029,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.027,
+          "http_status": 200,
+          "id": "qualify",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.031,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-network-ops-96e468",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 16.484,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "investigation": {
+            "action_executed": false,
+            "cause": "hardware_timing",
+            "human_approval": true,
+            "live_model": true,
+            "model": "granite-3.2-8b-tools"
+          },
+          "namespace": "launchpad-flightpath-candida-network-ops-96e468",
+          "qualification": {
+            "qualification_id": "bfb894d9147a",
+            "result": "pass",
+            "scenarios": 5
+          },
+          "readiness": {
+            "health": true,
+            "mcp_ready": true,
+            "story_http_status": 200,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-network-ops-96e468",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "96e468c3-c098-4fa8-a0b1-5b908424af61",
+      "seat_number": 3,
+      "session_id": "a355c3dc-e204-4220-9c3d-701615948aad",
+      "showroom": [
+        {
+          "duration_seconds": 0.024,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.041,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.02,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.026,
+          "http_status": 200,
+          "id": "qualify",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.027,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-network-ops-41e205",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 17.102,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "investigation": {
+            "action_executed": false,
+            "cause": "hardware_timing",
+            "human_approval": true,
+            "live_model": true,
+            "model": "granite-3.2-8b-tools"
+          },
+          "namespace": "launchpad-flightpath-candida-network-ops-41e205",
+          "qualification": {
+            "qualification_id": "bfb894d9147a",
+            "result": "pass",
+            "scenarios": 5
+          },
+          "readiness": {
+            "health": true,
+            "mcp_ready": true,
+            "story_http_status": 200,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-network-ops-41e205",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "41e20560-a9de-414f-bcd5-093c810a8ccf",
+      "seat_number": 4,
+      "session_id": "69944d82-ac56-466f-a3a6-c59fa66d631a",
+      "showroom": [
+        {
+          "duration_seconds": 0.024,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.042,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.022,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.015,
+          "http_status": 200,
+          "id": "qualify",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.022,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    },
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-network-ops-54dd60",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 17.098,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "investigation": {
+            "action_executed": false,
+            "cause": "hardware_timing",
+            "human_approval": true,
+            "live_model": true,
+            "model": "granite-3.2-8b-tools"
+          },
+          "namespace": "launchpad-flightpath-candida-network-ops-54dd60",
+          "qualification": {
+            "qualification_id": "bfb894d9147a",
+            "result": "pass",
+            "scenarios": 5
+          },
+          "readiness": {
+            "health": true,
+            "mcp_ready": true,
+            "story_http_status": 200,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-network-ops-54dd60",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "54dd6089-986d-4659-9b37-64b8e641a7a6",
+      "seat_number": 5,
+      "session_id": "e95c8842-46f6-4aa0-95bb-28749b851707",
+      "showroom": [
+        {
+          "duration_seconds": 0.023,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.036,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.02,
+          "http_status": 200,
+          "id": "baseline",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.026,
+          "http_status": 200,
+          "id": "qualify",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.022,
+          "http_status": 200,
+          "id": "conclusion",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-09-29T13:14:19.870244Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

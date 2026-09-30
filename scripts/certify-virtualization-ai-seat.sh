@@ -59,14 +59,35 @@ for _ in {1..30}; do curl -fsS --max-time 2 http://127.0.0.1:18080/healthz >"$wo
 jq -e . "$work_dir/health.json" >/dev/null
 
 post() { curl -fsS --max-time 30 -H 'Content-Type: application/json' --data-binary "$2" "http://127.0.0.1:18080$1"; }
+terminal_vm_request() {
+  local request_id="$1"
+  local condition="$2"
+  oc --kubeconfig "$KUBECONFIG" exec -i -n "$namespace" deployment/showroom -c terminal -- \
+    bash -s -- "$namespace" "$request_id" "$condition" <<'TERMINAL_VM_REQUEST'
+set -euo pipefail
+namespace="$1"
+request_id="$2"
+condition="$3"
+key_path=/opt/app-root/ssh/lab-key
+install -d -m 700 "$(dirname "$key_path")"
+oc get secret virtualization-ai-model-runtime -n "$namespace" \
+  -o jsonpath='{.data.VM_SSH_PRIVATE_KEY}' | base64 -d >"$key_path"
+chmod 600 "$key_path"
+virtctl ssh --identity-file="$key_path" \
+  --local-ssh-opts='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null' \
+  -n "$namespace" lab@operations-vm -- \
+  sudo env LAB_NAMESPACE="$namespace" VM_NAME=operations-vm \
+  /usr/local/bin/virtualization-ai-client "$condition" "$request_id"
+TERMINAL_VM_REQUEST
+}
 stage=adapter-contract
 case "$catalog_id" in
   virtualization-ai-foundations-101)
-    request="$(jq -cn --arg ns "$namespace" '{schema_version:"analysis-request/v1",request_id:"11111111-1111-4111-8111-111111111111",origin:{kind:"virtual-machine",namespace:$ns,vm_name:"operations-vm",guest_hostname:"operations-vm"},note:"Synthetic operations note for certification.",allowed_categories:["inspect","schedule-maintenance","escalate"],condition:"healthy"}')"
-    response="$(post "$endpoint" "$request")"
+    stage=vm-origin-request
+    response="$(terminal_vm_request 11111111-1111-4111-8111-111111111111 healthy)"
     jq -e '.source_state == "LIVE" and .ai_participated == true and .model.hardware == "Intel Xeon CPU" and .validation.schema_valid == true and .validation.category_valid == true and .authority.final_decision_owner == "human operator" and (.authority.actions_permitted | length) == 0' <<<"$response" >/dev/null
     evidence="$(curl -fsS "http://127.0.0.1:18080/api/v1/evidence/11111111-1111-4111-8111-111111111111")"
-    jq -e '.request_id == "11111111-1111-4111-8111-111111111111"' <<<"$evidence" >/dev/null
+    jq -e --arg ns "$namespace" '.request_id == "11111111-1111-4111-8111-111111111111" and .origin.kind == "virtual-machine" and .origin.namespace == $ns and .origin.vm_name == "operations-vm"' <<<"$evidence" >/dev/null
     outcome=live-advisory ;;
   virtualization-ai-201)
     request="$(jq -cn --arg ns "$namespace" '{schema_version:"virtualization-ai.redhat-intel.com/qualification-request/v1",correlation_id:"11111111-1111-4111-8111-111111111111",guest:{name:"contract-author-vm",namespace:$ns},task:"classify-operations-note",note:"The Service resolves but the downstream model boundary is unavailable.",allowed_categories:["application","capacity","connectivity","unknown"]}')"
@@ -111,4 +132,4 @@ grep -qx node_list=DENIED <<<"$terminal_scope"
 
 jq -cn --arg namespace "$namespace" --arg cluster_ref "$expected_cluster" --arg catalog_id "$catalog_id" \
   --arg outcome "$outcome" --arg terminal_scope "$terminal_scope" --argjson vm_count "$vm_count" --argjson vmi_count "$vmi_count" \
-  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:(if $catalog_id == "virtualization-ai-foundations-101" then "LIVE" else "REHEARSAL" end),outcome:$outcome,human_authority_preserved:true},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'
+  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:(if $catalog_id == "virtualization-ai-foundations-101" then "LIVE" else "REHEARSAL" end),outcome:$outcome,human_authority_preserved:true,request_origin:(if $catalog_id == "virtualization-ai-foundations-101" then "operations-vm" else "certification-client" end)},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'

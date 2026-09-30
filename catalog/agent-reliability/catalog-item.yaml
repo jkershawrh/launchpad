@@ -50,6 +50,7 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agent-reliability.yaml
+  certification_proof_contract: certification/catalog/agent-reliability.yaml
   certification_stage: five-seat-certified
   max_workshop_seats: 5
   promotion_sequence:
@@ -69,6 +70,9 @@ metadata:
   - id: workspace
     title: Reliability Advisor
     source: workload.route.workspace
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   required_models:
   - granite-3.2-8b-tools
   inference_endpoint: litellm

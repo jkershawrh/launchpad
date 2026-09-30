@@ -11,7 +11,7 @@ launchpad_source:
   repository: https://github.com/jkershawrh/launchpad.git
   branch: codex/flightpath-migration-20260922
   reviewed_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
-  remote_branch_head: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+  published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
   publication_state: reviewed-content-published
   publication_rule: >-
     Catalog and onboarding pins may reference only the published reviewed

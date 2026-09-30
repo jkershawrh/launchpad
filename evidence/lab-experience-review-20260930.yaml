@@ -1,0 +1,541 @@
+schema_version: launchpad.redhat.com/lab-experience-review/v1
+reviewed_at: "2026-09-30"
+portfolio_scope:
+  included_statuses: [active, draft]
+  excluded_statuses: [deprecated]
+  catalog_item_count: 25
+  distinct_learning_experience_count: 23
+  participant_learning_experience_count: 22
+  platform_validation_experience_count: 1
+  compatibility_alias_count: 2
+learning_pipeline:
+  platform_foundations:
+    - ai-sandbox
+    - openshift-operators-workshop
+  agentic_ai:
+    - intel-llm-cpu-serving
+    - intel-llm-tool-calling
+    - intel-xeon6-agent-201
+    - multi-agent-quickstart
+    - operate-agentic-blueprint
+    - scale-agentic-blueprint
+    - agentic-ai-601
+  sovereign_ai:
+    - sovereign-ai-101
+    - sovereign-ai-201
+    - sovereign-ai-301
+    - sovereign-ai-401
+    - sovereign-ai-501
+  virtualization_ai:
+    - virtualization-ai-foundations-101
+    - virtualization-ai-201
+    - virtualization-ai-301
+    - virtualization-ai-401
+    - virtualization-ai-501
+  applied_branches:
+    - hybrid-fraud-detection
+    - network-operations-agent
+    - agent-reliability
+  platform_validation:
+    - smoke-test
+  compatibility_aliases:
+    - cpu-inference-serving
+    - rag-on-xeon
+review_standard:
+  journey_order:
+    - show
+    - learn
+    - do
+    - prove
+  required_surfaces:
+    - story
+    - executable_lab
+    - learner_verification
+    - cleanup_or_reclaim_boundary
+  conditional_proof:
+    operators: declared operator tabs must be used and certified
+    inference: effective model identity and a real completion must be proven when claimed
+    source_truth: rehearsal, simulated, and live paths must be visibly distinct
+portfolio_evidence:
+  contract_validation:
+    status: green-local
+    evidence: 25 certification contracts validate against their onboarding definitions
+  one_seat_planning:
+    status: green-local
+    evidence: all 24 unique contracted catalog identities produce an eligible one-seat plan; multi-agent also retains a historical Arena contract
+  regression_suite:
+    status: green-local
+    evidence: 185 focused portfolio, journey, catalog, runtime-secret, operator, sandbox, content-package, and progression tests passed locally on 2026-09-30; this remains local evidence rather than immutable release evidence
+  consistency_audit:
+    status: green-local
+    evidence:
+      - 81 focused portfolio contract and evidence tests passed on 2026-09-30
+      - all 25 non-deprecated identities are classified exactly once
+      - 22 participant experiences have certification probe and lifecycle contracts
+      - two compatibility aliases are explicitly duplicate and hidden from normal discovery
+      - smoke-test remains a platform-validation probe, not a learner lab
+      - catalog identity, onboarding links, certification links, and the Intel Agent 201 Showroom source pin were reconciled
+  live_boundary:
+    status: incomplete
+    evidence: source candidates that changed after their last live evidence must be published, pinned, and recertified before their operator or inference status can be promoted to GREEN-live
+  flightpath_shared_foundations:
+    status: green-live
+    observed_at: "2026-09-30"
+    evidence:
+      - all six Flightpath nodes Ready
+      - Console, authentication, ingress, and network ClusterOperators Available and not Degraded
+      - OpenShift Pipelines TektonConfig Ready at 1.24.0
+      - OpenShift Virtualization HyperConverged Available and not Progressing or Degraded
+      - OpenShift GitOps Available
+      - granite-2b-cpu and granite-3.2-8b-tools both returned authenticated HTTP 200 completions through the Launchpad candidate MaaS gateway
+
+labs:
+  sovereign-ai-101:
+    display_name: "Sovereign AI 101: Understand Governed Inference"
+    source_repository: https://github.com/jkershawrh/sovereign-ai-101
+    candidate_branch: codex/sovereign-ai-101-lab-experience
+    candidate_revision: 43bfa90dd852e9a332051d0e438dfd5a11ff7bc1
+    overall_status: conditional
+    story:
+      status: green-local
+      evidence: internal policy assistant mission with human decision ownership
+    show:
+      status: green-local
+      evidence: governed request outcomes expose classification, policy, dispatch, and receipts
+    learn:
+      status: green-local
+      evidence: classification, authorization, generation, and evidence are explained separately
+    do:
+      status: green-local
+      evidence: 13 executable Showroom blocks across eight stages
+    prove:
+      status: green-local
+      evidence: allow, deny, fail-closed, receipt verification, decision brief, and cleanup are asserted
+    story_tab:
+      status: prepared-not-deployed
+      evidence: catalog and onboarding candidates explicitly route Interactive Story to /
+    operators:
+      status: not-required
+      evidence: this 101 experience does not claim an OpenShift operator workflow
+    inference:
+      status: rehearsal-only
+      evidence: the UI and service label the deterministic path REHEARSAL; no production model claim is made
+    cleanup:
+      status: green-local
+      evidence: session credential and participant artifacts are removed and service cleanup is verified
+    tests:
+      status: green-local
+      evidence:
+        - 33 presentation tests
+        - 14 service tests
+        - 30 fixture and negative-path tests
+        - 6 packaging and security tests
+        - full local API journey
+    release:
+      status: qualified-not-published
+      blocker: publication, exact digest pinning, and one-seat certification remain
+      qualification_run: https://github.com/jkershawrh/sovereign-ai-101/actions/runs/36711421188
+    next_action: publish only after image qualification passes, then pin exact digests and run one-seat live certification
+
+  sovereign-ai-201:
+    display_name: "Sovereign AI 201: Build the Governed Inference Boundary"
+    overall_status: source-fix-ready
+    story: {status: green-local, evidence: "One Northstar Claims case now connects the Story presentation and lab while keeping the claims analyst as final authority."}
+    show: {status: green-local, evidence: "The candidate visibly contrasts allowed, region-denied, malformed, injection-blocked, and dependency-unavailable outcomes."}
+    learn: {status: green-local, evidence: "Every construction stage explains the boundary, source state, policy, evidence, and human authority before action."}
+    do: {status: green-local, evidence: "Twenty executable blocks span all eight Show → Learn → Do → Prove stages."}
+    prove: {status: green-local, evidence: "The learner correlates five redacted evidence records, records human disposition, exports proof, and verifies cleanup."}
+    operators: {status: green-local, evidence: "Console checkpoints cover the Deployment and NetworkPolicies, and the chart narrowly permits the Showroom terminal through default-deny ingress."}
+    inference: {status: conditional, evidence: "LIVE requires complete identity and model_participated=true; REHEARSAL remains explicitly mechanical and unavailable inference fails closed."}
+    cleanup: {status: green-local, evidence: "Participant-owned files are removed and the Launchpad-owned reclaim boundary is explicit."}
+    next_action: publish immutable artifacts, pin the candidate, then certify one Flightpath seat for Console SSO, terminal connectivity under NetworkPolicy, live model identity, and cleanup
+
+  virtualization-ai-foundations-101:
+    display_name: "Virtualization + AI 101: Trace a VM to Governed AI"
+    source_repository: https://github.com/jkershawrh/virtualization-ai-foundations
+    candidate_branch: codex/virtualization-ai-101-vm-origin
+    candidate_revision: c8f04aa302a8148d95e65cee46019bfc4de1dbbb
+    candidate_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36724149337
+    overall_status: backend-candidate-published
+    launchpad_backend_candidate:
+      branch: codex/virt101-backend-keypair
+      revision: b5c38364ce556fbf0c40de07ec25c209357f3d0c
+      workflow: https://github.com/rhpds/launchpad/actions/runs/36727202035
+      image: ghcr.io/rhpds/launchpad-backend@sha256:5349f3538f9abfc77f927c6df5ac747be2b736cbe7290539b6ca5db39eec993f
+      status: published-not-deployed
+      supply_chain_evidence:
+        sbom: published
+        signature: published
+        provenance_attestation: published
+        fixable_high_critical_findings: 0
+        nonfixable_high_inventory_findings: 53
+        critical_inventory_findings: 0
+    immutable_images:
+      adapter: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:b12e760387bad40b648319fb7e068798a129696773b868761bda682c716e2b77
+      presentation: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:03767bcb59be03b1942967591ef81277a17b7db50cffae9b32623782f61b076f
+      showroom_content: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:4a368b65585b9a541c2beedf3272a9a55df0741a9d559e9e8c25884bd8905d6c
+    security_note: "The immutable-image workflow passed its enforced high/critical gate, but the presentation scan reported medium findings that remain tracked for remediation."
+    story: {status: green, evidence: "The VM-to-governed-AI boundary is clearly framed."}
+    show: {status: green, evidence: "The presentation exposes request and evidence flow."}
+    learn: {status: green, evidence: "The contract and trust boundary are explained."}
+    do: {status: green-local, evidence: "Launchpad now generates a unique Ed25519 keypair per seat, injects only the public half into cloud-init, and the learner executes the request from the VM through the Showroom terminal."}
+    prove: {status: green-local, evidence: "The certification probe now runs the same terminal-to-VM path and asserts the evidence record names the operations VM; fresh destination proof remains required."}
+    operators: {status: green-local, evidence: "OpenShift Virtualization VM/VMI readiness, namespace-scoped Secret access, Showroom terminal identity, and VM execution are now one source-tested operator path."}
+    inference: {status: rehearsal-corrected-source-only, evidence: "Candidate source no longer claims AI participation for rehearsal fixtures."}
+    cleanup: {status: green, evidence: "Seat reclaim is defined."}
+    next_action: deploy the published Launchpad backend candidate containing per-seat VM key injection, then run one fresh Flightpath seat proving the terminal-to-VM request, live inference, Console SSO, and zero residue before activation
+
+  virtualization-ai-201:
+    display_name: "Virtualization + AI 201: Author and Qualify the Contract"
+    overall_status: source-fix-ready
+    story: {status: green, evidence: "The learner owns an author-build-qualify-deploy decision."}
+    show: {status: green, evidence: "Contract outcomes and qualification evidence are visible."}
+    learn: {status: green, evidence: "The contract and governance mechanics are explained."}
+    do: {status: green, evidence: "The learner authors, validates, and deploys the contract."}
+    prove: {status: green-local, evidence: "The candidate correlates real adapter responses with evidence and proves both healthy and fail-closed paths."}
+    operators: {status: green-local, evidence: "Twelve executable steps now include active namespace-scoped Console checkpoints."}
+    inference: {status: conditional, evidence: "The candidate asserts exact LIVE versus REHEARSAL provenance; a deployed live completion still requires certification."}
+    cleanup: {status: green-local, evidence: "The learner removes only authored files while Launchpad retains ownership of runtime reclaim."}
+    next_action: publish and pin the candidate, then certify one seat for live inference, Console SSO, evidence correlation, and cleanup
+
+  virtualization-ai-301:
+    display_name: "Virtualization + AI 301 — Modernize VMs with Governed AI"
+    overall_status: source-fix-ready
+    story: {status: green-local, evidence: "The candidate frames a governed VM-modernization decision with human authority."}
+    show: {status: green-local, evidence: "The learner sees health, modernization, evidence, metrics, refusal, and abstention outcomes."}
+    learn: {status: green-local, evidence: "Identity, observability, evidence, model availability, and human decision boundaries are explained through outcomes."}
+    do: {status: green-local, evidence: "The rebuilt journey contains 20 executable participant actions."}
+    prove: {status: green-local, evidence: "The candidate verifies evidence hashes, metrics, identity refusal, two abstention paths, and a human decision artifact."}
+    operators: {status: green-local, evidence: "Console checkpoints are tied to the namespace and workload evidence."}
+    inference: {status: conditional, evidence: "The candidate distinguishes LIVE from REHEARSAL and fails closed when the model is unavailable; live cluster proof remains."}
+    cleanup: {status: green-local, evidence: "Participant artifacts are removed while Launchpad remains responsible for platform reclaim."}
+    next_action: publish and pin the rebuilt source, then certify one seat for Console SSO, runtime provenance, VM-origin behavior, and zero residue
+
+  agent-reliability:
+    display_name: "Intel AI 301: Engineer Reliable Agentic Workflows"
+    overall_status: green-live-source-update-ready
+    story: {status: green, evidence: "A reliability incident and recovery decision frame the lab."}
+    show: {status: green, evidence: "Healthy, degraded, and recovered outcomes are visible."}
+    learn: {status: green, evidence: "Reliability, safety, and evidence boundaries are explained."}
+    do: {status: green, evidence: "The learner executes disruption and recovery workflows."}
+    prove: {status: conditional, evidence: "Pipeline evidence exists; source candidate now adds Console-to-Terminal correlation checkpoints."}
+    operators: {status: green-local, evidence: "Catalog, onboarding, and Flightpath overlay candidates now expose the Console used by four source-level correlation checkpoints."}
+    inference: {status: conditional, evidence: "Inference disruption is part of the story but must be certified against the effective endpoint."}
+    cleanup: {status: source-fix-ready, evidence: "Candidate source now explains evidence retention and Launchpad reclaim."}
+    source_state:
+      repository: /Users/jkershaw/Documents/agent-reliability-quickstart
+      checked_out_branch: main
+      local_head: 096d8d6b0f774c583e67fddf49f50d0653ba4036
+      published_head: 096d8d6b0f774c583e67fddf49f50d0653ba4036
+      catalog_pinned_revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+      catalog_pinned_image: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+      post_review_changes: local-uncommitted
+      post_review_paths:
+        - modules/ROOT/pages/01-healthy-agent.adoc
+        - modules/ROOT/pages/02-safety-architecture.adoc
+        - modules/ROOT/pages/05-inference-disruption.adoc
+        - modules/ROOT/pages/06-prove-recover.adoc
+        - tests/publication/test_readme.py
+      local_validation:
+        status: green-local
+        evidence: "21 pytest checks, Antora build, Helm lint, and Helm render passed."
+      five_seat_live_evidence: evidence/runs/staging-candidate-e2d78de/flightpath-e2d78de-20260929T124528Z-7fpm8-agent-reliability-five-seat.json
+      image_provenance:
+        status: verified-byte-identical-mirror
+        manifest_digest: sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+        config_digest: sha256:62275b5e05c96d695019c85a16bbf208c97cdeb24320af03863d9b5af1b3dbfc
+        image_source_revision: 4cf610d3c225c8b31a73354bb405a3f9022305a2
+        source_manifest_registry: quay.io
+        source_manifest_reference: quay.io/rh-ee-jkershaw/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+        source_manifest_tag: intake-4cf610d
+        catalog_registry: ghcr.io
+        catalog_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+        ghcr_visibility: public
+        ghcr_tag: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+        verification: "Anonymous OCI registry reads returned the same manifest digest, config digest, media type, layer count, and byte-identical manifest from Quay and GHCR. The pulled image label identifies 4cf610d3c225c8b31a73354bb405a3f9022305a2 as the build source revision."
+      publication_note: "The five-seat GREEN-live result proves the currently pinned Launchpad candidate and its GHCR mirror. Quay versus GHCR is not an artifact discrepancy: both names resolve to the same immutable manifest. The newer Console-correlation and reclaim guidance is still not committed, published, pinned, or live-certified, and no later source-only change inherits the runtime proof automatically."
+    next_action: publish and pin the source fixes, then certify Console SSO, effective inference, evidence retention, and reclaim in one fresh seat
+
+  intel-xeon6-agent-201:
+    display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
+    overall_status: source-fix-ready
+    story: {status: green, evidence: "A Solution Architect agent gives the lab a concrete business role."}
+    show: {status: green, evidence: "The working agent UI demonstrates the target outcome."}
+    learn: {status: green, evidence: "Agent, tool, and model responsibilities are explained."}
+    do: {status: green, evidence: "The learner builds and queries the agent."}
+    prove: {status: green-local, evidence: "The source now saves the live response, asserts a nonempty brief, requires every observed inference model to equal the Deployment model, requires all three MCP tools, and exports a credential-free proof."}
+    operators: {status: green-local, evidence: "The candidate makes the OpenShift Console a namespace-scoped checkpoint correlated with terminal evidence."}
+    inference: {status: green-local, evidence: "The source checks the running Deployment model against every model-bearing inference-log record; fresh destination execution still gates GREEN-live."}
+    cleanup: {status: green-local, evidence: "The candidate removes learner-created Deployments, Services, Routes, ConfigMaps, Secret, and temporary proof files, verifies their absence, and reserves full-seat reclaim for Launchpad."}
+    local_validation: "Antora build passed without warnings; focused participant-truth tests passed on 2026-09-30."
+    next_action: publish and pin the corrected source, then recertify one seat for live inference, Console access, proof export, and cleanup
+
+  multi-agent-quickstart:
+    display_name: "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
+    overall_status: source-fix-ready
+    story: {status: green, evidence: "The multi-agent workflow and open-protocol decision are concrete."}
+    show: {status: green-local, evidence: "The workspace exposes routing, agent results, MCP evidence, and progressive timing with visible correlation IDs."}
+    learn: {status: green-local, evidence: "The candidate distinguishes routing decisions, independent agents, MCP evidence, inference, and human authority."}
+    do: {status: green-local, evidence: "The learner checks readiness for three agents and runs correlated multi-agent workflows."}
+    prove: {status: green-local, evidence: "Completed workflows expose run, journey, investigation, and request IDs together with evidence, inference, and authority proof."}
+    operators: {status: conditional, evidence: "Namespace operator work is documented and Console is declared; a dedicated 301 Story route and fresh-seat Console certification remain."}
+    inference: {status: green-local, evidence: "Live inference truth is central to the candidate and correlation is retained in seat-local run history."}
+    cleanup: {status: green-local, evidence: "The source now codifies participant cleanup and the Launchpad zero-residue reclaim boundary."}
+    next_action: parameterize or build a 301-specific Story package, publish and pin the runtime, then certify Story, Console, live inference, correlation, and cleanup in one seat
+
+  network-operations-agent:
+    display_name: "Intel AI 301: Build an Evidence-Backed Network Operations Agent"
+    overall_status: green-live-source-update-ready
+    story: {status: green, evidence: "One alarm with two possible causes drives a clear operator decision."}
+    show: {status: green, evidence: "The live journey demonstrates evidence changing the decision."}
+    learn: {status: green, evidence: "Network, platform, hardware, policy, and human authority are separated."}
+    do: {status: green, evidence: "The learner runs the evidence workflow and changes conditions."}
+    prove: {status: green, evidence: "Five-seat proof covers workflow, inference, and residue."}
+    operators: {status: green, evidence: "Story, Terminal, Workspace, and Console are used by the lab."}
+    inference: {status: green, evidence: "Live Granite inference participates in the decision narrative."}
+    cleanup: {status: source-fix-ready, evidence: "Candidate source adds sanitized export and Launchpad zero-residue guidance."}
+    source_state:
+      repository: /Users/jkershaw/Documents/network-operations-agent
+      checked_out_branch: main
+      local_head: 26f319866cf2a9f328cc8d284a88e696cac02593
+      published_head: 04927e988ea93293757cf5041f8988a40c04c236
+      catalog_pinned_revision: 287bffcca9c90336ed199ab2156d4471377b2c3e
+      catalog_pinned_image: ghcr.io/jkershawrh/network-operations-agent@sha256:74afaf7d26791327fe4d1d7e5f302c7532b644f8d902daf1e914f9c2c4e5faf1
+      post_review_changes: local-uncommitted
+      post_review_paths:
+        - showroom-lab/modules/ROOT/pages/conclusion.adoc
+        - tests/publication/test_readme.py
+      local_validation:
+        status: green-local
+        evidence: "68 unittest checks, both Showroom builds, 37 presentation checks with TypeScript/Vite build, Helm lint, and Helm render passed."
+      five_seat_live_evidence: evidence/runs/staging-candidate-e2d78de/flightpath-e2d78de-20260929T124528Z-7fpm8-network-operations-agent-five-seat.json
+      publication_note: "The five-seat GREEN-live result proves the currently pinned Launchpad candidate. The checkout is one published commit behind origin/main and also contains unrelated local work; the newer cleanup guidance is not committed, published, pinned, or live-certified."
+    next_action: commit and qualify the source cleanup improvement, publish immutable artifacts, advance the catalog pins, and recertify one seat without changing the already-green learning journey
+
+  hybrid-fraud-detection:
+    display_name: "Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon"
+    overall_status: green-live-source-update-ready
+    story: {status: green, evidence: "A fraud decision joins deterministic rules and model judgment."}
+    show: {status: green, evidence: "The learner sees why hybrid evidence changes the outcome."}
+    learn: {status: green, evidence: "Rules, inference, and human review responsibilities are explicit."}
+    do: {status: green, evidence: "The learner executes and inspects fraud decisions."}
+    prove: {status: green, evidence: "Five-seat proof covers the workflow and live model path."}
+    operators: {status: green, evidence: "Terminal, Workspace, and Console support the journey."}
+    inference: {status: green, evidence: "Live Granite inference is part of the fraud decision."}
+    cleanup: {status: source-fix-ready, evidence: "Candidate source adds sanitized export and Launchpad zero-residue guidance."}
+    source_state:
+      repository: /Users/jkershaw/Documents/hybrid-fraud-detection
+      checked_out_branch: codex/hybrid-fraud-immutable-images
+      local_head: 5a80cec2e11b3fed4e237847e8550de88125b8d8
+      published_head: 5a80cec2e11b3fed4e237847e8550de88125b8d8
+      catalog_pinned_revision: 14fad40be5904e293c5061bdaa09f8be31db7f7f
+      catalog_pinned_image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:f217fccd35f5a3508ca142671941180fae6a0a1b031ec6a8f045473ad2bae237
+      post_review_changes: local-uncommitted
+      post_review_paths:
+        - showroom/modules/ROOT/pages/conclusion.adoc
+        - tests/publication/test_launchpad_intake.py
+      local_validation:
+        status: green-local
+        evidence: "65 pytest checks, Showroom build, Helm lint, and Helm render passed."
+      five_seat_live_evidence: evidence/runs/staging-candidate-e2d78de/flightpath-e2d78de-20260929T124528Z-7fpm8-hybrid-fraud-detection-five-seat.json
+      publication_note: "The five-seat GREEN-live result proves the currently pinned Launchpad candidate. The newer cleanup guidance exists only as an uncommitted change on the immutable-images branch and is not published, pinned, or live-certified."
+    next_action: commit and qualify the source cleanup improvement, publish immutable artifacts, advance the catalog pins, and recertify one seat without changing the already-green learning journey
+
+  intel-llm-cpu-serving:
+    display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
+    overall_status: conditional
+    story: {status: green, evidence: "An HR retrieval assistant provides a recognizable customer workload."}
+    show: {status: green-local, evidence: "The opening now executes a real completion, prints the observed model identity and answer, and fails early when the inference boundary is unavailable before teaching the architecture."}
+    learn: {status: green, evidence: "Serving, retrieval, chunking, and model access are covered."}
+    do: {status: green, evidence: "The learner deploys AnythingLLM, loads content, and asks questions."}
+    prove: {status: source-fix-ready, evidence: "The source requires observed model, response, latency, retrieval, OpenShift state, and cleanup evidence; unsupported generic latency and zero-cost claims are removed."}
+    operators: {status: green-local, evidence: "The Console checkpoint now correlates the AnythingLLM Deployment, Bound PVC, and admitted Route with terminal evidence."}
+    inference: {status: green-live-prior-revision, evidence: "Existing certification proves an earlier managed Granite path; the revised source performs a real completion and fails closed, but its currently pinned Flightpath endpoint and content revision require fresh certification."}
+    cleanup: {status: green-local, evidence: "The candidate no longer prints Secret YAML, removes the AnythingLLM PVC, verifies zero learner residue, and states the Launchpad reclaim boundary."}
+    local_validation: "Antora build passed without missing-attribute warnings after correcting storage-class and shell-variable rendering; focused participant-truth tests passed on 2026-09-30."
+    next_action: publish and pin the revised content, then recertify the opening completion, Console checkpoint, managed model identity, RAG result, and cleanup in one fresh seat
+
+  intel-llm-tool-calling:
+    display_name: "Intel AI 201: LLM Tool Calling on Intel"
+    overall_status: source-fix-ready
+    story: {status: green-local, evidence: "The operations-assistant scenario now clearly separates the learner-owned tool loop from the Launchpad-managed model endpoint and preserves the model-versus-application authority boundary."}
+    show: {status: green, evidence: "The protocol path produces visible tool-call behavior."}
+    learn: {status: green, evidence: "Tool contracts and model interaction are explained."}
+    do: {status: green, evidence: "The learner executes tool-list and tool-call requests."}
+    prove: {status: green-local, evidence: "The protocol path is executable and the candidate now truthfully proves consumption of a platform-managed endpoint."}
+    operators: {status: green-local, evidence: "The candidate adds a Console and Terminal checkpoint that proves seat visibility and denial of shared-platform administration."}
+    inference: {status: green-local, evidence: "The candidate identifies the assigned MaaS model, verifies a completion, separates learner application ownership from model-server ownership, and treats the Intel hardware label as a declaration pending platform certification."}
+    cleanup: {status: green-local, evidence: "The candidate removes only learner-created files and delegates namespace, credential, Showroom, and Route cleanup to Launchpad."}
+    local_validation: "Antora build and focused participant-truth tests passed on 2026-09-30; unmeasured GPU/CPU savings claims were removed."
+    next_action: publish and pin the revised content, then recertify one seat for the managed model completion, tool-list and tool-call flow, Console isolation checkpoint, and cleanup
+
+  ai-sandbox:
+    display_name: "Intel AI 001: OpenShift Developer Sandbox"
+    overall_status: source-fix-ready
+    story: {status: green-local, evidence: "An optional guided-start card frames a small namespace-scoped AI workload without taking away open exploration."}
+    show: {status: green-local, evidence: "The learner sees namespace isolation, workload readiness, model availability, and the resulting proof artifact."}
+    learn: {status: green-local, evidence: "The seeded workspace guide explains the namespace, centrally hosted model boundary, evidence, and cleanup ownership."}
+    do: {status: green-local, evidence: "The guided runner deploys one tiny private labeled workload and calls the assigned model only when real endpoint credentials exist."}
+    prove: {status: green-local, evidence: "A credential-free proof records isolation, workload, model result or explicit unavailability, and cleanup."}
+    operators: {status: green-local, evidence: "The existing Console, terminal, and IDE surfaces support the namespace-scoped guided start."}
+    inference: {status: conditional, evidence: "The candidate performs a live completion when endpoint and key exist and reports unavailable otherwise; it never substitutes rehearsal."}
+    cleanup: {status: green-local, evidence: "Only guided-start-labeled resources are removed, followed by the existing Launchpad reclaim boundary."}
+    local_validation: "32 focused sandbox regressions, frontend component/build, local image build, and in-image runner smoke test passed on 2026-09-30."
+    next_action: publish and pin the rebuilt sandbox image, then certify a fresh Flightpath seat for UI card, isolation, workload, real model completion, proof, and cleanup
+
+  openshift-operators-workshop:
+    display_name: "OpenShift 201: Build an Operator-Managed Pipeline"
+    overall_status: source-fix-ready-draft
+    story: {status: green-local, evidence: "A namespaced evidence-automation request frames why an Operator reconciles desired state."}
+    show: {status: green-local, evidence: "The candidate shows a PipelineRun becoming a TaskRun and Pod before the learner authors it."}
+    learn: {status: green-local, evidence: "Task, Pipeline, PipelineRun, reconciliation, ownership, and human authority are explicitly separated."}
+    do: {status: green-local, evidence: "The learner authors and runs namespace-scoped Tekton v1 custom resources."}
+    prove: {status: green-local, evidence: "The candidate asserts a succeeded run, exact evidence result, one child TaskRun, Console visibility, and zero exercise residue."}
+    operators: {status: conditional, evidence: "Flightpath exposes Tekton v1 APIs and OpenShift Pipelines 1.24.0 Ready; participant Console SSO and Pipeline UI still require one-seat certification."}
+    inference: {status: not-applicable, evidence: "No AI inference path is present."}
+    cleanup: {status: green-local, evidence: "The learner removes PipelineRun, Pipeline, Task, TaskRun, and Pod artifacts and verifies zero residue."}
+    local_validation: "Five focused operator-experience tests and the Antora build passed on 2026-09-30; no inference claim is present."
+    next_action: publish and pin the candidate, then run one-seat Flightpath certification before returning this intentionally drafted item to active
+
+  cpu-inference-serving:
+    display_name: "Intel AI 101: CPU Inference Serving on Xeon"
+    overall_status: compatibility-alias-hidden
+    story: {status: duplicate, evidence: "The item aliases the canonical Serve LLMs experience."}
+    show: {status: duplicate, evidence: "No distinct participant outcome."}
+    learn: {status: duplicate, evidence: "No distinct curriculum."}
+    do: {status: duplicate, evidence: "No distinct runtime."}
+    prove: {status: duplicate, evidence: "Certification does not justify a separate active catalog entry."}
+    operators: {status: duplicate, evidence: "Uses the same surfaces as the canonical item."}
+    inference: {status: duplicate, evidence: "Uses the same model path as the canonical item."}
+    cleanup: {status: duplicate, evidence: "Uses the same lifecycle."}
+    next_action: retain direct API compatibility temporarily, route new participant discovery to intel-llm-cpu-serving, then retire after legacy consumers are inventoried
+
+  rag-on-xeon:
+    display_name: "Intel AI 101: RAG on Intel Xeon"
+    overall_status: compatibility-alias-hidden
+    story: {status: duplicate, evidence: "The item aliases the canonical Serve LLMs experience."}
+    show: {status: duplicate, evidence: "No distinct participant outcome."}
+    learn: {status: duplicate, evidence: "No distinct curriculum."}
+    do: {status: duplicate, evidence: "No distinct runtime."}
+    prove: {status: duplicate, evidence: "Certification does not justify a separate active catalog entry."}
+    operators: {status: duplicate, evidence: "Uses the same surfaces as the canonical item."}
+    inference: {status: duplicate, evidence: "Uses the same model path as the canonical item."}
+    cleanup: {status: duplicate, evidence: "Uses the same lifecycle."}
+    next_action: retain direct API compatibility temporarily, route new participant discovery to intel-llm-cpu-serving, then retire after legacy consumers are inventoried
+
+  operate-agentic-blueprint:
+    display_name: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
+    overall_status: source-fix-ready-draft
+    story: {status: green-source, evidence: "A live operations presentation frames correlation, evidence, deterministic policy, inference, and human authority."}
+    show: {status: green-local, evidence: "The presentation and workspace now explicitly show the governed workflow before the learner operates it."}
+    learn: {status: green-source, evidence: "The intended 301-to-401 progression moves from building the system to operating denial, recovery, drift, and evaluation."}
+    do: {status: green-local, evidence: "The learner correlates, challenges, changes, and restores the governed workflow; policy change begins from the observed baseline rather than a magic value."}
+    prove: {status: green-local, evidence: "The candidate proves restoration against the recorded baseline and distinguishes that source proof from pending destination telemetry and outage gates."}
+    operators: {status: conditional, evidence: "Story, Terminal, Workspace, and Console are declared; Console, GitOps, Pipeline, and trace use require journey-level certification."}
+    inference: {status: conditional, evidence: "Granite inference is required, but effective model identity and failure/recovery proof must be re-certified with the revised journey."}
+    cleanup: {status: green-local, evidence: "The learner restores policy and removes temporary files; Launchpad retains responsibility for namespace reclaim."}
+    next_action: publish and pin the revised source, then run one-seat certification for operators, inference, independent outage behavior, telemetry, restoration, and zero residue
+
+  scale-agentic-blueprint:
+    display_name: "Intel AI 501: Production Multi-Agent Blueprint"
+    overall_status: source-fix-ready-draft
+    story: {status: green-source, evidence: "The production-blueprint story advances the learner from one trusted run to a measured deployment envelope."}
+    show: {status: rehearsal-only, evidence: "The current qualifier exposes rehearsal evidence and does not claim approved destination telemetry."}
+    learn: {status: green-local, evidence: "The candidate explicitly advances from 401 operations into qualifying the same contract under labeled load and pressure."}
+    do: {status: green-local, evidence: "The learner executes an end-to-end qualification rehearsal while the UI and guide preserve source labels."}
+    prove: {status: rehearsal-only, evidence: "Factory evidence is explicitly non-production and maximum certified seats remains zero."}
+    operators: {status: conditional, evidence: "Story, Terminal, Qualification Evidence, and Console are declared but not destination-certified."}
+    inference: {status: not-claimed, evidence: "No required model is declared; approved live Xeon telemetry remains an activation blocker."}
+    cleanup: {status: green-local, evidence: "The guide states rehearsal changes no target state and reserves zero-residue claims for live Launchpad reclaim evidence."}
+    next_action: publish and pin the source, then qualify live adapters, Intel telemetry, fault drivers, thresholds, one seat, and reclaim before any scale claim
+
+  agentic-ai-601:
+    display_name: "Intel AI 601: Earn the Right to Act"
+    overall_status: source-fix-ready-draft
+    story: {status: green-source, evidence: "The authority story moves from signal to deterministic decision, bounded simulated action, validation or rollback, and human evaluation."}
+    show: {status: rehearsal-only, evidence: "Qualification evidence is presented without granting the runtime production authority."}
+    learn: {status: green-local, evidence: "The capstone now explicitly connects 301 build, 401 operate, 501 qualify, and 601 authority evaluation."}
+    do: {status: green-local, evidence: "The learner exercises a reversible control loop against clearly labeled synthetic evidence with external authority disabled."}
+    prove: {status: rehearsal-only, evidence: "No live authority, destination evidence, or production action is claimed."}
+    operators: {status: conditional, evidence: "Story, Terminal, Qualification Evidence, and Console are declared but not live-certified."}
+    inference: {status: not-applicable, evidence: "The catalog deliberately declares no model dependency; the learning claim is governance of authority, not generation."}
+    cleanup: {status: green-local, evidence: "Immutable in-memory rehearsal evidence is preserved while Launchpad owns seat teardown; rollback and live zero-residue remain promotion gates."}
+    next_action: publish and pin the source but retain draft status until 401/501 prerequisites, independent destination evidence, rollback, and one-seat reclaim all pass
+
+  sovereign-ai-301:
+    display_name: "Sovereign AI 301 — Confidential Inference and Intel TDX Foundations"
+    overall_status: source-fix-ready-draft
+    story: {status: green-local, evidence: "Northstar Claims advances from the 201 governed assistant into a fail-closed confidential-inference trust contract with human authority retained."}
+    show: {status: rehearsal-only, evidence: "Seven source-qualified outcomes visibly cover capability, identity, appraisal, policy, authorization, refusal, and authority without claiming live TDX."}
+    learn: {status: green-local, evidence: "All stages use Show → Learn → Do → Prove to explain the confidential-computing trust foundation."}
+    do: {status: green-local, evidence: "Twelve executable blocks span the rebuilt journey; live Sandboxed Containers and Trustee operations remain intentionally gated."}
+    prove: {status: rehearsal-only, evidence: "The learner proves the deterministic trust contract and failure boundaries; no hardware-rooted quote, protected resource, or confidential placement is claimed."}
+    operators: {status: green-local, evidence: "Story and Terminal match the catalog surface, and NetworkPolicy permits only the Showroom pod to reach the qualifier."}
+    inference: {status: not-claimed, evidence: "The candidate explicitly records zero model execution and does not turn inference authorization into a generation claim."}
+    cleanup: {status: green-local, evidence: "Participant cleanup and Launchpad reclaim ownership are explicit; destination zero-residue remains a certification gate."}
+    next_action: publish and pin the source, then retain draft until an approved TDX/Trustee destination supports truthful one-seat proof and reclaim
+
+  sovereign-ai-401:
+    display_name: "Sovereign AI 401 — Operate Confidential AI with Intel TDX"
+    overall_status: source-fix-ready-draft
+    story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
+    show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
+    learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
+    do: {status: green-local, evidence: "Sixteen executable blocks cover the operating lifecycle; live Trustee, KBS, quote, policy, and revocation remain destination gates."}
+    prove: {status: rehearsal-only, evidence: "The learner packages correlated evidence and verifies lifecycle transitions without claiming live TDX or protected-resource release."}
+    operators: {status: green-local, evidence: "Console and Terminal actions are meaningful, and NetworkPolicy limits qualifier access to the presentation and Showroom paths while preserving required DNS and router traffic."}
+    inference: {status: not-claimed, evidence: "The rebuilt journey explicitly states zero model execution rather than inferring a model call from metadata."}
+    cleanup: {status: green-local, evidence: "Participant cleanup and Launchpad reclaim ownership are explicit; destination reclaim and zero residue remain live gates."}
+    next_action: publish and pin the source, then retain draft until a real TDX/Trustee one-seat environment proves current quote, resource release, lifecycle operations, and reclaim
+
+  sovereign-ai-501:
+    display_name: "Sovereign AI 501 — Qualify a Confidential AI Fleet"
+    overall_status: source-fix-ready-draft
+    story: {status: green-local, evidence: "Northstar Claims advances the 401 operating lifecycle into three-site fleet qualification under changed rollout, freshness, revocation, failure, and admission conditions."}
+    show: {status: rehearsal-only, evidence: "A baseline qualifies in rehearsal and seven unsafe cases refuse promotion without claiming a confidential fleet or model execution."}
+    learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect fleet evidence, retained authority, and customer promotion decisions."}
+    do: {status: green-local, evidence: "Eighteen executable blocks cover the fleet journey while live confidential-fleet actions remain intentionally blocked."}
+    prove: {status: rehearsal-only, evidence: "The learner produces a correlated evidence package and fail-closed promotion result without claiming a live quote, resource release, inference, latency, throughput, or capacity."}
+    operators: {status: green-local, evidence: "Console and Terminal workload inspection are explicit, with NetworkPolicy narrowed to required presentation, Showroom, DNS, and router paths."}
+    inference: {status: not-claimed, evidence: "The rebuilt journey explicitly describes a zero-model-execution capacity rehearsal rather than treating catalog metadata as proof."}
+    cleanup: {status: green-local, evidence: "Participant cleanup and Launchpad reclaim ownership are explicit; destination scale and zero-residue remain independent gates."}
+    next_action: publish and pin the source, then keep draft until live confidential-fleet infrastructure proves current quotes, protected-resource delivery, confidential model execution, one-seat behavior, and reclaim
+
+  virtualization-ai-401:
+    display_name: "Virtualization + AI 401 — Operate Hybrid VM and AI Workloads"
+    overall_status: source-fix-ready-draft
+    story: {status: green-local, evidence: "The candidate advances the 301 modernization decision into a governed day-two VM operation and hands its evidence to 501."}
+    show: {status: green-local, evidence: "The learner sees ALLOW_REVIEW, ABSTAIN, and REFUSE outcomes with explicit rehearsal provenance and human control."}
+    learn: {status: green-local, evidence: "Observation, preflight, proposal, approval, execution boundary, validation, and retained learning form one coherent operating lifecycle."}
+    do: {status: green-local, evidence: "Executable in-cluster health, API, metrics, ledger, and Console VM/PVC checks span the journey."}
+    prove: {status: green-local, evidence: "The candidate verifies three outcome classes, seven ledger records, no automated action, and source_state REHEARSAL."}
+    operators: {status: conditional, evidence: "Console VM/PVC and Terminal checks are meaningful locally; one-seat SSO and VM visibility remain live gates."}
+    inference: {status: not-claimed, evidence: "The source explicitly records ai_participated false rather than implying model-backed operation."}
+    cleanup: {status: green-local, evidence: "Participant files are cleaned safely while Launchpad owns workload and namespace reclaim."}
+    next_action: publish and pin the source, then certify one seat for Console SSO, VM readiness, in-cluster commands, evidence, and zero residue
+
+  virtualization-ai-501:
+    display_name: "Virtualization + AI 501 — Qualify a Governed VM Inference Fleet"
+    overall_status: source-fix-ready-draft
+    story: {status: green-local, evidence: "The candidate qualifies the evidence handed off from 401 across a distinct three-VM fleet envelope."}
+    show: {status: rehearsal-only, evidence: "No live KubeVirt fleet, migration, Xeon placement, inference execution, or correlated telemetry has been observed."}
+    learn: {status: green-local, evidence: "Discovery, baseline, migration, disruption, correlation, qualification, and handoff distinguish fleet proof from proposed capacity."}
+    do: {status: green-local, evidence: "The learner executes baseline, migration, disruption, correlation-gap, and capacity-breach scenarios using packaged fixtures."}
+    prove: {status: green-local, evidence: "ALLOW_REVIEW, REFUSE, and ABSTAIN are asserted with seven records, promotion false, and every quantitative value labeled synthetic REHEARSAL."}
+    operators: {status: conditional, evidence: "Console VM/PVC checkpoints and terminal commands are defined; destination VM views and fixture serving need one-seat proof."}
+    inference: {status: not-claimed, evidence: "The candidate reports llm_authority NONE and makes no Intel performance or live inference claim."}
+    cleanup: {status: green-local, evidence: "Participant cleanup is safe and platform reclaim remains Launchpad-owned."}
+    next_action: publish and pin the source, then certify one seat for VM readiness, Console/Terminal operation, fixtures, evidence, and zero residue before any fleet promotion
+
+  smoke-test:
+    display_name: "Launchpad 001: Platform Smoke Test"
+    overall_status: platform-validation-only
+    story: {status: not-applicable, evidence: "This is an internal platform probe, not a participant learning product."}
+    show: {status: not-applicable, evidence: "No participant demonstration is promised."}
+    learn: {status: not-applicable, evidence: "No curriculum should be added to an infrastructure smoke test."}
+    do: {status: green-purpose, evidence: "The platform deploys one minimal nginx pod for provisioning validation."}
+    prove: {status: conditional, evidence: "Pod readiness is checked; full create, route, reclaim, and zero-residue coverage should remain a platform contract rather than a lab story."}
+    operators: {status: not-applicable, evidence: "No participant operator surface is declared."}
+    inference: {status: not-applicable, evidence: "The smoke test deliberately has no model dependency."}
+    cleanup: {status: conditional, evidence: "Its value is complete lifecycle validation, so zero-residue evidence must be explicit."}
+    next_action: keep draft and internal-only; strengthen lifecycle smoke evidence without presenting it as one of the learner-facing labs

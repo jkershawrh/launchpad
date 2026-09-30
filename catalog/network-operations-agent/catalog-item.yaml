@@ -47,6 +47,7 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/network-operations-agent.yaml
+  certification_proof_contract: certification/catalog/network-operations-agent.yaml
   certification_stage: five-seat-certified
   max_workshop_seats: 5
   promotion_sequence:

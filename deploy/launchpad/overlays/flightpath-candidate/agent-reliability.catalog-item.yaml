@@ -63,6 +63,9 @@ metadata:
   - id: workspace
     title: Reliability Advisor
     source: workload.route.workspace
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   required_models:
   - granite-3.2-8b-tools
   inference_endpoint: litellm

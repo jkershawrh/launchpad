@@ -6,7 +6,7 @@ catalog:
     through platform networking to governed Intel Xeon CPU inference and human authority.
   category: guided_build
   version: 0.1.0
-  status: active
+  status: draft
 learning:
   learning_level: '101'
   learning_stage: Learn
@@ -22,14 +22,14 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 33de397ab442964ed1a0e37204b9515132555205
+    revision: c8f04aa302a8148d95e65cee46019bfc4de1dbbb
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
-    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:5473dff5c6339a3f04ead245ed01f866827b6e0a48acee367ca18d888fe873ca
+    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:4a368b65585b9a541c2beedf3272a9a55df0741a9d559e9e8c25884bd8905d6c
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 33de397ab442964ed1a0e37204b9515132555205
+    revision: c8f04aa302a8148d95e65cee46019bfc4de1dbbb
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:
@@ -75,8 +75,8 @@ runtime:
     release_name: virtualization-ai-foundations-101
     helm_values:
       values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:0d0b9d3cadf3ea19061a4b54af9aa72e517f2f4deccb6e3e6dcc5125974954c9
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:42c14c4ec952b888f79bbec669bc7485587daff73a5605ce1a8fa9ce588b092f
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:b12e760387bad40b648319fb7e068798a129696773b868761bda682c716e2b77
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:03767bcb59be03b1942967591ef81277a17b7db50cffae9b32623782f61b076f
       presentation_enabled: true
       adapter:
         mode: live
@@ -92,14 +92,26 @@ runtime:
       endpoint: maas_endpoint
       name: requested_model
       api-key: maas_api_key
+      VM_SSH_PRIVATE_KEY:
+        source: generated_ssh_keypair
+        pair: operations-vm
+        part: private
+      VM_SSH_PUBLIC_KEY:
+        source: generated_ssh_keypair
+        pair: operations-vm
+        part: public
+    runtime_value_bindings:
+      vm.sshAuthorizedKey: VM_SSH_PUBLIC_KEY
     routes:
       ui: lab
     readiness: []
 certification:
-  stage: 1-seat-certified
-  certified_seats: 1
+  stage: source-reviewed
+  certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers: []
+  activation_blockers:
+  - deploy-vm-origin-credential-injection
+  - fresh-one-seat-vm-origin-certification
   proof_contract: certification/catalog/virtualization-ai-foundations-101.yaml

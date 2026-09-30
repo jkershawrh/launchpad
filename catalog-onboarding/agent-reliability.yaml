@@ -59,6 +59,9 @@ runtime:
   - id: workspace
     title: Reliability Advisor
     source: workload.route.workspace
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   workload:
     gitops_ready: true
     release_name: agent-reliability
