@@ -24,13 +24,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-301.git
-    revision: 36e61a5a6eb819dd7b9dcdf0c63854cb175722ec
+    revision: 21637a560c2ffe238927da2acce9595104ff3563
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-301.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-301.git
-    revision: 36e61a5a6eb819dd7b9dcdf0c63854cb175722ec
+    revision: 21637a560c2ffe238927da2acce9595104ff3563
     deploy_path: charts/virtualization-ai-301
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-301.git
 runtime:
