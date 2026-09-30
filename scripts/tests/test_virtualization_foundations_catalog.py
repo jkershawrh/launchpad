@@ -45,6 +45,6 @@ def test_virtualization_301_overrides_chart_images_with_immutable_candidates() -
     assert values["values_overlay"].endswith("values.published.yaml")
     assert values["adapter"]["image"]["digest"].startswith("sha256:")
     assert values["presentation"]["image"]["digest"].startswith("sha256:")
-    assert catalog["metadata"]["workload_revision"] == "c0a7f4d60a37a2501b1a5cc841cf5d0e6e6a8fa2"
+    assert catalog["metadata"]["workload_revision"] == "2fb50bfb5f597591e3851735706e9cef77534ab5"
     assert catalog["metadata"]["workload_routes"]["ui"] == "virt301"
     assert catalog["metadata"]["showroom_content_repo_url"].startswith("https://")
