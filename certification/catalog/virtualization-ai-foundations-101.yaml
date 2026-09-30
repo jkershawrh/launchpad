@@ -14,6 +14,7 @@ spec:
       - {id: welcome, path: /www/virtualization-ai-101/main/index.html, marker: "Trace a VM to Governed AI"}
       - {id: verify, path: /www/virtualization-ai-101/main/01-verify.html, marker: "Verify the runtime"}
       - {id: evidence, path: /www/virtualization-ai-101/main/06-evidence.html, marker: "Export the evidence map"}
+      - {id: cleanup, path: /www/virtualization-ai-101/main/07-cleanup.html, marker: "Clean learner artifacts"}
   seat_probe:
     argv: [bash, scripts/certify-virtualization-ai-seat.sh, virtualization-ai-foundations-101, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 900

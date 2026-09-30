@@ -37,6 +37,10 @@ def test_catalog_agent_driver_limits_probe_exec_access_to_the_seat_namespace():
 
     assert "launchpad-certification-probe" in driver
     assert "--clusterrole=edit" in driver
-    assert "--serviceaccount=partner-ai-launchpad:launchpad-provisioner" in driver
+    assert (
+        'probe_serviceaccount="${LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT:-partner-ai-launchpad:launchpad-provisioner}"'
+        in driver
+    )
+    assert '--serviceaccount="$probe_serviceaccount"' in driver
     assert 'delete rolebinding "$probe_binding"' in driver
     assert '--namespace "$namespace"' in driver

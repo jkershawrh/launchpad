@@ -44,7 +44,7 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/scale-agentic-blueprint.yaml
-  certification_stage: factory-development-verified
+  certification_stage: immutable-source-published
   certification_proof_contract: certification/catalog/scale-agentic-blueprint.yaml
   learner_workload_charter: certification/workload/scale-agentic-blueprint.yaml
   max_workshop_seats: 1
@@ -86,7 +86,7 @@ metadata:
   showroom_title: "Intel AI 501: Production Multi-Agent Blueprint"
   namespace_slug: agentic-scale
   showroom_content_repo_url: https://github.com/jkershawrh/agentic-scale-501.git
-  showroom_content_ref: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+  showroom_content_ref: c91c5fea075163b2cb9e316d3a77f0c3ffae2d18
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   showroom_terminal_storage: false
@@ -114,7 +114,7 @@ metadata:
   workshop_node_spread: false
   workshop_node_min_ready_seconds: 0
   workload_repo: https://github.com/jkershawrh/agentic-scale-501.git
-  workload_revision: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+  workload_revision: c91c5fea075163b2cb9e316d3a77f0c3ffae2d18
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/agentic-scale-501
@@ -125,10 +125,10 @@ metadata:
     images:
       presentation:
         repository: ghcr.io/jkershawrh/agentic-scale-501-presentation
-        digest: sha256:4d67e5d73f8207498b96172b0c5eeaf736686652dc2de1caa21aeb4fea806615
+        digest: sha256:15f227de9547b20dc137ce37b4d19bf68bebde7c6bf46ea4c01a2194829762a0
       qualifier:
         repository: ghcr.io/jkershawrh/agentic-scale-501-qualifier
-        digest: sha256:fe29325bbfdc34466fdfa2a77050282e1e2ec0d6b21d9e0115fe416288d8e431
+        digest: sha256:7875cb2772a5c9c6ce3628c7ad287ad70690aa345d836f331e7232b302b2e1d3
     routes:
       enabled: true
       ingressDomain: apps.flightpath.fm2aihpcsed.com
@@ -147,7 +147,7 @@ metadata:
     qualifier: agentic-scale-501-qualifier
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-scale-501.git
-  source_content_revision: 5413bb24b25e67e7fba9d2025c4e4b070e324878
+  source_content_revision: c91c5fea075163b2cb9e316d3a77f0c3ffae2d18
   source_references:
     canonical_blueprint:
       path: contracts/agentic-blueprint-v1.yaml

@@ -7,7 +7,7 @@ catalog:
     browser IDE, and a shared Intel CPU model endpoint.
   category: open_sandbox
   version: 1.0.1-flightpath.1
-  status: active
+  status: draft
   supported_branding:
   - redhat-intel-default
   - intel-internal
@@ -79,11 +79,14 @@ runtime:
   - id: openshift-console
     title: OpenShift Console
 certification:
-  stage: 5-seat-certified
-  certified_seats: 5
-  max_workshop_seats: 5
+  stage: guided-source-not-published
+  certified_seats: 0
+  max_workshop_seats: 1
   proof_contract: certification/catalog/ai-sandbox.yaml
   promotion_sequence:
   - 1
   - 5
-  activation_blockers: []
+  activation_blockers:
+  - Resolve the fixable HIGH/CRITICAL findings embedded in the upstream OpenShift CLI and code-server payloads without weakening the publication gate.
+  - Publish and pin the guided-start sandbox and portal images.
+  - Certify one fresh Flightpath seat for the UI card, namespace isolation, real model completion, proof artifact, reclaim, and zero residue.

@@ -48,18 +48,18 @@ api_base="http://127.0.0.1:18201"
 
 stage="health"
 health="$(cat "$work_dir/health")"
-jq -e '.status == "ok" and .source_state == "REHEARSAL" and .live_identity_complete == true and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$health" >/dev/null
+jq -e '.status == "ok" and .source_state == "LIVE" and .live_identity_complete == true and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$health" >/dev/null
 
-request_body='{"contract_version":"sovereign-inference/v1","request_id":"8da2153c-16ca-47f9-b0ee-6d8b957add4c","correlation_id":"sovereign-201-cert-001","identity":{"subject":"spiffe://workshop.example/learner","trust_domain":"workshop.example"},"residency":{"data_origin":"local","approved_regions":["local","eu-central"],"destination_region":"local"},"data_classification":"general","requested_model":"granite-3.2-sovereign","prompt":"Explain why deterministic policy must precede model inference.","final_decision_owner":"human-reviewer"}'
+request_body='{"contract_version":"sovereign-inference/v1","request_id":"8da2153c-16ca-47f9-b0ee-6d8b957add4c","correlation_id":"sovereign-201-cert-001","identity":{"subject":"spiffe://workshop.example/learner","trust_domain":"workshop.example"},"residency":{"data_origin":"local","approved_regions":["local","eu-central"],"destination_region":"local"},"data_classification":"general","requested_model":"granite-3.2-8b-tools","prompt":"Explain why deterministic policy must precede model inference.","final_decision_owner":"human-reviewer"}'
 
 stage="allowed-path"
 allowed="$(request_json 200 POST "$api_base/api/v1/qualify?condition=allowed" "$request_body")"
-jq -e '.outcome == "ALLOWED" and .source_state == "REHEARSAL" and .policy.decision == "ALLOW" and .model_participated == false and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$allowed" >/dev/null
+jq -e '.outcome == "ALLOWED" and .source_state == "LIVE" and .policy.decision == "ALLOW" and .model_participated == true and .model.id == "granite-3.2-8b-tools" and (.advisory | type == "string" and length > 0) and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$allowed" >/dev/null
 evidence_id="$(jq -r '.evidence_id' <<<"$allowed")"
 
 stage="evidence"
 evidence="$(request_json 200 GET "$api_base/api/v1/evidence/${evidence_id}")"
-jq -e '.source_state == "REHEARSAL" and .outcome == "ALLOWED" and .model_participated == false and .secret_values_recorded == false and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$evidence" >/dev/null
+jq -e '.source_state == "LIVE" and .outcome == "ALLOWED" and .model_participated == true and .model_identity.id == "granite-3.2-8b-tools" and .secret_values_recorded == false and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$evidence" >/dev/null
 
 stage="deny-paths"
 denied="$(request_json 200 POST "$api_base/api/v1/qualify?condition=denied" "$request_body")"
@@ -82,6 +82,6 @@ grep -qx 'node_list=DENIED' <<<"$terminal_scope"
 jq -cn --arg namespace "$namespace" --arg cluster_ref "$expected_cluster" --arg evidence_id "$evidence_id" --arg terminal_scope "$terminal_scope" '{
   result:"GREEN-live-internal-seat", namespace:$namespace, cluster_ref:$cluster_ref,
   readiness:{health:true,presentation_http_status:200},
-  journey:{mode:"REHEARSAL",live_qualified:false,model_identity_configured:true,model_participated:false,allow_path:"ALLOWED",deny_path:"POLICY_DENIED",injection_path:"INJECTION_BLOCKED",evidence_id:$evidence_id,evidence_redacted:true,human_authority:true},
+  journey:{mode:"LIVE",live_qualified:true,model_identity_configured:true,model_participated:true,model:"granite-3.2-8b-tools",allow_path:"ALLOWED",deny_path:"POLICY_DENIED",injection_path:"INJECTION_BLOCKED",evidence_id:$evidence_id,evidence_redacted:true,human_authority:true},
   terminal_scope:($terminal_scope|split("\n")), contains_sensitive_values:false
 }'

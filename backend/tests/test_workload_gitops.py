@@ -188,7 +188,8 @@ def test_runtime_secret_retry_preserves_existing_owned_credentials():
                 "launchpad.redhat.com/seat-id": "seat-1",
                 "launchpad.redhat.com/session-id": "session-1",
             }
-        )
+        ),
+        data={"VM_SSH_PUBLIC_KEY": "c3NoLWVkMjU1MTkgQUFBQU9MRA=="},
     )
     secret = build_runtime_secret(
         name="example-runtime",
@@ -201,9 +202,10 @@ def test_runtime_secret_retry_preserves_existing_owned_credentials():
         string_data={"POSTGRES_PASSWORD": "new-random-value"},
     )
 
-    adapter._apply_workload_runtime_secret(secret)
+    effective = adapter._apply_workload_runtime_secret(secret)
 
     adapter._core_v1.patch_namespaced_secret.assert_not_called()
+    assert effective == {"VM_SSH_PUBLIC_KEY": "ssh-ed25519 AAAAOLD"}
 
 
 def test_runtime_secret_retry_refreshes_credentials_for_the_same_stable_seat():

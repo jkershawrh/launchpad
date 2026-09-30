@@ -24,10 +24,11 @@ spec:
       - {path: cluster_ref, equals: flightpath}
       - {path: readiness.health, equals: true}
       - {path: readiness.presentation_http_status, equals: 200}
-      - {path: journey.mode, equals: REHEARSAL}
-      - {path: journey.live_qualified, equals: false}
+      - {path: journey.mode, equals: LIVE}
+      - {path: journey.live_qualified, equals: true}
       - {path: journey.model_identity_configured, equals: true}
-      - {path: journey.model_participated, equals: false}
+      - {path: journey.model_participated, equals: true}
+      - {path: journey.model, equals: granite-3.2-8b-tools}
       - {path: journey.allow_path, equals: ALLOWED}
       - {path: journey.deny_path, equals: POLICY_DENIED}
       - {path: journey.injection_path, equals: INJECTION_BLOCKED}

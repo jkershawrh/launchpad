@@ -61,7 +61,7 @@ spec:
   seat_probe:
     argv:
       - bash
-      - scripts/certify-multi-agent-seat.sh
+      - scripts/certify-multi-agent-301-seat.sh
       - "{namespace}"
       - "{cluster_ref}"
     timeout_seconds: 600
@@ -87,6 +87,20 @@ spec:
         equals: true
       - path: participant_ui_journey.step_count_one
         equals: true
+      - path: correlation.fields_present
+        equals: true
+      - path: correlation.stable
+        equals: true
+      - path: correlation.unique_event_ids
+        equals: true
+      - path: presentation.required
+        equals: true
+      - path: presentation.root_http_status
+        equals: 200
+      - path: presentation.workflow.steps
+        equals: 3
+      - path: presentation.workflow.errors
+        equals: 0
       - path: learner_policy.applied_max_tokens
         equals: 48
       - path: learner_policy.workflow_passed

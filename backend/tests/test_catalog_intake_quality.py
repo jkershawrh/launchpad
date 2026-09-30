@@ -139,6 +139,16 @@ def test_quality_profile_reuses_quickstart_authoring_and_showroom_signals(
     assert quality["showroom"]["hands_on_module_count"] == 1
     assert quality["showroom"]["execute_block_count"] == 1
     assert quality["showroom"]["thin_modules"] == []
+    assert quality["experience"]["journey_order"] == ["show", "learn", "do", "prove"]
+    assert quality["experience"]["show"]["status"] == "present"
+    assert quality["experience"]["learn"]["status"] == "present"
+    assert quality["experience"]["do"]["status"] == "present"
+    assert quality["experience"]["prove"]["status"] == "present"
+    assert quality["experience"]["story"]["status"] == "missing"
+    assert quality["experience"]["cleanup"]["status"] == "missing"
+    assert quality["experience"]["promotion_ready"] is False
+    assert "story" in quality["experience"]["missing_capabilities"]
+    assert "cleanup" in quality["experience"]["missing_capabilities"]
     assert quality["capacity_proposal"]["inference_mode"] == "remote-endpoint"
     assert quality["capacity_proposal"]["status"] == "review-required"
     assert quality["portfolio_overlap"]["status"] == "not-run"

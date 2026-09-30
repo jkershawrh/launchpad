@@ -62,7 +62,12 @@ def test_deployed_cluster_images_and_pilot_catalog_preserve_grant_boundary(
         requested_mode=item.category,
     )
 
-    for cluster_id, expected_grant in (("arena", True), ("brutus", True), ("flightpath", False)):
+    flightpath_grant = catalog_id == "multi-agent-quickstart"
+    for cluster_id, expected_grant in (
+        ("arena", True),
+        ("brutus", True),
+        ("flightpath", flightpath_grant),
+    ):
         adapter = OpenShiftProvisioningAdapter.__new__(OpenShiftProvisioningAdapter)
         adapter._overlay_path = "/tmp/demo"
         adapter._target = SimpleNamespace(

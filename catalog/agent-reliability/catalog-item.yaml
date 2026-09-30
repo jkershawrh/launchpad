@@ -4,8 +4,8 @@ description: A 75-minute Red Hat and Intel guided build that teaches platform te
   to contain prompt injection, deny unauthorized MCP tools, prove evidence-backed
   recommendations, and degrade safely when inference is unavailable.
 category: guided_build
-version: 0.1.0-flightpath.1
-status: active
+version: 0.1.1-flightpath.1
+status: draft
 required_capabilities:
 - openshift
 - showroom
@@ -43,7 +43,7 @@ metadata:
   solution_family: operations_reliability
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+  showroom_content_ref: 9c69348c34904c58997318d9124ac3d50661984b
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   operator_workshop: true
@@ -51,12 +51,14 @@ metadata:
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agent-reliability.yaml
   certification_proof_contract: certification/catalog/agent-reliability.yaml
-  certification_stage: five-seat-certified
-  max_workshop_seats: 5
+  certification_stage: source-update-published
+  max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
-  activation_blockers: []
+  activation_blockers:
+  - Recertify one Flightpath seat against the updated Console correlation and reclaim guidance.
+  - Verify the unchanged runtime image against the effective managed inference endpoint.
   allowed_exposure_policies:
   - internal
   showroom_journey: agent-reliability
@@ -86,7 +88,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+  workload_revision: 9c69348c34904c58997318d9124ac3d50661984b
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -118,7 +120,7 @@ metadata:
     workspace: ar
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+  source_content_revision: 9c69348c34904c58997318d9124ac3d50661984b
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1

@@ -43,7 +43,7 @@ metadata:
   solution_family: sovereign_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
-  showroom_content_ref: 2b109509d9bfdec27cf5128e1a281b75e1ea0390
+  showroom_content_ref: da46fe0d734f329c5f5ba69f51dd33e2e77faf92
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
@@ -81,9 +81,6 @@ metadata:
     title: Story
     source: presentation.route
     path: /
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -110,7 +107,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-401.git
-  workload_revision: 2b109509d9bfdec27cf5128e1a281b75e1ea0390
+  workload_revision: da46fe0d734f329c5f5ba69f51dd33e2e77faf92
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-401
@@ -118,18 +115,27 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: sovereign-ai-401
   workload_helm_values:
-    workload_image: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:6618e601513a468a807eda1762c124e567c322e89c04a11c067da80bd8ff6721
-    presentation_image: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:3406d439643ee0022f0f8b7b33cd32b09ea081fe068879b1e6ed88c8e282bc71
+    values_overlay: charts/sovereign-ai-401/values.published.yaml
+    workload_image: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:1667620a32c044ccfb992a9eb81e0360c93500f559d146f4848285280c6d189e
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:e0f07a7530aa2f5d4b8f59e8d50a2c8f0a04fad13d729c811675cafbe55dbc8b
     source_state: REHEARSAL
     confidential_runtime_enabled: false
     live_tdx_claimed: false
+    images:
+      presentation:
+        repository: ghcr.io/jkershawrh/sovereign-ai-401-presentation
+        digest: sha256:e0f07a7530aa2f5d4b8f59e8d50a2c8f0a04fad13d729c811675cafbe55dbc8b
+      qualifier:
+        repository: ghcr.io/jkershawrh/sovereign-ai-401-qualifier
+        digest: sha256:1667620a32c044ccfb992a9eb81e0360c93500f559d146f4848285280c6d189e
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
   workload_runtime_secret_sources: {}
   workload_runtime_secret_value_path: ''
   workload_identity_value_path: ''
-  workload_routes: {}
+  workload_routes:
+    ui: sovereign-ai-401-presentation
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-401.git
-  source_content_revision: 2b109509d9bfdec27cf5128e1a281b75e1ea0390
+  source_content_revision: da46fe0d734f329c5f5ba69f51dd33e2e77faf92
   source_references: {}

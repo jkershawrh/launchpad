@@ -39,28 +39,18 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
     active = {catalog_id for catalog_id, item in items.items() if item["status"] == "active"}
 
     assert active == {
-        "agent-reliability",
         "cpu-inference-serving",
-        "hybrid-fraud-detection",
         "intel-llm-cpu-serving",
-        "intel-llm-tool-calling",
-        "intel-xeon6-agent-201",
-        "multi-agent-quickstart",
-        "network-operations-agent",
         "rag-on-xeon",
-        "ai-sandbox",
-        "sovereign-ai-201",
-        "virtualization-ai-201",
-        "virtualization-ai-301",
     }
 
 
 def test_specialty_catalog_status_matches_certification_evidence():
     items = _catalog_items()
     expected = {
-        "ai-sandbox": "active",
+        "ai-sandbox": "draft",
         "cpu-inference-serving": "active",
-        "intel-llm-tool-calling": "active",
+        "intel-llm-tool-calling": "draft",
         "openshift-operators-workshop": "draft",
         "rag-on-xeon": "active",
         "smoke-test": "draft",
@@ -93,11 +83,21 @@ def test_agentic_501_is_mounted_as_a_fail_closed_destination_qualification_draft
     metadata = item["metadata"]
 
     assert item["status"] == "draft"
-    assert metadata["certification_stage"] == "factory-development-verified"
+    assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["max_workshop_seats"] == 1
     assert metadata["allowed_exposure_policies"] == ["internal"]
-    assert metadata["workload_revision"] == "5413bb24b25e67e7fba9d2025c4e4b070e324878"
+    assert metadata["workload_revision"] == "c91c5fea075163b2cb9e316d3a77f0c3ffae2d18"
     assert metadata["showroom_content_ref"] == metadata["workload_revision"]
+    assert metadata["workload_helm_values"]["images"] == {
+        "presentation": {
+            "repository": "ghcr.io/jkershawrh/agentic-scale-501-presentation",
+            "digest": "sha256:15f227de9547b20dc137ce37b4d19bf68bebde7c6bf46ea4c01a2194829762a0",
+        },
+        "qualifier": {
+            "repository": "ghcr.io/jkershawrh/agentic-scale-501-qualifier",
+            "digest": "sha256:7875cb2772a5c9c6ce3628c7ad287ad70690aa345d836f331e7232b302b2e1d3",
+        },
+    }
     assert metadata["workload_helm_values"]["routes"] == {
         "enabled": True,
         "ingressDomain": "apps.flightpath.fm2aihpcsed.com",
@@ -112,15 +112,25 @@ def test_agentic_601_is_mounted_as_a_prerequisite_gated_draft():
     metadata = item["metadata"]
 
     assert item["status"] == "draft"
-    assert metadata["certification_stage"] == "source-qualified"
+    assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["max_workshop_seats"] == 1
     assert metadata["prerequisites"] == [
         "operate-agentic-blueprint",
         "scale-agentic-blueprint",
     ]
     assert metadata["allowed_exposure_policies"] == ["internal"]
-    assert metadata["workload_revision"] == "a40f01396adcccdb93c240b8c5b5b45cf418c317"
+    assert metadata["workload_revision"] == "22f4e4656843721c66b0779e52c30fc46a4061de"
     assert metadata["showroom_content_ref"] == metadata["workload_revision"]
+    assert metadata["workload_helm_values"]["images"] == {
+        "presentation": {
+            "repository": "ghcr.io/jkershawrh/agentic-ai-601-presentation",
+            "digest": "sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e",
+        },
+        "qualifier": {
+            "repository": "ghcr.io/jkershawrh/agentic-ai-601-qualifier",
+            "digest": "sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc",
+        },
+    }
     assert metadata["workload_helm_values"]["routes"] == {
         "enabled": True,
         "ingressDomain": "apps.flightpath.fm2aihpcsed.com",

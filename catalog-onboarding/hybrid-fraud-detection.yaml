@@ -6,8 +6,8 @@ catalog:
   description: Repository-discovered onboarding draft for Hybrid Fraud Detection on
     Intel Xeon.
   category: guided_build
-  version: 0.1.1-flightpath.2
-  status: active
+  version: 0.1.2-flightpath.2
+  status: draft
 learning:
   learning_level: "201"
   learning_stage: Build
@@ -25,12 +25,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: 14fad40be5904e293c5061bdaa09f8be31db7f7f
+    revision: 9dccae859e939d836c06cc9fb51d8ae4a848a38f
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-    revision: 14fad40be5904e293c5061bdaa09f8be31db7f7f
+    revision: 9dccae859e939d836c06cc9fb51d8ae4a848a38f
     deploy_path: chart
 runtime:
   namespace_slug: fraud
@@ -42,7 +42,7 @@ runtime:
   workload:
     helm_values:
       app:
-        image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:f217fccd35f5a3508ca142671941180fae6a0a1b031ec6a8f045473ad2bae237
+        image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:4a31d147c46bc3323a29777519347dc30555a325b29e1cef2b77c85984343f0e
       model:
         endpointFromSecret: true
     runtime_secret_name: fraud-model-runtime
@@ -76,13 +76,15 @@ runtime:
   allowed_exposure_policies:
   - internal
 certification:
-  stage: five-seat-certified
-  max_workshop_seats: 5
+  stage: immutable-source-published
+  max_workshop_seats: 1
   proof_contract: certification/catalog/hybrid-fraud-detection.yaml
   promotion_sequence:
   - 1
   - 5
-  activation_blockers: []
+  activation_blockers:
+  - Recertify one Flightpath seat against the newly published image and learning journey.
+  - Record a vulnerability inventory for this candidate or explicitly accept that missing release evidence before activation.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

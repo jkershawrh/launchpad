@@ -4,7 +4,7 @@ description: Modernize a virtual machine with a governed AI service while preser
   operator authority and evidence-backed decisions.
 category: guided_build
 version: 0.1.0
-status: active
+status: draft
 required_capabilities:
 - openshift
 - openshift-virtualization
@@ -40,18 +40,21 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/virtualization-ai-301.git
-  showroom_content_ref: 9ffe5eb8034899092f980138c6a1f4f489442aaf
+  showroom_content_ref: eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-301.yaml
-  certification_stage: 1-seat-certified
+  certification_stage: source-reviewed
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers: []
+  activation_blockers:
+  - publish-immutable-showroom-content-or-verify-exact-git-source
+  - capture-platform-owned-intel-placement-receipt
+  - fresh-one-seat-console-rehearsal-and-reclaim-certification
   certification_proof_contract: certification/catalog/virtualization-ai-301.yaml
   allowed_exposure_policies:
   - internal
@@ -87,7 +90,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-301.git
-  workload_revision: 9ffe5eb8034899092f980138c6a1f4f489442aaf
+  workload_revision: eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-301
@@ -96,8 +99,8 @@ metadata:
   workload_release_name: virtualization-ai-301
   workload_helm_values:
     values_overlay: charts/virtualization-ai-301/values.published.yaml
-    adapter_image: ghcr.io/jkershawrh/virtualization-ai-301-adapter@sha256:6da66231992bd9db8a31cdc08b3912b7d6c797e1ed42a064c06eea686d579d07
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-301-presentation@sha256:012c22404725b03c5c5b3d8bb3234e608da334af72762e10e158031b505506fa
+    adapter_image: ghcr.io/jkershawrh/virtualization-ai-301-adapter@sha256:9be46b02185933877854dae6e4f91e7e11a3ab028b5f33f896ae40e56b1b07ee
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-301-presentation@sha256:853ea3bdfea8998652bb51a3930bfeaeb4785ce4c058fe5d733f2e5d2d835185
     presentation_enabled: true
     default_source_state: REHEARSAL
     adapter:
@@ -105,13 +108,13 @@ metadata:
       image:
         repository: ghcr.io/jkershawrh/virtualization-ai-301-adapter
         tag: ''
-        digest: sha256:6da66231992bd9db8a31cdc08b3912b7d6c797e1ed42a064c06eea686d579d07
+        digest: sha256:9be46b02185933877854dae6e4f91e7e11a3ab028b5f33f896ae40e56b1b07ee
         pullPolicy: IfNotPresent
     presentation:
       image:
         repository: ghcr.io/jkershawrh/virtualization-ai-301-presentation
         tag: ''
-        digest: sha256:012c22404725b03c5c5b3d8bb3234e608da334af72762e10e158031b505506fa
+        digest: sha256:853ea3bdfea8998652bb51a3930bfeaeb4785ce4c058fe5d733f2e5d2d835185
         pullPolicy: IfNotPresent
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
@@ -122,5 +125,6 @@ metadata:
     ui: virt301
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-301.git
-  source_content_revision: 9ffe5eb8034899092f980138c6a1f4f489442aaf
-  source_references: {}
+  source_content_revision: eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1
+  source_references:
+    release_workflow: https://github.com/jkershawrh/virtualization-ai-301/actions/runs/36735535261

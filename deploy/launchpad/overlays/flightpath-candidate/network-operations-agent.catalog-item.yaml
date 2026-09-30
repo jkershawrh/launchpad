@@ -2,8 +2,8 @@ catalog_item_id: network-operations-agent
 display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
 description: Investigate a simulated telecom network alarm with an evidence-backed agent, internal MCP diagnostics, and shared CPU model inference.
 category: guided_build
-version: 0.2.0-flightpath.10
-status: active
+version: 0.2.1-flightpath.10
+status: draft
 required_capabilities: [openshift, showroom, model_endpoint]
 default_hardware_profile: xeon-basic
 default_quota_profile: small
@@ -19,10 +19,11 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/network-operations-agent.yaml
-  certification_stage: five-seat-certified
-  max_workshop_seats: 5
+  certification_stage: immutable-source-published
+  max_workshop_seats: 1
   promotion_sequence: [1, 5]
-  activation_blockers: []
+  activation_blockers:
+    - Recertify one Flightpath seat against the newly published image and learning journey.
   # Public access is enabled first as a one-seat Flightpath certification gate.
   # Multi-seat public promotion remains separately evidence-gated.
   allowed_exposure_policies: [internal, public_code]
@@ -32,7 +33,7 @@ metadata:
   showroom_title: Evidence-Backed Network Operations Agent
   namespace_slug: network-ops
   showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
-  showroom_content_ref: 287bffcca9c90336ed199ab2156d4471377b2c3e
+  showroom_content_ref: 6ed5c53337afa55c03949b2963b429f32977ef69
   showroom_content_playbook: site-lab.yml
   showroom_content_start_path: showroom-lab
   showroom_terminal_storage: true
@@ -72,7 +73,7 @@ metadata:
   workshop_node_spread: false
   workshop_node_min_ready_seconds: 0
   workload_repo: https://github.com/jkershawrh/network-operations-agent.git
-  workload_revision: 287bffcca9c90336ed199ab2156d4471377b2c3e
+  workload_revision: 6ed5c53337afa55c03949b2963b429f32977ef69
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -82,7 +83,7 @@ metadata:
   workload_helm_values:
     image:
       repository: ghcr.io/jkershawrh/network-operations-agent
-      digest: sha256:74afaf7d26791327fe4d1d7e5f302c7532b644f8d902daf1e914f9c2c4e5faf1
+      digest: sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242
     route:
       enabled: true
       name: netops

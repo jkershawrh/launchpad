@@ -3,7 +3,7 @@ display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
 description: "Build and tune a namespace-isolated AI solution advisor with LangGraph, MCP tools, and shared Intel Xeon inference."
 category: guided_build
 version: "1.0.9-flightpath.1"
-status: active
+status: draft
 required_capabilities:
   - openshift
   - showroom
@@ -39,9 +39,9 @@ metadata:
   showroom: true
   operator_workshop: true
   content_only: true
-  workshop_cluster_ref: brutus
-  certification_stage: thirty-seat-certified
-  max_workshop_seats: 30
+  workshop_cluster_ref: flightpath
+  certification_stage: source-candidate-recertification-required
+  max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5
@@ -58,7 +58,7 @@ metadata:
   showroom_content_playbook: "site-intel-xeon6-agent-201.yml"
   required_models:
     - granite-3.2-8b-tools
-  inference_endpoint: litellm
+  inference_endpoint: direct_vllm_candidate
   maas_rpm_limit: 60
   seat_cpu_millicores: 415
   seat_memory_mib: 912
@@ -69,6 +69,10 @@ metadata:
   source_content_revision: "d5cd98c1bc9eddf3327f136cb7114eef551bf9a6"
   workload_repo: "https://github.com/rhpds/triforce.git"
   workload_revision: "201-v1.0.0"
+  activation_blockers:
+    - Replace the mutable workload tag with an immutable commit or digest.
+    - Certify the exact v1.0.9 Flightpath candidate for Story, Console, managed inference, proof export, reclaim, and zero residue.
+    - Treat the prior thirty-seat v1.0.8 result as historical evidence only.
   showroom_steps:
     - title: "Understand the agent"
       description: "Trace the model, LangGraph workflow, MCP tools, and OpenShift trust boundaries."

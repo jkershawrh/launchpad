@@ -22,14 +22,14 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: c8f04aa302a8148d95e65cee46019bfc4de1dbbb
+    revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
-    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:4a368b65585b9a541c2beedf3272a9a55df0741a9d559e9e8c25884bd8905d6c
+    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:bb7c1dbafe544a61d805fcf1e004f70d66daa99d1e5a3d7d7d4fe5c479db41b3
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: c8f04aa302a8148d95e65cee46019bfc4de1dbbb
+    revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:
@@ -75,8 +75,8 @@ runtime:
     release_name: virtualization-ai-foundations-101
     helm_values:
       values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:b12e760387bad40b648319fb7e068798a129696773b868761bda682c716e2b77
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:03767bcb59be03b1942967591ef81277a17b7db50cffae9b32623782f61b076f
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:7716e2f1d1188e50a47d8442ccf6a70b0d33b9b51b95df8c9c8a5444b5605efa
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:71458d6fe6367d91fcd1dd73e4946d4ccf7c06373b6187312edb37f92588b452
       presentation_enabled: true
       adapter:
         mode: live
@@ -112,6 +112,6 @@ certification:
   promotion_sequence:
   - 1
   activation_blockers:
-  - deploy-vm-origin-credential-injection
-  - fresh-one-seat-vm-origin-certification
+  - merge-reviewed-source-release-to-main
+  - fresh-one-seat-vm-origin-console-model-and-reclaim-certification
   proof_contract: certification/catalog/virtualization-ai-foundations-101.yaml

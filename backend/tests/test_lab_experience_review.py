@@ -138,22 +138,185 @@ def test_review_standard_preserves_show_learn_do_prove_order() -> None:
     ]
 
 
-def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> None:
+def test_sovereign_201_exact_release_requires_live_inference_recertification() -> None:
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
-    expected_revisions = {
-        "network-operations-agent": "287bffcca9c90336ed199ab2156d4471377b2c3e",
-        "hybrid-fraud-detection": "14fad40be5904e293c5061bdaa09f8be31db7f7f",
-        "agent-reliability": "ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e",
+    lab = review["labs"]["sovereign-ai-201"]
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/sovereign-ai-201/catalog-item.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    intake = yaml.safe_load(
+        (ROOT / "catalog-onboarding/sovereign-ai-201.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    contract = yaml.safe_load(
+        (ROOT / "certification/catalog/sovereign-ai-201.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert lab["overall_status"] == "immutable-source-published-draft"
+    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert catalog["metadata"]["certification_stage"] == (
+        intake["certification"]["stage"]
+    ) == "immutable-source-published"
+    assert intake["certification"]["certified_seats"] == 0
+    assert intake["sources"]["workload"]["revision"] == (
+        "c4c5a20792f361c360d64a3d997e8ec19c0f7781"
+    )
+    values = intake["runtime"]["workload"]["helm_values"]
+    assert values["adapter"]["mode"] == "live"
+    assert values["adapter"]["policy"]["approvedModels"] == (
+        "granite-3.2-8b-tools"
+    )
+    assertions = contract["spec"]["seat_probe"]["json_assertions"]
+    assert {"path": "journey.mode", "equals": "LIVE"} in assertions
+    assert {"path": "journey.model_participated", "equals": True} in assertions
+    assert {"path": "journey.model", "equals": "granite-3.2-8b-tools"} in assertions
+
+
+def test_multi_agent_301_exact_release_requires_story_and_correlation_recertification() -> None:
+    review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
+    lab = review["labs"]["multi-agent-quickstart"]
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/multi-agent-quickstart/catalog-item.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    intake = yaml.safe_load(
+        (
+            ROOT
+            / "catalog-onboarding/multi-agent-quickstart-flightpath.yaml"
+        ).read_text(encoding="utf-8")
+    )
+    contract = yaml.safe_load(
+        (
+            ROOT
+            / "certification/catalog/multi-agent-quickstart-flightpath.yaml"
+        ).read_text(encoding="utf-8")
+    )
+
+    assert lab["overall_status"] == "immutable-source-published-draft"
+    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert catalog["metadata"]["certification_stage"] == (
+        intake["certification"]["stage"]
+    ) == "immutable-source-published"
+    assert intake["certification"]["max_workshop_seats"] == 1
+    assert intake["references"]["original_lab"]["revision"] == (
+        "ea61ce4e20f6e12513b16eeaa746f81895e716c9"
+    )
+    values = intake["runtime"]["workload"]["helm_values"]
+    assert values["image"] == {
+        "repository": "ghcr.io/jkershawrh/multi-agent-quickstart",
+        "digest": "sha256:a772cd2979a1cc21d19273359b611be8e6848cedb3cb9ce478d5f963eec7cbbd",
+    }
+    assert values["presentation"]["enabled"] is True
+    assert [tab["id"] for tab in intake["runtime"]["tabs"]] == [
+        "presentation",
+        "terminal",
+        "workspace",
+        "openshift-console",
+    ]
+    assert contract["spec"]["seat_probe"]["argv"][1] == (
+        "scripts/certify-multi-agent-301-seat.sh"
+    )
+    wrapper = (ROOT / "scripts/certify-multi-agent-301-seat.sh").read_text()
+    assert "PRESENTATION_REQUIRED=true" in wrapper
+    assert "CORRELATION_REQUIRED=true" in wrapper
+
+
+def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
+    review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
+    expected = {
+        "agentic-ai-601": {
+            "revision": "22f4e4656843721c66b0779e52c30fc46a4061de",
+            "presentation": "sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e",
+            "workload": "sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc",
+        },
+        "virtualization-ai-501": {
+            "revision": "b8274c70cde28246a2c9bba0ba689a4dc57088b9",
+            "presentation": "sha256:9c8b67c94f7bc62ec460b8a9ad18b42c65c8e8b6defc49a6c62092ca14921f11",
+            "workload": "sha256:773d0f7c9c594d54a801d773cce752c01635155829e043783416b3405e182bd1",
+        },
+        "virtualization-ai-401": {
+            "revision": "529281616de3f11a2b5355314cd4f7123935e02d",
+            "presentation": "sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a",
+            "workload": "sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca",
+        },
     }
 
-    for catalog_id, expected_revision in expected_revisions.items():
+    for catalog_id, release in expected.items():
+        catalog = yaml.safe_load(
+            (ROOT / f"catalog/{catalog_id}/catalog-item.yaml").read_text()
+        )
+        intake = yaml.safe_load(
+            (ROOT / f"catalog-onboarding/{catalog_id}.yaml").read_text()
+        )
+        metadata = catalog["metadata"]
+
+        assert catalog["status"] == intake["catalog"]["status"] == "draft"
+        assert metadata["certification_stage"] == (
+            intake["certification"]["stage"]
+        ) == "immutable-source-published"
+        assert metadata["workload_revision"] == release["revision"]
+        assert metadata["showroom_content_ref"] == release["revision"]
+        assert intake["sources"]["workload"]["revision"] == release["revision"]
+        assert intake["sources"]["showroom"]["revision"] == release["revision"]
+        assert release["presentation"] in str(metadata["workload_helm_values"])
+        assert release["workload"] in str(metadata["workload_helm_values"])
+        assert review["labs"][catalog_id]["overall_status"] == (
+            "immutable-source-published-draft"
+        )
+
+    virtualization_401 = review["labs"]["virtualization-ai-401"]["source_state"]
+    assert virtualization_401["published_revision"] == (
+        "529281616de3f11a2b5355314cd4f7123935e02d"
+    )
+    assert virtualization_401["catalog_pinned_revision"] == (
+        "529281616de3f11a2b5355314cd4f7123935e02d"
+    )
+    assert virtualization_401["publication_workflow"] == (
+        "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36743086189"
+    )
+    assert virtualization_401["immutable_images"] == {
+        "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a",
+        "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca",
+    }
+
+
+def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> None:
+    review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
+    expected_states = {
+        "network-operations-agent": {
+            "revision": "6ed5c53337afa55c03949b2963b429f32977ef69",
+            "overall": "immutable-source-published-draft",
+            "cleanup": "green-local",
+            "change_state": "committed-published-pinned-not-live-certified",
+        },
+        "hybrid-fraud-detection": {
+            "revision": "9dccae859e939d836c06cc9fb51d8ae4a848a38f",
+            "overall": "immutable-source-published-draft",
+            "cleanup": "green-local",
+            "change_state": "committed-published-pinned-not-live-certified",
+        },
+        "agent-reliability": {
+            "revision": "9c69348c34904c58997318d9124ac3d50661984b",
+            "overall": "source-update-published-draft",
+            "cleanup": "green-local",
+            "change_state": "committed-published-pinned-not-live-certified",
+        },
+    }
+
+    for catalog_id, expected in expected_states.items():
         lab = review["labs"][catalog_id]
         source_state = lab["source_state"]
 
-        assert lab["overall_status"] == "green-live-source-update-ready"
-        assert lab["cleanup"]["status"] == "source-fix-ready"
-        assert source_state["catalog_pinned_revision"] == expected_revision
-        assert source_state["post_review_changes"] == "local-uncommitted"
+        assert lab["overall_status"] == expected["overall"]
+        assert lab["cleanup"]["status"] == expected["cleanup"]
+        assert source_state["catalog_pinned_revision"] == expected["revision"]
+        assert source_state["post_review_changes"] == expected["change_state"]
         assert source_state["post_review_paths"]
         assert source_state["local_validation"]["status"] == "green-local"
 
@@ -262,14 +425,15 @@ def test_virtualization_foundations_is_not_orderable_until_vm_origin_is_proven()
             "part": "private",
         }
     )
-    assert "deploy-vm-origin-credential-injection" in catalog["metadata"][
-        "activation_blockers"
-    ]
+    assert (
+        "fresh-one-seat-vm-origin-console-model-and-reclaim-certification"
+        in catalog["metadata"]["activation_blockers"]
+    )
     assert intake["catalog"]["status"] == "draft"
     assert intake["certification"]["certified_seats"] == 0
     assert catalog["metadata"]["showroom_content_ref"] == intake["sources"][
         "showroom"
-    ]["revision"] == "c8f04aa302a8148d95e65cee46019bfc4de1dbbb"
+    ]["revision"] == "df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6"
     assert catalog["metadata"]["showroom_content_image"] == intake["sources"][
         "showroom"
     ]["content_image"]
@@ -280,7 +444,9 @@ def test_virtualization_foundations_is_not_orderable_until_vm_origin_is_proven()
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))["labs"][
         "virtualization-ai-foundations-101"
     ]
-    assert review["overall_status"] == "backend-candidate-published"
+    assert review["overall_status"] == (
+        "immutable-source-published-draft-live-certification-required"
+    )
     assert review["launchpad_backend_candidate"] == {
         "branch": "codex/virt101-backend-keypair",
         "revision": "b5c38364ce556fbf0c40de07ec25c209357f3d0c",

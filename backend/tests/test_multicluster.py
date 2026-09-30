@@ -485,20 +485,24 @@ def test_arena_overlay_enables_brutus_for_supervised_public_pilot():
         )
 
 
-def test_three_pilot_catalogs_match_rendered_arena_target_contract():
+def test_three_pilot_catalogs_match_current_flightpath_target_contract():
     root = Path(__file__).resolve().parents[2]
     document = yaml.safe_load(
         (root / "deploy/launchpad/overlays/arena/arena-clusters.yaml").read_text()
     )
     runtime = yaml.safe_load(document["data"]["clusters.yaml"])
     targets = {item["cluster_id"]: item for item in runtime["clusters"]}
-    pilot_ids = (
-        "intel-llm-cpu-serving",
-        "intel-xeon6-agent-201",
-        "multi-agent-quickstart",
-    )
+    pilot_contracts = {
+        "intel-llm-cpu-serving": ("active", "five-seat-certified", 5),
+        "intel-xeon6-agent-201": (
+            "draft",
+            "source-candidate-recertification-required",
+            1,
+        ),
+        "multi-agent-quickstart": ("draft", "immutable-source-published", 1),
+    }
 
-    for catalog_id in pilot_ids:
+    for catalog_id, (status, stage, max_seats) in pilot_contracts.items():
         item = yaml.safe_load(
             (root / "catalog" / catalog_id / "catalog-item.yaml").read_text()
         )
@@ -508,8 +512,10 @@ def test_three_pilot_catalogs_match_rendered_arena_target_contract():
         assert target.get("enabled", True) is True, catalog_id
         assert set(item["required_capabilities"]).issubset(target["capabilities"]), catalog_id
         assert set(metadata["required_models"]).issubset(target["model_endpoints"]), catalog_id
-        assert metadata["certification_stage"] == "thirty-seat-certified", catalog_id
-        assert metadata["max_workshop_seats"] == 30, catalog_id
+        assert item["status"] == status, catalog_id
+        assert metadata["workshop_cluster_ref"] == "flightpath", catalog_id
+        assert metadata["certification_stage"] == stage, catalog_id
+        assert metadata["max_workshop_seats"] == max_seats, catalog_id
         assert re.fullmatch(r"[0-9a-f]{40}", metadata["showroom_content_ref"]), catalog_id
 
 

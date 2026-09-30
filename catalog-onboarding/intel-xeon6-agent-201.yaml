@@ -9,7 +9,7 @@ catalog:
     MCP tools, and shared Intel Xeon inference.
   category: guided_build
   version: "1.0.9-flightpath.1"
-  status: active
+  status: draft
   supported_branding:
     - redhat-intel-default
     - intel-internal
@@ -85,15 +85,19 @@ runtime:
       title: OpenShift Console
 
 certification:
-  stage: thirty-seat-certified
-  max_workshop_seats: 30
+  stage: source-candidate-recertification-required
+  certified_seats: 0
+  max_workshop_seats: 1
   proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
   promotion_sequence:
     - 1
     - 5
     - 25
     - 30
-  activation_blockers: []
+  activation_blockers:
+    - Replace the mutable workload tag with an immutable commit or digest.
+    - Certify the exact v1.0.9 Flightpath candidate for Story, Console, managed inference, proof export, reclaim, and zero residue.
+    - Treat the prior thirty-seat v1.0.8 result as historical evidence only.
   production_blockers:
     - >-
       Mirror all participant workload images to a durable external registry

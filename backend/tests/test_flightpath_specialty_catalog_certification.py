@@ -40,14 +40,19 @@ def _assert_exact_flightpath_contract(
 def test_hybrid_fraud_exact_release_has_a_flightpath_certification_contract():
     _assert_exact_flightpath_contract(
         "hybrid-fraud-detection",
-        "0.1.1-flightpath.2",
+        "0.1.2-flightpath.2",
         "scripts/certify-hybrid-fraud-seat.sh",
-        5,
+        1,
     )
     intake = load_intake(ROOT / "catalog-onboarding/hybrid-fraud-detection.yaml")
     assert intake["runtime"]["workload"]["helm_values"]["app"]["image"].endswith(
-        "@sha256:f217fccd35f5a3508ca142671941180fae6a0a1b031ec6a8f045473ad2bae237"
+        "@sha256:4a31d147c46bc3323a29777519347dc30555a325b29e1cef2b77c85984343f0e"
     )
+    assert intake["catalog"]["status"] == "draft"
+    assert intake["sources"]["workload"]["revision"] == (
+        "9dccae859e939d836c06cc9fb51d8ae4a848a38f"
+    )
+    assert intake["certification"]["stage"] == "immutable-source-published"
     contract = load_certification_contract(
         ROOT / "certification/catalog/hybrid-fraud-detection.yaml"
     )
@@ -60,16 +65,26 @@ def test_hybrid_fraud_exact_release_has_a_flightpath_certification_contract():
 def test_agent_reliability_exact_release_has_a_flightpath_certification_contract():
     _assert_exact_flightpath_contract(
         "agent-reliability",
-        "0.1.0-flightpath.1",
+        "0.1.1-flightpath.1",
         "scripts/certify-agent-reliability-seat.sh",
-        5,
+        1,
     )
     intake = load_intake(ROOT / "catalog-onboarding/agent-reliability.yaml")
+    assert intake["catalog"]["status"] == "draft"
+    assert intake["sources"]["showroom"]["revision"] == (
+        "9c69348c34904c58997318d9124ac3d50661984b"
+    )
+    assert intake["certification"]["stage"] == "source-update-published"
     image = intake["runtime"]["workload"]["helm_values"]["image"]
     assert image["repository"] == "ghcr.io/jkershawrh/agent-reliability-quickstart"
     assert image["digest"] == (
         "sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb"
     )
+    assert [tab["id"] for tab in intake["runtime"]["tabs"]] == [
+        "terminal",
+        "workspace",
+        "openshift-console",
+    ]
     contract = load_certification_contract(
         ROOT / "certification/catalog/agent-reliability.yaml"
     )
@@ -98,7 +113,7 @@ def test_specialty_probes_cover_function_namespace_and_secret_boundaries():
         assert expected in reliability
 
 
-def test_network_operations_current_release_is_limited_to_its_exact_proof():
+def test_network_operations_exact_release_is_limited_to_one_seat_until_recertified():
     contract_path = ROOT / "certification/catalog/network-operations-agent.yaml"
     contract = load_certification_contract(contract_path)
     intake = load_intake(ROOT / "catalog-onboarding/network-operations-agent.yaml")
@@ -110,20 +125,21 @@ def test_network_operations_current_release_is_limited_to_its_exact_proof():
         repo_root=ROOT,
         contract_path=contract_path,
     ) == []
-    assert intake["catalog"]["version"] == "0.2.0-flightpath.10"
+    assert intake["catalog"]["version"] == "0.2.1-flightpath.10"
     assert contract["spec"]["target_cluster"] == "flightpath"
     assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1, 5]
     assert contract["spec"]["seat_probe"]["argv"][1] == "scripts/certify-network-operations-seat.sh"
     assert intake["sources"]["workload"]["revision"] == (
-        "287bffcca9c90336ed199ab2156d4471377b2c3e"
+        "6ed5c53337afa55c03949b2963b429f32977ef69"
     )
     assert intake["runtime"]["workload"]["helm_values"]["image"]["digest"] == (
-        "sha256:74afaf7d26791327fe4d1d7e5f302c7532b644f8d902daf1e914f9c2c4e5faf1"
+        "sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242"
     )
-    assert intake["certification"]["stage"] == "five-seat-certified"
-    assert intake["certification"]["max_workshop_seats"] == 5
-    assert "certification_stage: five-seat-certified" in overlay
-    assert "max_workshop_seats: 5" in overlay
+    assert intake["catalog"]["status"] == "draft"
+    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert intake["certification"]["max_workshop_seats"] == 1
+    assert "certification_stage: immutable-source-published" in overlay
+    assert "max_workshop_seats: 1" in overlay
 
     probe = (ROOT / "scripts/certify-network-operations-seat.sh").read_text()
     for expected in (
@@ -166,7 +182,17 @@ def test_every_legacy_migration_candidate_has_a_fail_closed_flightpath_proof_pat
         assert contract["spec"]["seat_probe"]["argv"][1] == probe
         assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
         assert intake["certification"]["certified_seats"] in {0, 1, 5}
-        assert intake["certification"]["max_workshop_seats"] == 5
+        expected_max = (
+            1
+            if catalog_id
+            in {
+                "ai-sandbox",
+                "intel-llm-tool-calling",
+                "openshift-operators-workshop",
+            }
+            else 5
+        )
+        assert intake["certification"]["max_workshop_seats"] == expected_max
         if intake["certification"]["certified_seats"] < 5:
             assert intake["certification"]["activation_blockers"]
         else:
@@ -178,12 +204,14 @@ def test_every_legacy_migration_candidate_has_a_fail_closed_flightpath_proof_pat
         assert "github.com/rhpds/" not in catalog
 
 
-def test_operator_workshop_probe_uses_a_bounded_explicit_route_host():
+def test_operator_workshop_probe_uses_namespaced_operator_reconciliation():
     probe = (ROOT / "scripts/certify-operator-workshop-seat.sh").read_text()
 
-    assert "ingresses.config.openshift.io cluster" in probe
-    assert 'route_host="cert-${seat_suffix}.${ingress_domain}"' in probe
-    assert 'oc expose service launchpad-cert-hello --hostname="$route_host"' in probe
+    assert "apiVersion: tekton.dev/v1" in probe
+    assert "kind: PipelineRun" in probe
+    assert "--for=condition=Succeeded" in probe
+    assert "operator-reconciled:" in probe
+    assert "hello-openshift" not in probe
 
 
 def test_legacy_inference_entries_explicitly_reuse_the_proven_flightpath_runtime():

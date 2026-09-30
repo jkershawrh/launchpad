@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import copy
 import hashlib
 import json
 import logging
@@ -15,6 +17,8 @@ from pathlib import Path
 
 import requests
 import yaml
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 try:
     from kubernetes import client, config
@@ -251,6 +255,9 @@ class OpenShiftProvisioningAdapter:
                     "workload_image_pull_secret_name", ""
                 ),
                 "workload_runtime_secret_sources": meta.get("workload_runtime_secret_sources", {}),
+                "workload_runtime_value_bindings": meta.get(
+                    "workload_runtime_value_bindings", {}
+                ),
                 "workload_runtime_secret_value_path": meta.get(
                     "workload_runtime_secret_value_path", ""
                 ),
@@ -364,6 +371,7 @@ class OpenShiftProvisioningAdapter:
 
         workload_app = None
         if workload_enabled:
+            workload_helm_values = copy.deepcopy(res.get("workload_helm_values", {}))
             image_pull_secret_name = str(
                 res.get("workload_image_pull_secret_name", "")
             ).strip()
@@ -389,12 +397,13 @@ class OpenShiftProvisioningAdapter:
                     },
                 )
             runtime_secret_name = str(res.get("workload_runtime_secret_name", "")).strip()
+            effective_runtime_data: dict[str, str] = {}
             if runtime_secret_name:
                 runtime_data = self._resolve_workload_runtime_secret(
                     res.get("workload_runtime_secret_sources", {}),
                     {**res, "namespace": demo_namespace},
                 )
-                self._apply_workload_runtime_secret(
+                effective_runtime_data = self._apply_workload_runtime_secret(
                     build_runtime_secret(
                         name=runtime_secret_name,
                         namespace=demo_namespace,
@@ -405,6 +414,11 @@ class OpenShiftProvisioningAdapter:
                         cluster_id=plan.target_cluster or "oberon",
                         string_data=runtime_data,
                     )
+                )
+                self._bind_workload_runtime_values(
+                    workload_helm_values,
+                    res.get("workload_runtime_value_bindings", {}),
+                    effective_runtime_data,
                 )
             workload_app = build_workload_application(
                 WorkloadSeat(
@@ -420,7 +434,7 @@ class OpenShiftProvisioningAdapter:
                     deploy_path=str(res.get("workload_deploy_path", "")),
                     release_name=str(res.get("workload_release_name", "workload")),
                     source_kind=str(res.get("workload_source_kind", "chart")),
-                    helm_values=dict(res.get("workload_helm_values", {})),
+                    helm_values=workload_helm_values,
                     kustomize_images=tuple(res.get("workload_kustomize_images", [])),
                     runtime_secret_name=runtime_secret_name,
                     runtime_secret_value_path=str(
@@ -1015,6 +1029,7 @@ http {{
         }
         result: dict[str, str] = {}
         templates: dict[str, str] = {}
+        ssh_keypairs: dict[str, tuple[str, str]] = {}
         sensitive_markers = ("PASSWORD", "TOKEN", "SECRET", "API_KEY", "PRIVATE_KEY")
 
         for raw_key, contract in source_map.items():
@@ -1055,6 +1070,34 @@ http {{
                     )
                 result[key] = secrets.token_urlsafe(length)
                 continue
+            if source == "generated_ssh_keypair":
+                pair = str(contract.get("pair", "default")).strip()
+                part = str(contract.get("part", "")).strip()
+                if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,31}", pair):
+                    raise ValueError(
+                        f"Generated SSH keypair for '{key}' has an invalid pair name"
+                    )
+                if part not in {"private", "public"}:
+                    raise ValueError(
+                        f"Generated SSH keypair field '{key}' must select private or public"
+                    )
+                if pair not in ssh_keypairs:
+                    private_key = Ed25519PrivateKey.generate()
+                    private_value = private_key.private_bytes(
+                        encoding=serialization.Encoding.PEM,
+                        format=serialization.PrivateFormat.OpenSSH,
+                        encryption_algorithm=serialization.NoEncryption(),
+                    ).decode("utf-8")
+                    public_value = private_key.public_key().public_bytes(
+                        encoding=serialization.Encoding.OpenSSH,
+                        format=serialization.PublicFormat.OpenSSH,
+                    ).decode("utf-8")
+                    ssh_keypairs[pair] = (
+                        private_value,
+                        f"{public_value} launchpad-{pair}",
+                    )
+                result[key] = ssh_keypairs[pair][0 if part == "private" else 1]
+                continue
             if source == "model_endpoint":
                 model_id = str(contract.get("model", "")).strip()
                 if not model_id:
@@ -1092,11 +1135,40 @@ http {{
             raise ValueError("Workload runtime Secret contract resolved no values")
         return result
 
-    def _apply_workload_runtime_secret(self, secret: dict) -> None:
+    @staticmethod
+    def _bind_workload_runtime_values(
+        helm_values: dict,
+        bindings: dict[str, object],
+        runtime_data: dict[str, str],
+    ) -> None:
+        """Bind explicitly non-sensitive Secret fields into rendered Helm values."""
+        sensitive_markers = ("PASSWORD", "TOKEN", "SECRET", "API_KEY", "PRIVATE_KEY")
+        for raw_path, raw_key in bindings.items():
+            path = str(raw_path)
+            key = str(raw_key)
+            if any(marker in key.upper() for marker in sensitive_markers):
+                raise ValueError(f"Runtime Helm value binding cannot expose '{key}'")
+            if key not in runtime_data:
+                raise ValueError(f"Runtime Helm value binding source '{key}' is unavailable")
+            parts = path.split(".")
+            if not parts or any(
+                not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", part) for part in parts
+            ):
+                raise ValueError(f"Runtime Helm value binding path '{path}' is invalid")
+            current = helm_values
+            for part in parts[:-1]:
+                child = current.setdefault(part, {})
+                if not isinstance(child, dict):
+                    raise TypeError(f"Runtime Helm value binding path '{path}' collides")
+                current = child
+            current[parts[-1]] = runtime_data[key]
+
+    def _apply_workload_runtime_secret(self, secret: dict) -> dict[str, str]:
         namespace = secret["metadata"]["namespace"]
         name = secret["metadata"]["name"]
         try:
             self._core_v1.create_namespaced_secret(namespace, body=secret)
+            return dict(secret["stringData"])
         except ApiException as exc:
             if exc.status != 409:
                 raise ValueError(
@@ -1128,12 +1200,21 @@ http {{
                     namespace,
                     name,
                 )
-                return
+                return dict(secret["stringData"])
             logger.info(
                 "Preserving existing runtime Secret %s/%s during idempotent retry",
                 namespace,
                 name,
             )
+            encoded = (
+                existing.get("data", {})
+                if isinstance(existing, dict)
+                else getattr(existing, "data", {}) or {}
+            )
+            return {
+                str(key): base64.b64decode(value).decode("utf-8")
+                for key, value in encoded.items()
+            }
 
     @staticmethod
     def _in_cluster_namespace() -> str:

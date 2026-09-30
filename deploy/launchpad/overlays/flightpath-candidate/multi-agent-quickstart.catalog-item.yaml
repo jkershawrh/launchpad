@@ -2,8 +2,8 @@ catalog_item_id: multi-agent-quickstart
 display_name: 'Intel AI 301: Build Multi-Agent AI Systems with Open Protocols'
 description: Investigate a fictional service incident with specialized agents, produce an evidence-backed response package for human review, operate the workload on OpenShift, and explore its advanced blueprint alignment with A2A, MCP, Kagenti, OpenTelemetry, guardrails, and service authentication on Intel infrastructure.
 category: guided_build
-version: 0.2.15-flightpath.1
-status: active
+version: 0.2.16-flightpath.1
+status: draft
 required_capabilities:
   - openshift
   - showroom
@@ -30,10 +30,11 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/multi-agent-quickstart.yaml
-  certification_stage: twenty-five-seat-certified
-  max_workshop_seats: 25
+  certification_stage: immutable-source-published
+  max_workshop_seats: 1
   promotion_sequence: [1, 5, 25, 30]
-  activation_blockers: []
+  activation_blockers:
+    - Certify one fresh Flightpath seat for the 301 Story, progressive workflow, correlation, managed inference, Console scope, reclaim, and zero residue.
   certification_proof_contract: certification/catalog/multi-agent-quickstart.yaml
   allowed_exposure_policies: [internal, public_code]
   showroom_journey: multi-agent-quickstart
@@ -45,6 +46,9 @@ metadata:
   showroom_content_start_path: content-multi-agent-quickstart
   showroom_terminal_storage: false
   showroom_tabs:
+    - id: presentation
+      title: Multi-Agent Systems Story
+      source: workload.route.presentation
     - id: terminal
       title: Terminal
       source: showroom.terminal
@@ -56,10 +60,10 @@ metadata:
       source: cluster.console_url
   required_models:
     - granite-3.2-8b-tools
-  inference_endpoint: direct_vllm_candidate
-  seat_cpu_millicores: 1200
-  seat_memory_mib: 2048
-  seat_pods: 2
+  inference_endpoint: litellm_virtual_key_candidate
+  seat_cpu_millicores: 1250
+  seat_memory_mib: 2112
+  seat_pods: 3
   seat_storage_gib: 0
   single_environment: true
   track_count: 3
@@ -73,7 +77,7 @@ metadata:
       title: Build and operate on OpenShift
       showroom_page: track-2-openshift.adoc
       delivery_mode: live-runtime
-      certification_status: twenty-five-seat-certified
+      certification_status: candidate-recertification-required
     - id: track-3-blueprint
       title: Advanced blueprint alignment
       showroom_page: track-3-blueprint.adoc
@@ -94,8 +98,15 @@ metadata:
   workload_release_name: multi-agent
   workload_helm_values:
     image:
-      repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
-      digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+      repository: ghcr.io/jkershawrh/multi-agent-quickstart
+      digest: sha256:a772cd2979a1cc21d19273359b611be8e6848cedb3cb9ce478d5f963eec7cbbd
+    presentation:
+      enabled: true
+      image:
+        repository: ghcr.io/jkershawrh/multi-agent-quickstart-presentation
+        digest: sha256:22f0325f73c9cf67dc6d77c6e835d148c5e666344fed9d36bd809877fc6eb8e4
+      apiUpstream: http://multi-agent:8000
+      ingressDomain: apps.flightpath.fm2aihpcsed.com
   workload_ignore_differences: []
   workload_runtime_secret_name: multi-agent-runtime
   workload_runtime_secret_sources:
@@ -113,11 +124,12 @@ metadata:
   workload_routes:
     ui: multi-agent-ui
     orchestrator: multi-agent
+    presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/rhpds/launchpad.git
   source_content_revision: b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3
   source_references:
     original_lab:
       repo_url: https://github.com/jkershawrh/multi-agent-quickstart.git
-      revision: 159113ab9f8df39e09e08926b51c7c32da0fc1af
+      revision: ea61ce4e20f6e12513b16eeaa746f81895e716c9
       path: .

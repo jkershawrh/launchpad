@@ -38,6 +38,24 @@ checks:
     - verification section
     - key takeaway
     - minimum content depth
+  participant_experience:
+    order:
+      - show
+      - learn
+      - do
+      - prove
+    required:
+      - story that frames a concrete customer or operator decision
+      - visible demonstration before explanation
+      - explanation of architecture and evidence
+      - executable participant action
+      - machine-verifiable participant outcome
+      - cleanup or explicit Launchpad-owned reclaim boundary
+    conditional:
+      - operator tabs must be used by the learning journey when declared
+      - inference must identify the effective model and prove a completion when claimed
+      - rehearsal and live inference must be visibly distinct
+    result: review-only-until-live-certification
   capacity:
     result: proposal-only
     signals:

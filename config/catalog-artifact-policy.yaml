@@ -3,6 +3,7 @@ scope: september-17-pilot-successor-orders
 approved_repository_prefixes:
   - quay.io/redhat-gpte/
   - quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart@
+  - ghcr.io/jkershawrh/multi-agent-quickstart@
 catalogs:
   intel-llm-cpu-serving:
     catalog_path: catalog/intel-llm-cpu-serving/catalog-item.yaml

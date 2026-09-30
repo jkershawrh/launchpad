@@ -5,7 +5,7 @@ description: Author and qualify a VM-to-AI contract across schema, guest client,
   human authority, and reclaim.
 category: guided_build
 version: 0.1.0
-status: active
+status: draft
 required_capabilities:
 - openshift
 - showroom
@@ -41,19 +41,20 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
-  showroom_content_ref: 36472dee119b0f141d580461a8e4d9b1577de687
+  showroom_content_ref: 8ae42187e7fd2f683bb7e2fa83da56d0f968176a
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
-  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:57d9a793906a9725cf93405f2a74aedf41eca3e794bb78d484d37dba742668f9
+  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:92cf58e2980ea7ac3bdd25bcd3ca0477298ceb531e076c18d686295a9aa90b8e
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-201.yaml
-  certification_stage: 1-seat-certified
+  certification_stage: source-reviewed
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers: []
+  activation_blockers:
+  - fresh-one-seat-live-inference-console-and-reclaim-certification
   certification_proof_contract: certification/catalog/virtualization-ai-201.yaml
   allowed_exposure_policies:
   - internal
@@ -88,7 +89,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-201.git
-  workload_revision: 36472dee119b0f141d580461a8e4d9b1577de687
+  workload_revision: 8ae42187e7fd2f683bb7e2fa83da56d0f968176a
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-201
@@ -97,8 +98,8 @@ metadata:
   workload_release_name: virtualization-ai-201
   workload_helm_values:
     values_overlay: charts/virtualization-ai-201/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:69934bf37434876fdc591223ff74c24efdd9ccd0869e9f6e168e0ecc6807f1ff
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:0302b199187d340aba407ff76bb26f57cb27d1abcba3a00637500308edde252c
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:ec18fb9516a2a81d86c14307da9b2e386fdfd26bc418373f5bf511e74449875a
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:6b59e5a6a47ea421e09a7969de026aca2409e7383bfd395638c15396cfad4c78
     presentation_enabled: true
   workload_ignore_differences: []
   workload_runtime_secret_name: virtualization-ai-model-runtime
@@ -116,5 +117,6 @@ metadata:
     ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-201.git
-  source_content_revision: 36472dee119b0f141d580461a8e4d9b1577de687
-  source_references: {}
+  source_content_revision: 8ae42187e7fd2f683bb7e2fa83da56d0f968176a
+  source_references:
+    release_workflow: https://github.com/jkershawrh/virtualization-ai-201/actions/runs/36735505631

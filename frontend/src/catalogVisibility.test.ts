@@ -33,6 +33,21 @@ describe('participant catalog visibility', () => {
     ]);
   });
 
+  it('collapses compatibility aliases out of the participant learning catalog', () => {
+    const canonical = item('intel-llm-cpu-serving', 'active');
+    const alias = {
+      ...item('rag-on-xeon', 'active'),
+      metadata: {
+        migration_mode: 'compatibility_alias',
+        canonical_item_id: 'intel-llm-cpu-serving',
+      },
+    };
+
+    expect(participantCatalog([canonical, alias]).map((entry) => entry.catalog_item_id)).toEqual([
+      'intel-llm-cpu-serving',
+    ]);
+  });
+
   it('preserves an internal-only certification gate in ordering surfaces', () => {
     const internallyCertified = {
       ...item('virtualization-ai-201', 'active'),

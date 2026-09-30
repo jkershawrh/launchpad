@@ -112,6 +112,23 @@ def test_progression_models_named_tracks_without_making_plans_orderable():
     assert contract["track_rules"]["sales_enablement_is_a_separate_persona_axis"] is True
 
 
+def test_published_track_entries_match_their_catalog_lifecycle():
+    contract = yaml.safe_load(CONTRACT.read_text())
+    items = _items()
+
+    for track_name, track in contract["learning_tracks"].items():
+        for level, entry in track["entries"].items():
+            catalog_id = entry.get("catalog_id")
+            if catalog_id is None:
+                assert entry["lifecycle"] == "planned", f"{track_name} {level}"
+                continue
+
+            assert catalog_id in items, f"{track_name} {level} references {catalog_id}"
+            assert entry["lifecycle"] == items[catalog_id]["status"], (
+                f"{track_name} {level} lifecycle diverges from {catalog_id}"
+            )
+
+
 def test_scale_blueprint_extends_401_as_a_separate_gated_catalog_item():
     items = _items()
     operate = items["operate-agentic-blueprint"]

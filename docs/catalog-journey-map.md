@@ -25,12 +25,12 @@ Only an active release with current certification receives an order action.
 
 | Level | Agentic AI | Sovereign AI | Virtualization + AI |
 | --- | --- | --- | --- |
-| 101 | Understand Agentic Workflows — planned | Understand Sovereign AI — active, public one-seat certified | Understand VM and AI Coexistence — source-ready with per-seat VM identity; live proof pending |
-| 201 | Build an AI Agent on Intel Xeon 6 | Build the Governed Inference Boundary — active, internal one-seat certified | Author and Qualify the Contract — active, internal one-seat certified |
-| 301 | Build Multi-Agent Systems | Confidential Inference and Intel TDX Foundations — draft | Modernize VMs with Governed AI — active, public one-seat certified |
-| 401 | Operate Evidence-Backed Agents — draft | Confidential AI with Intel TDX — source-qualified draft | Operate Hybrid VM and AI Workloads — source-qualified draft |
-| 501 | Scale and Certify Agentic Systems — draft | Prove and Certify Sovereign AI — source-qualified draft | Scale Governed AI Modernization — source-qualified draft |
-| 601 | Earn the Right to Act — source-qualified draft | Not offered | Not offered |
+| 101 | Understand Agentic Workflows — planned | Understand Sovereign AI — immutable candidate draft; live proof pending | Understand VM and AI Coexistence — immutable candidate draft with per-seat VM identity; live proof pending |
+| 201 | Build an AI Agent on Intel Xeon 6 — published candidate draft; immutable workload pin and live proof pending | Build the Governed Inference Boundary — immutable candidate draft; live proof pending | Author and Qualify the Contract — immutable candidate draft; live proof pending |
+| 301 | Build Multi-Agent Systems — immutable candidate draft; live proof pending | Confidential Inference and Intel TDX Foundations — immutable candidate draft; live TDX proof pending | Modernize VMs with Governed AI — immutable candidate draft; live proof and platform placement receipt pending |
+| 401 | Operate Evidence-Backed Agents — draft | Confidential AI with Intel TDX — immutable candidate draft; live Trustee/KBS proof pending | Operate Hybrid VM and AI Workloads — immutable candidate draft; live proof pending |
+| 501 | Scale and Certify Agentic Systems — immutable candidate draft; live proof pending | Prove and Certify Sovereign AI — immutable candidate draft; destination proof pending | Scale Governed AI Modernization — immutable candidate draft; live proof pending |
+| 601 | Earn the Right to Act — immutable candidate draft; live proof pending | Not offered | Not offered |
 
 Sales enablement is a separate persona axis over these technical tracks. Sales
 tracks may select different talk tracks, outcomes, and evidence while reusing a
@@ -62,15 +62,18 @@ Catalog lifecycle and journey role are independent:
 
 ## Core journey
 
-1. `ai-sandbox` — 001 Explore; the current Flightpath runtime is active and the
-   reviewed guided-start enhancement awaits publish-and-pin recertification.
+1. `ai-sandbox` — 001 Explore; the guided-start enhancement is a draft awaiting
+   publication, immutable pins, and one-seat recertification.
 2. `intel-llm-cpu-serving` — 101 Learn.
-3. `intel-xeon6-agent-201` — 201 Build.
-4. `multi-agent-quickstart` — 301 Engineer.
+3. `intel-xeon6-agent-201` — 201 Build; the current v1.0.9 candidate is a
+   draft because its workload still uses a mutable tag and its thirty-seat
+   evidence belongs to v1.0.8.
+4. `multi-agent-quickstart` — 301 Engineer; the exact Story-enabled candidate
+   is a draft awaiting one-seat recertification.
 5. `operate-agentic-blueprint` — 401 Operate; currently a draft content and
    certification candidate using this same runtime.
-6. `scale-agentic-blueprint` — 501 Scale; currently a non-orderable charter
-   that extends and certifies this same blueprint.
+6. `scale-agentic-blueprint` — 501 Scale; the exact signed candidate is pinned
+   as a non-orderable draft awaiting one-seat qualification and reclaim proof.
 
 ## Specialty episodes
 
@@ -79,12 +82,15 @@ Catalog lifecycle and journey role are independent:
 - Domain: `hybrid-fraud-detection` and `network-operations-agent`.
 - Reliability: `agent-reliability`.
 
-Each episode retains its current lifecycle status. Network Operations,
-Reliability, and Hybrid Fraud Detection are active and retain their historical
-five-seat Flightpath evidence. Tool Calling is active with a source-corrected
-journey awaiting post-publish one-seat recertification. The Operator Workshop
-remains draft until its rebuilt OpenShift Pipelines journey passes a fresh
-one-seat certification.
+Each episode retains its current lifecycle status. Network Operations and
+Hybrid Fraud Detection now have immutable source candidates; Reliability has a
+published source update whose runtime image still belongs to the prior source.
+All three remain draft until the exact candidate completes fresh one-seat
+Flightpath proof. Their historical five-seat evidence remains useful historical
+evidence but does not transfer to changed source. Tool Calling is likewise a
+draft source-corrected journey awaiting one-seat recertification. The Operator
+Workshop remains draft until its rebuilt OpenShift Pipelines journey passes a
+fresh one-seat certification.
 
 ## Reviewed-source to Flightpath approval queue
 
@@ -117,11 +123,25 @@ capacity-graduation gates, not a prerequisite for manual one-seat orderability.
 
 Current convergence rules:
 
-- `intel-llm-tool-calling` — source-ready; awaiting Flightpath one-seat proof.
+- `intel-llm-tool-calling` — source-ready draft; awaiting Flightpath one-seat
+  proof and independent Intel backend provenance or a softened CPU claim.
 - `openshift-operators-workshop` — source-ready; awaiting Flightpath one-seat
   proof.
-- `ai-sandbox` — the current runtime has prior Flightpath evidence; the new
-  guided-start source candidate must be published, pinned, and recertified.
+- `ai-sandbox` — the prior runtime has Flightpath evidence; publication of the
+  guided-start candidate currently fails closed on fixable HIGH/CRITICAL
+  findings embedded in upstream OpenShift CLI and code-server payloads. Those
+  payloads must be securely replaced or remediated before publication, pinning,
+  and recertification; the security gate must not be weakened.
+- `network-operations-agent` and `hybrid-fraud-detection` — immutable source
+  candidates are pinned as drafts and need fresh one-seat proof.
+- `agent-reliability` — the source update is published, but a matching immutable
+  runtime image and fresh one-seat proof are still required.
+- `virtualization-ai-foundations-101`, `virtualization-ai-201`, and
+  `virtualization-ai-301` — exact source and available immutable images are
+  pinned as drafts. All require new KubeVirt, Console, VM-origin, inference,
+  reclaim, and zero-residue proof. The 101 source is still on its candidate
+  branch; 301 also lacks an immutable Showroom-content image and needs a
+  platform-owned placement receipt.
 - Sovereign 301/401/501, Virtualization 401/501, Agentic 501/601, and any other
   explicitly rehearsal-only journey remain draft after source publication.
   One-seat certification proves the rehearsal contract; it does not create a

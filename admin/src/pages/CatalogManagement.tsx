@@ -30,9 +30,9 @@ const EMPTY_FORM: AddForm = {
   display_name: '',
   description: '',
   category: 'quick_start',
-  default_hardware_profile: 'small',
-  default_quota_profile: 'default',
-  default_ttl: 'PT2H',
+  default_hardware_profile: 'xeon-basic',
+  default_quota_profile: 'standard',
+  default_ttl: '4h',
   demo_source: '',
 };
 
@@ -85,6 +85,10 @@ export default function CatalogManagement() {
 
   const handleToggleStatus = async (item: CatalogItem) => {
     const nextStatus = STATUS_CYCLE[item.status] || 'draft';
+    const blockers = Array.isArray(item.metadata?.activation_blockers)
+      ? item.metadata.activation_blockers
+      : [];
+    if (nextStatus === 'active' && blockers.length > 0) return;
     if (!window.confirm(`Change status of "${item.display_name}" from "${item.status}" to "${nextStatus}"?`)) return;
     setTogglingStatus(item.catalog_item_id);
     try {
@@ -247,9 +251,8 @@ export default function CatalogManagement() {
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Category</th>
                 <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Hardware</th>
-                <th className="py-3 px-4">TTL</th>
-                <th className="py-3 px-4">Provisioner</th>
+                <th className="py-3 px-4">Certification</th>
+                <th className="py-3 px-4">Access / seats</th>
                 <th className="py-3 px-4">Actions</th>
               </tr>
             </thead>
@@ -265,23 +268,25 @@ export default function CatalogManagement() {
                   </td>
                   <td className="py-3 px-4"><StatusBadge status={item.category} /></td>
                   <td className="py-3 px-4"><StatusBadge status={item.status} /></td>
-                  <td className="py-3 px-4 text-xs text-[#6A6E73]">{item.default_hardware_profile || '—'}</td>
-                  <td className="py-3 px-4 text-xs text-[#6A6E73]">{item.default_ttl || '—'}</td>
                   <td className="py-3 px-4">
-                    {(item.metadata as Record<string, unknown>)?.provisioner_mode === 'rhdp' ? (
-                      <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">RHDP</span>
-                    ) : (
-                      <span className="text-xs text-[#6A6E73]">Direct</span>
-                    )}
+                    <p className="text-xs font-medium text-[#151515]">{String(item.metadata?.certification_stage || 'not declared').replaceAll('-', ' ')}</p>
+                    {Array.isArray(item.metadata?.activation_blockers) && item.metadata.activation_blockers.length > 0
+                      ? <p className="mt-1 text-xs text-[#C9190B]">{item.metadata.activation_blockers.length} activation blocker{item.metadata.activation_blockers.length === 1 ? '' : 's'}</p>
+                      : <p className="mt-1 text-xs text-[#3E8635]">No declared blockers</p>}
+                  </td>
+                  <td className="py-3 px-4 text-xs text-[#6A6E73]">
+                    <p>{Array.isArray(item.metadata?.allowed_exposure_policies) ? item.metadata.allowed_exposure_policies.map(String).join(', ').replaceAll('_', ' ') : 'legacy defaults'}</p>
+                    <p className="mt-1">Up to {String(item.metadata?.max_workshop_seats || '—')} seat{item.metadata?.max_workshop_seats === 1 ? '' : 's'}</p>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleToggleStatus(item)}
-                        disabled={togglingStatus === item.catalog_item_id}
+                        disabled={togglingStatus === item.catalog_item_id || (item.status === 'draft' && Array.isArray(item.metadata?.activation_blockers) && item.metadata.activation_blockers.length > 0)}
+                        title={item.status === 'draft' && Array.isArray(item.metadata?.activation_blockers) && item.metadata.activation_blockers.length > 0 ? 'Resolve certification blockers before activation' : undefined}
                         className="px-2 py-1 text-xs font-medium rounded border border-[#0068B5] text-[#0068B5] hover:bg-[#0068B5] hover:text-white transition-colors disabled:opacity-50"
                       >
-                        {togglingStatus === item.catalog_item_id ? 'Updating...' : `Set ${STATUS_CYCLE[item.status] || 'draft'}`}
+                        {togglingStatus === item.catalog_item_id ? 'Updating...' : item.status === 'draft' && Array.isArray(item.metadata?.activation_blockers) && item.metadata.activation_blockers.length > 0 ? 'Certification gated' : `Set ${STATUS_CYCLE[item.status] || 'draft'}`}
                       </button>
                       <button
                         disabled

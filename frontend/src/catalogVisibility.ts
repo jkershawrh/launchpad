@@ -6,7 +6,10 @@ const ALL_EXPOSURE_POLICIES: ExposurePolicy[] = ['internal', 'public_code'];
 
 
 export function participantCatalog(items: CatalogItem[]): CatalogItem[] {
-  return items.filter((item) => item.status === 'active');
+  return items.filter(
+    (item) => item.status === 'active'
+      && item.metadata?.migration_mode !== 'compatibility_alias',
+  );
 }
 
 export function allowedExposurePolicies(item?: CatalogItem): ExposurePolicy[] {

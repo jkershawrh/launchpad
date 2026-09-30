@@ -22,13 +22,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
-    revision: 14799e38d587f48b850aab283016dd3da16a8acc
+    revision: b8274c70cde28246a2c9bba0ba689a4dc57088b9
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
-    revision: 14799e38d587f48b850aab283016dd3da16a8acc
+    revision: b8274c70cde28246a2c9bba0ba689a4dc57088b9
     deploy_path: charts/virtualization-ai-501
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
 runtime:
@@ -62,9 +62,6 @@ runtime:
     title: Story
     source: workload.route.ui
     path: /
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -78,8 +75,8 @@ runtime:
     gitops_ready: true
     release_name: virtualization-ai-501
     helm_values:
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:757226a0dd2e57f295705213acff51b3d09e5d4c1b8a8245cb0640866206e660
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:6df327b493b701f14f1facc19dd9aa2085b080edf2342318770829de63a2d5d1
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:773d0f7c9c594d54a801d773cce752c01635155829e043783416b3405e182bd1
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:9c8b67c94f7bc62ec460b8a9ad18b42c65c8e8b6defc49a6c62092ca14921f11
       presentation_enabled: true
     runtime_secret_name: virtualization-ai-501-inference
     runtime_secret_value_path: qualificationAdapter.inference.secretName
@@ -87,9 +84,11 @@ runtime:
       endpoint: maas_endpoint
       model: requested_model
       api-key: maas_api_key
+    routes:
+      ui: virtualization-ai-501
     readiness: []
 certification:
-  stage: factory-source-qualified
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:

@@ -4,7 +4,7 @@ description: A namespace-scoped OpenShift environment with the Red Hat web conso
   web terminal, browser IDE, and access to the Flightpath CPU model service.
 category: open_sandbox
 version: 1.0.1-flightpath.1
-status: active
+status: draft
 required_capabilities:
 - openshift
 - model_endpoint
@@ -50,10 +50,14 @@ metadata:
   - public_code
   inference_endpoint: litellm
   workshop_cluster_ref: flightpath
-  certification_stage: 5-seat-certified
-  max_workshop_seats: 5
+  certification_stage: guided-source-not-published
+  max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
+  activation_blockers:
+  - Resolve the fixable HIGH/CRITICAL findings embedded in the upstream OpenShift CLI and code-server payloads without weakening the publication gate.
+  - Publish and pin the guided-start sandbox and portal images.
+  - Certify one fresh Flightpath seat for the UI card, namespace isolation, real model completion, proof artifact, reclaim, and zero residue.
   onboarding_contract: catalog-onboarding/ai-sandbox.yaml
   certification_proof_contract: certification/catalog/ai-sandbox.yaml

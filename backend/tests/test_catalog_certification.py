@@ -206,8 +206,13 @@ def test_agent_201_certification_targets_exact_flightpath_candidate_release():
     } == {"flightpath"}
     assert intake["catalog"]["version"] == "1.0.9-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
-    assert intake["certification"]["stage"] == "thirty-seat-certified"
-    assert intake["certification"]["max_workshop_seats"] == 30
+    assert intake["catalog"]["status"] == "draft"
+    assert intake["certification"]["stage"] == (
+        "source-candidate-recertification-required"
+    )
+    assert intake["certification"]["certified_seats"] == 0
+    assert intake["certification"]["max_workshop_seats"] == 1
+    assert intake["certification"]["activation_blockers"]
 
 
 def test_multi_agent_certification_targets_exact_flightpath_candidate_release():
@@ -229,11 +234,11 @@ def test_multi_agent_certification_targets_exact_flightpath_candidate_release():
         for assertion in contract["spec"]["seat_probe"]["json_assertions"]
         if assertion["path"] == "cluster_ref"
     } == {"flightpath"}
-    assert intake["catalog"]["version"] == "0.2.15-flightpath.1"
+    assert intake["catalog"]["version"] == "0.2.16-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
-    assert intake["runtime"]["inference_endpoint"] == "direct_vllm_candidate"
-    assert intake["certification"]["stage"] == "twenty-five-seat-certified"
-    assert intake["certification"]["max_workshop_seats"] == 25
+    assert intake["runtime"]["inference_endpoint"] == "litellm_virtual_key_candidate"
+    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert intake["certification"]["max_workshop_seats"] == 1
 
 
 def test_cpu_serving_certification_targets_exact_flightpath_candidate_release():
@@ -333,13 +338,13 @@ def test_flightpath_candidate_uses_its_destination_certification_state():
     )
 
     assert one["cluster_ref"] == "flightpath"
-    assert one["current_certified_seats"] == 5
-    assert one["next_promotion_target"] is None
-    assert one["certification_override"] is False
+    assert one["current_certified_seats"] == 0
+    assert one["next_promotion_target"] == 1
+    assert one["certification_override"] is True
     assert one["execution_eligible"] is True
-    assert five["current_certified_seats"] == 5
-    assert five["certification_override"] is False
-    assert five["execution_eligible"] is True
+    assert five["current_certified_seats"] == 0
+    assert five["certification_override"] is True
+    assert five["execution_eligible"] is False
 
 
 def test_seat_probe_only_contract_can_certify_a_non_showroom_environment():

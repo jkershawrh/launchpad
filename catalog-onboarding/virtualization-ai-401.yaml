@@ -24,13 +24,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
-    revision: 255e6ba2ff6f8fd4734a9af7c0de3d6130abfd81
+    revision: 529281616de3f11a2b5355314cd4f7123935e02d
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-401.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
-    revision: 255e6ba2ff6f8fd4734a9af7c0de3d6130abfd81
+    revision: 529281616de3f11a2b5355314cd4f7123935e02d
     deploy_path: charts/virtualization-ai-401
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-401.git
 runtime:
@@ -63,9 +63,6 @@ runtime:
     title: Story
     source: workload.route.ui
     path: /
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -79,16 +76,18 @@ runtime:
     gitops_ready: true
     release_name: virtualization-ai-401
     helm_values:
-      operations_adapter_image: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:2e68e78c81b5be284160145191c0ca138b057d0859a74d99dd53de4374996ffa
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:3b380eb7e46e82f95317e303d56898787d528bbac9272f6bdaa4f6d19a02920c
+      operations_adapter_image: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a
       presentation_enabled: true
       default_source_state: REHEARSAL
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
+    routes:
+      ui: virtualization-ai-401
     readiness: []
 certification:
-  stage: factory-source-qualified
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:

@@ -6,8 +6,8 @@ catalog:
   description: Investigate a simulated telecom network alarm with an evidence-backed
     agent, internal MCP diagnostics, and shared CPU model inference.
   category: guided_build
-  version: 0.2.0-flightpath.10
-  status: active
+  version: 0.2.1-flightpath.10
+  status: draft
 learning:
   learning_level: "301"
   learning_stage: Engineer
@@ -24,12 +24,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: 287bffcca9c90336ed199ab2156d4471377b2c3e
+    revision: 6ed5c53337afa55c03949b2963b429f32977ef69
     playbook: site-lab.yml
     start_path: showroom-lab
   workload:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
-    revision: 287bffcca9c90336ed199ab2156d4471377b2c3e
+    revision: 6ed5c53337afa55c03949b2963b429f32977ef69
     deploy_path: chart
 runtime:
   deployment_type: helm
@@ -39,7 +39,7 @@ runtime:
     helm_values:
       image:
         repository: ghcr.io/jkershawrh/network-operations-agent
-        digest: sha256:74afaf7d26791327fe4d1d7e5f302c7532b644f8d902daf1e914f9c2c4e5faf1
+        digest: sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242
       route:
         enabled: true
         name: netops
@@ -83,13 +83,14 @@ runtime:
   - internal
   - public_code
 certification:
-  stage: five-seat-certified
-  max_workshop_seats: 5
+  stage: immutable-source-published
+  max_workshop_seats: 1
   proof_contract: certification/catalog/network-operations-agent.yaml
   promotion_sequence:
   - 1
   - 5
-  activation_blockers: []
+  activation_blockers:
+  - Recertify one Flightpath seat against the newly published image and learning journey.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

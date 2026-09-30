@@ -24,13 +24,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-501.git
-    revision: c5e8fa9ab6240ca25c49573a4d83c7f28ef7cc19
+    revision: efe6f661df3a7f03524b3dc20bba2fb89aec4419
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-501.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-501.git
-    revision: c5e8fa9ab6240ca25c49573a4d83c7f28ef7cc19
+    revision: efe6f661df3a7f03524b3dc20bba2fb89aec4419
     deploy_path: charts/sovereign-ai-501
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-501.git
 runtime:
@@ -62,9 +62,6 @@ runtime:
     title: Story
     source: presentation.route
     path: /
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -82,14 +79,24 @@ runtime:
     gitops_ready: true
     release_name: sovereign-ai-501
     helm_values:
-      workload_image: ghcr.io/jkershawrh/sovereign-ai-501-qualifier@sha256:cc3b3cfc19697b57d03347491523b6d72524fdb7890c591344ca714bbc4bca57
-      presentation_image: ghcr.io/jkershawrh/sovereign-ai-501-presentation@sha256:cd739547778feaaa5c0d86af26032a1b5962e95fe5447ec0b477730020daae64
+      values_overlay: charts/sovereign-ai-501/values.published.yaml
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-501-qualifier@sha256:7d265099583a3661ba4d7afb7ec12ba223e5bef2b35a220ae40c3b0eb4014e73
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-501-presentation@sha256:9504b2e7df38c653f09be26f3ceebce2330dcb49b2cb405dcd33bc3571d8455b
       source_state: REHEARSAL
       confidential_runtime_enabled: false
       live_tdx_claimed: false
+      images:
+        presentation:
+          repository: ghcr.io/jkershawrh/sovereign-ai-501-presentation
+          digest: sha256:9504b2e7df38c653f09be26f3ceebce2330dcb49b2cb405dcd33bc3571d8455b
+        qualifier:
+          repository: ghcr.io/jkershawrh/sovereign-ai-501-qualifier
+          digest: sha256:7d265099583a3661ba4d7afb7ec12ba223e5bef2b35a220ae40c3b0eb4014e73
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
+    routes:
+      ui: sovereign-ai-501-presentation
     readiness: []
 certification:
   stage: factory-source-qualified

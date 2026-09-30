@@ -35,6 +35,12 @@ def _bind_model_runtime(intake: dict) -> None:
     }
 
 
+def _bind_current_pull_evidence(policy: dict, probe: dict) -> None:
+    """Model exact new-candidate evidence without rewriting the archived probe."""
+
+    probe["image"] = policy["image"]
+
+
 def _render_review(policy: dict, intake: dict) -> dict:
     return {
         "schema_version": "launchpad.redhat.com/catalog-intake-rendered-output/v2",
@@ -65,16 +71,21 @@ def _render_attestation(policy: dict) -> dict:
     }
 
 
-def test_current_candidate_stays_blocked_without_bound_render_review():
+def test_current_candidate_stays_blocked_without_current_pull_or_render_review():
     policy, intake, probe = _load()
     report = review_candidate_admission(policy, intake, probe)
     assert report["status"] == "RED"
-    assert report["findings"] == ["render-attestation-missing", "render-review-missing"]
+    assert report["findings"] == [
+        "pull-evidence-not-passed",
+        "render-attestation-missing",
+        "render-review-missing",
+    ]
     assert report["release_eligible"] is False
 
 
 def test_exact_v2_render_review_advances_only_to_local_candidate():
     policy, intake, probe = _load()
+    _bind_current_pull_evidence(policy, probe)
     report = review_candidate_admission(
         policy,
         intake,
@@ -94,6 +105,7 @@ def test_exact_v2_render_review_advances_only_to_local_candidate():
 
 def test_render_review_must_bind_exact_candidate_source_values_and_manifest():
     policy, intake, probe = _load()
+    _bind_current_pull_evidence(policy, probe)
     mutations = (
         ("schema_version", "launchpad.redhat.com/catalog-intake-rendered-output/v1"),
         ("status", "blocked"),
@@ -118,6 +130,7 @@ def test_render_review_must_bind_exact_candidate_source_values_and_manifest():
 def test_correct_secret_contract_is_locally_reviewable_but_never_released():
     policy, intake, probe = _load()
     _bind_model_runtime(intake)
+    _bind_current_pull_evidence(policy, probe)
     report = review_candidate_admission(
         policy,
         intake,
@@ -132,6 +145,7 @@ def test_correct_secret_contract_is_locally_reviewable_but_never_released():
 
 def test_render_attestation_must_be_authenticated_and_exactly_bound():
     policy, intake, probe = _load()
+    _bind_current_pull_evidence(policy, probe)
     review = _render_review(policy, intake)
     attestation = _render_attestation(policy)
     mutations = (

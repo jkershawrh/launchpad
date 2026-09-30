@@ -11,8 +11,8 @@ catalog:
     Kagenti, OpenTelemetry, guardrails, and service authentication on Intel
     infrastructure.
   category: guided_build
-  version: "0.2.15-flightpath.1"
-  status: active
+  version: "0.2.16-flightpath.1"
+  status: draft
   supported_branding:
     - redhat-intel-default
     - intel-internal
@@ -47,7 +47,7 @@ sources:
 references:
   original_lab:
     repo_url: "https://github.com/jkershawrh/multi-agent-quickstart.git"
-    revision: "159113ab9f8df39e09e08926b51c7c32da0fc1af"
+    revision: "ea61ce4e20f6e12513b16eeaa746f81895e716c9"
     path: .
 
 runtime:
@@ -68,7 +68,7 @@ runtime:
   default_hardware_profile: xeon-basic
   default_quota_profile: large
   default_ttl: "4h"
-  inference_endpoint: direct_vllm_candidate
+  inference_endpoint: litellm_virtual_key_candidate
   required_capabilities:
     - openshift
     - showroom
@@ -89,7 +89,7 @@ runtime:
       title: "Build and operate on OpenShift"
       showroom_page: track-2-openshift.adoc
       delivery_mode: live-runtime
-      certification_status: twenty-five-seat-certified
+      certification_status: candidate-recertification-required
     - id: track-3-blueprint
       title: "Advanced blueprint alignment"
       showroom_page: track-3-blueprint.adoc
@@ -98,13 +98,16 @@ runtime:
   seat_resources:
     # One seven-container workload pod plus one Showroom pod. The envelope
     # includes measured Showroom requests and headroom above the chart's 800m.
-    cpu_millicores: 1200
-    memory_mib: 2048
-    pods: 2
+    cpu_millicores: 1250
+    memory_mib: 2112
+    pods: 3
     storage_gib: 0
   workshop_provision_concurrency: 2
   workshop_node_spread: true
   tabs:
+    - id: presentation
+      title: Multi-Agent Systems Story
+      source: workload.route.presentation
     - id: terminal
       title: Terminal
       source: showroom.terminal
@@ -128,22 +131,31 @@ runtime:
       AGENT_AUTH_TOKEN: {source: generated_password, length: 48}
     helm_values:
       image:
-        repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
-        digest: sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661
+        repository: ghcr.io/jkershawrh/multi-agent-quickstart
+        digest: sha256:a772cd2979a1cc21d19273359b611be8e6848cedb3cb9ce478d5f963eec7cbbd
+      presentation:
+        enabled: true
+        image:
+          repository: ghcr.io/jkershawrh/multi-agent-quickstart-presentation
+          digest: sha256:22f0325f73c9cf67dc6d77c6e835d148c5e666344fed9d36bd809877fc6eb8e4
+        apiUpstream: http://multi-agent:8000
+        ingressDomain: apps.flightpath.fm2aihpcsed.com
     routes:
       ui: multi-agent-ui
       orchestrator: multi-agent
+      presentation: story
 
 certification:
-  stage: twenty-five-seat-certified
-  max_workshop_seats: 25
+  stage: immutable-source-published
+  max_workshop_seats: 1
   proof_contract: certification/catalog/multi-agent-quickstart-flightpath.yaml
   promotion_sequence:
     - 1
     - 5
     - 25
     - 30
-  activation_blockers: []
+  activation_blockers:
+    - Certify one fresh Flightpath seat for the 301 Story, progressive workflow, correlation, managed inference, Console scope, reclaim, and zero residue.
   production_blockers:
     - >-
       Transfer the digest-pinned pilot mirror from the maintainer Quay

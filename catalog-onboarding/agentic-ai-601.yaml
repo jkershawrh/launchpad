@@ -7,7 +7,7 @@ catalog:
     Qualify a governed, reversible agentic control loop without granting the
     runtime production execution or promotion authority.
   category: guided_build
-  version: "0.1.0-flightpath.1"
+  version: "0.1.0-flightpath.2"
   status: draft
 learning:
   learning_level: "601"
@@ -27,13 +27,13 @@ sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agentic-ai-601.git
     gitops_repo_url: git@github.com:jkershawrh/agentic-ai-601.git
-    revision: a40f01396adcccdb93c240b8c5b5b45cf418c317
+    revision: 22f4e4656843721c66b0779e52c30fc46a4061de
     playbook: site.yml
     start_path: showroom
   workload:
     repo_url: https://github.com/jkershawrh/agentic-ai-601.git
     gitops_repo_url: git@github.com:jkershawrh/agentic-ai-601.git
-    revision: a40f01396adcccdb93c240b8c5b5b45cf418c317
+    revision: 22f4e4656843721c66b0779e52c30fc46a4061de
     deploy_path: charts/agentic-ai-601
 runtime:
   namespace_slug: agentic-ai-601
@@ -59,10 +59,10 @@ runtime:
       images:
         presentation:
           repository: ghcr.io/jkershawrh/agentic-ai-601-presentation
-          digest: sha256:3fac7a38520699eaff96e25bbbff6c311a1e509133f8c4f19ee9843600d0bdcc
+          digest: sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e
         qualifier:
           repository: ghcr.io/jkershawrh/agentic-ai-601-qualifier
-          digest: sha256:d2979d7cb90104c9b76d083502659c5cdfcc1868bf8d957d47bc38618b490223
+          digest: sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc
       routes:
         enabled: true
         ingressDomain: apps.flightpath.fm2aihpcsed.com
@@ -70,7 +70,7 @@ runtime:
         sourceState: rehearsal
         authorityExecutionEnabled: false
 certification:
-  stage: source-qualified
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence: [1, 5, 25]

@@ -98,13 +98,16 @@ def test_resilience_proves_safe_state_and_recovery():
     assert all(scenario["maximum_recovery_seconds"] >= 0 for scenario in scenarios)
 
 
-def test_certification_is_non_executable_until_blockers_are_cleared():
+def test_certification_executes_only_as_rehearsal_destination_qualification():
     certification = _load(CERTIFICATION_PATH)
     catalog = _load(CATALOG_PATH)
 
     assert certification["metadata"]["catalog_item_id"] == catalog["catalog_item_id"]
-    assert certification["spec"]["state"] == "charter"
-    assert certification["spec"]["execution_enabled"] is False
+    assert certification["spec"]["state"] == "destination-qualification"
+    assert certification["spec"]["execution_enabled"] is True
+    assert certification["spec"]["seat_probe"]["json_assertions"]
+    assert {"path": "evidence_source", "equals": "rehearsal"} in certification["spec"]["seat_probe"]["json_assertions"]
+    assert {"path": "live_claim", "equals": False} in certification["spec"]["seat_probe"]["json_assertions"]
     assert certification["spec"]["execution_blockers"]
     assert certification["spec"]["rubric"]["required_score"] == 100
     assert sum(category["weight"] for category in certification["spec"]["rubric"]["categories"]) == 100

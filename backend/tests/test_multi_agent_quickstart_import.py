@@ -2,11 +2,10 @@ from pathlib import Path
 
 import yaml
 from app.adapters.file.catalog import FileCatalogAdapter
-from app.domain.enums import CatalogStatus
 from app.services.catalog_onboarding import build_catalog_item, load_intake
 
 ROOT = Path(__file__).resolve().parents[2]
-INTAKE_PATH = ROOT / "catalog-onboarding/multi-agent-quickstart.yaml"
+INTAKE_PATH = ROOT / "catalog-onboarding/multi-agent-quickstart-flightpath.yaml"
 CATALOG_PATH = ROOT / "catalog/multi-agent-quickstart/catalog-item.yaml"
 CONTENT_ROOT = ROOT / "content-multi-agent-quickstart"
 TRACKS = {
@@ -16,7 +15,7 @@ TRACKS = {
 }
 
 
-def test_multi_agent_quickstart_is_active_for_public_event_orders():
+def test_multi_agent_quickstart_is_a_fail_closed_flightpath_candidate():
     intake = load_intake(INTAKE_PATH)
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
 
@@ -30,19 +29,23 @@ def test_multi_agent_quickstart_is_active_for_public_event_orders():
     assert catalog["display_name"] == (
         "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
     )
-    assert catalog["version"] == "0.2.14"
-    assert catalog["status"] == "active"
+    assert catalog["version"] == "0.2.16-flightpath.1"
+    assert catalog["status"] == "draft"
     assert catalog["metadata"]["onboarding_managed"] is True
-    assert catalog["metadata"]["activation_blockers"] == []
+    assert catalog["metadata"]["activation_blockers"] == [
+        "Certify one fresh Flightpath seat for the 301 Story, progressive workflow, "
+        "correlation, managed inference, Console scope, reclaim, and zero residue."
+    ]
     assert catalog["metadata"]["allowed_exposure_policies"] == [
         "internal",
         "public_code",
     ]
     assert catalog["metadata"]["production_blockers"]
-    assert catalog["metadata"]["certification_stage"] == "thirty-seat-certified"
-    assert catalog["metadata"]["max_workshop_seats"] == 30
+    assert catalog["metadata"]["certification_stage"] == "immutable-source-published"
+    assert catalog["metadata"]["max_workshop_seats"] == 1
+    assert catalog["metadata"]["workshop_cluster_ref"] == "flightpath"
     assert catalog["metadata"]["certification_proof_contract"] == (
-        "certification/catalog/multi-agent-quickstart.yaml"
+        "certification/catalog/multi-agent-quickstart-flightpath.yaml"
     )
 
 
@@ -53,12 +56,12 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
 
     assert metadata["source_references"]["original_lab"] == {
         "repo_url": "https://github.com/jkershawrh/multi-agent-quickstart.git",
-        "revision": "159113ab9f8df39e09e08926b51c7c32da0fc1af",
+        "revision": "ea61ce4e20f6e12513b16eeaa746f81895e716c9",
         "path": ".",
     }
-    assert metadata["workload_repo"] == "https://github.com/rhpds/launchpad.git"
+    assert metadata["workload_repo"] == "https://github.com/jkershawrh/launchpad.git"
     assert metadata["workload_revision"] == (
-        "5292234017bf3f538767e6b6a3c627d146fca086"
+        "2302acddb0e696ff72b647677049b7de529060e3"
     )
     assert len(metadata["workload_revision"]) == 40
     assert metadata["workload_deploy_path"] == "deploy/workloads/multi-agent-seat"
@@ -75,11 +78,22 @@ def test_multi_agent_quickstart_preserves_immutable_source_provenance():
     }
     assert metadata["workload_helm_values"] == {
         "image": {
-            "repository": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart",
+            "repository": "ghcr.io/jkershawrh/multi-agent-quickstart",
             "digest": (
-                "sha256:84f6be95993f6481b4d99f9e0d68e98e12d0ea9c992d204164a3688503e1c661"
+                "sha256:a772cd2979a1cc21d19273359b611be8e6848cedb3cb9ce478d5f963eec7cbbd"
             ),
-        }
+        },
+        "presentation": {
+            "enabled": True,
+            "image": {
+                "repository": "ghcr.io/jkershawrh/multi-agent-quickstart-presentation",
+                "digest": (
+                    "sha256:22f0325f73c9cf67dc6d77c6e835d148c5e666344fed9d36bd809877fc6eb8e4"
+                ),
+            },
+            "apiUpstream": "http://multi-agent:8000",
+            "ingressDomain": "apps.flightpath.fm2aihpcsed.com",
+        },
     }
 
 
@@ -95,7 +109,7 @@ def test_multi_agent_showroom_is_native_launchpad_content():
     assert "releases/download/patternfly-6/" in playbook["ui"]["bundle"]["url"]
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "b4079dc38f0d441725a34e2cdf0d0d3bdb2901c3"
+        "2302acddb0e696ff72b647677049b7de529060e3"
     )
     assert component["asciidoc"]["attributes"]["project_name"] == "%namespace%"
     assert component["asciidoc"]["attributes"]["maas_model"] == "%maas_model%"
@@ -295,13 +309,11 @@ def test_track_two_explains_expected_rbac_warning_and_workload_pod():
         assert f"`{container}`" in page
 
 
-def test_multi_agent_quickstart_is_orderable_after_internal_promotion():
+def test_multi_agent_quickstart_remains_unorderable_before_flightpath_certification():
     adapter = FileCatalogAdapter(str(ROOT / "catalog"))
 
-    assert adapter.validate_item("multi-agent-quickstart") is True
-    assert adapter.set_status(
-        "multi-agent-quickstart", CatalogStatus.ACTIVE
-    ).status == CatalogStatus.ACTIVE
+    assert adapter.validate_item("multi-agent-quickstart") is False
+    assert adapter.get_item("multi-agent-quickstart").status.value == "draft"
 
 
 def test_track_two_certification_executes_and_cleans_the_learner_change():

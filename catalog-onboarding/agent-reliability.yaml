@@ -7,8 +7,8 @@ catalog:
     teams to contain prompt injection, deny unauthorized MCP tools, prove
     evidence-backed recommendations, and degrade safely when inference is unavailable.
   category: guided_build
-  version: 0.1.0-flightpath.1
-  status: active
+  version: 0.1.1-flightpath.1
+  status: draft
 learning:
   learning_level: "301"
   learning_stage: Engineer
@@ -25,12 +25,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+    revision: 9c69348c34904c58997318d9124ac3d50661984b
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
+    revision: 9c69348c34904c58997318d9124ac3d50661984b
     deploy_path: chart
 runtime:
   workshop_cluster_ref: flightpath
@@ -89,13 +89,15 @@ runtime:
   allowed_exposure_policies:
   - internal
 certification:
-  stage: five-seat-certified
-  max_workshop_seats: 5
+  stage: source-update-published
+  max_workshop_seats: 1
   proof_contract: certification/catalog/agent-reliability.yaml
   promotion_sequence:
   - 1
   - 5
-  activation_blockers: []
+  activation_blockers:
+  - Recertify one Flightpath seat against the updated Console correlation and reclaim guidance.
+  - Verify the unchanged runtime image against the effective managed inference endpoint.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

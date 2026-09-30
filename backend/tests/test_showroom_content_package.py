@@ -19,10 +19,10 @@ INTEL_GUIDED_LABS = [
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
         "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
-        "status": "active",
+        "status": "draft",
         "content_repo": "https://github.com/jkershawrh/launchpad.git",
-        "max_workshop_seats": 30,
-        "certification_stage": "thirty-seat-certified",
+        "max_workshop_seats": 1,
+        "certification_stage": "source-candidate-recertification-required",
     },
     {
         "catalog_id": "intel-llm-cpu-serving",
@@ -48,10 +48,10 @@ INTEL_GUIDED_LABS = [
         "model": "granite-3.2-8b-tools",
         "workspace_route": "",
         "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
-        "status": "active",
+        "status": "draft",
         "content_repo": "https://github.com/jkershawrh/launchpad.git",
-        "max_workshop_seats": 5,
-        "certification_stage": "5-seat-certified",
+        "max_workshop_seats": 1,
+        "certification_stage": "source-update-published",
     },
 ]
 

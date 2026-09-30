@@ -46,7 +46,7 @@ profile="$(jq -cn '{profile:{
   id:"flightpath-destination-qualification",
   version:"policy-v1",
   phase:"baseline",
-  workloadImageDigest:"sha256:fe29325bbfdc34466fdfa2a77050282e1e2ec0d6b21d9e0115fe416288d8e431",
+  workloadImageDigest:"sha256:7875cb2772a5c9c6ce3628c7ad287ad70690aa345d836f331e7232b302b2e1d3",
   evaluationSetVersion:"agentic-scale-501-v1",
   target:"flightpath/agentic-scale-501",
   concurrency:1,

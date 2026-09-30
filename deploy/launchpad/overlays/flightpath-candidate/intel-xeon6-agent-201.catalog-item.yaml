@@ -2,8 +2,8 @@ catalog_item_id: intel-xeon6-agent-201
 display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
 description: "Build and tune a namespace-isolated AI solution advisor with LangGraph, MCP tools, and shared Intel Xeon inference."
 category: guided_build
-version: "1.0.8-flightpath.1"
-status: active
+version: "1.0.9-flightpath.1"
+status: draft
 required_capabilities:
   - openshift
   - showroom
@@ -26,8 +26,8 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: thirty-seat-certified
-  max_workshop_seats: 30
+  certification_stage: source-candidate-recertification-required
+  max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5
@@ -36,11 +36,11 @@ metadata:
   onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
   certification_proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
   showroom_journey: intel-xeon6-agent-201
-  showroom_title: "Intel Xeon 6 201: Building an AI Agent"
+  showroom_title: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
   workspace_route_name: app
   workspace_title: "Solution Architect"
   showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
-  showroom_content_ref: "9526ede61b5c31949f3a1bedd133b5a17e554178"
+  showroom_content_ref: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
   showroom_content_playbook: "site-intel-xeon6-agent-201.yml"
   required_models:
     - granite-3.2-8b-tools
@@ -55,6 +55,10 @@ metadata:
   source_content_revision: "d5cd98c1bc9eddf3327f136cb7114eef551bf9a6"
   workload_repo: "https://github.com/rhpds/triforce.git"
   workload_revision: "201-v1.0.0"
+  activation_blockers:
+    - Replace the mutable workload tag with an immutable commit or digest.
+    - Certify the exact v1.0.9 Flightpath candidate for Story, Console, managed inference, proof export, reclaim, and zero residue.
+    - Treat the prior thirty-seat v1.0.8 result as historical evidence only.
   showroom_steps:
     - title: "Understand the agent"
       description: "Trace the model, LangGraph workflow, MCP tools, and OpenShift trust boundaries."

@@ -159,7 +159,7 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/rhpds/launchpad.git
-  source_content_revision: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
+  source_content_revision: d12a47688d57b9d72fe8c069bad45cb0baad94aa
   source_references:
     canonical_blueprint:
       path: contracts/agentic-blueprint-v1.yaml

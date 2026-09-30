@@ -42,14 +42,14 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-401.git
-  showroom_content_ref: 255e6ba2ff6f8fd4734a9af7c0de3d6130abfd81
+  showroom_content_ref: 529281616de3f11a2b5355314cd4f7123935e02d
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-401.yaml
-  certification_stage: factory-source-qualified
+  certification_stage: immutable-source-published
   max_workshop_seats: 1
   promotion_sequence:
   - 1
@@ -73,9 +73,6 @@ metadata:
     title: Story
     source: workload.route.ui
     path: /
-  - id: guide
-    title: Lab Guide
-    source: showroom.guide
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -98,7 +95,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-401.git
-  workload_revision: 255e6ba2ff6f8fd4734a9af7c0de3d6130abfd81
+  workload_revision: 529281616de3f11a2b5355314cd4f7123935e02d
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-401
@@ -106,8 +103,8 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: virtualization-ai-401
   workload_helm_values:
-    operations_adapter_image: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:2e68e78c81b5be284160145191c0ca138b057d0859a74d99dd53de4374996ffa
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:3b380eb7e46e82f95317e303d56898787d528bbac9272f6bdaa4f6d19a02920c
+    operations_adapter_image: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a
     presentation_enabled: true
     default_source_state: REHEARSAL
   workload_ignore_differences: []
@@ -115,8 +112,9 @@ metadata:
   workload_runtime_secret_sources: {}
   workload_runtime_secret_value_path: ''
   workload_identity_value_path: ''
-  workload_routes: {}
+  workload_routes:
+    ui: virtualization-ai-401
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-401.git
-  source_content_revision: 255e6ba2ff6f8fd4734a9af7c0de3d6130abfd81
+  source_content_revision: 529281616de3f11a2b5355314cd4f7123935e02d
   source_references: {}
