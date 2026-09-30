@@ -6,7 +6,8 @@ LABEL name="ai-sandbox" \
 
 USER 0
 
-RUN dnf install -y \
+RUN dnf upgrade -y --refresh \
+    && dnf install -y \
     openssh-server \
     openssh-clients \
     git \
@@ -39,7 +40,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
        ipython \
        jupyterlab
 
-ARG CODE_SERVER_VERSION=4.104.2
+ARG CODE_SERVER_VERSION=4.139.1
 RUN curl -fsSL "https://github.com/coder/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz" \
     | tar xz -C /opt \
     && ln -s "/opt/code-server-${CODE_SERVER_VERSION}-linux-amd64/bin/code-server" /usr/local/bin/code-server

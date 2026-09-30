@@ -21,6 +21,8 @@ def test_sandbox_base_and_release_path_are_immutable_and_public_registry_ready()
     workflow = (ROOT / ".github/workflows/sandbox-release.yml").read_text()
 
     assert "registry.access.redhat.com/ubi9/python-311@sha256:" in containerfile
+    assert "dnf upgrade -y --refresh" in containerfile
+    assert "ARG CODE_SERVER_VERSION=4.139.1" in containerfile
     assert "expected_sha:" in workflow
     assert "ref: ${{ inputs.expected_sha }}" in workflow
     assert 'test "$(git rev-parse HEAD)" = "${{ inputs.expected_sha }}"' in workflow
