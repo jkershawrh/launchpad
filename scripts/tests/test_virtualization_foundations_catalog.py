@@ -45,3 +45,4 @@ def test_virtualization_301_overrides_chart_images_with_immutable_candidates() -
     assert values["values_overlay"].endswith("values.published.yaml")
     assert values["adapter"]["image"]["digest"].startswith("sha256:")
     assert values["presentation"]["image"]["digest"].startswith("sha256:")
+    assert catalog["metadata"]["workload_revision"] == "36e61a5a6eb819dd7b9dcdf0c63854cb175722ec"
