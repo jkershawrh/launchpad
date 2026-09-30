@@ -241,9 +241,9 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
             "workload": "sha256:773d0f7c9c594d54a801d773cce752c01635155829e043783416b3405e182bd1",
         },
         "virtualization-ai-401": {
-            "revision": "c123098b4ba3b95c5505d22b0bde767c3c90980e",
-            "presentation": "sha256:907a9b1a5e6a947002d1dee5f27ac28d0535b7e249b4354d72984007779f4d30",
-            "workload": "sha256:31fc59895fb09460724c1322841ffd1e6933c4a8a09272877f3061029a896116",
+            "revision": "99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44",
+            "presentation": "sha256:9e31434dc84361e6784831b95bb5db0e278d8954b0e5d3a4bdf39389d23b4e31",
+            "workload": "sha256:c6057b907477b80701219e03bbf8101e7f8f9c646f4aa6a67663a3b552ce17ee",
         },
     }
 
@@ -272,17 +272,17 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
 
     virtualization_401 = review["labs"]["virtualization-ai-401"]["source_state"]
     assert virtualization_401["published_revision"] == (
-        "c123098b4ba3b95c5505d22b0bde767c3c90980e"
+        "99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44"
     )
     assert virtualization_401["catalog_pinned_revision"] == (
-        "c123098b4ba3b95c5505d22b0bde767c3c90980e"
+        "99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44"
     )
     assert virtualization_401["publication_workflow"] == (
-            "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36756033518"
+            "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36758487257"
     )
     assert virtualization_401["immutable_images"] == {
-        "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:907a9b1a5e6a947002d1dee5f27ac28d0535b7e249b4354d72984007779f4d30",
-        "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:31fc59895fb09460724c1322841ffd1e6933c4a8a09272877f3061029a896116",
+        "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:9e31434dc84361e6784831b95bb5db0e278d8954b0e5d3a4bdf39389d23b4e31",
+        "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:c6057b907477b80701219e03bbf8101e7f8f9c646f4aa6a67663a3b552ce17ee",
     }
 
 
@@ -293,6 +293,12 @@ def test_virtualization_401_certification_capabilities_match_flightpath() -> Non
     intake = yaml.safe_load(
         (ROOT / "catalog-onboarding/virtualization-ai-401.yaml").read_text()
     )
+    assert catalog["metadata"]["workload_helm_values"]["presentation"][
+        "ingressDomain"
+    ] == "apps.flightpath.fm2aihpcsed.com"
+    assert intake["runtime"]["workload"]["helm_values"]["presentation"][
+        "ingressDomain"
+    ] == "apps.flightpath.fm2aihpcsed.com"
     cluster_document = yaml.safe_load(
         (
             ROOT

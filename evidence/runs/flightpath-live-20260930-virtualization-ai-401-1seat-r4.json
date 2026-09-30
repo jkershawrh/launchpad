@@ -1,0 +1,31 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-observation/v1",
+  "run_id": "flightpath-live-20260930-virtualization-ai-401-1seat-r4",
+  "observed_at": "2026-09-30T18:20:00Z",
+  "result": "RED-live",
+  "catalog_item_id": "virtualization-ai-401",
+  "cluster_ref": "flightpath",
+  "workshop_id": "cf8285b0-f0bd-46af-8a24-faa1d82435ac",
+  "session_id": "0170ac13-7caa-41cf-a6b3-e10897d02d71",
+  "namespace": "launchpad-flightpath-candida-virtualization-ai-a9888f",
+  "failure": {
+    "stage": "openshift-workload-admission",
+    "reasons": [
+      "The restricted-v2 SCC rejected the operations adapter's fixed fsGroup 65532.",
+      "The namespace-scoped Argo CD seat role did not include KubeVirt VirtualMachine resources.",
+      "The generated Route hostname's first DNS label exceeded 63 characters."
+    ],
+    "remediation": [
+      "Let OpenShift allocate the namespace-specific supplemental group.",
+      "Extend the existing per-seat Argo CD role with namespaced KubeVirt resources.",
+      "Generate a compact deterministic route label using the target ingress domain."
+    ]
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "seat_status": "reclaimed",
+    "namespace_present": false,
+    "argocd_application_present": false
+  },
+  "contains_sensitive_values": false
+}

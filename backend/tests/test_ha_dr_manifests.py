@@ -675,6 +675,9 @@ def test_flightpath_stage_bootstrap_requires_explicit_target_and_safe_order() ->
 def test_flightpath_candidate_provisioner_is_admission_scoped() -> None:
     items = render("deploy/launchpad/overlays/flightpath-candidate")
     worker = resource(items, "Deployment", "lifecycle-worker")
+    argocd_role = resource(
+        items, "ClusterRole", "launchpad-flightpath-argocd-seat-manager"
+    )
     binding = resource(
         items, "ClusterRoleBinding", "launchpad-flightpath-candidate-provisioner"
     )
@@ -720,3 +723,13 @@ def test_flightpath_candidate_provisioner_is_admission_scoped() -> None:
         "validationActions": ["Deny"],
     }
     assert worker["spec"]["replicas"] == 2
+    kubevirt_rules = [
+        rule for rule in argocd_role["rules"] if "kubevirt.io" in rule["apiGroups"]
+    ]
+    assert kubevirt_rules == [
+        {
+            "apiGroups": ["kubevirt.io"],
+            "resources": ["virtualmachines", "virtualmachineinstances"],
+            "verbs": ["get", "list", "watch", "create", "update", "patch", "delete"],
+        }
+    ]
