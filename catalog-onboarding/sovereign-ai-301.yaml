@@ -90,7 +90,7 @@ runtime:
       ui: sovereign-ai-301-presentation
     readiness: []
 certification:
-  stage: factory-source-qualified
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:
@@ -104,6 +104,6 @@ certification:
     by this handoff.
   - One, five, and twenty-five seat certification, reclaim, rollback, and trusted
     rendering remain independent Launchpad gates.
-  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete destination artifact qualification on Flightpath.
   - Complete one-seat live certification and zero-residue reclaim before activation.
   proof_contract: certification/catalog/sovereign-ai-301.yaml

@@ -99,7 +99,7 @@ runtime:
       ui: sovereign-ai-501-presentation
     readiness: []
 certification:
-  stage: factory-source-qualified
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:
@@ -120,6 +120,6 @@ certification:
     and zero-residue gates remain unverified.
   - Launchpad source approval, trusted rendering, artifact review, live-seat certification,
     scale graduation, promotion, and publication remain required.
-  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete destination artifact qualification on Flightpath.
   - Complete one-seat live certification and zero-residue reclaim before activation.
   proof_contract: certification/catalog/sovereign-ai-501.yaml

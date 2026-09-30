@@ -101,7 +101,7 @@ runtime:
       ui: sovereign-ai-401-presentation
     readiness: []
 certification:
-  stage: factory-source-qualified
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:
@@ -119,6 +119,6 @@ certification:
     policy, and one-seat reclaim remain unverified in a destination cluster.
   - Launchpad source approval, trusted render, artifact review, live-seat certification,
     scale graduation, reclaim, and promotion remain required.
-  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete destination artifact qualification on Flightpath.
   - Complete one-seat live certification and zero-residue reclaim before activation.
   proof_contract: certification/catalog/sovereign-ai-401.yaml
