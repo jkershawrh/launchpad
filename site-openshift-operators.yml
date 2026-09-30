@@ -1,5 +1,5 @@
 site:
-  title: Operate AI Workloads on Red Hat OpenShift
+  title: Build Operator-Managed Automation on Red Hat OpenShift
   url: https://github.com/jkershawrh/launchpad
   start_page: modules::index.adoc
 
@@ -17,7 +17,7 @@ ui:
 asciidoc:
   attributes:
     showroom-collection-version: v1.5.2
-    showroom_journey: openshift-operators
+    showroom_journey: openshift-pipelines
 
 output:
   dir: ./www

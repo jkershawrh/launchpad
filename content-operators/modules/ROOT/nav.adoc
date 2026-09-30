@@ -1,3 +1,5 @@
-* xref:index.adoc[Welcome and Verify Access]
-* xref:02-operator-discovery.adoc[Discover Platform Operators]
-* xref:03-deploy-and-observe.adoc[Deploy and Observe a Workload]
+* xref:index.adoc[Mission and Access]
+* xref:02-operator-discovery.adoc[2. Discover the Operator API]
+* xref:03-deploy-and-observe.adoc[3. Author Task and Pipeline]
+* xref:04-run-and-observe.adoc[4. Run and Observe]
+* xref:05-prove-and-cleanup.adoc[5. Prove and Clean Up]

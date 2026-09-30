@@ -36,6 +36,10 @@ The key insight: *tool calling is a model capability enabled by the serving laye
 
 In this lab, Launchpad provides a pre-hosted model via MaaS (Model as a Service). The serving endpoint is already running on Intel Xeon hardware with tool calling enabled -- so you can focus on building the tool calling application rather than managing infrastructure.
 
+The learner does not deploy or administer the shared model server. You inspect
+the serving contract, prove the endpoint behavior, and build the application
+side of the tool-calling protocol inside your isolated seat.
+
 == Do: Access the Cluster
 
 Open the OpenShift Console using the tab in the right panel, or navigate to:
@@ -53,6 +57,25 @@ oc project -q
 
 The final command must show `{project_name}`. The *OpenShift Console* tab uses the same Launchpad participant session and is restricted by namespace RBAC.
 
+=== Console checkpoint: Separate the seat from the model service
+
+Open the *OpenShift Console* tab and select *Workloads -> Deployments* for
+`{project_name}`. No model-serving Deployment should exist in your seat namespace.
+That absence is intentional: the terminal and Showroom belong to your seat,
+while the shared MaaS endpoint is operated outside the participant namespace.
+Return to the terminal and confirm the same boundary:
+
+[source,bash,role="execute",subs="attributes+"]
+----
+oc get deployment -n {project_name}
+oc auth can-i get deployments -n {project_name}
+oc auth can-i get deployments -n openshift-operators
+----
+
+The second command must return `yes`; the final command must return `no` or
+`Forbidden`. Together, the Console and terminal prove that you can inspect your
+seat but cannot administer the shared serving platform.
+
 == Do: Set Up Environment Variables
 
 Set the variables that the remaining modules will use:
@@ -68,7 +91,7 @@ echo "Model URL: $\{MODEL_URL\}"
 echo "Model Name: $\{MODEL_NAME\}"
 ----
 
-The MaaS endpoint serves {maas_model} on Intel Xeon 6 hardware with tool calling support already enabled. All inference in this lab runs through this endpoint -- $0 per token, no GPU required.
+The MaaS endpoint serves {maas_model} on Intel Xeon 6 hardware with tool calling support already enabled. All inference in this lab runs through this endpoint. The participant is not shown a metered per-token charge; actual platform cost depends on infrastructure, utilization, support, and operating model.
 
 Install the Python OpenAI client library (you will need it in later modules):
 

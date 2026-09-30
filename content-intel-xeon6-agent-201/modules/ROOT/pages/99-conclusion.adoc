@@ -9,7 +9,7 @@ In 45 minutes, you:
 * Deployed a LangGraph agent that orchestrates LLM reasoning over tool data
 * Generated solution briefs for 3+ customer scenarios
 * Wrote a custom system prompt for YOUR customer and deployed it
-* Compared two models on quality and latency
+* Recorded the assigned model and observed its inference latency
 * Produced an agent card capturing your configuration and next steps
 
 == The Pattern
@@ -35,3 +35,26 @@ Take the solution-agent as a starting point. Fork it and build your own:
 4. *Deploy and test*: Same `oc apply` pattern you used in this lab
 
 The infrastructure is the same. The creativity is yours.
+
+== Cleanup and Reclaim Boundary
+
+Save the sanitized `/tmp/agent-201-proof.json` if your instructor requests it,
+then remove only the resources and temporary files created by the learner:
+
+[source,bash,role="execute"]
+----
+oc delete route app agent tools --ignore-not-found
+oc delete service solution-ui solution-agent solution-tools --ignore-not-found
+oc delete deployment solution-ui solution-agent --ignore-not-found
+oc delete configmap advisor-prompt racmaas-connection --ignore-not-found
+oc delete secret litellm-api-key --ignore-not-found
+rm -f /tmp/agent-201-response.json /tmp/agent-201-proof.json
+
+test -z "$(oc get deployment,service,route,configmap,secret \
+  -o name | grep -E 'solution-(agent|tools|ui)|advisor-prompt|racmaas-connection|litellm-api-key' || true)"
+----
+
+Do not delete the project, Showroom, model CA bundle, participant identity, or
+Launchpad-managed resources. Launchpad reclaim owns namespace, route,
+credential, and application cleanup for the full seat and proves zero residue
+separately.

@@ -89,8 +89,8 @@ curl -fsS http://solution-ui:8080/health | python3 -m json.tool
 For an external workshop, your access URL remains the instructor-provided Launchpad URL.
 Return to *Open Lab* and refresh the *Solution Architect* tab.
 Launchpad automatically proxies the application for your assigned seat. Do not open the raw OpenShift Route
-in an external browser; the `apps.arena` hostname
-is only the gateway's upstream target.
+in an external browser; its cluster application hostname is only the gateway's
+upstream target and may not be publicly resolvable.
 
 Confirm that the UI Route belongs to the tenant namespace. This is a diagnostic
 check, not the participant browser URL:
@@ -112,7 +112,7 @@ curl -fsS -X POST "${ADVISOR_API_URL}/api/v1/advise" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "A retail chain needs real-time inventory prediction across 500 stores. Each store has 2 edge servers running legacy Windows applications. They currently run VMware with Oracle DB. Budget is $2M for the infrastructure refresh. They need sub-second predictions at each store."
-  }' | jq '.'
+  }' | tee /tmp/agent-201-response.json | jq '.'
 ----
 
 Examine the response:
@@ -136,6 +136,35 @@ Examine the response:
 
 Compare this to the raw model response from Module 1. The agent's response is backed by real data.
 ****
+
+Turn the observation into executable proof:
+
+[source,bash,role="execute"]
+----
+OBSERVED_MODEL="$(oc get deployment solution-agent \
+  -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="ADVISOR_MODEL")].value}')"
+test -n "${OBSERVED_MODEL}"
+jq -e --arg model "${OBSERVED_MODEL}" '
+  (.brief | type == "string" and length > 0)
+  and ([.inference_log[] | select(.model != null and .model != "") | .model] as $models
+    | ($models | length >= 1) and all($models[]; . == $model))
+  and ([.inference_log[] | select(.tool == "intel_hardware_lookup")] | length >= 1)
+  and ([.inference_log[] | select(.tool == "openshift_capabilities")] | length >= 1)
+  and ([.inference_log[] | select(.tool == "reference_architectures")] | length >= 1)
+' /tmp/agent-201-response.json
+jq --arg model "${OBSERVED_MODEL}" '{
+  proof_version: "agent-201/v1",
+  model: $model,
+  brief_present: (.brief | type == "string" and length > 0),
+  tools: ([.inference_log[] | select(.tool != null) | .tool] | unique),
+  total_ms: .total_ms
+}' /tmp/agent-201-response.json > /tmp/agent-201-proof.json
+cat /tmp/agent-201-proof.json
+----
+
+The proof contains no MaaS credential or customer data beyond the fictional
+exercise. The effective model comes from the running Deployment rather than a
+typed expectation.
 
 Now try the same question in the *Solution Architect* tab using the chat UI.
 

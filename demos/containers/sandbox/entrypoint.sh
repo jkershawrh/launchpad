@@ -12,6 +12,12 @@ if ! mkdir -p "$WORKSPACE" 2>/dev/null || [[ ! -w "$WORKSPACE" ]]; then
 fi
 mkdir -p /tmp/launchpad-sshd
 
+# Seed the optional guided start without replacing anything the learner has
+# already created in the persistent workspace.
+if [[ ! -e "$WORKSPACE/GETTING_STARTED.md" ]]; then
+  cp /opt/launchpad/guided-start.md "$WORKSPACE/GETTING_STARTED.md"
+fi
+
 if [[ -n "${SANDBOX_NAMESPACE:-}" && -r /var/run/secrets/kubernetes.io/serviceaccount/token ]]; then
   export KUBECONFIG="${KUBECONFIG:-/tmp/launchpad-kubeconfig}"
   oc config set-cluster in-cluster \

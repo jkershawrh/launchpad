@@ -1,28 +1,49 @@
-= Discover Platform Operators
-:navtitle: Discover Operators
+= 2. Discover the Operator API
+:navtitle: Discover the Operator
 
-{cluster_display_name} centrally manages Red Hat and Intel Operators. In this exercise you inspect their APIs and learn which capabilities can be consumed from your namespace.
+== Show
 
-== Inspect available APIs
-
-[source,bash,role=execute]
-----
-oc api-resources | grep -E 'ServingRuntime|InferenceService|Knative|ServiceMesh|Telemetry|Pipeline|Application'
-----
-
-== Inspect installed Operators
-
-Operator installation is cluster-scoped and read access may be restricted. Try:
+Ask the API server which OpenShift Pipelines custom resources are available.
 
 [source,bash,role=execute]
 ----
-oc get clusterserviceversions.operators.coreos.com -A \
-  -o custom-columns=NAME:.spec.display,STATUS:.status.phase 2>/dev/null | sort -u
+oc api-resources --api-group=tekton.dev \
+  -o custom-columns=NAME:.name,KIND:.kind,NAMESPACED:.namespaced
 ----
 
-If access is denied, use *Ecosystem → Installed Operators* in the OpenShift Console. Expected shared capabilities include Red Hat OpenShift AI, Serverless, Service Mesh, cluster observability, Argo CD, and Intel device plugins. Availability is validated by Launchpad and can change as the cluster is upgraded.
+You should see namespace-scoped `Task`, `Pipeline`, `PipelineRun`, and
+`TaskRun` resources. Their presence proves the API is installed; it does not
+prove that a particular run succeeded.
 
-IMPORTANT: Do not create Operator `Subscription` resources. Participant seats consume centrally managed capabilities; they do not install or upgrade Operators.
+== Learn
+
+A `Task` defines reusable steps. A `Pipeline` connects one or more Tasks. A
+`PipelineRun` requests an execution. The Operator creates a `TaskRun` and Pod,
+updates conditions, and publishes declared results.
+
+You do not create `Subscription`, `ClusterServiceVersion`, or `TektonConfig`
+objects in this lab. Those are platform-owned and cluster-scoped.
+
+== Prove
+
+Verify both API availability and your exact authorization boundary.
+
+[source,bash,role=execute,subs=attributes+]
+----
+oc get --raw /apis/tekton.dev/v1 | jq -e '
+  [.resources[].kind] as $k |
+  ($k | index("Task")) != null and
+  ($k | index("Pipeline")) != null and
+  ($k | index("PipelineRun")) != null and
+  ($k | index("TaskRun")) != null
+'
+test "$(oc auth can-i create tasks.tekton.dev -n {namespace})" = yes
+test "$(oc auth can-i create pipelines.tekton.dev -n {namespace})" = yes
+test "$(oc auth can-i create pipelineruns.tekton.dev -n {namespace})" = yes
+----
+
+In the *OpenShift Console*, open *Pipelines → Pipelines*. Keep that view open;
+you will use it to watch reconciliation after creating the resources.
 
 [.next-nav]
-xref:03-deploy-and-observe.adoc[Next: Deploy and observe →]
+xref:03-deploy-and-observe.adoc[Next: Author the pipeline →]

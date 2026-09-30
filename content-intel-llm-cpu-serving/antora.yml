@@ -16,4 +16,5 @@ asciidoc:
     project_name: '%namespace%'
     maas_endpoint: '%maas_endpoint%'
     maas_model: '%maas_model%'
+    storage_class: '%storage_class%'
     intel_platform: 'Intel Xeon'

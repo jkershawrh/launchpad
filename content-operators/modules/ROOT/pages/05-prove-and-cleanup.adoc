@@ -1,0 +1,52 @@
+= 5. Prove cleanup and ownership
+:navtitle: Prove and Clean Up
+
+== Learn
+
+Your Task, Pipeline, and PipelineRun are learner-owned. The OpenShift Pipelines
+Operator, its controllers, CRDs, and cluster configuration are platform-owned.
+Delete only the namespaced exercise resources.
+
+== Do
+
+[source,bash,role=execute,subs=attributes+]
+----
+oc delete pipelinerun/operator-evidence-run \
+  pipeline/operator-evidence task/operator-evidence \
+  -n {namespace} --ignore-not-found --wait=true
+
+for attempt in $(seq 1 30); do
+  remaining="$(
+    oc get taskrun,pod -n {namespace} \
+      -l tekton.dev/pipelineRun=operator-evidence-run \
+      --ignore-not-found -o name
+  )"
+  test -z "$remaining" && break
+  sleep 2
+done
+----
+
+== Prove
+
+[source,bash,role=execute,subs=attributes+]
+----
+test -z "$(oc get task,pipeline,pipelinerun -n {namespace} \
+  -l launchpad.redhat.com/learner-exercise=operator-pipeline \
+  --ignore-not-found -o name)"
+test -z "$(oc get taskrun,pod -n {namespace} \
+  -l tekton.dev/pipelineRun=operator-evidence-run \
+  --ignore-not-found -o name)"
+test "$(oc auth can-i delete subscriptions.operators.coreos.com -n openshift-operators)" = no
+----
+
+You proved a complete operator lifecycle: discover the API, declare desired
+state, observe reconciliation, verify the result, and remove the namespaced
+artifacts. Launchpad later reclaims the full seat namespace and independently
+checks for zero residue.
+
+== What you can explain now
+
+* why shared Operators should not be installed once per participant;
+* how a PipelineRun becomes a TaskRun and Pod;
+* where status, logs, and results prove reconciliation; and
+* which resources belong to the learner, the platform team, and Launchpad.

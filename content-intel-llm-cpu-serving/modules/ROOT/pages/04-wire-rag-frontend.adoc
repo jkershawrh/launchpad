@@ -49,7 +49,7 @@ Examine each field:
 LLM_PROVIDER: generic-openai                           # <1>
 GENERIC_OPEN_AI_BASE_PATH: {maas_endpoint}/v1           # <2>
 GENERIC_OPEN_AI_MODEL_PREF: {maas_model}                # <3>
-GENERIC_OPEN_AI_API_KEY: <your-litellm-virtual-key>     # <4>
+GENERIC_OPEN_AI_API_KEY: <your-seat-scoped-api-key>     # <4>
 GENERIC_OPEN_AI_MAX_TOKENS: "512"                       # <5>
 EMBEDDING_ENGINE: native                                # <6>
 VECTOR_DB: lancedb                                      # <7>
@@ -58,7 +58,7 @@ VECTOR_DB: lancedb                                      # <7>
 <1> *LLM_PROVIDER* -- tells AnythingLLM to use the generic OpenAI-compatible provider.
 <2> *BASE_PATH* -- the cluster-private shared inference endpoint assigned to this lab.
 <3> *MODEL_PREF* -- the model name as reported by `/v1/models`.
-<4> *API_KEY* -- your LiteLLM virtual key for authentication.
+<4> *API_KEY* -- the short-lived, seat-scoped API key supplied by Launchpad.
 <5> *MAX_TOKENS* -- maximum tokens per response.
 <6> *EMBEDDING_ENGINE: native* -- AnythingLLM runs its own embedding model for document vectorization, independent of the LLM.
 <7> *VECTOR_DB: lancedb* -- uses the built-in LanceDB vector store. No external database needed.
@@ -77,7 +77,7 @@ stringData:
   LLM_PROVIDER: generic-openai
   GENERIC_OPEN_AI_BASE_PATH: "{maas_endpoint}/v1"
   GENERIC_OPEN_AI_MODEL_PREF: "{maas_model}"
-  GENERIC_OPEN_AI_API_KEY: "$MAAS_API_KEY"
+  GENERIC_OPEN_AI_API_KEY: "$\{MAAS_API_KEY\}"
   GENERIC_OPEN_AI_MAX_TOKENS: "512"
   EMBEDDING_ENGINE: native
   VECTOR_DB: lancedb
@@ -211,13 +211,39 @@ else
   export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} -o custom-columns=HOST:.spec.host --no-headers)"
   ANYTHINGLLM_ROUTE_STATUS=""
   for attempt in {1..40}; do
-    ANYTHINGLLM_ROUTE_STATUS="$(curl -ksS -o /dev/null -w '%{http_code}' "$ANYTHINGLLM_URL/api/ping" || true)"
+    ANYTHINGLLM_ROUTE_STATUS="$(curl -ksS -o /dev/null -w '%\{http_code\}' "$ANYTHINGLLM_URL/api/ping" || true)"
     [ "$ANYTHINGLLM_ROUTE_STATUS" = "200" ] && break
     sleep 3
   done
   [ "$ANYTHINGLLM_ROUTE_STATUS" = "200" ] || { echo "The RAG Assistant route did not become ready"; false; }
 fi
 ----
+
+== OpenShift Console Checkpoint
+
+Open the *OpenShift Console* tab and keep this page beside it. This is not a
+second way to repeat the terminal commands: it is the operator view of the RAG
+workload you just created.
+
+. Select *Workloads* -> *Deployments* and open `anythingllm`. Confirm one pod is
+  available and that its image is pinned by digest.
+. Select *Storage* -> *PersistentVolumeClaims* and confirm
+  `anythingllm-storage` is `Bound` in `{project_name}`.
+. Select *Networking* -> *Routes* and open `rag`. Confirm the Route is admitted
+  before opening the RAG Assistant.
+
+Return to the terminal and correlate the same three objects:
+
+[source,bash,role="execute",subs="attributes+"]
+----
+oc get deployment anythingllm -n {project_name}
+oc get pvc anythingllm-storage -n {project_name}
+oc get route rag -n {project_name}
+----
+
+You have proved that the browser workspace is backed by a namespace-scoped
+OpenShift Deployment, persistent storage, and an admitted Route—not by an
+untracked external demo.
 
 === Verify: Pod is Running
 
@@ -294,8 +320,12 @@ You should see a response from the model in the AnythingLLM chat interface. The 
 
 If you see an error like "Could not connect to LLM provider":
 
-. Check that the MaaS endpoint is reachable: `curl -ks ${MAAS_ENDPOINT}/v1/models -H "Authorization: Bearer ${MAAS_API_KEY}"`
-. Check the secret values: `oc get secret anythingllm-config -n {project_name} -o yaml`
+. Check that the MaaS endpoint is reachable: `curl -ks $\{MAAS_ENDPOINT\}/v1/models -H "Authorization: Bearer $\{MAAS_API_KEY\}"`
+. Confirm that the expected Secret keys exist without exposing their values: `oc describe secret anythingllm-config -n {project_name}`
+
+Secret values are not printed during troubleshooting. If the required keys are
+missing, recreate the Secret from the scoped environment variables rather than
+copying credential data into the terminal transcript.
 
 === Troubleshooting
 

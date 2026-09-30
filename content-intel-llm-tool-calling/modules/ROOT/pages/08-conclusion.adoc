@@ -9,7 +9,7 @@ Congratulations -- you have built a complete tool calling system from scratch. L
 Over the course of this lab, you constructed each layer of a tool calling system:
 
 1. *Understood the protocol* -- Learned the 6-step tool calling lifecycle and when to use it (Module 1)
-2. *Deployed vLLM with tool calling* -- Configured `--enable-auto-tool-choice` and `--tool-call-parser` on {intel_platform} processors (Module 2)
+2. *Connected to the platform-managed vLLM endpoint* -- Inspected the required tool-calling flags, proved the scoped MaaS endpoint, and verified the seat-to-service boundary (Module 2)
 3. *Executed the protocol by hand* -- Defined a tool, sent a request, parsed the `tool_calls` response, executed a mock function, returned the result, and got a final answer -- all with `curl` (Module 3)
 4. *Built the dispatch loop* -- Automated the cycle in Python with a dispatch table, message history tracking, and a guard rail (Module 4)
 5. *Built a multi-tool application* -- Added three tools, tested multi-step chaining where the model plans a sequence of actions, and implemented error handling and trace logging (Module 5)
@@ -43,7 +43,7 @@ Tool calling's stop-and-go profile -- short outputs separated by tool execution 
 | Understood the 6-step lifecycle and when to use tool calling
 
 | 2. Serving
-| Deployed vLLM with tool calling flags and verified the model endpoint
+| Connected to the platform-managed vLLM endpoint and verified the seat boundary
 
 | 3. Anatomy
 | Executed the complete protocol by hand with `curl`
@@ -69,20 +69,15 @@ Swap the mock functions for actual API calls -- a weather service, a database qu
 
 === Try Different Models
 
-The Kustomize overlays support Granite 3.2-8B, Llama 3.2-1B, and Llama 3.2-3B. Each model has different tool calling accuracy and speed. Try swapping models to compare behavior.
+Future qualified catalog revisions may expose additional tool-capable models.
+Do not change the assigned model during this lab: its parser, chat template, and
+capability were selected and certified together.
 
 === Build a Full Agent
 
 Use the dispatch loop from this lab as the foundation for an agent. Add a system prompt with persona instructions, a conversation memory mechanism, and more tools. The tool calling loop you built is the core of every agent framework.
 
 == Cleanup
-
-Remove the deployed resources:
-
-[source,bash,role="execute",subs="attributes+"]
-----
-oc delete all -l app=vllm-tool-calling -n {project_name}
-----
 
 Remove the scripts you created:
 
@@ -91,7 +86,10 @@ Remove the scripts you created:
 rm -rf ~/vllm-tool-calling ~/tool_loop.py ~/multi_tool_app.py ~/error_test.py ~/traced_query.py ~/validate_args.py ~/guardrails.py ~/tool_request.json ~/tool_response.json
 ----
 
-Do not delete the project itself. Launchpad reclaims the seat namespace, model credential, Showroom application, and routes when the lab expires or the instructor reclaims the order.
+No model deployment was created in this seat, so there is no participant model
+workload to delete. Do not delete the project itself. Launchpad reclaims the seat namespace,
+model credential, Showroom application, and routes when the lab expires or the
+instructor reclaims the order.
 
 == Links and Resources
 

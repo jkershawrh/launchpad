@@ -5,10 +5,12 @@ _Estimated time: 5 minutes_
 In this module you will:
 
 * Understand why tool calling's stop-and-go pattern favors CPU over GPU
-* Confirm the Intel execution target assigned to your seat
+* Confirm the declared Intel execution target assigned to your seat
 * Calculate the cost difference between CPU and GPU deployment for agentic workloads
 
-In this module you will understand why CPU-based inference is well-suited to tool calling workloads, confirm the execution target assigned to your seat, and see how {intel_platform} processors deliver the right economics for agentic AI.
+In this module you will understand why CPU-based inference can suit tool calling
+workloads, inspect the execution declaration assigned to your seat, and learn
+which measurements are required before making a performance or cost claim.
 
 == Why CPU Inference Fits Tool Calling
 
@@ -17,7 +19,8 @@ Tool calling has a distinctive performance profile that differs from long-form t
 * *Short output sequences* -- Tool call responses are typically 50-200 tokens of JSON, not pages of text
 * *I/O-bound latency* -- The bottleneck is the external tool (API call, database query), not inference speed
 * *Lower concurrency* -- Agentic workflows are per-user, not batch processing thousands of prompts
-* *No additional hardware cost* -- You run inference on {intel_platform} servers already in your data center
+* *Infrastructure reuse potential* -- existing {intel_platform} capacity may be
+  suitable when measured headroom, support, and chargeback policy allow it
 
 The model is idle while tools execute. GPU utilization during that idle time is wasted. CPUs handle this intermittent pattern efficiently.
 
@@ -37,6 +40,10 @@ oc auth can-i list nodes
 
 The final command should return `no`. That is intentional: a participant can
 edit only the assigned namespace and cannot inspect cluster-wide node data.
+
+The `{intel_platform}` value is a catalog declaration, not participant-visible
+hardware telemetry. Platform certification must independently prove the
+serving hardware and model placement; do not infer them from this label alone.
 
 Depending on the {intel_platform} generation in your cluster, the vLLM runtime may leverage:
 
@@ -74,27 +81,33 @@ For a tool-calling workload:
 * *CPU usage while waiting for tools*: near zero — the model is idle
 * *Memory*: held by one shared model rather than duplicated in every seat
 
-This intermittent usage pattern is why CPU deployment makes economic sense for tool calling. A GPU would sit idle during tool execution — and GPU idle time is expensive.
+This intermittent usage pattern is one reason to evaluate CPU serving for tool
+calling. The right economic choice still depends on measured utilization,
+latency, concurrency, hardware allocation, power, support, and licensing.
 
 == The Economics
 
 Consider deploying an agentic assistant that calls three tools per user query:
 
-* *GPU path:* Procure GPU hardware, set up GPU operator, configure node affinity, manage drivers. Timeline: weeks to months. Cost: thousands per month per GPU.
-* *CPU path:* Deploy on existing {intel_platform} infrastructure. Same OpenShift cluster running your other workloads. Timeline: the `oc apply -k` command you ran in Module 2. Additional hardware cost: zero.
+* *Accelerator path:* include accelerator allocation, operator and driver
+  lifecycle, utilization, power, support, and workload performance.
+* *CPU path:* include CPU and memory allocation, shared-model utilization,
+  power, support, and workload performance on {intel_platform} infrastructure.
 
-For tool calling workloads where the model produces short outputs and waits for external services between turns, CPU inference delivers the same functionality at a fraction of the cost.
+Tool calling's short generations and tool wait time can make CPU serving a good
+candidate. A cost comparison requires measured demand and approved rates; this
+lab does not invent a savings percentage.
 
 === Exercise: Calculate Your Savings
 
-Based on the resource usage you observed, estimate the cost difference:
+Based on the resource usage you observed, list the evidence needed for a cost
+comparison:
 
 . Note that your seat uses a shared endpoint rather than loading another model
-. A single NVIDIA A100 GPU costs approximately $2-3/hour on cloud providers
 . Shared CPU serving amortizes model memory and runtime overhead across the workshop
 . Tool execution time creates idle gaps that make accelerator utilization harder to sustain
-
-For an agentic assistant serving 10 users with 3 tool calls per query, CPU inference at $0/incremental hardware cost delivers the same functionality as a $2,000+/month GPU instance.
+. Add measured requests, tokens, latency, queueing, CPU or accelerator time,
+  power, software, support, and infrastructure rates before calculating cost
 
 == When CPU Works for AI
 
@@ -136,7 +149,7 @@ For an agentic assistant serving 10 users with 3 tool calls per query, CPU infer
 At this point you have:
 
 * [x] Understood why tool calling's stop-and-go pattern suits CPU inference
-* [x] Confirmed the assigned Intel execution target and namespace boundary
+* [x] Inspected the assigned Intel execution declaration and namespace boundary
 * [x] Reviewed seat resource usage without cluster-wide privilege
 * [x] Understood the cost comparison between CPU and GPU deployment
 

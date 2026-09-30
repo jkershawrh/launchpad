@@ -1,5 +1,5 @@
 name: modules
-title: OpenShift AI Operator Workshop
+title: 'OpenShift 201: Build an Operator-Managed Pipeline'
 version: ~
 nav:
   - modules/ROOT/nav.adoc

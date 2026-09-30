@@ -1,6 +1,6 @@
 = Build an AI Tool Calling System from Scratch
 
-Welcome to the *vLLM Tool Calling on OpenShift AI* lab. In this hands-on workshop you will build a complete tool calling system -- from understanding the protocol, to deploying a model, to writing an automated multi-tool application. Everything runs on {intel_platform} processors.
+Welcome to the *vLLM Tool Calling on OpenShift AI* lab. In this hands-on workshop you will build a complete tool calling system -- from understanding the protocol, to verifying a platform-managed model endpoint, to writing an automated multi-tool application. Inference is supplied by the Launchpad MaaS service on {intel_platform} processors.
 
 == The Scenario
 
@@ -55,6 +55,18 @@ Tool calling follows a precise protocol. Every step in this lab maps to one part
 
 The model never executes code. It produces structured JSON requests. Your application handles execution, error handling, and returning results.
 
+== Show → Learn → Do → Prove
+
+* *Show:* inspect a real tool-call response from the model assigned to the
+  seat.
+* *Learn:* separate model selection, JSON tool contracts, application dispatch,
+  tool execution, and final answer synthesis.
+* *Do:* build a guarded Python dispatch loop and extend it from one mock tool to
+  several tools.
+* *Prove:* record the assigned model, the requested tool names and arguments,
+  application results, final answer, namespace boundary, and cleanup. Economic
+  conclusions require measured utilization and approved cost inputs.
+
 == Architecture
 
 [cols="1,3"]
@@ -62,7 +74,7 @@ The model never executes code. It produces structured JSON requests. Your applic
 | Component | Purpose
 
 | *Model as a Service (MaaS)*
-| Pre-hosted {maas_model} on Intel Xeon 6 with `--enable-auto-tool-choice`. Exposes an OpenAI-compatible `/v1/chat/completions` endpoint. $0 per token.
+| Pre-hosted {maas_model} on Intel Xeon 6 with `--enable-auto-tool-choice`. Exposes an OpenAI-compatible `/v1/chat/completions` endpoint. The participant receives a scoped lab credential; this lab makes no zero-cost claim.
 
 | *OpenShift AI*
 | Provides the platform, namespace isolation, and console access.

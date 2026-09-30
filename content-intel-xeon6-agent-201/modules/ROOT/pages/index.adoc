@@ -13,13 +13,25 @@ By the end, you will understand what makes an agent different from a model, and 
 * Deploy MCP tools that provide structured data to an agent
 * Deploy a LangGraph agent with a configurable system prompt
 * Test the agent with real customer scenarios
-* Tune agent behavior by swapping models and editing prompts
+* Tune agent behavior by editing prompts while preserving the model assigned to
+  the order
 
 == Why This Matters for You
 
 As a tech seller, you field workload discovery questions daily. This agent demonstrates sourced product lookup and platform-pattern recommendations. Its output is a conversation starter: validate sizing, availability, security requirements, and product compatibility before presenting a customer design.
 
 IMPORTANT: Use only fictional or sanitized scenarios in this workshop. Do not enter confidential, regulated, export-controlled, or customer-identifying information.
+
+== Show → Learn → Do → Prove
+
+* *Show:* inspect a working Solution Architect response and its tool and
+  inference log.
+* *Learn:* separate the assigned model, LangGraph orchestration, MCP facts,
+  system prompt, application UI, and human judgment.
+* *Do:* deploy the namespace-scoped components, run customer scenarios, and
+  customize the system prompt without changing the scoped model entitlement.
+* *Prove:* assert the solution brief, observed model, three distinct MCP tools,
+  namespace isolation, sanitized proof export, and learner cleanup.
 
 More broadly: this is how enterprise AI gets built. Not one monolithic model, but a model wrapped in tools and orchestration. This pattern applies to any domain.
 

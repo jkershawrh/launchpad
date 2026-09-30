@@ -4,13 +4,56 @@
 In this lab you will explore *how CPU-based LLM inference works* and build a complete RAG (Retrieval-Augmented Generation) system using a model running on {intel_platform} processors via Model-as-a-Service (MaaS).
 
 You will not deploy model infrastructure.
-You will connect to a production-grade inference endpoint, understand the architecture behind it, build a RAG pipeline with real documents, and walk away knowing how enterprise CPU inference works end-to-end.
+You will connect to the Launchpad-managed inference endpoint assigned to this
+seat, understand the architecture behind it, build a RAG pipeline with real
+documents, and walk away knowing how enterprise CPU inference works end-to-end.
 
 == The Scenario
 
 Your organization wants to serve an LLM internally without GPU hardware.
 The model must answer employee questions grounded in real documents -- an HR assistant backed by Retrieval-Augmented Generation.
-The inference runs on {intel_platform} processors via Red Hat's MaaS platform -- $0/token, no GPU procurement, no infrastructure to manage.
+The inference runs on {intel_platform} processors through Launchpad's managed MaaS path, so each learner can focus on the application instead of operating a model server inside the seat.
+
+== Show the Live Model First
+
+Before studying the architecture, prove that this seat can reach the managed
+model. The command uses the short-lived credential already loaded into the
+terminal and prints the model identity plus its answer without exposing the
+credential:
+
+[source,bash,role="execute"]
+----
+curl -ksS "${MAAS_ENDPOINT}/v1/chat/completions" \
+  -H "Authorization: Bearer ${MAAS_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"model\": \"${MAAS_MODEL}\",
+    \"messages\": [{\"role\": \"user\", \"content\": \"In one sentence, explain why retrieved policy documents improve an HR answer.\"}],
+    \"temperature\": 0,
+    \"max_tokens\": 80
+  }" | python3 -c '
+import json, sys
+body = json.load(sys.stdin)
+print("Served model:", body.get("model"))
+print("Answer:", body["choices"][0]["message"]["content"])
+'
+----
+
+The command must return a non-empty answer and an observed model identity. That
+is the live result you will now turn into a grounded HR assistant. If it fails,
+stop here: later RAG behavior cannot be proved without this inference boundary.
+
+== Show → Learn → Do → Prove
+
+* *Show:* run one live completion and record the model identity returned by the
+  managed endpoint.
+* *Learn:* separate shared inference, the RAG application, local embeddings,
+  retrieval, and the participant namespace.
+* *Do:* deploy AnythingLLM, load and embed a policy document, and compare a
+  grounded answer with a direct model answer.
+* *Prove:* retain observed identity, response, latency, retrieved context,
+  OpenShift resource state, and cleanup results. Do not replace observations
+  with generic benchmark or cost claims.
 
 == What You Will Build
 
@@ -128,7 +171,7 @@ AI inference in this lab runs on **Intel** hardware via Launchpad Model-as-a-Ser
 |Component |Details
 
 |**LLM Inference**
-|{maas_model} on {intel_platform} via MaaS -- $0/token
+|{maas_model} on {intel_platform} through the managed MaaS endpoint; commercial chargeback is outside this lab's scope
 |===
 
 TIP: This lab is part of the Red Hat + Intel AI Inference Partnership.

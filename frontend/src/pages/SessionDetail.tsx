@@ -8,6 +8,7 @@ import { canReclaimSession, workshopIdForSession } from '../labSessionContract';
 import DecisionInsight from '../components/DecisionInsight';
 import { guidedLabLinks } from '../guidedLabContract';
 import { sandboxConnections } from '../sandboxConnectionContract';
+import SandboxGuidedStart from '../components/SandboxGuidedStart';
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -104,6 +105,8 @@ function SandboxConnectionPanel({ session }: { session: LabSession }) {
           <p className="text-sm text-[#6A6E73]">Choose your preferred access method</p>
         </div>
       </div>
+
+      <SandboxGuidedStart />
 
       {/* Access method buttons */}
       <div className="grid sm:grid-cols-3 gap-3 mb-5">

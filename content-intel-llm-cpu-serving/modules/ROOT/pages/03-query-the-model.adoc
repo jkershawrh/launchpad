@@ -61,7 +61,7 @@ Look at the `usage` block in the response:
 
 * `prompt_tokens` -- how many tokens your input consumed
 * `completion_tokens` -- how many tokens the model generated
-* `total_tokens` -- the sum. This is what determines cost (though MaaS is $0/token).
+* `total_tokens` -- the sum. This is the usage unit a production platform can use for capacity planning or chargeback; this lab does not assert a commercial token price.
 
 == Exercise: System Prompts
 
@@ -162,13 +162,15 @@ print(f\"Tokens: {u['prompt_tokens']} in / {u['completion_tokens']} out / {u['to
 "
 ----
 
-Typical CPU inference latency:
+Record the values you actually observe: wall-clock duration, prompt tokens,
+completion tokens, model identity, and whether the request succeeded. This
+single request does not establish time-to-first-token, tokens per second,
+concurrency capacity, or a service-level objective because the API response
+and shell timer do not expose all of those measurements.
 
-* *First token* -- 1-3 seconds (prompt processing)
-* *Generation* -- 10-30 tokens per second
-* *Total for 200 tokens* -- 5-15 seconds
-
-This is acceptable for an interactive Q&A assistant where users submit questions and wait for answers. It would not be acceptable for real-time chat at high concurrency.
+Use the observation as a baseline for this seat, not as a generic CPU
+benchmark. Production suitability requires repeated load tests, percentile
+latency, queueing, failure rate, quality, and an approved operating envelope.
 
 == Exercise: Batch Multiple Questions
 

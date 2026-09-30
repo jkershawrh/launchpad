@@ -1,0 +1,68 @@
+= 4. Run and observe reconciliation
+:navtitle: Run and Observe
+
+== Do
+
+Create one `PipelineRun`. Removing an earlier run makes the command repeatable
+without changing the reusable Task or Pipeline.
+
+[source,bash,role=execute,subs=attributes+]
+----
+oc delete pipelinerun operator-evidence-run -n {namespace} \
+  --ignore-not-found --wait=true
+oc apply -n {namespace} -f - <<'EOF'
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: operator-evidence-run
+  labels:
+    launchpad.redhat.com/learner-exercise: operator-pipeline
+spec:
+  pipelineRef:
+    name: operator-evidence
+  params:
+    - name: scenario
+      value: validate-release-boundary
+EOF
+oc wait pipelinerun/operator-evidence-run -n {namespace} \
+  --for=condition=Succeeded --timeout=300s
+----
+
+== Show
+
+Watch the Operator-created chain and inspect the result.
+
+[source,bash,role=execute,subs=attributes+]
+----
+oc get pipelinerun,taskrun,pod -n {namespace} \
+  -l tekton.dev/pipelineRun=operator-evidence-run -o wide
+RESULT="$(oc get pipelinerun operator-evidence-run -n {namespace} \
+  -o jsonpath='{.status.results[?(@.name=="evidence")].value}')"
+printf 'Pipeline result: %s\n' "$RESULT"
+----
+
+In the *OpenShift Console*, open *Pipelines → PipelineRuns*, select
+`operator-evidence-run`, and compare its Task, logs, and result with the
+terminal output. The Console is the visual operator experience; the terminal
+provides the machine-checkable proof.
+
+== Learn
+
+You created one intent object. The Operator reconciled it into a TaskRun and
+Pod, updated status, and copied the declared result back to the PipelineRun.
+That is the Operator value: declarative intent plus observable convergence.
+
+== Prove
+
+[source,bash,role=execute,subs=attributes+]
+----
+test "$(oc get pipelinerun operator-evidence-run -n {namespace} \
+  -o jsonpath='{.status.conditions[?(@.type=="Succeeded")].status}')" = True
+test "$RESULT" = "operator-reconciled:validate-release-boundary"
+oc logs -n {namespace} \
+  -l tekton.dev/pipelineRun=operator-evidence-run --all-containers \
+  | grep -F 'operator-reconciled:validate-release-boundary'
+----
+
+[.next-nav]
+xref:05-prove-and-cleanup.adoc[Next: Prove cleanup →]

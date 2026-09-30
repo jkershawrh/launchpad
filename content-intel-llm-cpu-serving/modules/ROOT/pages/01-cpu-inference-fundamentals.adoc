@@ -12,7 +12,8 @@ Most enterprise data centers run on x86 processors. GPU hardware requires separa
 
 The economics are straightforward:
 
-* *No additional hardware cost* -- inference runs on servers you already own
+* *Reuse potential* -- CPU inference may use existing server capacity when the
+  measured workload, headroom, support model, and chargeback policy permit it
 * *No GPU procurement delays* -- GPU supply chains can add months to project timelines
 * *Standard infrastructure* -- same monitoring, networking, and security tooling
 * *Elastic scaling* -- scale model serving across the same OpenShift cluster that runs your other workloads
@@ -81,7 +82,7 @@ Key characteristics:
 * *Optimized for CPU* -- specifically tuned for {intel_platform} hardware with AMX/AVX-512 acceleration
 * *Architecture* -- standard transformer architecture, so vLLM's optimized CPU kernels apply directly
 * *Quality* -- sufficient for document Q&A, summarization, and classification tasks
-* *Cost* -- $0/token via MaaS. No GPU procurement, no infrastructure management
+* *Shared infrastructure* -- no GPU or model server is provisioned inside the learner seat. Platform economics and production chargeback are separate decisions.
 
 == What Is Model-as-a-Service (MaaS)?
 

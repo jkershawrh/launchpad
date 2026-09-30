@@ -1,36 +1,80 @@
-= Deploy and Observe a Workload
-:navtitle: Deploy and Observe
+= 3. Author the desired state
+:navtitle: Author Task and Pipeline
 
-Deploy a small OpenShift workload, expose it with a Route, and inspect it using standard Red Hat operational workflows.
+== Learn
 
-== Deploy
+The learner owns two declarations. The `Task` emits a bounded result; the
+`Pipeline` passes a scenario parameter to that Task and promotes the Task result
+to a Pipeline result. The Operator owns the runtime objects created later.
 
-[source,bash,role=execute,subs=attributes+]
-----
-oc create deployment hello --image=quay.io/openshifttest/hello-openshift:1.2.0 \
-  -n {namespace}
-oc expose deployment hello --port=8080 -n {namespace}
-oc expose service hello -n {namespace}
-oc rollout status deployment/hello -n {namespace} --timeout=120s
-----
+The step image is pinned to a Linux/AMD64 digest so the exercise does not drift
+between workshop runs.
 
-== Observe
+== Do
+
+Create the namespaced `Task` and `Pipeline`.
 
 [source,bash,role=execute,subs=attributes+]
 ----
-oc get deployment,pod,service,route -n {namespace}
-oc logs deployment/hello -n {namespace} --tail=20
-HELLO_URL="http://$(oc get route hello -n {namespace} -o jsonpath='{.spec.host}')"
-curl --fail --silent --show-error "$HELLO_URL"
+oc apply -n {namespace} -f - <<'EOF'
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: operator-evidence
+  labels:
+    launchpad.redhat.com/learner-exercise: operator-pipeline
+spec:
+  params:
+    - name: scenario
+      type: string
+  results:
+    - name: evidence
+      description: Reconciliation evidence emitted by the Task
+  steps:
+    - name: produce-evidence
+      image: registry.access.redhat.com/ubi9/ubi-minimal@sha256:d1bad2a2790eac1651e57e78159a81b72ddfa7b836936b26cf51e09744bf1c2d
+      script: |
+        #!/bin/sh
+        set -eu
+        message="operator-reconciled:$(params.scenario)"
+        printf '%s\n' "$message"
+        printf '%s' "$message" > "$(results.evidence.path)"
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: operator-evidence
+  labels:
+    launchpad.redhat.com/learner-exercise: operator-pipeline
+spec:
+  params:
+    - name: scenario
+      type: string
+  tasks:
+    - name: collect-evidence
+      taskRef:
+        name: operator-evidence
+      params:
+        - name: scenario
+          value: $(params.scenario)
+  results:
+    - name: evidence
+      value: $(tasks.collect-evidence.results.evidence)
+EOF
 ----
 
-Confirm that `curl` prints `Hello OpenShift!`. Then open *Topology* in the OpenShift Console and select `{namespace}`. Confirm the Deployment, Pod, Service, and Route are connected and healthy.
+== Prove
 
-== Clean up the exercise
+Inspect the server-normalized resources and confirm there is no `PipelineRun`
+yet. Desired state exists, but no execution was requested.
 
 [source,bash,role=execute,subs=attributes+]
 ----
-oc delete route,service,deployment hello -n {namespace}
+oc get task, pipeline -n {namespace} \
+  -l launchpad.redhat.com/learner-exercise=operator-pipeline
+test "$(oc get pipelinerun operator-evidence-run -n {namespace} \
+  --ignore-not-found -o name)" = ""
 ----
 
-Launchpad reclaims the entire seat namespace when the organizer ends the workshop, but removing exercise resources is part of the operational workflow.
+[.next-nav]
+xref:04-run-and-observe.adoc[Next: Run and observe reconciliation →]

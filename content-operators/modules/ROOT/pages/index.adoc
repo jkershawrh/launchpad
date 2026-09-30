@@ -1,35 +1,55 @@
-= OpenShift AI Operator Workshop
-:navtitle: Welcome and Verify Access
+= OpenShift 201: Build an Operator-Managed Pipeline
+:navtitle: Mission and Access
 
-Welcome to your isolated workshop seat. The instructions remain visible while you work in a terminal authenticated to your seat namespace.
+A platform team receives the same request every release: run a small validation,
+record exactly what executed, and leave no application running afterward. Shell
+scripts can do the work, but they do not provide an OpenShift-native lifecycle
+or a durable status that operators can inspect.
 
-== Your environment
+In this lab, the cluster team owns the *Red Hat OpenShift Pipelines Operator*.
+You consume its namespace-scoped APIs. You will author a `Task` and `Pipeline`,
+submit a `PipelineRun`, observe the Operator reconcile it into a `TaskRun` and
+Pod, verify the result, and remove your exercise resources.
 
-Participant:: `{user}`
-Namespace:: `{namespace}`
-Workshop:: `{workshop_id}`
-Seat:: `{seat_id}`
+This is an OpenShift automation lab. It does not deploy an AI model, call an
+inference endpoint, install an Operator, or grant cluster-admin access.
 
-This workshop uses operators already managed on the shared {cluster_display_name} platform. It does not install cluster-wide Operators for each participant.
+== Show
 
-== Verify access
+Confirm that the terminal is scoped to your isolated seat.
 
-. Open the *Terminal* tab.
-. Run:
-+
 [source,bash,role=execute,subs=attributes+]
 ----
 oc project {namespace}
-oc auth can-i create deployments.apps -n {namespace}
-oc get pods -n {namespace}
+test "$(oc project -q)" = "{namespace}"
+oc auth can-i create tasks.tekton.dev -n {namespace}
+oc auth can-i create pipelineruns.tekton.dev -n {namespace}
+oc auth can-i get nodes
 ----
-. Confirm the authorization result is `yes` and the active project is your assigned namespace.
 
-Open the *OpenShift Console* operator tab in this lab and choose
-*launchpad-public* when OpenShift asks for an identity provider. Your existing
-participant session completes sign-in; there is no separate OpenShift username
-or password. Launchpad grants that identity `edit` access only to
-`{namespace}`.
+The first two authorization checks must return `yes`; the node check must
+return `no`. Participants author namespaced workloads without administering the
+cluster.
+
+Open the *OpenShift Console* operator tab and choose *launchpad-public* if OpenShift asks
+for an identity provider. Your participant session receives `edit` only in
+`{namespace}`; no separate password is required.
+
+== Learn
+
+The Operator pattern separates responsibilities:
+
+* the platform team installs and upgrades OpenShift Pipelines once;
+* the participant declares desired state with namespaced custom resources;
+* the Operator reconciles that declaration into runtime objects; and
+* status, results, logs, and cleanup provide proof of what happened.
+
+== Journey
+
+* *Show* the installed API and your namespace boundary.
+* *Learn* how `PipelineRun → TaskRun → Pod` expresses reconciliation.
+* *Do* create and run a small evidence pipeline.
+* *Prove* the result and remove every learner-created resource.
 
 [.next-nav]
-xref:02-operator-discovery.adoc[Next: Discover platform operators →]
+xref:02-operator-discovery.adoc[Next: Discover the Operator API →]

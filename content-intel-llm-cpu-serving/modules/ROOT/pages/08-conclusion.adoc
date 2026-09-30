@@ -40,7 +40,9 @@ _Congratulations._ You built a RAG-powered HR assistant using CPU inference via 
 * *MaaS eliminates infrastructure complexity.* No KServe operators, no model downloads, no GPU procurement. Your cluster stays lean; inference happens on managed hardware.
 * *RAG does not make the model smarter -- it gives the model better information.* The same model gives materially different answers with and without retrieved context.
 * *The OpenAI-compatible API is universal.* The same curl commands and client libraries work with MaaS, local vLLM, or any other provider. Your application code is portable.
-* *$0/token on {intel_platform}.* CPU inference via MaaS has no per-token cost. The economics change the calculus for when to build vs buy AI capabilities.
+* *CPU serving changes the cost model.* This lab does not expose a metered
+  per-token charge to the participant. Actual infrastructure and service cost
+  depends on the deployed platform, utilization, support, and operating model.
 
 == Architecture Recap
 
@@ -78,7 +80,16 @@ oc delete deployment anythingllm -n {project_name}
 oc delete svc anythingllm -n {project_name}
 oc delete route rag -n {project_name}
 oc delete secret anythingllm-config -n {project_name}
+oc delete pvc anythingllm-storage -n {project_name}
+
+oc get deployment,svc,route,secret,pvc -n {project_name} \
+  -l app=anythingllm
 ----
+
+The final command must report `No resources found`. This proves that the
+learner-created workload, route, credential reference, and persistent storage
+are gone. Launchpad subsequently reclaims the complete seat namespace and
+revokes the scoped MaaS credential.
 
 == Resources
 
