@@ -93,7 +93,7 @@ runtime:
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
     routes:
-      ui: sovereign-ai-301-presentation
+      ui: story
     readiness: []
 certification:
   stage: immutable-source-published

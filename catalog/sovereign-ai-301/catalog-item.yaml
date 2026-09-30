@@ -111,7 +111,7 @@ metadata:
   workload_runtime_secret_value_path: ''
   workload_identity_value_path: ''
   workload_routes:
-    ui: sovereign-ai-301-presentation
+    ui: story
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-301.git
   source_content_revision: 958cbdfc08582aff0a5db2a273cd212ef270d88c

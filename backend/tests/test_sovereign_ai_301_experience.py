@@ -47,6 +47,9 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     assert metadata["showroom_content_ref"] == expected_revision
     assert metadata["workload_revision"] == expected_revision
     assert review["source_state"]["catalog_pinned_revision"] == expected_revision
+    assert metadata["workload_routes"] == runtime["workload"]["routes"] == {
+        "ui": "story"
+    }
     assert "get route story" in (ROOT / "scripts/certify-sovereign-ai-301-seat.sh").read_text()
 
     expected_tabs = ["story", "terminal"]
