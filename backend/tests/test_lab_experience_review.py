@@ -278,7 +278,7 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
         "c123098b4ba3b95c5505d22b0bde767c3c90980e"
     )
     assert virtualization_401["publication_workflow"] == (
-        "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36743086189"
+            "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36756033518"
     )
     assert virtualization_401["immutable_images"] == {
         "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:907a9b1a5e6a947002d1dee5f27ac28d0535b7e249b4354d72984007779f4d30",
