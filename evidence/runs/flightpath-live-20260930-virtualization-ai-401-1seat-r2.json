@@ -1,0 +1,23 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-observation/v1",
+  "run_id": "flightpath-live-20260930-virtualization-ai-401-1seat-r2",
+  "observed_at": "2026-09-30T17:52:27Z",
+  "result": "RED-live",
+  "catalog_item_id": "virtualization-ai-401",
+  "cluster_ref": "flightpath",
+  "workshop_id": "f15639e8-00f4-4f4c-b12d-2643829c8958",
+  "namespace": "launchpad-flightpath-candida-virtualization-ai-4304bd",
+  "failure": {
+    "stage": "workload-image-pull",
+    "reason": "The workload chart received flat image keys that it does not consume and therefore rendered its localhost development image defaults.",
+    "observed_image": "localhost/virtualization-ai-401-presentation:0.1.0",
+    "remediation": "Use the chart-native presentation.image and operationsAdapter.image value objects with exact immutable digests."
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "seat_status": "reclaimed",
+    "namespace_present": false,
+    "argocd_application_present": false
+  },
+  "contains_sensitive_values": false
+}

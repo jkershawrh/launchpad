@@ -309,6 +309,17 @@ def test_virtualization_401_certification_capabilities_match_flightpath() -> Non
     assert "openshift-virtualization" in required
     assert "openshift_virtualization" not in required
     assert catalog["metadata"]["required_models"] == []
+    values = catalog["metadata"]["workload_helm_values"]
+    assert values == intake["runtime"]["workload"]["helm_values"]
+    assert values["presentation"]["image"]["repository"] == (
+        "ghcr.io/jkershawrh/virtualization-ai-401-presentation"
+    )
+    assert values["operationsAdapter"]["image"]["repository"] == (
+        "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter"
+    )
+    assert values["operationsAdapter"]["mode"] == "rehearsal"
+    assert "presentation_image" not in values
+    assert "operations_adapter_image" not in values
 
 
 def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> None:

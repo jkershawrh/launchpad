@@ -101,10 +101,18 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: virtualization-ai-401
   workload_helm_values:
-    operations_adapter_image: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a
-    presentation_enabled: true
-    default_source_state: REHEARSAL
+    operationsAdapter:
+      mode: rehearsal
+      image:
+        repository: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter
+        digest: sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca
+        pullPolicy: IfNotPresent
+    presentation:
+      enabled: true
+      image:
+        repository: ghcr.io/jkershawrh/virtualization-ai-401-presentation
+        digest: sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a
+        pullPolicy: IfNotPresent
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
   workload_runtime_secret_sources: {}

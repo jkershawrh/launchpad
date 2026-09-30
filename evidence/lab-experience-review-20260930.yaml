@@ -714,6 +714,12 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat.json
         failure: "The catalog used three noncanonical capability names, so Flightpath correctly rejected placement before creating an order."
         remediation: "Catalog and intake now require the deployed openshift, openshift-virtualization, and showroom capabilities; the optional model remains unrequired and persistent evidence is verified by the seat probe rather than asserted as a cluster capability."
+      workload_attempt:
+        observed_at: "2026-09-30"
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r2.json
+        failure: "The chart ignored flat presentation and operations-adapter image keys and rendered its localhost development image defaults."
+        remediation: "Catalog and intake now use the chart-native nested image value objects with the exact published digests. The failed order reclaimed cleanly with no namespace or Argo CD residue."
     next_action: certify the exact immutable release for Console SSO, VM readiness, in-cluster commands, truthful REHEARSAL evidence, reclaim, and zero residue
 
   virtualization-ai-501:
