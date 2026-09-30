@@ -5,7 +5,7 @@ description: 'Operate the same Red Hat and Intel multi-agent blueprint built at 
   inference, and human review; exercise safe denial and recovery; and prove a controlled
   configuration change on OpenShift.'
 category: guided_build
-version: 0.1.0
+version: 0.1.1
 status: draft
 required_capabilities:
 - openshift
@@ -74,7 +74,7 @@ metadata:
   showroom_title: 'Intel AI 401: Operate Evidence-Backed Multi-Agent Systems'
   namespace_slug: agentic-ops
   showroom_content_repo_url: https://github.com/rhpds/launchpad.git
-  showroom_content_ref: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
+  showroom_content_ref: d12a47688d57b9d72fe8c069bad45cb0baad94aa
   showroom_content_playbook: site-operate-agentic-blueprint.yml
   showroom_content_start_path: content-operate-agentic-blueprint
   showroom_antora_flat: true

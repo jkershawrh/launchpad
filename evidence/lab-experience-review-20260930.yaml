@@ -65,7 +65,7 @@ portfolio_evidence:
     evidence: all 24 unique contracted catalog identities produce an eligible one-seat plan; multi-agent also retains a historical Arena contract
   regression_suite:
     status: green-local
-    evidence: 185 focused portfolio, journey, catalog, runtime-secret, operator, sandbox, content-package, and progression tests passed locally on 2026-09-30; this remains local evidence rather than immutable release evidence
+    evidence: 188 focused portfolio, publication-queue, journey, catalog, runtime-secret, operator, sandbox, content-package, and progression tests passed locally on 2026-09-30; this remains local evidence rather than immutable release evidence
   consistency_audit:
     status: green-local
     evidence:
@@ -258,7 +258,9 @@ labs:
 
   intel-xeon6-agent-201:
     display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
-    overall_status: source-fix-ready
+    overall_status: immutable-source-published
+    published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "A Solution Architect agent gives the lab a concrete business role."}
     show: {status: green, evidence: "The working agent UI demonstrates the target outcome."}
     learn: {status: green, evidence: "Agent, tool, and model responsibilities are explained."}
@@ -268,7 +270,7 @@ labs:
     inference: {status: green-local, evidence: "The source checks the running Deployment model against every model-bearing inference-log record; fresh destination execution still gates GREEN-live."}
     cleanup: {status: green-local, evidence: "The candidate removes learner-created Deployments, Services, Routes, ConfigMaps, Secret, and temporary proof files, verifies their absence, and reserves full-seat reclaim for Launchpad."}
     local_validation: "Antora build passed without warnings; focused participant-truth tests passed on 2026-09-30."
-    next_action: publish and pin the corrected source, then recertify one seat for live inference, Console access, proof export, and cleanup
+    next_action: recertify one seat from the published revision for live inference, Console access, proof export, and cleanup
 
   multi-agent-quickstart:
     display_name: "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
@@ -344,6 +346,8 @@ labs:
   intel-llm-cpu-serving:
     display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
     overall_status: conditional
+    published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "An HR retrieval assistant provides a recognizable customer workload."}
     show: {status: green-local, evidence: "The opening now executes a real completion, prints the observed model identity and answer, and fails early when the inference boundary is unavailable before teaching the architecture."}
     learn: {status: green, evidence: "Serving, retrieval, chunking, and model access are covered."}
@@ -353,11 +357,13 @@ labs:
     inference: {status: green-live-prior-revision, evidence: "Existing certification proves an earlier managed Granite path; the revised source performs a real completion and fails closed, but its currently pinned Flightpath endpoint and content revision require fresh certification."}
     cleanup: {status: green-local, evidence: "The candidate no longer prints Secret YAML, removes the AnythingLLM PVC, verifies zero learner residue, and states the Launchpad reclaim boundary."}
     local_validation: "Antora build passed without missing-attribute warnings after correcting storage-class and shell-variable rendering; focused participant-truth tests passed on 2026-09-30."
-    next_action: publish and pin the revised content, then recertify the opening completion, Console checkpoint, managed model identity, RAG result, and cleanup in one fresh seat
+    next_action: recertify the published revision for the opening completion, Console checkpoint, managed model identity, RAG result, and cleanup in one fresh seat
 
   intel-llm-tool-calling:
     display_name: "Intel AI 201: LLM Tool Calling on Intel"
-    overall_status: source-fix-ready
+    overall_status: immutable-source-published
+    published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green-local, evidence: "The operations-assistant scenario now clearly separates the learner-owned tool loop from the Launchpad-managed model endpoint and preserves the model-versus-application authority boundary."}
     show: {status: green, evidence: "The protocol path produces visible tool-call behavior."}
     learn: {status: green, evidence: "Tool contracts and model interaction are explained."}
@@ -367,7 +373,7 @@ labs:
     inference: {status: green-local, evidence: "The candidate identifies the assigned MaaS model, verifies a completion, separates learner application ownership from model-server ownership, and treats the Intel hardware label as a declaration pending platform certification."}
     cleanup: {status: green-local, evidence: "The candidate removes only learner-created files and delegates namespace, credential, Showroom, and Route cleanup to Launchpad."}
     local_validation: "Antora build and focused participant-truth tests passed on 2026-09-30; unmeasured GPU/CPU savings claims were removed."
-    next_action: publish and pin the revised content, then recertify one seat for the managed model completion, tool-list and tool-call flow, Console isolation checkpoint, and cleanup
+    next_action: recertify one seat from the published revision for the managed model completion, tool-list and tool-call flow, Console isolation checkpoint, and cleanup
 
   ai-sandbox:
     display_name: "Intel AI 001: OpenShift Developer Sandbox"
@@ -385,7 +391,9 @@ labs:
 
   openshift-operators-workshop:
     display_name: "OpenShift 201: Build an Operator-Managed Pipeline"
-    overall_status: source-fix-ready-draft
+    overall_status: immutable-source-published-draft
+    published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green-local, evidence: "A namespaced evidence-automation request frames why an Operator reconciles desired state."}
     show: {status: green-local, evidence: "The candidate shows a PipelineRun becoming a TaskRun and Pod before the learner authors it."}
     learn: {status: green-local, evidence: "Task, Pipeline, PipelineRun, reconciliation, ownership, and human authority are explicitly separated."}
@@ -395,7 +403,7 @@ labs:
     inference: {status: not-applicable, evidence: "No AI inference path is present."}
     cleanup: {status: green-local, evidence: "The learner removes PipelineRun, Pipeline, Task, TaskRun, and Pod artifacts and verifies zero residue."}
     local_validation: "Five focused operator-experience tests and the Antora build passed on 2026-09-30; no inference claim is present."
-    next_action: publish and pin the candidate, then run one-seat Flightpath certification before returning this intentionally drafted item to active
+    next_action: run one-seat Flightpath certification from the published revision before returning this intentionally drafted item to active
 
   cpu-inference-serving:
     display_name: "Intel AI 101: CPU Inference Serving on Xeon"
@@ -425,7 +433,8 @@ labs:
 
   operate-agentic-blueprint:
     display_name: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
-    overall_status: source-fix-ready-draft
+    overall_status: immutable-source-published-draft
+    published_content_revision: d12a47688d57b9d72fe8c069bad45cb0baad94aa
     story: {status: green-source, evidence: "A live operations presentation frames correlation, evidence, deterministic policy, inference, and human authority."}
     show: {status: green-local, evidence: "The presentation and workspace now explicitly show the governed workflow before the learner operates it."}
     learn: {status: green-source, evidence: "The intended 301-to-401 progression moves from building the system to operating denial, recovery, drift, and evaluation."}
@@ -434,7 +443,7 @@ labs:
     operators: {status: conditional, evidence: "Story, Terminal, Workspace, and Console are declared; Console, GitOps, Pipeline, and trace use require journey-level certification."}
     inference: {status: conditional, evidence: "Granite inference is required, but effective model identity and failure/recovery proof must be re-certified with the revised journey."}
     cleanup: {status: green-local, evidence: "The learner restores policy and removes temporary files; Launchpad retains responsibility for namespace reclaim."}
-    next_action: publish and pin the revised source, then run one-seat certification for operators, inference, independent outage behavior, telemetry, restoration, and zero residue
+    next_action: run one-seat certification from the published revision for operators, inference, independent outage behavior, telemetry, restoration, and zero residue
 
   scale-agentic-blueprint:
     display_name: "Intel AI 501: Production Multi-Agent Blueprint"

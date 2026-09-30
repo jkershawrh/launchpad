@@ -7,7 +7,7 @@ catalog:
     evidence, deterministic policy, Intel Xeon inference, human review, recovery,
     and a bounded configuration change.
   category: guided_build
-  version: 0.1.0
+  version: 0.1.1
   status: draft
 learning:
   learning_level: '401'
@@ -26,7 +26,7 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/rhpds/launchpad.git
-    revision: ddd7c2aab25d4c10f7738f15eece1ab101a95b15
+    revision: d12a47688d57b9d72fe8c069bad45cb0baad94aa
     playbook: site-operate-agentic-blueprint.yml
     start_path: content-operate-agentic-blueprint
   workload:
