@@ -9,9 +9,9 @@ spec:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 1200, maximum_cleanup_seconds: 600}
   showroom:
     pages:
-      - {id: welcome, path: /www/virtualization-ai-201/master/index.html, marker: "Build and Qualify a VM-to-AI Contract"}
-      - {id: prove, path: /www/virtualization-ai-201/master/05-prove.html, marker: "Prove the healthy path"}
-      - {id: break, path: /www/virtualization-ai-201/master/06-break.html, marker: "Break it safely"}
+      - {id: welcome, path: /www/virtualization-ai-201/main/index.html, marker: "Build and Qualify a VM-to-AI Contract"}
+      - {id: prove, path: /www/virtualization-ai-201/main/05-prove.html, marker: "Prove the healthy path"}
+      - {id: break, path: /www/virtualization-ai-201/main/06-break.html, marker: "Break it safely"}
   seat_probe:
     argv: [bash, scripts/certify-virtualization-ai-seat.sh, virtualization-ai-201, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 900
