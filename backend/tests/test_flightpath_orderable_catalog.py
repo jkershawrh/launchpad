@@ -41,7 +41,9 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
     assert active == {
         "cpu-inference-serving",
         "intel-llm-cpu-serving",
+        "network-operations-agent",
         "rag-on-xeon",
+        "virtualization-ai-401",
     }
 
 
@@ -66,14 +68,14 @@ def test_rebuilt_sovereign_101_is_pinned_but_not_orderable_before_recertificatio
     assert item["status"] == "draft"
     assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["showroom_content_ref"] == (
-        "a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767"
+        "6d7c6f267407d42ca465b8a381d841d8b5b77567"
     )
     assert metadata["workload_revision"] == metadata["showroom_content_ref"]
     assert metadata["workload_helm_values"]["workload_image"].endswith(
-        "@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351"
+        "@sha256:c7f5058213960ceb1a268506f43fe666c4cf5df62ce7d6e444dd277b34886958"
     )
     assert metadata["workload_helm_values"]["presentation_image"].endswith(
-        "@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49"
+        "@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d"
     )
     assert metadata["activation_blockers"]
 

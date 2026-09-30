@@ -22,13 +22,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
-    revision: b8274c70cde28246a2c9bba0ba689a4dc57088b9
+    revision: 5df91a725568d459474436a14160bc38fcda9c22
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-501.git
-    revision: b8274c70cde28246a2c9bba0ba689a4dc57088b9
+    revision: 5df91a725568d459474436a14160bc38fcda9c22
     deploy_path: charts/virtualization-ai-501
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-501.git
 runtime:
@@ -41,9 +41,7 @@ runtime:
   - kubevirt
   - persistent-storage
   - correlated-telemetry
-  - inference-endpoint
-  required_models:
-  - granite-3.2-8b-tools
+  required_models: []
   seat_resources:
     cpu_millicores: 1625
     memory_mib: 1696
@@ -75,15 +73,12 @@ runtime:
     gitops_ready: true
     release_name: virtualization-ai-501
     helm_values:
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:773d0f7c9c594d54a801d773cce752c01635155829e043783416b3405e182bd1
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:9c8b67c94f7bc62ec460b8a9ad18b42c65c8e8b6defc49a6c62092ca14921f11
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:126ead4ea79bbbe62f16f7a7211f384429199d814c263bcd6375ef1d0b7b9078
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:21dee7878a1aece34e567d859e95f3da2141944c77cb17ce65eb60993e9f73b8
       presentation_enabled: true
-    runtime_secret_name: virtualization-ai-501-inference
-    runtime_secret_value_path: qualificationAdapter.inference.secretName
-    runtime_secret_sources:
-      endpoint: maas_endpoint
-      model: requested_model
-      api-key: maas_api_key
+    runtime_secret_name: ''
+    runtime_secret_value_path: ''
+    runtime_secret_sources: {}
     routes:
       ui: virtualization-ai-501
     readiness: []

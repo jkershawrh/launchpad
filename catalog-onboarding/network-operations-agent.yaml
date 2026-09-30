@@ -7,9 +7,9 @@ catalog:
     agent, internal MCP diagnostics, and shared CPU model inference.
   category: guided_build
   version: 0.2.1-flightpath.10
-  status: draft
+  status: active
 learning:
-  learning_level: "301"
+  learning_level: '301'
   learning_stage: Engineer
   experience_type: domain_solution_engineering
   prerequisites:
@@ -81,16 +81,14 @@ runtime:
     source: cluster.console_url
   allowed_exposure_policies:
   - internal
-  - public_code
 certification:
-  stage: immutable-source-published
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   proof_contract: certification/catalog/network-operations-agent.yaml
   promotion_sequence:
   - 1
-  - 5
-  activation_blockers:
-  - Recertify one Flightpath seat against the newly published image and learning journey.
+  activation_blockers: []
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

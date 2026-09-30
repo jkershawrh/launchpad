@@ -99,6 +99,9 @@ def promote(*, root: Path, catalog_id: str, evidence_path: Path) -> dict[str, An
     ]
     catalog["metadata"]["certification_stage"] = stage
     catalog["metadata"]["max_workshop_seats"] = seats
+    catalog["metadata"]["activation_blockers"] = list(
+        certification["activation_blockers"]
+    )
     activated = seats == max(certification["promotion_sequence"]) and not certification[
         "activation_blockers"
     ]

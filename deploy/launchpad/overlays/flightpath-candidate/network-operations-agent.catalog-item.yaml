@@ -3,7 +3,7 @@ display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
 description: Investigate a simulated telecom network alarm with an evidence-backed agent, internal MCP diagnostics, and shared CPU model inference.
 category: guided_build
 version: 0.2.1-flightpath.10
-status: draft
+status: active
 required_capabilities: [openshift, showroom, model_endpoint]
 default_hardware_profile: xeon-basic
 default_quota_profile: small
@@ -19,14 +19,13 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/network-operations-agent.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
-  promotion_sequence: [1, 5]
-  activation_blockers:
-    - Recertify one Flightpath seat against the newly published image and learning journey.
+  promotion_sequence: [1]
+  activation_blockers: []
   # Public access is enabled first as a one-seat Flightpath certification gate.
   # Multi-seat public promotion remains separately evidence-gated.
-  allowed_exposure_policies: [internal, public_code]
+  allowed_exposure_policies: [internal]
   public_access_certification_stage: one-seat-candidate
   public_max_workshop_seats: 1
   showroom_journey: network-operations-agent

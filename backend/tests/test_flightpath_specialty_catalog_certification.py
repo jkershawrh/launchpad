@@ -113,7 +113,7 @@ def test_specialty_probes_cover_function_namespace_and_secret_boundaries():
         assert expected in reliability
 
 
-def test_network_operations_exact_release_is_limited_to_one_seat_until_recertified():
+def test_network_operations_exact_release_is_one_seat_certified_and_internal_only():
     contract_path = ROOT / "certification/catalog/network-operations-agent.yaml"
     contract = load_certification_contract(contract_path)
     intake = load_intake(ROOT / "catalog-onboarding/network-operations-agent.yaml")
@@ -127,7 +127,7 @@ def test_network_operations_exact_release_is_limited_to_one_seat_until_recertifi
     ) == []
     assert intake["catalog"]["version"] == "0.2.1-flightpath.10"
     assert contract["spec"]["target_cluster"] == "flightpath"
-    assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1, 5]
+    assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1]
     assert contract["spec"]["seat_probe"]["argv"][1] == "scripts/certify-network-operations-seat.sh"
     assert intake["sources"]["workload"]["revision"] == (
         "6ed5c53337afa55c03949b2963b429f32977ef69"
@@ -135,10 +135,16 @@ def test_network_operations_exact_release_is_limited_to_one_seat_until_recertifi
     assert intake["runtime"]["workload"]["helm_values"]["image"]["digest"] == (
         "sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242"
     )
-    assert intake["catalog"]["status"] == "draft"
-    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert intake["catalog"]["status"] == "active"
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["certified_seats"] == 1
+    assert intake["certification"]["promotion_sequence"] == [1]
+    assert intake["certification"]["activation_blockers"] == []
+    assert intake["runtime"]["allowed_exposure_policies"] == ["internal"]
     assert intake["certification"]["max_workshop_seats"] == 1
-    assert "certification_stage: immutable-source-published" in overlay
+    assert "status: active" in overlay
+    assert "certification_stage: 1-seat-certified" in overlay
+    assert "allowed_exposure_policies: [internal]" in overlay
     assert "max_workshop_seats: 1" in overlay
 
     probe = (ROOT / "scripts/certify-network-operations-seat.sh").read_text()

@@ -94,7 +94,7 @@ labs:
     display_name: "Sovereign AI 101: Understand Governed Inference"
     source_repository: https://github.com/jkershawrh/sovereign-ai-101
     candidate_branch: codex/sovereign-ai-101-lab-experience
-    candidate_revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
+    candidate_revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
     overall_status: immutable-source-published-draft
     story:
       status: green-local
@@ -107,10 +107,10 @@ labs:
       evidence: classification, authorization, generation, and evidence are explained separately
     do:
       status: green-local
-      evidence: 13 executable Showroom blocks across eight stages
+      evidence: all eight stages now enforce a learner action between Learn and Prove
     prove:
       status: green-local
-      evidence: allow, deny, fail-closed, receipt verification, decision brief, and cleanup are asserted
+      evidence: learner checkpoints are nested under Prove, covering allow, deny, fail-closed, receipt verification, decision brief, and cleanup
     story_tab:
       status: prepared-not-deployed
       evidence: catalog and onboarding candidates explicitly route Interactive Story to /
@@ -126,24 +126,23 @@ labs:
     tests:
       status: green-local
       evidence:
-        - 33 presentation tests
-        - 14 service tests
-        - 30 fixture and negative-path tests
-        - 6 packaging and security tests
-        - full local API journey
+        - TDD RED captured before the eight-stage journey correction
+        - full repository check passed after the correction
+        - Antora build passed
+        - 293 local links and anchors passed
     release:
       status: published-not-live-certified
-      workflow: https://github.com/jkershawrh/sovereign-ai-101/actions/runs/36731862663
-      source_revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
-      presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
-      rehearsal_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
+      workflow: https://github.com/jkershawrh/sovereign-ai-101/actions/runs/36765624274
+      source_revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d
+      rehearsal_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:c7f5058213960ceb1a268506f43fe666c4cf5df62ce7d6e444dd277b34886958
       evidence:
         - full source and journey validation passed
         - fixable high and critical vulnerability gates passed
         - SPDX SBOMs retained
         - exact image digests signed and attested with GitHub OIDC
         - workflow identity, SBOM attestation, and custom provenance attestation verified
-    next_action: deploy the exact pinned revision as a draft, then run one-seat Flightpath certification for the Story, all eight guided stages, Terminal, isolation, reclaim, and zero residue before activation
+    next_action: run one-seat Flightpath certification for the exact pinned release, Story, all eight guided stages, Terminal, isolation, reclaim, and zero residue before activation
 
   sovereign-ai-201:
     display_name: "Sovereign AI 201: Build the Governed Inference Boundary"
@@ -180,9 +179,9 @@ labs:
     display_name: "Virtualization + AI 101: Trace a VM to Governed AI"
     source_repository: https://github.com/jkershawrh/virtualization-ai-foundations
     candidate_branch: codex/virtualization-ai-101-vm-origin
-    candidate_revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
+    candidate_revision: 7a49ca59c5e92eaae2d9e4190385154707307b75
     candidate_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36735902752
-    overall_status: immutable-source-published-draft-live-certification-required
+    overall_status: source-reviewed-needs-immutable-release
     launchpad_backend_candidate:
       branch: codex/virt101-backend-keypair
       revision: b5c38364ce556fbf0c40de07ec25c209357f3d0c
@@ -215,11 +214,11 @@ labs:
       catalog_pinned_revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
       publication_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36735902752
       publication_validation: "30 Python tests, 34 component tests, Helm lint/render, production/offline builds, and 14 browser checks passed; all three immutable images passed zero HIGH/CRITICAL gates with signatures, SBOMs, and provenance."
-    next_action: merge the reviewed source release to main, then run one fresh Flightpath seat proving VM-origin execution, live granite-3.2-8b-tools identity, Console SSO, full reclaim, and zero residue before activation
+    next_action: publish and pin immutable artifacts for revision 7a49ca59c5e92eaae2d9e4190385154707307b75, deploy the reviewed per-seat keypair backend, then run one fresh Flightpath seat proving VM-origin execution, live granite-3.2-8b-tools identity, Console SSO, full reclaim, and zero residue before activation
 
   virtualization-ai-201:
     display_name: "Virtualization + AI 201: Author and Qualify the Contract"
-    overall_status: immutable-source-published-draft-live-certification-required
+    overall_status: source-reviewed-needs-immutable-release
     story: {status: green, evidence: "The learner owns an author-build-qualify-deploy decision."}
     show: {status: green, evidence: "Contract outcomes and qualification evidence are visible."}
     learn: {status: green, evidence: "The contract and governance mechanics are explained."}
@@ -238,7 +237,7 @@ labs:
         adapter: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:ec18fb9516a2a81d86c14307da9b2e386fdfd26bc418373f5bf511e74449875a
         showroom_content: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:92cf58e2980ea7ac3bdd25bcd3ca0477298ceb531e076c18d686295a9aa90b8e
       publication_validation: "33 Python tests, 32 component tests, Helm lint/render, production/offline builds, and 14 browser checks passed; all three images passed zero HIGH/CRITICAL gates with signatures, SBOMs, and provenance."
-    next_action: certify one exact-release Flightpath seat for live granite-3.2-8b-tools inference, Console SSO, evidence correlation, complete reclaim, and zero residue
+    next_action: publish and pin immutable artifacts for revision 946b654abc7ef02bbbe1a0a1d4245bff9aca86dd, then certify one Flightpath seat for live granite-3.2-8b-tools inference, Console SSO, VM-origin proof, evidence correlation, complete reclaim, and zero residue
 
   virtualization-ai-301:
     display_name: "Virtualization + AI 301 — Modernize VMs with Governed AI"
@@ -314,8 +313,8 @@ labs:
 
   intel-xeon6-agent-201:
     display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
-    overall_status: published-candidate-draft-prior-scale-evidence
-    published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    overall_status: source-reviewed-needs-launchpad-pin
+    published_content_revision: b48be002d8ddd7eba94c9d86d8284c9dba3ff020
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "A Solution Architect agent gives the lab a concrete business role."}
     show: {status: green, evidence: "The working agent UI demonstrates the target outcome."}
@@ -326,15 +325,21 @@ labs:
     inference: {status: green-local, evidence: "The source checks the running Deployment model against every model-bearing inference-log record; fresh destination execution still gates GREEN-live."}
     cleanup: {status: green-local, evidence: "The candidate removes learner-created Deployments, Services, Routes, ConfigMaps, Secret, and temporary proof files, verifies their absence, and reserves full-seat reclaim for Launchpad."}
     source_truth:
-      showroom_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
-      workload_reference: 201-v1.0.0
-      workload_reference_status: mutable-tag-not-immutable-source
+      reviewed_showroom_revision: b48be002d8ddd7eba94c9d86d8284c9dba3ff020
+      catalog_showroom_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+      workload_reference: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
+      workload_reference_status: immutable-public-commit
+      runtime_images:
+        tools: quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850
+        agent: quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03
+        ui: quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb
+      supply_chain_boundary: "The public Git commits and image digests are immutable and retrievable, but this source repository has no signature, SBOM, provenance, release, or tag workflow; those artifacts are not claimed."
       current_catalog_version: 1.0.9-flightpath.1
       historical_scale_version: 1.0.8
       historical_scale_seats: 30
       evidence_boundary: "The thirty-seat result is historical evidence for v1.0.8 and does not certify this v1.0.9 candidate."
-    local_validation: "Antora build passed without warnings; focused participant-truth tests passed on 2026-09-30."
-    next_action: replace the workload tag with an immutable source or image reference, then recertify one Flightpath seat for live inference, Console access, proof export, reclaim, and zero residue before restoring orderability
+    local_validation: "A fresh checkout at b48be002d8ddd7eba94c9d86d8284c9dba3ff020 passed 8 source-contract tests, Antora build, and all seven commit-pinned Triforce manifest URL checks."
+    next_action: adapt and pin the reviewed Showroom revision plus immutable Triforce commit in Launchpad, then recertify one Flightpath seat for live inference, Console access, proof export, reclaim, and zero residue before restoring orderability
 
   multi-agent-quickstart:
     display_name: "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
@@ -368,15 +373,15 @@ labs:
 
   network-operations-agent:
     display_name: "Intel AI 301: Build an Evidence-Backed Network Operations Agent"
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-active
     story: {status: green-local, evidence: "One alarm with two possible causes drives a clear operator decision."}
     show: {status: green-local, evidence: "The journey demonstrates evidence changing the decision."}
     learn: {status: green-local, evidence: "Network, platform, hardware, policy, and human authority are separated."}
     do: {status: green-local, evidence: "The learner runs the evidence workflow and changes conditions."}
-    prove: {status: green-local, evidence: "The exact source adds a meaningful namespace-scoped Console checkpoint and explicit proof boundaries; fresh live proof remains required."}
-    operators: {status: green-local, evidence: "Story, Terminal, Workspace, and a namespace-scoped Console evidence checkpoint are part of the candidate journey."}
-    inference: {status: conditional, evidence: "Granite inference is part of the decision narrative, but the newly published image has not yet received fresh Flightpath execution proof."}
-    cleanup: {status: green-local, evidence: "Published source covers model-key revocation, participant artifacts, namespace deletion, and zero residue."}
+    prove: {status: green-live, evidence: "The exact source passed the live investigation, five-scenario qualification, namespace isolation, and sensitive-value checks."}
+    operators: {status: green-live, evidence: "Story, Terminal, Workspace, and namespace-scoped OpenShift evidence all passed the one-seat Flightpath probe."}
+    inference: {status: green-live, evidence: "The live investigation proved granite-3.2-8b-tools participation and retained human approval with no automated action."}
+    cleanup: {status: green-live, evidence: "The promotion-bound run reclaimed in 95.296 seconds with model keys revoked and zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_state:
       repository: /Users/jkershaw/Documents/network-operations-agent
       checked_out_branch: main
@@ -384,7 +389,7 @@ labs:
       published_head: 6ed5c53337afa55c03949b2963b429f32977ef69
       catalog_pinned_revision: 6ed5c53337afa55c03949b2963b429f32977ef69
       catalog_pinned_image: ghcr.io/jkershawrh/network-operations-agent@sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242
-      post_review_changes: committed-published-pinned-not-live-certified
+      post_review_changes: one-seat-live-certified
       post_review_paths:
         - showroom-lab/modules/ROOT/pages/conclusion.adoc
         - showroom-lab/modules/ROOT/pages/01-baseline.adoc
@@ -402,8 +407,14 @@ labs:
         manifest_digest: sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242
         image_source_revision: 6ed5c53337afa55c03949b2963b429f32977ef69
         workflow: https://github.com/jkershawrh/network-operations-agent/actions/runs/36733546281
-      publication_note: "The previous five-seat GREEN-live result proves the prior catalog revision. The exact updated source and immutable image are published and pinned as a draft, but do not inherit that live proof."
-    next_action: certify one fresh Flightpath seat for Story, Console correlation, live inference, proof export, reclaim, and zero residue before restoring orderability
+      publication_note: "The previous five-seat result remains historical evidence. The exact updated source and immutable image now have fresh one-seat GREEN-live proof; public exposure and larger scale remain separately gated."
+      one_seat_live_certification:
+        observed_at: "2026-09-30"
+        result: GREEN-live
+        rubric_score: 100
+        evidence: evidence/runs/flightpath-live-20260930-network-operations-agent-1seat-r2.json
+        proof: "Exact pinned release, participant surfaces, live model-backed investigation, human authority, namespace isolation, 95.296-second reclaim, model-key revocation, and zero residue all passed against the one-seat promotion contract."
+    next_action: deploy the one-seat internal catalog promotion; certify public_code exposure separately
 
   hybrid-fraud-detection:
     display_name: "Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon"
@@ -754,18 +765,18 @@ labs:
     do: {status: green-local, evidence: "The learner executes baseline, migration, disruption, correlation-gap, and capacity-breach scenarios using packaged fixtures."}
     prove: {status: green-local, evidence: "ALLOW_REVIEW, REFUSE, and ABSTAIN are asserted with seven records, promotion false, and every quantitative value labeled synthetic REHEARSAL."}
     operators: {status: conditional, evidence: "Console VM/PVC checkpoints and terminal commands are defined; destination VM views and fixture serving need one-seat proof."}
-    inference: {status: not-claimed, evidence: "The candidate reports llm_authority NONE and makes no Intel performance or live inference claim."}
+    inference: {status: not-claimed, evidence: "The candidate reports llm_authority NONE, makes no Intel performance or live inference claim, and Launchpad no longer allocates an unused model entitlement or runtime secret."}
     cleanup: {status: green-local, evidence: "Participant cleanup is safe and platform reclaim remains Launchpad-owned."}
     source_state:
       repository: /Users/jkershaw/Documents/virtualization-ai-501
-      published_revision: b8274c70cde28246a2c9bba0ba689a4dc57088b9
-      catalog_pinned_revision: b8274c70cde28246a2c9bba0ba689a4dc57088b9
-      publication_workflow: https://github.com/jkershawrh/virtualization-ai-501/actions/runs/36742623129
+      published_revision: 5df91a725568d459474436a14160bc38fcda9c22
+      catalog_pinned_revision: 5df91a725568d459474436a14160bc38fcda9c22
+      publication_workflow: https://github.com/jkershawrh/virtualization-ai-501/actions/runs/36765619829
       immutable_images:
-        presentation: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:9c8b67c94f7bc62ec460b8a9ad18b42c65c8e8b6defc49a6c62092ca14921f11
-        qualification_adapter: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:773d0f7c9c594d54a801d773cce752c01635155829e043783416b3405e182bd1
+        presentation: ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:21dee7878a1aece34e567d859e95f3da2141944c77cb17ce65eb60993e9f73b8
+        qualification_adapter: ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:126ead4ea79bbbe62f16f7a7211f384429199d814c263bcd6375ef1d0b7b9078
       publication_validation: "The exact source passed full qualification, immutable linux/amd64 publication, vulnerability gates, SPDX SBOM generation, signing, SLSA provenance, and verification."
-    next_action: certify the exact immutable release for VM readiness, Console/Terminal operation, fixtures, truthful REHEARSAL evidence, reclaim, and zero residue; retain draft until live fleet claims are independently proven
+    next_action: certify the exact pinned release for VM readiness, Console/Terminal operation, fixtures, truthful REHEARSAL evidence, reclaim, and zero residue; retain live fleet claims as unproven
 
   smoke-test:
     display_name: "Launchpad 001: Platform Smoke Test"

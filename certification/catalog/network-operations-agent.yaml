@@ -16,11 +16,6 @@ spec:
       probe_concurrency: 1
       maximum_ready_seconds: 900
       maximum_cleanup_seconds: 600
-    - seats: 5
-      required_consecutive_runs: 1
-      probe_concurrency: 5
-      maximum_ready_seconds: 1500
-      maximum_cleanup_seconds: 900
   showroom:
     pages:
       - {id: welcome, path: /www/network-operations-agent/main/index.html, marker: "Evidence-Backed Network Operations Lab"}

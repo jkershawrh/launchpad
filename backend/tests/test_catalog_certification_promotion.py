@@ -96,6 +96,10 @@ def test_one_then_five_seat_evidence_activates_only_after_all_blockers_clear(tmp
     result = MODULE.promote(root=tmp_path, catalog_id=catalog_id, evidence_path=five)
     assert result["status"] == "active"
     assert result["certified_seats"] == 5
+    promoted_catalog = yaml.safe_load(
+        (tmp_path / "catalog" / catalog_id / "catalog-item.yaml").read_text()
+    )
+    assert promoted_catalog["metadata"]["activation_blockers"] == []
 
 
 def test_non_proof_blocker_keeps_five_seat_catalog_draft(tmp_path):

@@ -25,13 +25,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
-    revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
+    revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
     playbook: site.yml
     start_path: showroom
     gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
-    revision: a23ed5c03a8ae4f68ad819bbc8ae1b6a9d62a767
+    revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
     deploy_path: deploy/openshift/base
     gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
 runtime:
@@ -73,12 +73,12 @@ runtime:
     gitops_ready: true
     release_name: sovereign-ai-101
     helm_values:
-      workload_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
-      presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:c7f5058213960ceb1a268506f43fe666c4cf5df62ce7d6e444dd277b34886958
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d
       source_state: REHEARSAL
     kustomize_images:
-    - registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:a38b17cca8ff0cea22bdd4d447503b20afd454b33f3d8a714b1ec39582420351
-    - registry.invalid/sovereign-ai-101/presentation=ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:be49d6e3b295c784aefaa416f5ac86a02b30aca3c164baa4d4c0acd25d563e49
+    - registry.invalid/sovereign-ai-101/rehearsal=ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:c7f5058213960ceb1a268506f43fe666c4cf5df62ce7d6e444dd277b34886958
+    - registry.invalid/sovereign-ai-101/presentation=ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}

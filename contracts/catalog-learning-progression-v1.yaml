@@ -47,7 +47,7 @@ learning_tracks:
       "101": {title: Understand VM and AI Coexistence, lifecycle: draft, catalog_id: virtualization-ai-foundations-101}
       "201": {title: Connect a VM to AI, lifecycle: draft, catalog_id: virtualization-ai-201}
       "301": {title: Modernize VMs with AI, lifecycle: draft, catalog_id: virtualization-ai-301}
-      "401": {title: Operate Hybrid VM and AI Workloads, lifecycle: draft, catalog_id: virtualization-ai-401}
+      "401": {title: Operate Hybrid VM and AI Workloads, lifecycle: active, catalog_id: virtualization-ai-401}
       "501": {title: Scale Governed AI Modernization, lifecycle: draft, catalog_id: virtualization-ai-501}
 track_rules:
   missing_entry_behavior: not_offered
