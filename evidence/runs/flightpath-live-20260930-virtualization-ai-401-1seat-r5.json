@@ -1,0 +1,27 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-observation/v1",
+  "run_id": "flightpath-live-20260930-virtualization-ai-401-1seat-r5",
+  "observed_at": "2026-09-30T18:42:25Z",
+  "result": "RED-live",
+  "catalog_item_id": "virtualization-ai-401",
+  "cluster_ref": "flightpath",
+  "workshop_id": "1f2f328d-60c8-4e84-ae0a-e0c48bc60b10",
+  "session_id": "c8650cf9-0c7f-4a3b-9f38-cc0768e04a70",
+  "namespace": "launchpad-flightpath-candida-virtualization-ai-9d4f90",
+  "failure": {
+    "stage": "showroom-source-clone",
+    "reasons": [
+      "The Showroom git-cloner used the private SSH source URL and failed host-key verification on Flightpath."
+    ],
+    "remediation": [
+      "The source repository passed a complete history credential scan, was made public, and the catalog and intake now use matching public HTTPS source URLs."
+    ]
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "session_record_present": false,
+    "namespace_present": false,
+    "argocd_application_present": false
+  },
+  "contains_sensitive_values": false
+}

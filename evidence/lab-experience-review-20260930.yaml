@@ -701,12 +701,12 @@ labs:
     cleanup: {status: green-local, evidence: "Participant files are cleaned safely while Launchpad owns workload and namespace reclaim."}
     source_state:
       repository: /Users/jkershaw/Documents/virtualization-ai-401
-      published_revision: 99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44
-      catalog_pinned_revision: 99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44
-      publication_workflow: https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36758487257
+      published_revision: f00b4bc075acf37f014b8ee55d5810625639b6b3
+      catalog_pinned_revision: f00b4bc075acf37f014b8ee55d5810625639b6b3
+      publication_workflow: https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36761503526
       immutable_images:
-        presentation: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:9e31434dc84361e6784831b95bb5db0e278d8954b0e5d3a4bdf39389d23b4e31
-        operations_adapter: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:c6057b907477b80701219e03bbf8101e7f8f9c646f4aa6a67663a3b552ce17ee
+        presentation: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:7115b9332335e9ceb77f68b9dc04828b36e1f0c874deee56272556fa3001bf25
+        operations_adapter: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:864ad89cb5f4bae6f2b403c31604d78692e30afe9275c0d753a9eafaeae9d8ca
       publication_validation: "The exact source passed full qualification, immutable linux/amd64 publication, zero HIGH/CRITICAL vulnerability gates, SPDX SBOM generation, signing, SLSA provenance, verification, and exact-digest pull for both artifacts."
       admission_attempt:
         observed_at: "2026-09-30"
@@ -726,6 +726,18 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r4.json
         failure: "Flightpath truthfully rejected a fixed fsGroup, an ungranted KubeVirt resource, and an overlong generated Route DNS label."
         remediation: "The candidate now lets OpenShift assign its supplemental group, extends the existing namespace-scoped Argo CD seat role for KubeVirt, and generates a compact deterministic Route hostname. The failed order reclaimed with zero namespace and Argo CD residue."
+      showroom_source_attempt:
+        observed_at: "2026-09-30"
+        result: RED-live-reclaimed
+        evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r5.json
+        failure: "The workload and VM cleared OpenShift admission, but the Showroom git-cloner could not clone the private SSH source because Flightpath did not trust its host key."
+        remediation: "The full repository history passed a credential-pattern scan, the repository is now public, and catalog and intake use the matching public HTTPS transport. The failed order reclaimed with zero session, namespace, or Argo CD residue."
+      showroom_runtime_attempt:
+        observed_at: "2026-09-30"
+        result: RED-live-reclaimed
+        evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r6.json
+        failure: "Public HTTPS clone, Antora build, immutable workloads, persistent evidence, and KubeVirt admission all passed; the content runtime then failed because the playbook did not expose the mounted source path it uses for prebuilt-content detection."
+        remediation: "A regression test now requires the proven /showroom/repo plus showroom/content source contract, and corrected revision f00b4bc075acf37f014b8ee55d5810625639b6b3 is in immutable qualification. The failed order reclaimed with zero namespace and Argo CD residue."
     next_action: certify the exact immutable release for Console SSO, VM readiness, in-cluster commands, truthful REHEARSAL evidence, reclaim, and zero residue
 
   virtualization-ai-501:

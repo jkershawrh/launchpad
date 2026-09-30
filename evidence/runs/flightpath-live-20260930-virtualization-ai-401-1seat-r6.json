@@ -1,0 +1,35 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-observation/v1",
+  "run_id": "flightpath-live-20260930-virtualization-ai-401-1seat-r6",
+  "observed_at": "2026-09-30T18:50:09Z",
+  "result": "RED-live",
+  "catalog_item_id": "virtualization-ai-401",
+  "cluster_ref": "flightpath",
+  "workshop_id": "11394e22-dad8-4621-9c8d-ba9aeff5dec7",
+  "session_id": "5ee9d686-8a02-42b0-96f1-941ccc0eea19",
+  "namespace": "launchpad-flightpath-candida-virtualization-ai-6c4ad6",
+  "verified_before_failure": {
+    "public_https_source_clone": true,
+    "antora_build": true,
+    "presentation_ready": true,
+    "operations_adapter_ready": true,
+    "persistent_evidence_bound": true,
+    "virtual_machine_created": true
+  },
+  "failure": {
+    "stage": "showroom-content-runtime",
+    "reasons": [
+      "The Showroom playbook described its source as ./content with start_path '.', so the content runtime could not recognize the already-mounted source and attempted to delete /showroom/repo."
+    ],
+    "remediation": [
+      "A failing regression test now requires the proven mounted-source contract: url /showroom/repo and start_path showroom/content.",
+      "The corrected source revision is being qualified and published before another live run."
+    ]
+  },
+  "cleanup": {
+    "workshop_status": "completed",
+    "namespace_present": false,
+    "argocd_application_present": false
+  },
+  "contains_sensitive_values": false
+}

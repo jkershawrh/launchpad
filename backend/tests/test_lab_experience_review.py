@@ -241,9 +241,9 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
             "workload": "sha256:773d0f7c9c594d54a801d773cce752c01635155829e043783416b3405e182bd1",
         },
         "virtualization-ai-401": {
-            "revision": "99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44",
-            "presentation": "sha256:9e31434dc84361e6784831b95bb5db0e278d8954b0e5d3a4bdf39389d23b4e31",
-            "workload": "sha256:c6057b907477b80701219e03bbf8101e7f8f9c646f4aa6a67663a3b552ce17ee",
+            "revision": "f00b4bc075acf37f014b8ee55d5810625639b6b3",
+            "presentation": "sha256:7115b9332335e9ceb77f68b9dc04828b36e1f0c874deee56272556fa3001bf25",
+            "workload": "sha256:864ad89cb5f4bae6f2b403c31604d78692e30afe9275c0d753a9eafaeae9d8ca",
         },
     }
 
@@ -272,17 +272,17 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
 
     virtualization_401 = review["labs"]["virtualization-ai-401"]["source_state"]
     assert virtualization_401["published_revision"] == (
-        "99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44"
+        "f00b4bc075acf37f014b8ee55d5810625639b6b3"
     )
     assert virtualization_401["catalog_pinned_revision"] == (
-        "99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44"
+        "f00b4bc075acf37f014b8ee55d5810625639b6b3"
     )
     assert virtualization_401["publication_workflow"] == (
-            "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36758487257"
+            "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36761503526"
     )
     assert virtualization_401["immutable_images"] == {
-        "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:9e31434dc84361e6784831b95bb5db0e278d8954b0e5d3a4bdf39389d23b4e31",
-        "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:c6057b907477b80701219e03bbf8101e7f8f9c646f4aa6a67663a3b552ce17ee",
+        "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:7115b9332335e9ceb77f68b9dc04828b36e1f0c874deee56272556fa3001bf25",
+        "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:864ad89cb5f4bae6f2b403c31604d78692e30afe9275c0d753a9eafaeae9d8ca",
     }
 
 
