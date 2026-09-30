@@ -7,10 +7,8 @@ version: 0.1.0
 status: draft
 required_capabilities:
 - openshift
-- openshift_virtualization
+- openshift-virtualization
 - showroom
-- persistent_evidence
-- optional_model_endpoint
 default_hardware_profile: xeon-basic
 default_quota_profile: large
 default_ttl: 4h

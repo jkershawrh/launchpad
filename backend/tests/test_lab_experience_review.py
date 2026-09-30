@@ -286,6 +286,31 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
     }
 
 
+def test_virtualization_401_certification_capabilities_match_flightpath() -> None:
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/virtualization-ai-401/catalog-item.yaml").read_text()
+    )
+    intake = yaml.safe_load(
+        (ROOT / "catalog-onboarding/virtualization-ai-401.yaml").read_text()
+    )
+    cluster_document = yaml.safe_load(
+        (
+            ROOT
+            / "deploy/launchpad/overlays/flightpath-candidate/candidate-clusters.yaml"
+        ).read_text()
+    )
+    flightpath = yaml.safe_load(cluster_document["data"]["clusters.yaml"])[
+        "clusters"
+    ][0]
+
+    required = catalog["required_capabilities"]
+    assert required == intake["runtime"]["required_capabilities"]
+    assert set(required).issubset(set(flightpath["capabilities"]))
+    assert "openshift-virtualization" in required
+    assert "openshift_virtualization" not in required
+    assert catalog["metadata"]["required_models"] == []
+
+
 def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> None:
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
     expected_states = {

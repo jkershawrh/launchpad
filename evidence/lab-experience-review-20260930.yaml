@@ -562,13 +562,18 @@ labs:
     cleanup: {status: green-local, evidence: "The guide states rehearsal changes no target state and reserves zero-residue claims for live Launchpad reclaim evidence."}
     source_state:
       repository: /Users/jkershaw/Documents/agentic-scale-501
-      published_revision: c91c5fea075163b2cb9e316d3a77f0c3ffae2d18
-      catalog_pinned_revision: c91c5fea075163b2cb9e316d3a77f0c3ffae2d18
-      publication_workflow: https://github.com/jkershawrh/agentic-scale-501/actions/runs/36744267905
+      published_revision: ae23851fb5d24523930abc6a4639205f072e93a7
+      catalog_pinned_revision: ae23851fb5d24523930abc6a4639205f072e93a7
+      publication_workflow: https://github.com/jkershawrh/agentic-scale-501/actions/runs/36750566182
       immutable_images:
-        presentation: ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:15f227de9547b20dc137ce37b4d19bf68bebde7c6bf46ea4c01a2194829762a0
-        qualifier: ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:7875cb2772a5c9c6ce3628c7ad287ad70690aa345d836f331e7232b302b2e1d3
+        presentation: ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:ac1e22061238bda32fb41338c4fe03f2a3bf801fffbcd0bc3350a87f93f9fc21
+        qualifier: ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:24b265cc26b4c6e6a84a2adf3cb463613c883d92e33e7937ae0487a3cbab6330
       publication_validation: "Both exact linux/amd64 images passed the enforced Grype zero-HIGH/CRITICAL gate; each retained inventory records five MEDIUM and one LOW finding, with signed digests, SPDX SBOM attestations, SLSA provenance attestations, identity verification, and transparency-log inclusion."
+      corrected_live_attempt:
+        observed_at: "2026-09-30"
+        result: RED-live-reclaimed
+        evidence: "The prior presentation inherited worker_processes auto, started 157 workers on Flightpath, and was OOM-killed at its 128Mi limit. Workshop 2d6cb497-44e6-4f34-b408-1a65ab25aaa8 completed reclaim with its seat reclaimed and no remaining namespace or Argo CD Application."
+        remediation: "Release ae23851fb5d24523930abc6a4639205f072e93a7 bounds NGINX to two workers and adds a packaging regression test; fresh one-seat proof remains required."
     prior_live_attempt:
       status: RED-live
       evidence: evidence/runs/catalog/scale-agentic-blueprint-flightpath-one-seat-r1-20260929.json
@@ -703,6 +708,12 @@ labs:
         presentation: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a
         operations_adapter: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca
       publication_validation: "The exact source passed full qualification, immutable linux/amd64 publication, zero HIGH/CRITICAL vulnerability gates, SPDX SBOM generation, signing, SLSA provenance, verification, and exact-digest pull for both artifacts."
+      admission_attempt:
+        observed_at: "2026-09-30"
+        result: RED-live-no-mutation
+        evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat.json
+        failure: "The catalog used three noncanonical capability names, so Flightpath correctly rejected placement before creating an order."
+        remediation: "Catalog and intake now require the deployed openshift, openshift-virtualization, and showroom capabilities; the optional model remains unrequired and persistent evidence is verified by the seat probe rather than asserted as a cluster capability."
     next_action: certify the exact immutable release for Console SSO, VM readiness, in-cluster commands, truthful REHEARSAL evidence, reclaim, and zero residue
 
   virtualization-ai-501:
