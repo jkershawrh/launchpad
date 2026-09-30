@@ -414,7 +414,7 @@ labs:
         rubric_score: 100
         evidence: evidence/runs/flightpath-live-20260930-network-operations-agent-1seat-r2.json
         proof: "Exact pinned release, participant surfaces, live model-backed investigation, human authority, namespace isolation, 95.296-second reclaim, model-key revocation, and zero residue all passed against the one-seat promotion contract."
-    next_action: deploy the one-seat internal catalog promotion; certify public_code exposure separately
+    next_action: retain the deployed one-seat internal ceiling; certify public_code exposure separately and require fresh evidence before any scale increase
 
   hybrid-fraud-detection:
     display_name: "Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon"
