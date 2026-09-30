@@ -1486,6 +1486,15 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             ),
             "workload_runtime_secret_name": workload_contract.get("runtime_secret_name", ""),
             "workload_runtime_secret_sources": workload_contract.get("runtime_secret_sources", {}),
+            **(
+                {
+                    "workload_runtime_value_bindings": workload_contract[
+                        "runtime_value_bindings"
+                    ]
+                }
+                if workload_contract.get("runtime_value_bindings")
+                else {}
+            ),
             "workload_runtime_secret_value_path": workload_contract.get(
                 "runtime_secret_value_path", ""
             ),
@@ -1788,6 +1797,7 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                     source = str(field_contract["source"])
                     if source not in {
                         "generated_password",
+                        "generated_ssh_keypair",
                         "maas_api_key",
                         "maas_api_url",
                         "maas_endpoint",
@@ -1804,6 +1814,17 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                             errors.append(
                                 f"Generated runtime field '{key}' length must be between 24 and 128"
                             )
+                    if source == "generated_ssh_keypair":
+                        pair = str(field_contract.get("pair", "default"))
+                        part = str(field_contract.get("part", ""))
+                        if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,31}", pair):
+                            errors.append(
+                                f"Generated SSH keypair field '{key}' has an invalid pair name"
+                            )
+                        if part not in {"private", "public"}:
+                            errors.append(
+                                f"Generated SSH keypair field '{key}' must select private or public"
+                            )
                     if (
                         source == "model_endpoint"
                         and not str(field_contract.get("model", "")).strip()
@@ -1818,6 +1839,26 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
                         errors.append(
                             f"Runtime Secret template for '{key}' references unknown fields"
                         )
+        value_bindings = workload_contract.get("runtime_value_bindings", {})
+        if value_bindings and not isinstance(value_bindings, dict):
+            errors.append("runtime.workload.runtime_value_bindings must be a mapping")
+        elif isinstance(value_bindings, dict):
+            for value_path, source_key in value_bindings.items():
+                if not VALUE_PATH.fullmatch(str(value_path)):
+                    errors.append(
+                        "runtime.workload.runtime_value_bindings keys must be dotted Helm value paths"
+                    )
+                if str(source_key) not in secret_sources:
+                    errors.append(
+                        f"Runtime value binding '{value_path}' references unknown Secret field"
+                    )
+                if any(
+                    marker in str(source_key).upper()
+                    for marker in SENSITIVE_RUNTIME_MARKERS
+                ):
+                    errors.append(
+                        f"Runtime value binding '{value_path}' cannot expose sensitive Secret field"
+                    )
     resources = _required_mapping(runtime, "seat_resources", errors, "runtime")
     for key in ("cpu_millicores", "memory_mib", "pods", "storage_gib"):
         value = resources.get(key)

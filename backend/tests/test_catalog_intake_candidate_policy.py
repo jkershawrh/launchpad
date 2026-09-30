@@ -178,6 +178,58 @@ def test_bound_intake_passes_contract_and_resolves_runtime_secret_per_seat():
     assert metadata["workload_helm_values"]["model"] == {"endpointFromSecret": True}
 
 
+def test_generated_ssh_public_key_can_bind_to_a_helm_value_without_exposing_private_key():
+    _policy, intake, _probe = _load()
+    workload = intake["runtime"]["workload"]
+    workload["runtime_secret_name"] = "vm-runtime"
+    workload["runtime_secret_value_path"] = "runtime.existingSecret"
+    workload["runtime_secret_sources"] = {
+        "VM_SSH_PRIVATE_KEY": {
+            "source": "generated_ssh_keypair",
+            "pair": "operations-vm",
+            "part": "private",
+        },
+        "VM_SSH_PUBLIC_KEY": {
+            "source": "generated_ssh_keypair",
+            "pair": "operations-vm",
+            "part": "public",
+        },
+    }
+    workload["runtime_value_bindings"] = {
+        "vm.sshAuthorizedKey": "VM_SSH_PUBLIC_KEY"
+    }
+
+    report = validate_intake(intake)
+    assert report["checks"]["intake_contract"] == "pass"
+    metadata = build_catalog_item(intake)["metadata"]
+    assert metadata["workload_runtime_value_bindings"] == {
+        "vm.sshAuthorizedKey": "VM_SSH_PUBLIC_KEY"
+    }
+
+
+def test_runtime_value_binding_rejects_private_key_or_unknown_source():
+    _policy, intake, _probe = _load()
+    workload = intake["runtime"]["workload"]
+    workload["runtime_secret_name"] = "vm-runtime"
+    workload["runtime_secret_value_path"] = "runtime.existingSecret"
+    workload["runtime_secret_sources"] = {
+        "VM_SSH_PRIVATE_KEY": {
+            "source": "generated_ssh_keypair",
+            "pair": "operations-vm",
+            "part": "private",
+        }
+    }
+    workload["runtime_value_bindings"] = {
+        "vm.privateKey": "VM_SSH_PRIVATE_KEY",
+        "vm.unknown": "MISSING_VALUE",
+    }
+
+    report = validate_intake(intake)
+    errors = report["errors"]
+    assert any("cannot expose sensitive Secret field" in error for error in errors)
+    assert any("references unknown Secret field" in error for error in errors)
+
+
 def test_other_catalog_digest_or_source_cannot_inherit_exception():
     policy, intake, probe = _load()
     for mutation in (

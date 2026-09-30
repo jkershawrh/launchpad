@@ -22,7 +22,7 @@ RUN dnf -y upgrade \
     && chmod +x /usr/local/bin/helm
 
 RUN pip install --no-cache-dir --upgrade setuptools \
-    && pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx websockets python-multipart sqlalchemy psycopg2-binary kubernetes requests "celery[redis]" kafka-python-ng argon2-cffi
+    && pip install --no-cache-dir pydantic pyyaml fastapi uvicorn httpx websockets python-multipart sqlalchemy psycopg2-binary kubernetes requests "celery[redis]" kafka-python-ng argon2-cffi cryptography
 
 COPY backend/app/ ./app/
 COPY frontend/public/logos/ ./public/logos/

@@ -470,6 +470,58 @@ def test_runtime_secret_resolver_generates_and_composes_credentials_without_cata
     assert resolved["MLFLOW_WORKSPACE"] == "launchpad-agentops-seat-1"
 
 
+def test_runtime_secret_resolver_generates_one_valid_ed25519_keypair_per_seat():
+    from cryptography.hazmat.primitives import serialization
+
+    source_map = {
+        "VM_SSH_PRIVATE_KEY": {
+            "source": "generated_ssh_keypair",
+            "pair": "operations-vm",
+            "part": "private",
+        },
+        "VM_SSH_PUBLIC_KEY": {
+            "source": "generated_ssh_keypair",
+            "pair": "operations-vm",
+            "part": "public",
+        },
+    }
+
+    first = OpenShiftProvisioningAdapter._resolve_workload_runtime_secret(source_map, {})
+    second = OpenShiftProvisioningAdapter._resolve_workload_runtime_secret(source_map, {})
+    private_key = serialization.load_ssh_private_key(
+        first["VM_SSH_PRIVATE_KEY"].encode(), password=None
+    )
+    expected_public = private_key.public_key().public_bytes(
+        serialization.Encoding.OpenSSH,
+        serialization.PublicFormat.OpenSSH,
+    ).decode()
+
+    assert first["VM_SSH_PUBLIC_KEY"].startswith(f"{expected_public} ")
+    assert first["VM_SSH_PRIVATE_KEY"] != second["VM_SSH_PRIVATE_KEY"]
+
+
+def test_runtime_value_binding_exposes_only_the_public_half_of_a_keypair():
+    values = {"vm": {"sshAuthorizedKey": ""}}
+    OpenShiftProvisioningAdapter._bind_workload_runtime_values(
+        values,
+        {"vm.sshAuthorizedKey": "VM_SSH_PUBLIC_KEY"},
+        {
+            "VM_SSH_PUBLIC_KEY": "ssh-ed25519 AAAATEST launchpad-seat",
+            "VM_SSH_PRIVATE_KEY": "test-private-key-material",
+        },
+    )
+
+    assert values["vm"]["sshAuthorizedKey"] == "ssh-ed25519 AAAATEST launchpad-seat"
+    assert "PRIVATE" not in str(values)
+
+    with pytest.raises(ValueError, match="cannot expose"):
+        OpenShiftProvisioningAdapter._bind_workload_runtime_values(
+            {},
+            {"vm.sshAuthorizedKey": "VM_SSH_PRIVATE_KEY"},
+            {"VM_SSH_PRIVATE_KEY": "secret"},
+        )
+
+
 def test_runtime_secret_resolver_uses_a_named_cluster_model_endpoint():
     resolved = OpenShiftProvisioningAdapter._resolve_workload_runtime_secret(
         {
