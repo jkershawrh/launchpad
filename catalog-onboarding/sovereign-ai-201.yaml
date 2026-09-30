@@ -7,7 +7,7 @@ catalog:
     outcomes, redacted evidence, human authority, and reclaim.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '201'
   learning_stage: Build
@@ -106,22 +106,10 @@ runtime:
       ui: lab
     readiness: []
 certification:
-  stage: factory-source-qualified
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Published GHCR candidates are digest-pinned, signed, attested, and exact-pull
-    verified, but Launchpad must still approve the registry destination, evidence
-    retention, and rollback policy.
-  - No approved OpenShift cluster, model endpoint, model identity, provider identity,
-    or independently reviewed Intel CPU placement was available for a LIVE run.
-  - Declared chart resources have not been measured at one, five, or twenty-five seats.
-  - OpenShift reclaim and zero-residue evidence remain independent Launchpad gates;
-    the factory receipt covers only the local container smoke environment.
-  - Launchpad source approval, trusted render, artifact review, live seat certification,
-    and promotion remain required.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   proof_contract: certification/catalog/sovereign-ai-201.yaml
