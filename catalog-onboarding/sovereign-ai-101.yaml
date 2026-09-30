@@ -28,12 +28,12 @@ sources:
     revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
     playbook: site.yml
     start_path: showroom
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-101.git
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
     revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
     deploy_path: deploy/openshift/base
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-101.git
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
 runtime:
   namespace_slug: sovereign-ai-101
   workshop_cluster_ref: flightpath
@@ -65,6 +65,7 @@ runtime:
     source: showroom.terminal
   allowed_exposure_policies:
   - internal
+  - public_code
   workload:
     source_kind: kustomize
     gitops_ready: true

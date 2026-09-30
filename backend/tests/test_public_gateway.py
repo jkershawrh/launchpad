@@ -104,6 +104,27 @@ def test_order_home_exposes_only_order_scoped_participant_links(monkeypatch):
     assert "apps.arena.fm2aihpcsed.com" not in response.text
 
 
+def test_order_home_hides_duplicate_workspace_when_showroom_is_the_workspace(monkeypatch):
+    async def resolved(_request):
+        return {
+            "seat_ref": "seat-1",
+            "expires_at": "2026-09-30T22:00:00Z",
+            "showroom_url": "https://showroom-seat.apps.flightpath.example",
+            "workspace_url": "https://showroom-seat.apps.flightpath.example",
+            "console_url": "",
+            "tool_urls": {
+                "story": "https://story-seat.apps.flightpath.example",
+            },
+        }
+
+    monkeypatch.setattr("app.public_gateway._resolve", resolved)
+    response = TestClient(app).get("/labs/sovereign-ai-101-ab12cd34/")
+
+    assert response.status_code == 200
+    assert response.text.count("Open Lab") == 1
+    assert "Open workspace" not in response.text
+
+
 def test_order_join_form_posts_back_to_the_same_order(monkeypatch):
     async def denied(_request):
         raise HTTPException(403, "Access denied")

@@ -38,7 +38,7 @@ metadata:
   shared_blueprint: red-hat-intel-sovereign-ai-v1
   solution_family: sovereign_ai
   showroom: true
-  showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-101.git
+  showroom_content_repo_url: https://github.com/jkershawrh/sovereign-ai-101.git
   showroom_content_ref: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
@@ -54,6 +54,7 @@ metadata:
   certification_proof_contract: certification/catalog/sovereign-ai-101.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: sovereign-ai-101
   showroom_title: 'Sovereign AI 101: Understand Governed Inference'
   namespace_slug: sovereign-ai-101
@@ -80,7 +81,7 @@ metadata:
   workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: git@github.com:jkershawrh/sovereign-ai-101.git
+  workload_repo: https://github.com/jkershawrh/sovereign-ai-101.git
   workload_revision: 9eee1500ce475bfb75ad5e52d50f8b50582ed420
   workload_deploy_type: kustomize
   workload_deployment_scope: seat

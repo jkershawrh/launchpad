@@ -432,6 +432,16 @@ async def home(request: Request, order_ref: str = ""):
     ):
         if key == "console_url" and target.get("showroom_url"):
             continue
+        if (
+            key == "workspace_url"
+            and target.get("showroom_url")
+            and str(target.get("workspace_url", "")).rstrip("/")
+            == str(target.get("showroom_url", "")).rstrip("/")
+        ):
+            # Showroom already contains the declared participant tools.  A
+            # second link through the legacy workspace proxy is both
+            # redundant and can break relative iframe paths for these labs.
+            continue
         if target.get(key):
             if key == "showroom_url" and proxy_prefix:
                 path = f"{proxy_prefix}/showroom/"

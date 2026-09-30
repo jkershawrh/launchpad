@@ -55,6 +55,7 @@ metadata:
   certification_proof_contract: certification/catalog/virtualization-ai-301.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: virtualization-ai-301
   showroom_title: "Virtualization + AI 301 \u2014 Modernize VMs with Governed AI"
   namespace_slug: virtualization-ai-301
