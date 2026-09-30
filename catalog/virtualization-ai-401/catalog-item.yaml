@@ -103,6 +103,8 @@ metadata:
   workload_helm_values:
     operationsAdapter:
       mode: rehearsal
+      ledger:
+        storageClassName: ocs-storagecluster-ceph-rbd
       image:
         repository: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter
         digest: sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca

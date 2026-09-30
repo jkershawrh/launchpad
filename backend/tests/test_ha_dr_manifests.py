@@ -674,6 +674,7 @@ def test_flightpath_stage_bootstrap_requires_explicit_target_and_safe_order() ->
 
 def test_flightpath_candidate_provisioner_is_admission_scoped() -> None:
     items = render("deploy/launchpad/overlays/flightpath-candidate")
+    worker = resource(items, "Deployment", "lifecycle-worker")
     binding = resource(
         items, "ClusterRoleBinding", "launchpad-flightpath-candidate-provisioner"
     )
@@ -718,3 +719,4 @@ def test_flightpath_candidate_provisioner_is_admission_scoped() -> None:
         "policyName": "launchpad-flightpath-candidate-namespace-boundary",
         "validationActions": ["Deny"],
     }
+    assert worker["spec"]["replicas"] == 2

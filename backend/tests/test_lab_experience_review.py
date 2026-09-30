@@ -318,6 +318,9 @@ def test_virtualization_401_certification_capabilities_match_flightpath() -> Non
         "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter"
     )
     assert values["operationsAdapter"]["mode"] == "rehearsal"
+    assert values["operationsAdapter"]["ledger"]["storageClassName"] == (
+        "ocs-storagecluster-ceph-rbd"
+    )
     assert "presentation_image" not in values
     assert "operations_adapter_image" not in values
 
