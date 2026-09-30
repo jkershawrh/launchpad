@@ -40,7 +40,7 @@ metadata:
   certification_transfer: none
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
-  showroom_content_ref: 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b
+  showroom_content_ref: 958cbdfc08582aff0a5db2a273cd212ef270d88c
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
@@ -84,7 +84,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-301.git
-  workload_revision: 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b
+  workload_revision: 958cbdfc08582aff0a5db2a273cd212ef270d88c
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-301
@@ -94,17 +94,17 @@ metadata:
   workload_helm_values:
     values_overlay: charts/sovereign-ai-301/values.published.yaml
     workload_image: ghcr.io/jkershawrh/sovereign-ai-301-qualifier@sha256:1f23f2fb1d3f12c676399c56fcedc4a57c5291cc9b0a883ad4103dd680f8db31
-    presentation_image: ghcr.io/jkershawrh/sovereign-ai-301-presentation@sha256:e457952acf2ba6df805e6fb46c0f0f249b09aeba2baadd9d1ba8185aaeced277
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-301-presentation@sha256:203a386123a2ea34198a0b3a67c967481d4a72300f232010a48af4c4209f5893
     source_state: REHEARSAL
     confidential_runtime_enabled: false
     live_tdx_claimed: false
     image:
       repository: ghcr.io/jkershawrh/sovereign-ai-301-qualifier
-      digest: sha256:1f23f2fb1d3f12c676399c56fcedc4a57c5291cc9b0a883ad4103dd680f8db31
+      digest: sha256:9972430351ea2b5b8c6f8798e3b9baf244194fc29b48471d42cb2ee06f497e62
     presentation:
       image:
         repository: ghcr.io/jkershawrh/sovereign-ai-301-presentation
-        digest: sha256:e457952acf2ba6df805e6fb46c0f0f249b09aeba2baadd9d1ba8185aaeced277
+        digest: sha256:203a386123a2ea34198a0b3a67c967481d4a72300f232010a48af4c4209f5893
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
   workload_runtime_secret_sources: {}
@@ -114,5 +114,5 @@ metadata:
     ui: sovereign-ai-301-presentation
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-301.git
-  source_content_revision: 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b
+  source_content_revision: 958cbdfc08582aff0a5db2a273cd212ef270d88c
   source_references: {}
