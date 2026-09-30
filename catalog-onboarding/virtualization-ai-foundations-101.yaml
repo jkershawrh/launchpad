@@ -22,14 +22,14 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 6650f09059e20a5f8dc20ca7869752c962151b40
+    revision: a5266507d6546ba69d88da00dcd7b507bf3a668b
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
-    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:3ab055c39a5cacf7e1c4dad0550b072d4153475c4a74b2e81c5feeb746a2128a
+    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:dcf94e1ff17aea182008ca337d5787b31282e70a46a73a01be934586964f3891
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: 6650f09059e20a5f8dc20ca7869752c962151b40
+    revision: a5266507d6546ba69d88da00dcd7b507bf3a668b
     deploy_path: charts/virtualization-ai-foundations
     gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
 runtime:
@@ -75,8 +75,8 @@ runtime:
     release_name: virtualization-ai-foundations-101
     helm_values:
       values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:674ce5cf7c0ea024cfa73a72bd9422b5d0f221f50f668b3d4ce0e9b71893766e
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:66203cee49748f3c0c07ac002741677ea5ccbf70ff77012f34bbccc16748606d
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:1485ecf3a0d4a4fdc14ea51c073ec11fdf945fb7a5bb289834728d630290ab6d
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:92d418ef8b3b895712a2adb3950544e9b2a7adaf66d167dc786807ad2d2bce16
       presentation_enabled: true
       adapter:
         mode: live
