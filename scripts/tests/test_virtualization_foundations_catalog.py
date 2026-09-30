@@ -34,3 +34,14 @@ def test_virtualization_301_uses_flightpath_capability_names() -> None:
         "openshift-virtualization",
         "showroom",
     ]
+
+
+def test_virtualization_301_overrides_chart_images_with_immutable_candidates() -> None:
+    catalog = yaml.safe_load(
+        (REPO_ROOT / "catalog/virtualization-ai-301/catalog-item.yaml").read_text()
+    )
+    values = catalog["metadata"]["workload_helm_values"]
+
+    assert values["values_overlay"].endswith("values.published.yaml")
+    assert values["adapter"]["image"]["digest"].startswith("sha256:")
+    assert values["presentation"]["image"]["digest"].startswith("sha256:")

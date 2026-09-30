@@ -74,10 +74,24 @@ runtime:
     gitops_ready: true
     release_name: virtualization-ai-301
     helm_values:
+      values_overlay: charts/virtualization-ai-301/values.published.yaml
       adapter_image: ghcr.io/jkershawrh/virtualization-ai-301-adapter@sha256:6da66231992bd9db8a31cdc08b3912b7d6c797e1ed42a064c06eea686d579d07
       presentation_image: ghcr.io/jkershawrh/virtualization-ai-301-presentation@sha256:012c22404725b03c5c5b3d8bb3234e608da334af72762e10e158031b505506fa
       presentation_enabled: true
       default_source_state: REHEARSAL
+      adapter:
+        mode: rehearsal
+        image:
+          repository: ghcr.io/jkershawrh/virtualization-ai-301-adapter
+          tag: ''
+          digest: sha256:6da66231992bd9db8a31cdc08b3912b7d6c797e1ed42a064c06eea686d579d07
+          pullPolicy: IfNotPresent
+      presentation:
+        image:
+          repository: ghcr.io/jkershawrh/virtualization-ai-301-presentation
+          tag: ''
+          digest: sha256:012c22404725b03c5c5b3d8bb3234e608da334af72762e10e158031b505506fa
+          pullPolicy: IfNotPresent
     runtime_secret_name: ''
     runtime_secret_value_path: ''
     runtime_secret_sources: {}
