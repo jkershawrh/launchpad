@@ -14,6 +14,19 @@ from app.auth.oauth import User, require_admin
 from app.services.public_access import PublicAccessCodeRotationConflictError
 
 router = APIRouter(prefix="/public-access", tags=["public-access"])
+
+
+def _deduplicate_showroom_workspace(
+    showroom_url: str | None, workspace_url: str | None
+) -> tuple[str | None, str | None]:
+    """Do not advertise Showroom twice when it is the lab's only workspace."""
+    if (
+        showroom_url
+        and workspace_url
+        and showroom_url.rstrip("/") == workspace_url.rstrip("/")
+    ):
+        workspace_url = None
+    return showroom_url, workspace_url
 logger = logging.getLogger("launchpad.public_access")
 
 
@@ -441,6 +454,9 @@ def resolve_gateway_target(
         if lab_session:
             showroom_url = lab_session.lab_url
             workspace_url = lab_session.metadata.get("workspace_url") or lab_session.dashboard_url
+    showroom_url, workspace_url = _deduplicate_showroom_workspace(
+        showroom_url, workspace_url
+    )
     if lab_session and lab_session.cluster_ref and provisioning_service.cluster_registry:
         target = provisioning_service.cluster_registry.get(lab_session.cluster_ref)
         # Public participants must never be redirected to the cluster's
@@ -528,6 +544,9 @@ def resolve_oidc_identity(
     elif lab_session:
         showroom_url = lab_session.metadata.get("showroom_url") or lab_session.lab_url
         workspace_url = lab_session.metadata.get("workspace_url") or lab_session.dashboard_url
+    showroom_url, workspace_url = _deduplicate_showroom_workspace(
+        showroom_url, workspace_url
+    )
     if lab_session and lab_session.cluster_ref and provisioning_service.cluster_registry:
         cluster = provisioning_service.cluster_registry.get(lab_session.cluster_ref)
         # Fail closed rather than leaking an internal Console hostname into a

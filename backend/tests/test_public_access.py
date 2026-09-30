@@ -859,6 +859,28 @@ def test_public_access_never_uses_placeholder_workspace_url():
     assert "/core~v1~Pod" in source
 
 
+def test_showroom_only_lab_does_not_publish_duplicate_workspace():
+    from app.api.routers.public_access import _deduplicate_showroom_workspace
+
+    showroom, workspace = _deduplicate_showroom_workspace(
+        "https://showroom.example.test/", "https://showroom.example.test"
+    )
+
+    assert showroom == "https://showroom.example.test/"
+    assert workspace is None
+
+
+def test_distinct_workspace_remains_available():
+    from app.api.routers.public_access import _deduplicate_showroom_workspace
+
+    showroom, workspace = _deduplicate_showroom_workspace(
+        "https://showroom.example.test", "https://workspace.example.test"
+    )
+
+    assert showroom == "https://showroom.example.test"
+    assert workspace == "https://workspace.example.test"
+
+
 def test_public_access_never_falls_back_to_private_console_url():
     source = (
         __import__("pathlib").Path(__file__).resolve().parents[1]
