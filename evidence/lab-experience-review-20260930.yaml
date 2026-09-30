@@ -641,8 +641,8 @@ labs:
     source_state:
       repository: /Users/jkershaw/Documents/sovereign-ai-301
       checked_out_branch: main
-      published_head: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
-      catalog_pinned_revision: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
+      published_head: 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b
+      catalog_pinned_revision: 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b
       post_review_changes: committed-published-pinned-not-live-certified
       certification_target: truthful-rehearsal-only
       live_confidentiality_claims: prohibited
@@ -650,7 +650,7 @@ labs:
       publication_validation:
         status: green-integration
         workflow: https://github.com/jkershawrh/sovereign-ai-301/actions/runs/36740848244
-        evidence: "Source qualification, zero HIGH/CRITICAL gates, linux/amd64 publication, signatures, SPDX SBOM attestations, provenance attestations, and verification passed for both immutable artifacts."
+        evidence: "The immutable images retain their successful zero HIGH/CRITICAL, signature, SBOM, provenance, and linux/amd64 qualification. Source revision 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b adds only the tested short Route and writable NGINX runtime required by restricted Flightpath seats."
       immutable_images:
         presentation: ghcr.io/jkershawrh/sovereign-ai-301-presentation@sha256:e457952acf2ba6df805e6fb46c0f0f249b09aeba2baadd9d1ba8185aaeced277
         qualifier: ghcr.io/jkershawrh/sovereign-ai-301-qualifier@sha256:1f23f2fb1d3f12c676399c56fcedc4a57c5291cc9b0a883ad4103dd680f8db31

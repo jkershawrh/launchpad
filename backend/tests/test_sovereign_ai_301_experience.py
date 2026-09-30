@@ -38,10 +38,16 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     assert metadata["workload_runtime_secret_sources"] == {}
     assert runtime["workload"]["runtime_secret_name"] == ""
     assert runtime["workload"]["runtime_secret_sources"] == {}
-    assert metadata["showroom_content_repo_url"].startswith("https://")
-    assert metadata["workload_repo"].startswith("https://")
-    assert intake["sources"]["showroom"]["gitops_repo_url"].startswith("https://")
-    assert intake["sources"]["workload"]["gitops_repo_url"].startswith("https://")
+    expected_gitops_repo = "git@github.com:jkershawrh/sovereign-ai-301.git"
+    expected_revision = "1ea6ce5da38c54639f38b27d223a01a39dfe3b8b"
+    assert metadata["showroom_content_repo_url"] == expected_gitops_repo
+    assert metadata["workload_repo"] == expected_gitops_repo
+    assert intake["sources"]["showroom"]["gitops_repo_url"] == expected_gitops_repo
+    assert intake["sources"]["workload"]["gitops_repo_url"] == expected_gitops_repo
+    assert metadata["showroom_content_ref"] == expected_revision
+    assert metadata["workload_revision"] == expected_revision
+    assert review["source_state"]["catalog_pinned_revision"] == expected_revision
+    assert "get route story" in (ROOT / "scripts/certify-sovereign-ai-301-seat.sh").read_text()
 
     expected_tabs = ["story", "terminal"]
     assert [tab["id"] for tab in metadata["showroom_tabs"]] == expected_tabs

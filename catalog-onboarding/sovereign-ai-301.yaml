@@ -27,15 +27,15 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
-    revision: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
+    revision: 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b
     playbook: showroom/default-site.yml
     start_path: showroom/content
-    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
-    revision: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
+    revision: 1ea6ce5da38c54639f38b27d223a01a39dfe3b8b
     deploy_path: charts/sovereign-ai-301
-    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
+    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
 runtime:
   namespace_slug: sovereign-ai-301
   workshop_cluster_ref: flightpath
