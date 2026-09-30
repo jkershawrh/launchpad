@@ -40,7 +40,7 @@ metadata:
   solution_family: virtualization_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/virtualization-ai-301.git
-  showroom_content_ref: 2fb50bfb5f597591e3851735706e9cef77534ab5
+  showroom_content_ref: 9ffe5eb8034899092f980138c6a1f4f489442aaf
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
@@ -87,7 +87,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/virtualization-ai-301.git
-  workload_revision: 2fb50bfb5f597591e3851735706e9cef77534ab5
+  workload_revision: 9ffe5eb8034899092f980138c6a1f4f489442aaf
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-301
@@ -122,5 +122,5 @@ metadata:
     ui: virt301
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-301.git
-  source_content_revision: 2fb50bfb5f597591e3851735706e9cef77534ab5
+  source_content_revision: 9ffe5eb8034899092f980138c6a1f4f489442aaf
   source_references: {}

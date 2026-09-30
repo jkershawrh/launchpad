@@ -1,0 +1,81 @@
+{
+  "schema": "launchpad.redhat.com/public-exposure-certification-evidence/v1",
+  "catalog_item_id": "virtualization-ai-301",
+  "result": "GREEN-live-public-exposure",
+  "observed_at": "2026-09-30T03:03:00Z",
+  "source": {
+    "launchpad_commit_sha": "599c551150ba7ffdc4d423bb8980dc47d657aff3",
+    "lab_content_commit_sha": "9ffe5eb8034899092f980138c6a1f4f489442aaf",
+    "release_run": "https://github.com/rhpds/launchpad/actions/runs/36660903849",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:8a5c588cc01007bc2e0307cbe9669cc3e008dc0d4973ccb51d28eb191b106e55"
+  },
+  "internal_evidence": {
+    "path": "evidence/runs/catalog/virtualization-ai-301-flightpath-one-seat-20260929-r9.json",
+    "sha256": "376982294232181eb2a88bf61375e73416d7676c03399bafe67723d98f459cda"
+  },
+  "plan": {
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false
+  },
+  "run": {
+    "workshop_id": "1c1dd2dd-ce70-4688-b02a-5335fc9692bc",
+    "session_id": "b5c5b27d-8c56-4ba3-ad93-20cf38303c8c",
+    "seat_id": "d6255bb0-e39e-462b-a15b-60d98a12ac0d",
+    "namespace": "launchpad-flightpath-candida-virtualization-ai-d6255b",
+    "public_url": "https://labs.smg-helix.ai/labs/virtualization-ai-301-1c1dd2dd"
+  },
+  "identity_and_claim": {
+    "one_time_code_disclosed_once": true,
+    "claim_succeeded": true,
+    "same_identity_recovered_same_seat": true,
+    "plaintext_code_persisted": false
+  },
+  "participant_journey": {
+    "landing": true,
+    "showroom": true,
+    "declared_tools": true,
+    "logout_and_resume": true,
+    "instructions_path": "/showroom/www/virtualization-ai-301/main/index.html",
+    "story_loaded": true,
+    "terminal_loaded": true
+  },
+  "authorization": {
+    "assigned_namespace_edit": true,
+    "cross_namespace_denied": true,
+    "unauthenticated_denied": true,
+    "cluster_scoped_nodes_denied": true
+  },
+  "edge": {
+    "trusted_tls": true,
+    "external_browser": true
+  },
+  "abuse_controls": {
+    "uniform_denial": true,
+    "rate_limit_enforced": true,
+    "component_evidence": "evidence/public-access/green-live-flightpath-public-access-2026-09-24.yaml"
+  },
+  "cleanup": {
+    "status": "completed",
+    "identity_disabled_after_final_entitlement": true,
+    "model_keys_revoked": true,
+    "model_key_revocation_confirmation": "http-success",
+    "resource_counts": {
+      "namespaces": 0,
+      "applications": 0,
+      "routes": 0,
+      "rolebindings": 0,
+      "secrets": 0,
+      "active_entitlements": 0
+    }
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_email_exported": false
+  },
+  "rubric": {
+    "score": 100,
+    "passed": true
+  }
+}

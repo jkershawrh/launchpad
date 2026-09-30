@@ -1,0 +1,76 @@
+{
+  "schema": "launchpad.redhat.com/public-exposure-certification-evidence/v1",
+  "catalog_item_id": "sovereign-ai-101",
+  "result": "GREEN-live-public-exposure",
+  "observed_at": "2026-09-30T02:49:00Z",
+  "source": {
+    "commit_sha": "599c551150ba7ffdc4d423bb8980dc47d657aff3",
+    "release_run": "https://github.com/rhpds/launchpad/actions/runs/36660903849",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:8a5c588cc01007bc2e0307cbe9669cc3e008dc0d4973ccb51d28eb191b106e55"
+  },
+  "internal_evidence": {
+    "path": "evidence/runs/catalog/sovereign-ai-101-one-seat-20260929h.json",
+    "sha256": "e699f65c458d16d21699dc289933fa0a9f7fd15074f0413ad2a16a7fe9611fe2"
+  },
+  "plan": {
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false
+  },
+  "run": {
+    "workshop_id": "4b0ced7b-ff4d-44f4-986f-a8794e4cb67b",
+    "session_id": "dd555ceb-5df6-4897-b3d1-8c8034801c03",
+    "seat_id": "d94f465d-b02c-4335-861b-69c7b6aba76d",
+    "namespace": "launchpad-flightpath-candida-sovereign-ai-101-d94f46",
+    "public_url": "https://labs.smg-helix.ai/labs/sovereign-ai-101-4b0ced7b"
+  },
+  "identity_and_claim": {
+    "one_time_code_disclosed_once": true,
+    "claim_succeeded": true,
+    "same_identity_recovered_same_seat": true,
+    "plaintext_code_persisted": false
+  },
+  "participant_journey": {
+    "landing": true,
+    "showroom": true,
+    "declared_tools": true,
+    "logout_and_resume": true
+  },
+  "authorization": {
+    "assigned_namespace_edit": true,
+    "cross_namespace_denied": true,
+    "unauthenticated_denied": true
+  },
+  "edge": {
+    "trusted_tls": true,
+    "external_browser": true
+  },
+  "abuse_controls": {
+    "uniform_denial": true,
+    "rate_limit_enforced": true,
+    "component_evidence": "evidence/public-access/green-live-flightpath-public-access-2026-09-24.yaml"
+  },
+  "cleanup": {
+    "status": "completed",
+    "identity_disabled_after_final_entitlement": true,
+    "model_keys_revoked": true,
+    "model_key_revocation_confirmation": "http-success",
+    "resource_counts": {
+      "namespaces": 0,
+      "applications": 0,
+      "routes": 0,
+      "rolebindings": 0,
+      "secrets": 0,
+      "active_entitlements": 0
+    }
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_email_exported": false
+  },
+  "rubric": {
+    "score": 100,
+    "passed": true
+  }
+}
