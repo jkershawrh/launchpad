@@ -20,6 +20,28 @@ If any supplied fixture or example was used instead of a runtime observation,
 mark it `REHEARSAL`. This candidate does not permit offline information to be
 presented as live evidence.
 
+== Clean Up the Learner Session
+
+The policy override was removed and the deployment was restored in the prior
+step. Close any remaining local port forwards and remove only the temporary
+files created by this journey:
+
+[source,bash,role="execute"]
+----
+kill "${MCP_FORWARD_PID:-}" "${PORT_FORWARD_PID:-}" 2>/dev/null || true
+unset AGENT_AUTH_TOKEN BASELINE_MAX_TOKENS RESTORED_MAX_TOKENS
+rm -f /tmp/agentic-401-*.json \
+  /tmp/agentic-401-*.log \
+  /tmp/agentic-401-baseline-max-tokens
+test "$(oc get configmap workflow-policy --ignore-not-found)" = ""
+oc rollout status deployment/multi-agent --timeout=5m
+----
+
+This learner cleanup does not delete the namespace, Showroom, routes, secrets,
+or workload release. Those resources belong to Launchpad reclaim. Complete
+certification separately proves that reclaim removes the whole seat and leaves
+zero-residue; a participant must never perform that platform lifecycle action.
+
 == What Remains Before Activation
 
 This content is a 401 candidate, not an active catalog promise. Promotion
@@ -34,4 +56,3 @@ not deployed in this draft.
 The same operating method can be applied to Network Operations, reliability,
 fraud, RAG, or another approved specialty. The specialty changes the evidence
 and policy; it does not replace the canonical Red Hat and Intel boundaries.
-

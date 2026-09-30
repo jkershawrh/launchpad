@@ -27,8 +27,11 @@ oc delete configmap workflow-policy
 oc rollout restart deployment/multi-agent
 oc rollout status deployment/multi-agent --timeout=5m
 test "$(oc get configmap workflow-policy --ignore-not-found)" = ""
-test "$(oc exec deployment/multi-agent -c executor -- \
-  python -c 'import agent; print(agent.AGENT_MAX_TOKENS)')" = "96"
+BASELINE_MAX_TOKENS="$(cat /tmp/agentic-401-baseline-max-tokens)"
+RESTORED_MAX_TOKENS="$(oc exec deployment/multi-agent -c executor -- \
+  python -c 'import agent; print(agent.AGENT_MAX_TOKENS)')"
+test "${RESTORED_MAX_TOKENS}" = "${BASELINE_MAX_TOKENS}"
+printf 'Restored executor token policy: %s\n' "${RESTORED_MAX_TOKENS}"
 ----
 
 Record rollout completion and the restored value. The proof is incomplete if
@@ -46,4 +49,3 @@ restored policy value as one auditable sequence.
 
 [.next-nav]
 xref:99-conclusion.adoc[Next: Assemble the Operational Proof Package ->]
-

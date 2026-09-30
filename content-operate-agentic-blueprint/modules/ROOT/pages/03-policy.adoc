@@ -39,14 +39,20 @@ alone is not evidence that a tool was called.
 [source,bash,role="execute"]
 ----
 test "$(oc get configmap workflow-policy --ignore-not-found)" = ""
-oc exec deployment/multi-agent -c executor -- \
-  python -c 'import agent; print("executor token policy:", agent.AGENT_MAX_TOKENS)'
+BASELINE_MAX_TOKENS="$(oc exec deployment/multi-agent -c executor -- \
+  python -c 'import agent; print(agent.AGENT_MAX_TOKENS)')"
+test -n "${BASELINE_MAX_TOKENS}"
+printf '%s\n' "${BASELINE_MAX_TOKENS}" > /tmp/agentic-401-baseline-max-tokens
+printf 'Executor token policy baseline: %s\n' "${BASELINE_MAX_TOKENS}"
 ----
 
 The baseline policy is versioned in the deployed image and permits no
 learner-configured override. The optional ConfigMap is a controlled,
 non-secret extension point. It changes a generation bound; it does not teach
 the LLM a new policy or grant action authority.
+
+The baseline value is observed from the running revision and retained locally
+for the later restore check. It is not assumed from a previous image version.
 
 Record four adjacent items in the proof package: Supporting Evidence, policy
 state, Prompt in, and Response out. The separation is the operating control.
@@ -59,4 +65,3 @@ retains authority.
 
 [.next-nav]
 xref:04-failure-recovery.adoc[Next: Prove Safe Denial and Recovery ->]
-

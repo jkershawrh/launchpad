@@ -1,6 +1,33 @@
 = Operate Evidence-Backed Multi-Agent Systems
 :navtitle: Welcome
 
+== Story
+
+At level 301 you built a multi-agent incident workflow. Now an operator must
+answer a harder question: when the workflow recommends a change, can another
+person prove which agent ran, which evidence it used, which deterministic
+policy bounded it, what the Intel Xeon model explained, and why a human still
+owns the action?
+
+You are that operator. A fictional checkout incident is the thread through the
+lab. You will observe the running system, correlate one journey, challenge its
+guardrails, make one controlled policy change, and restore the certified
+baseline. The resulting proof package becomes the input to level 501, where
+the same governed workload is evaluated under sustained load and controlled
+pressure.
+
+== Show → Learn → Do → Prove
+
+* *Show:* use the Live Operations Story and Multi-Agent Workspace to see one
+  evidence-backed journey and its human-review boundary.
+* *Learn:* use the Terminal and OpenShift Console to distinguish workload
+  health, MCP evidence, deterministic policy, and shared Intel Xeon inference.
+* *Do:* run a correlated workflow, test fail-closed denial and recovery, and
+  apply one reversible token-policy override.
+* *Prove:* assemble the learner-visible request, response, evidence, latency,
+  policy, recovery, rollback, and cleanup records without exposing secrets or
+  hidden model reasoning.
+
 == Continue the Same Journey
 
 This 401 experience operates the same Red Hat and Intel blueprint you built at
@@ -44,6 +71,10 @@ live.
 IMPORTANT: Use only fictional or sanitized information. Never print the
 runtime Secret or model credential.
 
+Use the four supplied operators as one experience: *Live Operations Story*
+frames the business problem, *Multi-Agent Workspace* runs and explains the
+journey, *Terminal* collects exact evidence, and *OpenShift Console* shows the
+namespace-scoped platform state. No single operator is the complete proof.
+
 [.next-nav]
 xref:01-baseline.adoc[Start: Establish the Operational Baseline ->]
-
