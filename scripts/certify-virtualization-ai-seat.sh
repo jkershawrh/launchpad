@@ -40,8 +40,8 @@ esac
 
 stage=vm-ready
 for vm in "${vm_names[@]}"; do
-  oc --kubeconfig "$KUBECONFIG" wait -n "$namespace" --for=jsonpath='{.status.printableStatus}'=Running "vm/$vm" --timeout=600s
-  oc --kubeconfig "$KUBECONFIG" wait -n "$namespace" --for=condition=Ready "vmi/$vm" --timeout=600s
+  oc --kubeconfig "$KUBECONFIG" wait -n "$namespace" --for=jsonpath='{.status.printableStatus}'=Running "vm/$vm" --timeout=600s >/dev/null
+  oc --kubeconfig "$KUBECONFIG" wait -n "$namespace" --for=condition=Ready "vmi/$vm" --timeout=600s >/dev/null
 done
 vm_count="$(oc --kubeconfig "$KUBECONFIG" get vm -n "$namespace" -o json | jq '[.items[] | select(.status.printableStatus == "Running")] | length')"
 vmi_count="$(oc --kubeconfig "$KUBECONFIG" get vmi -n "$namespace" -o json | jq '[.items[] | select(any(.status.conditions[]?; .type == "Ready" and .status == "True"))] | length')"
