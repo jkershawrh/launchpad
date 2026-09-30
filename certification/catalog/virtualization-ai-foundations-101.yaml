@@ -11,9 +11,9 @@ spec:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 1200, maximum_cleanup_seconds: 600}
   showroom:
     pages:
-      - {id: welcome, path: /www/virtualization-ai-101/master/index.html, marker: "Trace a VM to Governed AI"}
-      - {id: verify, path: /www/virtualization-ai-101/master/01-verify.html, marker: "Verify the runtime"}
-      - {id: evidence, path: /www/virtualization-ai-101/master/06-evidence.html, marker: "Export the evidence map"}
+      - {id: welcome, path: /www/virtualization-ai-101/main/index.html, marker: "Trace a VM to Governed AI"}
+      - {id: verify, path: /www/virtualization-ai-101/main/01-verify.html, marker: "Verify the runtime"}
+      - {id: evidence, path: /www/virtualization-ai-101/main/06-evidence.html, marker: "Export the evidence map"}
   seat_probe:
     argv: [bash, scripts/certify-virtualization-ai-seat.sh, virtualization-ai-foundations-101, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 900

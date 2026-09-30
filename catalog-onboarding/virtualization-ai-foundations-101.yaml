@@ -81,7 +81,7 @@ runtime:
       adapter:
         mode: live
         model:
-          apiBase: http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000/v1
+          apiBase: http://launchpad-candidate-maas.launchpad-flightpath-candidate.svc:4000
           name: granite-3.2-8b-tools
           provider: openai-compatible
           egressNamespace: launchpad-flightpath-candidate
