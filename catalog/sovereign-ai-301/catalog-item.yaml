@@ -18,8 +18,6 @@ provisioner_refs:
 validation_refs:
 - pod-ready
 - route-accessible
-- inference-health
-- agentops-journey
 observability_profile: agentops-full-stack
 supported_branding:
 - redhat-intel-default
@@ -31,15 +29,17 @@ metadata:
   prerequisites:
   - sovereign-ai-101
   - sovereign-ai-201
-  recommended_next_items: []
+  recommended_next_items:
+  - sovereign-ai-401
   journey_role: core
   specialty_family: null
   branches_from: sovereign-ai-201
   returns_to: null
   shared_blueprint: red-hat-intel-sovereign-ai-v1
   solution_family: sovereign_ai
+  certification_transfer: none
   showroom: true
-  showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
+  showroom_content_repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
   showroom_content_ref: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
@@ -52,16 +52,8 @@ metadata:
   promotion_sequence:
   - 1
   activation_blockers:
-  - No approved Intel Xeon TDX host or current hardware-rooted quote is attached.
-  - No live OpenShift Sandboxed Containers workload placement is verified.
-  - No reviewed live Trustee verifier, KBS, reference values, or resource policy is
-    attached.
-  - Sovereign AI 101 and 201 remain independent prerequisites and are not certified
-    by this handoff.
-  - One, five, and twenty-five seat certification, reclaim, rollback, and trusted
-    rendering remain independent Launchpad gates.
-  - Complete destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  - Complete exact one-seat Flightpath rehearsal certification, reclaim, credential-revocation
+    observation, and zero-residue proof before activation.
   certification_proof_contract: certification/catalog/sovereign-ai-301.yaml
   allowed_exposure_policies:
   - internal
@@ -78,7 +70,7 @@ metadata:
     source: showroom.terminal
   workshop_cluster_ref: flightpath
   required_models: []
-  inference_endpoint: litellm
+  inference_endpoint: none
   seat_cpu_millicores: 50
   seat_memory_mib: 80
   seat_pods: 2
@@ -91,7 +83,7 @@ metadata:
   workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: git@github.com:jkershawrh/sovereign-ai-301.git
+  workload_repo: https://github.com/jkershawrh/sovereign-ai-301.git
   workload_revision: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
   workload_deploy_type: helm
   workload_deployment_scope: seat

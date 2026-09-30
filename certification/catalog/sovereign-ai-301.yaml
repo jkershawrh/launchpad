@@ -31,6 +31,10 @@ spec:
       - {path: journey.synthetic_receipt_only, equals: true}
       - {path: journey.key_material_released, equals: false}
       - {path: journey.model_invoked, equals: false}
+      - {path: journey.confidential_runtime_enabled, equals: false}
+      - {path: journey.hardware_quote_verified, equals: false}
+      - {path: journey.trustee_verified, equals: false}
+      - {path: journey.inference_authorized, equals: false}
       - {path: journey.human_authority_retained, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}

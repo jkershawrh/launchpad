@@ -15,25 +15,27 @@ learning:
   prerequisites:
   - sovereign-ai-101
   - sovereign-ai-201
-  recommended_next_items: []
+  recommended_next_items:
+  - sovereign-ai-401
   journey_role: core
   specialty_family: null
   branches_from: sovereign-ai-201
   returns_to: null
   shared_blueprint: red-hat-intel-sovereign-ai-v1
   solution_family: sovereign_ai
+  certification_transfer: none
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
     revision: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
     playbook: showroom/default-site.yml
     start_path: showroom/content
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
     revision: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
     deploy_path: charts/sovereign-ai-301
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-301.git
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-301.git
 runtime:
   namespace_slug: sovereign-ai-301
   workshop_cluster_ref: flightpath
@@ -42,7 +44,11 @@ runtime:
   required_capabilities:
   - openshift
   - showroom
+  validation_refs:
+  - pod-ready
+  - route-accessible
   required_models: []
+  inference_endpoint: none
   seat_resources:
     cpu_millicores: 50
     memory_mib: 80
@@ -96,14 +102,6 @@ certification:
   promotion_sequence:
   - 1
   activation_blockers:
-  - No approved Intel Xeon TDX host or current hardware-rooted quote is attached.
-  - No live OpenShift Sandboxed Containers workload placement is verified.
-  - No reviewed live Trustee verifier, KBS, reference values, or resource policy is
-    attached.
-  - Sovereign AI 101 and 201 remain independent prerequisites and are not certified
-    by this handoff.
-  - One, five, and twenty-five seat certification, reclaim, rollback, and trusted
-    rendering remain independent Launchpad gates.
-  - Complete destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  - Complete exact one-seat Flightpath rehearsal certification, reclaim, credential-revocation
+    observation, and zero-residue proof before activation.
   proof_contract: certification/catalog/sovereign-ai-301.yaml

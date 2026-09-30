@@ -644,6 +644,9 @@ labs:
       published_head: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
       catalog_pinned_revision: 3e3c49d440ec6a3a946c5eaf5e558318f23aa001
       post_review_changes: committed-published-pinned-not-live-certified
+      certification_target: truthful-rehearsal-only
+      live_confidentiality_claims: prohibited
+      live_infrastructure_boundary: "No approved TDX host, hardware-rooted quote, confidential guest placement, Trustee verifier, KBS release, protected resource, or model execution is attached; none is required to certify the explicitly labeled rehearsal experience."
       publication_validation:
         status: green-integration
         workflow: https://github.com/jkershawrh/sovereign-ai-301/actions/runs/36740848244
@@ -651,7 +654,7 @@ labs:
       immutable_images:
         presentation: ghcr.io/jkershawrh/sovereign-ai-301-presentation@sha256:e457952acf2ba6df805e6fb46c0f0f249b09aeba2baadd9d1ba8185aaeced277
         qualifier: ghcr.io/jkershawrh/sovereign-ai-301-qualifier@sha256:1f23f2fb1d3f12c676399c56fcedc4a57c5291cc9b0a883ad4103dd680f8db31
-    next_action: retain draft and certify one Flightpath seat for rehearsal truth, Console/Terminal scope, reclaim, and zero residue; live TDX/Trustee claims remain blocked pending approved infrastructure
+    next_action: certify the exact immutable release for one truthful REHEARSAL seat, Story and Terminal function, reclaim, credential-revocation observation, and zero residue; activation may cover only this rehearsal product, while live TDX, Trustee/KBS, protected-resource, confidential-placement, and inference claims remain prohibited pending approved infrastructure and separate certification
 
   sovereign-ai-401:
     display_name: "Sovereign AI 401 — Operate Confidential AI with Intel TDX"
