@@ -24,14 +24,14 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-201.git
-    revision: 4362c13b0309a0fb1de416b5d40cd27699a23fc8
+    revision: fcc25aa6b2a6aba39ea520ae1b4340234a35419c
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
-    content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:d84d894dd2df3503451b5fd3cb07f70c3ffbce9f6a8378cb5a5c626020e9e40d
+    content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:e1a11fc1c7e1d97b1fe8a50f8db5344b70f5696f3b9812a2e066c572228fb613
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-201.git
-    revision: 4362c13b0309a0fb1de416b5d40cd27699a23fc8
+    revision: fcc25aa6b2a6aba39ea520ae1b4340234a35419c
     deploy_path: charts/sovereign-ai-201
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
 runtime:
@@ -76,21 +76,21 @@ runtime:
     release_name: sovereign-ai-201
     helm_values:
       values_overlay: charts/sovereign-ai-201/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:3d79b40ac8f2dd349eab5b51e1133cd205eb29fc772c7640e7cd367038db5889
-      presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:6ed2b935156cd3aedfb2083de3618354ffa4bd3cd865916f0cb7c2fd197b0d5f
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:2e64c6398662fe691381d9b196d93895d9cec4c20f79bf9bd82b156adc8dd05a
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:513cf322a32a53a2f4946662dd42bedac2186403665aa9a57b674e6caa4fe2f7
       presentation_enabled: true
       adapter:
         image:
           repository: ghcr.io/jkershawrh/sovereign-ai-201-adapter
           tag: ""
-          digest: sha256:3d79b40ac8f2dd349eab5b51e1133cd205eb29fc772c7640e7cd367038db5889
+          digest: sha256:2e64c6398662fe691381d9b196d93895d9cec4c20f79bf9bd82b156adc8dd05a
           pullPolicy: IfNotPresent
       presentation:
         enabled: true
         image:
           repository: ghcr.io/jkershawrh/sovereign-ai-201-presentation
           tag: ""
-          digest: sha256:6ed2b935156cd3aedfb2083de3618354ffa4bd3cd865916f0cb7c2fd197b0d5f
+          digest: sha256:513cf322a32a53a2f4946662dd42bedac2186403665aa9a57b674e6caa4fe2f7
           pullPolicy: IfNotPresent
     runtime_secret_name: sovereign-ai-201-model-runtime
     runtime_secret_value_path: adapter.model.secretName
