@@ -690,15 +690,15 @@ labs:
 
   virtualization-ai-401:
     display_name: "Virtualization + AI 401 — Operate Hybrid VM and AI Workloads"
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-active
     story: {status: green-local, evidence: "The candidate advances the 301 modernization decision into a governed day-two VM operation and hands its evidence to 501."}
     show: {status: green-local, evidence: "The learner sees ALLOW_REVIEW, ABSTAIN, and REFUSE outcomes with explicit rehearsal provenance and human control."}
     learn: {status: green-local, evidence: "Observation, preflight, proposal, approval, execution boundary, validation, and retained learning form one coherent operating lifecycle."}
     do: {status: green-local, evidence: "Executable in-cluster health, API, metrics, ledger, and Console VM/PVC checks span the journey."}
     prove: {status: green-local, evidence: "The candidate verifies three outcome classes, seven ledger records, no automated action, and source_state REHEARSAL."}
-    operators: {status: conditional, evidence: "Console VM/PVC and Terminal checks are meaningful locally; one-seat SSO and VM visibility remain live gates."}
+    operators: {status: green-live, evidence: "The Flightpath one-seat probe proved a Running/Ready KubeVirt VM, namespace-scoped terminal edit, cross-namespace denial, and node-list denial."}
     inference: {status: not-claimed, evidence: "The source explicitly records ai_participated false rather than implying model-backed operation."}
-    cleanup: {status: green-local, evidence: "Participant files are cleaned safely while Launchpad owns workload and namespace reclaim."}
+    cleanup: {status: green-live, evidence: "Launchpad reclaimed the certified seat in 95.54 seconds with zero namespaces, Applications, PVCs, PVs, RoleBindings, Routes, Secrets, or model keys remaining."}
     source_state:
       repository: /Users/jkershaw/Documents/virtualization-ai-401
       published_revision: f00b4bc075acf37f014b8ee55d5810625639b6b3
@@ -738,7 +738,12 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r6.json
         failure: "Public HTTPS clone, Antora build, immutable workloads, persistent evidence, and KubeVirt admission all passed; the content runtime then failed because the playbook did not expose the mounted source path it uses for prebuilt-content detection."
         remediation: "A regression test now requires the proven /showroom/repo plus showroom/content source contract, and corrected revision f00b4bc075acf37f014b8ee55d5810625639b6b3 is in immutable qualification. The failed order reclaimed with zero namespace and Argo CD residue."
-    next_action: certify the exact immutable release for Console SSO, VM readiness, in-cluster commands, truthful REHEARSAL evidence, reclaim, and zero residue
+      live_certification:
+        observed_at: "2026-09-30"
+        result: GREEN-live
+        evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r9.json
+        proof: "100/100: exact immutable release, three participant Showroom pages, Running/Ready VM, adapter health, namespace isolation, truthful REHEARSAL outcome, model-key revocation, 95.54-second reclaim, and zero residue."
+    next_action: retain the measured one-seat ceiling; certify public exposure separately if needed, then graduate capacity only with additional live evidence
 
   virtualization-ai-501:
     display_name: "Virtualization + AI 501 — Qualify a Governed VM Inference Fleet"

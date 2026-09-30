@@ -256,19 +256,28 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
         )
         metadata = catalog["metadata"]
 
-        assert catalog["status"] == intake["catalog"]["status"] == "draft"
+        expected_status = "active" if catalog_id == "virtualization-ai-401" else "draft"
+        expected_stage = (
+            "1-seat-certified"
+            if catalog_id == "virtualization-ai-401"
+            else "immutable-source-published"
+        )
+        assert catalog["status"] == intake["catalog"]["status"] == expected_status
         assert metadata["certification_stage"] == (
             intake["certification"]["stage"]
-        ) == "immutable-source-published"
+        ) == expected_stage
         assert metadata["workload_revision"] == release["revision"]
         assert metadata["showroom_content_ref"] == release["revision"]
         assert intake["sources"]["workload"]["revision"] == release["revision"]
         assert intake["sources"]["showroom"]["revision"] == release["revision"]
         assert release["presentation"] in str(metadata["workload_helm_values"])
         assert release["workload"] in str(metadata["workload_helm_values"])
-        assert review["labs"][catalog_id]["overall_status"] == (
-            "immutable-source-published-draft"
+        expected_overall = (
+            "one-seat-live-certified-active"
+            if catalog_id == "virtualization-ai-401"
+            else "immutable-source-published-draft"
         )
+        assert review["labs"][catalog_id]["overall_status"] == expected_overall
 
     virtualization_401 = review["labs"]["virtualization-ai-401"]["source_state"]
     assert virtualization_401["published_revision"] == (
@@ -293,6 +302,15 @@ def test_virtualization_401_certification_capabilities_match_flightpath() -> Non
     intake = yaml.safe_load(
         (ROOT / "catalog-onboarding/virtualization-ai-401.yaml").read_text()
     )
+    contract = yaml.safe_load(
+        (ROOT / "certification/catalog/virtualization-ai-401.yaml").read_text()
+    )
+    showroom_paths = [page["path"] for page in contract["spec"]["showroom"]["pages"]]
+    assert showroom_paths == [
+        "/www/virtualization-ai-401/index.html",
+        "/www/virtualization-ai-401/02-preflight.html",
+        "/www/virtualization-ai-401/06-validate.html",
+    ]
     assert catalog["metadata"]["workload_helm_values"]["presentation"][
         "ingressDomain"
     ] == "apps.flightpath.fm2aihpcsed.com"

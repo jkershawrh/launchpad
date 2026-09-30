@@ -1,10 +1,9 @@
 catalog_item_id: virtualization-ai-401
 display_name: "Virtualization + AI 401 \u2014 Operate Hybrid VM and AI Workloads"
-description: Governed hybrid VM and AI day-two operations candidate awaiting independent
-  Launchpad discovery and review.
+description: Certified one-seat governed hybrid VM and AI day-two operations experience.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
 - openshift-virtualization
@@ -47,18 +46,11 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-401.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Launchpad source approval, trusted rendering, destination artifact review, live-seat
-    certification, capacity graduation, reclaim verification, promotion, and publication
-    remain required.
-  - Factory resource values are chart requests, not observed capacity evidence; maximum
-    certified seats remains zero.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/virtualization-ai-401.yaml
   allowed_exposure_policies:
   - internal

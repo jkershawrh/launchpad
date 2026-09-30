@@ -9,9 +9,9 @@ spec:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 1200, maximum_cleanup_seconds: 600}
   showroom:
     pages:
-      - {id: welcome, path: /www/virtualization-ai-401/master/index.html, marker: "Operate Hybrid VM and AI Workloads"}
-      - {id: preflight, path: /www/virtualization-ai-401/master/02-preflight.html, marker: "PREFLIGHT"}
-      - {id: validate, path: /www/virtualization-ai-401/master/06-validate.html, marker: "VALIDATE"}
+      - {id: welcome, path: /www/virtualization-ai-401/index.html, marker: "Operate Hybrid VM and AI Workloads"}
+      - {id: preflight, path: /www/virtualization-ai-401/02-preflight.html, marker: "PREFLIGHT"}
+      - {id: validate, path: /www/virtualization-ai-401/06-validate.html, marker: "VALIDATE"}
   seat_probe:
     argv: [bash, scripts/certify-virtualization-ai-seat.sh, virtualization-ai-401, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 900

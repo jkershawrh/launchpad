@@ -2,11 +2,10 @@ api_version: launchpad.redhat.com/v1alpha1
 catalog:
   catalog_item_id: virtualization-ai-401
   display_name: "Virtualization + AI 401 \u2014 Operate Hybrid VM and AI Workloads"
-  description: Governed hybrid VM and AI day-two operations candidate awaiting independent
-    Launchpad discovery and review.
+  description: Certified one-seat governed hybrid VM and AI day-two operations experience.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '401'
   learning_stage: Operate
@@ -96,17 +95,10 @@ runtime:
       ui: virtualization-ai-401
     readiness: []
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Launchpad source approval, trusted rendering, destination artifact review, live-seat
-    certification, capacity graduation, reclaim verification, promotion, and publication
-    remain required.
-  - Factory resource values are chart requests, not observed capacity evidence; maximum
-    certified seats remains zero.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   proof_contract: certification/catalog/virtualization-ai-401.yaml
