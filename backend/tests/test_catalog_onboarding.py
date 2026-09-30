@@ -107,6 +107,22 @@ def test_private_source_can_use_matching_read_only_gitops_transport() -> None:
     )
 
 
+def test_public_source_can_use_matching_https_gitops_transport() -> None:
+    intake = load_intake(ROOT / "catalog-onboarding/virtualization-ai-401.yaml")
+    validation = validate_intake(intake)
+    generated = build_catalog_item(intake)["metadata"]
+
+    assert not [
+        error for error in validation["errors"] if "gitops_repo_url" in error
+    ]
+    assert generated["showroom_content_repo_url"] == (
+        "https://github.com/jkershawrh/virtualization-ai-401.git"
+    )
+    assert generated["workload_repo"] == (
+        "https://github.com/jkershawrh/virtualization-ai-401.git"
+    )
+
+
 def test_gitops_transport_must_match_the_provenance_repository() -> None:
     intake = load_intake(ROOT / "catalog-onboarding/agentic-ai-601.yaml")
     intake["sources"]["workload"]["gitops_repo_url"] = (

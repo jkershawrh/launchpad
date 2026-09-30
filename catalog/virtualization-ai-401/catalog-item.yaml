@@ -39,7 +39,7 @@ metadata:
   shared_blueprint: red-hat-intel-virtualization-ai-v1
   solution_family: virtualization_ai
   showroom: true
-  showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-401.git
+  showroom_content_repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
   showroom_content_ref: 99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
@@ -92,7 +92,7 @@ metadata:
   workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: git@github.com:jkershawrh/virtualization-ai-401.git
+  workload_repo: https://github.com/jkershawrh/virtualization-ai-401.git
   workload_revision: 99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44
   workload_deploy_type: helm
   workload_deployment_scope: seat

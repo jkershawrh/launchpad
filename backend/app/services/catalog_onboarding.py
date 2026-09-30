@@ -74,7 +74,9 @@ def _valid_gitops_repo_url(source: dict[str, Any]) -> bool:
     if gitops_url is None:
         return True
     source_match = GITHUB_HTTPS_REPO.fullmatch(str(source.get("repo_url", "")))
-    gitops_match = GITHUB_SSH_REPO.fullmatch(str(gitops_url))
+    gitops_match = GITHUB_SSH_REPO.fullmatch(
+        str(gitops_url)
+    ) or GITHUB_HTTPS_REPO.fullmatch(str(gitops_url))
     return bool(
         source_match
         and gitops_match
@@ -1657,7 +1659,7 @@ def _validate_contract(intake: dict[str, Any], errors: list[str]) -> None:
         if not _valid_gitops_repo_url(source):
             errors.append(
                 f"sources.{source_name}.gitops_repo_url must be the matching "
-                "git@github.com:<owner>/<repo>.git URL"
+                "GitHub SSH or HTTPS repository URL"
             )
         revision = str(source.get("revision", ""))
         if not IMMUTABLE_GIT_SHA.fullmatch(revision):

@@ -27,12 +27,12 @@ sources:
     revision: 99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44
     playbook: showroom/default-site.yml
     start_path: showroom/content
-    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-401.git
+    gitops_repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
     revision: 99fa41f7ce1adc1cf7232bc783e93da6ed8cbc44
     deploy_path: charts/virtualization-ai-401
-    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-401.git
+    gitops_repo_url: https://github.com/jkershawrh/virtualization-ai-401.git
 runtime:
   namespace_slug: virtualization-ai-401
   workshop_cluster_ref: flightpath
