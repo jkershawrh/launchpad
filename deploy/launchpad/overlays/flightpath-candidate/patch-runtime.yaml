@@ -3,9 +3,7 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  # Two durable workers let a high-priority reclaim proceed while another
-  # worker is blocked in a target-cluster readiness check.
-  replicas: 2
+  replicas: 1
   strategy:
     type: Recreate
   template:
@@ -219,7 +217,9 @@ kind: Deployment
 metadata:
   name: lifecycle-worker
 spec:
-  replicas: 1
+  # Two durable workers let a high-priority reclaim proceed while another
+  # worker is blocked in a target-cluster readiness check.
+  replicas: 2
   template:
     spec:
       imagePullSecrets:
