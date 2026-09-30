@@ -701,12 +701,12 @@ labs:
     cleanup: {status: green-local, evidence: "Participant files are cleaned safely while Launchpad owns workload and namespace reclaim."}
     source_state:
       repository: /Users/jkershaw/Documents/virtualization-ai-401
-      published_revision: 529281616de3f11a2b5355314cd4f7123935e02d
-      catalog_pinned_revision: 529281616de3f11a2b5355314cd4f7123935e02d
-      publication_workflow: https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36743086189
+      published_revision: c123098b4ba3b95c5505d22b0bde767c3c90980e
+      catalog_pinned_revision: c123098b4ba3b95c5505d22b0bde767c3c90980e
+      publication_workflow: https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36756033518
       immutable_images:
-        presentation: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a
-        operations_adapter: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca
+        presentation: ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:907a9b1a5e6a947002d1dee5f27ac28d0535b7e249b4354d72984007779f4d30
+        operations_adapter: ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:31fc59895fb09460724c1322841ffd1e6933c4a8a09272877f3061029a896116
       publication_validation: "The exact source passed full qualification, immutable linux/amd64 publication, zero HIGH/CRITICAL vulnerability gates, SPDX SBOM generation, signing, SLSA provenance, verification, and exact-digest pull for both artifacts."
       admission_attempt:
         observed_at: "2026-09-30"

@@ -241,9 +241,9 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
             "workload": "sha256:773d0f7c9c594d54a801d773cce752c01635155829e043783416b3405e182bd1",
         },
         "virtualization-ai-401": {
-            "revision": "529281616de3f11a2b5355314cd4f7123935e02d",
-            "presentation": "sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a",
-            "workload": "sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca",
+            "revision": "c123098b4ba3b95c5505d22b0bde767c3c90980e",
+            "presentation": "sha256:907a9b1a5e6a947002d1dee5f27ac28d0535b7e249b4354d72984007779f4d30",
+            "workload": "sha256:31fc59895fb09460724c1322841ffd1e6933c4a8a09272877f3061029a896116",
         },
     }
 
@@ -272,17 +272,17 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
 
     virtualization_401 = review["labs"]["virtualization-ai-401"]["source_state"]
     assert virtualization_401["published_revision"] == (
-        "529281616de3f11a2b5355314cd4f7123935e02d"
+        "c123098b4ba3b95c5505d22b0bde767c3c90980e"
     )
     assert virtualization_401["catalog_pinned_revision"] == (
-        "529281616de3f11a2b5355314cd4f7123935e02d"
+        "c123098b4ba3b95c5505d22b0bde767c3c90980e"
     )
     assert virtualization_401["publication_workflow"] == (
         "https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36743086189"
     )
     assert virtualization_401["immutable_images"] == {
-        "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:eaf0ccb49b88c879ea6d7e36fbdf44cf9a3c1abc3685af871c5d856efcc8087a",
-        "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:ebfc3c0dfa95efe49b1cb8b59bf5e8445f502a6583996c777fee4d8132d197ca",
+        "presentation": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:907a9b1a5e6a947002d1dee5f27ac28d0535b7e249b4354d72984007779f4d30",
+        "operations_adapter": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:31fc59895fb09460724c1322841ffd1e6933c4a8a09272877f3061029a896116",
     }
 
 
