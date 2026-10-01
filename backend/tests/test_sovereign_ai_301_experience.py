@@ -24,8 +24,8 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     runtime = intake["runtime"]
 
     assert catalog == build_catalog_item(load_intake(ROOT / "catalog-onboarding/sovereign-ai-301.yaml"))
-    assert catalog["status"] == "draft"
-    assert metadata["certification_stage"] == "immutable-source-published"
+    assert catalog["status"] == "active"
+    assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["certification_transfer"] == "none"
     assert metadata["recommended_next_items"] == ["sovereign-ai-401"]
     assert metadata["required_models"] == runtime["required_models"] == []
@@ -58,7 +58,7 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     assert "Console" not in review["operators"]["evidence"]
     assert "Console" not in review["next_action"]
     assert "Terminal" in review["operators"]["evidence"]
-    assert "Terminal" in review["next_action"]
+    assert "truthful rehearsal product" in review["next_action"]
     assert review["source_state"]["certification_target"] == "truthful-rehearsal-only"
     assert review["source_state"]["live_confidentiality_claims"] == "prohibited"
 
@@ -99,6 +99,4 @@ def test_sovereign_ai_301_rehearsal_proof_cannot_transfer_to_live_tdx() -> None:
     ):
         assert expected in assertions
 
-    assert catalog["metadata"]["activation_blockers"] == [
-        "Complete exact one-seat Flightpath rehearsal certification, reclaim, credential-revocation observation, and zero-residue proof before activation."
-    ]
+    assert catalog["metadata"]["activation_blockers"] == []

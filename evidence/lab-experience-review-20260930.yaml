@@ -629,21 +629,21 @@ labs:
 
   sovereign-ai-301:
     display_name: "Sovereign AI 301 — Confidential Inference and Intel TDX Foundations"
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-active
     story: {status: green-local, evidence: "Northstar Claims advances from the 201 governed assistant into a fail-closed confidential-inference trust contract with human authority retained."}
-    show: {status: rehearsal-only, evidence: "Seven source-qualified outcomes visibly cover capability, identity, appraisal, policy, authorization, refusal, and authority without claiming live TDX."}
+    show: {status: green-live-rehearsal, evidence: "The exact Flightpath seat served the Northstar introduction, challenge, appraisal, and refusal pages while explicitly labeling the journey REHEARSAL."}
     learn: {status: green-local, evidence: "All stages use Show → Learn → Do → Prove to explain the confidential-computing trust foundation."}
-    do: {status: green-local, evidence: "Twelve executable blocks span the rebuilt journey; live Sandboxed Containers and Trustee operations remain intentionally gated."}
-    prove: {status: rehearsal-only, evidence: "The learner proves the deterministic trust contract and failure boundaries; no hardware-rooted quote, protected resource, or confidential placement is claimed."}
-    operators: {status: green-local, evidence: "Story and Terminal match the catalog surface, and NetworkPolicy permits only the Showroom pod to reach the qualifier."}
+    do: {status: green-live-rehearsal, evidence: "The exact seat executed allowed and invalid-measurement qualification paths and verified terminal namespace scope."}
+    prove: {status: green-live-rehearsal, evidence: "Run r9 scored 100/100 while proving the deterministic trust contract, failure boundary, human authority, cleanup, and zero residue without claiming live TDX."}
+    operators: {status: green-live, evidence: "Story and Terminal passed in the exact Flightpath seat, and the participant identity could edit only its assigned namespace."}
     inference: {status: not-claimed, evidence: "The candidate explicitly records zero model execution and does not turn inference authorization into a generation claim."}
-    cleanup: {status: green-local, evidence: "Participant cleanup and Launchpad reclaim ownership are explicit; destination zero-residue remains a certification gate."}
+    cleanup: {status: green-live, evidence: "Reclaim completed with model keys revoked and zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_state:
       repository: /Users/jkershaw/Documents/sovereign-ai-301
       checked_out_branch: main
-      published_head: 958cbdfc08582aff0a5db2a273cd212ef270d88c
+      published_head: a07902e0f58af8bd01a9e7f156bf89687173b72e
       catalog_pinned_revision: a07902e0f58af8bd01a9e7f156bf89687173b72e
-      post_review_changes: committed-published-pinned-not-live-certified
+      post_review_changes: exact-pinned-candidate-one-seat-live-certified
       certification_target: truthful-rehearsal-only
       live_confidentiality_claims: prohibited
       live_infrastructure_boundary: "No approved TDX host, hardware-rooted quote, confidential guest placement, Trustee verifier, KBS release, protected resource, or model execution is attached; none is required to certify the explicitly labeled rehearsal experience."
@@ -654,7 +654,14 @@ labs:
       immutable_images:
         presentation: ghcr.io/jkershawrh/sovereign-ai-301-presentation@sha256:203a386123a2ea34198a0b3a67c967481d4a72300f232010a48af4c4209f5893
         qualifier: ghcr.io/jkershawrh/sovereign-ai-301-qualifier@sha256:9972430351ea2b5b8c6f8798e3b9baf244194fc29b48471d42cb2ee06f497e62
-    next_action: certify the exact immutable release for one truthful REHEARSAL seat, Story and Terminal function, reclaim, credential-revocation observation, and zero residue; activation may cover only this rehearsal product, while live TDX, Trustee/KBS, protected-resource, confidential-placement, and inference claims remain prohibited pending approved infrastructure and separate certification
+      one_seat_live_certification:
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-301-1seat-r9.json
+        score: 100
+        ready_seconds: 57.574
+        cleanup_seconds: 99.094
+        zero_residue: true
+        model_keys_revoked: true
+    next_action: keep activation scoped to this truthful rehearsal product; live TDX, Trustee/KBS, protected-resource, confidential-placement, and inference claims remain prohibited pending approved infrastructure and separate certification
 
   sovereign-ai-401:
     display_name: "Sovereign AI 401 — Operate Confidential AI with Intel TDX"

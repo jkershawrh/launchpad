@@ -7,7 +7,7 @@ catalog:
     authority.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '301'
   learning_stage: Engineer
@@ -96,12 +96,10 @@ runtime:
       ui: story
     readiness: []
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Complete exact one-seat Flightpath rehearsal certification, reclaim, credential-revocation
-    observation, and zero-residue proof before activation.
+  activation_blockers: []
   proof_contract: certification/catalog/sovereign-ai-301.yaml
