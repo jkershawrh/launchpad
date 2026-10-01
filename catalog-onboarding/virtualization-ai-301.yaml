@@ -6,7 +6,7 @@ catalog:
     operator authority and evidence-backed decisions.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '301'
   learning_stage: Engineer
@@ -78,7 +78,6 @@ runtime:
     source: cluster.console_url
   allowed_exposure_policies:
   - internal
-  - public_code
   workload:
     source_kind: chart
     gitops_ready: true
@@ -109,13 +108,10 @@ runtime:
       ui: virt301
     readiness: []
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - factory-and-publication-evidence-do-not-transfer-to-live-model-or-placement-certification
-  - pin-showroom-ui-bundle-to-immutable-release
-  - capture-platform-owned-intel-placement-receipt
+  activation_blockers: []
   proof_contract: certification/catalog/virtualization-ai-301.yaml

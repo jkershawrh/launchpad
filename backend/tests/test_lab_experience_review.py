@@ -195,8 +195,8 @@ def test_sovereign_201_exact_release_requires_live_inference_recertification() -
     assert {"path": "journey.model", "equals": "granite-3.2-8b-tools"} in assertions
 
 
-def test_virtualization_301_pins_public_root_playbook_without_claiming_certification() -> None:
-    exact_revision = "1c4669bfc07df84a1b304c7eebdceb793ad0f949"
+def test_virtualization_301_pins_public_root_playbook_and_exact_internal_certification() -> None:
+    exact_revision = "30f51e19223faf64c689a07e254870fbc43fd0c6"
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))["labs"][
         "virtualization-ai-301"
     ]
@@ -212,8 +212,8 @@ def test_virtualization_301_pins_public_root_playbook_without_claiming_certifica
     )
     metadata = catalog["metadata"]
 
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
-    assert intake["certification"]["certified_seats"] == 0
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
+    assert intake["certification"]["certified_seats"] == 1
     assert metadata["showroom_content_ref"] == exact_revision
     assert metadata["source_content_revision"] == exact_revision
     assert metadata["workload_revision"] == exact_revision
@@ -225,9 +225,8 @@ def test_virtualization_301_pins_public_root_playbook_without_claiming_certifica
         assert source["repo_url"].startswith("https://github.com/")
         assert source["gitops_repo_url"].startswith("https://github.com/")
     assert metadata["workload_repo"].startswith("https://github.com/")
-    assert "capture-platform-owned-intel-placement-receipt" in metadata[
-        "activation_blockers"
-    ]
+    assert metadata["activation_blockers"] == []
+    assert metadata["allowed_exposure_policies"] == ["internal"]
     assert metadata["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]
@@ -236,7 +235,7 @@ def test_virtualization_301_pins_public_root_playbook_without_claiming_certifica
         "eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1"
     )
     assert review["source_state"]["showroom_content_status"] == (
-        "exact-public-git-root-playbook-pinned-not-live-certified"
+        "exact-public-git-root-playbook-pinned-and-one-seat-live-certified"
     )
 
 

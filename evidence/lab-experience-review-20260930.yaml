@@ -14,7 +14,7 @@ goal_reconciliation:
   reviewed_catalog_entries_total: 25
   distinct_participant_experiences: 22
   current_one_seat_live_closeouts: 22
-  current_internal_orderable: 16
+  current_internal_orderable: 17
   current_public_code_orderable: 5
   compatibility_aliases: 2
   platform_validation_entries: 1
@@ -283,8 +283,8 @@ labs:
 
   virtualization-ai-301:
     display_name: "Virtualization + AI 301 — Modernize VMs with Governed AI"
-    overall_status: one-seat-certified-draft-browser-console-and-placement-receipt-blocked
-    story: {status: green-live, evidence: "All four required Showroom pages rendered from exact source revision 1c4669bfc07df84a1b304c7eebdceb793ad0f949 with their required participant markers."}
+    overall_status: one-seat-live-certified-active
+    story: {status: green-live, evidence: "All four required Showroom pages rendered from exact source revision 30f51e19223faf64c689a07e254870fbc43fd0c6 with their required participant markers and a pinned Showroom UI release."}
     show: {status: green-live, evidence: "The live seat exposed the presentation, governed modernization decision, refusal path, and cleanup journey."}
     learn: {status: green-live, evidence: "The exact candidate preserved explicit REHEARSAL labeling, human authority, and the distinction between observed evidence and unverified placement."}
     do: {status: green-live, evidence: "The Flightpath seat ran a VM, VMI, presentation, and adapter and completed the deterministic ALLOW_REVIEW journey."}
@@ -294,25 +294,25 @@ labs:
     cleanup: {status: green-live, evidence: "Reclaim completed in 96.43 seconds with model-key revocation and zero namespaces, Applications, PVCs, PVs, RoleBindings, Routes, or Secrets remaining."}
     source_state:
       checked_out_branch: main
-      published_revision: 1c4669bfc07df84a1b304c7eebdceb793ad0f949
-      catalog_pinned_revision: 1c4669bfc07df84a1b304c7eebdceb793ad0f949
+      published_revision: 30f51e19223faf64c689a07e254870fbc43fd0c6
+      catalog_pinned_revision: 30f51e19223faf64c689a07e254870fbc43fd0c6
       runtime_image_source_revision: eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1
       publication_workflow: https://github.com/jkershawrh/virtualization-ai-301/actions/runs/36735535261
       immutable_images:
         presentation: ghcr.io/jkershawrh/virtualization-ai-301-presentation@sha256:853ea3bdfea8998652bb51a3930bfeaeb4785ce4c058fe5d733f2e5d2d835185
         adapter: ghcr.io/jkershawrh/virtualization-ai-301-adapter@sha256:9be46b02185933877854dae6e4f91e7e11a3ab028b5f33f896ae40e56b1b07ee
-      publication_validation: "The runtime images from eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1 passed zero HIGH/CRITICAL gates with signatures, SBOMs, and provenance; the content-only root-playbook correction at 1c4669bfc07df84a1b304c7eebdceb793ad0f949 passed 37 Python tests, 32 component tests, Helm lint/render, production/offline builds, and exact public Git source verification."
+      publication_validation: "The runtime images from eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1 passed zero HIGH/CRITICAL gates with signatures, SBOMs, and provenance; the content-only Showroom release pin at 30f51e19223faf64c689a07e254870fbc43fd0c6 passed 37 Python tests, 32 component tests, Helm lint/render, production/offline builds, and exact public Git source verification."
       showroom_content_status: exact-public-git-root-playbook-pinned-and-one-seat-live-certified
     live_certification:
       status: green-live
       certified_seats: 1
       rubric_score: 100
-      ready_seconds: 62.235
-      probe_seconds: 55.643
-      cleanup_seconds: 96.43
-      evidence: evidence/runs/flightpath-live-20261001-virtualization-ai-301-1seat-r11.json
-      proof: "The exact 1c4669b candidate proved all required Showroom pages, VM/VMI readiness, immutable runtime images, truthful REHEARSAL behavior, namespace isolation, model-key revocation, complete reclaim, and zero residue."
-    next_action: pin the mutable Showroom UI bundle, capture a platform-owned Intel placement receipt, and complete trusted browser Console SSO and namespace navigation before activation
+      ready_seconds: 57.622
+      probe_seconds: 24.185
+      cleanup_seconds: 101.095
+      evidence: evidence/runs/flightpath-live-20261001-virtualization-ai-301-1seat-r15.json
+      proof: "The exact 30f51e1 candidate proved all required Showroom pages, VM/VMI readiness, immutable runtime images, truthful REHEARSAL behavior, platform-owned Intel KubeVirt placement, namespace isolation, model-key revocation, complete reclaim, and zero residue."
+    next_action: retain one-seat internal orderability; require trusted external browser Console SSO/navigation and an exact-revision public-code lifecycle receipt before external activation or any seat-limit increase
 
   agent-reliability:
     display_name: "Intel AI 301: Engineer Reliable Agentic Workflows"

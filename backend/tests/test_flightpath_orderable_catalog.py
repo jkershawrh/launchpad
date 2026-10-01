@@ -55,6 +55,7 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
         "sovereign-ai-301",
         "virtualization-ai-foundations-101",
         "virtualization-ai-201",
+        "virtualization-ai-301",
         "virtualization-ai-401",
         "virtualization-ai-501",
     }

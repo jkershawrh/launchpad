@@ -4,7 +4,7 @@ description: Modernize a virtual machine with a governed AI service while preser
   operator authority and evidence-backed decisions.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
 - openshift-virtualization
@@ -46,18 +46,14 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-301.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - factory-and-publication-evidence-do-not-transfer-to-live-model-or-placement-certification
-  - pin-showroom-ui-bundle-to-immutable-release
-  - capture-platform-owned-intel-placement-receipt
+  activation_blockers: []
   certification_proof_contract: certification/catalog/virtualization-ai-301.yaml
   allowed_exposure_policies:
   - internal
-  - public_code
   showroom_journey: virtualization-ai-301
   showroom_title: "Virtualization + AI 301 \u2014 Modernize VMs with Governed AI"
   namespace_slug: virtualization-ai-301

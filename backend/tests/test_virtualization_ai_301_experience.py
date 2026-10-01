@@ -18,11 +18,11 @@ def test_virtualization_ai_301_is_an_exact_one_seat_certified_rehearsal_candidat
     metadata = catalog["metadata"]
 
     assert catalog == build_catalog_item(intake)
-    assert catalog["status"] == "draft"
-    assert metadata["certification_stage"] == "immutable-source-published"
+    assert catalog["status"] == "active"
+    assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["certification_transfer"] == "none"
     assert metadata["max_workshop_seats"] == 1
-    assert intake["certification"]["certified_seats"] == 0
+    assert intake["certification"]["certified_seats"] == 1
     assert catalog["validation_refs"] == ["pod-ready", "route-accessible"]
     assert metadata["showroom_content_ref"] == (
         "30f51e19223faf64c689a07e254870fbc43fd0c6"
@@ -30,12 +30,8 @@ def test_virtualization_ai_301_is_an_exact_one_seat_certified_rehearsal_candidat
     assert metadata["source_content_revision"] == metadata["showroom_content_ref"]
     assert metadata["workload_revision"] == metadata["showroom_content_ref"]
     assert metadata["workload_helm_values"]["default_source_state"] == "REHEARSAL"
-    assert "capture-platform-owned-intel-placement-receipt" in metadata[
-        "activation_blockers"
-    ]
-    assert "pin-showroom-ui-bundle-to-immutable-release" in metadata[
-        "activation_blockers"
-    ]
+    assert metadata["activation_blockers"] == []
+    assert metadata["allowed_exposure_policies"] == ["internal"]
 
 
 def test_virtualization_ai_301_certification_preserves_rehearsal_model_truth_and_platform_placement_proof() -> None:
