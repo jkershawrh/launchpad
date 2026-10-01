@@ -78,11 +78,11 @@ def test_agent_reliability_exact_release_has_a_flightpath_certification_contract
         (1,),
     )
     intake = load_intake(ROOT / "catalog-onboarding/agent-reliability.yaml")
-    assert intake["catalog"]["status"] == "draft"
+    assert intake["catalog"]["status"] == "active"
     assert intake["sources"]["showroom"]["revision"] == (
         "fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc"
     )
-    assert intake["certification"]["stage"] == "exact-image-published"
+    assert intake["certification"]["stage"] == "1-seat-certified"
     image = intake["runtime"]["workload"]["helm_values"]["image"]
     assert image["repository"] == "ghcr.io/jkershawrh/agent-reliability-quickstart"
     assert image["digest"] == (

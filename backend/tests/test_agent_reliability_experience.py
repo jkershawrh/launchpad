@@ -40,18 +40,18 @@ def test_agent_reliability_canonical_mapping_and_immutable_pins_are_exact():
     assert intake["runtime"]["workload"]["image_source_revision"] == IMAGE_SOURCE_REVISION
 
 
-def test_agent_reliability_remains_a_one_seat_exact_image_draft():
+def test_agent_reliability_is_one_seat_live_certified_and_active():
     catalog = _load(CATALOG)
     intake = _load(INTAKE)
 
-    assert catalog["status"] == "draft"
-    assert intake["catalog"]["status"] == "draft"
+    assert catalog["status"] == "active"
+    assert intake["catalog"]["status"] == "active"
     assert catalog["metadata"]["max_workshop_seats"] == 1
     assert intake["certification"]["max_workshop_seats"] == 1
     assert intake["certification"]["promotion_sequence"] == [1]
-    assert intake["certification"]["stage"] == "exact-image-published"
-    blockers = " ".join(intake["certification"]["activation_blockers"])
-    assert "Recertify one Flightpath seat against the exact source and image revisions" in blockers
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["certified_seats"] == 1
+    assert intake["certification"]["activation_blockers"] == []
     assert intake["runtime"]["required_models"] == ["granite-3.2-8b-tools"]
     assert intake["runtime"]["inference_endpoint"] == "litellm_virtual_key_candidate"
 
@@ -102,4 +102,4 @@ def test_agent_reliability_evidence_records_exact_candidate_boundary():
     assert provenance["image_source_revision"] == IMAGE_SOURCE_REVISION
     assert review["source_state"]["catalog_pinned_revision"] == REVISION
     assert "fixable Critical" in review["source_state"]["publication_note"]
-    assert "one fresh Flightpath seat" in review["next_action"]
+    assert review["live_certification"]["status"] == "green-live"

@@ -13,13 +13,11 @@ goal_reconciliation:
   reviewed_catalog_entries: 25
   reviewed_catalog_entries_total: 25
   distinct_participant_experiences: 22
-  current_one_seat_live_closeouts: 18
+  current_one_seat_live_closeouts: 20
   compatibility_aliases: 2
   platform_validation_entries: 1
-  current_revision_gates_remaining: 4
+  current_revision_gates_remaining: 2
   remaining_catalog_items:
-    - agent-reliability
-    - hybrid-fraud-detection
     - ai-sandbox
     - openshift-operators-workshop
   interpretation: "The content and journey review is complete across the scoped catalog. Remaining work is exact-revision publication or targeted live recertification, not another full review of all labs."
@@ -318,15 +316,15 @@ labs:
 
   agent-reliability:
     display_name: "Intel AI 301: Engineer Reliable Agentic Workflows"
-    overall_status: exact-image-published-draft
+    overall_status: one-seat-live-certified-active
     story: {status: green, evidence: "A reliability incident and recovery decision frame the lab."}
     show: {status: green, evidence: "Healthy, degraded, and recovered outcomes are visible."}
     learn: {status: green, evidence: "Reliability, safety, and evidence boundaries are explained."}
     do: {status: green, evidence: "The learner executes disruption and recovery workflows."}
-    prove: {status: conditional, evidence: "Pipeline evidence exists; source candidate now adds Console-to-Terminal correlation checkpoints."}
-    operators: {status: green-local, evidence: "Catalog, onboarding, and Flightpath overlay candidates now expose the Console used by four source-level correlation checkpoints."}
-    inference: {status: conditional, evidence: "Inference disruption is part of the story but must be certified against the effective endpoint."}
-    cleanup: {status: green-local, evidence: "Published source now explains evidence retention and Launchpad reclaim."}
+    prove: {status: green-live, evidence: "The exact candidate passed the healthy, prompt-injection, unauthorized-tool, and inference-timeout contracts."}
+    operators: {status: green-live, evidence: "The participant terminal proved own-namespace edit access while cross-namespace and node access were denied."}
+    inference: {status: green-live, evidence: "The managed endpoint returned the configured and observed granite-3.2-8b-tools identity with actual model participation."}
+    cleanup: {status: green-live, evidence: "Reclaim revoked the model key and left zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_state:
       repository: /Users/jkershaw/Documents/agent-reliability-quickstart
       checked_out_branch: main
@@ -334,7 +332,7 @@ labs:
       published_head: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
       catalog_pinned_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
       catalog_pinned_image: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00
-      post_review_changes: committed-published-pinned-not-live-certified
+      post_review_changes: one-seat-live-certified
       post_review_paths:
         - modules/ROOT/pages/01-healthy-agent.adoc
         - modules/ROOT/pages/02-safety-architecture.adoc
@@ -362,8 +360,17 @@ labs:
         ghcr_visibility: public
         ghcr_tag: link-fa6a1797662e
         verification: "The exact image passed 22 source tests, Ruff, Helm lint/render, a runtime health smoke test, and a Grype 0.110.0 gate with zero fixable Critical findings after removing the unused Node/npm payload. Anonymous GHCR access is enabled."
-      publication_note: "The previous image failed closed on a fixable Critical npm tar finding. The remediated exact-source image is published and pinned, but remains draft until a fresh one-seat Flightpath certification proves managed inference and complete reclaim."
-    next_action: certify Console SSO, effective inference, evidence retention, and reclaim in one fresh Flightpath seat, then restore orderability only if the exact pinned revision passes
+      publication_note: "The previous image failed closed on a fixable Critical npm tar finding. The remediated exact-source image passed fresh one-seat Flightpath certification and is the active one-seat runtime."
+    live_certification:
+      status: green-live
+      certified_seats: 1
+      rubric_score: 100
+      ready_seconds: 58.261
+      probe_seconds: 38.141
+      cleanup_seconds: 56.346
+      evidence: evidence/runs/flightpath-live-20261001-agent-reliability-1seat-r3.json
+      proof: "The exact candidate proved six Showroom pages, managed Granite inference, all four reliability outcomes, namespace isolation, model-key revocation, complete reclaim, and zero residue."
+    next_action: retain one-seat orderability; resolve the GHCR package-to-repository Actions linkage before relying on automatic future publications
 
   intel-xeon6-agent-201:
     display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"

@@ -8,7 +8,7 @@ catalog:
     evidence-backed recommendations, and degrade safely when inference is unavailable.
   category: guided_build
   version: 0.1.1-flightpath.1
-  status: draft
+  status: active
 learning:
   learning_level: "301"
   learning_stage: Engineer
@@ -90,13 +90,13 @@ runtime:
   allowed_exposure_policies:
   - internal
 certification:
-  stage: exact-image-published
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   proof_contract: certification/catalog/agent-reliability.yaml
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Recertify one Flightpath seat against the exact source and image revisions, Console correlation, managed inference, and reclaim guidance.
+  activation_blockers: []
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:

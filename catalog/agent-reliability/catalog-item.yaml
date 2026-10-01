@@ -5,7 +5,7 @@ description: A 75-minute Red Hat and Intel guided build that teaches platform te
   recommendations, and degrade safely when inference is unavailable.
 category: guided_build
 version: 0.1.1-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -51,12 +51,11 @@ metadata:
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agent-reliability.yaml
   certification_proof_contract: certification/catalog/agent-reliability.yaml
-  certification_stage: exact-image-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Recertify one Flightpath seat against the exact source and image revisions, Console correlation, managed inference, and reclaim guidance.
+  activation_blockers: []
   allowed_exposure_policies:
   - internal
   showroom_journey: agent-reliability
