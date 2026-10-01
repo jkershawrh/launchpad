@@ -16,7 +16,7 @@ def _yaml(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-def test_ai_sandbox_remains_draft_until_the_exact_image_passes_live_certification() -> None:
+def test_ai_sandbox_is_active_only_after_exact_image_live_certification() -> None:
     catalog = _yaml(CATALOG)
     intake = _yaml(INTAKE)
     contract = _yaml(CERTIFICATION)
@@ -25,15 +25,15 @@ def test_ai_sandbox_remains_draft_until_the_exact_image_passes_live_certificatio
     assert catalog["catalog_item_id"] == intake["catalog"]["catalog_item_id"] == (
         "ai-sandbox"
     )
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert metadata["certification_stage"] == intake["certification"]["stage"] == (
-        "exact-image-published"
+        "1-seat-certified"
     )
-    assert intake["certification"]["certified_seats"] == 0
+    assert intake["certification"]["certified_seats"] == 1
     assert metadata["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]
-    assert any("Certify one fresh Flightpath seat" in item for item in metadata["activation_blockers"])
+    assert metadata["activation_blockers"] == []
     assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1, 5]
 
 
@@ -62,10 +62,10 @@ def test_ai_sandbox_surfaces_and_managed_model_contract_are_coherent() -> None:
     assert runtime["deployment_type"] == "sandbox"
     assert runtime["image"]["digest"].startswith("sha256:")
     assert runtime["image"]["digest"] == (
-        "sha256:79abced2a81c606065c0a2b595c2c3a08ccea0b95216dde0536a0f54dde7cb06"
+        "sha256:0faa22c48b50e9f896788ef3d4380282c8fed75f4a4c8a437236a47a608ac452"
     )
     assert runtime["image"]["source_revision"] == (
-        "d99c43a9e4b00d4e961d31810dda9ef64bf95eee"
+        "c5de4b259cfb014f5e1c6d931e9e7b1a63ce54e2"
     )
     assert metadata["workload_revision"] == runtime["image"]["source_revision"]
 

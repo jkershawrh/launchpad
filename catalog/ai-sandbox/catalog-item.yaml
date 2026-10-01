@@ -4,7 +4,7 @@ description: A namespace-scoped OpenShift environment with the Red Hat web conso
   web terminal, browser IDE, and access to the Flightpath CPU model service.
 category: open_sandbox
 version: 1.0.2-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - model_endpoint
@@ -50,17 +50,16 @@ metadata:
   - public_code
   inference_endpoint: litellm_virtual_key_candidate
   workshop_cluster_ref: flightpath
-  certification_stage: exact-image-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
-  activation_blockers:
-  - Certify one fresh Flightpath seat for the UI card, namespace isolation, real model completion, proof artifact, reclaim, and zero residue.
+  activation_blockers: []
   source_content_repo: https://github.com/jkershawrh/launchpad.git
-  source_content_revision: d99c43a9e4b00d4e961d31810dda9ef64bf95eee
+  source_content_revision: c5de4b259cfb014f5e1c6d931e9e7b1a63ce54e2
   workload_repo: https://github.com/jkershawrh/launchpad.git
-  workload_revision: d99c43a9e4b00d4e961d31810dda9ef64bf95eee
-  workload_image: ghcr.io/jkershawrh/launchpad-sandbox@sha256:79abced2a81c606065c0a2b595c2c3a08ccea0b95216dde0536a0f54dde7cb06
+  workload_revision: c5de4b259cfb014f5e1c6d931e9e7b1a63ce54e2
+  workload_image: ghcr.io/jkershawrh/launchpad-sandbox@sha256:0faa22c48b50e9f896788ef3d4380282c8fed75f4a4c8a437236a47a608ac452
   onboarding_contract: catalog-onboarding/ai-sandbox.yaml
   certification_proof_contract: certification/catalog/ai-sandbox.yaml

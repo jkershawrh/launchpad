@@ -13,13 +13,12 @@ goal_reconciliation:
   reviewed_catalog_entries: 25
   reviewed_catalog_entries_total: 25
   distinct_participant_experiences: 22
-  current_one_seat_live_closeouts: 21
+  current_one_seat_live_closeouts: 22
   compatibility_aliases: 2
   platform_validation_entries: 1
-  current_revision_gates_remaining: 1
-  remaining_catalog_items:
-    - ai-sandbox
-  interpretation: "The content and journey review is complete across the scoped catalog. Remaining work is exact-revision publication or targeted live recertification, not another full review of all labs."
+  current_revision_gates_remaining: 0
+  remaining_catalog_items: []
+  interpretation: "All 22 scoped participant experiences now have current one-seat live closeouts. Compatibility aliases and the platform-validation entry remain separately classified."
 learning_pipeline:
   platform_foundations:
     - ai-sandbox
@@ -599,27 +598,36 @@ labs:
 
   ai-sandbox:
     display_name: "Intel AI 001: OpenShift Developer Sandbox"
-    overall_status: exact-image-published-draft
-    story: {status: green-local, evidence: "An optional guided-start card frames a small namespace-scoped AI workload without taking away open exploration."}
-    show: {status: green-local, evidence: "The learner sees namespace isolation, workload readiness, model availability, and the resulting proof artifact."}
-    learn: {status: green-local, evidence: "The seeded workspace guide explains the namespace, centrally hosted model boundary, evidence, and cleanup ownership."}
-    do: {status: green-local, evidence: "The guided runner deploys one tiny private labeled workload and calls the assigned model only when real endpoint credentials exist."}
-    prove: {status: green-local, evidence: "A credential-free proof records isolation, workload, model result or explicit unavailability, and cleanup."}
-    operators: {status: green-local, evidence: "The existing Console, terminal, and IDE surfaces support the namespace-scoped guided start."}
-    inference: {status: conditional, evidence: "The candidate performs a live completion when endpoint and key exist and reports unavailable otherwise; it never substitutes rehearsal."}
-    cleanup: {status: green-local, evidence: "Only guided-start-labeled resources are removed, followed by the existing Launchpad reclaim boundary."}
-    local_validation: "135 relevant backend tests, the guided-start frontend component, local linux/amd64 image build, in-image client/IDE/runner smoke tests, and a Grype 0.110.0 scan with zero fixable HIGH/CRITICAL findings passed on 2026-10-01."
-    current_runtime_proof: "The exact guided-start image is published and pinned; it remains draft until a fresh one-seat receipt proves the full live journey and reclaim."
+    overall_status: one-seat-live-certified-active
+    story: {status: green-live, evidence: "The guided-start card frames one namespace-scoped OpenShift workload and an assigned managed Intel CPU model without taking away open exploration."}
+    show: {status: green-live, evidence: "The certified seat exposed a ready browser IDE and the guided proof showed namespace, workload, and assigned model state."}
+    learn: {status: green-live, evidence: "The live terminal proved own-namespace edit authority while cross-namespace pod and cluster-node reads were denied."}
+    do: {status: green-live, evidence: "The guided runner created one private labeled workload and called only the assigned granite-2b-cpu model."}
+    prove: {status: green-live, evidence: "Run r6 scored 100/100 with credential-free proof, exact model identity, namespace isolation, guided cleanup, reclaim, and zero residue."}
+    operators: {status: green-live-scope, evidence: "The IDE and namespace-scoped terminal passed live; browser Console SSO remains a separate manual UX check before increasing the seat limit."}
+    inference: {status: green-live, evidence: "The assigned granite-2b-cpu model returned an authenticated live completion through the Launchpad-managed endpoint."}
+    cleanup: {status: green-live, evidence: "Guided resources reached zero before proof completion, then Launchpad reclaim revoked the model key and left zero tracked resources."}
+    local_validation: "The guided-start and experience suites passed, the exact linux/amd64 image was anonymously pullable, and Grype 0.110.0 reported zero fixable HIGH/CRITICAL findings on 2026-10-01."
+    current_runtime_proof: "The exact c5de4b25 image is pinned and passed a fresh one-seat Flightpath lifecycle receipt."
     publication_attempt:
       status: security-gate-passed-exact-image-published
-      source_revision: d99c43a9e4b00d4e961d31810dda9ef64bf95eee
-      image: ghcr.io/jkershawrh/launchpad-sandbox@sha256:79abced2a81c606065c0a2b595c2c3a08ccea0b95216dde0536a0f54dde7cb06
+      source_revision: c5de4b259cfb014f5e1c6d931e9e7b1a63ce54e2
+      image: ghcr.io/jkershawrh/launchpad-sandbox@sha256:0faa22c48b50e9f896788ef3d4380282c8fed75f4a4c8a437236a47a608ac452
       workflows:
         - https://github.com/jkershawrh/launchpad/actions/runs/36742498806
         - https://github.com/jkershawrh/launchpad/actions/runs/36743247694
         - https://github.com/jkershawrh/launchpad/actions/runs/36915083761
-      evidence: "The first two attempts failed closed. The exact d99c43a9 candidate replaced the vulnerable broad OpenShift client with a checksum-pinned kubectl plus narrow oc compatibility, patched code-server undici, removed unused Node/Jupyter payloads, and passed the unchanged fixable HIGH/CRITICAL gate. GitHub Actions then hit the known GHCR repository-link write_package defect, so the already-authorized local path published the exact labeled image without weakening the scan gate. Anonymous digest pull and source labels were verified."
-    next_action: certify one fresh Flightpath seat for UI card, namespace isolation, private workload, assigned Granite completion, credential-free proof, cleanup, reclaim, and zero residue
+      evidence: "The exact candidate replaced the vulnerable broad OpenShift client with a checksum-pinned kubectl plus narrow oc compatibility, patched code-server undici, removed unused Node/Jupyter payloads, normalized the managed-model endpoint, and waited for guided resource deletion. The exact labeled image passed the fixable HIGH/CRITICAL gate and anonymous digest pull verification."
+    live_certification:
+      observed_at: "2026-10-01"
+      result: GREEN-live
+      rubric_score: 100
+      ready_seconds: 35.034
+      probe_seconds: 56.719
+      cleanup_seconds: 62.635
+      evidence: evidence/runs/flightpath-live-20261001-ai-sandbox-1seat-r6.json
+      proof: "IDE readiness, namespace isolation, guided workload readiness and cleanup, assigned granite-2b-cpu participation, key revocation, reclaim, and zero tracked residue all passed."
+    next_action: retain one-seat orderability and complete a separate manual browser Console SSO usability check before raising the seat limit
 
   openshift-operators-workshop:
     display_name: "OpenShift 201: Build an Operator-Managed Pipeline"

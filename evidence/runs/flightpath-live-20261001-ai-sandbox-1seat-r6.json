@@ -1,0 +1,251 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 1,
+    "certification_override": true,
+    "certification_target_seats": 1,
+    "estimated_resources": {
+      "cpu_millicores": 1000,
+      "memory_mib": 2048,
+      "pods": 1
+    },
+    "placement_reason": "single-cluster placement",
+    "reason": "Cluster can support 171 seats (CPU: 398, Memory: 389, Pods: 171; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 1000,
+        "memory_mib": 2048,
+        "pods": 1
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 1,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "ai-sandbox",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 62.635,
+    "status": "completed"
+  },
+  "completed_at": "2026-10-01T20:30:12.414365Z",
+  "contract": {
+    "catalog_version": "1.0.2-flightpath.1",
+    "certification_runner_image": "",
+    "git_commit": "c5de4b259cfb014f5e1c6d931e9e7b1a63ce54e2",
+    "intake_path": "catalog-onboarding/ai-sandbox.yaml",
+    "path": "certification/catalog/ai-sandbox.yaml",
+    "platform_manifest_sha256": "",
+    "sha256": "2167d50d5890ff20c631e3e3117406adc01f01b0653b44630a23eb649e52fa2d"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [
+      "launchpad-sandbox-flightpath-candidate-cert-f5fd8180"
+    ],
+    "ready_seconds": 35.034,
+    "seat_count": 1,
+    "session_ids": [
+      "5e349028-af73-4d55-a618-be38f897757a"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "d9ee3e2d-c8c9-4489-8d94-18f104fceb59"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "ai-sandbox",
+    "certification_override": true,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 0,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 600,
+    "maximum_ready_seconds": 1200,
+    "mutates_cluster": true,
+    "next_promotion_target": 1,
+    "probe_concurrency": 1,
+    "provision_concurrency": 5,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 1,
+    "seats": 1,
+    "showroom_pages_per_seat": 0,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 1,
+    "eligible": true,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "flightpath-live-20261001-ai-sandbox-1seat-r6",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-sandbox-flightpath-candidate-cert-f5fd8180",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 56.719,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "guided_journey": {
+            "cleanup_status": "complete",
+            "workload_status": "ready"
+          },
+          "model": {
+            "assigned_model": "granite-2b-cpu",
+            "inference_source": "launchpad-managed-endpoint",
+            "models_http_status": 200,
+            "observed_model": "granite-2b-cpu",
+            "participated": true,
+            "status": "live"
+          },
+          "namespace": "launchpad-sandbox-flightpath-candidate-cert-f5fd8180",
+          "result": "GREEN-live-internal-seat",
+          "terminal_scope": [
+            "project=launchpad-sandbox-flightpath-candidate-cert-f5fd8180",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "workspace": {
+            "deployment_ready": true,
+            "home_writable": true,
+            "ide_http_status": 200
+          }
+        }
+      },
+      "seat_id": "47ea0ab7-c285-4d41-b1a6-a515b33ddb3a",
+      "seat_number": 1,
+      "session_id": "5e349028-af73-4d55-a618-be38f897757a",
+      "showroom": []
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-10-01T20:27:32.095957Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

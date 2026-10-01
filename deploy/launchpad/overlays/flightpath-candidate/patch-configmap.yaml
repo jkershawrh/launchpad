@@ -30,7 +30,7 @@ data:
   OPENSHIFT_INGRESS_DOMAIN: "apps.flightpath.fm2aihpcsed.com"
   OPENSHIFT_CONSOLE_URL: "https://console-openshift-console.apps.flightpath.fm2aihpcsed.com"
   SANDBOX_STORAGE_CLASS: "ocs-storagecluster-ceph-rbd"
-  SANDBOX_IMAGE: "ghcr.io/jkershawrh/launchpad-sandbox@sha256:5fe2a362fe8e751b5e1fd200e7ba48118cf9e1d2141cdcfcee15075af5cc825c"
+  SANDBOX_IMAGE: "ghcr.io/jkershawrh/launchpad-sandbox@sha256:0faa22c48b50e9f896788ef3d4380282c8fed75f4a4c8a437236a47a608ac452"
   DEMO_FRONTEND_IMAGE: "quay.io/redhat-gpte/intel-inference-frontend@sha256:1243f4eef89dc151a2247f509d32c97db3ca9ede3d554032c17a349d49956ba3"
   DEMO_GATEWAY_IMAGE: "quay.io/redhat-gpte/intel-inference-gateway@sha256:5fe683a15fdc98c4c1dde6f0055138f9ff7f39fc39d8c15b31cce0ce56ae5a51"
   CORS_ORIGINS: "https://launchpad-candidate.apps.flightpath.fm2aihpcsed.com,https://launchpad-admin-candidate.apps.flightpath.fm2aihpcsed.com,https://launchpad-api-candidate.apps.flightpath.fm2aihpcsed.com"
