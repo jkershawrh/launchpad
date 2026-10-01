@@ -51,7 +51,14 @@ def _fixture(tmp_path: Path, *, blocker: str | None = None):
     return catalog_id, contract_path
 
 
-def _evidence(tmp_path: Path, catalog_id: str, contract_path: Path, seats: int):
+def _evidence(
+    tmp_path: Path,
+    catalog_id: str,
+    contract_path: Path,
+    seats: int,
+    *,
+    intake_path: str | None = None,
+):
     path = tmp_path / f"{catalog_id}-{seats}.json"
     payload = {
         "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
@@ -60,6 +67,7 @@ def _evidence(tmp_path: Path, catalog_id: str, contract_path: Path, seats: int):
         "contract": {
             "catalog_version": "1.0.0",
             "path": f"certification/catalog/{catalog_id}.yaml",
+            "intake_path": intake_path or f"catalog-onboarding/{catalog_id}.yaml",
             "sha256": hashlib.sha256(contract_path.read_bytes()).hexdigest(),
         },
         "plan": {"cluster_ref": "flightpath", "seats": seats},
@@ -116,3 +124,75 @@ def test_non_proof_blocker_keeps_five_seat_catalog_draft(tmp_path):
     )
     assert result["status"] == "draft"
     assert result["remaining_blockers"] == ["make image public"]
+
+
+def test_promotion_clears_natural_language_flightpath_seat_blocker(tmp_path):
+    catalog_id, contract_path = _fixture(tmp_path)
+    intake_path = tmp_path / "catalog-onboarding" / f"{catalog_id}.yaml"
+    catalog_path = tmp_path / "catalog" / catalog_id / "catalog-item.yaml"
+    intake = yaml.safe_load(intake_path.read_text())
+    catalog = yaml.safe_load(catalog_path.read_text())
+    blocker = "Recertify one Flightpath seat against the exact image and journey."
+    intake["certification"]["promotion_sequence"] = [1]
+    intake["certification"]["activation_blockers"] = [blocker]
+    catalog["metadata"]["activation_blockers"] = [blocker]
+    intake_path.write_text(yaml.safe_dump(intake))
+    catalog_path.write_text(yaml.safe_dump(catalog))
+
+    result = MODULE.promote(
+        root=tmp_path,
+        catalog_id=catalog_id,
+        evidence_path=_evidence(tmp_path, catalog_id, contract_path, 1),
+    )
+
+    assert result["status"] == "active"
+    assert result["remaining_blockers"] == []
+
+
+def test_promotion_preserves_catalog_only_non_proof_blocker_when_intake_drifted(
+    tmp_path,
+):
+    catalog_id, contract_path = _fixture(tmp_path)
+    catalog_path = tmp_path / "catalog" / catalog_id / "catalog-item.yaml"
+    catalog = yaml.safe_load(catalog_path.read_text())
+    catalog["metadata"]["activation_blockers"] = [
+        "one-seat Flightpath proof is not yet GREEN-live",
+        "publish immutable presentation image digest",
+    ]
+    catalog_path.write_text(yaml.safe_dump(catalog))
+
+    result = MODULE.promote(
+        root=tmp_path,
+        catalog_id=catalog_id,
+        evidence_path=_evidence(tmp_path, catalog_id, contract_path, 1),
+    )
+
+    assert result["status"] == "draft"
+    assert result["remaining_blockers"] == [
+        "five-seat Flightpath proof is not yet GREEN-live",
+        "publish immutable presentation image digest",
+    ]
+    promoted_catalog = yaml.safe_load(catalog_path.read_text())
+    assert promoted_catalog["metadata"]["activation_blockers"] == result[
+        "remaining_blockers"
+    ]
+
+
+def test_promotion_uses_evidence_bound_custom_intake_path(tmp_path):
+    catalog_id, contract_path = _fixture(tmp_path)
+    default_intake = tmp_path / "catalog-onboarding" / f"{catalog_id}.yaml"
+    custom_intake = tmp_path / "catalog-onboarding" / f"{catalog_id}-flightpath.yaml"
+    default_intake.rename(custom_intake)
+    evidence = _evidence(
+        tmp_path,
+        catalog_id,
+        contract_path,
+        1,
+        intake_path=f"catalog-onboarding/{catalog_id}-flightpath.yaml",
+    )
+
+    result = MODULE.promote(root=tmp_path, catalog_id=catalog_id, evidence_path=evidence)
+
+    assert result["certified_seats"] == 1
+    promoted = yaml.safe_load(custom_intake.read_text())
+    assert promoted["certification"]["certified_seats"] == 1

@@ -13,7 +13,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def _assert_exact_flightpath_contract(
-    catalog_id: str, version: str, probe: str, max_workshop_seats: int = 1
+    catalog_id: str,
+    version: str,
+    probe: str,
+    max_workshop_seats: int = 1,
+    scale_profiles: tuple[int, ...] = (1, 5),
 ) -> None:
     contract_path = ROOT / f"certification/catalog/{catalog_id}.yaml"
     intake_path = ROOT / f"catalog-onboarding/{catalog_id}.yaml"
@@ -34,7 +38,9 @@ def _assert_exact_flightpath_contract(
     assert intake["catalog"]["version"] == version
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
     assert intake["certification"]["max_workshop_seats"] == max_workshop_seats
-    assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1, 5]
+    assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == list(
+        scale_profiles
+    )
 
 
 def test_hybrid_fraud_exact_release_has_a_flightpath_certification_contract():
@@ -43,6 +49,7 @@ def test_hybrid_fraud_exact_release_has_a_flightpath_certification_contract():
         "0.1.2-flightpath.3",
         "scripts/certify-hybrid-fraud-seat.sh",
         1,
+        (1,),
     )
     intake = load_intake(ROOT / "catalog-onboarding/hybrid-fraud-detection.yaml")
     assert intake["runtime"]["workload"]["helm_values"]["app"]["image"].endswith(

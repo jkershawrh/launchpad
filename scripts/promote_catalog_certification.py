@@ -31,10 +31,41 @@ def _verify_checksum(evidence_path: Path) -> None:
         raise ValueError("evidence checksum does not match")
 
 
+def _bound_repo_path(root: Path, value: str, *, fallback: str) -> Path:
+    relative = Path(value or fallback)
+    if relative.is_absolute() or ".." in relative.parts:
+        raise ValueError("evidence-bound repository path is unsafe")
+    resolved = (root / relative).resolve()
+    if root != resolved and root not in resolved.parents:
+        raise ValueError("evidence-bound repository path escapes the repository")
+    return resolved
+
+
 def _next_target(certification: dict[str, Any]) -> int | None:
     current = int(certification.get("certified_seats", 0))
     targets = [int(v) for v in certification["promotion_sequence"] if int(v) > current]
     return targets[0] if targets else None
+
+
+def _remaining_activation_blockers(
+    certification: dict[str, Any], catalog: dict[str, Any], *, scale_label: str
+) -> list[Any]:
+    """Merge drifted blocker copies before clearing this scale's proof gate."""
+    scale_words = {
+        "one-seat": ("one-seat", "one seat", "one flightpath seat"),
+        "five-seat": ("five-seat", "five seat", "five flightpath seat"),
+    }.get(scale_label, (scale_label, scale_label.replace("-", " ")))
+    candidates = [
+        *certification.get("activation_blockers", []),
+        *((catalog.get("metadata") or {}).get("activation_blockers", [])),
+    ]
+    remaining: list[Any] = []
+    for blocker in candidates:
+        normalized = str(blocker).casefold()
+        if any(label in normalized for label in scale_words) or blocker in remaining:
+            continue
+        remaining.append(blocker)
+    return remaining
 
 
 def validate_promotion(
@@ -42,9 +73,18 @@ def validate_promotion(
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any], int]:
     _verify_checksum(evidence_path)
     evidence = json.loads(evidence_path.read_text())
-    intake_path = root / "catalog-onboarding" / f"{catalog_id}.yaml"
+    contract_evidence = evidence.get("contract") or {}
+    intake_path = _bound_repo_path(
+        root,
+        str(contract_evidence.get("intake_path") or ""),
+        fallback=f"catalog-onboarding/{catalog_id}.yaml",
+    )
     catalog_path = root / "catalog" / catalog_id / "catalog-item.yaml"
-    contract_path = root / "certification" / "catalog" / f"{catalog_id}.yaml"
+    contract_path = _bound_repo_path(
+        root,
+        str(contract_evidence.get("path") or ""),
+        fallback=f"certification/catalog/{catalog_id}.yaml",
+    )
     intake = _load_yaml(intake_path)
     catalog = _load_yaml(catalog_path)
     contract = _load_yaml(contract_path)
@@ -84,7 +124,7 @@ def validate_promotion(
 
 
 def promote(*, root: Path, catalog_id: str, evidence_path: Path) -> dict[str, Any]:
-    intake, catalog, _, seats = validate_promotion(
+    intake, catalog, evidence, seats = validate_promotion(
         root=root, catalog_id=catalog_id, evidence_path=evidence_path
     )
     certification = intake["certification"]
@@ -92,11 +132,9 @@ def promote(*, root: Path, catalog_id: str, evidence_path: Path) -> dict[str, An
     scale_label = {1: "one-seat", 5: "five-seat"}.get(seats, f"{seats}-seat")
     certification["certified_seats"] = seats
     certification["stage"] = stage
-    certification["activation_blockers"] = [
-        blocker
-        for blocker in certification.get("activation_blockers", [])
-        if scale_label not in str(blocker)
-    ]
+    certification["activation_blockers"] = _remaining_activation_blockers(
+        certification, catalog, scale_label=scale_label
+    )
     catalog["metadata"]["certification_stage"] = stage
     catalog["metadata"]["max_workshop_seats"] = seats
     catalog["metadata"]["activation_blockers"] = list(
@@ -109,7 +147,11 @@ def promote(*, root: Path, catalog_id: str, evidence_path: Path) -> dict[str, An
         intake["catalog"]["status"] = "active"
         catalog["status"] = "active"
 
-    intake_path = root / "catalog-onboarding" / f"{catalog_id}.yaml"
+    intake_path = _bound_repo_path(
+        root,
+        str((evidence.get("contract") or {}).get("intake_path") or ""),
+        fallback=f"catalog-onboarding/{catalog_id}.yaml",
+    )
     catalog_path = root / "catalog" / catalog_id / "catalog-item.yaml"
     intake_path.write_text(yaml.safe_dump(intake, sort_keys=False))
     catalog_path.write_text(yaml.safe_dump(catalog, sort_keys=False))

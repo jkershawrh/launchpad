@@ -9,7 +9,7 @@ catalog:
   version: 0.1.2-flightpath.3
   status: draft
 learning:
-  learning_level: "201"
+  learning_level: '201'
   learning_stage: Build
   experience_type: domain_solution_build
   prerequisites:
@@ -93,7 +93,6 @@ certification:
   proof_contract: certification/catalog/hybrid-fraud-detection.yaml
   promotion_sequence:
   - 1
-  - 5
   activation_blockers:
   - Recertify one Flightpath seat against the remediated exact image and learning journey.
 quality:

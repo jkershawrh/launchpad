@@ -52,10 +52,8 @@ metadata:
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  - 5
   activation_blockers:
-  - Recertify one Flightpath seat against the remediated exact image and learning
-    journey.
+  - Recertify one Flightpath seat against the remediated exact image and learning journey.
   certification_proof_contract: certification/catalog/hybrid-fraud-detection.yaml
   allowed_exposure_policies:
   - internal
