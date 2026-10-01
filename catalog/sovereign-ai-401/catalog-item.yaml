@@ -78,7 +78,7 @@ metadata:
   showroom_tabs:
   - id: story
     title: Story
-    source: presentation.route
+    source: workload.route.ui
     path: /
   - id: terminal
     title: Terminal

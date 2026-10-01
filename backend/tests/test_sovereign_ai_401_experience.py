@@ -49,6 +49,7 @@ def test_sovereign_ai_401_exposes_operations_without_allocating_model_access() -
     expected_tabs = ["story", "terminal", "qualification", "openshift-console"]
     assert [tab["id"] for tab in metadata["showroom_tabs"]] == expected_tabs
     assert [tab["id"] for tab in runtime["tabs"]] == expected_tabs
+    assert runtime["tabs"][0]["source"] == "workload.route.ui"
 
     values = metadata["workload_helm_values"]
     assert values["source_state"] == "REHEARSAL"

@@ -737,6 +737,11 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r5.json
         finding: "Both immutable workloads became ready with zero restarts, but OpenShift rejected the generated presentation Route host because the route name plus seat namespace exceeded the DNS label limit."
         remediation: "Pin chart revision 0a528c651c2cb6b6bb9d31875aa2ada099dedd35, use the stable short Route name story, and bind the catalog UI route to that name."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r6
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r6.json
+        finding: "The short Route synchronized, but the Story tab retained a legacy presentation.route source that the canonical Showroom resolver rejects."
+        remediation: "Use the contract-supported workload.route.ui source, backed by the exact story Route binding, and preserve the participant path at /."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
