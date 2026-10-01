@@ -467,7 +467,7 @@ labs:
 
   intel-llm-cpu-serving:
     display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
-    overall_status: conditional
+    overall_status: source-reviewed-needs-publication-and-one-seat-certification
     published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "An HR retrieval assistant provides a recognizable customer workload."}
@@ -476,10 +476,19 @@ labs:
     do: {status: green, evidence: "The learner deploys AnythingLLM, loads content, and asks questions."}
     prove: {status: source-fix-ready, evidence: "The source requires observed model, response, latency, retrieval, OpenShift state, and cleanup evidence; unsupported generic latency and zero-cost claims are removed."}
     operators: {status: green-local, evidence: "The Console checkpoint now correlates the AnythingLLM Deployment, Bound PVC, and admitted Route with terminal evidence."}
-    inference: {status: green-live-prior-revision, evidence: "Existing certification proves an earlier managed Granite path; the revised source performs a real completion and fails closed, but its currently pinned Flightpath endpoint and content revision require fresh certification."}
+    inference: {status: green-live-prior-revision, evidence: "Existing certification proves an earlier managed Granite path but does not transfer. The revised strict-TLS certifier requires granite-3.2-8b-tools as both the configured and observed direct model and proves the unique AnythingLLM grounded query used that configured model."}
     cleanup: {status: green-local, evidence: "The candidate no longer prints Secret YAML, removes the AnythingLLM PVC, verifies zero learner residue, and states the Launchpad reclaim boundary."}
     local_validation: "Antora build passed without missing-attribute warnings after correcting storage-class and shell-variable rendering; focused participant-truth tests passed on 2026-09-30."
-    next_action: recertify the published revision for the opening completion, Console checkpoint, managed model identity, RAG result, and cleanup in one fresh seat
+    source_state:
+      repository: /Users/jkershaw/Documents/launchpad
+      published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+      catalog_pinned_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+      candidate_revision: pending-uncommitted
+      workload_repository: https://github.com/rhpds/llm-cpu-serving.git
+      workload_revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
+      certification_transfer: none
+      certification_boundary: "The strict-TLS content and strengthened direct-model, RAG-model, Terminal, and Console proof are not part of the pinned content revision. Publish and pin them together, then run fresh one-seat certification."
+    next_action: publish and pin the exact strict-TLS v1.0.13 content and certifier, then certify one seat for direct and AnythingLLM model participation, Console and Terminal scope, cleanup, credential revocation, and zero residue
 
   intel-llm-tool-calling:
     display_name: "Intel AI 201: LLM Tool Calling on Intel"

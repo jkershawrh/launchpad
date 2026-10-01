@@ -22,7 +22,7 @@ The `/v1/chat/completions` endpoint is the standard interface for conversational
 [source,json]
 ----
 {
-  "model": "granite-2b-cpu",           // <1>
+  "model": "{maas_model}",             // <1>
   "messages": [                         // <2>
     {"role": "system", "content": "..."},
     {"role": "user", "content": "..."}
@@ -43,7 +43,7 @@ Send a straightforward question:
 
 [source,bash,role="execute"]
 ----
-curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -71,7 +71,7 @@ System prompts set the model's persona and behavior. Compare these two approache
 
 [source,bash,role="execute"]
 ----
-curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -87,7 +87,7 @@ curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
 
 [source,bash,role="execute"]
 ----
-curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -110,7 +110,7 @@ Temperature controls how "creative" the model is. Try the same prompt at differe
 
 [source,bash,role="execute"]
 ----
-curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -125,7 +125,7 @@ curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
 
 [source,bash,role="execute"]
 ----
-curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -146,7 +146,7 @@ Time a request to understand CPU inference performance:
 
 [source,bash,role="execute"]
 ----
-time curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
+time curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -183,7 +183,7 @@ for q in \
   "Define workplace harassment." \
   "What is an employee handbook?"; do
   echo "Q: $q"
-  time curl -ks "${MAAS_ENDPOINT}/v1/chat/completions" \
+  time curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
     -H "Authorization: Bearer ${MAAS_API_KEY}" \
     -H "Content-Type: application/json" \
     -d "{

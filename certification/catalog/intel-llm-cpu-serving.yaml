@@ -55,6 +55,26 @@ spec:
         equals: true
       - path: rag_journey.grounded_answer
         equals: true
+      - path: rag_journey.model_participated
+        equals: true
+      - path: rag_journey.model
+        equals: granite-3.2-8b-tools
+      - path: model_journey.answer_present
+        equals: true
+      - path: model_journey.identity_present
+        equals: true
+      - path: model_journey.configured_model
+        equals: granite-3.2-8b-tools
+      - path: model_journey.observed_model
+        equals: granite-3.2-8b-tools
+      - path: operator_journey.terminal_scope_verified
+        equals: true
+      - path: operator_journey.console_url_present
+        equals: true
+      - path: operator_journey.console_namespace_scope
+        equals: true
+      - path: operator_journey.workspace_http_status
+        equals: 200
       - path: terminal_scope
         contains: own_edit=yes
       - path: terminal_scope

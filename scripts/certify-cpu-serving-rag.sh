@@ -53,7 +53,7 @@ wait_for_route() {
   local attempt http_status
   for ((attempt = 1; attempt <= route_ready_attempts; attempt++)); do
     http_status="$(
-      curl -sSk -o /dev/null -w '%{http_code}' \
+      curl -fsS -o /dev/null -w '%{http_code}' \
         --connect-timeout 3 --max-time 5 \
         "${base_url}/api/ping" 2>/dev/null || true
     )"
@@ -72,7 +72,7 @@ run_id="${CERTIFICATION_RUN_ID:-$(date -u +%Y%m%d%H%M%S)-$$}"
 run_id="$(printf '%s' "$run_id" | tr -cd '[:alnum:]-' | tr '[:upper:]' '[:lower:]')"
 workspace_slug="hr-assistant-${run_id}"
 curl_options=(
-  -fsSk
+  -fsS
   --retry 3
   --retry-all-errors
   --retry-delay 2
@@ -121,6 +121,13 @@ auth_ok="$(curl "${curl_options[@]}" -H "Authorization: Bearer ${api_token}" \
   "${base_url}/api/v1/auth" | jq -r '.authenticated')"
 [[ "$auth_ok" == "true" ]]
 
+stage="rag-model-contract"
+rag_model="$(
+  oc get secret anythingllm-config -n "$namespace" \
+    -o jsonpath='{.data.GENERIC_OPEN_AI_MODEL_PREF}' | base64 -d
+)"
+[[ "$rag_model" == "granite-3.2-8b-tools" ]]
+
 stage="workspace-create"
 curl "${curl_options[@]}" \
   -H "Authorization: Bearer ${api_token}" \
@@ -156,5 +163,5 @@ printf '%s' "$response" | jq -e '
   and (.error == null)
 ' >/dev/null
 
-printf '%s\t%s\t%s\tgrounded=true\n' \
-  "$namespace" "$expected_cluster" "$metadata"
+printf '%s\t%s\t%s\tgrounded=true\tmodel=%s\tmodel_participated=true\n' \
+  "$namespace" "$expected_cluster" "$metadata" "$rag_model"

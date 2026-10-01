@@ -23,7 +23,7 @@ credential:
 
 [source,bash,role="execute"]
 ----
-curl -ksS "${MAAS_ENDPOINT}/v1/chat/completions" \
+curl -fsS "${MAAS_ENDPOINT}/v1/chat/completions" \
   -H "Authorization: Bearer ${MAAS_API_KEY}" \
   -H "Content-Type: application/json" \
   -d "{

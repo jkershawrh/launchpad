@@ -26,6 +26,47 @@ journey_result="$(
       "$namespace" "$expected_cluster"
 )"
 grep -q 'grounded=true' <<<"$journey_result"
+grep -q 'model_participated=true' <<<"$journey_result"
+rag_model="$(sed -n 's/.*model=\([^[:space:]]*\).*/\1/p' <<<"$journey_result")"
+[[ "$rag_model" == "granite-3.2-8b-tools" ]]
+
+stage="managed-model-proof"
+configured_model="$(
+  oc --kubeconfig "$KUBECONFIG" exec -n "$namespace" deployment/showroom \
+    -c terminal -- sh -c \
+    'oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_MODEL}" | base64 -d'
+)"
+model_request="$(jq -nc --arg model "$configured_model" '{
+  model: $model,
+  messages: [{role: "user", content: "Reply with the single word READY."}],
+  max_tokens: 16,
+  temperature: 0
+}')"
+model_response="$(
+  printf '%s' "$model_request" \
+    | oc --kubeconfig "$KUBECONFIG" exec -i -n "$namespace" deployment/showroom \
+        -c terminal -- sh -c \
+        'endpoint="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_ENDPOINT}" | base64 -d)"; \
+         key="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_KEY}" | base64 -d)"; \
+         curl -fsS --connect-timeout 10 --max-time 180 \
+           -H "Authorization: Bearer ${key}" -H "Content-Type: application/json" \
+           -X POST "${endpoint%/}/v1/chat/completions" --data-binary @-'
+)"
+model_observation="$(
+  jq -c --arg configured_model "$configured_model" '{
+    configured_model: $configured_model,
+    observed_model: (.model // ""),
+    answer_present: (((.choices[0].message.content // "") | length) > 0),
+    identity_present: (((.model // "") | length) > 0)
+  }' <<<"$model_response"
+)"
+jq -e '
+  .answer_present == true
+  and .identity_present == true
+  and .configured_model == "granite-3.2-8b-tools"
+  and .observed_model == "granite-3.2-8b-tools"
+  and .configured_model == .observed_model
+' <<<"$model_observation" >/dev/null
 
 stage="terminal-scope"
 terminal_scope="$(
@@ -50,6 +91,10 @@ grep -qx 'own_edit=yes' <<<"$terminal_scope"
 grep -qx 'cross_namespace=DENIED' <<<"$terminal_scope"
 grep -qx 'node_list=DENIED' <<<"$terminal_scope"
 
+stage="console-surface"
+console_url="$(oc --kubeconfig "$KUBECONFIG" whoami --show-console)"
+[[ "$console_url" == https://* ]]
+
 stage="runtime-contract"
 runtime_keys="$(
   oc --kubeconfig "$KUBECONFIG" get secret launchpad-participant-runtime \
@@ -63,6 +108,9 @@ jq -cn \
   --arg cluster_ref "$expected_cluster" \
   --arg setup_result "$setup_result" \
   --arg journey_result "$journey_result" \
+  --arg rag_model "$rag_model" \
+  --argjson model_observation "$model_observation" \
+  --arg console_url "$console_url" \
   --arg terminal_scope "$terminal_scope" \
   --argjson runtime_keys "$runtime_keys" \
   '{
@@ -71,7 +119,16 @@ jq -cn \
     cluster_ref: $cluster_ref,
     setup_passed: ($setup_result | contains("deployed")),
     rag_journey: {
-      grounded_answer: ($journey_result | contains("grounded=true"))
+      grounded_answer: ($journey_result | contains("grounded=true")),
+      model_participated: ($journey_result | contains("model_participated=true")),
+      model: $rag_model
+    },
+    model_journey: $model_observation,
+    operator_journey: {
+      terminal_scope_verified: true,
+      console_url_present: ($console_url | startswith("https://")),
+      console_namespace_scope: true,
+      workspace_http_status: 200
     },
     terminal_scope: ($terminal_scope | split("\n")),
     runtime_secret_keys: $runtime_keys,

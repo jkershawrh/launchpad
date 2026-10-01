@@ -3,7 +3,7 @@ display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
 description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
 category: guided_build
 version: "1.0.13-flightpath.1"
-status: active
+status: draft
 required_capabilities:
   - openshift
   - showroom
@@ -35,21 +35,36 @@ metadata:
   returns_to: null
   shared_blueprint: red-hat-intel-agentic-v1
   solution_family: inference
+  certification_transfer: none
   showroom: true
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: five-seat-certified
-  max_workshop_seats: 5
+  certification_stage: source-reviewed
+  max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5
+  activation_blockers:
+    - Publish and pin the exact strict-TLS v1.0.13 content and certification driver revision.
+    - Recertify one Flightpath seat for managed-model and AnythingLLM RAG participation, Console and Terminal scope, cleanup, credential revocation, and zero residue.
   onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
   certification_proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
   showroom_journey: intel-llm-cpu-serving
   showroom_title: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
+  showroom_terminal_storage: false
+  showroom_tabs:
+    - id: terminal
+      title: Terminal
+      source: showroom.terminal
+    - id: workspace
+      title: RAG Assistant
+      source: workload.route.ui
+    - id: openshift-console
+      title: OpenShift Console
+      source: cluster.console_url
   showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
   showroom_content_ref: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
   showroom_content_playbook: "site-intel-llm-cpu-serving.yml"

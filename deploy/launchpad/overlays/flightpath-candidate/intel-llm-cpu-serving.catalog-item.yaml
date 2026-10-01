@@ -2,8 +2,8 @@ catalog_item_id: intel-llm-cpu-serving
 display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
 description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
 category: guided_build
-version: "1.0.12-flightpath.1"
-status: active
+version: "1.0.13-flightpath.1"
+status: draft
 required_capabilities:
   - openshift
   - showroom
@@ -26,8 +26,8 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: five-seat-certified
-  max_workshop_seats: 5
+  certification_stage: source-reviewed
+  max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5
@@ -37,8 +37,19 @@ metadata:
   showroom_title: "Serve LLMs on Intel Xeon CPUs"
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
+  showroom_terminal_storage: false
+  showroom_tabs:
+    - id: terminal
+      title: Terminal
+      source: showroom.terminal
+    - id: workspace
+      title: RAG Assistant
+      source: workload.route.ui
+    - id: openshift-console
+      title: OpenShift Console
+      source: cluster.console_url
   showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
-  showroom_content_ref: "9526ede61b5c31949f3a1bedd133b5a17e554178"
+  showroom_content_ref: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
   showroom_content_playbook: "site-intel-llm-cpu-serving.yml"
   required_models:
     - granite-3.2-8b-tools
@@ -55,8 +66,8 @@ metadata:
   seat_storage_gib: 2
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
-  source_content_repo: "https://github.com/rhpds/showroom-intel-llm-cpu-serving.git"
-  source_content_revision: "ca1b9af736d1b5dfa80e76c0a1bd6c4638d3eaef"
+  source_content_repo: "https://github.com/jkershawrh/launchpad.git"
+  source_content_revision: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
   workload_repo: "https://github.com/rhpds/llm-cpu-serving.git"
   workload_revision: "88867e14b1eede7d9aa563069aa093c122a4a53a"
   showroom_steps:

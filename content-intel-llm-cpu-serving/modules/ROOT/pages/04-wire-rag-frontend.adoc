@@ -211,7 +211,7 @@ else
   export ANYTHINGLLM_URL="https://$(oc get route rag -n {project_name} -o custom-columns=HOST:.spec.host --no-headers)"
   ANYTHINGLLM_ROUTE_STATUS=""
   for attempt in {1..40}; do
-    ANYTHINGLLM_ROUTE_STATUS="$(curl -ksS -o /dev/null -w '%\{http_code\}' "$ANYTHINGLLM_URL/api/ping" || true)"
+    ANYTHINGLLM_ROUTE_STATUS="$(curl -fsS -o /dev/null -w '%\{http_code\}' "$ANYTHINGLLM_URL/api/ping" || true)"
     [ "$ANYTHINGLLM_ROUTE_STATUS" = "200" ] && break
     sleep 3
   done
@@ -320,7 +320,7 @@ You should see a response from the model in the AnythingLLM chat interface. The 
 
 If you see an error like "Could not connect to LLM provider":
 
-. Check that the MaaS endpoint is reachable: `curl -ks $\{MAAS_ENDPOINT\}/v1/models -H "Authorization: Bearer $\{MAAS_API_KEY\}"`
+. Check that the MaaS endpoint is reachable: `curl -fsS $\{MAAS_ENDPOINT\}/v1/models -H "Authorization: Bearer $\{MAAS_API_KEY\}"`
 . Confirm that the expected Secret keys exist without exposing their values: `oc describe secret anythingllm-config -n {project_name}`
 
 Secret values are not printed during troubleshooting. If the required keys are
