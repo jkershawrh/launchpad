@@ -467,34 +467,39 @@ labs:
 
   intel-llm-cpu-serving:
     display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
-    overall_status: immutable-source-published-needs-one-seat-certification
+    overall_status: green-live-active-one-seat-certified
     published_content_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "An HR retrieval assistant provides a recognizable customer workload."}
     show: {status: green-local, evidence: "The opening now executes a real completion, prints the observed model identity and answer, and fails early when the inference boundary is unavailable before teaching the architecture."}
     learn: {status: green, evidence: "Serving, retrieval, chunking, and model access are covered."}
     do: {status: green, evidence: "The learner deploys AnythingLLM, loads content, and asks questions."}
-    prove: {status: source-fix-ready, evidence: "The source requires observed model, response, latency, retrieval, OpenShift state, and cleanup evidence; unsupported generic latency and zero-cost claims are removed."}
-    operators: {status: green-local, evidence: "The Console checkpoint now correlates the AnythingLLM Deployment, Bound PVC, and admitted Route with terminal evidence."}
-    inference: {status: green-live-prior-revision, evidence: "Existing certification proves an earlier managed Granite path but does not transfer. The revised strict-TLS certifier requires granite-3.2-8b-tools as both the configured and observed direct model and proves the unique AnythingLLM grounded query used that configured model."}
-    cleanup: {status: green-local, evidence: "The candidate no longer prints Secret YAML, removes the AnythingLLM PVC, verifies zero learner residue, and states the Launchpad reclaim boundary."}
+    prove: {status: green-live, evidence: "The live run proved observed model, response, retrieval, OpenShift state, namespace isolation, and cleanup; unsupported generic latency and zero-cost claims remain removed."}
+    operators: {status: green-live, evidence: "The participant Terminal scope and namespace-scoped Console contract passed; all four Showroom pages returned 200 with their expected markers."}
+    inference: {status: green-live, evidence: "Direct inference and the AnythingLLM grounded journey both proved granite-3.2-8b-tools participation through the participant boundary."}
+    cleanup: {status: green-live, evidence: "The model key was revoked and the namespace, routes, secrets, PVCs, PVs, RoleBindings, and Argo CD Applications all reached zero residue."}
     live_attempts:
       - run_id: flightpath-live-20260930-intel-llm-cpu-serving-1seat-r1
         result: RED-live
         evidence: evidence/runs/flightpath-live-20260930-intel-llm-cpu-serving-1seat-r1.json
         finding: "Provisioning failed closed before creating a seat because the RAG Assistant tab declared workload.route.ui without binding ui to the rag Route; cleanup proved zero namespace residue."
         remediation: "Bind runtime.workload.routes.ui and catalog metadata.workload_routes.ui to the existing rag Route, then repeat the same one-seat proof."
+      - run_id: flightpath-live-20260930-intel-llm-cpu-serving-1seat-r2
+        result: GREEN-live
+        rubric: 100/100
+        evidence: evidence/runs/flightpath-live-20260930-intel-llm-cpu-serving-1seat-r2.json
+        proof: "One Flightpath seat reached ready, all four Showroom pages returned 200 with their markers, direct inference and AnythingLLM RAG both used granite-3.2-8b-tools, Terminal and Console scope passed, the model key was revoked, and cleanup left zero residue."
     local_validation: "Antora build passed without missing-attribute warnings after correcting storage-class and shell-variable rendering; focused participant-truth tests passed on 2026-09-30."
     source_state:
       repository: /Users/jkershaw/Documents/launchpad
       published_content_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
       catalog_pinned_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
-      candidate_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
+      candidate_revision: d2db12895d6ac3dfd8a632ae0e965cc2cdd9896f
       workload_repository: https://github.com/rhpds/llm-cpu-serving.git
       workload_revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
       certification_transfer: none
-      certification_boundary: "The strict-TLS content and strengthened direct-model, RAG-model, Terminal, and Console proof are pinned together; fresh one-seat certification is still required."
-    next_action: certify one seat for direct and AnythingLLM model participation, Console and Terminal scope, cleanup, credential revocation, and zero residue
+      certification_boundary: "The strict-TLS v1.0.13 participant journey is active only at the proven one-seat boundary; the prior five-seat result does not transfer."
+    next_action: retain one-seat orderability; run a new five-seat proof before raising the workshop limit, and mirror AnythingLLM to a durable registry before production portability
 
   intel-llm-tool-calling:
     display_name: "Intel AI 201: LLM Tool Calling on Intel"

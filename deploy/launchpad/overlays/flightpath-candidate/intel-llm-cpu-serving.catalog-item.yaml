@@ -3,7 +3,7 @@ display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
 description: "Explore CPU inference through a shared model endpoint, then build and test a namespace-isolated RAG assistant on OpenShift."
 category: guided_build
 version: "1.0.13-flightpath.1"
-status: draft
+status: active
 required_capabilities:
   - openshift
   - showroom
@@ -26,13 +26,13 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5
-  activation_blockers:
-    - Recertify one Flightpath seat for managed-model and AnythingLLM RAG participation, Console and Terminal scope, cleanup, credential revocation, and zero residue.
+  activation_blockers: []
   production_blockers:
     - Mirror the AnythingLLM image to a durable external registry before the production control plane is moved away from Arena.
   onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml

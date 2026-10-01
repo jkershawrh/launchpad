@@ -9,7 +9,7 @@ catalog:
     a namespace-isolated RAG assistant on OpenShift.
   category: guided_build
   version: "1.0.13-flightpath.1"
-  status: draft
+  status: active
   supported_branding:
     - redhat-intel-default
     - intel-internal
@@ -92,14 +92,14 @@ runtime:
       source: cluster.console_url
 
 certification:
-  stage: immutable-source-published
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
   promotion_sequence:
     - 1
     - 5
-  activation_blockers:
-    - Recertify one Flightpath seat for managed-model and AnythingLLM RAG participation, Console and Terminal scope, cleanup, credential revocation, and zero residue.
+  activation_blockers: []
   production_blockers:
     - >-
       Mirror the AnythingLLM image to a durable external registry before the

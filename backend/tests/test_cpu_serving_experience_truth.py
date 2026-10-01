@@ -114,28 +114,29 @@ def test_cpu_serving_certification_records_managed_model_identity() -> None:
     assert ("operator_journey.console_namespace_scope", True) in expected
 
 
-def test_cpu_serving_orderability_does_not_transfer_from_the_prior_contract() -> None:
+def test_cpu_serving_orderability_is_bound_to_the_new_one_seat_proof() -> None:
     catalog = _load(CATALOG_PATH)
     intake = _load(INTAKE_PATH)
     overlay = _load(OVERLAY_PATH)
 
-    # v1.0.12 proof cannot bind the revised v1.0.13 participant journey.
+    # The v1.0.12 proof did not transfer; this state is bound to the v1.0.13 run.
     assert catalog["version"] == intake["catalog"]["version"] == (
         "1.0.13-flightpath.1"
     )
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
-    assert overlay["status"] == "draft"
-    assert catalog["metadata"]["certification_stage"] == "immutable-source-published"
-    assert intake["certification"]["stage"] == "immutable-source-published"
-    assert overlay["metadata"]["certification_stage"] == "immutable-source-published"
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
+    assert overlay["status"] == "active"
+    assert catalog["metadata"]["certification_stage"] == "1-seat-certified"
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert overlay["metadata"]["certification_stage"] == "1-seat-certified"
+    assert catalog["metadata"]["certified_seats"] == 1
+    assert intake["certification"]["certified_seats"] == 1
+    assert overlay["metadata"]["certified_seats"] == 1
     assert catalog["metadata"]["max_workshop_seats"] == 1
     assert intake["certification"]["max_workshop_seats"] == 1
     assert overlay["metadata"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["certification_transfer"] == "none"
     assert intake["learning"]["certification_transfer"] == "none"
-    assert catalog["metadata"]["activation_blockers"] == [
-        "Recertify one Flightpath seat for managed-model and AnythingLLM RAG participation, Console and Terminal scope, cleanup, credential revocation, and zero residue.",
-    ]
+    assert catalog["metadata"]["activation_blockers"] == []
     assert catalog["metadata"]["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]
