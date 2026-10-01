@@ -6,7 +6,7 @@ from app.services.catalog_onboarding import build_catalog_item, load_intake
 
 
 ROOT = Path(__file__).resolve().parents[2]
-REVISION = "bce72fb0b65c40b5fbee597b9234379322a5773a"
+REVISION = "74cd64cd806b3ce59c4de73eb4fa18e548d0cce9"
 
 
 def _load(path: str) -> dict:
