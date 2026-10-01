@@ -6,6 +6,7 @@ from app.services.catalog_onboarding import build_catalog_item, load_intake
 
 
 ROOT = Path(__file__).resolve().parents[2]
+REVISION = "23f7d9cfbadde1df2c83d378de8a7d0bbaa0bef6"
 
 
 def _load(path: str) -> dict:
@@ -21,6 +22,11 @@ def test_sovereign_ai_401_exposes_operations_without_allocating_model_access() -
     runtime = intake["runtime"]
 
     assert catalog == build_catalog_item(load_intake(ROOT / "catalog-onboarding/sovereign-ai-401.yaml"))
+    assert metadata["showroom_content_ref"] == REVISION
+    assert metadata["source_content_revision"] == REVISION
+    assert metadata["workload_revision"] == REVISION
+    assert intake["sources"]["showroom"]["revision"] == REVISION
+    assert intake["sources"]["workload"]["revision"] == REVISION
     assert catalog["status"] == "draft"
     assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["certification_transfer"] == "none"
