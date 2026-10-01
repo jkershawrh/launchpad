@@ -75,17 +75,18 @@ def test_agent_reliability_exact_release_has_a_flightpath_certification_contract
         "0.1.1-flightpath.1",
         "scripts/certify-agent-reliability-seat.sh",
         1,
+        (1,),
     )
     intake = load_intake(ROOT / "catalog-onboarding/agent-reliability.yaml")
     assert intake["catalog"]["status"] == "draft"
     assert intake["sources"]["showroom"]["revision"] == (
-        "9c69348c34904c58997318d9124ac3d50661984b"
+        "fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc"
     )
-    assert intake["certification"]["stage"] == "source-update-published"
+    assert intake["certification"]["stage"] == "exact-image-published"
     image = intake["runtime"]["workload"]["helm_values"]["image"]
     assert image["repository"] == "ghcr.io/jkershawrh/agent-reliability-quickstart"
     assert image["digest"] == (
-        "sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb"
+        "sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66"
     )
     assert [tab["id"] for tab in intake["runtime"]["tabs"]] == [
         "terminal",
@@ -121,9 +122,16 @@ def test_specialty_probes_cover_function_namespace_and_secret_boundaries():
 
 
 def test_network_operations_exact_release_is_one_seat_certified_and_internal_only():
+    exact_revision = "6ed5c53337afa55c03949b2963b429f32977ef69"
     contract_path = ROOT / "certification/catalog/network-operations-agent.yaml"
     contract = load_certification_contract(contract_path)
     intake = load_intake(ROOT / "catalog-onboarding/network-operations-agent.yaml")
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/network-operations-agent/catalog-item.yaml").read_text()
+    )
+    review = yaml.safe_load(
+        (ROOT / "evidence/lab-experience-review-20260930.yaml").read_text()
+    )["labs"]["network-operations-agent"]
     overlay = (ROOT / "deploy/launchpad/overlays/flightpath-candidate/network-operations-agent.catalog-item.yaml").read_text()
 
     assert validate_certification_contract(
@@ -136,8 +144,15 @@ def test_network_operations_exact_release_is_one_seat_certified_and_internal_onl
     assert contract["spec"]["target_cluster"] == "flightpath"
     assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1]
     assert contract["spec"]["seat_probe"]["argv"][1] == "scripts/certify-network-operations-seat.sh"
-    assert intake["sources"]["workload"]["revision"] == (
-        "6ed5c53337afa55c03949b2963b429f32977ef69"
+    assert intake["sources"]["showroom"]["revision"] == exact_revision
+    assert intake["sources"]["workload"]["revision"] == exact_revision
+    assert catalog["metadata"]["showroom_content_ref"] == exact_revision
+    assert catalog["metadata"]["source_content_revision"] == exact_revision
+    assert catalog["metadata"]["workload_revision"] == exact_revision
+    assert review["source_state"]["published_head"] == exact_revision
+    assert review["source_state"]["catalog_pinned_revision"] == exact_revision
+    assert review["source_state"]["image_provenance"]["image_source_revision"] == (
+        exact_revision
     )
     assert intake["runtime"]["workload"]["helm_values"]["image"]["digest"] == (
         "sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242"

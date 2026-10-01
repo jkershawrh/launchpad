@@ -16,11 +16,6 @@ spec:
       probe_concurrency: 1
       maximum_ready_seconds: 1200
       maximum_cleanup_seconds: 600
-    - seats: 5
-      required_consecutive_runs: 1
-      probe_concurrency: 5
-      maximum_ready_seconds: 1800
-      maximum_cleanup_seconds: 900
   showroom:
     pages:
       - {id: welcome, path: /www/agent-reliability-quickstart/main/index.html, marker: "When Agents Fail"}
@@ -45,6 +40,11 @@ spec:
       - {path: reliability_journey.inference_timeout, equals: degraded}
       - {path: reliability_journey.evidence_records, equals: 3}
       - {path: reliability_journey.human_approval_required, equals: true}
+      - {path: reliability_journey.inference_provider, equals: openai-compatible}
+      - {path: reliability_journey.configured_model, equals: granite-3.2-8b-tools}
+      - {path: reliability_journey.observed_model, equals: granite-3.2-8b-tools}
+      - {path: reliability_journey.model_participated, equals: true}
+      - {path: runtime.workload_image, equals: "ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66"}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

@@ -25,12 +25,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 9c69348c34904c58997318d9124ac3d50661984b
+    revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
     playbook: site.yml
     start_path: .
   workload:
     repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-    revision: 9c69348c34904c58997318d9124ac3d50661984b
+    revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
     deploy_path: chart
 runtime:
   workshop_cluster_ref: flightpath
@@ -65,6 +65,7 @@ runtime:
   workload:
     gitops_ready: true
     release_name: agent-reliability
+    image_source_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
     runtime_secret_name: model-connection
     runtime_secret_value_path: model.existingSecret
     runtime_secret_sources:
@@ -78,7 +79,7 @@ runtime:
     helm_values:
       image:
         repository: ghcr.io/jkershawrh/agent-reliability-quickstart
-        digest: sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+        digest: sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
       route:
         enabled: true
         name: ar
@@ -89,15 +90,13 @@ runtime:
   allowed_exposure_policies:
   - internal
 certification:
-  stage: source-update-published
+  stage: exact-image-published
   max_workshop_seats: 1
   proof_contract: certification/catalog/agent-reliability.yaml
   promotion_sequence:
   - 1
-  - 5
   activation_blockers:
-  - Recertify one Flightpath seat against the updated Console correlation and reclaim guidance.
-  - Verify the unchanged runtime image against the effective managed inference endpoint.
+  - Recertify one Flightpath seat against the exact source and image revisions, Console correlation, managed inference, and reclaim guidance.
 quality:
   schema_version: launchpad.redhat.com/catalog-intake-quality/v1
   business_solution:
@@ -134,7 +133,7 @@ quality:
   showroom:
     page_count: 7
     hands_on_module_count: 6
-    execute_block_count: 20
+    execute_block_count: 33
     see_section_count: 6
     verification_section_count: 6
     key_takeaway_count: 6

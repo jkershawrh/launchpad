@@ -318,7 +318,7 @@ labs:
 
   agent-reliability:
     display_name: "Intel AI 301: Engineer Reliable Agentic Workflows"
-    overall_status: source-update-published-draft
+    overall_status: exact-image-published-draft
     story: {status: green, evidence: "A reliability incident and recovery decision frame the lab."}
     show: {status: green, evidence: "Healthy, degraded, and recovered outcomes are visible."}
     learn: {status: green, evidence: "Reliability, safety, and evidence boundaries are explained."}
@@ -330,10 +330,10 @@ labs:
     source_state:
       repository: /Users/jkershaw/Documents/agent-reliability-quickstart
       checked_out_branch: main
-      local_head: 9c69348c34904c58997318d9124ac3d50661984b
-      published_head: 9c69348c34904c58997318d9124ac3d50661984b
-      catalog_pinned_revision: 9c69348c34904c58997318d9124ac3d50661984b
-      catalog_pinned_image: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+      local_head: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
+      published_head: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
+      catalog_pinned_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
+      catalog_pinned_image: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
       post_review_changes: committed-published-pinned-not-live-certified
       post_review_paths:
         - modules/ROOT/pages/01-healthy-agent.adoc
@@ -347,22 +347,22 @@ labs:
       publication_validation:
         status: green-integration
         workflow: https://github.com/jkershawrh/agent-reliability-quickstart/actions/runs/36732110014
-        evidence: "Repository CI passed for exact source revision 9c69348c34904c58997318d9124ac3d50661984b. The repository has no image release workflow, so the unchanged runtime image remains attributed only to its embedded build source revision."
+        evidence: "Repository CI passed for exact source revision fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc. The exact linux/amd64 image passed the fixable-Critical publication gate and was published publicly to GHCR with its source revision embedded."
       five_seat_live_evidence: evidence/runs/staging-candidate-e2d78de/flightpath-e2d78de-20260929T124528Z-7fpm8-agent-reliability-five-seat.json
       image_provenance:
-        status: verified-byte-identical-mirror
-        manifest_digest: sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
-        config_digest: sha256:62275b5e05c96d695019c85a16bbf208c97cdeb24320af03863d9b5af1b3dbfc
-        image_source_revision: 4cf610d3c225c8b31a73354bb405a3f9022305a2
-        source_manifest_registry: quay.io
-        source_manifest_reference: quay.io/rh-ee-jkershaw/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
-        source_manifest_tag: intake-4cf610d
+        status: exact-source-publication
+        manifest_digest: sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
+        config_digest: sha256:ea0ec523a47629a79737d706ee232f696db0f17cc18199d03c519db38cfad8a4
+        image_source_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
+        source_manifest_registry: ghcr.io
+        source_manifest_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
+        source_manifest_tag: link-fa6a1797662e
         catalog_registry: ghcr.io
-        catalog_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+        catalog_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
         ghcr_visibility: public
-        ghcr_tag: ac71e2ec27a1360d0032538c0a16cd1b0a6bed7e
-        verification: "Anonymous OCI registry reads returned the same manifest digest, config digest, media type, layer count, and byte-identical manifest from Quay and GHCR. The pulled image label identifies 4cf610d3c225c8b31a73354bb405a3f9022305a2 as the build source revision."
-      publication_note: "The prior five-seat GREEN-live result proves the unchanged runtime image and its GHCR mirror. Quay versus GHCR is not an artifact discrepancy: both names resolve to the same immutable manifest. The newer source revision is committed, published, and pinned, but it does not inherit that live proof and remains draft until fresh certification."
+        ghcr_tag: link-fa6a1797662e
+        verification: "The exact image passed 22 source tests, Ruff, Helm lint/render, a runtime health smoke test, and a Grype 0.110.0 gate with zero fixable Critical findings after removing the unused Node/npm payload. Anonymous GHCR access is enabled."
+      publication_note: "The previous image failed closed on a fixable Critical npm tar finding. The remediated exact-source image is published and pinned, but remains draft until a fresh one-seat Flightpath certification proves managed inference and complete reclaim."
     next_action: certify Console SSO, effective inference, evidence retention, and reclaim in one fresh Flightpath seat, then restore orderability only if the exact pinned revision passes
 
   intel-xeon6-agent-201:

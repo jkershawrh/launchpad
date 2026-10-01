@@ -4,6 +4,7 @@ set -euo pipefail
 namespace="${1:?usage: certify-agent-reliability-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agent-reliability-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
+expected_workload_image="ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66"
 
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
@@ -42,6 +43,10 @@ healthy="$(request none)"
 jq -e '
   .outcome == "recommended"
   and .model_status == "available"
+  and .inference_provider == "openai-compatible"
+  and .configured_model == "granite-3.2-8b-tools"
+  and .observed_model == .configured_model
+  and .model_participated == true
   and (.evidence | length) == 3
   and .human_approval_required == true
   and (.trace_id | type) == "string"
@@ -74,6 +79,10 @@ grep -qx 'node_list=DENIED' <<<"$terminal_scope"
 stage="runtime-contract"
 runtime_keys="$(oc --kubeconfig "$KUBECONFIG" get secret model-connection -n "$namespace" -o json | jq -c '.data | keys | sort')"
 [[ "$runtime_keys" == '["api-key","endpoint","model"]' ]]
+workload_image="$(oc --kubeconfig "$KUBECONFIG" get deployment agent-reliability -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="api")].image}')"
+[[ "$workload_image" == "$expected_workload_image" ]]
+workload_image_id="$(oc --kubeconfig "$KUBECONFIG" get pods -n "$namespace" -l app.kubernetes.io/name=agent-reliability -o jsonpath='{.items[0].status.containerStatuses[?(@.name=="api")].imageID}')"
+[[ "$workload_image_id" == *"@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66" ]]
 
 stage="evidence"
 jq -cn \
@@ -81,6 +90,12 @@ jq -cn \
   --arg cluster_ref "$expected_cluster" \
   --arg terminal_scope "$terminal_scope" \
   --arg healthy_guardrail "$(jq -r '.policy_decisions[] | select(.control == "input-guardrail") | .provider' <<<"$healthy")" \
+  --arg inference_provider "$(jq -r '.inference_provider' <<<"$healthy")" \
+  --arg configured_model "$(jq -r '.configured_model' <<<"$healthy")" \
+  --arg observed_model "$(jq -r '.observed_model' <<<"$healthy")" \
+  --arg workload_image "$workload_image" \
+  --arg workload_image_id "$workload_image_id" \
+  --argjson model_participated "$(jq -r '.model_participated' <<<"$healthy")" \
   --argjson runtime_keys "$runtime_keys" \
   '{
     result: "GREEN-live-internal-seat",
@@ -94,7 +109,15 @@ jq -cn \
       inference_timeout: "degraded",
       evidence_records: 3,
       human_approval_required: true,
-      guardrail_provider: $healthy_guardrail
+      guardrail_provider: $healthy_guardrail,
+      inference_provider: $inference_provider,
+      configured_model: $configured_model,
+      observed_model: $observed_model,
+      model_participated: $model_participated
+    },
+    runtime: {
+      workload_image: $workload_image,
+      workload_image_id: $workload_image_id
     },
     terminal_scope: ($terminal_scope | split("\n")),
     runtime_secret_keys: $runtime_keys,
