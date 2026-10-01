@@ -767,6 +767,11 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r11.json
         finding: "Public immutable source retrieval succeeded, but the repository-local Showroom file was not an Antora playbook and defaulted the builder to a missing root content directory."
         remediation: "Pin source revision 74cd64cd806b3ce59c4de73eb4fa18e548d0cce9 with a contract-tested Antora playbook selecting showroom/content and the sovereign-ai-401 start page."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r12
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r12.json
+        finding: "All containers and the Showroom and Story Routes became participant-ready, but route-level validation timed out on Trust Evidence because its NetworkPolicy admitted only in-namespace callers."
+        remediation: "Pin source revision 78e8153f76926bba1226787a5438c2b42092d3c1, preserving default-deny while admitting only the OpenShift ingress policy group to the qualifier port."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
@@ -778,13 +783,13 @@ labs:
     source_state:
       repository: /Users/jkershaw/Documents/sovereign-ai-401
       checked_out_branch: main
-      published_head: 74cd64cd806b3ce59c4de73eb4fa18e548d0cce9
-      catalog_pinned_revision: 74cd64cd806b3ce59c4de73eb4fa18e548d0cce9
+      published_head: 78e8153f76926bba1226787a5438c2b42092d3c1
+      catalog_pinned_revision: 78e8153f76926bba1226787a5438c2b42092d3c1
       post_review_changes: exact-pinned-candidate-awaiting-final-one-seat-proof
       publication_validation:
         status: green-integration
         workflow: https://github.com/jkershawrh/sovereign-ai-401/actions/runs/36804816530
-        evidence: "Image source revision cf31dea053855f467f68325a871e44cf44b11df3 passed source qualification, zero HIGH/CRITICAL gates, linux/amd64 publication, signing, SPDX SBOM, provenance, and verification for both immutable artifacts; source revision 74cd64cd806b3ce59c4de73eb4fa18e548d0cce9 adds the short Routes and reviewed Antora playbook without changing either image."
+        evidence: "Image source revision cf31dea053855f467f68325a871e44cf44b11df3 passed source qualification, zero HIGH/CRITICAL gates, linux/amd64 publication, signing, SPDX SBOM, provenance, and verification for both immutable artifacts; source revision 78e8153f76926bba1226787a5438c2b42092d3c1 adds the short Routes, reviewed Antora playbook, and narrowly scoped router ingress without changing either image."
       immutable_images:
         presentation: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:9e980f5113f340edf209acfa8572a273c1d5220a79165f7e6379ecd3fd0e1df4
         qualifier: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:df3fe53d316198a76f4fb526cf2e10be51ef9a14c97a46ea5de29e8f38b65a50
