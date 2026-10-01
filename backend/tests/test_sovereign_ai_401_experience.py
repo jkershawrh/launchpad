@@ -6,7 +6,7 @@ from app.services.catalog_onboarding import build_catalog_item, load_intake
 
 
 ROOT = Path(__file__).resolve().parents[2]
-REVISION = "0a528c651c2cb6b6bb9d31875aa2ada099dedd35"
+REVISION = "016e9406231dbc435cdb3fb591e92b3cca2e83b9"
 
 
 def _load(path: str) -> dict:
@@ -45,11 +45,13 @@ def test_sovereign_ai_401_exposes_operations_without_allocating_model_access() -
     assert runtime["workload"]["runtime_secret_name"] == ""
     assert runtime["workload"]["runtime_secret_sources"] == {}
     assert runtime["workload"]["routes"]["ui"] == "story"
+    assert runtime["workload"]["routes"]["qualification"] == "trust-evidence"
 
     expected_tabs = ["story", "terminal", "qualification", "openshift-console"]
     assert [tab["id"] for tab in metadata["showroom_tabs"]] == expected_tabs
     assert [tab["id"] for tab in runtime["tabs"]] == expected_tabs
     assert runtime["tabs"][0]["source"] == "workload.route.ui"
+    assert runtime["tabs"][2]["source"] == "workload.route.qualification"
 
     values = metadata["workload_helm_values"]
     assert values["source_state"] == "REHEARSAL"

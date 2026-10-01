@@ -27,13 +27,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
-    revision: 0a528c651c2cb6b6bb9d31875aa2ada099dedd35
+    revision: 016e9406231dbc435cdb3fb591e92b3cca2e83b9
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
-    revision: 0a528c651c2cb6b6bb9d31875aa2ada099dedd35
+    revision: 016e9406231dbc435cdb3fb591e92b3cca2e83b9
     deploy_path: charts/sovereign-ai-401
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
 runtime:
@@ -72,7 +72,7 @@ runtime:
     source: showroom.terminal
   - id: qualification
     title: Trust Evidence
-    source: workload.service
+    source: workload.route.qualification
     path: /api/v1/scenarios
   - id: openshift-console
     title: OpenShift Console
@@ -102,6 +102,7 @@ runtime:
     runtime_secret_sources: {}
     routes:
       ui: story
+      qualification: trust-evidence
     readiness: []
 certification:
   stage: immutable-source-published

@@ -40,7 +40,7 @@ metadata:
   certification_transfer: none
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
-  showroom_content_ref: 0a528c651c2cb6b6bb9d31875aa2ada099dedd35
+  showroom_content_ref: 016e9406231dbc435cdb3fb591e92b3cca2e83b9
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
@@ -85,7 +85,7 @@ metadata:
     source: showroom.terminal
   - id: qualification
     title: Trust Evidence
-    source: workload.service
+    source: workload.route.qualification
     path: /api/v1/scenarios
   - id: openshift-console
     title: OpenShift Console
@@ -106,7 +106,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-401.git
-  workload_revision: 0a528c651c2cb6b6bb9d31875aa2ada099dedd35
+  workload_revision: 016e9406231dbc435cdb3fb591e92b3cca2e83b9
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-401
@@ -134,7 +134,8 @@ metadata:
   workload_identity_value_path: ''
   workload_routes:
     ui: story
+    qualification: trust-evidence
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-401.git
-  source_content_revision: 0a528c651c2cb6b6bb9d31875aa2ada099dedd35
+  source_content_revision: 016e9406231dbc435cdb3fb591e92b3cca2e83b9
   source_references: {}
