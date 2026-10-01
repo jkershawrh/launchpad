@@ -44,8 +44,6 @@ runtime:
   required_capabilities:
   - openshift
   - showroom
-  - intel-xeon-tdx-review-required
-  - trustee-review-required
   validation_refs:
   - pod-ready
   - route-accessible

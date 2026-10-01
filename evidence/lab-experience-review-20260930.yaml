@@ -711,6 +711,12 @@ labs:
   sovereign-ai-401:
     display_name: "Sovereign AI 401 — Operate Confidential AI with Intel TDX"
     overall_status: immutable-source-published-draft
+    live_attempts:
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r1
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r1.json
+        finding: "Capacity failed closed before mutation because rehearsal-only review markers were incorrectly modeled as destination capabilities."
+        remediation: "Require only OpenShift and Showroom for the truthful REHEARSAL product; retain absent TDX and Trustee infrastructure as explicit activation blockers and prohibited live claims."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}

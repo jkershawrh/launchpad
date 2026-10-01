@@ -25,6 +25,10 @@ def test_sovereign_ai_401_exposes_operations_without_allocating_model_access() -
     assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["certification_transfer"] == "none"
     assert metadata["required_models"] == runtime["required_models"] == []
+    assert catalog["required_capabilities"] == runtime["required_capabilities"] == [
+        "openshift",
+        "showroom",
+    ]
     assert metadata["inference_endpoint"] == runtime["inference_endpoint"] == "none"
     assert catalog["validation_refs"] == runtime["validation_refs"] == [
         "pod-ready",

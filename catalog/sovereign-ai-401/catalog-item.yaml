@@ -8,8 +8,6 @@ status: draft
 required_capabilities:
 - openshift
 - showroom
-- intel-xeon-tdx-review-required
-- trustee-review-required
 default_hardware_profile: xeon-basic
 default_quota_profile: large
 default_ttl: 4h
