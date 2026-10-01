@@ -4,7 +4,7 @@ catalog:
   catalog_item_id: intel-llm-tool-calling
   display_name: 'Intel AI 201: LLM Tool Calling on Intel'
   description: Learn the tool-calling protocol and build single- and multi-tool applications
-    against shared Intel Xeon inference.
+    against shared managed inference with platform-declared Intel Xeon placement.
   category: guided_build
   version: 1.0.3-flightpath.1
   status: draft
@@ -71,16 +71,17 @@ runtime:
   tabs:
   - id: terminal
     title: Terminal
+    source: showroom.terminal
   - id: openshift-console
     title: OpenShift Console
+    source: cluster.console_url
 certification:
-  stage: source-update-published
+  stage: source-update-pending-publication
   certified_seats: 0
   max_workshop_seats: 1
   proof_contract: certification/catalog/intel-llm-tool-calling.yaml
   promotion_sequence:
   - 1
-  - 5
   activation_blockers:
-  - Certify one fresh Flightpath seat for managed inference, structured tool calls, Console isolation, reclaim, and zero residue.
-  - Record independent Intel backend provenance or soften the remaining CPU-specific opening and conclusion claims.
+  - Publish the revised Launchpad content and certifier, then pin their exact immutable revision.
+  - Certify one fresh Flightpath seat for strict-TLS managed inference, structured tool calls, local tool execution with no MCP participation, Console isolation, reclaim, and zero residue.

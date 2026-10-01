@@ -12,7 +12,7 @@ Test parallel tool calling:
 
 [source,bash,role="execute"]
 ----
-curl -s $\{MODEL_URL\}/chat/completions \
+curl -fsS $\{MODEL_URL\}/chat/completions \
   -H "Authorization: Bearer $\{MODEL_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -68,7 +68,7 @@ Test forced tool choice:
 
 [source,bash,role="execute"]
 ----
-curl -s $\{MODEL_URL\}/chat/completions \
+curl -fsS $\{MODEL_URL\}/chat/completions \
   -H "Authorization: Bearer $\{MODEL_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{

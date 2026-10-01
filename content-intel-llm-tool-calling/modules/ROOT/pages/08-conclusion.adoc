@@ -29,9 +29,9 @@ The dispatch pattern is simple: check for `tool_calls`, look up the function nam
 
 The `description` field in a tool definition is an instruction to the model. Vague descriptions lead to wrong tool calls. Specific descriptions with clear trigger conditions lead to reliable behavior.
 
-=== CPU Inference Fits the Pattern
+=== CPU Inference Can Fit the Pattern
 
-Tool calling's stop-and-go profile -- short outputs separated by tool execution waits -- is well-suited to {intel_platform} CPUs. The model is idle while tools run, making GPU utilization economics unfavorable for this workload.
+Tool calling's stop-and-go profile -- short outputs separated by tool execution waits -- can suit {intel_platform} CPUs. This lab does not compare CPU and GPU utilization or cost. Use destination placement evidence and measured workload data before making an efficiency or economic claim.
 
 == What You Learned
 
@@ -103,3 +103,7 @@ instructor reclaims the order.
 You have completed the *Build an AI Tool Calling System* lab. You did not just deploy and click -- you built every layer: the protocol, the dispatch loop, the multi-tool application, and the production guard rails. These are the building blocks of agentic AI.
 
 Powered by *Red Hat OpenShift AI* running on *{intel_platform}* processors.
+
+The hardware statement above is the platform's declared placement; the learner
+proof covers managed-model and tool-protocol behavior, not independent hardware
+attestation.

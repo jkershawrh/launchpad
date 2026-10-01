@@ -16,12 +16,6 @@ spec:
       probe_concurrency: 1
       maximum_ready_seconds: 900
       maximum_cleanup_seconds: 600
-    - seats: 5
-      required_consecutive_runs: 1
-      probe_concurrency: 5
-      maximum_ready_seconds: 1500
-      maximum_cleanup_seconds: 900
-
   showroom:
     pages:
       - {id: welcome, path: /www/modules/index.html, marker: "LLM Tool Calling on Intel"}
@@ -38,8 +32,14 @@ spec:
       - {path: result, equals: GREEN-live-internal-seat}
       - {path: cluster_ref, equals: flightpath}
       - {path: model.models_http_status, equals: 200}
+      - {path: model.name, equals: granite-3.2-8b-tools}
+      - {path: model.inference_participated, equals: true}
+      - {path: model.backend_placement_verified, equals: false}
       - {path: model.structured_tool_call, equals: true}
       - {path: model.complete_tool_protocol, equals: true}
+      - {path: tool.execution_mode, equals: deterministic-local-function}
+      - {path: tool.mcp_participated, equals: false}
+      - {path: tool.result_returned_to_model, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

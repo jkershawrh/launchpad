@@ -91,7 +91,7 @@ echo "Model URL: $\{MODEL_URL\}"
 echo "Model Name: $\{MODEL_NAME\}"
 ----
 
-The MaaS endpoint serves {maas_model} on Intel Xeon 6 hardware with tool calling support already enabled. All inference in this lab runs through this endpoint. The participant is not shown a metered per-token charge; actual platform cost depends on infrastructure, utilization, support, and operating model.
+The MaaS endpoint serves {maas_model} with tool calling support already enabled. All inference in this lab runs through this endpoint. Launchpad declares Intel Xeon 6 placement; the learner proves endpoint behavior while independent platform evidence remains responsible for hardware provenance. The participant is not shown a metered per-token charge; actual platform cost depends on infrastructure, utilization, support, and operating model.
 
 Install the Python OpenAI client library (you will need it in later modules):
 
@@ -106,7 +106,7 @@ List available models:
 
 [source,bash,role="execute"]
 ----
-curl -s $\{MODEL_URL\}/models \
+curl -fsS $\{MODEL_URL\}/models \
   -H "Authorization: Bearer $\{MODEL_API_KEY\}" | python3 -m json.tool
 ----
 
@@ -116,7 +116,7 @@ Send a basic chat completion (no tools) to confirm the model is healthy:
 
 [source,bash,role="execute"]
 ----
-curl -s $\{MODEL_URL\}/chat/completions \
+curl -fsS $\{MODEL_URL\}/chat/completions \
   -H "Authorization: Bearer $\{MODEL_API_KEY\}" \
   -H "Content-Type: application/json" \
   -d '{

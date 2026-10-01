@@ -1,12 +1,12 @@
 = Build an AI Tool Calling System from Scratch
 
-Welcome to the *vLLM Tool Calling on OpenShift AI* lab. In this hands-on workshop you will build a complete tool calling system -- from understanding the protocol, to verifying a platform-managed model endpoint, to writing an automated multi-tool application. Inference is supplied by the Launchpad MaaS service on {intel_platform} processors.
+Welcome to the *vLLM Tool Calling on OpenShift AI* lab. In this hands-on workshop you will build a complete tool calling system -- from understanding the protocol, to verifying a platform-managed model endpoint, to writing an automated multi-tool application. Inference is supplied by the Launchpad MaaS service. Its {intel_platform} placement is a platform declaration that requires independent destination evidence.
 
 == The Scenario
 
 Your team is building an internal AI assistant for operations staff. The assistant must do more than chat -- it needs to look up employee records, check inventory systems, and query live data from external APIs. Today, staff switch between five different tools to answer one customer question. You are building an assistant that calls those tools automatically.
 
-The challenge: most tool calling tutorials assume expensive GPU hardware. In this lab you will prove that an {intel_platform} CPU can handle agentic AI workloads -- because tool calling's stop-and-go pattern (short model outputs, long tool execution waits) plays to CPU strengths, not GPU strengths.
+The challenge: most tool calling tutorials assume GPU hardware. In this lab you will explore why tool calling's stop-and-go pattern can be a good CPU candidate, while proving only the assigned endpoint's tool-calling behavior. Hardware placement and comparative efficiency require platform evidence and measurement outside the learner namespace.
 
 == What You Will BUILD
 
@@ -18,7 +18,19 @@ By the end of this lab you will have constructed:
 * A *multi-tool application* where the model chains multiple function calls to answer complex questions
 * *Advanced patterns* including parallel calls, error handling, and guard rails
 
-There is no application UI. You build and run everything from the terminal using `curl` and Python.
+There is no application UI. You build and run everything from the terminal using `curl` and Python. This lab does not deploy or call an MCP server: the managed model requests a tool, and learner-owned code executes deterministic local functions before returning results to the model.
+
+== How to Use the Operator Views
+
+* The Showroom guide is the *Story* view: it carries the scenario, protocol,
+  instructions, and proof criteria.
+* *Terminal* is the tool workspace: you inspect managed-model responses, write
+  the local dispatch loop, execute deterministic functions, and retain evidence.
+* *OpenShift Console* is the platform view: you corroborate the seat namespace
+  and confirm that the shared model service is outside learner authority.
+
+These are complementary views of one journey. There is no separate tool UI and
+no hidden MCP service.
 
 == The Tool Calling Lifecycle
 
@@ -74,7 +86,7 @@ The model never executes code. It produces structured JSON requests. Your applic
 | Component | Purpose
 
 | *Model as a Service (MaaS)*
-| Pre-hosted {maas_model} on Intel Xeon 6 with `--enable-auto-tool-choice`. Exposes an OpenAI-compatible `/v1/chat/completions` endpoint. The participant receives a scoped lab credential; this lab makes no zero-cost claim.
+| Pre-hosted {maas_model} with `--enable-auto-tool-choice`. Exposes an OpenAI-compatible `/v1/chat/completions` endpoint. The participant receives a scoped lab credential. The platform declares Intel Xeon 6 placement; this lab proves endpoint behavior, not backend placement or comparative cost.
 
 | *OpenShift AI*
 | Provides the platform, namespace isolation, and console access.
@@ -112,7 +124,7 @@ When you are ready, proceed to xref:01-tool-calling-fundamentals.adoc[Module 1: 
 
 == Powered by Intel
 
-AI inference in this lab runs on **Intel** hardware via the Intel x Red Hat AI Launchpad.
+The Intel x Red Hat AI Launchpad declares that this MaaS inference runs on **Intel** hardware. Treat that placement as a platform claim until destination certification records independent evidence.
 
 [cols="1,2",options="header"]
 |===

@@ -23,18 +23,18 @@ runtime_json="$(oc exec -n "$namespace" deployment/showroom -c terminal -- \
 runtime_keys="$(jq -c '.data | keys | sort' <<<"$runtime_json")"
 jq -e '(.data.MAAS_API_KEY | length > 0) and (.data.MAAS_MODEL | length > 0)' \
   <<<"$runtime_json" >/dev/null
-model_url="$(jq -r '(.data.MAAS_API_URL // .data.MAAS_ENDPOINT) | @base64d' <<<"$runtime_json")"
-model_url="${model_url%/}"
-[[ "$model_url" == */v1 ]] || model_url="${model_url}/v1"
 model_name="$(jq -r '.data.MAAS_MODEL | @base64d' <<<"$runtime_json")"
-model_key="$(jq -r '.data.MAAS_API_KEY | @base64d' <<<"$runtime_json")"
 
 stage=model-list
 models_response="$(oc exec -n "$namespace" deployment/showroom -c terminal -- \
-  curl -kfsS -w $'\n%{http_code}' -H "Authorization: Bearer ${model_key}" \
-    "${model_url}/models")"
+  sh -c 'curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
+    -w "\n%{http_code}" -H "Authorization: Bearer ${MAAS_API_KEY}" \
+    "${MAAS_API_URL%/}/models"')"
 models_status="${models_response##*$'\n'}"
 [[ "$models_status" == 200 ]]
+models_body="${models_response%$'\n'*}"
+jq -e --arg model "$model_name" '.data | map(.id) | index($model) != null' \
+  <<<"$models_body" >/dev/null
 
 stage=structured-tool-call
 request="$(jq -nc --arg model "$model_name" '{
@@ -44,8 +44,9 @@ request="$(jq -nc --arg model "$model_name" '{
   tool_choice:"auto",max_tokens:128,temperature:0
 }')"
 first="$(printf '%s' "$request" | oc exec -i -n "$namespace" deployment/showroom -c terminal -- \
-  curl -kfsS -H "Authorization: Bearer ${model_key}" -H 'Content-Type: application/json' \
-    -X POST "${model_url}/chat/completions" --data-binary @-)"
+  sh -c 'curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
+    -H "Authorization: Bearer ${MAAS_API_KEY}" -H "Content-Type: application/json" \
+    -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-')"
 tool_call="$(jq -c '.choices[0].message.tool_calls[0]' <<<"$first")"
 jq -e '.function.name == "get_weather" and (.function.arguments | fromjson | .city | ascii_downcase | contains("austin"))' \
   <<<"$tool_call" >/dev/null
@@ -61,8 +62,9 @@ final_request="$(jq -nc --arg model "$model_name" --argjson assistant "$assistan
   ],max_tokens:128,temperature:0
 }')"
 final="$(printf '%s' "$final_request" | oc exec -i -n "$namespace" deployment/showroom -c terminal -- \
-  curl -kfsS -H "Authorization: Bearer ${model_key}" -H 'Content-Type: application/json' \
-    -X POST "${model_url}/chat/completions" --data-binary @-)"
+  sh -c 'curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
+    -H "Authorization: Bearer ${MAAS_API_KEY}" -H "Content-Type: application/json" \
+    -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-')"
 jq -e '.choices[0].message.content | type == "string" and test("78") and test("sunny"; "i")' \
   <<<"$final" >/dev/null
 
@@ -83,13 +85,15 @@ jq -cn \
   --arg cluster_ref "$expected_cluster" \
   --argjson runtime_keys "$runtime_keys" \
   --argjson models_status "$models_status" \
+  --arg model_name "$model_name" \
   --arg terminal_scope "$terminal_scope" \
   '{
     result:"GREEN-live-internal-seat",
     namespace:$namespace,
     cluster_ref:$cluster_ref,
     runtime_secret_keys:$runtime_keys,
-    model:{models_http_status:$models_status,structured_tool_call:true,complete_tool_protocol:true},
+    model:{name:$model_name,models_http_status:$models_status,inference_participated:true,backend_placement_verified:false,structured_tool_call:true,complete_tool_protocol:true},
+    tool:{execution_mode:"deterministic-local-function",mcp_participated:false,result_returned_to_model:true},
     terminal_scope:($terminal_scope | split("\n")),
     contains_sensitive_values:false
   }'

@@ -14,7 +14,7 @@ asciidoc:
     openshift_cluster_ingress_domain: '%openshift_cluster_ingress_domain%'
     cluster_display_name: '%cluster_display_name%'
     project_name: '%namespace%'
-    quickstart_repo: 'https://github.com/rhpds/vllm-tool-calling.git'
+    quickstart_repo: 'https://github.com/rh-ai-quickstart/vllm-tool-calling.git'
     maas_api_url: '%maas_api_url%'
     maas_model: '%maas_model%'
     intel_platform: 'Intel Xeon'

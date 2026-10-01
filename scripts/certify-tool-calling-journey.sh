@@ -1,35 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-namespace="${1:?usage: certify-tool-calling-journey.sh <namespace>}"
-: "${KUBECONFIG:?KUBECONFIG must point to the Arena credential}"
+namespace="${1:?usage: certify-tool-calling-journey.sh <namespace> <cluster-id>}"
+expected_cluster="${2:?usage: certify-tool-calling-journey.sh <namespace> <cluster-id>}"
+: "${KUBECONFIG:?KUBECONFIG must point to the execution cluster credential}"
 
-case "$KUBECONFIG" in
-  *config-arena*) ;;
-  *)
-    echo "refusing to validate a non-Arena cluster" >&2
-    exit 2
-    ;;
-esac
-
-host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
-curl_options=(-fsSk)
-if [[ -n "${ARENA_CURL_INTERFACE:-}" ]]; then
-  curl_options+=(--interface "$ARENA_CURL_INTERFACE")
-fi
-if [[ -n "${ARENA_INGRESS_IP:-}" ]]; then
-  curl_options+=(--resolve "${host}:443:${ARENA_INGRESS_IP}")
-fi
-
-page="$(curl "${curl_options[@]}" "https://${host}/www/modules/02-serving-with-tools.html")"
-model_url="$(printf '%s' "$page" | sed -n 's/.*export MODEL_URL=\([^< ]*\).*/\1/p' | head -1)"
-model="$(printf '%s' "$page" | sed -n 's/.*export MODEL_NAME=\([^< ]*\).*/\1/p' | head -1)"
-api_key="$(printf '%s' "$page" | sed -n 's/.*export MODEL_API_KEY=\([^< ]*\).*/\1/p' | head -1)"
-
-if [[ -z "$model_url" || -z "$model" || -z "$api_key" ]]; then
-  echo "Showroom did not render the required model connection values" >&2
-  exit 3
-fi
+oc() { command oc --kubeconfig "$KUBECONFIG" "$@"; }
+actual_cluster="$(oc get namespace "$namespace" -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}')"
+[[ "$actual_cluster" == "$expected_cluster" ]]
+model="$(oc exec -n "$namespace" deployment/showroom -c terminal -- printenv MAAS_MODEL)"
+[[ -n "$model" ]]
 
 request="$(jq -nc --arg model "$model" '{
   model:$model,
@@ -54,11 +34,10 @@ request="$(jq -nc --arg model "$model" '{
 first_result="$({
   printf '%s' "$request" \
     | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
-        curl -fsS -w $'\n%{http_code}\t%{time_total}\n' \
-          -H "Authorization: Bearer ${api_key}" \
-          -H 'Content-Type: application/json' \
-          -X POST "${model_url}/chat/completions" \
-          --data-binary @-
+        sh -c 'curl -fsS -w "\n%{http_code}\t%{time_total}\n" \
+          -H "Authorization: Bearer ${MAAS_API_KEY}" \
+          -H "Content-Type: application/json" \
+          -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-'
 })"
 first_response="$(printf '%s\n' "$first_result" | head -1)"
 first_metadata="$(printf '%s\n' "$first_result" | tail -1)"
@@ -96,11 +75,10 @@ final_request="$(jq -nc \
 final_result="$({
   printf '%s' "$final_request" \
     | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
-        curl -fsS -w $'\n%{http_code}\t%{time_total}\n' \
-          -H "Authorization: Bearer ${api_key}" \
-          -H 'Content-Type: application/json' \
-          -X POST "${model_url}/chat/completions" \
-          --data-binary @-
+        sh -c 'curl -fsS -w "\n%{http_code}\t%{time_total}\n" \
+          -H "Authorization: Bearer ${MAAS_API_KEY}" \
+          -H "Content-Type: application/json" \
+          -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-'
 })"
 final_response="$(printf '%s\n' "$final_result" | head -1)"
 final_metadata="$(printf '%s\n' "$final_result" | tail -1)"
@@ -115,4 +93,5 @@ printf '%s' "$final_response" | jq -e '
 first_seconds="$(printf '%s' "$first_metadata" | cut -f2)"
 final_seconds="$(printf '%s' "$final_metadata" | cut -f2)"
 total_seconds="$(awk -v first="$first_seconds" -v final="$final_seconds" 'BEGIN {printf "%.6f", first + final}')"
-printf '%s\t200\t%s\tcomplete-tool-protocol=true\n' "$namespace" "$total_seconds"
+printf '%s\t%s\t200\t%s\tcomplete-tool-protocol=true\n' \
+  "$namespace" "$expected_cluster" "$total_seconds"
