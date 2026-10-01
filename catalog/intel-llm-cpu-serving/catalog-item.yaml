@@ -53,6 +53,8 @@ metadata:
   showroom_title: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
+  workload_routes:
+    ui: rag
   showroom_terminal_storage: false
   showroom_tabs:
     - id: terminal

@@ -478,6 +478,12 @@ labs:
     operators: {status: green-local, evidence: "The Console checkpoint now correlates the AnythingLLM Deployment, Bound PVC, and admitted Route with terminal evidence."}
     inference: {status: green-live-prior-revision, evidence: "Existing certification proves an earlier managed Granite path but does not transfer. The revised strict-TLS certifier requires granite-3.2-8b-tools as both the configured and observed direct model and proves the unique AnythingLLM grounded query used that configured model."}
     cleanup: {status: green-local, evidence: "The candidate no longer prints Secret YAML, removes the AnythingLLM PVC, verifies zero learner residue, and states the Launchpad reclaim boundary."}
+    live_attempts:
+      - run_id: flightpath-live-20260930-intel-llm-cpu-serving-1seat-r1
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-intel-llm-cpu-serving-1seat-r1.json
+        finding: "Provisioning failed closed before creating a seat because the RAG Assistant tab declared workload.route.ui without binding ui to the rag Route; cleanup proved zero namespace residue."
+        remediation: "Bind runtime.workload.routes.ui and catalog metadata.workload_routes.ui to the existing rag Route, then repeat the same one-seat proof."
     local_validation: "Antora build passed without missing-attribute warnings after correcting storage-class and shell-variable rendering; focused participant-truth tests passed on 2026-09-30."
     source_state:
       repository: /Users/jkershaw/Documents/launchpad

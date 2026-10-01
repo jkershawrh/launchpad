@@ -52,6 +52,9 @@ def test_cpu_serving_declares_all_participant_operators() -> None:
     assert [tab["id"] for tab in intake["runtime"]["tabs"]] == expected_ids
     assert [tab["id"] for tab in catalog["metadata"]["showroom_tabs"]] == expected_ids
     assert [tab["id"] for tab in overlay["metadata"]["showroom_tabs"]] == expected_ids
+    assert intake["runtime"]["workload"]["routes"] == {"ui": "rag"}
+    assert catalog["metadata"]["workload_routes"] == {"ui": "rag"}
+    assert overlay["metadata"]["workload_routes"] == {"ui": "rag"}
     assert catalog["metadata"]["workspace_title"] == "RAG Assistant"
     assert overlay["metadata"]["workspace_title"] == "RAG Assistant"
 

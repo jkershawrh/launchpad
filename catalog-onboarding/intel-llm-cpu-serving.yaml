@@ -69,6 +69,9 @@ runtime:
   allowed_exposure_policies:
     - internal
     - public_code
+  workload:
+    routes:
+      ui: rag
   seat_resources:
     cpu_millicores: 665
     memory_mib: 1488
@@ -80,10 +83,13 @@ runtime:
   tabs:
     - id: terminal
       title: Terminal
+      source: showroom.terminal
     - id: workspace
       title: RAG Assistant
+      source: workload.route.ui
     - id: openshift-console
       title: OpenShift Console
+      source: cluster.console_url
 
 certification:
   stage: immutable-source-published
