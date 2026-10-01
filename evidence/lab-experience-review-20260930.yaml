@@ -722,6 +722,11 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r2.json
         finding: "The qualifier became ready, but the presentation image could not write /run/nginx.pid under the restricted read-only root filesystem."
         remediation: "Publish and pin chart revision 23f7d9cfbadde1df2c83d378de8a7d0bbaa0bef6, which supplies a bounded emptyDir at /run without weakening the container security context."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r3
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r3.json
+        finding: "With writable /run restored, nginx inherited worker_processes auto and spawned one worker per visible cluster CPU, repeatedly exceeding the presentation container memory limit."
+        remediation: "Pin chart revision e648f54cab042e8bbf0f044d4c03bf93ad09d7e2, bound nginx to one worker, and require zero presentation restarts in the seat proof."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
