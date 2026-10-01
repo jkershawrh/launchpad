@@ -44,6 +44,8 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
         "network-operations-agent",
         "rag-on-xeon",
         "sovereign-ai-101",
+        "sovereign-ai-301",
+        "intel-xeon6-agent-201",
         "virtualization-ai-401",
         "virtualization-ai-501",
     }

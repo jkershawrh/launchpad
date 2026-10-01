@@ -124,11 +124,11 @@ def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():
         "start_path": ".",
     }
     assert intake["sources"]["workload"]["revision"] == WORKLOAD_REVISION
-    assert intake["certification"]["stage"] == "immutable-source-published"
-    assert intake["certification"]["certified_seats"] == 0
+    assert intake["catalog"]["status"] == "active"
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["promotion_sequence"] == [1]
-    blockers = " ".join(intake["certification"]["activation_blockers"])
-    assert "one fresh Flightpath seat" in blockers
+    assert intake["certification"]["activation_blockers"] == []
     assert all(
         "mutable workload tag" not in blocker
         for blocker in intake["certification"]["activation_blockers"]
@@ -140,7 +140,7 @@ def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():
     assert metadata["showroom_content_playbook"] == "site.yml"
     assert metadata["source_content_revision"] == SOURCE_REVISION
     assert metadata["workload_revision"] == WORKLOAD_REVISION
-    assert metadata["certification_stage"] == "immutable-source-published"
+    assert metadata["certification_stage"] == "1-seat-certified"
 
 
 def test_agent_201_catalog_and_source_expose_the_three_operator_tabs():
@@ -199,12 +199,13 @@ def test_agent_201_certification_fails_closed_on_inference_identity_and_exports_
         assert image in source
 
 
-def test_agent_201_evidence_marks_published_changes_as_nontransferable_until_certified():
+def test_agent_201_evidence_records_exact_candidate_live_certification():
     review = yaml.safe_load(
         (ROOT / "evidence/lab-experience-review-20260930.yaml").read_text()
     )["labs"]["intel-xeon6-agent-201"]
 
-    assert review["overall_status"] == "immutable-source-published-draft"
+    assert review["overall_status"] == "one-seat-live-certified-active"
     assert review["source_truth"]["candidate_revision"] == SOURCE_REVISION
-    assert review["source_truth"]["certification_transfer"] == "none"
-    assert "one Flightpath seat" in review["next_action"]
+    assert review["source_truth"]["certification_transfer"] == "exact-candidate-only"
+    assert review["live_certification"]["result"] == "GREEN-live"
+    assert review["live_certification"]["rubric_score"] == 100

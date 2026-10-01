@@ -9,7 +9,7 @@ catalog:
     MCP tools, and shared Intel Xeon inference.
   category: guided_build
   version: "1.0.9-flightpath.1"
-  status: draft
+  status: active
   supported_branding:
     - redhat-intel-default
     - intel-internal
@@ -91,14 +91,13 @@ runtime:
       source: cluster.console_url
 
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
   promotion_sequence:
     - 1
-  activation_blockers:
-    - Certify the exact source revision b8475464e5f1447da67ccfc0673b9a8a3e4757d7 and workload revision c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d on one fresh Flightpath seat for Story, Console, managed inference, proof export, reclaim, and zero residue.
+  activation_blockers: []
   production_blockers:
     - >-
       Mirror all participant workload images to a durable external registry

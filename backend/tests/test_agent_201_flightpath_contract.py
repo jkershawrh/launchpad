@@ -16,7 +16,7 @@ def test_flightpath_overlay_uses_the_reviewed_immutable_agent_201_contract():
     overlay = yaml.safe_load(OVERLAY.read_text())
 
     assert overlay["version"] == catalog["version"]
-    assert overlay["status"] == "draft"
+    assert overlay["status"] == "active"
 
     expected_metadata = catalog["metadata"]
     actual_metadata = overlay["metadata"]
@@ -38,13 +38,10 @@ def test_flightpath_overlay_uses_the_reviewed_immutable_agent_201_contract():
         assert actual_metadata[key] == expected_metadata[key]
 
 
-def test_agent_201_remains_a_draft_one_seat_candidate_pending_live_proof():
+def test_agent_201_is_orderable_only_at_its_certified_one_seat_limit():
     overlay = yaml.safe_load(OVERLAY.read_text())
 
-    assert overlay["status"] == "draft"
+    assert overlay["status"] == "active"
     assert overlay["metadata"]["max_workshop_seats"] == 1
-    assert overlay["metadata"]["certification_stage"] == "immutable-source-published"
-    assert any(
-        "one fresh Flightpath seat" in blocker
-        for blocker in overlay["metadata"]["activation_blockers"]
-    )
+    assert overlay["metadata"]["certification_stage"] == "1-seat-certified"
+    assert overlay["metadata"]["activation_blockers"] == []

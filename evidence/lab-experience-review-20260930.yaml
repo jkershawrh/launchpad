@@ -319,24 +319,24 @@ labs:
 
   intel-xeon6-agent-201:
     display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-active
     published_content_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "A Solution Architect agent gives the lab a concrete business role."}
     show: {status: green, evidence: "The working agent UI demonstrates the target outcome."}
     learn: {status: green, evidence: "Agent, tool, and model responsibilities are explained."}
     do: {status: green, evidence: "The learner builds and queries the agent."}
-    prove: {status: green-local, evidence: "The source now saves the live response, asserts a nonempty brief, requires every observed inference model to equal the Deployment model, requires all three MCP tools, and exports a credential-free proof."}
-    operators: {status: green-local, evidence: "The candidate makes the OpenShift Console a namespace-scoped checkpoint correlated with terminal evidence."}
-    inference: {status: green-local, evidence: "The source checks the running Deployment model against every model-bearing inference-log record; fresh destination execution still gates GREEN-live."}
-    cleanup: {status: green-local, evidence: "The candidate removes learner-created Deployments, Services, Routes, ConfigMaps, Secret, and temporary proof files, verifies their absence, and reserves full-seat reclaim for Launchpad."}
+    prove: {status: green-live, evidence: "The exact candidate produced a 6,793-character sourced brief, used all three MCP tools, matched every model-bearing record to granite-3.2-8b-tools, and exported credential-free proof."}
+    operators: {status: green-live, evidence: "The participant terminal proved namespace edit access while cross-namespace and node access were denied; the UI, tools, and agent services were all healthy."}
+    inference: {status: green-live, evidence: "The exact Flightpath seat proved managed granite-3.2-8b-tools participation through the participant runtime connection."}
+    cleanup: {status: green-live, evidence: "Reclaim revoked the model key and left zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_truth:
       reviewed_showroom_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
       catalog_showroom_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
       candidate_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
       workload_reference: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
       workload_reference_status: immutable-public-commit
-      certification_transfer: none
+      certification_transfer: exact-candidate-only
       certification_boundary: "The published Showroom revision and Launchpad adapter preserve the pinned Triforce Deployments, Services, image digests, selectors, ports, probes, and Route targets while changing only Route metadata names to tools, agent, and app. Historical receipts do not transfer to this candidate."
       runtime_images:
         tools: quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850
@@ -348,7 +348,14 @@ labs:
       historical_scale_seats: 30
       evidence_boundary: "The thirty-seat result is historical evidence for v1.0.8 and does not certify this v1.0.9 candidate."
     local_validation: "The published candidate passed 11 source-contract checks, Antora rendering, 24 focused adapter/control-plane/content tests, 31 onboarding tests, and exact Triforce semantic comparison proving only Route metadata names changed."
-    next_action: certify one Flightpath seat for exact workload images, tools/agent/app routes, live inference identity, Console access, proof export, reclaim, and zero residue before restoring orderability
+    live_certification:
+      result: GREEN-live
+      rubric_score: 100
+      ready_seconds: 46.079
+      probe_seconds: 170.923
+      evidence: evidence/runs/flightpath-live-20260930-intel-xeon6-agent-201-1seat-r5.json
+      proof: "Exact Showroom and Triforce revisions passed Story, all five guide pages, immutable workload images, three MCP tools, live Xeon inference, namespace isolation, key revocation, reclaim, and zero residue."
+    next_action: retain one-seat orderability; address the durable external image-mirror production blocker before moving the control plane
 
   multi-agent-quickstart:
     display_name: "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"

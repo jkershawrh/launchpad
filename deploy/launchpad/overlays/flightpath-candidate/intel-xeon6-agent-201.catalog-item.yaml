@@ -4,7 +4,7 @@ description: Build and tune a namespace-isolated AI solution advisor with LangGr
   MCP tools, and shared Intel Xeon inference.
 category: guided_build
 version: 1.0.9-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -47,14 +47,11 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Certify the exact source revision b8475464e5f1447da67ccfc0673b9a8a3e4757d7 and
-    workload revision c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d on one fresh Flightpath
-    seat for Story, Console, managed inference, proof export, reclaim, and zero residue.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
   production_blockers:
   - Mirror all participant workload images to a durable external registry before the
