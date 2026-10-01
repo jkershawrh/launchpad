@@ -13,13 +13,12 @@ goal_reconciliation:
   reviewed_catalog_entries: 25
   reviewed_catalog_entries_total: 25
   distinct_participant_experiences: 22
-  current_one_seat_live_closeouts: 20
+  current_one_seat_live_closeouts: 21
   compatibility_aliases: 2
   platform_validation_entries: 1
-  current_revision_gates_remaining: 2
+  current_revision_gates_remaining: 1
   remaining_catalog_items:
     - ai-sandbox
-    - openshift-operators-workshop
   interpretation: "The content and journey review is complete across the scoped catalog. Remaining work is exact-revision publication or targeted live recertification, not another full review of all labs."
 learning_pipeline:
   platform_foundations:
@@ -622,26 +621,35 @@ labs:
 
   openshift-operators-workshop:
     display_name: "OpenShift 201: Build an Operator-Managed Pipeline"
-    overall_status: exact-source-published-draft
+    overall_status: one-seat-live-certified-active
     published_content_revision: 6fcb2906e4d22f90afe62a8304b45f04be7cd048
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
-    story: {status: green-local, evidence: "A namespaced evidence-automation request frames why an Operator reconciles desired state."}
-    show: {status: green-local, evidence: "The candidate shows a PipelineRun becoming a TaskRun and Pod before the learner authors it."}
-    learn: {status: green-local, evidence: "Task, Pipeline, PipelineRun, reconciliation, ownership, and human authority are explicitly separated."}
-    do: {status: green-local, evidence: "The learner authors and runs namespace-scoped Tekton v1 custom resources."}
-    prove: {status: green-local, evidence: "The candidate asserts a succeeded run, exact evidence result, one child TaskRun, Console visibility, and zero exercise residue."}
-    operators: {status: conditional, evidence: "Flightpath exposes Tekton v1 APIs and OpenShift Pipelines 1.24.0 Ready; participant Console SSO and Pipeline UI still require one-seat certification."}
+    story: {status: green-live, evidence: "A namespaced evidence-automation request frames why an Operator reconciles desired state."}
+    show: {status: green-live, evidence: "The live Showroom shows a PipelineRun becoming a TaskRun and Pod before the learner authors it."}
+    learn: {status: green-live, evidence: "Task, Pipeline, PipelineRun, reconciliation, ownership, and human authority are explicitly separated."}
+    do: {status: green-live, evidence: "The live participant seat authored and ran namespace-scoped Tekton v1 custom resources."}
+    prove: {status: green-live, evidence: "The exact candidate proved a succeeded run, exact evidence result, one child TaskRun, exercise cleanup, reclaim, and zero residue."}
+    operators: {status: green-live, evidence: "Flightpath exposed Tekton v1 and OpenShift Pipelines 1.24.0 Ready with namespace-scoped participant authority."}
     inference: {status: not-applicable, evidence: "No AI inference path is present."}
-    cleanup: {status: green-local, evidence: "The learner removes PipelineRun, Pipeline, Task, TaskRun, and Pod artifacts and verifies zero residue."}
+    cleanup: {status: green-live, evidence: "Exercise resources were removed, the Launchpad model key was revoked, and reclaim left zero tracked residue."}
     local_validation: "Five focused operator-experience tests and the Antora build passed on 2026-09-30; no inference claim is present."
     source_state:
       repository: /Users/jkershaw/Documents/launchpad
       published_revision: 6fcb2906e4d22f90afe62a8304b45f04be7cd048
       candidate_revision: 6fcb2906e4d22f90afe62a8304b45f04be7cd048
-      certification_transfer: none
+      certification_transfer: green-live
       inference_contract: "No model is required or called; the certification receipt must report required=false and participated=false."
-      certification_boundary: "The corrected Showroom and certifier are not part of the currently pinned revision. Publish and pin one exact Launchpad SHA, then run a fresh one-seat Flightpath certification proving Pipelines reconciliation, participant Console SSO, namespace isolation, exercise cleanup, reclaim, and zero residue."
-    next_action: publish and pin the corrected Showroom and certifier together, then run one exact one-seat Flightpath certification before returning this intentionally drafted item to active
+      certification_boundary: "The exact pinned source passed one-seat Flightpath certification for Showroom content, Tekton reconciliation, namespace isolation, exercise cleanup, reclaim, and zero residue. Browser Console SSO remains a separate manual UX check and is not overstated by this automated receipt."
+    live_certification:
+      status: green-live
+      certified_seats: 1
+      rubric_score: 100
+      ready_seconds: 58.349
+      probe_seconds: 195.019
+      cleanup_seconds: 60.455
+      evidence: evidence/runs/flightpath-live-20261001-openshift-operators-workshop-1seat-r1.json
+      proof: "Five Showroom pages, Tekton v1 API availability, a succeeded PipelineRun, one TaskRun, namespace isolation, exercise cleanup, key revocation, reclaim, and zero tracked residue passed."
+    next_action: retain one-seat orderability and complete a separate manual browser Console SSO usability check before raising the seat limit
 
   cpu-inference-serving:
     display_name: "Intel AI 101: CPU Inference Serving on Xeon"

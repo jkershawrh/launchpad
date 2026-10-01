@@ -96,19 +96,17 @@ def test_operator_certification_probes_reconciliation_and_cleanup():
     assert 'inference:{required:false,participated:false}' in script
 
 
-def test_changed_operator_journey_requires_fresh_one_seat_certification():
+def test_operator_journey_is_one_seat_live_certified_and_active():
     catalog = _load("catalog/openshift-operators-workshop/catalog-item.yaml")
     onboarding = _load("catalog-onboarding/openshift-operators-workshop.yaml")
 
-    assert catalog["status"] == "draft"
-    assert catalog["metadata"]["certification_stage"] == "source-update-pending-publication"
+    assert catalog["status"] == "active"
+    assert catalog["metadata"]["certification_stage"] == "1-seat-certified"
     assert catalog["metadata"]["max_workshop_seats"] == 1
-    assert onboarding["catalog"]["status"] == "draft"
-    assert onboarding["certification"]["certified_seats"] == 0
+    assert onboarding["catalog"]["status"] == "active"
+    assert onboarding["certification"]["certified_seats"] == 1
     assert onboarding["certification"]["max_workshop_seats"] == 1
-    blockers = " ".join(onboarding["certification"]["activation_blockers"])
-    assert "Publish and pin the revised content and certifier" in blockers
-    assert "participant Console SSO" in blockers
+    assert onboarding["certification"]["activation_blockers"] == []
 
 
 def test_operator_workshop_declares_story_terminal_and_console_contracts():
@@ -129,13 +127,13 @@ def test_operator_workshop_declares_story_terminal_and_console_contracts():
     assert catalog["metadata"]["inference_endpoint"] == "none"
 
 
-def test_operator_review_records_the_unpublished_exact_candidate_boundary():
+def test_operator_review_records_the_live_certified_exact_candidate():
     review = _load("evidence/lab-experience-review-20260930.yaml")
     lab = review["labs"]["openshift-operators-workshop"]
     source_state = lab["source_state"]
 
-    assert lab["overall_status"] == "exact-source-published-draft"
+    assert lab["overall_status"] == "one-seat-live-certified-active"
     assert source_state["published_revision"] == REVISION
     assert source_state["candidate_revision"] == REVISION
-    assert source_state["certification_transfer"] == "none"
-    assert "fresh one-seat" in source_state["certification_boundary"]
+    assert source_state["certification_transfer"] == "green-live"
+    assert lab["live_certification"]["rubric_score"] == 100

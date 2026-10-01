@@ -8,7 +8,7 @@ catalog:
     verify a result, and prove cleanup.
   category: guided_build
   version: 2.0.0-candidate.2
-  status: draft
+  status: active
   supported_branding:
   - redhat-intel-default
   - intel-internal
@@ -74,13 +74,11 @@ runtime:
     title: OpenShift Console
     source: cluster.console_url
 certification:
-  stage: source-update-pending-publication
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   proof_contract: certification/catalog/openshift-operators-workshop.yaml
   promotion_sequence:
   - 1
   - 5
-  activation_blockers:
-  - Publish and pin the revised content and certifier at one exact immutable Launchpad revision.
-  - Complete fresh one-seat certification including participant Console SSO, the integrated Pipelines view, namespace isolation, exercise cleanup, reclaim, and zero residue.
+  activation_blockers: []

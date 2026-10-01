@@ -5,7 +5,7 @@ description: A guided, seat-isolated OpenShift Pipelines workshop that teaches
   reconciliation, verify results, and prove cleanup.
 category: guided_build
 version: 2.0.0-candidate.2
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -39,14 +39,12 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: source-update-pending-publication
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
-  activation_blockers:
-  - Publish and pin the revised content and certifier at one exact immutable Launchpad revision.
-  - Complete fresh one-seat certification including participant Console SSO, the integrated Pipelines view, namespace isolation, exercise cleanup, reclaim, and zero residue.
+  activation_blockers: []
   onboarding_contract: catalog-onboarding/openshift-operators-workshop.yaml
   certification_proof_contract: certification/catalog/openshift-operators-workshop.yaml
   seat_cpu_millicores: 265

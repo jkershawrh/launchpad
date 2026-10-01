@@ -57,8 +57,8 @@ def test_specialty_catalog_status_matches_certification_evidence():
     expected = {
         "ai-sandbox": "draft",
         "cpu-inference-serving": "active",
-        "intel-llm-tool-calling": "draft",
-        "openshift-operators-workshop": "draft",
+        "intel-llm-tool-calling": "active",
+        "openshift-operators-workshop": "active",
         "rag-on-xeon": "active",
         "smoke-test": "draft",
     }
