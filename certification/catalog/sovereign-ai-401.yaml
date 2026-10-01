@@ -11,10 +11,10 @@ spec:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 900, maximum_cleanup_seconds: 600}
   showroom:
     pages:
-      - {id: welcome, path: /www/sovereign-ai-401/main/index.html, marker: "Operate confidential AI with Intel TDX"}
-      - {id: attest, path: /www/sovereign-ai-401/main/03-attest.html, marker: "Collect attestation evidence"}
-      - {id: authorize, path: /www/sovereign-ai-401/main/05-authorize.html, marker: "Authorize one resource"}
-      - {id: verify, path: /www/sovereign-ai-401/main/08-verify.html, marker: "Verify evidence and reclaim"}
+      - {id: welcome, path: /www/sovereign-ai-401/main/index.html, marker: "Northstar Claims: operate confidential AI with Intel TDX"}
+      - {id: attest, path: /www/sovereign-ai-401/main/03-attest.html, marker: "Reject a false LIVE attestation claim"}
+      - {id: authorize, path: /www/sovereign-ai-401/main/05-authorize.html, marker: "Authorize one bounded resource"}
+      - {id: verify, path: /www/sovereign-ai-401/main/08-verify.html, marker: "Package evidence and respect the reclaim boundary"}
   seat_probe:
     argv: [bash, scripts/certify-sovereign-ai-401-seat.sh, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 600

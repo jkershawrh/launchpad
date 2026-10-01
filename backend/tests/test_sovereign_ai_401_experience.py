@@ -83,7 +83,25 @@ def test_sovereign_ai_401_exposes_operations_without_allocating_model_access() -
     certifier = (ROOT / "scripts/certify-sovereign-ai-401-seat.sh").read_text(
         encoding="utf-8"
     )
+    assert "get route story" in certifier
+    assert "get route sovereign-ai-401-presentation" not in certifier
     assert "curl -k" not in certifier
     assert "curl -sk" not in certifier
     assert "curl -sSk" not in certifier
     assert "whoami --show-console" in certifier
+
+    page_contracts = {
+        page["id"]: page for page in contract["spec"]["showroom"]["pages"]
+    }
+    assert page_contracts["welcome"]["marker"] == (
+        "Northstar Claims: operate confidential AI with Intel TDX"
+    )
+    assert page_contracts["attest"]["marker"] == (
+        "Reject a false LIVE attestation claim"
+    )
+    assert page_contracts["authorize"]["marker"] == (
+        "Authorize one bounded resource"
+    )
+    assert page_contracts["verify"]["marker"] == (
+        "Package evidence and respect the reclaim boundary"
+    )
