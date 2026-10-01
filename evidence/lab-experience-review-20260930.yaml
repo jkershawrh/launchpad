@@ -732,6 +732,11 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r4.json
         finding: "The first worker-limit attempt supplied a second worker_processes directive at startup, so nginx failed closed with a duplicate-directive error."
         remediation: "Publish the complete bounded nginx main configuration inside the immutable distroless image rather than mutating it or appending command-line directives at runtime."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r5
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r5.json
+        finding: "Both immutable workloads became ready with zero restarts, but OpenShift rejected the generated presentation Route host because the route name plus seat namespace exceeded the DNS label limit."
+        remediation: "Pin chart revision 0a528c651c2cb6b6bb9d31875aa2ada099dedd35, use the stable short Route name story, and bind the catalog UI route to that name."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
@@ -743,13 +748,13 @@ labs:
     source_state:
       repository: /Users/jkershaw/Documents/sovereign-ai-401
       checked_out_branch: main
-      published_head: cf31dea053855f467f68325a871e44cf44b11df3
-      catalog_pinned_revision: cf31dea053855f467f68325a871e44cf44b11df3
+      published_head: 0a528c651c2cb6b6bb9d31875aa2ada099dedd35
+      catalog_pinned_revision: 0a528c651c2cb6b6bb9d31875aa2ada099dedd35
       post_review_changes: exact-pinned-candidate-awaiting-final-one-seat-proof
       publication_validation:
         status: green-integration
         workflow: https://github.com/jkershawrh/sovereign-ai-401/actions/runs/36804816530
-        evidence: "Exact source revision cf31dea053855f467f68325a871e44cf44b11df3 passed source qualification, zero HIGH/CRITICAL gates, linux/amd64 publication, signing, SPDX SBOM, provenance, and verification for both immutable artifacts; the presentation now supplies a bounded nginx configuration compatible with the distroless image and restricted Flightpath runtime."
+        evidence: "Image source revision cf31dea053855f467f68325a871e44cf44b11df3 passed source qualification, zero HIGH/CRITICAL gates, linux/amd64 publication, signing, SPDX SBOM, provenance, and verification for both immutable artifacts; chart-only revision 0a528c651c2cb6b6bb9d31875aa2ada099dedd35 adds the source-tested short Route required by Flightpath seat namespaces without changing either image."
       immutable_images:
         presentation: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:9e980f5113f340edf209acfa8572a273c1d5220a79165f7e6379ecd3fd0e1df4
         qualifier: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:df3fe53d316198a76f4fb526cf2e10be51ef9a14c97a46ea5de29e8f38b65a50
