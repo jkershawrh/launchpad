@@ -329,6 +329,85 @@ def test_console_only_sandbox_entrypoint_stays_alive():
     assert "sleep infinity" in entrypoint
 
 
+def test_sandbox_model_secret_uses_the_selected_endpoint_and_model():
+    from unittest.mock import MagicMock
+
+    from app.adapters.openshift.sandbox_provisioning import OpenShiftSandboxProvisioner
+
+    provisioner = object.__new__(OpenShiftSandboxProvisioner)
+    provisioner._core_v1 = MagicMock()
+
+    provisioner._create_secrets(
+        "sandbox-test",
+        "workspace-password",
+        "seat-model-key",
+        model_endpoint="https://managed-model.example.test/v1",
+        model_name="granite-2b-cpu",
+    )
+
+    secrets = {
+        call.args[1].metadata.name: call.args[1].string_data
+        for call in provisioner._core_v1.create_namespaced_secret.call_args_list
+    }
+    model_config = secrets["maas-config"]
+    assert model_config["MODEL_ENDPOINT"] == "https://managed-model.example.test/v1"
+    assert model_config["LITELLM_API_BASE"] == "https://managed-model.example.test/v1"
+    assert model_config["MODEL_NAME"] == "granite-2b-cpu"
+    assert model_config["LITELLM_API_KEY"] == "seat-model-key"
+
+
+def test_sandbox_provision_transfers_the_placement_selected_model_binding(monkeypatch):
+    from unittest.mock import MagicMock
+
+    from app.adapters.openshift.sandbox_provisioning import OpenShiftSandboxProvisioner
+    from app.domain.models import ProvisioningPlan
+
+    provisioner = object.__new__(OpenShiftSandboxProvisioner)
+    provisioner._target = None
+    for method in (
+        "_create_namespace",
+        "_create_sandbox_identity",
+        "_grant_requester_access",
+        "_grant_image_pull",
+        "_create_secrets",
+        "_create_pvc",
+        "_create_deployment",
+        "_create_service",
+    ):
+        setattr(provisioner, method, MagicMock())
+    provisioner._create_routes = MagicMock(return_value={"sandbox-vscode": "ide.example.test"})
+    monkeypatch.setattr("app.adapters.openshift.sandbox_provisioning.time.sleep", lambda _: None)
+
+    plan = ProvisioningPlan(
+        request_id="request-one",
+        target_namespace="sandbox-one",
+        target_cluster="flightpath",
+        steps=[],
+        adapters_required=["openshift-sandbox"],
+        validation_steps=[],
+        estimated_duration="60s",
+        required_resources={
+            "tenant_id": "tenant-one",
+            "requester_id": "learner-one",
+            "requested_models": ["granite-2b-cpu"],
+            "maas_endpoint": "https://managed-model.example.test/v1",
+            "maas_api_key": "seat-model-key",
+            "access_methods": ["vscode"],
+        },
+    )
+
+    provisioner.provision(plan)
+
+    secret_call = provisioner._create_secrets.call_args
+    assert secret_call.args[0] == "sandbox-one"
+    assert secret_call.args[1].startswith("lab-")
+    assert secret_call.args[2] == "seat-model-key"
+    assert secret_call.kwargs == {
+        "model_endpoint": "https://managed-model.example.test/v1",
+        "model_name": "granite-2b-cpu",
+    }
+
+
 # ─── S12: API end-to-end ─────────────────────────────────────────────────────
 
 def test_api_sandbox_launch():

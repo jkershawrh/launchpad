@@ -128,14 +128,16 @@ def build_manifests(*, namespace: str, image: str) -> list[dict[str, Any]]:
 
 
 def complete_model_probe(
-    *, endpoint: str, api_key: str, client: Any | None = None
+    *, endpoint: str, api_key: str, expected_model: str, client: Any | None = None
 ) -> dict[str, Any]:
-    """Make one real completion or return a truthful unavailable result."""
-    if not endpoint or not api_key:
+    """Call only the managed model assigned to this seat, or fail truthfully."""
+    if not endpoint or not api_key or not expected_model:
         return {
             "status": "unavailable",
+            "assigned_model": expected_model or None,
             "model": None,
-            "reason": "Launchpad model endpoint or seat credential is not configured",
+            "inference_source": "launchpad-managed-endpoint",
+            "reason": "Launchpad model endpoint, seat credential, or assigned model is not configured",
         }
 
     http = client or httpx.Client(timeout=90.0)
@@ -145,21 +147,24 @@ def complete_model_probe(
         models_response = http.get(f"{base}/models", headers=headers)
         models_response.raise_for_status()
         models = models_response.json().get("data") or []
-        model = next(
-            (item.get("id") for item in models if isinstance(item, dict) and item.get("id")),
-            None,
-        )
-        if not model:
+        available_models = {
+            item.get("id")
+            for item in models
+            if isinstance(item, dict) and item.get("id")
+        }
+        if expected_model not in available_models:
             return {
                 "status": "unavailable",
+                "assigned_model": expected_model,
                 "model": None,
-                "reason": "The model endpoint returned no available model IDs",
+                "inference_source": "launchpad-managed-endpoint",
+                "reason": "The assigned model is not available from the managed endpoint",
             }
         completion = http.post(
             f"{base}/chat/completions",
             headers=headers,
             json={
-                "model": model,
+                "model": expected_model,
                 "messages": [
                     {
                         "role": "user",
@@ -175,16 +180,29 @@ def complete_model_probe(
         )
         completion.raise_for_status()
         payload = completion.json()
+        observed_model = payload.get("model") or expected_model
+        if observed_model != expected_model:
+            return {
+                "status": "unavailable",
+                "assigned_model": expected_model,
+                "model": observed_model,
+                "inference_source": "launchpad-managed-endpoint",
+                "reason": "The managed endpoint returned a different model identity",
+            }
         return {
             "status": "live",
-            "model": payload.get("model") or model,
+            "assigned_model": expected_model,
+            "model": observed_model,
+            "inference_source": "launchpad-managed-endpoint",
             "response": payload["choices"][0]["message"]["content"],
             "usage": payload.get("usage") or {},
         }
     except Exception as exc:
         return {
             "status": "unavailable",
+            "assigned_model": expected_model,
             "model": None,
+            "inference_source": "launchpad-managed-endpoint",
             "reason": f"Live model request failed: {type(exc).__name__}",
         }
     finally:
@@ -364,6 +382,7 @@ def prove() -> dict[str, Any]:
         or os.environ.get("MODEL_ENDPOINT", ""),
         api_key=os.environ.get("LITELLM_API_KEY")
         or os.environ.get("MAAS_SESSION_KEY", ""),
+        expected_model=os.environ.get("MODEL_NAME", ""),
     )
     proof = {
         "namespace": namespace,

@@ -48,7 +48,7 @@ metadata:
   allowed_exposure_policies:
   - internal
   - public_code
-  inference_endpoint: litellm
+  inference_endpoint: litellm_virtual_key_candidate
   workshop_cluster_ref: flightpath
   certification_stage: guided-source-not-published
   max_workshop_seats: 1

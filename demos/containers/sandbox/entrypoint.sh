@@ -51,16 +51,6 @@ EOF
   service_pids+=("$!")
 fi
 
-if [[ "$ACCESS_METHODS" == *,jupyter,* || "$ACCESS_METHODS" == *,web_console,* ]]; then
-  : "${SSH_PASSWORD:?SSH_PASSWORD is required for browser workspace access}"
-  echo "Starting JupyterLab on port 8888..."
-  jupyter lab --no-browser --ip=0.0.0.0 --port=8888 \
-    --ServerApp.root_dir="$WORKSPACE" \
-    --ServerApp.token="$SSH_PASSWORD" \
-    --ServerApp.allow_remote_access=True &
-  service_pids+=("$!")
-fi
-
 if [[ "$ACCESS_METHODS" == *,vscode,* ]]; then
   : "${SSH_PASSWORD:?SSH_PASSWORD is required for browser IDE access}"
   echo "Starting code-server on port 8443..."

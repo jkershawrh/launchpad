@@ -54,7 +54,7 @@ def test_guided_workload_is_one_small_namespace_scoped_deployment():
     assert container["securityContext"]["capabilities"]["drop"] == ["ALL"]
 
 
-def test_model_probe_discovers_then_calls_an_available_model_without_leaking_key():
+def test_model_probe_calls_the_assigned_managed_model_without_leaking_key():
     runner = _runner_module()
     calls = []
 
@@ -71,13 +71,13 @@ def test_model_probe_discovers_then_calls_an_available_model_without_leaking_key
     class Client:
         def get(self, url, **kwargs):
             calls.append(("GET", url, kwargs))
-            return Response({"data": [{"id": "granite-test"}]})
+            return Response({"data": [{"id": "other-model"}, {"id": "granite-2b-cpu"}]})
 
         def post(self, url, **kwargs):
             calls.append(("POST", url, kwargs))
             return Response(
                 {
-                    "model": "granite-test",
+                    "model": "granite-2b-cpu",
                     "choices": [{"message": {"content": "OpenShift keeps the seat scoped."}}],
                     "usage": {"prompt_tokens": 9, "completion_tokens": 7},
                 }
@@ -86,17 +86,21 @@ def test_model_probe_discovers_then_calls_an_available_model_without_leaking_key
     result = runner.complete_model_probe(
         endpoint="https://maas.example.test",
         api_key="seat-secret",
+        expected_model="granite-2b-cpu",
         client=Client(),
     )
 
     assert result == {
         "status": "live",
-        "model": "granite-test",
+        "assigned_model": "granite-2b-cpu",
+        "model": "granite-2b-cpu",
+        "inference_source": "launchpad-managed-endpoint",
         "response": "OpenShift keeps the seat scoped.",
         "usage": {"prompt_tokens": 9, "completion_tokens": 7},
     }
     assert calls[0][0:2] == ("GET", "https://maas.example.test/v1/models")
     assert calls[1][0:2] == ("POST", "https://maas.example.test/v1/chat/completions")
+    assert calls[1][2]["json"]["model"] == "granite-2b-cpu"
     assert calls[0][2]["headers"] == {"Authorization": "Bearer seat-secret"}
     assert "seat-secret" not in json.dumps(result)
 
@@ -104,11 +108,48 @@ def test_model_probe_discovers_then_calls_an_available_model_without_leaking_key
 def test_model_probe_is_honest_when_endpoint_is_not_configured():
     runner = _runner_module()
 
-    result = runner.complete_model_probe(endpoint="", api_key="", client=None)
+    result = runner.complete_model_probe(
+        endpoint="", api_key="", expected_model="granite-2b-cpu", client=None
+    )
 
     assert result["status"] == "unavailable"
     assert result["model"] is None
+    assert result["assigned_model"] == "granite-2b-cpu"
+    assert result["inference_source"] == "launchpad-managed-endpoint"
     assert "not configured" in result["reason"]
+
+
+def test_model_probe_refuses_to_substitute_a_different_managed_model():
+    runner = _runner_module()
+
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"data": [{"id": "granite-3.2-8b-tools"}]}
+
+    class Client:
+        def get(self, *_args, **_kwargs):
+            return Response()
+
+        def post(self, *_args, **_kwargs):
+            raise AssertionError("completion must not run with an unassigned model")
+
+    result = runner.complete_model_probe(
+        endpoint="https://maas.example.test",
+        api_key="seat-secret",
+        expected_model="granite-2b-cpu",
+        client=Client(),
+    )
+
+    assert result == {
+        "status": "unavailable",
+        "assigned_model": "granite-2b-cpu",
+        "model": None,
+        "inference_source": "launchpad-managed-endpoint",
+        "reason": "The assigned model is not available from the managed endpoint",
+    }
 
 
 def test_container_packages_guide_and_runner_and_entrypoint_seeds_workspace_safely():

@@ -34,8 +34,9 @@ export default function SandboxGuidedStart() {
         Your first governed AI workload
       </h3>
       <p className="text-sm text-[#c7c7c7] mt-2 max-w-3xl">
-        Prove your namespace boundary, deploy one tiny workload, call the shared Intel CPU model when it is available,
-        capture evidence, and clean up. Your open sandbox stays open for exploration after this path.
+        Prove your namespace boundary, deploy one tiny workload, call the assigned managed granite-2b-cpu model when
+        it is available, capture evidence, and clean up. Model serving remains outside this sandbox. Your open sandbox
+        stays open for exploration after this path.
       </p>
       <div className="grid md:grid-cols-5 gap-2 mt-4">
         {stages.map((stage) => (

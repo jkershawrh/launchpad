@@ -1,0 +1,23 @@
+#!/bin/sh
+# Minimal OpenShift CLI compatibility for this namespace-scoped sandbox.
+# The guided journey uses Kubernetes APIs only; keep the participant-facing
+# `oc` spelling without shipping the much broader vulnerable client payload.
+set -eu
+
+if [ "${1:-}" = "project" ]; then
+  if [ "${2:-}" = "-q" ]; then
+    exec kubectl config view --minify -o 'jsonpath={.contexts[0].context.namespace}'
+  fi
+  if [ -n "${2:-}" ]; then
+    kubectl config set-context --current --namespace="$2" >/dev/null
+    printf 'Now using project "%s".\n' "$2"
+    exit 0
+  fi
+fi
+
+if [ "${1:-}" = "whoami" ]; then
+  shift
+  exec kubectl auth whoami -o 'jsonpath={.status.userInfo.username}' "$@"
+fi
+
+exec kubectl "$@"

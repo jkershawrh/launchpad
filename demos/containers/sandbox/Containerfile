@@ -14,12 +14,18 @@ RUN dnf upgrade -y --refresh \
     vim \
     wget \
     procps-ng \
+    && dnf remove -y npm nodejs nodejs-docs nodejs-full-i18n nodejs-libs \
     && dnf clean all \
     && rm -rf /var/cache/dnf
 
-RUN curl -sL https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz \
-    | tar xz -C /usr/local/bin oc kubectl \
-    && chmod +x /usr/local/bin/oc /usr/local/bin/kubectl
+ARG KUBECTL_VERSION=v1.37.1
+ARG KUBECTL_SHA256=65691ff77eb6fa44c908b77a1082c9f092c3b9733b5cefabec0d1104890e21a8
+RUN curl -fsSL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+      -o /usr/local/bin/kubectl \
+    && echo "${KUBECTL_SHA256}  /usr/local/bin/kubectl" | sha256sum -c - \
+    && chmod 0555 /usr/local/bin/kubectl
+COPY oc-compat /usr/local/bin/oc
+RUN chmod 0555 /usr/local/bin/oc
 
 RUN ssh-keygen -A \
     && mkdir -p /run/sshd \
@@ -37,13 +43,15 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
        openai \
        pyyaml \
        pandas \
-       ipython \
-       jupyterlab
+       ipython
 
 ARG CODE_SERVER_VERSION=4.139.1
 RUN curl -fsSL "https://github.com/coder/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz" \
     | tar xz -C /opt \
-    && ln -s "/opt/code-server-${CODE_SERVER_VERSION}-linux-amd64/bin/code-server" /usr/local/bin/code-server
+    && ln -s "/opt/code-server-${CODE_SERVER_VERSION}-linux-amd64/bin/code-server" /usr/local/bin/code-server \
+    && curl -fsSL https://registry.npmjs.org/undici/-/undici-7.29.1.tgz \
+      | tar xz -C "/opt/code-server-${CODE_SERVER_VERSION}-linux-amd64/lib/vscode/node_modules/undici" --strip-components=1 \
+    && grep -q '"version": "7.29.1"' "/opt/code-server-${CODE_SERVER_VERSION}-linux-amd64/lib/vscode/node_modules/undici/package.json"
 
 COPY entrypoint.sh /opt/app-root/src/entrypoint.sh
 RUN chmod +x /opt/app-root/src/entrypoint.sh
@@ -61,6 +69,6 @@ RUN chmod -R g+w /run/sshd && chmod g+w /etc/ssh/sshd_config \
     && chown -R 0:0 /home/lab-user \
     && chmod -R g+rwX /home/lab-user
 
-EXPOSE 2222 8888 8443
+EXPOSE 2222 8443
 
 ENTRYPOINT ["/opt/app-root/src/entrypoint.sh"]

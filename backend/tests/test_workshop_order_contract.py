@@ -289,7 +289,7 @@ def test_workshop_order_preserves_explicit_api_name():
 def test_create_workshop_is_idempotent_for_same_tenant_and_key():
     payload = {
         "tenant_id": "idempotent-tenant",
-        "catalog_item_id": "guided-rag-on-xeon",
+        "catalog_item_id": "inference-overdrive-quickstart",
         "num_users": 2,
         "ttl": "4h",
         "name": "Partner workshop",
@@ -311,7 +311,7 @@ def test_idempotency_key_cannot_be_reused_for_different_order():
     headers = {"Idempotency-Key": "conflicting-workshop-order"}
     base = {
         "tenant_id": "conflict-tenant",
-        "catalog_item_id": "guided-rag-on-xeon",
+        "catalog_item_id": "inference-overdrive-quickstart",
         "num_users": 2,
     }
     assert client.post("/api/v1/workshops", json=base, headers=headers).status_code == 201

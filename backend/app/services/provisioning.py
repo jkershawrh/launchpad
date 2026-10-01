@@ -24,6 +24,7 @@ from app.adapters.mock.validation import MockValidationAdapter
 from app.domain.access import ExposurePolicy
 from app.domain.enums import (
     CatalogCategory,
+    CatalogStatus,
     LabRequestStatus,
     Persistence,
     SessionStatus,
@@ -459,7 +460,9 @@ class ProvisioningService:
 
     def submit_request(self, request: LabRequest) -> LabRequest:
         catalog_item = self.catalog.get_item(request.catalog_item_id)
-        if not catalog_item:
+        if not catalog_item or getattr(
+            catalog_item, "status", CatalogStatus.ACTIVE
+        ) != CatalogStatus.ACTIVE:
             request = request.model_copy(update={"status": LabRequestStatus.REJECTED})
             self._save_request(request)
             return request
@@ -1702,10 +1705,18 @@ class ProvisioningService:
             )
 
         catalog_item = self.catalog.get_item(workshop.catalog_item_id)
+        if not catalog_item:
+            raise ValueError(f"Catalog item {workshop.catalog_item_id} was not found")
+        if (
+            getattr(catalog_item, "status", CatalogStatus.ACTIVE)
+            != CatalogStatus.ACTIVE
+            and not workshop.certification_override
+        ):
+            raise ValueError(
+                f"Catalog item {workshop.catalog_item_id} is not active"
+            )
         allowed_exposure_policies = (
             (catalog_item.metadata or {}).get("allowed_exposure_policies")
-            if catalog_item
-            else None
         )
         if (
             allowed_exposure_policies
@@ -1715,7 +1726,7 @@ class ProvisioningService:
                 f"{workshop.catalog_item_id} does not allow "
                 f"{workshop.exposure_policy.value} exposure"
             )
-        metadata = catalog_item.metadata or {} if catalog_item else {}
+        metadata = catalog_item.metadata or {}
         raw_catalog_limit = metadata.get("max_workshop_seats")
         if workshop.exposure_policy == ExposurePolicy.PUBLIC_CODE:
             raw_catalog_limit = metadata.get(

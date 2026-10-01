@@ -10,6 +10,8 @@ describe('SandboxGuidedStart', () => {
 
     expect(screen.getByRole('heading', { name: 'Your first governed AI workload' })).toBeInTheDocument();
     expect(screen.getByText(/open sandbox stays open/i)).toBeInTheDocument();
+    expect(screen.getByText(/assigned managed granite-2b-cpu model/i)).toBeInTheDocument();
+    expect(screen.getByText(/model serving remains outside this sandbox/i)).toBeInTheDocument();
     for (const stage of ['Show', 'Learn', 'Do', 'Prove', 'Clean up']) {
       expect(screen.getByText(stage)).toBeInTheDocument();
     }

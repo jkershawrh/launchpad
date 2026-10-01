@@ -2,9 +2,11 @@
 
 You have been given an open OpenShift sandbox, not a scripted application.
 Your first mission is intentionally small: prove your project boundary, deploy
-one tiny web workload, make one honest completion through the shared Intel CPU
-model service when it is available, capture evidence, and remove what you
-created. After that, the namespace remains yours for open exploration.
+one tiny web workload, make one honest completion with the managed
+`granite-2b-cpu` model assigned to this seat when it is available, capture
+evidence, and remove what you created. The model is centrally served; this
+sandbox does not deploy or claim a local model server. After that, the
+namespace remains yours for open exploration.
 
 Use only fictional or sanitized information. The helper never prints or stores
 your model credential.
@@ -55,12 +57,14 @@ launchpad-guided-start prove
 python3 -m json.tool guided-start-proof.json
 ```
 
-When the Launchpad model endpoint and seat credential are configured, the
-helper discovers an available model and makes one `/v1/chat/completions`
-request. The proof records `live`, the returned model ID, token counts when
-reported, and the short fictional response. If inference is not available, the
-proof says `unavailable` with a reason; it never substitutes rehearsal output
-or claims that a model ran.
+When the Launchpad model endpoint, assigned model, and seat credential are
+configured, the helper confirms that the assigned `granite-2b-cpu` identity is
+advertised and makes one `/v1/chat/completions` request for that model only.
+The proof records `live`, the returned model ID, token counts when reported,
+and the short fictional response. If the assigned model is absent or inference
+is unavailable, the proof says `unavailable` with a reason; it never chooses a
+different advertised model, substitutes rehearsal output, or claims that a
+model ran.
 
 ## Clean up
 

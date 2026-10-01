@@ -157,7 +157,16 @@ class OpenShiftSandboxProvisioner:
         # 3. Create secrets (use session-specific MaaS key for tracking)
         ssh_password = f"lab-{uuid.uuid4().hex[:8]}"
         session_maas_key = res.get("maas_api_key", os.environ.get("LITELLM_API_KEY", ""))
-        self._create_secrets(namespace, ssh_password, session_maas_key)
+        requested_models = list(res.get("requested_models") or [])
+        self._create_secrets(
+            namespace,
+            ssh_password,
+            session_maas_key,
+            model_endpoint=str(
+                res.get("maas_endpoint") or os.environ.get("LITELLM_API_BASE", "")
+            ),
+            model_name=str(requested_models[0] if requested_models else ""),
+        )
 
         # 4. Create PVC
         self._create_pvc(namespace, storage_size)
@@ -325,14 +334,24 @@ class OpenShiftSandboxProvisioner:
             if e.status != 409:
                 raise ValueError(f"Failed to grant sandbox CLI access: {e.reason}")
 
-    def _create_secrets(self, namespace: str, ssh_password: str, maas_key: str = "") -> None:
+    def _create_secrets(
+        self,
+        namespace: str,
+        ssh_password: str,
+        maas_key: str = "",
+        *,
+        model_endpoint: str = "",
+        model_name: str = "",
+    ) -> None:
         litellm_key = maas_key or os.environ.get("LITELLM_API_KEY", "")
+        endpoint = model_endpoint or os.environ.get("LITELLM_API_BASE", "")
         for name, data in [
             ("sandbox-credentials", {"SSH_USER": "lab-user", "SSH_PASSWORD": ssh_password}),
             ("maas-config", {
-                "MODEL_ENDPOINT": os.environ.get("LITELLM_API_BASE", ""),
+                "MODEL_ENDPOINT": endpoint,
+                "MODEL_NAME": model_name,
                 "LITELLM_API_KEY": litellm_key,
-                "LITELLM_API_BASE": os.environ.get("LITELLM_API_BASE", ""),
+                "LITELLM_API_BASE": endpoint,
                 "MAAS_SESSION_KEY": maas_key,
                 "MAAS_RATE_LIMIT_RPM": os.environ.get("MAAS_RATE_LIMIT_RPM", "60"),
             }),
