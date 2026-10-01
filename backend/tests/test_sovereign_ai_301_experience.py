@@ -38,8 +38,8 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     assert metadata["workload_runtime_secret_sources"] == {}
     assert runtime["workload"]["runtime_secret_name"] == ""
     assert runtime["workload"]["runtime_secret_sources"] == {}
-    expected_gitops_repo = "git@github.com:jkershawrh/sovereign-ai-301.git"
-    expected_revision = "958cbdfc08582aff0a5db2a273cd212ef270d88c"
+    expected_gitops_repo = "https://github.com/jkershawrh/sovereign-ai-301.git"
+    expected_revision = "a7514f7d766b845a81e079cbc698361d44ed3fdd"
     assert metadata["showroom_content_repo_url"] == expected_gitops_repo
     assert metadata["workload_repo"] == expected_gitops_repo
     assert intake["sources"]["showroom"]["gitops_repo_url"] == expected_gitops_repo
