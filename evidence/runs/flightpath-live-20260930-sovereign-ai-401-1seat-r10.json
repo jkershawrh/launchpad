@@ -1,0 +1,206 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 1,
+    "certification_override": true,
+    "certification_target_seats": 1,
+    "estimated_resources": {
+      "cpu_millicores": 50,
+      "memory_mib": 80,
+      "pods": 2
+    },
+    "placement_reason": "single-cluster placement",
+    "reason": "Cluster can support 85 seats (CPU: 7968, Memory: 9979, Pods: 85; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 50,
+        "memory_mib": 80,
+        "pods": 2
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 1,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "sovereign-ai-401",
+  "cleanup": {
+    "model_keys_revoked": false,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 6.779,
+    "status": "completed"
+  },
+  "completed_at": "2026-10-01T02:56:25.917271Z",
+  "contract": {
+    "catalog_version": "0.1.0",
+    "certification_runner_image": "",
+    "git_commit": "b214eba03ad638839f1c81d2410b10f8e3beedfd",
+    "intake_path": "catalog-onboarding/sovereign-ai-401.yaml",
+    "path": "certification/catalog/sovereign-ai-401.yaml",
+    "platform_manifest_sha256": "",
+    "sha256": "5e34aa538fe66b63b7be3440df6aeac52e7285c7b9b220c58b84cc47c16b838c"
+  },
+  "errors": [
+    "RuntimeError: Workshop stopped in completed state"
+  ],
+  "gates": {
+    "all_seats_ready": false,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": false,
+    "namespace_isolation_passed": false,
+    "ready_within_limit": true,
+    "seat_probes_passed": false,
+    "sensitive_values_absent": false,
+    "showroom_pages_passed": false,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [],
+    "ready_seconds": 264.335,
+    "seat_count": 1,
+    "session_ids": [],
+    "status_before_reclaim": "completed",
+    "workshop_id": "70ff6d97-59cb-42fe-bf85-3cde36bb2dda"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "sovereign-ai-401",
+    "certification_override": true,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 0,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 600,
+    "maximum_ready_seconds": 900,
+    "mutates_cluster": true,
+    "next_promotion_target": 1,
+    "probe_concurrency": 1,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 1,
+    "seats": 1,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 0,
+    "eligible": false,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "RED-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": false,
+    "required": 100,
+    "score": 25
+  },
+  "run_id": "flightpath-live-20260930-sovereign-ai-401-1seat-r10",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-10-01T02:51:50.693329Z",
+  "validation_matrix": {
+    "all_seats_ready": "RED-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "RED-live",
+    "namespace_isolation_passed": "RED-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "RED-live",
+    "sensitive_values_absent": "RED-live",
+    "showroom_pages_passed": "RED-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

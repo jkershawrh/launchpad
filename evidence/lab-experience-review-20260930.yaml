@@ -757,6 +757,11 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r9.json
         finding: "Both workload Routes and containers became healthy, but the Showroom init container could not verify github.com for the legacy SSH content URL."
         remediation: "Use the reviewed public HTTPS repository URL for both Showroom content and Argo CD source retrieval; retain exact commit pinning."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r10
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r10.json
+        finding: "The HTTPS source contract was correct, but the repository itself was still private, so unauthenticated Argo CD and Showroom retrieval failed closed."
+        remediation: "After current-tree and history secret review found no exposed credentials, publish the reviewed source repository and retain the immutable revision pin."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
