@@ -161,8 +161,11 @@ recommend but never creates eligibility.
   100-point rubric, trusted external TLS, claim and same-seat recovery,
   namespace isolation, participant journey, reclaim, and zero residue.
 - `virtualization-ai-301` passed the same public one-seat gate, including the
-  corrected content revision, Story and Terminal paths, cluster-scoped denial,
-  reclaim, and zero residue.
+  exact `30f51e19223faf64c689a07e254870fbc43fd0c6` content revision, Story and
+  Terminal paths, same-seat recovery, uniform denial and rate limiting,
+  cluster-scoped denial, confirmed model-key revocation, idempotent reclaim,
+  and zero active residue. The current immutable evidence is
+  `evidence/runs/catalog/virtualization-ai-301-flightpath-public-one-seat-20261001-r2.json`.
 - Both catalog entries are active, expose `internal` and `public_code`, and
   remain deliberately capped at one certified seat.
 - The broader participant-path task remains open: these two passing catalogs
