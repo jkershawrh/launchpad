@@ -20,12 +20,21 @@ spec:
     json_assertions:
       - {path: result, equals: GREEN-live-internal-seat}
       - {path: cluster_ref, equals: flightpath}
+      - {path: provenance.source_revision, equals: 3c94600ca8808a55693e94d5a1f169efbadbedd1}
+      - {path: runtime_images.presentation, equals: "ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:2749e4ad44f3902f7507adaaaa8fadd509d1e625b33619530852bd9a01255069"}
+      - {path: runtime_images.adapter, equals: "ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:99f1ac6f65386013cb20d81e3dbc6099ffbb63cebfdc6fb1f1cdd50d96153a39"}
       - {path: readiness.vms_running, equals: 1}
       - {path: readiness.vmis_ready, equals: 1}
       - {path: readiness.presentation_http_status, equals: 200}
       - {path: readiness.adapter_health, equals: true}
       - {path: journey.outcome, equals: qualified}
+      - {path: journey.source_state, equals: LIVE}
+      - {path: journey.request_origin, equals: contract-author-vm}
+      - {path: journey.model_participated, equals: true}
+      - {path: journey.model, equals: granite-3.2-8b-tools}
+      - {path: journey.hardware, equals: Intel Xeon}
       - {path: journey.human_authority_preserved, equals: true}
+      - {path: operator_journey.console_url_present, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

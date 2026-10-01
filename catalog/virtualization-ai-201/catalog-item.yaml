@@ -32,29 +32,31 @@ metadata:
   experience_type: guided_build
   prerequisites:
   - virtualization-ai-foundations-101
-  recommended_next_items: []
+  recommended_next_items:
+  - virtualization-ai-301
   journey_role: core
   specialty_family: null
   branches_from: virtualization-ai-foundations-101
   returns_to: null
   shared_blueprint: red-hat-intel-virtualization-ai-v1
   solution_family: virtualization_ai
+  certification_transfer: none
   showroom: true
-  showroom_content_repo_url: git@github.com:jkershawrh/virtualization-ai-201.git
-  showroom_content_ref: 8ae42187e7fd2f683bb7e2fa83da56d0f968176a
+  showroom_content_repo_url: https://github.com/jkershawrh/virtualization-ai-201.git
+  showroom_content_ref: 3c94600ca8808a55693e94d5a1f169efbadbedd1
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
-  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:92cf58e2980ea7ac3bdd25bcd3ca0477298ceb531e076c18d686295a9aa90b8e
+  showroom_content_image: ghcr.io/jkershawrh/virtualization-ai-201-showroom-content@sha256:56991a08cba6849d42caa54ae45b4c7d2714b086d0df247f53cd2d4700b090ca
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-201.yaml
-  certification_stage: source-reviewed
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   activation_blockers:
-  - fresh-one-seat-live-inference-console-and-reclaim-certification
+  - browser-console-sso-and-namespace-navigation-evidence
   certification_proof_contract: certification/catalog/virtualization-ai-201.yaml
   allowed_exposure_policies:
   - internal
@@ -66,6 +68,7 @@ metadata:
   - id: story
     title: Story
     source: workload.route.ui
+    path: /
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -88,8 +91,8 @@ metadata:
   workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: git@github.com:jkershawrh/virtualization-ai-201.git
-  workload_revision: 8ae42187e7fd2f683bb7e2fa83da56d0f968176a
+  workload_repo: https://github.com/jkershawrh/virtualization-ai-201.git
+  workload_revision: 3c94600ca8808a55693e94d5a1f169efbadbedd1
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-201
@@ -98,9 +101,14 @@ metadata:
   workload_release_name: virtualization-ai-201
   workload_helm_values:
     values_overlay: charts/virtualization-ai-201/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:ec18fb9516a2a81d86c14307da9b2e386fdfd26bc418373f5bf511e74449875a
-    presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:6b59e5a6a47ea421e09a7969de026aca2409e7383bfd395638c15396cfad4c78
+    workload_image: ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:99f1ac6f65386013cb20d81e3dbc6099ffbb63cebfdc6fb1f1cdd50d96153a39
+    presentation_image: ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:2749e4ad44f3902f7507adaaaa8fadd509d1e625b33619530852bd9a01255069
     presentation_enabled: true
+    adapter:
+      mode: live
+      model:
+        egressNamespace: launchpad-flightpath-candidate
+        egressPort: 4000
   workload_ignore_differences: []
   workload_runtime_secret_name: virtualization-ai-model-runtime
   workload_runtime_secret_sources:
@@ -111,12 +119,22 @@ metadata:
     hardware:
       value: Intel Xeon
     api-key: maas_api_key
+    VM_SSH_PRIVATE_KEY:
+      source: generated_ssh_keypair
+      pair: contract-author-vm
+      part: private
+    VM_SSH_PUBLIC_KEY:
+      source: generated_ssh_keypair
+      pair: contract-author-vm
+      part: public
+  workload_runtime_value_bindings:
+    vm.sshAuthorizedKey: VM_SSH_PUBLIC_KEY
   workload_runtime_secret_value_path: adapter.model.secretName
   workload_identity_value_path: ''
   workload_routes:
     ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-201.git
-  source_content_revision: 8ae42187e7fd2f683bb7e2fa83da56d0f968176a
+  source_content_revision: 3c94600ca8808a55693e94d5a1f169efbadbedd1
   source_references:
-    release_workflow: https://github.com/jkershawrh/virtualization-ai-201/actions/runs/36735505631
+    release_workflow: https://github.com/jkershawrh/virtualization-ai-201/actions/runs/36878975266

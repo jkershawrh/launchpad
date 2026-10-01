@@ -1,0 +1,296 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 1,
+    "certification_override": true,
+    "certification_target_seats": 1,
+    "estimated_resources": {
+      "cpu_millicores": 625,
+      "memory_mib": 672,
+      "pods": 3
+    },
+    "placement_reason": "single-cluster placement",
+    "reason": "Cluster can support 56 seats (CPU: 637, Memory: 1187, Pods: 56; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 625,
+        "memory_mib": 672,
+        "pods": 3
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 1,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "virtualization-ai-201",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 104.64,
+    "status": "completed"
+  },
+  "completed_at": "2026-10-01T15:30:43.921504Z",
+  "contract": {
+    "catalog_version": "0.1.0",
+    "certification_runner_image": "",
+    "git_commit": "5a3e4b79693601596b5656a6ddb728ffc10a3af0",
+    "intake_path": "catalog-onboarding/virtualization-ai-201.yaml",
+    "path": "certification/catalog/virtualization-ai-201.yaml",
+    "platform_manifest_sha256": "",
+    "sha256": "7b18511728f73e553dc2c270e4cd87588cd5dbf4b4105a60819a3871da1e3e9a"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [
+      "launchpad-flightpath-candida-virtualization-ai-76f732"
+    ],
+    "ready_seconds": 71.415,
+    "seat_count": 1,
+    "session_ids": [
+      "79539aa8-599f-48de-aaf7-3e3bb8a70640"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "99feb835-fb42-43dc-9d4f-53aff35ebdbc"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "virtualization-ai-201",
+    "certification_override": true,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 0,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 600,
+    "maximum_ready_seconds": 1200,
+    "mutates_cluster": true,
+    "next_promotion_target": 1,
+    "probe_concurrency": 1,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 1,
+    "seats": 1,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 1,
+    "eligible": true,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "flightpath-live-20261001-virtualization-ai-201-1seat-r24",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-virtualization-ai-76f732",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 38.55,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "catalog_item_id": "virtualization-ai-201",
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "journey": {
+            "hardware": "Intel Xeon",
+            "human_authority_preserved": true,
+            "intel_placement_verified": null,
+            "model": "granite-3.2-8b-tools",
+            "model_participated": true,
+            "outcome": "qualified",
+            "request_origin": "contract-author-vm",
+            "source_state": "LIVE"
+          },
+          "namespace": "launchpad-flightpath-candida-virtualization-ai-76f732",
+          "operator_journey": {
+            "console_url": "https://labs.smg-helix.ai",
+            "console_url_present": true
+          },
+          "provenance": {
+            "source_revision": "3c94600ca8808a55693e94d5a1f169efbadbedd1"
+          },
+          "readiness": {
+            "adapter_health": true,
+            "presentation_http_status": 200,
+            "vmis_ready": 1,
+            "vms_running": 1
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_images": {
+            "adapter": "ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:99f1ac6f65386013cb20d81e3dbc6099ffbb63cebfdc6fb1f1cdd50d96153a39",
+            "presentation": "ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:2749e4ad44f3902f7507adaaaa8fadd509d1e625b33619530852bd9a01255069"
+          },
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-virtualization-ai-76f732",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "76f7326c-8771-4a0a-97dd-4775ccf43b2e",
+      "seat_number": 1,
+      "session_id": "79539aa8-599f-48de-aaf7-3e3bb8a70640",
+      "showroom": [
+        {
+          "duration_seconds": 0.764,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.81,
+          "http_status": 200,
+          "id": "prove",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.664,
+          "http_status": 200,
+          "id": "break",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.76,
+          "http_status": 200,
+          "id": "cleanup",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-10-01T15:27:00.188953Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

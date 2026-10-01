@@ -12,6 +12,7 @@ probe_binding=launchpad-certification-probe
 probe_serviceaccount="${LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT:-launchpad-flightpath-candidate:launchpad-certification-runner}"
 work_dir="$(mktemp -d)"
 forward_pid=""
+forward_port="${LAUNCHPAD_CERTIFICATION_FORWARD_PORT:-18080}"
 source_revision=""
 expected_presentation_image=""
 expected_adapter_image=""
@@ -22,6 +23,16 @@ cleanup() {
   rm -rf "$work_dir"
 }
 trap cleanup EXIT
+
+wait_for_resource() {
+  local kind="$1"
+  local name="$2"
+  for _ in {1..120}; do
+    oc --kubeconfig "$KUBECONFIG" get "$kind/$name" -n "$namespace" >/dev/null 2>&1 && return 0
+    sleep 2
+  done
+  return 1
+}
 
 oc --kubeconfig "$KUBECONFIG" create rolebinding "$probe_binding" --clusterrole=edit \
   --serviceaccount="$probe_serviceaccount" -n "$namespace" --dry-run=client -o yaml \
@@ -34,7 +45,10 @@ case "$catalog_id" in
     expected_presentation_image="ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:c0e16f6c63a59989f0da349a97a8e661cb5eca3e356e1664ff571979551f50f0"
     expected_adapter_image="ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:fef33f72569296df84888102c0dab19b607b56a14a5516de7eed1279dbb3fbad" ;;
   virtualization-ai-201)
-    vm_names=(contract-author-vm); service=virtualization-ai-201-adapter; route=lab; endpoint=/api/v1/qualify ;;
+    vm_names=(contract-author-vm); service=virtualization-ai-201-adapter; route=lab; endpoint=/api/v1/qualify
+    source_revision="3c94600ca8808a55693e94d5a1f169efbadbedd1"
+    expected_presentation_image="ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:2749e4ad44f3902f7507adaaaa8fadd509d1e625b33619530852bd9a01255069"
+    expected_adapter_image="ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:99f1ac6f65386013cb20d81e3dbc6099ffbb63cebfdc6fb1f1cdd50d96153a39" ;;
   virtualization-ai-301)
     vm_names=(modernization-client); service=virtualization-ai-301-adapter; route=virt301; endpoint=/api/v1/modernize ;;
   virtualization-ai-401)
@@ -46,7 +60,9 @@ esac
 
 stage=vm-ready
 for vm in "${vm_names[@]}"; do
+  wait_for_resource vm "$vm"
   oc --kubeconfig "$KUBECONFIG" wait -n "$namespace" --for=jsonpath='{.status.printableStatus}'=Running "vm/$vm" --timeout=600s >/dev/null
+  wait_for_resource vmi "$vm"
   oc --kubeconfig "$KUBECONFIG" wait -n "$namespace" --for=condition=Ready "vmi/$vm" --timeout=600s >/dev/null
 done
 vm_count="$(oc --kubeconfig "$KUBECONFIG" get vm -n "$namespace" -o json | jq '[.items[] | select(.status.printableStatus == "Running")] | length')"
@@ -54,9 +70,16 @@ vmi_count="$(oc --kubeconfig "$KUBECONFIG" get vmi -n "$namespace" -o json | jq 
 [[ "$vm_count" -eq "${#vm_names[@]}" && "$vmi_count" -eq "${#vm_names[@]}" ]]
 
 stage=runtime-images
-if [[ "$catalog_id" == virtualization-ai-foundations-101 ]]; then
-  presentation_image="$(oc --kubeconfig "$KUBECONFIG" get deployment virtualization-ai-presentation -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
-  adapter_image="$(oc --kubeconfig "$KUBECONFIG" get deployment ai-analysis-adapter -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
+if [[ "$catalog_id" == virtualization-ai-foundations-101 || "$catalog_id" == virtualization-ai-201 ]]; then
+  if [[ "$catalog_id" == virtualization-ai-foundations-101 ]]; then
+    presentation_deployment=virtualization-ai-presentation
+    adapter_deployment=ai-analysis-adapter
+  else
+    presentation_deployment=virtualization-ai-201-presentation
+    adapter_deployment=virtualization-ai-201-adapter
+  fi
+  presentation_image="$(oc --kubeconfig "$KUBECONFIG" get deployment "$presentation_deployment" -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
+  adapter_image="$(oc --kubeconfig "$KUBECONFIG" get deployment "$adapter_deployment" -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
   [[ "$presentation_image" == "$expected_presentation_image" ]]
   [[ "$adapter_image" == "$expected_adapter_image" ]]
 fi
@@ -67,12 +90,36 @@ presentation_status="$(curl -sSL --retry 3 --retry-all-errors --max-time 90 -o /
 [[ "$presentation_status" == 200 ]]
 
 stage=adapter-forward
-oc --kubeconfig "$KUBECONFIG" port-forward -n "$namespace" "service/$service" 18080:8080 >"$work_dir/port-forward.log" 2>&1 &
+oc --kubeconfig "$KUBECONFIG" port-forward -n "$namespace" "service/$service" "${forward_port}:8080" >"$work_dir/port-forward.log" 2>&1 &
 forward_pid=$!
-for _ in {1..30}; do curl -fsS --max-time 2 http://127.0.0.1:18080/healthz >"$work_dir/health.json" && break; sleep 1; done
+for _ in {1..30}; do curl -fsS --max-time 2 "http://127.0.0.1:${forward_port}/healthz" >"$work_dir/health.json" && break; sleep 1; done
 jq -e . "$work_dir/health.json" >/dev/null
 
-post() { curl -fsS --max-time 30 -H 'Content-Type: application/json' --data-binary "$2" "http://127.0.0.1:18080$1"; }
+post() { curl -fsS --max-time 30 -H 'Content-Type: application/json' --data-binary "$2" "http://127.0.0.1:${forward_port}$1"; }
+normalize_remote_json() {
+  # virtctl may emit connection text or terminal control bytes around the
+  # remote program's stdout. Decode every possible object boundary and retain
+  # only the versioned qualification response, never surrounding transport
+  # diagnostics or the VM's stderr receipt.
+  python3 -c '
+import json
+import sys
+
+raw = sys.stdin.read()
+decoder = json.JSONDecoder()
+for offset, character in enumerate(raw):
+    if character != "{":
+        continue
+    try:
+        value, _ = decoder.raw_decode(raw[offset:])
+    except json.JSONDecodeError:
+        continue
+    if isinstance(value, dict) and value.get("schema_version") == "virtualization-ai.redhat-intel.com/qualification-response/v1":
+        print(json.dumps(value, separators=(",", ":")))
+        raise SystemExit(0)
+raise SystemExit("versioned qualification response not found")
+'
+}
 terminal_vm_request() {
   local request_id="$1"
   local condition="$2"
@@ -105,8 +152,10 @@ TERMINAL_VM_REQUEST
   return 1
 }
 terminal_contract_author_request() {
-  oc --kubeconfig "$KUBECONFIG" exec -i -n "$namespace" deployment/showroom -c terminal -- \
-    bash -s -- "$namespace" <<'TERMINAL_CONTRACT_AUTHOR_REQUEST'
+  local contract_author_response=""
+  for _ in {1..40}; do
+    if contract_author_response="$(oc --kubeconfig "$KUBECONFIG" exec -i -n "$namespace" deployment/showroom -c terminal -- \
+      bash -s -- "$namespace" 2>&1 <<'TERMINAL_CONTRACT_AUTHOR_REQUEST'
 set -euo pipefail
 namespace="$1"
 key_path=/tmp/launchpad-certification/contract-author-key
@@ -114,13 +163,24 @@ install -d -m 700 "$(dirname "$key_path")"
 oc get secret virtualization-ai-model-runtime -n "$namespace" \
   -o jsonpath='{.data.VM_SSH_PRIVATE_KEY}' | base64 -d >"$key_path"
 chmod 600 "$key_path"
-virtctl ssh --identity-file="$key_path" \
-  --local-ssh-opts='-o StrictHostKeyChecking=no' \
-  --local-ssh-opts='-o UserKnownHostsFile=/dev/null' \
-  -n "$namespace" \
-  --command="sudo env VM_NAMESPACE=$namespace VM_NAME=contract-author-vm /home/learner/vm_client.py 'The application resolves the adapter Service and reaches the governed model boundary.'" \
-  learner@vm/contract-author-vm
+vm_ip="$(oc get vmi contract-author-vm -n "$namespace" -o jsonpath='{.status.interfaces[0].ipAddress}')"
+test -n "$vm_ip"
+ssh -i "$key_path" \
+  -o StrictHostKeyChecking=no \
+  -o UserKnownHostsFile=/dev/null \
+  -o ConnectTimeout=10 \
+  learner@"$vm_ip" \
+  "sudo env VM_NAMESPACE=$namespace VM_NAME=contract-author-vm /home/learner/vm_client.py 'The application resolves the adapter Service and reaches the governed model boundary.'"
 TERMINAL_CONTRACT_AUTHOR_REQUEST
+    )"; then
+      printf '%s\n' "$contract_author_response"
+      return 0
+    fi
+    sleep 3
+  done
+  jq -cn --arg phase contract-author-request --arg output "$contract_author_response" \
+    '{phase:$phase,output:$output}' | sed 's/^/semantic_response=/' >&2
+  return 1
 }
 stage=adapter-contract
 journey_source_state=REHEARSAL
@@ -143,10 +203,18 @@ case "$catalog_id" in
     outcome=live-advisory ;;
   virtualization-ai-201)
     stage=vm-origin-request
-    response="$(terminal_contract_author_request)"
-    jq -e '.source_state == "LIVE" and .ai_participated == true and .authority == "HUMAN_REVIEW_REQUIRED" and .model.id == "granite-3.2-8b-tools"' <<<"$response" >/dev/null
+    raw_response="$(terminal_contract_author_request)"
+    response="$(normalize_remote_json <<<"$raw_response")"
+    stage=vm-origin-semantic
+    if ! jq -e '.source_state == "LIVE" and .ai_participated == true and .authority == "HUMAN_REVIEW_REQUIRED" and .model.id == "granite-3.2-8b-tools"' <<<"$response" >/dev/null; then
+      jq -c '{source_state,ai_participated,outcome,validation,authority,model_id:(.model.id // null),failure_class:(.failure.class // null)}' <<<"$response" \
+        | sed 's/^/semantic_response=/' >&2
+      false
+    fi
     evidence_id="$(jq -r .evidence_id <<<"$response")"
-    evidence="$(curl -fsS "http://127.0.0.1:18080/api/v1/evidence/$evidence_id")"
+    stage=vm-origin-evidence-fetch
+    evidence="$(curl -fsS "http://127.0.0.1:${forward_port}/api/v1/evidence/$evidence_id")"
+    stage=vm-origin-evidence-assert
     jq -e --arg ns "$namespace" '.request_sha256 and (.raw_note == null) and .guest == ($ns + "/contract-author-vm") and .service == "virtualization-ai-201-adapter:8080" and .source_state == "LIVE" and .ai_participated == true' <<<"$evidence" >/dev/null
     journey_source_state=LIVE
     journey_request_origin=contract-author-vm
@@ -158,7 +226,7 @@ case "$catalog_id" in
     request="$(jq -cn --arg ns "$namespace" '{schema_version:"virtualization-ai.redhat-intel.com/modernization-request/v1",correlation_id:"30100000-0000-4000-8000-000000000001",task:"review-vm-modernization",note:"Synthetic certification request.",allowed_categories:["identity","connectivity","placement","operations","unknown"],declared:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client"},destination:{service:"virtualization-ai-301-adapter",port:8080},placement:{architecture:"amd64",required_labels:{"feature.node.kubernetes.io/cpu-model.vendor_id":"Intel"}}},observed:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client",vmi_uid:"cert-vmi"},destination:{service:"virtualization-ai-301-adapter",port:8080,network_policy:"ENFORCED",endpoints_ready:true},placement:{node_name:"flightpath-worker",architecture:"amd64",required_labels:{},labels:{"feature.node.kubernetes.io/cpu-model.vendor_id":"Intel"}},observability:{correlation_id:"30100000-0000-4000-8000-000000000001",collected_at:"2026-09-29T12:00:00Z",events_available:true}}}')"
     response="$(post "$endpoint" "$request")"
     jq -e '.outcome == "ALLOW_REVIEW" and .source_state == "REHEARSAL" and .ai_participated == false and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$response" >/dev/null
-    curl -fsS http://127.0.0.1:18080/metrics | grep -q 'virtualization_ai_301_decisions_total'
+    curl -fsS "http://127.0.0.1:${forward_port}/metrics" | grep -q 'virtualization_ai_301_decisions_total'
     outcome=ALLOW_REVIEW ;;
   virtualization-ai-401)
     request='{"schema_version":"demo-story.redhat-intel.com/virtualization-ai-401/operation-request/v1","request_id":"op-401-cert","operation":"LIVE_MIGRATE","target":{"namespace":"cert","virtual_machine":"operations-client"},"requested_by":"certifier","evidence_snapshot":[{"schema_version":"demo-story.redhat-intel.com/virtualization-ai-401/evidence/v1","evidence_id":"ev","request_id":"op-401-cert","state":"OBSERVE","kind":"KUBEVIRT","source":"certification","source_state":"REHEARSAL","observed_at":"2026-09-29T12:00:00Z","freshness":"FRESH","digest":"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","payload":{}}],"preflight":{"identity_match":true,"network_compatible":true,"storage_compatible":true,"evidence_fresh":true,"correlation_complete":true},"approval":null,"observed_result":null}'
