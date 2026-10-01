@@ -86,7 +86,7 @@ def test_agent_reliability_exact_release_has_a_flightpath_certification_contract
     image = intake["runtime"]["workload"]["helm_values"]["image"]
     assert image["repository"] == "ghcr.io/jkershawrh/agent-reliability-quickstart"
     assert image["digest"] == (
-        "sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66"
+        "sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00"
     )
     assert [tab["id"] for tab in intake["runtime"]["tabs"]] == [
         "terminal",

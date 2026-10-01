@@ -4,7 +4,7 @@ set -euo pipefail
 namespace="${1:?usage: certify-agent-reliability-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agent-reliability-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
-expected_workload_image="ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66"
+expected_workload_image="ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00"
 
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
@@ -82,7 +82,7 @@ runtime_keys="$(oc --kubeconfig "$KUBECONFIG" get secret model-connection -n "$n
 workload_image="$(oc --kubeconfig "$KUBECONFIG" get deployment agent-reliability -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="api")].image}')"
 [[ "$workload_image" == "$expected_workload_image" ]]
 workload_image_id="$(oc --kubeconfig "$KUBECONFIG" get pods -n "$namespace" -l app.kubernetes.io/name=agent-reliability -o jsonpath='{.items[0].status.containerStatuses[?(@.name=="api")].imageID}')"
-[[ "$workload_image_id" == *"@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66" ]]
+[[ "$workload_image_id" == *"@sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00" ]]
 
 stage="evidence"
 jq -cn \

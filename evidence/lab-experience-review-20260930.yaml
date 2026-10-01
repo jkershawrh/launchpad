@@ -333,7 +333,7 @@ labs:
       local_head: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
       published_head: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
       catalog_pinned_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
-      catalog_pinned_image: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
+      catalog_pinned_image: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00
       post_review_changes: committed-published-pinned-not-live-certified
       post_review_paths:
         - modules/ROOT/pages/01-healthy-agent.adoc
@@ -351,14 +351,14 @@ labs:
       five_seat_live_evidence: evidence/runs/staging-candidate-e2d78de/flightpath-e2d78de-20260929T124528Z-7fpm8-agent-reliability-five-seat.json
       image_provenance:
         status: exact-source-publication
-        manifest_digest: sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
+        manifest_digest: sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00
         config_digest: sha256:ea0ec523a47629a79737d706ee232f696db0f17cc18199d03c519db38cfad8a4
         image_source_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
         source_manifest_registry: ghcr.io
-        source_manifest_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
+        source_manifest_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00
         source_manifest_tag: link-fa6a1797662e
         catalog_registry: ghcr.io
-        catalog_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
+        catalog_reference: ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00
         ghcr_visibility: public
         ghcr_tag: link-fa6a1797662e
         verification: "The exact image passed 22 source tests, Ruff, Helm lint/render, a runtime health smoke test, and a Grype 0.110.0 gate with zero fixable Critical findings after removing the unused Node/npm payload. Anonymous GHCR access is enabled."

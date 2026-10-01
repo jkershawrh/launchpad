@@ -10,7 +10,7 @@ CERTIFICATION = ROOT / "certification/catalog/agent-reliability.yaml"
 CERTIFIER = ROOT / "scripts/certify-agent-reliability-seat.sh"
 REVIEW_EVIDENCE = ROOT / "evidence/lab-experience-review-20260930.yaml"
 REVISION = "fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc"
-DIGEST = "sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66"
+DIGEST = "sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00"
 IMAGE_SOURCE_REVISION = REVISION
 IMAGE_REFERENCE = f"ghcr.io/jkershawrh/agent-reliability-quickstart@{DIGEST}"
 

@@ -79,7 +79,7 @@ runtime:
     helm_values:
       image:
         repository: ghcr.io/jkershawrh/agent-reliability-quickstart
-        digest: sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66
+        digest: sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00
       route:
         enabled: true
         name: ar

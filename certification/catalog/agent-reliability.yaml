@@ -44,7 +44,7 @@ spec:
       - {path: reliability_journey.configured_model, equals: granite-3.2-8b-tools}
       - {path: reliability_journey.observed_model, equals: granite-3.2-8b-tools}
       - {path: reliability_journey.model_participated, equals: true}
-      - {path: runtime.workload_image, equals: "ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:e19256ddc41d887791b4bec5ad024ab6e4d6a0976e54443e21986fb146d03b66"}
+      - {path: runtime.workload_image, equals: "ghcr.io/jkershawrh/agent-reliability-quickstart@sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00"}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}
