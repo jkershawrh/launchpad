@@ -29,12 +29,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/launchpad.git
-    revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    revision: 6fcb2906e4d22f90afe62a8304b45f04be7cd048
     playbook: site-openshift-operators.yml
     start_path: content-operators
   workload:
     repo_url: https://github.com/jkershawrh/launchpad.git
-    revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    revision: 6fcb2906e4d22f90afe62a8304b45f04be7cd048
     deploy_path: content-operators
 runtime:
   namespace_slug: openshift-operators

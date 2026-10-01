@@ -6,7 +6,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 PAGES = ROOT / "content-operators/modules/ROOT/pages"
 EXPECTED_TITLE = "OpenShift 201: Build an Operator-Managed Pipeline"
-REVISION = "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
+REVISION = "6fcb2906e4d22f90afe62a8304b45f04be7cd048"
 
 
 def _load(path: str):
@@ -134,8 +134,8 @@ def test_operator_review_records_the_unpublished_exact_candidate_boundary():
     lab = review["labs"]["openshift-operators-workshop"]
     source_state = lab["source_state"]
 
-    assert lab["overall_status"] == "source-update-pending-publication-draft"
+    assert lab["overall_status"] == "exact-source-published-draft"
     assert source_state["published_revision"] == REVISION
-    assert source_state["candidate_revision"] == "pending-uncommitted"
+    assert source_state["candidate_revision"] == REVISION
     assert source_state["certification_transfer"] == "none"
     assert "fresh one-seat" in source_state["certification_boundary"]
