@@ -13,7 +13,7 @@ OVERLAY_PATH = ROOT / (
 CERTIFICATION_PATH = ROOT / "certification/catalog/intel-llm-cpu-serving.yaml"
 CONTENT_ROOT = ROOT / "content-intel-llm-cpu-serving/modules/ROOT/pages"
 
-CONTENT_REVISION = "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
+CONTENT_REVISION = "67d1965c8e6347afe502ff4cba61b99e24257ec4"
 WORKLOAD_REVISION = "88867e14b1eede7d9aa563069aa093c122a4a53a"
 
 
@@ -122,18 +122,20 @@ def test_cpu_serving_orderability_does_not_transfer_from_the_prior_contract() ->
     )
     assert catalog["status"] == intake["catalog"]["status"] == "draft"
     assert overlay["status"] == "draft"
-    assert catalog["metadata"]["certification_stage"] == "source-reviewed"
-    assert intake["certification"]["stage"] == "source-reviewed"
-    assert overlay["metadata"]["certification_stage"] == "source-reviewed"
+    assert catalog["metadata"]["certification_stage"] == "immutable-source-published"
+    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert overlay["metadata"]["certification_stage"] == "immutable-source-published"
     assert catalog["metadata"]["max_workshop_seats"] == 1
     assert intake["certification"]["max_workshop_seats"] == 1
     assert overlay["metadata"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["certification_transfer"] == "none"
     assert intake["learning"]["certification_transfer"] == "none"
     assert catalog["metadata"]["activation_blockers"] == [
-        "Publish and pin the exact strict-TLS v1.0.13 content and certification driver revision.",
         "Recertify one Flightpath seat for managed-model and AnythingLLM RAG participation, Console and Terminal scope, cleanup, credential revocation, and zero residue.",
     ]
     assert catalog["metadata"]["activation_blockers"] == intake["certification"][
+        "activation_blockers"
+    ]
+    assert overlay["metadata"]["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]

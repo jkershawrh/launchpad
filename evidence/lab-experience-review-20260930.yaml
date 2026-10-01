@@ -467,8 +467,8 @@ labs:
 
   intel-llm-cpu-serving:
     display_name: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
-    overall_status: source-reviewed-needs-publication-and-one-seat-certification
-    published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    overall_status: immutable-source-published-needs-one-seat-certification
+    published_content_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "An HR retrieval assistant provides a recognizable customer workload."}
     show: {status: green-local, evidence: "The opening now executes a real completion, prints the observed model identity and answer, and fails early when the inference boundary is unavailable before teaching the architecture."}
@@ -481,14 +481,14 @@ labs:
     local_validation: "Antora build passed without missing-attribute warnings after correcting storage-class and shell-variable rendering; focused participant-truth tests passed on 2026-09-30."
     source_state:
       repository: /Users/jkershaw/Documents/launchpad
-      published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
-      catalog_pinned_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
-      candidate_revision: pending-uncommitted
+      published_content_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
+      catalog_pinned_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
+      candidate_revision: 67d1965c8e6347afe502ff4cba61b99e24257ec4
       workload_repository: https://github.com/rhpds/llm-cpu-serving.git
       workload_revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
       certification_transfer: none
-      certification_boundary: "The strict-TLS content and strengthened direct-model, RAG-model, Terminal, and Console proof are not part of the pinned content revision. Publish and pin them together, then run fresh one-seat certification."
-    next_action: publish and pin the exact strict-TLS v1.0.13 content and certifier, then certify one seat for direct and AnythingLLM model participation, Console and Terminal scope, cleanup, credential revocation, and zero residue
+      certification_boundary: "The strict-TLS content and strengthened direct-model, RAG-model, Terminal, and Console proof are pinned together; fresh one-seat certification is still required."
+    next_action: certify one seat for direct and AnythingLLM model participation, Console and Terminal scope, cleanup, credential revocation, and zero residue
 
   intel-llm-tool-calling:
     display_name: "Intel AI 201: LLM Tool Calling on Intel"

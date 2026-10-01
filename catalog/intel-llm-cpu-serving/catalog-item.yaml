@@ -40,13 +40,12 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: source-reviewed
+  certification_stage: immutable-source-published
   max_workshop_seats: 1
   promotion_sequence:
     - 1
     - 5
   activation_blockers:
-    - Publish and pin the exact strict-TLS v1.0.13 content and certification driver revision.
     - Recertify one Flightpath seat for managed-model and AnythingLLM RAG participation, Console and Terminal scope, cleanup, credential revocation, and zero residue.
   onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
   certification_proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
@@ -66,7 +65,7 @@ metadata:
       title: OpenShift Console
       source: cluster.console_url
   showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
-  showroom_content_ref: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
+  showroom_content_ref: "67d1965c8e6347afe502ff4cba61b99e24257ec4"
   showroom_content_playbook: "site-intel-llm-cpu-serving.yml"
   required_models:
     - granite-3.2-8b-tools
@@ -84,7 +83,7 @@ metadata:
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
   source_content_repo: "https://github.com/jkershawrh/launchpad.git"
-  source_content_revision: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
+  source_content_revision: "67d1965c8e6347afe502ff4cba61b99e24257ec4"
   workload_repo: "https://github.com/rhpds/llm-cpu-serving.git"
   workload_revision: "88867e14b1eede7d9aa563069aa093c122a4a53a"
   showroom_steps:
