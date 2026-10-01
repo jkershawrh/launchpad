@@ -642,7 +642,7 @@ labs:
       repository: /Users/jkershaw/Documents/sovereign-ai-301
       checked_out_branch: main
       published_head: 958cbdfc08582aff0a5db2a273cd212ef270d88c
-      catalog_pinned_revision: a7514f7d766b845a81e079cbc698361d44ed3fdd
+      catalog_pinned_revision: a07902e0f58af8bd01a9e7f156bf89687173b72e
       post_review_changes: committed-published-pinned-not-live-certified
       certification_target: truthful-rehearsal-only
       live_confidentiality_claims: prohibited
