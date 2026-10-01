@@ -95,16 +95,16 @@ def test_agentic_501_is_mounted_as_a_fail_closed_destination_qualification_draft
     assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["max_workshop_seats"] == 1
     assert metadata["allowed_exposure_policies"] == ["internal"]
-    assert metadata["workload_revision"] == "ae23851fb5d24523930abc6a4639205f072e93a7"
+    assert metadata["workload_revision"] == "173f019da79d0d55431457ff24ed3e7253d98b23"
     assert metadata["showroom_content_ref"] == metadata["workload_revision"]
     assert metadata["workload_helm_values"]["images"] == {
         "presentation": {
             "repository": "ghcr.io/jkershawrh/agentic-scale-501-presentation",
-            "digest": "sha256:ac1e22061238bda32fb41338c4fe03f2a3bf801fffbcd0bc3350a87f93f9fc21",
+            "digest": "sha256:c69aa83eafde91e67544d79f804ab3849a0402522277cbb21a72bc649866a1cb",
         },
         "qualifier": {
             "repository": "ghcr.io/jkershawrh/agentic-scale-501-qualifier",
-            "digest": "sha256:24b265cc26b4c6e6a84a2adf3cb463613c883d92e33e7937ae0487a3cbab6330",
+            "digest": "sha256:e33dd9066e36d01e0b90143d7752004c15128b21f42b5f4c1aac465b9a5be7a0",
         },
     }
     assert metadata["workload_helm_values"]["routes"] == {

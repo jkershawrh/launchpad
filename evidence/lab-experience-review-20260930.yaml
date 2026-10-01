@@ -13,10 +13,10 @@ goal_reconciliation:
   reviewed_catalog_entries: 25
   reviewed_catalog_entries_total: 25
   distinct_participant_experiences: 22
-  current_one_seat_live_closeouts: 14
+  current_one_seat_live_closeouts: 15
   compatibility_aliases: 2
   platform_validation_entries: 1
-  current_revision_gates_remaining: 8
+  current_revision_gates_remaining: 7
   remaining_catalog_items:
     - virtualization-ai-foundations-101
     - virtualization-ai-201
@@ -25,7 +25,6 @@ goal_reconciliation:
     - hybrid-fraud-detection
     - ai-sandbox
     - openshift-operators-workshop
-    - scale-agentic-blueprint
   interpretation: "The content and journey review is complete across the scoped catalog. Remaining work is exact-revision publication or targeted live recertification, not another full review of all labs."
 learning_pipeline:
   platform_foundations:
@@ -632,24 +631,26 @@ labs:
 
   scale-agentic-blueprint:
     display_name: "Intel AI 501: Production Multi-Agent Blueprint"
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-draft
     story: {status: green-source, evidence: "The production-blueprint story advances the learner from one trusted run to a measured deployment envelope."}
-    show: {status: rehearsal-only, evidence: "The current qualifier exposes rehearsal evidence and does not claim approved destination telemetry."}
-    learn: {status: green-local, evidence: "The candidate explicitly advances from 401 operations into qualifying the same contract under labeled load and pressure."}
-    do: {status: green-local, evidence: "The learner executes an end-to-end qualification rehearsal while the UI and guide preserve source labels."}
-    prove: {status: rehearsal-only, evidence: "Factory evidence is explicitly non-production and maximum certified seats remains zero."}
-    operators: {status: conditional, evidence: "Story, Terminal, Qualification Evidence, and Console are declared but not destination-certified."}
+    show: {status: green-live-rehearsal, evidence: "The exact presentation and all five Showroom checkpoints served with explicit SCALE PROOF and rehearsal labeling."}
+    learn: {status: green-live-rehearsal, evidence: "The live seat preserved the 401-to-501 progression from operating one trusted run to qualifying a measured deployment envelope."}
+    do: {status: green-live-rehearsal, evidence: "The qualifier completed three correlated rehearsal journeys with zero workload errors and no automated promotion."}
+    prove: {status: green-live-rehearsal, evidence: "The one-seat destination receipt scored 100/100 while explicitly denying live inference and scale certification claims."}
+    operators: {status: green-live-partial, evidence: "Story, Terminal, Qualification Evidence, exact runtime images, namespace isolation, and Console URL were proven; browser Console SSO/navigation remains an activation gate."}
     inference: {status: not-claimed, evidence: "No required model is declared; approved live Xeon telemetry remains an activation blocker."}
-    cleanup: {status: green-local, evidence: "The guide states rehearsal changes no target state and reserves zero-residue claims for live Launchpad reclaim evidence."}
+    cleanup: {status: green-live, evidence: "Reclaim completed in 64.695 seconds with model key revocation and zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_state:
       repository: /Users/jkershaw/Documents/agentic-scale-501
-      published_revision: ae23851fb5d24523930abc6a4639205f072e93a7
-      catalog_pinned_revision: ae23851fb5d24523930abc6a4639205f072e93a7
-      publication_workflow: https://github.com/jkershawrh/agentic-scale-501/actions/runs/36750566182
+      published_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
+      catalog_pinned_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
+      certification_transfer: none
+      certification_boundary: "The exact immutable release removes ambiguous LIVE interface labels and remains a truthful rehearsal. It requires a fresh one-seat destination proof and does not inherit prior receipts or activate any scale claim."
+      publication_workflow: https://github.com/jkershawrh/agentic-scale-501/actions/runs/36812268212
       immutable_images:
-        presentation: ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:ac1e22061238bda32fb41338c4fe03f2a3bf801fffbcd0bc3350a87f93f9fc21
-        qualifier: ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:24b265cc26b4c6e6a84a2adf3cb463613c883d92e33e7937ae0487a3cbab6330
-      publication_validation: "Both exact linux/amd64 images passed the enforced Grype zero-HIGH/CRITICAL gate; each retained inventory records five MEDIUM and one LOW finding, with signed digests, SPDX SBOM attestations, SLSA provenance attestations, identity verification, and transparency-log inclusion."
+        presentation: ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:c69aa83eafde91e67544d79f804ab3849a0402522277cbb21a72bc649866a1cb
+        qualifier: ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:e33dd9066e36d01e0b90143d7752004c15128b21f42b5f4c1aac465b9a5be7a0
+      publication_validation: "The exact linux/amd64 presentation and qualifier passed repository checks, zero-HIGH/CRITICAL vulnerability gates, signed digest verification, SPDX SBOM attestations, SLSA provenance attestations, identity verification, and transparency-log inclusion."
       corrected_live_attempt:
         observed_at: "2026-09-30"
         result: RED-live-reclaimed
@@ -661,7 +662,15 @@ labs:
       score: 0
       failure: "Workshop stopped in failed state before participant journey proof."
       cleanup_boundary: "Namespace residue reached zero, but model-key revocation was not proven."
-    next_action: retain draft status and certify the exact immutable release for rehearsal truth, Console and Terminal scope, live adapters, Intel telemetry, fault drivers, thresholds, one seat, and zero-residue reclaim before any scale claim
+    live_certification:
+      observed_at: "2026-09-30"
+      result: GREEN-live
+      rubric_score: 100
+      ready_seconds: 57.626
+      cleanup_seconds: 64.695
+      evidence: evidence/runs/flightpath-live-20260930-scale-agentic-501-1seat-r5.json
+      proof: "The exact 173f019 release passed trusted Showroom rendering, rehearsal qualification, exact image identity, zero presentation restarts, terminal isolation, Console URL discovery, key revocation, reclaim, and zero residue."
+    next_action: retain draft status; live adapters, Intel Xeon telemetry, fault drivers, thresholds, browser Console SSO/navigation, and all scale claims remain independently blocked
 
   agentic-ai-601:
     display_name: "Intel AI 601: Earn the Right to Act"

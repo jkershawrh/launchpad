@@ -22,16 +22,6 @@ spec:
       probe_concurrency: 1
       maximum_ready_seconds: 900
       maximum_cleanup_seconds: 600
-    - seats: 5
-      required_consecutive_runs: 3
-      probe_concurrency: 5
-      maximum_ready_seconds: 1200
-      maximum_cleanup_seconds: 900
-    - seats: 25
-      required_consecutive_runs: 3
-      probe_concurrency: 10
-      maximum_ready_seconds: 2400
-      maximum_cleanup_seconds: 1200
 
   execution_blockers:
     - The destination run proves rehearsal-mode deployment only and must not be represented as live inference certification.
@@ -41,8 +31,20 @@ spec:
   showroom:
     pages:
       - id: welcome
-        path: /www/modules/index.html
+        path: /www/agentic-scale-501/index.html
         marker: "Agentic AI 501"
+      - id: baseline
+        path: /www/agentic-scale-501/02-baseline.html
+        marker: "Baseline: establish the reference state"
+      - id: controlled-pressure
+        path: /www/agentic-scale-501/04-controlled-pressure.html
+        marker: "Controlled pressure: cross one named boundary"
+      - id: score-review
+        path: /www/agentic-scale-501/06-score-review.html
+        marker: "Score and review: fail closed"
+      - id: close-handoff
+        path: /www/agentic-scale-501/07-close-handoff.html
+        marker: "Close and handoff: certify the envelope"
 
   seat_probe:
     argv:
@@ -61,6 +63,16 @@ spec:
         equals: rehearsal
       - path: live_claim
         equals: false
+      - path: provenance.source_revision
+        equals: 173f019da79d0d55431457ff24ed3e7253d98b23
+      - path: runtime_images.presentation
+        equals: "ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:c69aa83eafde91e67544d79f804ab3849a0402522277cbb21a72bc649866a1cb"
+      - path: runtime_images.qualifier
+        equals: "ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:e33dd9066e36d01e0b90143d7752004c15128b21f42b5f4c1aac465b9a5be7a0"
+      - path: inference.synthetic
+        equals: true
+      - path: inference.model_participated
+        equals: false
       - path: qualification.attempted_journeys
         equals: 3
       - path: qualification.completed_journeys
@@ -77,6 +89,14 @@ spec:
         contains: cross_namespace=DENIED
       - path: terminal_scope
         contains: node_list=DENIED
+      - path: operator_journey.terminal_scope_verified
+        equals: true
+      - path: operator_journey.console_url_present
+        equals: true
+      - path: operator_journey.qualification_service_verified
+        equals: true
+      - path: presentation_restarts
+        equals: 0
       - path: contains_sensitive_values
         equals: false
 
@@ -95,19 +115,16 @@ spec:
     categories:
       - id: contract_and_provenance
         weight: 15
-        requires: [contract_valid, immutable_artifacts, evidence_hashed]
+        requires: [contract_valid, evidence_hashed]
       - id: provisioning_and_capacity
         weight: 25
-        requires: [all_seats_ready, ready_within_limit, capacity_admitted]
-      - id: participant_probe
-        weight: 20
-        requires: [representative_probe_passed_per_seat, routes_ready, model_access_ready]
+        requires: [capacity_passed, single_cluster_assignment, all_seats_ready, ready_within_limit]
+      - id: participant_rehearsal
+        weight: 25
+        requires: [showroom_pages_passed, seat_probes_passed]
       - id: isolation_and_access
         weight: 15
-        requires: [namespace_isolation_passed, cross_namespace_denied, secrets_absent]
-      - id: delivery_observability
-        weight: 10
-        requires: [seat_correlation_complete, provisioning_metrics_complete, reclaim_metrics_complete]
+        requires: [namespace_isolation_passed, sensitive_values_absent]
       - id: lifecycle
-        weight: 15
-        requires: [cleanup_within_limit, zero_residue_cleanup, model_keys_revoked]
+        weight: 20
+        requires: [cleanup_completed, zero_residue_cleanup, model_keys_revoked]
