@@ -43,9 +43,8 @@ jq -e '
   and .llm_skipped == false
   and (.llm_score | type) == "number"
   and (.risk_score >= 0 and .risk_score <= 100)
-  and (.model | type) == "string"
-  and (.model | length) > 0
-  and (.ai_disclaimer | type) == "string"
+  and .model == "granite-3.2-8b-tools"
+  and (.ai_disclaimer | contains("not for real decisions"))
 ' <<<"$score" >/dev/null
 
 stage="bounded-input"
@@ -87,7 +86,7 @@ jq -cn \
     namespace: $namespace,
     cluster_ref: $cluster_ref,
     readiness: {health: true, model_ready: true, workspace_http_status: 200},
-    hybrid_journey: {live_model: true, model: $model, risk_score: $risk_score, llm_score: $llm_score, bounded_input: true},
+    hybrid_journey: {live_model: true, model: $model, risk_score: $risk_score, llm_score: $llm_score, bounded_input: true, human_authority_preserved: true},
     terminal_scope: ($terminal_scope | split("\n")),
     runtime_secret_keys: $runtime_keys,
     contains_sensitive_values: false

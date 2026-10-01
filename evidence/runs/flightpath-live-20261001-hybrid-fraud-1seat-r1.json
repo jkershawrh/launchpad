@@ -1,0 +1,286 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 1,
+    "certification_override": false,
+    "certification_target_seats": null,
+    "estimated_resources": {
+      "cpu_millicores": 700,
+      "memory_mib": 1280,
+      "pods": 2
+    },
+    "placement_reason": "single-cluster placement",
+    "reason": "Cluster can support 85 seats (CPU: 569, Memory: 623, Pods: 85; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 700,
+        "memory_mib": 1280,
+        "pods": 2
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 1,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "hybrid-fraud-detection",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 100.255,
+    "status": "completed"
+  },
+  "completed_at": "2026-10-01T18:02:25.465946Z",
+  "contract": {
+    "catalog_version": "0.1.2-flightpath.3",
+    "certification_runner_image": "",
+    "git_commit": "b1db47659e8a90a82bc41e964927bb015561eb5c",
+    "intake_path": "catalog-onboarding/hybrid-fraud-detection.yaml",
+    "path": "certification/catalog/hybrid-fraud-detection.yaml",
+    "platform_manifest_sha256": "",
+    "sha256": "f5f7278f822ce38997cc59862697b99edd83b1c1e567375fa41b0394e62d53db"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [
+      "launchpad-flightpath-candida-fraud-3d802f"
+    ],
+    "ready_seconds": 57.41,
+    "seat_count": 1,
+    "session_ids": [
+      "1877a6db-5bf3-4318-af6e-c4a21fdc44dc"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "d4860dd0-3b46-4bdd-a131-54b8edd4fe1a"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "hybrid-fraud-detection",
+    "certification_override": false,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 1,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 600,
+    "maximum_ready_seconds": 900,
+    "mutates_cluster": true,
+    "next_promotion_target": 5,
+    "probe_concurrency": 1,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 1,
+    "seats": 1,
+    "showroom_pages_per_seat": 4,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 1,
+    "eligible": true,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "GREEN-live",
+  "rubric": {
+    "categories": {
+      "authorization": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 15
+      },
+      "cleanup": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup",
+          "model_keys_revoked"
+        ],
+        "weight": 15
+      },
+      "contract_integrity": {
+        "awarded": 10,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 10
+      },
+      "participant_function": {
+        "awarded": 25,
+        "passed": true,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "placement_capacity": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "single_cluster_assignment"
+        ],
+        "weight": 15
+      },
+      "provisioning_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": true,
+    "required": 100,
+    "score": 100
+  },
+  "run_id": "flightpath-live-20261001-hybrid-fraud-1seat-r1",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-fraud-3d802f",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 12.937,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "hybrid_journey": {
+            "bounded_input": true,
+            "human_authority_preserved": true,
+            "live_model": true,
+            "llm_score": 90.0,
+            "model": "granite-3.2-8b-tools",
+            "risk_score": 54.0
+          },
+          "namespace": "launchpad-flightpath-candida-fraud-3d802f",
+          "readiness": {
+            "health": true,
+            "model_ready": true,
+            "workspace_http_status": 200
+          },
+          "result": "GREEN-live-internal-seat",
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-fraud-3d802f",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ]
+        }
+      },
+      "seat_id": "3d802f05-d07e-4d8a-8033-52c146ef208d",
+      "seat_number": 1,
+      "session_id": "1877a6db-5bf3-4318-af6e-c4a21fdc44dc",
+      "showroom": [
+        {
+          "duration_seconds": 0.589,
+          "http_status": 200,
+          "id": "welcome",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.635,
+          "http_status": 200,
+          "id": "architecture",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.503,
+          "http_status": 200,
+          "id": "conditional-inference",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.56,
+          "http_status": 200,
+          "id": "governance",
+          "marker_present": true,
+          "passed": true,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-10-01T17:59:27.127902Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "GREEN-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}

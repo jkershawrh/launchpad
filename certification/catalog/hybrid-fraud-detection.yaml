@@ -39,6 +39,8 @@ spec:
       - {path: readiness.model_ready, equals: true}
       - {path: readiness.workspace_http_status, equals: 200}
       - {path: hybrid_journey.live_model, equals: true}
+      - {path: hybrid_journey.model, equals: granite-3.2-8b-tools}
+      - {path: hybrid_journey.human_authority_preserved, equals: true}
       - {path: hybrid_journey.bounded_input, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}

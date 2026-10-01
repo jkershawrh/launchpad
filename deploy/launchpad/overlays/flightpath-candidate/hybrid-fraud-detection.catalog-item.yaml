@@ -2,7 +2,7 @@ catalog_item_id: hybrid-fraud-detection
 display_name: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
 description: Build and test an explainable hybrid fraud scorer using deterministic rules and shared Intel Xeon model inference.
 category: guided_build
-version: 0.1.2-flightpath.2
+version: 0.1.2-flightpath.3
 status: draft
 required_capabilities: [openshift, showroom, model_endpoint]
 default_hardware_profile: xeon-basic
@@ -23,14 +23,13 @@ metadata:
   max_workshop_seats: 1
   promotion_sequence: [1, 5]
   activation_blockers:
-    - Recertify one Flightpath seat against the newly published image and learning journey.
-    - Record a vulnerability inventory for this candidate or explicitly accept that missing release evidence before activation.
+    - Recertify one Flightpath seat against the remediated exact image and learning journey.
   allowed_exposure_policies: [internal]
   showroom_journey: hybrid-fraud-detection
   showroom_title: Hybrid Fraud Detection on Intel Xeon
   namespace_slug: fraud
   showroom_content_repo_url: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  showroom_content_ref: 9dccae859e939d836c06cc9fb51d8ae4a848a38f
+  showroom_content_ref: 2ea5e1f5cfce7e7a45e9b10408d8653590a4af79
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   showroom_terminal_storage: true
@@ -39,13 +38,13 @@ metadata:
       title: Terminal
       source: showroom.terminal
     - id: workspace
-      title: Fraud Scoring Workspace
+      title: Hybrid Decision Casebook
       source: workload.route.ui
     - id: openshift-console
       title: OpenShift Console
       source: cluster.console_url
   workspace_route_name: fraud-ui
-  workspace_title: Fraud Scoring Workspace
+  workspace_title: Hybrid Decision Casebook
   required_models: [granite-3.2-8b-tools]
   inference_endpoint: litellm_virtual_key_candidate
   seat_cpu_millicores: 700
@@ -56,7 +55,7 @@ metadata:
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
   workload_repo: https://github.com/jkershawrh/hybrid-fraud-detection.git
-  workload_revision: 9dccae859e939d836c06cc9fb51d8ae4a848a38f
+  workload_revision: 2ea5e1f5cfce7e7a45e9b10408d8653590a4af79
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -65,7 +64,7 @@ metadata:
   workload_release_name: fraud
   workload_helm_values:
     app:
-      image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:4a31d147c46bc3323a29777519347dc30555a325b29e1cef2b77c85984343f0e
+      image: ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:faa4b11c6e314bf3f995b13153c7fa061bcba862753fe3f97b2488d4c117eb03
     model:
       endpointFromSecret: true
   workload_runtime_secret_name: fraud-model-runtime
