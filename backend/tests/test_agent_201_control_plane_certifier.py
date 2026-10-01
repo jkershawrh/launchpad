@@ -100,6 +100,9 @@ def test_catalog_seat_probe_reports_bounded_failure_stages():
     assert "inference_http_statuses:" in source
     assert "curl -k" not in source
     assert "curl_options=(-fsSk" not in source
+    assert 'deployment/showroom' in source
+    assert 'http://solution-agent:8082/api/v1/advise' in source
+    assert 'https://${agent_host}/api/v1/advise' not in source
 
 
 def test_remote_certifier_reads_model_connection_from_participant_runtime_secret():

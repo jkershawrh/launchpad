@@ -91,9 +91,12 @@ printf '%s' "$tools_result" | jq -e '
 
 stage="model-request"
 agent_result="$(
-  curl "${curl_options[@]}" -X POST "https://${agent_host}/api/v1/advise" \
-    -H 'Content-Type: application/json' \
-    --data '{"query":"A retail chain needs real-time inventory prediction across 500 stores on an on-premises OpenShift platform. Recommend a sourced Intel and Red Hat architecture with a migration path."}'
+  oc --kubeconfig "$KUBECONFIG" exec -n "$namespace" deployment/showroom \
+    -c terminal -- \
+    curl -fsS --max-time 300 -X POST \
+      "http://solution-agent:8082/api/v1/advise" \
+      -H 'Content-Type: application/json' \
+      --data '{"query":"A retail chain needs real-time inventory prediction across 500 stores on an on-premises OpenShift platform. Recommend a sourced Intel and Red Hat architecture with a migration path."}'
 )"
 stage="response-contract"
 printf '%s' "$agent_result" | jq -e 'type == "object"' >/dev/null
