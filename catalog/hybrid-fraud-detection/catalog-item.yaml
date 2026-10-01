@@ -4,7 +4,7 @@ description: Build and test an explainable hybrid fraud scorer using determinist
   rules and shared Intel Xeon model inference.
 category: guided_build
 version: 0.1.2-flightpath.3
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -48,12 +48,11 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/hybrid-fraud-detection.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Recertify one Flightpath seat against the remediated exact image and learning journey.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/hybrid-fraud-detection.yaml
   allowed_exposure_policies:
   - internal

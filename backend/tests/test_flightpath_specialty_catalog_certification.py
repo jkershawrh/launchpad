@@ -55,11 +55,11 @@ def test_hybrid_fraud_exact_release_has_a_flightpath_certification_contract():
     assert intake["runtime"]["workload"]["helm_values"]["app"]["image"].endswith(
         "@sha256:faa4b11c6e314bf3f995b13153c7fa061bcba862753fe3f97b2488d4c117eb03"
     )
-    assert intake["catalog"]["status"] == "draft"
+    assert intake["catalog"]["status"] == "active"
     assert intake["sources"]["workload"]["revision"] == (
         "2ea5e1f5cfce7e7a45e9b10408d8653590a4af79"
     )
-    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert intake["certification"]["stage"] == "1-seat-certified"
     contract = load_certification_contract(
         ROOT / "certification/catalog/hybrid-fraud-detection.yaml"
     )

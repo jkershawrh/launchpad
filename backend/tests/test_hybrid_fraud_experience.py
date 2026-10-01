@@ -27,24 +27,23 @@ def _load(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-def test_hybrid_fraud_exact_candidate_is_truthfully_draft() -> None:
+def test_hybrid_fraud_exact_candidate_is_one_seat_certified_and_active() -> None:
     catalog = _load(CATALOG_PATH)
     intake = _load(INTAKE_PATH)
     metadata = catalog["metadata"]
 
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
-    assert metadata["certification_stage"] == "immutable-source-published"
-    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
+    assert metadata["certification_stage"] == "1-seat-certified"
+    assert intake["certification"]["stage"] == "1-seat-certified"
     assert metadata["max_workshop_seats"] == 1
     assert intake["certification"]["max_workshop_seats"] == 1
     assert metadata["certification_transfer"] == "none"
     assert intake["learning"]["certification_transfer"] == "none"
-    assert metadata["activation_blockers"] == [
-        "Recertify one Flightpath seat against the remediated exact image and learning journey.",
-    ]
+    assert metadata["activation_blockers"] == []
     assert metadata["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]
+    assert intake["certification"]["certified_seats"] == 1
 
 
 def test_hybrid_fraud_exact_candidate_vulnerability_disposition_is_recorded() -> None:
