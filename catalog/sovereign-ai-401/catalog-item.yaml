@@ -19,8 +19,6 @@ provisioner_refs:
 validation_refs:
 - pod-ready
 - route-accessible
-- inference-health
-- agentops-journey
 observability_profile: agentops-full-stack
 supported_branding:
 - redhat-intel-default
@@ -41,6 +39,7 @@ metadata:
   returns_to: sovereign-ai-501
   shared_blueprint: red-hat-intel-sovereign-ai-v1
   solution_family: sovereign_ai
+  certification_transfer: none
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
   showroom_content_ref: da46fe0d734f329c5f5ba69f51dd33e2e77faf92
@@ -55,6 +54,8 @@ metadata:
   promotion_sequence:
   - 1
   activation_blockers:
+  - Factory and publication evidence do not transfer to live TDX, Trustee/KBS,
+    protected-resource, model, placement, or destination certification.
   - No approved Intel Xeon TDX host or current quote is attached.
   - No live OpenShift Sandboxed Containers confidential guest placement is verified.
   - No reviewed live Trustee verifier, KBS, reference values, or protected resource
@@ -93,7 +94,7 @@ metadata:
     source: cluster.console_url
   workshop_cluster_ref: flightpath
   required_models: []
-  inference_endpoint: litellm
+  inference_endpoint: none
   seat_cpu_millicores: 50
   seat_memory_mib: 80
   seat_pods: 2

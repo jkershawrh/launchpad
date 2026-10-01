@@ -33,6 +33,9 @@ spec:
       - {path: journey.model_invoked, equals: false}
       - {path: journey.evidence_chain_valid, equals: true}
       - {path: journey.human_authority_retained, equals: true}
+      - {path: operator_journey.terminal_scope_verified, equals: true}
+      - {path: operator_journey.console_url_present, equals: true}
+      - {path: operator_journey.qualification_service_verified, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

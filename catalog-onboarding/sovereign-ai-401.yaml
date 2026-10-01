@@ -23,6 +23,7 @@ learning:
   returns_to: sovereign-ai-501
   shared_blueprint: red-hat-intel-sovereign-ai-v1
   solution_family: sovereign_ai
+  certification_transfer: none
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
@@ -45,7 +46,11 @@ runtime:
   - showroom
   - intel-xeon-tdx-review-required
   - trustee-review-required
+  validation_refs:
+  - pod-ready
+  - route-accessible
   required_models: []
+  inference_endpoint: none
   seat_resources:
     cpu_millicores: 50
     memory_mib: 80
@@ -107,6 +112,8 @@ certification:
   promotion_sequence:
   - 1
   activation_blockers:
+  - Factory and publication evidence do not transfer to live TDX, Trustee/KBS,
+    protected-resource, model, placement, or destination certification.
   - No approved Intel Xeon TDX host or current quote is attached.
   - No live OpenShift Sandboxed Containers confidential guest placement is verified.
   - No reviewed live Trustee verifier, KBS, reference values, or protected resource
