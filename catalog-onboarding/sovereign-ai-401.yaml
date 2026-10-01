@@ -27,13 +27,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
-    revision: 23f7d9cfbadde1df2c83d378de8a7d0bbaa0bef6
+    revision: e648f54cab042e8bbf0f044d4c03bf93ad09d7e2
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
-    revision: 23f7d9cfbadde1df2c83d378de8a7d0bbaa0bef6
+    revision: e648f54cab042e8bbf0f044d4c03bf93ad09d7e2
     deploy_path: charts/sovereign-ai-401
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
 runtime:

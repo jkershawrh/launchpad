@@ -24,6 +24,7 @@ spec:
       - {path: cluster_ref, equals: flightpath}
       - {path: readiness.qualifier_health, equals: true}
       - {path: readiness.presentation_http_status, equals: 200}
+      - {path: readiness.presentation_restarts, equals: 0}
       - {path: journey.mode, equals: REHEARSAL}
       - {path: journey.live_tdx_observed, equals: false}
       - {path: journey.allow_path, equals: ALLOW_REVIEW}
