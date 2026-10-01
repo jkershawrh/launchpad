@@ -98,6 +98,8 @@ def test_catalog_seat_probe_reports_bounded_failure_stages():
     assert "top_level_keys:" in source
     assert "inference_error_count:" in source
     assert "inference_http_statuses:" in source
+    assert "curl -k" not in source
+    assert "curl_options=(-fsSk" not in source
 
 
 def test_remote_certifier_reads_model_connection_from_participant_runtime_secret():

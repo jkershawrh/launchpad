@@ -65,7 +65,7 @@ app_host="$(
   oc --kubeconfig "$KUBECONFIG" get route app -n "$namespace" \
     -o jsonpath='{.spec.host}'
 )"
-curl_options=(-fsSk --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
+curl_options=(-fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
 stage="tools-health"
 [[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${tools_host}/health")" == "200" ]]
 stage="agent-health"
