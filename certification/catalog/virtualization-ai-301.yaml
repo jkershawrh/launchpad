@@ -27,8 +27,11 @@ spec:
       - {path: journey.outcome, equals: ALLOW_REVIEW}
       - {path: journey.source_state, equals: REHEARSAL}
       - {path: journey.model_participated, equals: false}
-      - {path: journey.intel_placement_verified, equals: false}
+      - {path: journey.intel_placement_verified, equals: true}
       - {path: journey.human_authority_preserved, equals: true}
+      - {path: placement_receipt.architecture, equals: amd64}
+      - {path: placement_receipt.kubevirt_vmx, equals: true}
+      - {path: placement_receipt.source, equals: platform-node-and-vmi-status}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

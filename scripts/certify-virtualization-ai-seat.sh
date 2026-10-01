@@ -16,6 +16,9 @@ forward_port="${LAUNCHPAD_CERTIFICATION_FORWARD_PORT:-18080}"
 source_revision=""
 expected_presentation_image=""
 expected_adapter_image=""
+placement_node=""
+placement_architecture=""
+placement_vmx=false
 
 cleanup() {
   [[ -z "$forward_pid" ]] || kill "$forward_pid" >/dev/null 2>&1 || true
@@ -51,7 +54,7 @@ case "$catalog_id" in
     expected_adapter_image="ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:99f1ac6f65386013cb20d81e3dbc6099ffbb63cebfdc6fb1f1cdd50d96153a39" ;;
   virtualization-ai-301)
     vm_names=(modernization-client); service=virtualization-ai-301-adapter; route=virt301; endpoint=/api/v1/modernize
-    source_revision="1c4669bfc07df84a1b304c7eebdceb793ad0f949"
+    source_revision="30f51e19223faf64c689a07e254870fbc43fd0c6"
     expected_presentation_image="ghcr.io/jkershawrh/virtualization-ai-301-presentation@sha256:853ea3bdfea8998652bb51a3930bfeaeb4785ce4c058fe5d733f2e5d2d835185"
     expected_adapter_image="ghcr.io/jkershawrh/virtualization-ai-301-adapter@sha256:9be46b02185933877854dae6e4f91e7e11a3ab028b5f33f896ae40e56b1b07ee" ;;
   virtualization-ai-401)
@@ -71,6 +74,16 @@ done
 vm_count="$(oc --kubeconfig "$KUBECONFIG" get vm -n "$namespace" -o json | jq '[.items[] | select(.status.printableStatus == "Running")] | length')"
 vmi_count="$(oc --kubeconfig "$KUBECONFIG" get vmi -n "$namespace" -o json | jq '[.items[] | select(any(.status.conditions[]?; .type == "Ready" and .status == "True"))] | length')"
 [[ "$vm_count" -eq "${#vm_names[@]}" && "$vmi_count" -eq "${#vm_names[@]}" ]]
+
+if [[ "$catalog_id" == virtualization-ai-301 ]]; then
+  stage=platform-placement
+  placement_node="$(oc --kubeconfig "$KUBECONFIG" get vmi modernization-client -n "$namespace" -o jsonpath='{.status.nodeName}')"
+  [[ -n "$placement_node" ]]
+  placement_architecture="$(oc --kubeconfig "$KUBECONFIG" get node "$placement_node" -o jsonpath='{.metadata.labels.kubernetes\.io/arch}')"
+  placement_vmx="$(oc --kubeconfig "$KUBECONFIG" get node "$placement_node" -o jsonpath='{.metadata.labels.cpu-feature\.node\.kubevirt\.io/vmx}')"
+  [[ "$placement_architecture" == amd64 ]]
+  [[ "$placement_vmx" == true ]]
+fi
 
 stage=runtime-images
 if [[ "$catalog_id" == virtualization-ai-foundations-101 || "$catalog_id" == virtualization-ai-201 || "$catalog_id" == virtualization-ai-301 ]]; then
@@ -229,7 +242,7 @@ case "$catalog_id" in
     journey_hardware="$(jq -r '.model.hardware' <<<"$response")"
     outcome=qualified ;;
   virtualization-ai-301)
-    request="$(jq -cn --arg ns "$namespace" '{schema_version:"virtualization-ai.redhat-intel.com/modernization-request/v1",correlation_id:"30100000-0000-4000-8000-000000000001",task:"review-vm-modernization",note:"Synthetic certification request.",allowed_categories:["identity","connectivity","placement","operations","unknown"],declared:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client"},destination:{service:"virtualization-ai-301-adapter",port:8080},placement:{architecture:"amd64",required_labels:{"feature.node.kubernetes.io/cpu-model.vendor_id":"Intel"}}},observed:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client",vmi_uid:"cert-vmi"},destination:{service:"virtualization-ai-301-adapter",port:8080,network_policy:"ENFORCED",endpoints_ready:true},placement:{node_name:"flightpath-worker",architecture:"amd64",required_labels:{},labels:{"feature.node.kubernetes.io/cpu-model.vendor_id":"Intel"}},observability:{correlation_id:"30100000-0000-4000-8000-000000000001",collected_at:"2026-09-29T12:00:00Z",events_available:true}}}')"
+    request="$(jq -cn --arg ns "$namespace" --arg node "$placement_node" --arg architecture "$placement_architecture" '{schema_version:"virtualization-ai.redhat-intel.com/modernization-request/v1",correlation_id:"30100000-0000-4000-8000-000000000001",task:"review-vm-modernization",note:"Synthetic certification request.",allowed_categories:["identity","connectivity","placement","operations","unknown"],declared:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client"},destination:{service:"virtualization-ai-301-adapter",port:8080},placement:{architecture:"amd64",required_labels:{"cpu-feature.node.kubevirt.io/vmx":"true"}}},observed:{identity:{namespace:$ns,vm_name:"modernization-client",service_account:"vm-modernization-client",vmi_uid:"cert-vmi"},destination:{service:"virtualization-ai-301-adapter",port:8080,network_policy:"ENFORCED",endpoints_ready:true},placement:{node_name:$node,architecture:$architecture,required_labels:{"cpu-feature.node.kubevirt.io/vmx":"true"},labels:{"cpu-feature.node.kubevirt.io/vmx":"true"}},observability:{correlation_id:"30100000-0000-4000-8000-000000000001",collected_at:"2026-09-29T12:00:00Z",events_available:true}}}')"
     response="$(post "$endpoint" "$request")"
     jq -e '.outcome == "ALLOW_REVIEW" and .source_state == "REHEARSAL" and .ai_participated == false and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$response" >/dev/null
     curl -fsS "http://127.0.0.1:${forward_port}/metrics" | grep -q 'virtualization_ai_301_decisions_total'
@@ -269,6 +282,7 @@ console_url="$(oc --kubeconfig "$KUBECONFIG" whoami --show-console)"
 jq -cn --arg namespace "$namespace" --arg cluster_ref "$expected_cluster" --arg catalog_id "$catalog_id" \
   --arg outcome "$outcome" --arg source_state "$journey_source_state" --arg request_origin "$journey_request_origin" \
   --arg model "$journey_model" --arg hardware "$journey_hardware" --argjson model_participated "$journey_model_participated" \
+  --arg placement_node "$placement_node" --arg placement_architecture "$placement_architecture" --argjson placement_vmx "$placement_vmx" \
   --arg terminal_scope "$terminal_scope" --argjson vm_count "$vm_count" --argjson vmi_count "$vmi_count" \
   --arg source_revision "$source_revision" --arg presentation_image "${presentation_image:-}" --arg adapter_image "${adapter_image:-}" --arg console_url "$console_url" \
-  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,provenance:{source_revision:$source_revision},runtime_images:{presentation:$presentation_image,adapter:$adapter_image},readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:$source_state,outcome:$outcome,model_participated:(if $catalog_id == "virtualization-ai-301" then false else $model_participated end),model:$model,hardware:$hardware,intel_placement_verified:(if $catalog_id == "virtualization-ai-301" then false else null end),human_authority_preserved:true,request_origin:$request_origin},operator_journey:{console_url_present:($console_url|startswith("https://")),console_url:$console_url},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'
+  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,provenance:{source_revision:$source_revision},runtime_images:{presentation:$presentation_image,adapter:$adapter_image},readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:$source_state,outcome:$outcome,model_participated:(if $catalog_id == "virtualization-ai-301" then false else $model_participated end),model:$model,hardware:$hardware,intel_placement_verified:(if $catalog_id == "virtualization-ai-301" then $placement_vmx else null end),human_authority_preserved:true,request_origin:$request_origin},placement_receipt:(if $catalog_id == "virtualization-ai-301" then {node_name:$placement_node,architecture:$placement_architecture,kubevirt_vmx:$placement_vmx,source:"platform-node-and-vmi-status"} else null end),operator_journey:{console_url_present:($console_url|startswith("https://")),console_url:$console_url},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'
