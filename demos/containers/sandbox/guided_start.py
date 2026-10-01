@@ -7,6 +7,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -341,17 +342,22 @@ def cleanup() -> dict[str, Any]:
         namespace,
         "--ignore-not-found=true",
     )
-    remaining = _oc(
-        "get",
-        "deployment,service,configmap,pod",
-        "-n",
-        namespace,
-        "-l",
-        f"{LABEL_KEY}=true",
-        "-o",
-        "name",
-        check=False,
-    )
+    remaining = ""
+    for _ in range(30):
+        remaining = _oc(
+            "get",
+            "deployment,service,configmap,pod",
+            "-n",
+            namespace,
+            "-l",
+            f"{LABEL_KEY}=true",
+            "-o",
+            "name",
+            check=False,
+        )
+        if not remaining:
+            break
+        time.sleep(1)
     return {
         "status": "complete" if not remaining else "incomplete",
         "remaining_resources": remaining.splitlines() if remaining else [],

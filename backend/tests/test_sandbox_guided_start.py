@@ -143,6 +143,22 @@ def test_learn_treats_expected_kubectl_denials_as_boundary_evidence(monkeypatch)
     }
 
 
+def test_cleanup_waits_for_terminating_guided_resources(monkeypatch):
+    runner = _runner_module()
+    remaining = iter(("pod/guided-start-old", ""))
+
+    def fake_oc(*args, **_kwargs):
+        if args[0] == "delete":
+            return ""
+        return next(remaining)
+
+    monkeypatch.setenv("SANDBOX_NAMESPACE", "sandbox-seat-one")
+    monkeypatch.setattr(runner, "_oc", fake_oc)
+    monkeypatch.setattr(runner.time, "sleep", lambda _seconds: None)
+
+    assert runner.cleanup() == {"status": "complete", "remaining_resources": []}
+
+
 def test_model_probe_refuses_to_substitute_a_different_managed_model():
     runner = _runner_module()
 
