@@ -8,7 +8,8 @@ expected_cluster="${2:?usage: certify-tool-calling-journey.sh <namespace> <clust
 oc() { command oc --kubeconfig "$KUBECONFIG" "$@"; }
 actual_cluster="$(oc get namespace "$namespace" -o jsonpath='{.metadata.labels.launchpad\.redhat\.com/cluster-id}')"
 [[ "$actual_cluster" == "$expected_cluster" ]]
-model="$(oc exec -n "$namespace" deployment/showroom -c terminal -- printenv MAAS_MODEL)"
+model="$(oc exec -n "$namespace" deployment/showroom -c terminal -- \
+  sh -c 'oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_MODEL}" | base64 -d')"
 [[ -n "$model" ]]
 
 request="$(jq -nc --arg model "$model" '{
@@ -34,10 +35,11 @@ request="$(jq -nc --arg model "$model" '{
 first_result="$({
   printf '%s' "$request" \
     | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
-        sh -c 'curl -fsS -w "\n%{http_code}\t%{time_total}\n" \
-          -H "Authorization: Bearer ${MAAS_API_KEY}" \
-          -H "Content-Type: application/json" \
-          -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-'
+        sh -c 'api="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_URL}" | base64 -d)"; \
+          key="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_KEY}" | base64 -d)"; \
+          curl -fsS -w "\n%{http_code}\t%{time_total}\n" \
+            -H "Authorization: Bearer ${key}" -H "Content-Type: application/json" \
+            -X POST "${api%/}/chat/completions" --data-binary @-'
 })"
 first_response="$(printf '%s\n' "$first_result" | head -1)"
 first_metadata="$(printf '%s\n' "$first_result" | tail -1)"
@@ -75,10 +77,11 @@ final_request="$(jq -nc \
 final_result="$({
   printf '%s' "$final_request" \
     | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
-        sh -c 'curl -fsS -w "\n%{http_code}\t%{time_total}\n" \
-          -H "Authorization: Bearer ${MAAS_API_KEY}" \
-          -H "Content-Type: application/json" \
-          -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-'
+        sh -c 'api="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_URL}" | base64 -d)"; \
+          key="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_KEY}" | base64 -d)"; \
+          curl -fsS -w "\n%{http_code}\t%{time_total}\n" \
+            -H "Authorization: Bearer ${key}" -H "Content-Type: application/json" \
+            -X POST "${api%/}/chat/completions" --data-binary @-'
 })"
 final_response="$(printf '%s\n' "$final_result" | head -1)"
 final_metadata="$(printf '%s\n' "$final_result" | tail -1)"

@@ -113,8 +113,8 @@ def test_tool_calling_execute_blocks_use_strict_tls_and_fail_on_http_errors():
     journey = JOURNEY_CERTIFIER.read_text()
     assert 'model_key="' not in seat
     assert 'api_key="' not in journey
-    assert '${MAAS_API_KEY}' in seat
-    assert '${MAAS_API_KEY}' in journey
+    assert 'key="$(oc get secret launchpad-participant-runtime' in seat
+    assert 'key="$(oc get secret launchpad-participant-runtime' in journey
     assert 'actual_cluster" == "$expected_cluster' in journey
 
 

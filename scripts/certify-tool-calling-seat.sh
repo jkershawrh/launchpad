@@ -29,9 +29,10 @@ model_name="$(jq -r '.data.MAAS_MODEL | @base64d' <<<"$runtime_json")"
 
 stage=model-list
 models_response="$(oc exec -n "$namespace" deployment/showroom -c terminal -- \
-  sh -c 'curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
-    -w "\n%{http_code}" -H "Authorization: Bearer ${MAAS_API_KEY}" \
-    "${MAAS_API_URL%/}/models"')"
+  sh -c 'api="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_URL}" | base64 -d)"; \
+    key="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_KEY}" | base64 -d)"; \
+    curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
+      -w "\n%{http_code}" -H "Authorization: Bearer ${key}" "${api%/}/models"')"
 models_status="${models_response##*$'\n'}"
 [[ "$models_status" == 200 ]]
 models_body="${models_response%$'\n'*}"
@@ -46,9 +47,11 @@ request="$(jq -nc --arg model "$model_name" '{
   tool_choice:"auto",max_tokens:128,temperature:0
 }')"
 first="$(printf '%s' "$request" | oc exec -i -n "$namespace" deployment/showroom -c terminal -- \
-  sh -c 'curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
-    -H "Authorization: Bearer ${MAAS_API_KEY}" -H "Content-Type: application/json" \
-    -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-')"
+  sh -c 'api="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_URL}" | base64 -d)"; \
+    key="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_KEY}" | base64 -d)"; \
+    curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
+      -H "Authorization: Bearer ${key}" -H "Content-Type: application/json" \
+      -X POST "${api%/}/chat/completions" --data-binary @-')"
 tool_call="$(jq -c '.choices[0].message.tool_calls[0]' <<<"$first")"
 jq -e '.function.name == "get_weather" and (.function.arguments | fromjson | .city | ascii_downcase | contains("austin"))' \
   <<<"$tool_call" >/dev/null
@@ -64,9 +67,11 @@ final_request="$(jq -nc --arg model "$model_name" --argjson assistant "$assistan
   ],max_tokens:128,temperature:0
 }')"
 final="$(printf '%s' "$final_request" | oc exec -i -n "$namespace" deployment/showroom -c terminal -- \
-  sh -c 'curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
-    -H "Authorization: Bearer ${MAAS_API_KEY}" -H "Content-Type: application/json" \
-    -X POST "${MAAS_API_URL%/}/chat/completions" --data-binary @-')"
+  sh -c 'api="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_URL}" | base64 -d)"; \
+    key="$(oc get secret launchpad-participant-runtime -o jsonpath="{.data.MAAS_API_KEY}" | base64 -d)"; \
+    curl -fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180 \
+      -H "Authorization: Bearer ${key}" -H "Content-Type: application/json" \
+      -X POST "${api%/}/chat/completions" --data-binary @-')"
 jq -e '.choices[0].message.content | type == "string" and test("78") and test("sunny"; "i")' \
   <<<"$final" >/dev/null
 
