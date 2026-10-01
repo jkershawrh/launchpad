@@ -8,6 +8,26 @@ portfolio_scope:
   participant_learning_experience_count: 22
   platform_validation_experience_count: 1
   compatibility_alias_count: 2
+goal_reconciliation:
+  status: convergence
+  reviewed_catalog_entries: 25
+  reviewed_catalog_entries_total: 25
+  distinct_participant_experiences: 22
+  current_one_seat_live_closeouts: 13
+  compatibility_aliases: 2
+  platform_validation_entries: 1
+  current_revision_gates_remaining: 9
+  remaining_catalog_items:
+    - virtualization-ai-foundations-101
+    - virtualization-ai-201
+    - virtualization-ai-301
+    - agent-reliability
+    - hybrid-fraud-detection
+    - ai-sandbox
+    - openshift-operators-workshop
+    - scale-agentic-blueprint
+    - sovereign-ai-501
+  interpretation: "The content and journey review is complete across the scoped catalog. Remaining work is exact-revision publication or targeted live recertification, not another full review of all labs."
 learning_pipeline:
   platform_foundations:
     - ai-sandbox
@@ -710,7 +730,7 @@ labs:
 
   sovereign-ai-401:
     display_name: "Sovereign AI 401 — Operate Confidential AI with Intel TDX"
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-draft
     live_attempts:
       - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r1
         result: RED-live
@@ -772,20 +792,34 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r12.json
         finding: "All containers and the Showroom and Story Routes became participant-ready, but route-level validation timed out on Trust Evidence because its NetworkPolicy admitted only in-namespace callers."
         remediation: "Pin source revision 78e8153f76926bba1226787a5438c2b42092d3c1, preserving default-deny while admitting only the OpenShift ingress policy group to the qualifier port."
-    story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
-    show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
-    learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
-    do: {status: green-local, evidence: "Sixteen executable blocks cover the operating lifecycle; live Trustee, KBS, quote, policy, and revocation remain destination gates."}
-    prove: {status: rehearsal-only, evidence: "The learner packages correlated evidence and verifies lifecycle transitions without claiming live TDX or protected-resource release."}
-    operators: {status: green-local, evidence: "Console and Terminal actions are meaningful, and NetworkPolicy limits qualifier access to the presentation and Showroom paths while preserving required DNS and router traffic."}
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r13
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r13.json
+        finding: "The workload and Showroom became ready, but the proof still referenced the retired long presentation Route and pre-review page markers."
+        remediation: "Bind the proof to the deployed short story Route and exact reviewed Antora page titles."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r14
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r14.json
+        finding: "The corrected route and page contract reached the participant surfaces, but the certification client did not trust Flightpath's internal ingress CA."
+        remediation: "Supply the Flightpath router CA to both the evidence runner and the seat probe while preserving TLS verification."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r15
+        result: GREEN-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r15.json
+        finding: "One Flightpath seat passed the truthful REHEARSAL lifecycle, all participant and operator checks, namespace isolation, reclaim, model-key revocation, and zero-residue cleanup at 100/100."
+    story: {status: green-live, evidence: "Northstar Claims and the exact Story route passed live, advancing the 301 trust contract through day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
+    show: {status: green-live-rehearsal, evidence: "The live seat exposed the reviewed scenario lifecycle while explicitly proving no confidential guest, key release, model call, or live TDX."}
+    learn: {status: green-live, evidence: "All four sampled Showroom pages returned their exact reviewed markers from the eight-stage Show → Learn → Do → Prove journey."}
+    do: {status: green-live-rehearsal, evidence: "The deployed qualifier proved ALLOW_REVIEW and REFUSE behavior while live Trustee, KBS, quote, policy, and revocation remain destination gates."}
+    prove: {status: green-live-rehearsal, evidence: "The seat probe verified the evidence chain, synthetic-receipt boundary, retained human authority, and absence of key or model execution claims."}
+    operators: {status: green-live, evidence: "Terminal scope, namespace isolation, Console URL, presentation route, qualifier service, and router-scoped NetworkPolicy all passed live."}
     inference: {status: not-claimed, evidence: "The rebuilt journey explicitly states zero model execution rather than inferring a model call from metadata."}
-    cleanup: {status: green-local, evidence: "Participant cleanup and Launchpad reclaim ownership are explicit; destination reclaim and zero residue remain live gates."}
+    cleanup: {status: green-live, evidence: "Launchpad reclaimed the certified seat in 99.777 seconds, revoked model keys, and left zero namespaces, Applications, Routes, RoleBindings, PVCs, PVs, or Secrets."}
     source_state:
       repository: /Users/jkershaw/Documents/sovereign-ai-401
       checked_out_branch: main
       published_head: 78e8153f76926bba1226787a5438c2b42092d3c1
       catalog_pinned_revision: 78e8153f76926bba1226787a5438c2b42092d3c1
-      post_review_changes: exact-pinned-candidate-awaiting-final-one-seat-proof
+      post_review_changes: exact-pinned-candidate-one-seat-live-certified
       publication_validation:
         status: green-integration
         workflow: https://github.com/jkershawrh/sovereign-ai-401/actions/runs/36804816530
@@ -793,7 +827,13 @@ labs:
       immutable_images:
         presentation: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:9e980f5113f340edf209acfa8572a273c1d5220a79165f7e6379ecd3fd0e1df4
         qualifier: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:df3fe53d316198a76f4fb526cf2e10be51ef9a14c97a46ea5de29e8f38b65a50
-    next_action: retain draft and certify one Flightpath seat for rehearsal truth, lifecycle proof, reclaim, and zero residue; real quote, Trustee/KBS resource release, model execution, and live TDX remain blocked pending approved infrastructure
+    one_seat_live_certification:
+      status: green-live
+      run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r15
+      score: 100
+      evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r15.json
+      proof: "One Flightpath seat passed Showroom, Story, qualifier, Terminal, Console, namespace isolation, truthful REHEARSAL assertions, reclaim, key revocation, and zero-residue cleanup."
+    next_action: retain draft until real quote, Trustee/KBS resource release, model execution, and live TDX infrastructure are approved; the truthful rehearsal experience itself is one-seat certified
 
   sovereign-ai-501:
     display_name: "Sovereign AI 501 — Qualify a Confidential AI Fleet"
