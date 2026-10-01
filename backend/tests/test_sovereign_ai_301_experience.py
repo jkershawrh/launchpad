@@ -63,6 +63,12 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     assert review["source_state"]["live_confidentiality_claims"] == "prohibited"
 
     assertions = contract["spec"]["seat_probe"]["json_assertions"]
+    welcome = contract["spec"]["showroom"]["pages"][0]
+    assert welcome == {
+        "id": "welcome",
+        "path": "/www/sovereign-ai-301/main/index.html",
+        "marker": "Northstar Claims: build the confidential-inference trust chain",
+    }
     assert {"path": "journey.model_invoked", "equals": False} in assertions
     assert {"path": "journey.confidential_runtime_enabled", "equals": False} in assertions
     assert {"path": "journey.hardware_quote_verified", "equals": False} in assertions

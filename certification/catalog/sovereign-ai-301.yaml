@@ -11,7 +11,7 @@ spec:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 900, maximum_cleanup_seconds: 600}
   showroom:
     pages:
-      - {id: welcome, path: /www/sovereign-ai-301/main/index.html, marker: "Confidential inference trust-chain foundations"}
+      - {id: welcome, path: /www/sovereign-ai-301/main/index.html, marker: "Northstar Claims: build the confidential-inference trust chain"}
       - {id: challenge, path: /www/sovereign-ai-301/main/02-challenge.html, marker: "Challenge and evidence"}
       - {id: appraisal, path: /www/sovereign-ai-301/main/03-appraise.html, marker: "Appraise measured identity"}
       - {id: refusal, path: /www/sovereign-ai-301/main/05-failures.html, marker: "Refuse unsafe states"}
