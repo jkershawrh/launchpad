@@ -511,7 +511,7 @@ def test_learning_pipeline_classifies_every_portfolio_item_once() -> None:
         assert levels == sorted(levels), (track, levels)
 
 
-def test_virtualization_foundations_is_not_orderable_until_vm_origin_is_proven() -> None:
+def test_virtualization_foundations_records_exact_one_seat_proof_before_activation() -> None:
     catalog = yaml.safe_load(
         (ROOT / "catalog/virtualization-ai-foundations-101/catalog-item.yaml").read_text(
             encoding="utf-8"
@@ -524,7 +524,7 @@ def test_virtualization_foundations_is_not_orderable_until_vm_origin_is_proven()
     )
 
     assert catalog["status"] == "draft"
-    assert catalog["metadata"]["certification_stage"] == "source-reviewed"
+    assert catalog["metadata"]["certification_stage"] == "1-seat-certified"
     assert catalog["metadata"]["workload_runtime_value_bindings"] == {
         "vm.sshAuthorizedKey": "VM_SSH_PUBLIC_KEY"
     }
@@ -537,14 +537,14 @@ def test_virtualization_foundations_is_not_orderable_until_vm_origin_is_proven()
         }
     )
     assert (
-        "fresh-one-seat-vm-origin-console-model-and-reclaim-certification"
+        "browser-console-sso-and-namespace-navigation-evidence"
         in catalog["metadata"]["activation_blockers"]
     )
     assert intake["catalog"]["status"] == "draft"
-    assert intake["certification"]["certified_seats"] == 0
+    assert intake["certification"]["certified_seats"] == 1
     assert catalog["metadata"]["showroom_content_ref"] == intake["sources"][
         "showroom"
-    ]["revision"] == "df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6"
+    ]["revision"] == "e74393d0def1a7a2749911b3a421c62f3f1c2558"
     assert catalog["metadata"]["showroom_content_image"] == intake["sources"][
         "showroom"
     ]["content_image"]
@@ -555,9 +555,9 @@ def test_virtualization_foundations_is_not_orderable_until_vm_origin_is_proven()
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))["labs"][
         "virtualization-ai-foundations-101"
     ]
-    assert review["overall_status"] == "source-reviewed-needs-immutable-release"
+    assert review["overall_status"] == "exact-revision-one-seat-certified-draft"
     assert review["candidate_revision"] == (
-        "7a49ca59c5e92eaae2d9e4190385154707307b75"
+        "e74393d0def1a7a2749911b3a421c62f3f1c2558"
     )
     assert review["launchpad_backend_candidate"] == {
         "branch": "codex/virt101-backend-keypair",
@@ -583,6 +583,11 @@ def test_virtualization_foundations_is_not_orderable_until_vm_origin_is_proven()
     assert review["immutable_images"]["showroom_content"] == intake["sources"][
         "showroom"
     ]["content_image"]
+    assert review["live_certification"]["result"] == "GREEN-live"
+    assert review["live_certification"]["rubric_score"] == 100
+    assert review["live_certification"]["evidence"].endswith(
+        "flightpath-live-20261001-virtualization-ai-101-1seat-r10.json"
+    )
 
     certifier = (ROOT / "scripts/certify-virtualization-ai-seat.sh").read_text(
         encoding="utf-8"

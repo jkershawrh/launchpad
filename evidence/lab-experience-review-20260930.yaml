@@ -13,12 +13,11 @@ goal_reconciliation:
   reviewed_catalog_entries: 25
   reviewed_catalog_entries_total: 25
   distinct_participant_experiences: 22
-  current_one_seat_live_closeouts: 15
+  current_one_seat_live_closeouts: 16
   compatibility_aliases: 2
   platform_validation_entries: 1
-  current_revision_gates_remaining: 7
+  current_revision_gates_remaining: 6
   remaining_catalog_items:
-    - virtualization-ai-foundations-101
     - virtualization-ai-201
     - virtualization-ai-301
     - agent-reliability
@@ -203,9 +202,9 @@ labs:
     display_name: "Virtualization + AI 101: Trace a VM to Governed AI"
     source_repository: https://github.com/jkershawrh/virtualization-ai-foundations
     candidate_branch: codex/virtualization-ai-101-vm-origin
-    candidate_revision: 7a49ca59c5e92eaae2d9e4190385154707307b75
-    candidate_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36735902752
-    overall_status: source-reviewed-needs-immutable-release
+    candidate_revision: e74393d0def1a7a2749911b3a421c62f3f1c2558
+    candidate_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36818896961
+    overall_status: exact-revision-one-seat-certified-draft
     launchpad_backend_candidate:
       branch: codex/virt101-backend-keypair
       revision: b5c38364ce556fbf0c40de07ec25c209357f3d0c
@@ -220,25 +219,33 @@ labs:
         nonfixable_high_inventory_findings: 53
         critical_inventory_findings: 0
     immutable_images:
-      adapter: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:7716e2f1d1188e50a47d8442ccf6a70b0d33b9b51b95df8c9c8a5444b5605efa
-      presentation: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:71458d6fe6367d91fcd1dd73e4946d4ccf7c06373b6187312edb37f92588b452
-      showroom_content: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:bb7c1dbafe544a61d805fcf1e004f70d66daa99d1e5a3d7d7d4fe5c479db41b3
+      adapter: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:fef33f72569296df84888102c0dab19b607b56a14a5516de7eed1279dbb3fbad
+      presentation: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:c0e16f6c63a59989f0da349a97a8e661cb5eca3e356e1664ff571979551f50f0
+      showroom_content: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:09474d2dc78aeced64efb8095cd23fe7ef62ce2409bfe742dccc6c8490f4eb20
     security_note: "The exact release workflow passed all three enforced HIGH/CRITICAL vulnerability gates and published signatures, SBOM attestations, and provenance attestations."
     story: {status: green, evidence: "The VM-to-governed-AI boundary is clearly framed."}
     show: {status: green, evidence: "The presentation exposes request and evidence flow."}
     learn: {status: green, evidence: "The contract and trust boundary are explained."}
-    do: {status: green-local, evidence: "Launchpad now generates a unique Ed25519 keypair per seat, injects only the public half into cloud-init, and the learner executes the request from the VM through the Showroom terminal."}
-    prove: {status: green-local, evidence: "The certification probe now runs the same terminal-to-VM path and asserts the evidence record names the operations VM; fresh destination proof remains required."}
-    operators: {status: green-local, evidence: "OpenShift Virtualization VM/VMI readiness, namespace-scoped Secret access, Showroom terminal identity, and VM execution are now one source-tested operator path."}
-    inference: {status: rehearsal-corrected-source-only, evidence: "Candidate source no longer claims AI participation for rehearsal fixtures."}
-    cleanup: {status: green-local, evidence: "The learner cleanup page removes only the per-seat private key and temporary evidence while Launchpad retains ownership of complete resource reclaim."}
+    do: {status: green-live, evidence: "The certified learner path executed from operations-vm through the namespace adapter using a unique per-seat Ed25519 keypair."}
+    prove: {status: green-live, evidence: "The probe proved request_origin=operations-vm, LIVE source state, Granite model participation, terminal isolation, and human authority."}
+    operators: {status: partial-green-live, evidence: "VM/VMI readiness, namespace-scoped terminal access, and the generated Console URL were proven. Browser Console SSO/navigation remains an activation check and is not claimed by this receipt."}
+    inference: {status: green-live, evidence: "The VM-origin request returned a live advisory from granite-3.2-8b-tools on Intel Xeon CPU."}
+    cleanup: {status: green-live, evidence: "Reclaim completed in 100.282 seconds with zero namespaces, Applications, PVCs, PVs, RoleBindings, Routes, Secrets, or model keys remaining."}
     source_state:
       checked_out_branch: codex/virtualization-ai-101-vm-origin
-      published_revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
-      catalog_pinned_revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
-      publication_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36735902752
-      publication_validation: "30 Python tests, 34 component tests, Helm lint/render, production/offline builds, and 14 browser checks passed; all three immutable images passed zero HIGH/CRITICAL gates with signatures, SBOMs, and provenance."
-    next_action: publish and pin immutable artifacts for revision 7a49ca59c5e92eaae2d9e4190385154707307b75, deploy the reviewed per-seat keypair backend, then run one fresh Flightpath seat proving VM-origin execution, live granite-3.2-8b-tools identity, Console SSO, full reclaim, and zero residue before activation
+      published_revision: e74393d0def1a7a2749911b3a421c62f3f1c2558
+      catalog_pinned_revision: e74393d0def1a7a2749911b3a421c62f3f1c2558
+      publication_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36818896961
+      publication_validation: "33 factory tests, 34 component tests, Helm lint/render, production/offline builds, and browser checks passed; all three immutable images passed enforced vulnerability gates with signatures, SBOMs, and provenance."
+    live_certification:
+      observed_at: "2026-10-01"
+      result: GREEN-live
+      rubric_score: 100
+      ready_seconds: 57.63
+      cleanup_seconds: 100.282
+      evidence: evidence/runs/flightpath-live-20261001-virtualization-ai-101-1seat-r10.json
+      proof: "The exact e74393d candidate proved the Show/Learn/Do/Prove pages, VM-origin live Granite inference, namespace isolation, generated Console URL, complete reclaim, key revocation, and zero residue."
+    next_action: capture browser evidence for OpenShift Console SSO and namespace navigation before activation; the exact revision is otherwise one-seat certified
 
   virtualization-ai-201:
     display_name: "Virtualization + AI 201: Author and Qualify the Contract"

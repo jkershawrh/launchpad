@@ -12,26 +12,28 @@ learning:
   learning_stage: Learn
   experience_type: guided_trace
   prerequisites: []
-  recommended_next_items: []
+  recommended_next_items:
+  - virtualization-ai-201
   journey_role: core
   specialty_family: null
   branches_from: null
   returns_to: null
   shared_blueprint: red-hat-intel-virtualization-ai-v1
   solution_family: virtualization_ai
+  certification_transfer: none
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
-    playbook: showroom/default-site.yml
+    revision: e74393d0def1a7a2749911b3a421c62f3f1c2558
+    playbook: default-site.yml
     start_path: showroom/content
-    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
-    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:bb7c1dbafe544a61d805fcf1e004f70d66daa99d1e5a3d7d7d4fe5c479db41b3
+    gitops_repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
+    content_image: ghcr.io/jkershawrh/virtualization-ai-foundations-showroom-content@sha256:09474d2dc78aeced64efb8095cd23fe7ef62ce2409bfe742dccc6c8490f4eb20
   workload:
     repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
-    revision: df4dbea9b746f9e65b4c611f96e7e76b4a2cafb6
+    revision: e74393d0def1a7a2749911b3a421c62f3f1c2558
     deploy_path: charts/virtualization-ai-foundations
-    gitops_repo_url: git@github.com:jkershawrh/virtualization-ai-foundations.git
+    gitops_repo_url: https://github.com/jkershawrh/virtualization-ai-foundations.git
 runtime:
   namespace_slug: virtualization-ai-foundations-101
   workshop_cluster_ref: flightpath
@@ -61,6 +63,7 @@ runtime:
   - id: story
     title: Story
     source: workload.route.ui
+    path: /
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -75,8 +78,8 @@ runtime:
     release_name: virtualization-ai-foundations-101
     helm_values:
       values_overlay: charts/virtualization-ai-foundations/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:7716e2f1d1188e50a47d8442ccf6a70b0d33b9b51b95df8c9c8a5444b5605efa
-      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:71458d6fe6367d91fcd1dd73e4946d4ccf7c06373b6187312edb37f92588b452
+      workload_image: ghcr.io/jkershawrh/virtualization-ai-foundations-adapter@sha256:fef33f72569296df84888102c0dab19b607b56a14a5516de7eed1279dbb3fbad
+      presentation_image: ghcr.io/jkershawrh/virtualization-ai-foundations-presentation@sha256:c0e16f6c63a59989f0da349a97a8e661cb5eca3e356e1664ff571979551f50f0
       presentation_enabled: true
       adapter:
         mode: live
@@ -106,12 +109,11 @@ runtime:
       ui: lab
     readiness: []
 certification:
-  stage: source-reviewed
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   activation_blockers:
-  - merge-reviewed-source-release-to-main
-  - fresh-one-seat-vm-origin-console-model-and-reclaim-certification
+  - browser-console-sso-and-namespace-navigation-evidence
   proof_contract: certification/catalog/virtualization-ai-foundations-101.yaml
