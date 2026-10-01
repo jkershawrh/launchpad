@@ -460,9 +460,12 @@ class ProvisioningService:
 
     def submit_request(self, request: LabRequest) -> LabRequest:
         catalog_item = self.catalog.get_item(request.catalog_item_id)
+        certification_override = bool(
+            request.metadata.get("certification_override", False)
+        )
         if not catalog_item or getattr(
             catalog_item, "status", CatalogStatus.ACTIVE
-        ) != CatalogStatus.ACTIVE:
+        ) != CatalogStatus.ACTIVE and not certification_override:
             request = request.model_copy(update={"status": LabRequestStatus.REJECTED})
             self._save_request(request)
             return request
@@ -2870,6 +2873,7 @@ class ProvisioningService:
                 "participant_id": seat.participant_id,
                 "purpose": workshop.purpose,
                 "target_cluster": workshop.cluster_ref,
+                "certification_override": workshop.certification_override,
                 **(
                     {"event_reservation_id": workshop.metadata["event_reservation_id"]}
                     if workshop.metadata.get("event_reservation_id")

@@ -12,6 +12,7 @@ from app.auth.oauth import User, get_current_user
 from app.domain.clusters import ClusterTarget
 from app.domain.enums import (
     CatalogCategory,
+    CatalogStatus,
     LabRequestStatus,
     SessionStatus,
     ValidationResultStatus,
@@ -1408,6 +1409,49 @@ def test_admin_api_persists_certification_override_on_draft_order():
     assert order["certification_override"] is True
     assert order["metadata"]["capacity_preview"]["catalog_seat_limit"] == 1
     assert order["metadata"]["capacity_preview"]["certification_target_seats"] == 5
+
+
+def test_certification_override_transfers_to_the_draft_seat_request():
+    catalog = SimpleNamespace(
+        get_item=lambda _item_id: SimpleNamespace(
+            status=CatalogStatus.DRAFT,
+            metadata={},
+            required_capabilities=[],
+        )
+    )
+    service = ProvisioningService(catalog=catalog)
+    request = LabRequest(
+        tenant_id="certification-tenant",
+        requester_id="certifier",
+        catalog_item_id="draft-candidate",
+        requested_mode=CatalogCategory.QUICK_START,
+        metadata={"certification_override": True},
+    )
+
+    accepted = service.submit_request(request)
+
+    assert accepted.status == LabRequestStatus.ACCEPTED
+
+
+def test_draft_seat_request_without_certification_override_is_rejected():
+    catalog = SimpleNamespace(
+        get_item=lambda _item_id: SimpleNamespace(
+            status=CatalogStatus.DRAFT,
+            metadata={},
+            required_capabilities=[],
+        )
+    )
+    service = ProvisioningService(catalog=catalog)
+    request = LabRequest(
+        tenant_id="participant-tenant",
+        requester_id="participant",
+        catalog_item_id="draft-candidate",
+        requested_mode=CatalogCategory.QUICK_START,
+    )
+
+    rejected = service.submit_request(request)
+
+    assert rejected.status == LabRequestStatus.REJECTED
 
 
 def test_workshop_provisioning_respects_bounded_concurrency():
