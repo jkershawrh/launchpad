@@ -30,12 +30,12 @@ sources:
     revision: bce72fb0b65c40b5fbee597b9234379322a5773a
     playbook: showroom/default-site.yml
     start_path: showroom/content
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
     revision: bce72fb0b65c40b5fbee597b9234379322a5773a
     deploy_path: charts/sovereign-ai-401
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
 runtime:
   namespace_slug: sovereign-ai-401
   workshop_cluster_ref: flightpath

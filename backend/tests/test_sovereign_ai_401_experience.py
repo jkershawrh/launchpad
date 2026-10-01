@@ -27,6 +27,8 @@ def test_sovereign_ai_401_exposes_operations_without_allocating_model_access() -
     assert metadata["workload_revision"] == REVISION
     assert intake["sources"]["showroom"]["revision"] == REVISION
     assert intake["sources"]["workload"]["revision"] == REVISION
+    assert intake["sources"]["showroom"]["gitops_repo_url"].startswith("https://")
+    assert intake["sources"]["workload"]["gitops_repo_url"].startswith("https://")
     assert catalog["status"] == "draft"
     assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["certification_transfer"] == "none"

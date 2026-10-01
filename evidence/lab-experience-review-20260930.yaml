@@ -752,6 +752,11 @@ labs:
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r8.json
         finding: "The Trust Evidence endpoint was declared, but its generated hostname still exceeded the DNS label limit because trust-evidence was longer than the seat-safe Route budget."
         remediation: "Pin chart revision bce72fb0b65c40b5fbee597b9234379322a5773a and use the contract-tested short Route name trust."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r9
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r9.json
+        finding: "Both workload Routes and containers became healthy, but the Showroom init container could not verify github.com for the legacy SSH content URL."
+        remediation: "Use the reviewed public HTTPS repository URL for both Showroom content and Argo CD source retrieval; retain exact commit pinning."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
