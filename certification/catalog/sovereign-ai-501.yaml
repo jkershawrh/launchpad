@@ -11,10 +11,10 @@ spec:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 900, maximum_cleanup_seconds: 600}
   showroom:
     pages:
-      - {id: welcome, path: /www/sovereign-ai-501/main/index.html, marker: "Qualify a confidential AI fleet"}
+      - {id: welcome, path: /www/sovereign-ai-501/main/index.html, marker: "The Fleet That Had to Refuse"}
       - {id: rollout, path: /www/sovereign-ai-501/main/02-challenge.html, marker: "Roll policy and reference values"}
-      - {id: capacity, path: /www/sovereign-ai-501/main/06-infer.html, marker: "Exercise admission limits"}
-      - {id: review, path: /www/sovereign-ai-501/main/08-verify.html, marker: "Human review and zero residue"}
+      - {id: capacity, path: /www/sovereign-ai-501/main/06-infer.html, marker: "Exercise admission limits without inventing capacity"}
+      - {id: review, path: /www/sovereign-ai-501/main/08-verify.html, marker: "Human review and cleanup"}
   seat_probe:
     argv: [bash, scripts/certify-sovereign-ai-501-seat.sh, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 600
@@ -24,6 +24,7 @@ spec:
       - {path: cluster_ref, equals: flightpath}
       - {path: readiness.qualifier_health, equals: true}
       - {path: readiness.presentation_http_status, equals: 200}
+      - {path: readiness.presentation_restarts, equals: 0}
       - {path: journey.mode, equals: REHEARSAL}
       - {path: journey.live_fleet_observed, equals: false}
       - {path: journey.baseline_path, equals: QUALIFIED_REHEARSAL}
@@ -34,6 +35,9 @@ spec:
       - {path: journey.model_executions, equals: 0}
       - {path: journey.evidence_chain_valid, equals: true}
       - {path: journey.human_authority_retained, equals: true}
+      - {path: operator_journey.terminal_scope_verified, equals: true}
+      - {path: operator_journey.console_url_present, equals: true}
+      - {path: operator_journey.qualification_service_verified, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}
