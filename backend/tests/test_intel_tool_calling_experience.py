@@ -26,7 +26,7 @@ def test_tool_calling_canonical_mapping_and_published_provenance_are_exact():
     metadata = catalog["metadata"]
 
     assert catalog["catalog_item_id"] == "intel-llm-tool-calling"
-    assert catalog["status"] == "draft"
+    assert catalog["status"] == "active"
     assert metadata["content_only"] is True
     assert metadata["showroom_content_repo_url"] == "https://github.com/jkershawrh/launchpad.git"
     assert metadata["showroom_content_ref"] == CONTENT_REVISION
@@ -37,12 +37,11 @@ def test_tool_calling_canonical_mapping_and_published_provenance_are_exact():
     assert intake["sources"]["workload"]["revision"] == WORKLOAD_REVISION
     antora = _load(ANTORA)
     assert antora["asciidoc"]["attributes"]["quickstart_repo"] == metadata["source_content_repo"]
-    assert intake["certification"]["certified_seats"] == 0
+    assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["max_workshop_seats"] == 1
-    assert metadata["certification_stage"] == "immutable-source-published"
-    assert intake["certification"]["stage"] == "immutable-source-published"
-    blockers = " ".join(intake["certification"]["activation_blockers"])
-    assert "strict-TLS managed inference" in blockers
+    assert metadata["certification_stage"] == "1-seat-certified"
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["activation_blockers"] == []
 
 
 def test_tool_calling_publication_candidate_is_one_seat_only():
@@ -62,13 +61,14 @@ def test_tool_calling_review_records_the_exact_published_candidate_boundary():
     lab = review["labs"]["intel-llm-tool-calling"]
     source_state = lab["source_state"]
 
-    assert lab["overall_status"] == "immutable-source-published-draft"
+    assert lab["overall_status"] == "one-seat-live-certified-active"
     assert source_state["published_revision"] == CONTENT_REVISION
     assert source_state["candidate_revision"] == CONTENT_REVISION
     assert source_state["workload_revision"] == WORKLOAD_REVISION
-    assert source_state["certification_transfer"] == "none"
-    assert "fresh one-seat" in source_state["certification_boundary"].lower()
-    assert "backend placement explicitly unverified" in lab["next_action"]
+    assert source_state["certification_transfer"] == "exact-candidate-only"
+    assert lab["live_certification"]["result"] == "GREEN-live"
+    assert lab["live_certification"]["rubric_score"] == 100
+    assert "backend placement" in lab["next_action"]
 
 
 def test_tool_calling_story_and_operator_surfaces_are_truthful():

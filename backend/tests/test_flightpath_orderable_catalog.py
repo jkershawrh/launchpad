@@ -40,6 +40,7 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
 
     assert active == {
         "cpu-inference-serving",
+        "intel-llm-tool-calling",
         "intel-llm-cpu-serving",
         "network-operations-agent",
         "rag-on-xeon",

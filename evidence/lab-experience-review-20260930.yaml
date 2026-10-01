@@ -483,17 +483,17 @@ labs:
 
   intel-llm-tool-calling:
     display_name: "Intel AI 201: LLM Tool Calling on Intel"
-    overall_status: immutable-source-published-draft
+    overall_status: one-seat-live-certified-active
     published_content_revision: 13e8119b807735b5b8ba161d2daf8e462e7baeb7
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green-local, evidence: "The operations-assistant scenario now clearly separates the learner-owned tool loop from the Launchpad-managed model endpoint and preserves the model-versus-application authority boundary."}
     show: {status: green, evidence: "The protocol path produces visible tool-call behavior."}
     learn: {status: green, evidence: "Tool contracts and model interaction are explained."}
     do: {status: green, evidence: "The learner executes tool-list and tool-call requests."}
-    prove: {status: green-local, evidence: "The protocol path is executable and the candidate now truthfully proves consumption of a platform-managed endpoint."}
-    operators: {status: green-local, evidence: "The candidate adds a Console and Terminal checkpoint that proves seat visibility and denial of shared-platform administration."}
-    inference: {status: green-local, evidence: "The candidate identifies the assigned MaaS model, verifies a completion, separates learner application ownership from model-server ownership, and treats the Intel hardware label as a declaration pending platform certification."}
-    cleanup: {status: green-local, evidence: "The candidate removes only learner-created files and delegates namespace, credential, Showroom, and Route cleanup to Launchpad."}
+    prove: {status: green-live, evidence: "The exact candidate proved model discovery, a structured weather tool call, deterministic local execution, result return, and final model synthesis."}
+    operators: {status: green-live, evidence: "The participant terminal proved own-namespace edit access while cross-namespace and node access were denied."}
+    inference: {status: green-live, evidence: "The assigned granite-3.2-8b-tools model participated in both protocol turns; Intel backend placement remains explicitly unverified."}
+    cleanup: {status: green-live, evidence: "Reclaim revoked the model key and left zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     local_validation: "Antora build and focused participant-truth tests passed on 2026-09-30; unmeasured GPU/CPU savings claims were removed."
     prior_live_evidence_scope: "The five-seat GREEN-live evidence covers catalog v1.0.2; it does not certify the current v1.0.3 source-corrected journey."
     source_state:
@@ -502,9 +502,16 @@ labs:
       candidate_revision: 13e8119b807735b5b8ba161d2daf8e462e7baeb7
       workload_repository: https://github.com/rh-ai-quickstart/vllm-tool-calling.git
       workload_revision: fc6a574694b531a89c4417309c6f74c144130576
-      certification_transfer: none
-      certification_boundary: "The corrected content and strict-TLS certifier are pinned together at the exact candidate revision. Fresh one-seat Flightpath certification remains required; the prior v1.0.2 five-seat receipt does not transfer."
-    next_action: certify one exact seat for managed model completion, model-list and tool-call flow, local tool execution, Console isolation checkpoint, cleanup, key revocation, and zero residue; keep Intel backend placement explicitly unverified unless independent destination evidence is added separately
+      certification_transfer: exact-candidate-only
+      certification_boundary: "The exact v1.0.3 candidate is one-seat certified. The prior v1.0.2 five-seat receipt does not transfer, and no independent backend hardware attestation is claimed."
+    live_certification:
+      result: GREEN-live
+      rubric_score: 100
+      ready_seconds: 57.755
+      probe_seconds: 25.327
+      cleanup_seconds: 53.446
+      evidence: evidence/runs/flightpath-live-20260930-intel-llm-tool-calling-1seat-r2.json
+    next_action: retain one-seat orderability; add independent destination hardware evidence before treating Intel backend placement as certified
 
   ai-sandbox:
     display_name: "Intel AI 001: OpenShift Developer Sandbox"

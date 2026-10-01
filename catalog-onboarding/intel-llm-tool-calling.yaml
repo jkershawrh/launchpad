@@ -7,7 +7,7 @@ catalog:
     against shared managed inference with platform-declared Intel Xeon placement.
   category: guided_build
   version: 1.0.3-flightpath.1
-  status: draft
+  status: active
   supported_branding:
   - redhat-intel-default
   - intel-internal
@@ -76,11 +76,10 @@ runtime:
     title: OpenShift Console
     source: cluster.console_url
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   proof_contract: certification/catalog/intel-llm-tool-calling.yaml
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Certify one fresh Flightpath seat for strict-TLS managed inference, structured tool calls, local tool execution with no MCP participation, Console isolation, reclaim, and zero residue.
+  activation_blockers: []

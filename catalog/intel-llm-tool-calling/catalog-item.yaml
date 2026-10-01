@@ -4,7 +4,7 @@ description: Learn the tool-calling protocol and build single- and multi-tool ap
   against shared managed inference with platform-declared Intel Xeon placement.
 category: guided_build
 version: 1.0.3-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -41,12 +41,11 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Certify one fresh Flightpath seat for strict-TLS managed inference, structured tool calls, local tool execution with no MCP participation, Console isolation, reclaim, and zero residue.
+  activation_blockers: []
   onboarding_contract: catalog-onboarding/intel-llm-tool-calling.yaml
   certification_proof_contract: certification/catalog/intel-llm-tool-calling.yaml
   showroom_journey: intel-llm-tool-calling
