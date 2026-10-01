@@ -16,7 +16,7 @@ def _yaml(path: Path) -> dict:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-def test_ai_sandbox_remains_a_non_orderable_guided_source_candidate() -> None:
+def test_ai_sandbox_remains_draft_until_the_exact_image_passes_live_certification() -> None:
     catalog = _yaml(CATALOG)
     intake = _yaml(INTAKE)
     contract = _yaml(CERTIFICATION)
@@ -27,14 +27,12 @@ def test_ai_sandbox_remains_a_non_orderable_guided_source_candidate() -> None:
     )
     assert catalog["status"] == intake["catalog"]["status"] == "draft"
     assert metadata["certification_stage"] == intake["certification"]["stage"] == (
-        "guided-source-not-published"
+        "exact-image-published"
     )
     assert intake["certification"]["certified_seats"] == 0
     assert metadata["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]
-    assert any("HIGH/CRITICAL" in item for item in metadata["activation_blockers"])
-    assert any("Publish and pin" in item for item in metadata["activation_blockers"])
     assert any("Certify one fresh Flightpath seat" in item for item in metadata["activation_blockers"])
     assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1, 5]
 
@@ -63,6 +61,13 @@ def test_ai_sandbox_surfaces_and_managed_model_contract_are_coherent() -> None:
     )
     assert runtime["deployment_type"] == "sandbox"
     assert runtime["image"]["digest"].startswith("sha256:")
+    assert runtime["image"]["digest"] == (
+        "sha256:79abced2a81c606065c0a2b595c2c3a08ccea0b95216dde0536a0f54dde7cb06"
+    )
+    assert runtime["image"]["source_revision"] == (
+        "d99c43a9e4b00d4e961d31810dda9ef64bf95eee"
+    )
+    assert metadata["workload_revision"] == runtime["image"]["source_revision"]
 
     guide = GUIDE.read_text(encoding="utf-8")
     normalized_guide = " ".join(guide.split())
@@ -97,3 +102,23 @@ def test_ai_sandbox_patches_code_server_runtime_dependency() -> None:
     assert "undici-7.29.1.tgz" in containerfile
     assert '\"version\": \"7.29.1\"' in containerfile
     assert "dnf remove -y npm nodejs" in containerfile
+
+
+def test_ai_sandbox_certification_runs_the_full_guided_journey() -> None:
+    contract = _yaml(CERTIFICATION)
+    assertions = contract["spec"]["seat_probe"]["json_assertions"]
+    expected = {(row["path"], row.get("equals")) for row in assertions}
+    script = (ROOT / "scripts/certify-ai-sandbox-seat.sh").read_text(encoding="utf-8")
+
+    for assertion in (
+        ("guided_journey.workload_status", "ready"),
+        ("guided_journey.cleanup_status", "complete"),
+        ("model.status", "live"),
+        ("model.assigned_model", "granite-2b-cpu"),
+        ("model.observed_model", "granite-2b-cpu"),
+        ("model.inference_source", "launchpad-managed-endpoint"),
+        ("model.participated", True),
+    ):
+        assert assertion in expected
+    assert "launchpad-guided-start all" in script
+    assert "guided-start-proof.json" in script

@@ -6,7 +6,7 @@ catalog:
   description: Explore OpenShift through a namespace-scoped console, web terminal,
     browser IDE, and a shared Intel CPU model endpoint.
   category: open_sandbox
-  version: 1.0.1-flightpath.1
+  version: 1.0.2-flightpath.1
   status: draft
   supported_branding:
   - redhat-intel-default
@@ -27,12 +27,12 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/launchpad.git
-    revision: 079f4829938cb01ee491198001e68db04282d05a
+    revision: d99c43a9e4b00d4e961d31810dda9ef64bf95eee
     playbook: site-openshift-operators.yml
     start_path: content-operators
   workload:
     repo_url: https://github.com/jkershawrh/launchpad.git
-    revision: 079f4829938cb01ee491198001e68db04282d05a
+    revision: d99c43a9e4b00d4e961d31810dda9ef64bf95eee
     deploy_path: demos/containers/sandbox
 runtime:
   namespace_slug: ai-sandbox
@@ -70,7 +70,8 @@ runtime:
   - vscode
   image:
     repository: ghcr.io/jkershawrh/launchpad-sandbox
-    digest: sha256:5fe2a362fe8e751b5e1fd200e7ba48118cf9e1d2141cdcfcee15075af5cc825c
+    digest: sha256:79abced2a81c606065c0a2b595c2c3a08ccea0b95216dde0536a0f54dde7cb06
+    source_revision: d99c43a9e4b00d4e961d31810dda9ef64bf95eee
   tabs:
   - id: web-terminal
     title: Web Terminal
@@ -79,7 +80,7 @@ runtime:
   - id: openshift-console
     title: OpenShift Console
 certification:
-  stage: guided-source-not-published
+  stage: exact-image-published
   certified_seats: 0
   max_workshop_seats: 1
   proof_contract: certification/catalog/ai-sandbox.yaml
@@ -87,6 +88,4 @@ certification:
   - 1
   - 5
   activation_blockers:
-  - Resolve the fixable HIGH/CRITICAL findings embedded in the upstream OpenShift CLI and code-server payloads without weakening the publication gate.
-  - Publish and pin the guided-start sandbox and portal images.
   - Certify one fresh Flightpath seat for the UI card, namespace isolation, real model completion, proof artifact, reclaim, and zero residue.

@@ -599,7 +599,7 @@ labs:
 
   ai-sandbox:
     display_name: "Intel AI 001: OpenShift Developer Sandbox"
-    overall_status: guided-source-not-published-draft
+    overall_status: exact-image-published-draft
     story: {status: green-local, evidence: "An optional guided-start card frames a small namespace-scoped AI workload without taking away open exploration."}
     show: {status: green-local, evidence: "The learner sees namespace isolation, workload readiness, model availability, and the resulting proof artifact."}
     learn: {status: green-local, evidence: "The seeded workspace guide explains the namespace, centrally hosted model boundary, evidence, and cleanup ownership."}
@@ -608,16 +608,18 @@ labs:
     operators: {status: green-local, evidence: "The existing Console, terminal, and IDE surfaces support the namespace-scoped guided start."}
     inference: {status: conditional, evidence: "The candidate performs a live completion when endpoint and key exist and reports unavailable otherwise; it never substitutes rehearsal."}
     cleanup: {status: green-local, evidence: "Only guided-start-labeled resources are removed, followed by the existing Launchpad reclaim boundary."}
-    local_validation: "32 focused sandbox regressions, frontend component/build, local image build, and in-image runner smoke test passed on 2026-09-30."
-    current_runtime_proof: "The prior five-seat evidence proves the currently pinned open sandbox runtime, not the unpublished guided-start learning journey."
+    local_validation: "135 relevant backend tests, the guided-start frontend component, local linux/amd64 image build, in-image client/IDE/runner smoke tests, and a Grype 0.110.0 scan with zero fixable HIGH/CRITICAL findings passed on 2026-10-01."
+    current_runtime_proof: "The exact guided-start image is published and pinned; it remains draft until a fresh one-seat receipt proves the full live journey and reclaim."
     publication_attempt:
-      status: security-gate-failed
-      source_revision: c279b62f1989e7ccd718bc5a649bb72b8e527763
+      status: security-gate-passed-exact-image-published
+      source_revision: d99c43a9e4b00d4e961d31810dda9ef64bf95eee
+      image: ghcr.io/jkershawrh/launchpad-sandbox@sha256:79abced2a81c606065c0a2b595c2c3a08ccea0b95216dde0536a0f54dde7cb06
       workflows:
         - https://github.com/jkershawrh/launchpad/actions/runs/36742498806
         - https://github.com/jkershawrh/launchpad/actions/runs/36743247694
-      evidence: "Both exact-revision builds retained vulnerability inventories and failed closed on fixable HIGH/CRITICAL findings embedded in the official OpenShift CLI and code-server/npm payloads. The publication gate was not weakened and no candidate image was promoted."
-    next_action: resolve or securely replace the vulnerable upstream OpenShift CLI and code-server payloads, publish and pin the rebuilt sandbox and portal images without weakening the gate, then certify a fresh Flightpath seat for UI card, isolation, workload, real model completion, proof, and cleanup
+        - https://github.com/jkershawrh/launchpad/actions/runs/36915083761
+      evidence: "The first two attempts failed closed. The exact d99c43a9 candidate replaced the vulnerable broad OpenShift client with a checksum-pinned kubectl plus narrow oc compatibility, patched code-server undici, removed unused Node/Jupyter payloads, and passed the unchanged fixable HIGH/CRITICAL gate. GitHub Actions then hit the known GHCR repository-link write_package defect, so the already-authorized local path published the exact labeled image without weakening the scan gate. Anonymous digest pull and source labels were verified."
+    next_action: certify one fresh Flightpath seat for UI card, namespace isolation, private workload, assigned Granite completion, credential-free proof, cleanup, reclaim, and zero residue
 
   openshift-operators-workshop:
     display_name: "OpenShift 201: Build an Operator-Managed Pipeline"

@@ -33,6 +33,24 @@ model_status="$(oc exec -n "$namespace" deployment/sandbox -- sh -c '
 ')"
 [[ "$model_status" == 200 ]]
 
+stage=guided-journey
+guided_proof="$(oc exec -n "$namespace" deployment/sandbox -- sh -c '
+  launchpad-guided-start all >/tmp/launchpad-guided-start.log
+  cat /home/lab-user/workspace/guided-start-proof.json
+')"
+guided_workload_status="$(jq -r '.workload.status' <<<"$guided_proof")"
+guided_model_status="$(jq -r '.model.status' <<<"$guided_proof")"
+guided_assigned_model="$(jq -r '.model.assigned_model' <<<"$guided_proof")"
+guided_observed_model="$(jq -r '.model.model' <<<"$guided_proof")"
+guided_inference_source="$(jq -r '.model.inference_source' <<<"$guided_proof")"
+guided_cleanup_status="$(jq -r '.cleanup.status' <<<"$guided_proof")"
+[[ "$guided_workload_status" == ready ]]
+[[ "$guided_model_status" == live ]]
+[[ "$guided_assigned_model" == granite-2b-cpu ]]
+[[ "$guided_observed_model" == granite-2b-cpu ]]
+[[ "$guided_inference_source" == launchpad-managed-endpoint ]]
+[[ "$guided_cleanup_status" == complete ]]
+
 stage=terminal-scope
 terminal_scope="$(oc exec -n "$namespace" deployment/sandbox -- sh -c '
   printf "project=%s\n" "$(oc project -q)"
@@ -47,9 +65,13 @@ grep -qx node_list=DENIED <<<"$terminal_scope"
 
 jq -cn --arg namespace "$namespace" --arg cluster_ref "$expected_cluster" \
   --argjson ide_status "$ide_status" --argjson model_status "$model_status" \
-  --argjson home_writable "$home_writable" --arg terminal_scope "$terminal_scope" '{
+  --argjson home_writable "$home_writable" --arg terminal_scope "$terminal_scope" \
+  --arg workload_status "$guided_workload_status" --arg guided_model_status "$guided_model_status" \
+  --arg assigned_model "$guided_assigned_model" --arg observed_model "$guided_observed_model" \
+  --arg inference_source "$guided_inference_source" --arg guided_cleanup_status "$guided_cleanup_status" '{
     result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,
     workspace:{deployment_ready:true,ide_http_status:$ide_status,home_writable:$home_writable},
-    model:{models_http_status:$model_status},
+    guided_journey:{workload_status:$workload_status,cleanup_status:$guided_cleanup_status},
+    model:{models_http_status:$model_status,status:$guided_model_status,assigned_model:$assigned_model,observed_model:$observed_model,inference_source:$inference_source,participated:true},
     terminal_scope:($terminal_scope | split("\n")),contains_sensitive_values:false
   }'

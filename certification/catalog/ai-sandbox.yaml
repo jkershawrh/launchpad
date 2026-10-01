@@ -24,6 +24,13 @@ spec:
       - {path: workspace.ide_http_status, equals: 200}
       - {path: workspace.home_writable, equals: true}
       - {path: model.models_http_status, equals: 200}
+      - {path: guided_journey.workload_status, equals: ready}
+      - {path: guided_journey.cleanup_status, equals: complete}
+      - {path: model.status, equals: live}
+      - {path: model.assigned_model, equals: granite-2b-cpu}
+      - {path: model.observed_model, equals: granite-2b-cpu}
+      - {path: model.inference_source, equals: launchpad-managed-endpoint}
+      - {path: model.participated, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}
