@@ -483,8 +483,8 @@ labs:
 
   intel-llm-tool-calling:
     display_name: "Intel AI 201: LLM Tool Calling on Intel"
-    overall_status: source-update-pending-publication-draft
-    published_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    overall_status: immutable-source-published-draft
+    published_content_revision: 13e8119b807735b5b8ba161d2daf8e462e7baeb7
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green-local, evidence: "The operations-assistant scenario now clearly separates the learner-owned tool loop from the Launchpad-managed model endpoint and preserves the model-versus-application authority boundary."}
     show: {status: green, evidence: "The protocol path produces visible tool-call behavior."}
@@ -498,13 +498,13 @@ labs:
     prior_live_evidence_scope: "The five-seat GREEN-live evidence covers catalog v1.0.2; it does not certify the current v1.0.3 source-corrected journey."
     source_state:
       repository: /Users/jkershaw/Documents/launchpad
-      published_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
-      candidate_revision: pending-uncommitted
+      published_revision: 13e8119b807735b5b8ba161d2daf8e462e7baeb7
+      candidate_revision: 13e8119b807735b5b8ba161d2daf8e462e7baeb7
       workload_repository: https://github.com/rh-ai-quickstart/vllm-tool-calling.git
       workload_revision: fc6a574694b531a89c4417309c6f74c144130576
       certification_transfer: none
-      certification_boundary: "The corrected content and strict-TLS certifier are not part of the currently pinned revision. Publish them together, pin the exact resulting Launchpad SHA, then run a fresh one-seat Flightpath certification; the prior v1.0.2 five-seat receipt does not transfer."
-    next_action: publish and pin the corrected content and strict-TLS certifier together, then certify one exact seat for the managed model completion, tool-list and tool-call flow, Console isolation checkpoint, cleanup, key revocation, and zero residue; keep Intel backend placement explicitly unverified unless independent destination evidence is added separately
+      certification_boundary: "The corrected content and strict-TLS certifier are pinned together at the exact candidate revision. Fresh one-seat Flightpath certification remains required; the prior v1.0.2 five-seat receipt does not transfer."
+    next_action: certify one exact seat for managed model completion, model-list and tool-call flow, local tool execution, Console isolation checkpoint, cleanup, key revocation, and zero residue; keep Intel backend placement explicitly unverified unless independent destination evidence is added separately
 
   ai-sandbox:
     display_name: "Intel AI 001: OpenShift Developer Sandbox"

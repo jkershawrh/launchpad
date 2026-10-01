@@ -7,6 +7,8 @@ expected_cluster="${2:?usage: certify-tool-calling-seat.sh <namespace> <cluster-
 
 stage=cluster-identity
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
+showroom_revision="13e8119b807735b5b8ba161d2daf8e462e7baeb7"
+workload_revision="fc6a574694b531a89c4417309c6f74c144130576"
 
 oc() { command oc --kubeconfig "$KUBECONFIG" "$@"; }
 
@@ -87,6 +89,8 @@ jq -cn \
   --argjson models_status "$models_status" \
   --arg model_name "$model_name" \
   --arg terminal_scope "$terminal_scope" \
+  --arg showroom_revision "$showroom_revision" \
+  --arg workload_revision "$workload_revision" \
   '{
     result:"GREEN-live-internal-seat",
     namespace:$namespace,
@@ -94,6 +98,7 @@ jq -cn \
     runtime_secret_keys:$runtime_keys,
     model:{name:$model_name,models_http_status:$models_status,inference_participated:true,backend_placement_verified:false,structured_tool_call:true,complete_tool_protocol:true},
     tool:{execution_mode:"deterministic-local-function",mcp_participated:false,result_returned_to_model:true},
+    provenance:{showroom_revision:$showroom_revision,workload_revision:$workload_revision},
     terminal_scope:($terminal_scope | split("\n")),
     contains_sensitive_values:false
   }'

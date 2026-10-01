@@ -40,6 +40,8 @@ spec:
       - {path: tool.execution_mode, equals: deterministic-local-function}
       - {path: tool.mcp_participated, equals: false}
       - {path: tool.result_returned_to_model, equals: true}
+      - {path: provenance.showroom_revision, equals: 13e8119b807735b5b8ba161d2daf8e462e7baeb7}
+      - {path: provenance.workload_revision, equals: fc6a574694b531a89c4417309c6f74c144130576}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

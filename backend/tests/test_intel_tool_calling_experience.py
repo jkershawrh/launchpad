@@ -12,7 +12,7 @@ INTAKE = ROOT / "catalog-onboarding/intel-llm-tool-calling.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-llm-tool-calling.yaml"
 SEAT_CERTIFIER = ROOT / "scripts/certify-tool-calling-seat.sh"
 JOURNEY_CERTIFIER = ROOT / "scripts/certify-tool-calling-journey.sh"
-CONTENT_REVISION = "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
+CONTENT_REVISION = "13e8119b807735b5b8ba161d2daf8e462e7baeb7"
 WORKLOAD_REVISION = "fc6a574694b531a89c4417309c6f74c144130576"
 
 
@@ -39,10 +39,9 @@ def test_tool_calling_canonical_mapping_and_published_provenance_are_exact():
     assert antora["asciidoc"]["attributes"]["quickstart_repo"] == metadata["source_content_repo"]
     assert intake["certification"]["certified_seats"] == 0
     assert intake["certification"]["max_workshop_seats"] == 1
-    assert metadata["certification_stage"] == "source-update-pending-publication"
-    assert intake["certification"]["stage"] == "source-update-pending-publication"
+    assert metadata["certification_stage"] == "immutable-source-published"
+    assert intake["certification"]["stage"] == "immutable-source-published"
     blockers = " ".join(intake["certification"]["activation_blockers"])
-    assert "pin their exact immutable revision" in blockers
     assert "strict-TLS managed inference" in blockers
 
 
@@ -58,17 +57,17 @@ def test_tool_calling_publication_candidate_is_one_seat_only():
     assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1]
 
 
-def test_tool_calling_review_records_the_unpublished_candidate_boundary():
+def test_tool_calling_review_records_the_exact_published_candidate_boundary():
     review = _load(ROOT / "evidence/lab-experience-review-20260930.yaml")
     lab = review["labs"]["intel-llm-tool-calling"]
     source_state = lab["source_state"]
 
-    assert lab["overall_status"] == "source-update-pending-publication-draft"
+    assert lab["overall_status"] == "immutable-source-published-draft"
     assert source_state["published_revision"] == CONTENT_REVISION
-    assert source_state["candidate_revision"] == "pending-uncommitted"
+    assert source_state["candidate_revision"] == CONTENT_REVISION
     assert source_state["workload_revision"] == WORKLOAD_REVISION
     assert source_state["certification_transfer"] == "none"
-    assert "fresh one-seat" in source_state["certification_boundary"]
+    assert "fresh one-seat" in source_state["certification_boundary"].lower()
     assert "backend placement explicitly unverified" in lab["next_action"]
 
 
@@ -132,6 +131,8 @@ def test_tool_calling_certification_proves_model_and_tool_participation_truth():
     assert ("tool.execution_mode", "deterministic-local-function") in assertions
     assert ("tool.mcp_participated", False) in assertions
     assert ("tool.result_returned_to_model", True) in assertions
+    assert ("provenance.showroom_revision", CONTENT_REVISION) in assertions
+    assert ("provenance.workload_revision", WORKLOAD_REVISION) in assertions
 
     certifier = SEAT_CERTIFIER.read_text()
     assert 'index($model) != null' in certifier

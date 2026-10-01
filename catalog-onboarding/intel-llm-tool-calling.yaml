@@ -29,7 +29,7 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/launchpad.git
-    revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+    revision: 13e8119b807735b5b8ba161d2daf8e462e7baeb7
     playbook: site-intel-llm-tool-calling.yml
     start_path: content-intel-llm-tool-calling
   workload:
@@ -76,12 +76,11 @@ runtime:
     title: OpenShift Console
     source: cluster.console_url
 certification:
-  stage: source-update-pending-publication
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   proof_contract: certification/catalog/intel-llm-tool-calling.yaml
   promotion_sequence:
   - 1
   activation_blockers:
-  - Publish the revised Launchpad content and certifier, then pin their exact immutable revision.
   - Certify one fresh Flightpath seat for strict-TLS managed inference, structured tool calls, local tool execution with no MCP participation, Console isolation, reclaim, and zero residue.
