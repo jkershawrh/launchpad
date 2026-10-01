@@ -100,6 +100,12 @@ def test_catalog_seat_probe_reports_bounded_failure_stages():
     assert "inference_http_statuses:" in source
 
 
+def test_remote_certifier_reads_model_connection_from_the_wire_agent_page():
+    source = (ROOT / "scripts/certify-agent-201-remote-seat.sh").read_text()
+    assert "/www/modules/03-wire-agent.html" in source
+    assert "/www/modules/02-deploy-tools.html" not in source
+
+
 def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():
     intake = load_intake(INTAKE)
     catalog = yaml.safe_load(CATALOG.read_text())

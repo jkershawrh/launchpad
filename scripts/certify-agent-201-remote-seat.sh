@@ -33,7 +33,7 @@ fi
 if [[ -n "${LAUNCHPAD_INGRESS_IP:-}" ]]; then
   curl_options+=(--resolve "${host}:443:${LAUNCHPAD_INGRESS_IP}")
 fi
-page="$(curl "${curl_options[@]}" "https://${host}/www/modules/02-deploy-tools.html")"
+page="$(curl "${curl_options[@]}" "https://${host}/www/modules/03-wire-agent.html")"
 endpoint="$(printf '%s' "$page" | sed -n "s/.*--from-literal=api-base='\([^']*\)'.*/\1/p" | head -1)"
 model="$(printf '%s' "$page" | sed -n "s/.*ADVISOR_MODEL='\([^']*\)'.*/\1/p" | head -1)"
 
