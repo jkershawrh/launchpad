@@ -164,12 +164,15 @@ jq -cn \
     cluster_ref:$cluster_ref,
     operator:{
       api_available:true,
+      api_group:"tekton.dev/v1",
+      namespace_scoped:true,
       version:$tekton_version,
       run_succeeded:true,
       result_marker:($result_value == "operator-reconciled:certify-namespace-reconciliation"),
       taskrun_count:$taskrun_count,
       resources_removed:true
     },
+    inference:{required:false,participated:false},
     terminal_scope:($terminal_scope | split("\n")),
     contains_sensitive_values:false
   }'

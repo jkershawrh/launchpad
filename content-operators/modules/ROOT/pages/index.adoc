@@ -22,9 +22,11 @@ Confirm that the terminal is scoped to your isolated seat.
 ----
 oc project {namespace}
 test "$(oc project -q)" = "{namespace}"
-oc auth can-i create tasks.tekton.dev -n {namespace}
-oc auth can-i create pipelineruns.tekton.dev -n {namespace}
-oc auth can-i get nodes
+test "$(oc auth can-i create tasks.tekton.dev -n {namespace})" = yes
+test "$(oc auth can-i create pipelines.tekton.dev -n {namespace})" = yes
+test "$(oc auth can-i create pipelineruns.tekton.dev -n {namespace})" = yes
+test "$(oc auth can-i get pods -n openshift-operators)" = no
+test "$(oc auth can-i get nodes)" = no
 ----
 
 The first two authorization checks must return `yes`; the node check must
@@ -35,6 +37,12 @@ Open the *OpenShift Console* operator tab and choose *launchpad-public* if OpenS
 for an identity provider. Your participant session receives `edit` only in
 `{namespace}`; no separate password is required.
 
+The Showroom guide is the *Story* view that carries the mission, instructions,
+and proof criteria. *Terminal* is the authoring and proof workspace.
+*OpenShift Console* is the integrated operator view: use its Pipelines pages to
+correlate the same namespaced resources, conditions, logs, and results that the
+terminal checks mechanically.
+
 == Learn
 
 The Operator pattern separates responsibilities:
@@ -44,7 +52,7 @@ The Operator pattern separates responsibilities:
 * the Operator reconciles that declaration into runtime objects; and
 * status, results, logs, and cleanup provide proof of what happened.
 
-== Journey
+== Show → Learn → Do → Prove
 
 * *Show* the installed API and your namespace boundary.
 * *Learn* how `PipelineRun → TaskRun → Pod` expresses reconciliation.

@@ -69,10 +69,12 @@ runtime:
   tabs:
   - id: terminal
     title: Terminal
+    source: showroom.terminal
   - id: openshift-console
     title: OpenShift Console
+    source: cluster.console_url
 certification:
-  stage: source-reviewed
+  stage: source-update-pending-publication
   certified_seats: 0
   max_workshop_seats: 1
   proof_contract: certification/catalog/openshift-operators-workshop.yaml
@@ -80,4 +82,5 @@ certification:
   - 1
   - 5
   activation_blockers:
-  - fresh-one-seat-operator-certification
+  - Publish and pin the revised content and certifier at one exact immutable Launchpad revision.
+  - Complete fresh one-seat certification including participant Console SSO, the integrated Pipelines view, namespace isolation, exercise cleanup, reclaim, and zero residue.

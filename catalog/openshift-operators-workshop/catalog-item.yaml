@@ -39,11 +39,14 @@ metadata:
   operator_workshop: true
   content_only: true
   workshop_cluster_ref: flightpath
-  certification_stage: source-reviewed
+  certification_stage: source-update-pending-publication
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
+  activation_blockers:
+  - Publish and pin the revised content and certifier at one exact immutable Launchpad revision.
+  - Complete fresh one-seat certification including participant Console SSO, the integrated Pipelines view, namespace isolation, exercise cleanup, reclaim, and zero residue.
   onboarding_contract: catalog-onboarding/openshift-operators-workshop.yaml
   certification_proof_contract: certification/catalog/openshift-operators-workshop.yaml
   seat_cpu_millicores: 265
@@ -52,7 +55,25 @@ metadata:
   showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
   showroom_content_ref: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
   showroom_content_playbook: site-openshift-operators.yml
+  showroom_content_start_path: content-operators
   showroom_title: 'OpenShift 201: Build an Operator-Managed Pipeline'
+  showroom_terminal_storage: false
+  showroom_tabs:
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  required_models: []
+  inference_endpoint: none
+  source_content_repo: https://github.com/jkershawrh/launchpad.git
+  source_content_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+  workload_repo: https://github.com/jkershawrh/launchpad.git
+  workload_revision: 1ed487299f043a89660916c9ce8a8ae5a155d6e3
+  workload_deploy_type: manifests
+  workload_deployment_scope: seat
+  workload_deploy_path: content-operators
   operator_capabilities:
   - openshift-pipelines
   allowed_exposure_policies:

@@ -25,9 +25,14 @@ spec:
       - {path: result, equals: GREEN-live-internal-seat}
       - {path: cluster_ref, equals: flightpath}
       - {path: operator.api_available, equals: true}
+      - {path: operator.api_group, equals: tekton.dev/v1}
+      - {path: operator.namespace_scoped, equals: true}
       - {path: operator.run_succeeded, equals: true}
       - {path: operator.result_marker, equals: true}
+      - {path: operator.taskrun_count, equals: 1}
       - {path: operator.resources_removed, equals: true}
+      - {path: inference.required, equals: false}
+      - {path: inference.participated, equals: false}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}
