@@ -28,8 +28,13 @@ done
 stage=model-endpoint
 model_status="$(oc exec -n "$namespace" deployment/sandbox -- sh -c '
   test -n "$LITELLM_API_BASE" && test -n "$LITELLM_API_KEY"
+  model_api_base="${LITELLM_API_BASE%/}"
+  case "$model_api_base" in
+    */v1) ;;
+    *) model_api_base="${model_api_base}/v1" ;;
+  esac
   curl -fsS -o /dev/null -w "%{http_code}" \
-    -H "Authorization: Bearer $LITELLM_API_KEY" "${LITELLM_API_BASE%/}/v1/models"
+    -H "Authorization: Bearer $LITELLM_API_KEY" "${model_api_base}/models"
 ')"
 [[ "$model_status" == 200 ]]
 

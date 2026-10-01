@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 
 ROOT = Path(__file__).parents[2]
@@ -117,6 +118,29 @@ def test_model_probe_is_honest_when_endpoint_is_not_configured():
     assert result["assigned_model"] == "granite-2b-cpu"
     assert result["inference_source"] == "launchpad-managed-endpoint"
     assert "not configured" in result["reason"]
+
+
+def test_learn_treats_expected_kubectl_denials_as_boundary_evidence(monkeypatch):
+    runner = _runner_module()
+
+    def fake_run(command, **_kwargs):
+        rendered = " ".join(command)
+        if "project -q" in rendered:
+            return SimpleNamespace(returncode=0, stdout="sandbox-seat-one", stderr="")
+        if "create deployments.apps" in rendered:
+            return SimpleNamespace(returncode=0, stdout="yes\n", stderr="")
+        return SimpleNamespace(returncode=1, stdout="no\n", stderr="")
+
+    monkeypatch.setenv("SANDBOX_NAMESPACE", "sandbox-seat-one")
+    monkeypatch.setattr(runner.subprocess, "run", fake_run)
+
+    assert runner.learn() == {
+        "namespace": "sandbox-seat-one",
+        "current_project_matches": True,
+        "own_edit": True,
+        "cross_namespace": False,
+        "cluster_nodes": False,
+    }
 
 
 def test_model_probe_refuses_to_substitute_a_different_managed_model():

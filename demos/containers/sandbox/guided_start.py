@@ -268,10 +268,13 @@ def learn() -> dict[str, Any]:
     namespace = _namespace()
     current = _oc("project", "-q")
     own_edit = _oc("auth", "can-i", "create", "deployments.apps", "-n", namespace)
+    # kubectl returns exit status 1 for the expected `no` answer, unlike some
+    # oc builds.  The answer is the evidence here, so do not treat denial as a
+    # command failure.
     cross_namespace = _oc(
-        "auth", "can-i", "get", "pods", "-n", "partner-ai-launchpad"
+        "auth", "can-i", "get", "pods", "-n", "partner-ai-launchpad", check=False
     )
-    nodes = _oc("auth", "can-i", "get", "nodes")
+    nodes = _oc("auth", "can-i", "get", "nodes", check=False)
     result = {
         "namespace": namespace,
         "current_project_matches": current == namespace,

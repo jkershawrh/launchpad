@@ -122,3 +122,5 @@ def test_ai_sandbox_certification_runs_the_full_guided_journey() -> None:
         assert assertion in expected
     assert "launchpad-guided-start all" in script
     assert "guided-start-proof.json" in script
+    assert '*/v1) ;;' in script
+    assert '"${model_api_base}/models"' in script
