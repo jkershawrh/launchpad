@@ -46,7 +46,7 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-301.yaml
-  certification_stage: 1-seat-certified
+  certification_stage: immutable-source-published
   max_workshop_seats: 1
   promotion_sequence:
   - 1

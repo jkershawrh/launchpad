@@ -109,8 +109,8 @@ runtime:
       ui: virt301
     readiness: []
 certification:
-  stage: 1-seat-certified
-  certified_seats: 1
+  stage: immutable-source-published
+  certified_seats: 0
   max_workshop_seats: 1
   promotion_sequence:
   - 1

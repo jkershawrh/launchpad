@@ -19,9 +19,10 @@ def test_virtualization_ai_301_is_an_exact_one_seat_certified_rehearsal_candidat
 
     assert catalog == build_catalog_item(intake)
     assert catalog["status"] == "draft"
-    assert metadata["certification_stage"] == "1-seat-certified"
+    assert metadata["certification_stage"] == "immutable-source-published"
     assert metadata["certification_transfer"] == "none"
     assert metadata["max_workshop_seats"] == 1
+    assert intake["certification"]["certified_seats"] == 0
     assert catalog["validation_refs"] == ["pod-ready", "route-accessible"]
     assert metadata["showroom_content_ref"] == (
         "30f51e19223faf64c689a07e254870fbc43fd0c6"
