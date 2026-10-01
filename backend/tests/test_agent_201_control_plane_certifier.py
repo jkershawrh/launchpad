@@ -1,9 +1,29 @@
 from pathlib import Path
 
+import yaml
+
+
+from app.services.catalog_onboarding import load_intake
+
 
 ROOT = Path(__file__).resolve().parents[2]
 DRIVER = ROOT / "scripts/certify-agent-201-via-control-plane.py"
 CATALOG_SEAT_PROBE = ROOT / "scripts/certify-agent-201-catalog-seat.sh"
+CATALOG = ROOT / "catalog/intel-xeon6-agent-201/catalog-item.yaml"
+INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
+CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
+
+SOURCE_REVISION = "4af7302a68cd40e5c46ed963da8dd6d6586e204f"
+WORKLOAD_REVISION = "c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d"
+WORKLOAD_BASE = (
+    "https://raw.githubusercontent.com/rhpds/triforce/"
+    f"{WORKLOAD_REVISION}/infrastructure/manifests-201"
+)
+RUNTIME_IMAGES = {
+    "solution-tools": "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850",
+    "solution-agent": "quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03",
+    "solution-ui": "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb",
+}
 
 
 def test_remote_certifier_uses_persisted_cluster_client_without_kubeconfig_or_exec():
@@ -78,3 +98,100 @@ def test_catalog_seat_probe_reports_bounded_failure_stages():
     assert "top_level_keys:" in source
     assert "inference_error_count:" in source
     assert "inference_http_statuses:" in source
+
+
+def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():
+    intake = load_intake(INTAKE)
+    catalog = yaml.safe_load(CATALOG.read_text())
+
+    assert intake["sources"]["showroom"] == {
+        "repo_url": "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git",
+        "revision": SOURCE_REVISION,
+        "playbook": "site.yml",
+        "start_path": ".",
+    }
+    assert intake["sources"]["workload"]["revision"] == WORKLOAD_REVISION
+    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert intake["certification"]["certified_seats"] == 0
+    assert intake["certification"]["promotion_sequence"] == [1]
+    blockers = " ".join(intake["certification"]["activation_blockers"])
+    assert "one fresh Flightpath seat" in blockers
+    assert all(
+        "mutable workload tag" not in blocker
+        for blocker in intake["certification"]["activation_blockers"]
+    )
+
+    metadata = catalog["metadata"]
+    assert metadata["showroom_content_repo_url"] == intake["sources"]["showroom"]["repo_url"]
+    assert metadata["showroom_content_ref"] == SOURCE_REVISION
+    assert metadata["showroom_content_playbook"] == "site.yml"
+    assert metadata["source_content_revision"] == SOURCE_REVISION
+    assert metadata["workload_revision"] == WORKLOAD_REVISION
+    assert metadata["certification_stage"] == "immutable-source-published"
+
+
+def test_agent_201_catalog_and_source_expose_the_three_operator_tabs():
+    intake = load_intake(INTAKE)
+    assert intake["runtime"]["workload"]["routes"] == {"workspace": "app"}
+    assert intake["runtime"]["tabs"] == [
+        {"id": "terminal", "title": "Terminal", "source": "showroom.terminal"},
+        {
+            "id": "workspace",
+            "title": "Solution Architect",
+            "source": "workload.route.workspace",
+        },
+        {
+            "id": "openshift-console",
+            "title": "OpenShift Console",
+            "source": "cluster.console_url",
+        },
+    ]
+
+
+def test_agent_201_certification_fails_closed_on_inference_identity_and_exports_proof():
+    contract = yaml.safe_load(CERTIFICATION.read_text())
+    assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1]
+    assertions = contract["spec"]["seat_probe"]["json_assertions"]
+
+    for assertion in (
+        {"path": "intel_xeon_inference.configured_model", "equals": "granite-3.2-8b-tools"},
+        {"path": "intel_xeon_inference.model_participated", "equals": True},
+        {"path": "intel_xeon_inference.matches_configured_model", "equals": True},
+        {"path": "proof_export.tool_count", "equals": 3},
+        {"path": "proof_export.contains_sensitive_values", "equals": False},
+        {"path": "provenance.showroom_revision", "equals": SOURCE_REVISION},
+        {"path": "provenance.workload_revision", "equals": WORKLOAD_REVISION},
+        {"path": "runtime_images.solution_tools", "equals": RUNTIME_IMAGES["solution-tools"]},
+        {"path": "runtime_images.solution_agent", "equals": RUNTIME_IMAGES["solution-agent"]},
+        {"path": "runtime_images.solution_ui", "equals": RUNTIME_IMAGES["solution-ui"]},
+    ):
+        assert assertion in assertions
+
+    pages = {page["id"]: page for page in contract["spec"]["showroom"]["pages"]}
+    assert pages["prove-and-clean"] == {
+        "id": "prove-and-clean",
+        "path": "/www/modules/05-prove-and-clean.html",
+        "marker": "Prove and Clean Up",
+    }
+
+    source = CATALOG_SEAT_PROBE.read_text()
+    assert 'stage="response-model"' in source
+    assert "ADVISOR_MODEL" in source
+    assert "all(. == $configured_model)" in source
+    assert "response_sha256" in source
+    assert WORKLOAD_BASE in source
+    assert 'content-intel-xeon6-agent-201/manifests/$manifest' not in source
+    for deployment, image in RUNTIME_IMAGES.items():
+        assert deployment in source
+        assert image in source
+
+
+def test_agent_201_evidence_marks_published_changes_as_nontransferable_until_certified():
+    review = yaml.safe_load(
+        (ROOT / "evidence/lab-experience-review-20260930.yaml").read_text()
+    )["labs"]["intel-xeon6-agent-201"]
+
+    assert review["overall_status"] == "immutable-source-published-draft"
+    assert review["source_truth"]["candidate_revision"] == SOURCE_REVISION
+    assert review["source_truth"]["certification_transfer"] == "none"
+    assert "one Flightpath seat" in review["next_action"]

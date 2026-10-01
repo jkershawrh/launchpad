@@ -7,6 +7,8 @@ expected_cluster="${2:?usage: certify-agent-201-remote-seat.sh <namespace> <clus
 
 stage="cluster-identity"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+manifest_adapter="$repo_root/scripts/render-agent-201-short-routes.py"
 
 actual_cluster="$(
   oc get namespace "$namespace" \
@@ -17,10 +19,14 @@ if [[ "$actual_cluster" != "$expected_cluster" ]]; then
   exit 2
 fi
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+workload_base="${AGENT_201_WORKLOAD_BASE:-}"
+if [[ -z "$workload_base" ]]; then
+  echo "AGENT_201_WORKLOAD_BASE must identify the exact immutable workload revision" >&2
+  exit 4
+fi
 stage="showroom-contract"
 host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
-curl_options=(-fsSk)
+curl_options=(-fsS)
 if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
   curl_options+=(--interface "$LAUNCHPAD_CURL_INTERFACE")
 fi
@@ -78,17 +84,24 @@ test -n "$(
     --namespace "$namespace" -o jsonpath='{.data.api-key}'
 )"
 
-for manifest in \
-  advisor-prompt-configmap.yaml \
-  solution-tools.yaml \
-  solution-agent.yaml \
-  solution-ui.yaml
+for manifest_contract in \
+  advisor-prompt-configmap.yaml:none \
+  solution-tools.yaml:tools \
+  solution-agent.yaml:agent \
+  solution-ui.yaml:app
 do
+  manifest="${manifest_contract%%:*}"
+  route_alias="${manifest_contract##*:}"
   stage="workload-apply-${manifest%.yaml}"
   if apply_output="$(
-    oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
-      oc apply -n "$namespace" -f - \
-      < "$repo_root/content-intel-xeon6-agent-201/manifests/$manifest" 2>&1
+    if [[ "$route_alias" == "none" ]]; then
+      curl -fsS "$workload_base/$manifest"
+    else
+      python3 "$manifest_adapter" --source "$workload_base/$manifest" \
+        --route-alias "$route_alias"
+    fi \
+      | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
+          oc apply -n "$namespace" -f - 2>&1
   )"; then
     :
   else

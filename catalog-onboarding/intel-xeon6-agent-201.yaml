@@ -32,13 +32,13 @@ learning:
 
 sources:
   showroom:
-    repo_url: "https://github.com/jkershawrh/launchpad.git"
-    revision: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
-    playbook: site-intel-xeon6-agent-201.yml
-    start_path: content-intel-xeon6-agent-201
+    repo_url: "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
+    revision: "4af7302a68cd40e5c46ed963da8dd6d6586e204f"
+    playbook: site.yml
+    start_path: .
   workload:
     repo_url: "https://github.com/rhpds/triforce.git"
-    revision: "201-v1.0.0"
+    revision: "c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d"
     deploy_path: .
 
 runtime:
@@ -68,6 +68,9 @@ runtime:
   allowed_exposure_policies:
     - internal
     - public_code
+  workload:
+    routes:
+      workspace: app
   seat_resources:
     cpu_millicores: 415
     memory_mib: 912
@@ -79,25 +82,23 @@ runtime:
   tabs:
     - id: terminal
       title: Terminal
+      source: showroom.terminal
     - id: workspace
       title: Solution Architect
+      source: workload.route.workspace
     - id: openshift-console
       title: OpenShift Console
+      source: cluster.console_url
 
 certification:
-  stage: source-candidate-recertification-required
+  stage: immutable-source-published
   certified_seats: 0
   max_workshop_seats: 1
   proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
   promotion_sequence:
     - 1
-    - 5
-    - 25
-    - 30
   activation_blockers:
-    - Replace the mutable workload tag with an immutable commit or digest.
-    - Certify the exact v1.0.9 Flightpath candidate for Story, Console, managed inference, proof export, reclaim, and zero residue.
-    - Treat the prior thirty-seat v1.0.8 result as historical evidence only.
+    - Certify the exact source revision 4af7302a68cd40e5c46ed963da8dd6d6586e204f and workload revision c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d on one fresh Flightpath seat for Story, Console, managed inference, proof export, reclaim, and zero residue.
   production_blockers:
     - >-
       Mirror all participant workload images to a durable external registry

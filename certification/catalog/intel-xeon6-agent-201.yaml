@@ -18,21 +18,6 @@ spec:
       probe_concurrency: 1
       maximum_ready_seconds: 900
       maximum_cleanup_seconds: 600
-    - seats: 5
-      required_consecutive_runs: 1
-      probe_concurrency: 5
-      maximum_ready_seconds: 1500
-      maximum_cleanup_seconds: 900
-    - seats: 25
-      required_consecutive_runs: 3
-      probe_concurrency: 10
-      maximum_ready_seconds: 2700
-      maximum_cleanup_seconds: 1200
-    - seats: 30
-      required_consecutive_runs: 3
-      probe_concurrency: 10
-      maximum_ready_seconds: 3300
-      maximum_cleanup_seconds: 1500
 
   showroom:
     pages:
@@ -48,6 +33,9 @@ spec:
       - id: test-and-tune
         path: /www/modules/04-test-and-tune.html
         marker: "Make It Yours"
+      - id: prove-and-clean
+        path: /www/modules/05-prove-and-clean.html
+        marker: "Prove and Clean Up"
 
   seat_probe:
     argv:
@@ -66,6 +54,26 @@ spec:
         equals: true
       - path: agent_journey.functional_agent
         equals: true
+      - path: intel_xeon_inference.configured_model
+        equals: granite-3.2-8b-tools
+      - path: intel_xeon_inference.model_participated
+        equals: true
+      - path: intel_xeon_inference.matches_configured_model
+        equals: true
+      - path: proof_export.tool_count
+        equals: 3
+      - path: proof_export.contains_sensitive_values
+        equals: false
+      - path: provenance.showroom_revision
+        equals: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
+      - path: provenance.workload_revision
+        equals: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
+      - path: runtime_images.solution_tools
+        equals: "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
+      - path: runtime_images.solution_agent
+        equals: "quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03"
+      - path: runtime_images.solution_ui
+        equals: "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
       - path: terminal_scope
         contains: own_edit=yes
       - path: terminal_scope

@@ -6,6 +6,12 @@ expected_cluster="${2:?usage: certify-agent-201-catalog-seat.sh <namespace> <clu
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+showroom_revision="4af7302a68cd40e5c46ed963da8dd6d6586e204f"
+workload_revision="c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d"
+workload_base="https://raw.githubusercontent.com/rhpds/triforce/c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d/infrastructure/manifests-201"
+expected_tools_image="quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
+expected_agent_image="quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03"
+expected_ui_image="quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
 
@@ -27,9 +33,24 @@ oc --kubeconfig "$KUBECONFIG" create rolebinding "$probe_binding" \
   | oc --kubeconfig "$KUBECONFIG" apply -f - >/dev/null
 
 setup_result="$(
-  bash "$repo_root/scripts/certify-agent-201-remote-seat.sh" \
+  AGENT_201_WORKLOAD_BASE="$workload_base" \
+    bash "$repo_root/scripts/certify-agent-201-remote-seat.sh" \
     "$namespace" "$expected_cluster"
 )"
+
+stage="runtime-images"
+tools_image="$(oc --kubeconfig "$KUBECONFIG" get deployment solution-tools -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-tools")].image}')"
+agent_image="$(oc --kubeconfig "$KUBECONFIG" get deployment solution-agent -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-agent")].image}')"
+ui_image="$(oc --kubeconfig "$KUBECONFIG" get deployment solution-ui -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-ui")].image}')"
+[[ "$tools_image" == "$expected_tools_image" ]]
+[[ "$agent_image" == "$expected_agent_image" ]]
+[[ "$ui_image" == "$expected_ui_image" ]]
+for deployment in solution-tools solution-agent solution-ui; do
+  expected_var="expected_${deployment#solution-}_image"
+  expected_image="${!expected_var}"
+  image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l "app=${deployment}" -o jsonpath='{.items[0].status.containerStatuses[0].imageID}')"
+  [[ "$image_id" == *"${expected_image#*@}" ]]
+done
 
 stage="route-discovery"
 tools_host="$(
@@ -84,6 +105,21 @@ if [[ "$inference_error_count" -ne 0 ]]; then
     "$inference_error_count" "${inference_http_statuses:-unknown}" >&2
   false
 fi
+stage="response-model"
+configured_model="$(
+  oc --kubeconfig "$KUBECONFIG" get deployment solution-agent -n "$namespace" \
+    -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-agent")].env[?(@.name=="ADVISOR_MODEL")].value}'
+)"
+[[ "$configured_model" == "granite-3.2-8b-tools" ]]
+observed_models="$(
+  printf '%s' "$agent_result" \
+    | jq -c '[.inference_log[] | select(.model != null) | .model] | unique'
+)"
+model_count="$(printf '%s' "$observed_models" | jq 'length')"
+[[ "$model_count" -ge 1 ]]
+printf '%s' "$observed_models" \
+  | jq -e --arg configured_model "$configured_model" \
+      'all(. == $configured_model)' >/dev/null
 stage="response-brief"
 brief_type="$(printf '%s' "$agent_result" | jq -r '.brief | type')"
 brief_length="$(printf '%s' "$agent_result" | jq -r 'if (.brief | type) == "string" then (.brief | length) else 0 end')"
@@ -110,6 +146,11 @@ stage="response-platform-tool"
 printf '%s' "$agent_result" | jq -e '[.inference_log[] | select(.tool == "openshift_capabilities")] | length >= 1' >/dev/null
 stage="response-architecture-tool"
 printf '%s' "$agent_result" | jq -e '[.inference_log[] | select(.tool == "reference_architectures")] | length >= 1' >/dev/null
+tool_count="$(
+  printf '%s' "$agent_result" \
+    | jq '[.inference_log[] | select(.tool != null) | .tool] | unique | length'
+)"
+response_sha256="$(printf '%s' "$agent_result" | python3 -c 'import hashlib, sys; print(hashlib.sha256(sys.stdin.buffer.read()).hexdigest())')"
 journey_result="functional-agent=true"
 
 stage="terminal-scope"
@@ -148,6 +189,17 @@ jq -cn \
   --arg cluster_ref "$expected_cluster" \
   --arg setup_result "$setup_result" \
   --arg journey_result "$journey_result" \
+  --arg configured_model "$configured_model" \
+  --argjson observed_models "$observed_models" \
+  --argjson model_count "$model_count" \
+  --arg response_sha256 "$response_sha256" \
+  --argjson brief_length "$brief_length" \
+  --argjson tool_count "$tool_count" \
+  --arg showroom_revision "$showroom_revision" \
+  --arg workload_revision "$workload_revision" \
+  --arg tools_image "$tools_image" \
+  --arg agent_image "$agent_image" \
+  --arg ui_image "$ui_image" \
   --arg terminal_scope "$terminal_scope" \
   --argjson runtime_keys "$runtime_keys" \
   '{
@@ -157,6 +209,27 @@ jq -cn \
     setup_passed: ($setup_result | contains("deployed")),
     agent_journey: {
       functional_agent: ($journey_result | contains("functional-agent=true"))
+    },
+    intel_xeon_inference: {
+      configured_model: $configured_model,
+      observed_models: $observed_models,
+      model_participated: ($model_count > 0),
+      matches_configured_model: true
+    },
+    proof_export: {
+      response_sha256: $response_sha256,
+      brief_length: $brief_length,
+      tool_count: $tool_count,
+      contains_sensitive_values: false
+    },
+    provenance: {
+      showroom_revision: $showroom_revision,
+      workload_revision: $workload_revision
+    },
+    runtime_images: {
+      solution_tools: $tools_image,
+      solution_agent: $agent_image,
+      solution_ui: $ui_image
     },
     terminal_scope: ($terminal_scope | split("\n")),
     runtime_secret_keys: $runtime_keys,

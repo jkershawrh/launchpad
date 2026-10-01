@@ -1,68 +1,111 @@
 catalog_item_id: intel-xeon6-agent-201
-display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
-description: "Build and tune a namespace-isolated AI solution advisor with LangGraph, MCP tools, and shared Intel Xeon inference."
+display_name: 'Intel AI 201: Build an AI Agent on Intel Xeon 6'
+description: Build and tune a namespace-isolated AI solution advisor with LangGraph,
+  MCP tools, and shared Intel Xeon inference.
 category: guided_build
-version: "1.0.9-flightpath.1"
+version: 1.0.9-flightpath.1
 status: draft
 required_capabilities:
-  - openshift
-  - showroom
-  - model_endpoint
+- openshift
+- showroom
+- model_endpoint
 default_hardware_profile: xeon-basic
 default_quota_profile: standard
-default_ttl: "4h"
+default_ttl: 4h
 provisioner_refs:
-  - openshift-provisioner
-  - showroom
+- openshift-provisioner
+- showroom
 validation_refs:
-  - pod-ready
-  - route-accessible
-  - inference-health
+- pod-ready
+- route-accessible
+- inference-health
+observability_profile: intel-agent-201
 supported_branding:
-  - redhat-intel-default
-  - intel-internal
+- redhat-intel-default
+- intel-internal
 metadata:
+  learning_level: '201'
+  learning_stage: Build
+  experience_type: solution_build
+  prerequisites:
+  - intel-llm-cpu-serving
+  recommended_next_items:
+  - multi-agent-quickstart
+  - network-operations-agent
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: agentic_ai
   showroom: true
+  showroom_content_repo_url: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
+  showroom_content_ref: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
+  showroom_content_playbook: site.yml
+  showroom_content_start_path: .
   operator_workshop: true
-  content_only: true
-  workshop_cluster_ref: flightpath
-  certification_stage: source-candidate-recertification-required
+  content_only: false
+  onboarding_managed: true
+  onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
+  certification_stage: immutable-source-published
   max_workshop_seats: 1
   promotion_sequence:
-    - 1
-    - 5
-    - 25
-    - 30
-  onboarding_contract: catalog-onboarding/intel-xeon6-agent-201.yaml
+  - 1
+  activation_blockers:
+  - Certify the exact source revision 4af7302a68cd40e5c46ed963da8dd6d6586e204f and
+    workload revision c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d on one fresh Flightpath
+    seat for Story, Console, managed inference, proof export, reclaim, and zero residue.
   certification_proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
+  production_blockers:
+  - Mirror all participant workload images to a durable external registry before the
+    production control plane is moved away from Arena.
+  allowed_exposure_policies:
+  - internal
+  - public_code
   showroom_journey: intel-xeon6-agent-201
-  showroom_title: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
-  workspace_route_name: app
-  workspace_title: "Solution Architect"
-  showroom_content_repo_url: "https://github.com/jkershawrh/launchpad.git"
-  showroom_content_ref: "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
-  showroom_content_playbook: "site-intel-xeon6-agent-201.yml"
+  showroom_title: 'Intel AI 201: Build an AI Agent on Intel Xeon 6'
+  namespace_slug: intel-xeon6-agent-201
+  showroom_terminal_storage: false
+  showroom_tabs:
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: workspace
+    title: Solution Architect
+    source: workload.route.workspace
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
+  workshop_cluster_ref: flightpath
   required_models:
-    - granite-3.2-8b-tools
+  - granite-3.2-8b-tools
   inference_endpoint: direct_vllm_candidate
-  maas_rpm_limit: 60
   seat_cpu_millicores: 415
   seat_memory_mib: 912
   seat_pods: 3
+  seat_storage_gib: 0
+  workshop_provision_concurrency: 5
   workshop_node_spread: true
   workshop_node_min_ready_seconds: 900
-  source_content_repo: "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
-  source_content_revision: "d5cd98c1bc9eddf3327f136cb7114eef551bf9a6"
-  workload_repo: "https://github.com/rhpds/triforce.git"
-  workload_revision: "201-v1.0.0"
-  activation_blockers:
-    - Replace the mutable workload tag with an immutable commit or digest.
-    - Certify the exact v1.0.9 Flightpath candidate for Story, Console, managed inference, proof export, reclaim, and zero residue.
-    - Treat the prior thirty-seat v1.0.8 result as historical evidence only.
-  showroom_steps:
-    - title: "Understand the agent"
-      description: "Trace the model, LangGraph workflow, MCP tools, and OpenShift trust boundaries."
-    - title: "Deploy the tools and agent"
-      description: "Create the lightweight solution stack in your assigned namespace."
-    - title: "Test and tune"
-      description: "Generate a solution brief, inspect tool calls, and tune the prompt."
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
+  workload_repo: https://github.com/rhpds/triforce.git
+  workload_revision: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
+  workload_deploy_type: manifests
+  workload_deployment_scope: seat
+  workload_deploy_path: .
+  workload_source_kind: chart
+  workload_gitops_ready: false
+  workload_release_name: intel-xeon6-agent-201
+  workload_helm_values: {}
+  workload_ignore_differences: []
+  workload_runtime_secret_name: ''
+  workload_runtime_secret_sources: {}
+  workload_runtime_secret_value_path: ''
+  workload_identity_value_path: ''
+  workload_routes:
+    workspace: app
+  workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
+  source_content_revision: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
+  source_references: {}
