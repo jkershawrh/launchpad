@@ -36,11 +36,11 @@ generatorOptions:
 
 images:
   - name: backend
-    newName: ghcr.io/rhpds/launchpad-backend
-    digest: sha256:a01b936642b04c998ec0549d34b89e62dfde80d34e14babbbf1beb145dea4e76
+    newName: quay.io/rh-ee-jkershaw/launchpad-backend
+    digest: sha256:ee243a850dcd32f179d42ce881c78b100f9b5cf792a6f67aeca2d7fcbf04a878
   - name: partner-portal
-    newName: ghcr.io/rhpds/launchpad-portal
-    digest: sha256:760de9a2b4cb452aae39c4d01affe7d4910a59b3d3dcd264e198c41f89a89790
+    newName: ghcr.io/jkershawrh/launchpad-portal
+    digest: sha256:340b2309fabebccd6b8beba3b744041e8095e0d7d6662c7640f0edc709a42c70
   - name: admin
     newName: ghcr.io/rhpds/launchpad-admin
     digest: sha256:177115d7ffa6ad674d49b24cb4575a99daff9590587f912df2b95161bb697cd0
