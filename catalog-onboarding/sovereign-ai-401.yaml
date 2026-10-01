@@ -27,13 +27,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
-    revision: 016e9406231dbc435cdb3fb591e92b3cca2e83b9
+    revision: bce72fb0b65c40b5fbee597b9234379322a5773a
     playbook: showroom/default-site.yml
     start_path: showroom/content
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-401.git
-    revision: 016e9406231dbc435cdb3fb591e92b3cca2e83b9
+    revision: bce72fb0b65c40b5fbee597b9234379322a5773a
     deploy_path: charts/sovereign-ai-401
     gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
 runtime:
@@ -102,7 +102,7 @@ runtime:
     runtime_secret_sources: {}
     routes:
       ui: story
-      qualification: trust-evidence
+      qualification: trust
     readiness: []
 certification:
   stage: immutable-source-published
