@@ -40,7 +40,7 @@ metadata:
   certification_transfer: none
   showroom: true
   showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-401.git
-  showroom_content_ref: e648f54cab042e8bbf0f044d4c03bf93ad09d7e2
+  showroom_content_ref: cf31dea053855f467f68325a871e44cf44b11df3
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
@@ -52,8 +52,8 @@ metadata:
   promotion_sequence:
   - 1
   activation_blockers:
-  - Factory and publication evidence do not transfer to live TDX, Trustee/KBS,
-    protected-resource, model, placement, or destination certification.
+  - Factory and publication evidence do not transfer to live TDX, Trustee/KBS, protected-resource,
+    model, placement, or destination certification.
   - No approved Intel Xeon TDX host or current quote is attached.
   - No live OpenShift Sandboxed Containers confidential guest placement is verified.
   - No reviewed live Trustee verifier, KBS, reference values, or protected resource
@@ -106,7 +106,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: git@github.com:jkershawrh/sovereign-ai-401.git
-  workload_revision: e648f54cab042e8bbf0f044d4c03bf93ad09d7e2
+  workload_revision: cf31dea053855f467f68325a871e44cf44b11df3
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-401
@@ -115,18 +115,18 @@ metadata:
   workload_release_name: sovereign-ai-401
   workload_helm_values:
     values_overlay: charts/sovereign-ai-401/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:1667620a32c044ccfb992a9eb81e0360c93500f559d146f4848285280c6d189e
-    presentation_image: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:e0f07a7530aa2f5d4b8f59e8d50a2c8f0a04fad13d729c811675cafbe55dbc8b
+    workload_image: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:df3fe53d316198a76f4fb526cf2e10be51ef9a14c97a46ea5de29e8f38b65a50
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:9e980f5113f340edf209acfa8572a273c1d5220a79165f7e6379ecd3fd0e1df4
     source_state: REHEARSAL
     confidential_runtime_enabled: false
     live_tdx_claimed: false
     images:
       presentation:
         repository: ghcr.io/jkershawrh/sovereign-ai-401-presentation
-        digest: sha256:e0f07a7530aa2f5d4b8f59e8d50a2c8f0a04fad13d729c811675cafbe55dbc8b
+        digest: sha256:9e980f5113f340edf209acfa8572a273c1d5220a79165f7e6379ecd3fd0e1df4
       qualifier:
         repository: ghcr.io/jkershawrh/sovereign-ai-401-qualifier
-        digest: sha256:1667620a32c044ccfb992a9eb81e0360c93500f559d146f4848285280c6d189e
+        digest: sha256:df3fe53d316198a76f4fb526cf2e10be51ef9a14c97a46ea5de29e8f38b65a50
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
   workload_runtime_secret_sources: {}
@@ -136,5 +136,5 @@ metadata:
     ui: sovereign-ai-401-presentation
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-401.git
-  source_content_revision: e648f54cab042e8bbf0f044d4c03bf93ad09d7e2
+  source_content_revision: cf31dea053855f467f68325a871e44cf44b11df3
   source_references: {}

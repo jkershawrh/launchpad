@@ -6,7 +6,7 @@ from app.services.catalog_onboarding import build_catalog_item, load_intake
 
 
 ROOT = Path(__file__).resolve().parents[2]
-REVISION = "e648f54cab042e8bbf0f044d4c03bf93ad09d7e2"
+REVISION = "cf31dea053855f467f68325a871e44cf44b11df3"
 
 
 def _load(path: str) -> dict:
@@ -53,6 +53,12 @@ def test_sovereign_ai_401_exposes_operations_without_allocating_model_access() -
     assert values["source_state"] == "REHEARSAL"
     assert values["confidential_runtime_enabled"] is False
     assert values["live_tdx_claimed"] is False
+    assert values["images"]["presentation"]["digest"] == (
+        "sha256:9e980f5113f340edf209acfa8572a273c1d5220a79165f7e6379ecd3fd0e1df4"
+    )
+    assert values["images"]["qualifier"]["digest"] == (
+        "sha256:df3fe53d316198a76f4fb526cf2e10be51ef9a14c97a46ea5de29e8f38b65a50"
+    )
 
     assertions = contract["spec"]["seat_probe"]["json_assertions"]
     for expected in (

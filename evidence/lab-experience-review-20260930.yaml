@@ -726,7 +726,12 @@ labs:
         result: RED-live
         evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r3.json
         finding: "With writable /run restored, nginx inherited worker_processes auto and spawned one worker per visible cluster CPU, repeatedly exceeding the presentation container memory limit."
-        remediation: "Pin chart revision e648f54cab042e8bbf0f044d4c03bf93ad09d7e2, bound nginx to one worker, and require zero presentation restarts in the seat proof."
+        remediation: "Bound nginx to one worker and require zero presentation restarts in the seat proof."
+      - run_id: flightpath-live-20260930-sovereign-ai-401-1seat-r4
+        result: RED-live
+        evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-401-1seat-r4.json
+        finding: "The first worker-limit attempt supplied a second worker_processes directive at startup, so nginx failed closed with a duplicate-directive error."
+        remediation: "Publish the complete bounded nginx main configuration inside the immutable distroless image rather than mutating it or appending command-line directives at runtime."
     story: {status: green-local, evidence: "Northstar Claims advances the 301 trust contract into day-two challenge, attestation, appraisal, resource, inference, revocation, and human-control operations."}
     show: {status: rehearsal-only, evidence: "Eleven source-qualified scenarios plus replay and revocation expose the lifecycle while explicitly claiming no confidential guest, key release, model call, or live TDX."}
     learn: {status: green-local, evidence: "All eight stages use Show → Learn → Do → Prove to connect trust operations to customer outcomes."}
@@ -738,16 +743,16 @@ labs:
     source_state:
       repository: /Users/jkershaw/Documents/sovereign-ai-401
       checked_out_branch: main
-      published_head: da46fe0d734f329c5f5ba69f51dd33e2e77faf92
-      catalog_pinned_revision: da46fe0d734f329c5f5ba69f51dd33e2e77faf92
-      post_review_changes: committed-published-pinned-not-live-certified
+      published_head: cf31dea053855f467f68325a871e44cf44b11df3
+      catalog_pinned_revision: cf31dea053855f467f68325a871e44cf44b11df3
+      post_review_changes: exact-pinned-candidate-awaiting-final-one-seat-proof
       publication_validation:
         status: green-integration
-        workflow: https://github.com/jkershawrh/sovereign-ai-401/actions/runs/36740857883
-        evidence: "Source qualification, zero HIGH/CRITICAL gates, linux/amd64 publication, signatures, SPDX SBOM attestations, provenance attestations, and verification passed for both immutable artifacts."
+        workflow: https://github.com/jkershawrh/sovereign-ai-401/actions/runs/36804816530
+        evidence: "Exact source revision cf31dea053855f467f68325a871e44cf44b11df3 passed source qualification, zero HIGH/CRITICAL gates, linux/amd64 publication, signing, SPDX SBOM, provenance, and verification for both immutable artifacts; the presentation now supplies a bounded nginx configuration compatible with the distroless image and restricted Flightpath runtime."
       immutable_images:
-        presentation: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:e0f07a7530aa2f5d4b8f59e8d50a2c8f0a04fad13d729c811675cafbe55dbc8b
-        qualifier: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:1667620a32c044ccfb992a9eb81e0360c93500f559d146f4848285280c6d189e
+        presentation: ghcr.io/jkershawrh/sovereign-ai-401-presentation@sha256:9e980f5113f340edf209acfa8572a273c1d5220a79165f7e6379ecd3fd0e1df4
+        qualifier: ghcr.io/jkershawrh/sovereign-ai-401-qualifier@sha256:df3fe53d316198a76f4fb526cf2e10be51ef9a14c97a46ea5de29e8f38b65a50
     next_action: retain draft and certify one Flightpath seat for rehearsal truth, lifecycle proof, reclaim, and zero residue; real quote, Trustee/KBS resource release, model execution, and live TDX remain blocked pending approved infrastructure
 
   sovereign-ai-501:
