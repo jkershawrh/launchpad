@@ -22,13 +22,13 @@ EVENT_CLUSTERS = {
     "multi-agent-quickstart": "flightpath",
 }
 CURRENT_LIMITS = {
-    "intel-llm-cpu-serving": ("active", "five-seat-certified", 5),
+    "intel-llm-cpu-serving": ("active", "1-seat-certified", 1),
     "intel-xeon6-agent-201": (
-        "draft",
-        "source-candidate-recertification-required",
+        "active",
+        "1-seat-certified",
         1,
     ),
-    "multi-agent-quickstart": ("draft", "immutable-source-published", 1),
+    "multi-agent-quickstart": ("active", "1-seat-certified", 1),
 }
 
 
@@ -84,7 +84,7 @@ def test_historical_thirty_seat_runs_do_not_promote_a_new_flightpath_candidate()
     ("catalog_item_id", "expected_profiles", "intake_status"),
     (
         ("intel-llm-cpu-serving", [1, 5], "pass"),
-        ("intel-xeon6-agent-201", [1, 5, 25, 30], "fail"),
+        ("intel-xeon6-agent-201", [1], "pass"),
         ("multi-agent-quickstart", [1, 5, 25, 30], "pass"),
     ),
 )

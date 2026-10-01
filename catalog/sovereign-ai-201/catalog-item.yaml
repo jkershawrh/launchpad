@@ -5,7 +5,7 @@ description: Construct and qualify a fail-closed inference boundary across resid
   outcomes, redacted evidence, human authority, and reclaim.
 category: guided_build
 version: 0.1.1-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -39,21 +39,20 @@ metadata:
   shared_blueprint: red-hat-intel-sovereign-ai-v1
   solution_family: sovereign_ai
   showroom: true
-  showroom_content_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
-  showroom_content_ref: c4c5a20792f361c360d64a3d997e8ec19c0f7781
+  showroom_content_repo_url: https://github.com/jkershawrh/sovereign-ai-201.git
+  showroom_content_ref: 0fdcfba6c2db35190a768e561ac6b0665c76484b
   showroom_content_playbook: showroom/default-site.yml
   showroom_content_start_path: showroom/content
-  showroom_content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:1b88a56db8eaa3932a096bc71a0b0778aefde7196c2e4bcc5322927574ece2ac
+  showroom_content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:56fbc6071efb353f0d43f0f7ef6aec3547f60d3764f3205bfd24b2ad0caf9528
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/sovereign-ai-201.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Certify one fresh Flightpath seat with LIVE model participation, Console scope, reclaim, and zero residue.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/sovereign-ai-201.yaml
   allowed_exposure_policies:
   - internal
@@ -87,8 +86,8 @@ metadata:
   workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: git@github.com:jkershawrh/sovereign-ai-201.git
-  workload_revision: c4c5a20792f361c360d64a3d997e8ec19c0f7781
+  workload_repo: https://github.com/jkershawrh/sovereign-ai-201.git
+  workload_revision: 0fdcfba6c2db35190a768e561ac6b0665c76484b
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/sovereign-ai-201
@@ -97,24 +96,29 @@ metadata:
   workload_release_name: sovereign-ai-201
   workload_helm_values:
     values_overlay: charts/sovereign-ai-201/values.published.yaml
-    workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:260b3953c80996d908d5150bcd1541e1a97ec3be455c40a882443a46d8a36411
-    presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:af7baae27e476c38adc01ef953fd3e006427b1d7d3a3e9ddc3014bccab613064
+    workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:a5b903e1287279087d1b442639ec864911638ff873712bdbf88ebea70cea2f4b
+    presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:1348ec0131a9efcfdc1fe537a3c5127f2470d86e3178aae7f7d07bc6370cab5d
     presentation_enabled: true
     adapter:
       mode: live
+      dnsEgressCIDR: 10.128.0.0/14
       policy:
         approvedModels: granite-3.2-8b-tools
+      model:
+        egressNamespace: launchpad-flightpath-candidate
+        egressPodName: launchpad-candidate-maas
+        egressPort: 4000
       image:
         repository: ghcr.io/jkershawrh/sovereign-ai-201-adapter
         tag: ''
-        digest: sha256:260b3953c80996d908d5150bcd1541e1a97ec3be455c40a882443a46d8a36411
+        digest: sha256:a5b903e1287279087d1b442639ec864911638ff873712bdbf88ebea70cea2f4b
         pullPolicy: IfNotPresent
     presentation:
       enabled: true
       image:
         repository: ghcr.io/jkershawrh/sovereign-ai-201-presentation
         tag: ''
-        digest: sha256:af7baae27e476c38adc01ef953fd3e006427b1d7d3a3e9ddc3014bccab613064
+        digest: sha256:1348ec0131a9efcfdc1fe537a3c5127f2470d86e3178aae7f7d07bc6370cab5d
         pullPolicy: IfNotPresent
   workload_ignore_differences: []
   workload_runtime_secret_name: sovereign-ai-201-model-runtime
@@ -132,5 +136,5 @@ metadata:
     ui: lab
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-201.git
-  source_content_revision: c4c5a20792f361c360d64a3d997e8ec19c0f7781
+  source_content_revision: 0fdcfba6c2db35190a768e561ac6b0665c76484b
   source_references: {}

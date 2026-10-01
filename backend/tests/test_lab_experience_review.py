@@ -157,24 +157,87 @@ def test_sovereign_201_exact_release_requires_live_inference_recertification() -
         )
     )
 
-    assert lab["overall_status"] == "immutable-source-published-draft"
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert lab["overall_status"] == "one-seat-live-certified-active"
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert catalog["metadata"]["certification_stage"] == (
         intake["certification"]["stage"]
-    ) == "immutable-source-published"
-    assert intake["certification"]["certified_seats"] == 0
+    ) == "1-seat-certified"
+    assert intake["certification"]["certified_seats"] == 1
     assert intake["sources"]["workload"]["revision"] == (
-        "c4c5a20792f361c360d64a3d997e8ec19c0f7781"
+        "0fdcfba6c2db35190a768e561ac6b0665c76484b"
     )
+    assert intake["sources"]["showroom"]["revision"] == (
+        "0fdcfba6c2db35190a768e561ac6b0665c76484b"
+    )
+    assert intake["sources"]["showroom"]["playbook"] == (
+        "showroom/default-site.yml"
+    )
+    assert catalog["metadata"]["showroom_content_repo_url"].startswith(
+        "https://github.com/"
+    )
+    assert catalog["metadata"]["workload_repo"].startswith("https://github.com/")
     values = intake["runtime"]["workload"]["helm_values"]
     assert values["adapter"]["mode"] == "live"
+    assert values["adapter"]["dnsEgressCIDR"] == "10.128.0.0/14"
     assert values["adapter"]["policy"]["approvedModels"] == (
         "granite-3.2-8b-tools"
     )
+    assert values["adapter"]["model"]["egressNamespace"] == (
+        "launchpad-flightpath-candidate"
+    )
+    assert values["adapter"]["model"]["egressPodName"] == (
+        "launchpad-candidate-maas"
+    )
+    assert values["adapter"]["model"]["egressPort"] == 4000
     assertions = contract["spec"]["seat_probe"]["json_assertions"]
     assert {"path": "journey.mode", "equals": "LIVE"} in assertions
     assert {"path": "journey.model_participated", "equals": True} in assertions
     assert {"path": "journey.model", "equals": "granite-3.2-8b-tools"} in assertions
+
+
+def test_virtualization_301_pins_public_root_playbook_without_claiming_certification() -> None:
+    exact_revision = "1c4669bfc07df84a1b304c7eebdceb793ad0f949"
+    review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))["labs"][
+        "virtualization-ai-301"
+    ]
+    catalog = yaml.safe_load(
+        (ROOT / "catalog/virtualization-ai-301/catalog-item.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    intake = yaml.safe_load(
+        (ROOT / "catalog-onboarding/virtualization-ai-301.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+    metadata = catalog["metadata"]
+
+    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert intake["certification"]["certified_seats"] == 0
+    assert metadata["showroom_content_ref"] == exact_revision
+    assert metadata["source_content_revision"] == exact_revision
+    assert metadata["workload_revision"] == exact_revision
+    assert intake["sources"]["showroom"]["revision"] == exact_revision
+    assert intake["sources"]["workload"]["revision"] == exact_revision
+    assert metadata["showroom_content_playbook"] == "default-site.yml"
+    assert intake["sources"]["showroom"]["playbook"] == "default-site.yml"
+    for source in intake["sources"].values():
+        assert source["repo_url"].startswith("https://github.com/")
+        assert source["gitops_repo_url"].startswith("https://github.com/")
+    assert metadata["workload_repo"].startswith("https://github.com/")
+    assert "capture-platform-owned-intel-placement-receipt" in metadata[
+        "activation_blockers"
+    ]
+    assert metadata["activation_blockers"] == intake["certification"][
+        "activation_blockers"
+    ]
+    assert review["source_state"]["catalog_pinned_revision"] == exact_revision
+    assert review["source_state"]["runtime_image_source_revision"] == (
+        "eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1"
+    )
+    assert review["source_state"]["showroom_content_status"] == (
+        "exact-public-git-root-playbook-pinned-not-live-certified"
+    )
 
 
 def test_multi_agent_301_exact_release_requires_story_and_correlation_recertification() -> None:
@@ -198,19 +261,19 @@ def test_multi_agent_301_exact_release_requires_story_and_correlation_recertific
         ).read_text(encoding="utf-8")
     )
 
-    assert lab["overall_status"] == "immutable-source-published-draft"
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert lab["overall_status"] == "one-seat-live-certified-active"
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert catalog["metadata"]["certification_stage"] == (
         intake["certification"]["stage"]
-    ) == "immutable-source-published"
+    ) == "1-seat-certified"
     assert intake["certification"]["max_workshop_seats"] == 1
     assert intake["references"]["original_lab"]["revision"] == (
-        "ea61ce4e20f6e12513b16eeaa746f81895e716c9"
+        "fd6affb22691236f6e0c7ff13abd2a8c0829453e"
     )
     values = intake["runtime"]["workload"]["helm_values"]
     assert values["image"] == {
         "repository": "ghcr.io/jkershawrh/multi-agent-quickstart",
-        "digest": "sha256:a772cd2979a1cc21d19273359b611be8e6848cedb3cb9ce478d5f963eec7cbbd",
+        "digest": "sha256:67184f0bd18f29146f9353d2f80108c5d62e6bf9f866c01000b8762449812eb1",
     }
     assert values["presentation"]["enabled"] is True
     assert [tab["id"] for tab in intake["runtime"]["tabs"]] == [
@@ -406,12 +469,12 @@ def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> 
             "cleanup": "green-live",
             "change_state": "one-seat-live-certified",
         },
-        "hybrid-fraud-detection": {
-            "revision": "9dccae859e939d836c06cc9fb51d8ae4a848a38f",
-            "overall": "immutable-source-published-draft",
-            "cleanup": "green-local",
-            "change_state": "committed-published-pinned-not-live-certified",
-        },
+            "hybrid-fraud-detection": {
+                "revision": "9dccae859e939d836c06cc9fb51d8ae4a848a38f",
+                "overall": "security-remediation-required-draft",
+                "cleanup": "green-local",
+                "change_state": "committed-published-pinned-not-live-certified",
+            },
         "agent-reliability": {
             "revision": "9c69348c34904c58997318d9124ac3d50661984b",
             "overall": "source-update-published-draft",
@@ -523,7 +586,7 @@ def test_virtualization_foundations_records_exact_one_seat_proof_before_activati
         )
     )
 
-    assert catalog["status"] == "draft"
+    assert catalog["status"] == "active"
     assert catalog["metadata"]["certification_stage"] == "1-seat-certified"
     assert catalog["metadata"]["workload_runtime_value_bindings"] == {
         "vm.sshAuthorizedKey": "VM_SSH_PUBLIC_KEY"
@@ -536,11 +599,8 @@ def test_virtualization_foundations_records_exact_one_seat_proof_before_activati
             "part": "private",
         }
     )
-    assert (
-        "browser-console-sso-and-namespace-navigation-evidence"
-        in catalog["metadata"]["activation_blockers"]
-    )
-    assert intake["catalog"]["status"] == "draft"
+    assert catalog["metadata"]["activation_blockers"] == []
+    assert intake["catalog"]["status"] == "active"
     assert intake["certification"]["certified_seats"] == 1
     assert catalog["metadata"]["showroom_content_ref"] == intake["sources"][
         "showroom"
@@ -555,7 +615,7 @@ def test_virtualization_foundations_records_exact_one_seat_proof_before_activati
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))["labs"][
         "virtualization-ai-foundations-101"
     ]
-    assert review["overall_status"] == "exact-revision-one-seat-certified-draft"
+    assert review["overall_status"] == "exact-revision-one-seat-certified-active"
     assert review["candidate_revision"] == (
         "e74393d0def1a7a2749911b3a421c62f3f1c2558"
     )

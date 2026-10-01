@@ -7,7 +7,7 @@ catalog:
     outcomes, redacted evidence, human authority, and reclaim.
   category: guided_build
   version: 0.1.1-flightpath.1
-  status: draft
+  status: active
 learning:
   learning_level: '201'
   learning_stage: Build
@@ -24,16 +24,16 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/sovereign-ai-201.git
-    revision: c4c5a20792f361c360d64a3d997e8ec19c0f7781
+    revision: 0fdcfba6c2db35190a768e561ac6b0665c76484b
     playbook: showroom/default-site.yml
     start_path: showroom/content
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
-    content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:1b88a56db8eaa3932a096bc71a0b0778aefde7196c2e4bcc5322927574ece2ac
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-201.git
+    content_image: ghcr.io/jkershawrh/sovereign-ai-201-showroom-content@sha256:56fbc6071efb353f0d43f0f7ef6aec3547f60d3764f3205bfd24b2ad0caf9528
   workload:
     repo_url: https://github.com/jkershawrh/sovereign-ai-201.git
-    revision: c4c5a20792f361c360d64a3d997e8ec19c0f7781
+    revision: 0fdcfba6c2db35190a768e561ac6b0665c76484b
     deploy_path: charts/sovereign-ai-201
-    gitops_repo_url: git@github.com:jkershawrh/sovereign-ai-201.git
+    gitops_repo_url: https://github.com/jkershawrh/sovereign-ai-201.git
 runtime:
   namespace_slug: sovereign-ai-201
   workshop_cluster_ref: flightpath
@@ -76,24 +76,29 @@ runtime:
     release_name: sovereign-ai-201
     helm_values:
       values_overlay: charts/sovereign-ai-201/values.published.yaml
-      workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:260b3953c80996d908d5150bcd1541e1a97ec3be455c40a882443a46d8a36411
-      presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:af7baae27e476c38adc01ef953fd3e006427b1d7d3a3e9ddc3014bccab613064
+      workload_image: ghcr.io/jkershawrh/sovereign-ai-201-adapter@sha256:a5b903e1287279087d1b442639ec864911638ff873712bdbf88ebea70cea2f4b
+      presentation_image: ghcr.io/jkershawrh/sovereign-ai-201-presentation@sha256:1348ec0131a9efcfdc1fe537a3c5127f2470d86e3178aae7f7d07bc6370cab5d
       presentation_enabled: true
       adapter:
         mode: live
+        dnsEgressCIDR: 10.128.0.0/14
         policy:
           approvedModels: granite-3.2-8b-tools
+        model:
+          egressNamespace: launchpad-flightpath-candidate
+          egressPodName: launchpad-candidate-maas
+          egressPort: 4000
         image:
           repository: ghcr.io/jkershawrh/sovereign-ai-201-adapter
-          tag: ""
-          digest: sha256:260b3953c80996d908d5150bcd1541e1a97ec3be455c40a882443a46d8a36411
+          tag: ''
+          digest: sha256:a5b903e1287279087d1b442639ec864911638ff873712bdbf88ebea70cea2f4b
           pullPolicy: IfNotPresent
       presentation:
         enabled: true
         image:
           repository: ghcr.io/jkershawrh/sovereign-ai-201-presentation
-          tag: ""
-          digest: sha256:af7baae27e476c38adc01ef953fd3e006427b1d7d3a3e9ddc3014bccab613064
+          tag: ''
+          digest: sha256:1348ec0131a9efcfdc1fe537a3c5127f2470d86e3178aae7f7d07bc6370cab5d
           pullPolicy: IfNotPresent
     runtime_secret_name: sovereign-ai-201-model-runtime
     runtime_secret_value_path: adapter.model.secretName
@@ -109,11 +114,10 @@ runtime:
       ui: lab
     readiness: []
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: 1-seat-certified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Certify one fresh Flightpath seat with LIVE model participation, Console scope, reclaim, and zero residue.
+  activation_blockers: []
   proof_contract: certification/catalog/sovereign-ai-201.yaml

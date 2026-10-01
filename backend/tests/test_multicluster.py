@@ -493,13 +493,13 @@ def test_three_pilot_catalogs_match_current_flightpath_target_contract():
     runtime = yaml.safe_load(document["data"]["clusters.yaml"])
     targets = {item["cluster_id"]: item for item in runtime["clusters"]}
     pilot_contracts = {
-        "intel-llm-cpu-serving": ("active", "five-seat-certified", 5),
+        "intel-llm-cpu-serving": ("active", "1-seat-certified", 1),
         "intel-xeon6-agent-201": (
-            "draft",
-            "source-candidate-recertification-required",
+            "active",
+            "1-seat-certified",
             1,
         ),
-        "multi-agent-quickstart": ("draft", "immutable-source-published", 1),
+        "multi-agent-quickstart": ("active", "1-seat-certified", 1),
     }
 
     for catalog_id, (status, stage, max_seats) in pilot_contracts.items():

@@ -5,7 +5,7 @@ description: Author and qualify a VM-to-AI contract across schema, guest client,
   human authority, and reclaim.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -55,8 +55,7 @@ metadata:
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - browser-console-sso-and-namespace-navigation-evidence
+  activation_blockers: []
   certification_proof_contract: certification/catalog/virtualization-ai-201.yaml
   allowed_exposure_policies:
   - internal

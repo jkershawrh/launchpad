@@ -22,6 +22,20 @@ supported_branding:
   - redhat-intel-default
   - intel-internal
 metadata:
+  learning_level: "101"
+  learning_stage: Learn
+  experience_type: foundational_inference
+  prerequisites: []
+  recommended_next_items:
+    - intel-llm-tool-calling
+    - intel-xeon6-agent-201
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: inference
+  certification_transfer: none
   showroom: true
   operator_workshop: true
   content_only: true
@@ -33,12 +47,10 @@ metadata:
     - 1
     - 5
   activation_blockers: []
-  production_blockers:
-    - Mirror the AnythingLLM image to a durable external registry before the production control plane is moved away from Arena.
   onboarding_contract: catalog-onboarding/intel-llm-cpu-serving.yaml
   certification_proof_contract: certification/catalog/intel-llm-cpu-serving.yaml
   showroom_journey: intel-llm-cpu-serving
-  showroom_title: "Serve LLMs on Intel Xeon CPUs"
+  showroom_title: "Intel AI 101: Serve LLMs on Intel Xeon CPUs"
   workspace_route_name: rag
   workspace_title: "RAG Assistant"
   workload_routes:

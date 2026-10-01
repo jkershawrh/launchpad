@@ -6,7 +6,7 @@ description: Investigate a fictional service incident with specialized agents, p
   guardrails, and service authentication on Intel infrastructure.
 category: guided_build
 version: 0.2.16-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -27,7 +27,7 @@ supported_branding:
 - redhat-intel-default
 - intel-internal
 metadata:
-  learning_level: "301"
+  learning_level: '301'
   learning_stage: Engineer
   experience_type: system_engineering
   prerequisites:
@@ -47,31 +47,29 @@ metadata:
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/multi-agent-quickstart-flightpath.yaml
-  certification_stage: immutable-source-published
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
   - 25
   - 30
-  activation_blockers:
-  - Certify one fresh Flightpath seat for the 301 Story, progressive workflow, correlation, managed inference, Console scope, reclaim, and zero residue.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/multi-agent-quickstart-flightpath.yaml
   production_blockers:
-  - Transfer the digest-pinned pilot mirror from the maintainer Quay namespace to an
-    organization-owned registry before general availability. The current external
-    mirror is sufficient for the September pilot and cross-cluster certification.
+  - Transfer the digest-pinned candidate images from the maintainer-owned GHCR namespace
+    to an organization-owned registry before general availability. The current public
+    GHCR packages are sufficient for one-seat Flightpath certification.
   - Track 3 is currently an architecture and manifest exploration path; certify Kagenti
     and OpenTelemetry runtime integrations before presenting those optional blueprint
     components as deployed services.
   allowed_exposure_policies:
   - internal
-  - public_code
   showroom_journey: multi-agent-quickstart
   showroom_title: 'Intel AI 301: Build Multi-Agent AI Systems with Open Protocols'
   namespace_slug: multi-agent
   showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
-  showroom_content_ref: 2302acddb0e696ff72b647677049b7de529060e3
+  showroom_content_ref: 4b341ad1f7b9ee833a5b664b5f52a4a8f9ffcb6c
   showroom_content_playbook: site-multi-agent-quickstart.yml
   showroom_content_start_path: content-multi-agent-quickstart
   showroom_terminal_storage: false
@@ -119,7 +117,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/launchpad.git
-  workload_revision: 2302acddb0e696ff72b647677049b7de529060e3
+  workload_revision: 4b341ad1f7b9ee833a5b664b5f52a4a8f9ffcb6c
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: deploy/workloads/multi-agent-seat
@@ -129,12 +127,12 @@ metadata:
   workload_helm_values:
     image:
       repository: ghcr.io/jkershawrh/multi-agent-quickstart
-      digest: sha256:a772cd2979a1cc21d19273359b611be8e6848cedb3cb9ce478d5f963eec7cbbd
+      digest: sha256:67184f0bd18f29146f9353d2f80108c5d62e6bf9f866c01000b8762449812eb1
     presentation:
       enabled: true
       image:
         repository: ghcr.io/jkershawrh/multi-agent-quickstart-presentation
-        digest: sha256:22f0325f73c9cf67dc6d77c6e835d148c5e666344fed9d36bd809877fc6eb8e4
+        digest: sha256:3bb02d76c74e001fd5218634467295760b24f79e575edb2ca6ff84294df9a61b
       apiUpstream: http://multi-agent:8000
       ingressDomain: apps.flightpath.fm2aihpcsed.com
   workload_ignore_differences: []
@@ -157,9 +155,9 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/launchpad.git
-  source_content_revision: 2302acddb0e696ff72b647677049b7de529060e3
+  source_content_revision: 4b341ad1f7b9ee833a5b664b5f52a4a8f9ffcb6c
   source_references:
     original_lab:
       repo_url: https://github.com/jkershawrh/multi-agent-quickstart.git
-      revision: ea61ce4e20f6e12513b16eeaa746f81895e716c9
+      revision: fd6affb22691236f6e0c7ff13abd2a8c0829453e
       path: .

@@ -93,6 +93,12 @@ spec:
         equals: true
       - path: correlation.unique_event_ids
         equals: true
+      - path: intel_xeon_inference.configured_model
+        equals: granite-3.2-8b-tools
+      - path: intel_xeon_inference.workflow_completed
+        equals: true
+      - path: intel_xeon_inference.semantic_route_completed
+        equals: true
       - path: presentation.required
         equals: true
       - path: presentation.root_http_status

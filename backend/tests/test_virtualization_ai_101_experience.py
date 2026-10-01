@@ -19,7 +19,7 @@ def test_101_records_certification_without_claiming_browser_console_sso() -> Non
     contract = _load(CERTIFICATION)
     metadata = catalog["metadata"]
 
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert intake["certification"]["certified_seats"] == 1
     assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["workload_revision"] == "e74393d0def1a7a2749911b3a421c62f3f1c2558"
@@ -66,9 +66,7 @@ def test_101_records_certification_without_claiming_browser_console_sso() -> Non
     } in assertions
     assert {"path": "journey.hardware", "equals": "Intel Xeon CPU"} in assertions
     assert {"path": "journey.human_authority_preserved", "equals": True} in assertions
-    assert metadata["activation_blockers"] == [
-        "browser-console-sso-and-namespace-navigation-evidence"
-    ]
+    assert metadata["activation_blockers"] == []
     assert metadata["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]

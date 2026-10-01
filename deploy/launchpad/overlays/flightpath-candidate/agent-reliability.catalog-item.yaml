@@ -5,7 +5,7 @@ description: A 75-minute Red Hat and Intel guided build that teaches platform te
   recommendations, and degrade safely when inference is unavailable.
 category: guided_build
 version: 0.1.1-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -35,23 +35,27 @@ metadata:
   prerequisites:
   - intel-xeon6-agent-201
   recommended_next_items: []
+  journey_role: specialty
+  specialty_family: reliability
+  branches_from: multi-agent-quickstart
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: operations_reliability
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  showroom_content_ref: 9c69348c34904c58997318d9124ac3d50661984b
+  showroom_content_ref: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agent-reliability.yaml
-  certification_stage: source-update-published
+  certification_proof_contract: certification/catalog/agent-reliability.yaml
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  - 5
-  activation_blockers:
-  - Recertify one Flightpath seat against the updated Console correlation and reclaim guidance.
-  - Verify the unchanged runtime image against the effective managed inference endpoint.
+  activation_blockers: []
   allowed_exposure_policies:
   - internal
   showroom_journey: agent-reliability
@@ -81,7 +85,8 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  workload_revision: 9c69348c34904c58997318d9124ac3d50661984b
+  workload_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
+  workload_image_source_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: chart
@@ -91,7 +96,7 @@ metadata:
   workload_helm_values:
     image:
       repository: ghcr.io/jkershawrh/agent-reliability-quickstart
-      digest: sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb
+      digest: sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00
     route:
       enabled: true
       name: ar
@@ -113,7 +118,7 @@ metadata:
     workspace: ar
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agent-reliability-quickstart.git
-  source_content_revision: 9c69348c34904c58997318d9124ac3d50661984b
+  source_content_revision: fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc
   source_references: {}
   intake_quality:
     schema_version: launchpad.redhat.com/catalog-intake-quality/v1
@@ -151,7 +156,7 @@ metadata:
     showroom:
       page_count: 7
       hands_on_module_count: 6
-      execute_block_count: 20
+      execute_block_count: 33
       see_section_count: 6
       verification_section_count: 6
       key_takeaway_count: 6

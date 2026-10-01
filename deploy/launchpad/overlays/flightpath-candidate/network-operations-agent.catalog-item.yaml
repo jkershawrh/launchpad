@@ -1,68 +1,91 @@
 catalog_item_id: network-operations-agent
 display_name: 'Intel AI 301: Build an Evidence-Backed Network Operations Agent'
-description: Investigate a simulated telecom network alarm with an evidence-backed agent, internal MCP diagnostics, and shared CPU model inference.
+description: Investigate a simulated telecom network alarm with an evidence-backed
+  agent, internal MCP diagnostics, and shared CPU model inference.
 category: guided_build
 version: 0.2.1-flightpath.10
 status: active
-required_capabilities: [openshift, showroom, model_endpoint]
+required_capabilities:
+- openshift
+- showroom
+- model_endpoint
 default_hardware_profile: xeon-basic
 default_quota_profile: small
 default_ttl: 4h
-provisioner_refs: [helm-workload, showroom]
-validation_refs: [pod-ready, route-accessible, inference-health]
+provisioner_refs:
+- helm-workload
+- showroom
+validation_refs:
+- pod-ready
+- route-accessible
+- inference-health
+- agentops-journey
 observability_profile: agentops-full-stack
-supported_branding: [redhat-intel-default, intel-internal]
+supported_branding:
+- redhat-intel-default
+- intel-internal
 metadata:
+  learning_level: '301'
+  learning_stage: Engineer
+  experience_type: domain_solution_engineering
+  prerequisites:
+  - intel-xeon6-agent-201
+  recommended_next_items: []
+  journey_role: specialty
+  specialty_family: domain
+  branches_from: multi-agent-quickstart
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: industry_solutions
   showroom: true
+  showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
+  showroom_content_ref: 6ed5c53337afa55c03949b2963b429f32977ef69
+  showroom_content_playbook: site-lab.yml
+  showroom_content_start_path: showroom-lab
   operator_workshop: true
   content_only: false
   workshop_cluster_ref: flightpath
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/network-operations-agent.yaml
+  certification_proof_contract: certification/catalog/network-operations-agent.yaml
   certification_stage: 1-seat-certified
   max_workshop_seats: 1
-  promotion_sequence: [1]
+  promotion_sequence:
+  - 1
   activation_blockers: []
-  # Public access is enabled first as a one-seat Flightpath certification gate.
-  # Multi-seat public promotion remains separately evidence-gated.
-  allowed_exposure_policies: [internal]
+  allowed_exposure_policies:
+  - internal
   public_access_certification_stage: one-seat-candidate
   public_max_workshop_seats: 1
   showroom_journey: network-operations-agent
   showroom_title: Evidence-Backed Network Operations Agent
   namespace_slug: network-ops
-  showroom_content_repo_url: https://github.com/jkershawrh/network-operations-agent.git
-  showroom_content_ref: 6ed5c53337afa55c03949b2963b429f32977ef69
-  showroom_content_playbook: site-lab.yml
-  showroom_content_start_path: showroom-lab
   showroom_terminal_storage: true
   showroom_tabs:
-    - id: story
-      title: Story
-      source: workload.route.ui
-      path: /story/
-      same_origin_path: /story/
-      # Authorize the whole declared application origin through the participant
-      # gateway while opening this tab at /story/. The Story can then call the
-      # same workload's /ready and /api endpoints without escaping the order.
-      public_proxy_root: true
-    - id: terminal
-      title: Terminal
-      source: showroom.terminal
-    - id: workspace
-      title: Network Operations Workspace
-      source: workload.route.ui
-      same_origin_path: /workspace
-      rewrite_target: /
-      proxy_paths:
-        - path: /api
-        - path: /health
-    - id: openshift-console
-      title: OpenShift Console
-      source: cluster.console_url
+  - id: story
+    title: Story
+    source: workload.route.ui
+    path: /story/
+    same_origin_path: /story/
+    public_proxy_root: true
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: workspace
+    title: Network Operations Workspace
+    source: workload.route.ui
+    same_origin_path: /workspace
+    rewrite_target: /
+    proxy_paths:
+    - path: /api
+    - path: /health
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   workspace_route_name: netops
   workspace_title: Network Operations Workspace
-  required_models: [granite-3.2-8b-tools]
+  required_models:
+  - granite-3.2-8b-tools
   inference_endpoint: litellm_virtual_key_candidate
   seat_cpu_millicores: 100
   seat_memory_mib: 256
@@ -71,6 +94,8 @@ metadata:
   workshop_provision_concurrency: 1
   workshop_node_spread: false
   workshop_node_min_ready_seconds: 0
+  workshop_node_headroom_pods: 0
+  workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/network-operations-agent.git
   workload_revision: 6ed5c53337afa55c03949b2963b429f32977ef69
   workload_deploy_type: helm
@@ -88,6 +113,7 @@ metadata:
       name: netops
     lab:
       enabled: true
+  workload_ignore_differences: []
   workload_runtime_secret_name: network-operations-model-runtime
   workload_runtime_secret_sources:
     endpoint:
@@ -98,7 +124,95 @@ metadata:
     api-key:
       source: maas_api_key
   workload_runtime_secret_value_path: model.existingSecret
-  workload_identity_value_path: ""
+  workload_identity_value_path: ''
   workload_routes:
     ui: netops
   workload_readiness: []
+  source_content_repo: https://github.com/jkershawrh/network-operations-agent.git
+  source_content_revision: 6ed5c53337afa55c03949b2963b429f32977ef69
+  source_references:
+    release_workflow: https://github.com/jkershawrh/network-operations-agent/actions/runs/36733546281
+    certification_evidence: evidence/runs/flightpath-live-20260930-network-operations-agent-1seat-r2.json
+  intake_quality:
+    schema_version: launchpad.redhat.com/catalog-intake-quality/v1
+    business_solution:
+      status: review-required
+      readme_present: true
+      title: Analyze Network Alarms with an Evidence-Backed Agent
+      action_oriented_title: true
+      required_sections_present: true
+      missing_sections: []
+      business_language_present: true
+      human_review_required: true
+    artifacts:
+      validation_matrix:
+        path: tests/validation_matrix.yaml
+        status: present-valid
+        entry_count: 6
+      claim_registry:
+        path: tests/claim_registry.yaml
+        status: present-valid
+        entry_count: 0
+      benchmark_rubric:
+        path: tests/benchmark_rubric.yaml
+        status: present-valid
+        entry_count: 3
+      publication_test:
+        path: tests/publication/test_readme.py
+        status: present
+      makefile:
+        path: Makefile
+        status: present
+      ci_workflows:
+        path: .github/workflows
+        status: present
+    showroom:
+      page_count: 4
+      hands_on_module_count: 2
+      execute_block_count: 7
+      see_section_count: 2
+      verification_section_count: 2
+      key_takeaway_count: 2
+      thin_modules: []
+    capacity_proposal:
+      status: review-required
+      inference_mode: remote-endpoint
+      framework_signals:
+      - openai
+      - openvino
+      - react
+      declared_models: []
+      explicit_resource_envelopes: 0
+      measurement_required_before_placement: true
+    requirement_review:
+      status: blocked
+      resolution_authority: human-and-cluster-evidence
+      findings:
+      - code: model-endpoint-unresolved
+        evidence_count: 0
+      - code: manifest-unparsed
+        evidence_count: 4
+      target_support_inferred: false
+    security_summary:
+      status: review-required
+      mutable_image_count: 0
+      cluster_scoped_resource_count: 0
+      privileged_finding_count: 0
+      secret_manifest_count: 0
+      unparsed_manifest_count: 4
+      secret_values_included: false
+    portfolio_overlap:
+      status: not-run
+      reason: A pinned versioned portfolio inventory was not supplied.
+      mutable_live_org_scan_allowed: false
+    gate:
+      status: blocked
+      blocking_findings:
+      - 'Unresolved Quickstart requirement: model-endpoint-unresolved'
+      - 'Unresolved Quickstart requirement: manifest-unparsed'
+    authority:
+      mode: analysis-only
+      may_modify_source: false
+      may_publish_catalog: false
+      may_provision: false
+      may_certify: false

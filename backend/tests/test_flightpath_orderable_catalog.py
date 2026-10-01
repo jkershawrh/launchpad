@@ -39,17 +39,22 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
     active = {catalog_id for catalog_id, item in items.items() if item["status"] == "active"}
 
     assert active == {
+        "agent-reliability",
         "ai-sandbox",
         "cpu-inference-serving",
         "hybrid-fraud-detection",
         "intel-llm-cpu-serving",
         "intel-llm-tool-calling",
+        "intel-xeon6-agent-201",
+        "multi-agent-quickstart",
         "network-operations-agent",
         "openshift-operators-workshop",
         "rag-on-xeon",
         "sovereign-ai-101",
+        "sovereign-ai-201",
         "sovereign-ai-301",
-        "intel-xeon6-agent-201",
+        "virtualization-ai-foundations-101",
+        "virtualization-ai-201",
         "virtualization-ai-401",
         "virtualization-ai-501",
     }

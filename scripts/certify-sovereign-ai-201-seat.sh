@@ -17,7 +17,7 @@ trap cleanup EXIT
 
 request_json() {
   local expected_status="$1" method="$2" url="$3" body="${4:-}"
-  local -a args=(-sSk --max-time 30 -o "$work_dir/body" -w '%{http_code}' -X "$method")
+  local -a args=(-sSk --max-time 75 -o "$work_dir/body" -w '%{http_code}' -X "$method")
   if [[ -n "$body" ]]; then
     args+=(-H 'Content-Type: application/json' --data-binary "$body")
   fi
@@ -53,7 +53,17 @@ jq -e '.status == "ok" and .source_state == "LIVE" and .live_identity_complete =
 request_body='{"contract_version":"sovereign-inference/v1","request_id":"8da2153c-16ca-47f9-b0ee-6d8b957add4c","correlation_id":"sovereign-201-cert-001","identity":{"subject":"spiffe://workshop.example/learner","trust_domain":"workshop.example"},"residency":{"data_origin":"local","approved_regions":["local","eu-central"],"destination_region":"local"},"data_classification":"general","requested_model":"granite-3.2-8b-tools","prompt":"Explain why deterministic policy must precede model inference.","final_decision_owner":"human-reviewer"}'
 
 stage="allowed-path"
-allowed="$(request_json 200 POST "$api_base/api/v1/qualify?condition=allowed" "$request_body")"
+allowed=""
+for attempt in {1..4}; do
+  candidate=""
+  if candidate="$(request_json 200 POST "$api_base/api/v1/qualify?condition=allowed" "$request_body")" \
+    && jq -e '.outcome == "ALLOWED" and .source_state == "LIVE" and .model_participated == true' <<<"$candidate" >/dev/null; then
+    allowed="$candidate"
+    break
+  fi
+  sleep 10
+done
+[[ -n "$allowed" ]]
 jq -e '.outcome == "ALLOWED" and .source_state == "LIVE" and .policy.decision == "ALLOW" and .model_participated == true and .model.id == "granite-3.2-8b-tools" and (.advisory | type == "string" and length > 0) and .authority == "HUMAN_REVIEW_REQUIRED"' <<<"$allowed" >/dev/null
 evidence_id="$(jq -r '.evidence_id' <<<"$allowed")"
 

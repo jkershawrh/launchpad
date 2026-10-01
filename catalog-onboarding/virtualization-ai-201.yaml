@@ -7,7 +7,7 @@ catalog:
     evidence, human authority, and reclaim.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '201'
   learning_stage: Build
@@ -117,6 +117,5 @@ certification:
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - browser-console-sso-and-namespace-navigation-evidence
+  activation_blockers: []
   proof_contract: certification/catalog/virtualization-ai-201.yaml

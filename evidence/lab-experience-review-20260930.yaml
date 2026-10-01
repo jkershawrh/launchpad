@@ -14,6 +14,8 @@ goal_reconciliation:
   reviewed_catalog_entries_total: 25
   distinct_participant_experiences: 22
   current_one_seat_live_closeouts: 22
+  current_internal_orderable: 16
+  current_public_code_orderable: 5
   compatibility_aliases: 2
   platform_validation_entries: 1
   current_revision_gates_remaining: 0
@@ -163,7 +165,7 @@ labs:
 
   sovereign-ai-201:
     display_name: "Sovereign AI 201: Build the Governed Inference Boundary"
-    overall_status: one-seat-live-certified-draft
+    overall_status: one-seat-live-certified-active
     story: {status: green-live, evidence: "The exact seat served the Northstar Claims Story and all four required Showroom checkpoints."}
     show: {status: green-live, evidence: "Welcome, controls, qualification, and human-authority pages all returned 200 with their required markers."}
     learn: {status: green-live, evidence: "The exact live journey retained the policy-first and human-authority contracts."}
@@ -197,7 +199,7 @@ labs:
       rubric_score: 100
       evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-201-1seat-r14.json
       proof: "The exact 0fdcfba candidate proved Showroom, live Granite inference, deterministic denials, evidence redaction, terminal isolation, human authority, reclaim, key revocation, and zero residue."
-    next_action: capture browser evidence for OpenShift Console SSO and namespace navigation before activation
+    next_action: retain one-seat internal orderability; require browser Console SSO evidence and a public-code lifecycle receipt before external activation or any seat-limit increase
 
   virtualization-ai-foundations-101:
     display_name: "Virtualization + AI 101: Trace a VM to Governed AI"
@@ -205,7 +207,7 @@ labs:
     candidate_branch: codex/virtualization-ai-101-vm-origin
     candidate_revision: e74393d0def1a7a2749911b3a421c62f3f1c2558
     candidate_workflow: https://github.com/jkershawrh/virtualization-ai-foundations/actions/runs/36818896961
-    overall_status: exact-revision-one-seat-certified-draft
+    overall_status: exact-revision-one-seat-certified-active
     launchpad_backend_candidate:
       branch: codex/virt101-backend-keypair
       revision: b5c38364ce556fbf0c40de07ec25c209357f3d0c
@@ -246,11 +248,11 @@ labs:
       cleanup_seconds: 100.282
       evidence: evidence/runs/flightpath-live-20261001-virtualization-ai-101-1seat-r10.json
       proof: "The exact e74393d candidate proved the Show/Learn/Do/Prove pages, VM-origin live Granite inference, namespace isolation, generated Console URL, complete reclaim, key revocation, and zero residue."
-    next_action: capture browser evidence for OpenShift Console SSO and namespace navigation before activation; the exact revision is otherwise one-seat certified
+    next_action: retain one-seat internal orderability; require browser Console SSO evidence and a public-code lifecycle receipt before external activation or any seat-limit increase
 
   virtualization-ai-201:
     display_name: "Virtualization + AI 201: Author and Qualify the Contract"
-    overall_status: one-seat-certified-browser-console-evidence-required
+    overall_status: one-seat-live-certified-active
     story: {status: green, evidence: "The learner owns an author-build-qualify-deploy decision."}
     show: {status: green, evidence: "Contract outcomes and qualification evidence are visible."}
     learn: {status: green, evidence: "The contract and governance mechanics are explained."}
@@ -277,7 +279,7 @@ labs:
       cleanup_seconds: 104.64
       evidence: evidence/runs/flightpath-live-20261001-virtualization-ai-201-1seat-r24.json
       proof: "The exact 3c94600 candidate proved all Showroom pages, VM-origin live Granite inference on Intel Xeon, evidence correlation, namespace isolation, model-key revocation, complete reclaim, and zero residue."
-    next_action: capture browser evidence for OpenShift Console SSO and namespace navigation before activation; the exact revision is otherwise one-seat certified
+    next_action: retain one-seat internal orderability; require browser Console SSO evidence and a public-code lifecycle receipt before external activation or any seat-limit increase
 
   virtualization-ai-301:
     display_name: "Virtualization + AI 301 — Modernize VMs with Governed AI"
@@ -412,7 +414,7 @@ labs:
 
   multi-agent-quickstart:
     display_name: "Intel AI 301: Build Multi-Agent AI Systems with Open Protocols"
-    overall_status: one-seat-live-certified-draft
+    overall_status: one-seat-live-certified-active
     story: {status: green, evidence: "The multi-agent workflow and open-protocol decision are concrete."}
     show: {status: green-local, evidence: "The workspace exposes routing, agent results, MCP evidence, and progressive timing with visible correlation IDs."}
     learn: {status: green-local, evidence: "The candidate distinguishes routing decisions, independent agents, MCP evidence, inference, and human authority."}
@@ -446,7 +448,7 @@ labs:
         cleanup_seconds: 94.309
         zero_residue: true
         model_keys_revoked: true
-    next_action: capture browser evidence for OpenShift Console SSO and namespace navigation on the exact one-seat-certified candidate, then decide whether to activate at one seat
+    next_action: retain one-seat internal orderability; require browser Console SSO evidence and a public-code lifecycle receipt before external activation or any seat-limit increase
 
   network-operations-agent:
     display_name: "Intel AI 301: Build an Evidence-Backed Network Operations Agent"

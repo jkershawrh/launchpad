@@ -33,7 +33,7 @@ def test_201_requires_vm_origin_and_truthful_live_inference_before_certification
     metadata = catalog["metadata"]
     runtime = intake["runtime"]
 
-    assert catalog["status"] == intake["catalog"]["status"] == "draft"
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["stage"] == "1-seat-certified"
     assert metadata["recommended_next_items"] == ["virtualization-ai-301"]
@@ -93,9 +93,7 @@ def test_201_requires_vm_origin_and_truthful_live_inference_before_certification
         "path": "journey.model",
         "equals": "granite-3.2-8b-tools",
     } in assertions
-    assert metadata["activation_blockers"] == [
-        "browser-console-sso-and-namespace-navigation-evidence"
-    ]
+    assert metadata["activation_blockers"] == []
     assert metadata["certification_transfer"] == "none"
     assert metadata["activation_blockers"] == intake["certification"][
         "activation_blockers"

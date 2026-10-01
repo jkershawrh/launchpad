@@ -14,7 +14,7 @@ spec:
       - {id: welcome, path: /www/sovereign-ai-201/main/index.html, marker: "Build the Governed Inference Boundary"}
       - {id: controls, path: /www/sovereign-ai-201/main/04-wire-controls.html, marker: "Wire policy and platform controls"}
       - {id: qualify, path: /www/sovereign-ai-201/main/05-qualify-paths.html, marker: "Qualify allowed and denied paths"}
-      - {id: authority, path: /www/sovereign-ai-201/main/07-evidence-authority.html, marker: "Review correlated evidence and human authority"}
+      - {id: authority, path: /www/sovereign-ai-201/main/07-evidence-authority.html, marker: "Verify evidence and retain human authority"}
   seat_probe:
     argv: [bash, scripts/certify-sovereign-ai-201-seat.sh, "{namespace}", "{cluster_ref}"]
     timeout_seconds: 600

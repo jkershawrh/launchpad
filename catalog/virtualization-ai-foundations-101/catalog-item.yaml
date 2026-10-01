@@ -4,7 +4,7 @@ description: Trace one attributable request from an OpenShift Virtualization VM 
   platform networking to governed Intel Xeon CPU inference and human authority.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -53,8 +53,7 @@ metadata:
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - browser-console-sso-and-namespace-navigation-evidence
+  activation_blockers: []
   certification_proof_contract: certification/catalog/virtualization-ai-foundations-101.yaml
   allowed_exposure_policies:
   - internal
