@@ -31,7 +31,7 @@ def test_virtualization_ai_301_is_an_exact_one_seat_certified_rehearsal_candidat
     assert metadata["workload_revision"] == metadata["showroom_content_ref"]
     assert metadata["workload_helm_values"]["default_source_state"] == "REHEARSAL"
     assert metadata["activation_blockers"] == []
-    assert metadata["allowed_exposure_policies"] == ["internal"]
+    assert metadata["allowed_exposure_policies"] == ["internal", "public_code"]
 
 
 def test_virtualization_ai_301_certification_preserves_rehearsal_model_truth_and_platform_placement_proof() -> None:
