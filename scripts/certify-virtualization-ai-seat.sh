@@ -50,7 +50,10 @@ case "$catalog_id" in
     expected_presentation_image="ghcr.io/jkershawrh/virtualization-ai-201-presentation@sha256:2749e4ad44f3902f7507adaaaa8fadd509d1e625b33619530852bd9a01255069"
     expected_adapter_image="ghcr.io/jkershawrh/virtualization-ai-201-adapter@sha256:99f1ac6f65386013cb20d81e3dbc6099ffbb63cebfdc6fb1f1cdd50d96153a39" ;;
   virtualization-ai-301)
-    vm_names=(modernization-client); service=virtualization-ai-301-adapter; route=virt301; endpoint=/api/v1/modernize ;;
+    vm_names=(modernization-client); service=virtualization-ai-301-adapter; route=virt301; endpoint=/api/v1/modernize
+    source_revision="1c4669bfc07df84a1b304c7eebdceb793ad0f949"
+    expected_presentation_image="ghcr.io/jkershawrh/virtualization-ai-301-presentation@sha256:853ea3bdfea8998652bb51a3930bfeaeb4785ce4c058fe5d733f2e5d2d835185"
+    expected_adapter_image="ghcr.io/jkershawrh/virtualization-ai-301-adapter@sha256:9be46b02185933877854dae6e4f91e7e11a3ab028b5f33f896ae40e56b1b07ee" ;;
   virtualization-ai-401)
     vm_names=(operations-client); service=virtualization-ai-401-operations-adapter; route=virtualization-ai-401; endpoint=/api/v1/operations ;;
   virtualization-ai-501)
@@ -70,13 +73,16 @@ vmi_count="$(oc --kubeconfig "$KUBECONFIG" get vmi -n "$namespace" -o json | jq 
 [[ "$vm_count" -eq "${#vm_names[@]}" && "$vmi_count" -eq "${#vm_names[@]}" ]]
 
 stage=runtime-images
-if [[ "$catalog_id" == virtualization-ai-foundations-101 || "$catalog_id" == virtualization-ai-201 ]]; then
+if [[ "$catalog_id" == virtualization-ai-foundations-101 || "$catalog_id" == virtualization-ai-201 || "$catalog_id" == virtualization-ai-301 ]]; then
   if [[ "$catalog_id" == virtualization-ai-foundations-101 ]]; then
     presentation_deployment=virtualization-ai-presentation
     adapter_deployment=ai-analysis-adapter
-  else
+  elif [[ "$catalog_id" == virtualization-ai-201 ]]; then
     presentation_deployment=virtualization-ai-201-presentation
     adapter_deployment=virtualization-ai-201-adapter
+  else
+    presentation_deployment=virtualization-ai-301-presentation
+    adapter_deployment=virtualization-ai-301-adapter
   fi
   presentation_image="$(oc --kubeconfig "$KUBECONFIG" get deployment "$presentation_deployment" -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
   adapter_image="$(oc --kubeconfig "$KUBECONFIG" get deployment "$adapter_deployment" -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
@@ -265,4 +271,4 @@ jq -cn --arg namespace "$namespace" --arg cluster_ref "$expected_cluster" --arg 
   --arg model "$journey_model" --arg hardware "$journey_hardware" --argjson model_participated "$journey_model_participated" \
   --arg terminal_scope "$terminal_scope" --argjson vm_count "$vm_count" --argjson vmi_count "$vmi_count" \
   --arg source_revision "$source_revision" --arg presentation_image "${presentation_image:-}" --arg adapter_image "${adapter_image:-}" --arg console_url "$console_url" \
-  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,provenance:{source_revision:$source_revision},runtime_images:{presentation:$presentation_image,adapter:$adapter_image},readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:$source_state,outcome:$outcome,model_participated:$model_participated,model:$model,hardware:$hardware,intel_placement_verified:(if $catalog_id == "virtualization-ai-301" then false else null end),human_authority_preserved:true,request_origin:$request_origin},operator_journey:{console_url_present:($console_url|startswith("https://")),console_url:$console_url},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'
+  '{result:"GREEN-live-internal-seat",namespace:$namespace,cluster_ref:$cluster_ref,catalog_item_id:$catalog_id,provenance:{source_revision:$source_revision},runtime_images:{presentation:$presentation_image,adapter:$adapter_image},readiness:{vms_running:$vm_count,vmis_ready:$vmi_count,presentation_http_status:200,adapter_health:true},journey:{source_state:$source_state,outcome:$outcome,model_participated:(if $catalog_id == "virtualization-ai-301" then false else $model_participated end),model:$model,hardware:$hardware,intel_placement_verified:(if $catalog_id == "virtualization-ai-301" then false else null end),human_authority_preserved:true,request_origin:$request_origin},operator_journey:{console_url_present:($console_url|startswith("https://")),console_url:$console_url},terminal_scope:($terminal_scope|split("\n")),contains_sensitive_values:false}'

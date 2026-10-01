@@ -18,8 +18,6 @@ provisioner_refs:
 validation_refs:
 - pod-ready
 - route-accessible
-- inference-health
-- agentops-journey
 observability_profile: agentops-full-stack
 supported_branding:
 - redhat-intel-default
@@ -38,23 +36,24 @@ metadata:
   returns_to: null
   shared_blueprint: red-hat-intel-virtualization-ai-v1
   solution_family: virtualization_ai
+  certification_transfer: none
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/virtualization-ai-301.git
-  showroom_content_ref: eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1
-  showroom_content_playbook: showroom/default-site.yml
+  showroom_content_ref: 1c4669bfc07df84a1b304c7eebdceb793ad0f949
+  showroom_content_playbook: default-site.yml
   showroom_content_start_path: showroom/content
   operator_workshop: true
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-301.yaml
-  certification_stage: source-reviewed
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   activation_blockers:
-  - publish-immutable-showroom-content-or-verify-exact-git-source
+  - factory-and-publication-evidence-do-not-transfer-to-live-model-or-placement-certification
+  - pin-showroom-ui-bundle-to-immutable-release
   - capture-platform-owned-intel-placement-receipt
-  - fresh-one-seat-console-rehearsal-and-reclaim-certification
   certification_proof_contract: certification/catalog/virtualization-ai-301.yaml
   allowed_exposure_policies:
   - internal
@@ -89,8 +88,8 @@ metadata:
   workshop_node_min_ready_seconds: 0
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: git@github.com:jkershawrh/virtualization-ai-301.git
-  workload_revision: eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1
+  workload_repo: https://github.com/jkershawrh/virtualization-ai-301.git
+  workload_revision: 1c4669bfc07df84a1b304c7eebdceb793ad0f949
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/virtualization-ai-301
@@ -125,6 +124,9 @@ metadata:
     ui: virt301
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-301.git
-  source_content_revision: eaca0d12a224c6edebeae6c0a4f80c9fd92bfdf1
+  source_content_revision: 1c4669bfc07df84a1b304c7eebdceb793ad0f949
   source_references:
-    release_workflow: https://github.com/jkershawrh/virtualization-ai-301/actions/runs/36735535261
+    release_workflow:
+      repo_url: https://github.com/jkershawrh/virtualization-ai-301.git
+      revision: 1c4669bfc07df84a1b304c7eebdceb793ad0f949
+      path: .github/workflows/release-images.yml

@@ -26,6 +26,8 @@ spec:
       - {path: readiness.adapter_health, equals: true}
       - {path: journey.outcome, equals: ALLOW_REVIEW}
       - {path: journey.source_state, equals: REHEARSAL}
+      - {path: journey.model_participated, equals: false}
+      - {path: journey.intel_placement_verified, equals: false}
       - {path: journey.human_authority_preserved, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
