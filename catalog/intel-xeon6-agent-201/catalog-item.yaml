@@ -40,7 +40,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  showroom_content_ref: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
+  showroom_content_ref: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   operator_workshop: true
@@ -52,7 +52,7 @@ metadata:
   promotion_sequence:
   - 1
   activation_blockers:
-  - Certify the exact source revision 4af7302a68cd40e5c46ed963da8dd6d6586e204f and
+  - Certify the exact source revision b8475464e5f1447da67ccfc0673b9a8a3e4757d7 and
     workload revision c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d on one fresh Flightpath
     seat for Story, Console, managed inference, proof export, reclaim, and zero residue.
   certification_proof_contract: certification/catalog/intel-xeon6-agent-201.yaml
@@ -107,5 +107,5 @@ metadata:
     workspace: app
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  source_content_revision: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
+  source_content_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
   source_references: {}

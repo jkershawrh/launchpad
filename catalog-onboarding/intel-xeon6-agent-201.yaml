@@ -33,7 +33,7 @@ learning:
 sources:
   showroom:
     repo_url: "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
-    revision: "4af7302a68cd40e5c46ed963da8dd6d6586e204f"
+    revision: "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
     playbook: site.yml
     start_path: .
   workload:
@@ -98,7 +98,7 @@ certification:
   promotion_sequence:
     - 1
   activation_blockers:
-    - Certify the exact source revision 4af7302a68cd40e5c46ed963da8dd6d6586e204f and workload revision c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d on one fresh Flightpath seat for Story, Console, managed inference, proof export, reclaim, and zero residue.
+    - Certify the exact source revision b8475464e5f1447da67ccfc0673b9a8a3e4757d7 and workload revision c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d on one fresh Flightpath seat for Story, Console, managed inference, proof export, reclaim, and zero residue.
   production_blockers:
     - >-
       Mirror all participant workload images to a durable external registry

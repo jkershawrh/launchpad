@@ -13,7 +13,7 @@ CATALOG = ROOT / "catalog/intel-xeon6-agent-201/catalog-item.yaml"
 INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
-SOURCE_REVISION = "4af7302a68cd40e5c46ed963da8dd6d6586e204f"
+SOURCE_REVISION = "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
 WORKLOAD_REVISION = "c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d"
 WORKLOAD_BASE = (
     "https://raw.githubusercontent.com/rhpds/triforce/"
@@ -100,10 +100,12 @@ def test_catalog_seat_probe_reports_bounded_failure_stages():
     assert "inference_http_statuses:" in source
 
 
-def test_remote_certifier_reads_model_connection_from_the_wire_agent_page():
+def test_remote_certifier_reads_model_connection_from_participant_runtime_secret():
     source = (ROOT / "scripts/certify-agent-201-remote-seat.sh").read_text()
-    assert "/www/modules/03-wire-agent.html" in source
-    assert "/www/modules/02-deploy-tools.html" not in source
+    assert "launchpad-participant-runtime" in source
+    assert ".data.MAAS_ENDPOINT" in source
+    assert ".data.MAAS_MODEL" in source
+    assert "/www/modules/03-wire-agent.html" not in source
 
 
 def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():

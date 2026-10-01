@@ -11,8 +11,8 @@ def test_remote_agent_drivers_bind_to_the_labeled_execution_cluster():
     for script in (seat, journey):
         assert "launchpad\\.redhat\\.com/cluster-id" in script
         assert 'actual_cluster" != "$expected_cluster' in script
-        assert "LAUNCHPAD_INGRESS_IP" in script
         assert "ARENA_INGRESS_IP" not in script
+    assert "LAUNCHPAD_INGRESS_IP" in journey
 
 
 def test_remote_agent_drivers_exercise_the_participant_boundary_and_tools():

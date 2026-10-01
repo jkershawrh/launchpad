@@ -320,7 +320,7 @@ labs:
   intel-xeon6-agent-201:
     display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
     overall_status: immutable-source-published-draft
-    published_content_revision: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
+    published_content_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
     published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
     story: {status: green, evidence: "A Solution Architect agent gives the lab a concrete business role."}
     show: {status: green, evidence: "The working agent UI demonstrates the target outcome."}
@@ -331,9 +331,9 @@ labs:
     inference: {status: green-local, evidence: "The source checks the running Deployment model against every model-bearing inference-log record; fresh destination execution still gates GREEN-live."}
     cleanup: {status: green-local, evidence: "The candidate removes learner-created Deployments, Services, Routes, ConfigMaps, Secret, and temporary proof files, verifies their absence, and reserves full-seat reclaim for Launchpad."}
     source_truth:
-      reviewed_showroom_revision: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
-      catalog_showroom_revision: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
-      candidate_revision: 4af7302a68cd40e5c46ed963da8dd6d6586e204f
+      reviewed_showroom_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
+      catalog_showroom_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
+      candidate_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
       workload_reference: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
       workload_reference_status: immutable-public-commit
       certification_transfer: none

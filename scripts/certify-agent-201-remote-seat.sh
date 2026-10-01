@@ -24,21 +24,16 @@ if [[ -z "$workload_base" ]]; then
   echo "AGENT_201_WORKLOAD_BASE must identify the exact immutable workload revision" >&2
   exit 4
 fi
-stage="showroom-contract"
-host="$(oc get route showroom -n "$namespace" -o jsonpath='{.spec.host}')"
-curl_options=(-fsS)
-if [[ -n "${LAUNCHPAD_CURL_INTERFACE:-}" ]]; then
-  curl_options+=(--interface "$LAUNCHPAD_CURL_INTERFACE")
-fi
-if [[ -n "${LAUNCHPAD_INGRESS_IP:-}" ]]; then
-  curl_options+=(--resolve "${host}:443:${LAUNCHPAD_INGRESS_IP}")
-fi
-page="$(curl "${curl_options[@]}" "https://${host}/www/modules/03-wire-agent.html")"
-endpoint="$(printf '%s' "$page" | sed -n "s/.*--from-literal=api-base='\([^']*\)'.*/\1/p" | head -1)"
-model="$(printf '%s' "$page" | sed -n "s/.*ADVISOR_MODEL='\([^']*\)'.*/\1/p" | head -1)"
+stage="participant-runtime-contract"
+runtime_secret="$(
+  oc --kubeconfig "$KUBECONFIG" get secret launchpad-participant-runtime \
+    --namespace "$namespace" -o json
+)"
+endpoint="$(printf '%s' "$runtime_secret" | jq -r '.data.MAAS_ENDPOINT // empty | @base64d')"
+model="$(printf '%s' "$runtime_secret" | jq -r '.data.MAAS_MODEL // empty | @base64d')"
 
 if [[ -z "$endpoint" || -z "$model" ]]; then
-  echo "Showroom did not render the required model connection values" >&2
+  echo "participant runtime did not provide the required model connection values" >&2
   exit 3
 fi
 
