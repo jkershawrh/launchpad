@@ -4,7 +4,7 @@ description: Trace capability, challenge-bound workload identity, evidence appra
   resource policy, independent inference authorization, refusal states, and human
   authority.
 category: guided_build
-version: 0.1.0
+version: 0.1.1
 status: active
 required_capabilities:
 - openshift
@@ -55,10 +55,14 @@ metadata:
   certification_proof_contract: certification/catalog/sovereign-ai-301.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
+  public_access_certification_stage: one-seat-certified
+  public_max_workshop_seats: 1
   showroom_journey: sovereign-ai-301
   showroom_title: "Sovereign AI 301 \u2014 Confidential Inference and Intel TDX Foundations"
   namespace_slug: sovereign-ai-301
   showroom_terminal_storage: true
+  showroom_antora_flat: false
   showroom_tabs:
   - id: story
     title: Story
@@ -113,4 +117,5 @@ metadata:
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/sovereign-ai-301.git
   source_content_revision: a07902e0f58af8bd01a9e7f156bf89687173b72e
-  source_references: {}
+  source_references:
+    certification_evidence: evidence/runs/flightpath-live-20261002-sovereign-ai-301-public-1seat-r1.json

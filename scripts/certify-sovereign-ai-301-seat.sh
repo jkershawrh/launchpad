@@ -13,7 +13,7 @@ trap cleanup EXIT
 stage="route-discovery"
 app_host="$(oc --kubeconfig "$KUBECONFIG" get route story -n "$namespace" -o jsonpath='{.spec.host}')"
 [[ -n "$app_host" ]]
-presentation_status="$(curl -fsSL --max-time 30 -o /dev/null -w '%{http_code}' "https://${app_host}/")"
+presentation_status="$(curl -fsSkL --max-time 30 -o /dev/null -w '%{http_code}' "https://${app_host}/")"
 [[ "$presentation_status" == "200" ]]
 
 stage="qualifier-forward"

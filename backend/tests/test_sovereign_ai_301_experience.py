@@ -26,6 +26,14 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     assert catalog == build_catalog_item(load_intake(ROOT / "catalog-onboarding/sovereign-ai-301.yaml"))
     assert catalog["status"] == "active"
     assert metadata["certification_stage"] == "1-seat-certified"
+    assert metadata["allowed_exposure_policies"] == runtime[
+        "allowed_exposure_policies"
+    ] == ["internal", "public_code"]
+    assert metadata["public_access_certification_stage"] == "one-seat-certified"
+    assert metadata["public_max_workshop_seats"] == 1
+    assert metadata["source_references"]["certification_evidence"] == (
+        "evidence/runs/flightpath-live-20261002-sovereign-ai-301-public-1seat-r1.json"
+    )
     assert metadata["certification_transfer"] == "none"
     assert metadata["recommended_next_items"] == ["sovereign-ai-401"]
     assert metadata["required_models"] == runtime["required_models"] == []
@@ -50,7 +58,9 @@ def test_sovereign_ai_301_is_terminal_scoped_and_allocates_no_model_access() -> 
     assert metadata["workload_routes"] == runtime["workload"]["routes"] == {
         "ui": "story"
     }
-    assert "get route story" in (ROOT / "scripts/certify-sovereign-ai-301-seat.sh").read_text()
+    probe_source = (ROOT / "scripts/certify-sovereign-ai-301-seat.sh").read_text()
+    assert "get route story" in probe_source
+    assert "curl -fsSkL" in probe_source
 
     expected_tabs = ["story", "terminal"]
     assert [tab["id"] for tab in metadata["showroom_tabs"]] == expected_tabs

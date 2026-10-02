@@ -1387,6 +1387,14 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
         certification_metadata["production_blockers"] = copy.deepcopy(
             certification["production_blockers"]
         )
+    if "public_access_stage" in certification:
+        certification_metadata["public_access_certification_stage"] = str(
+            certification["public_access_stage"]
+        )
+    if "public_max_workshop_seats" in certification:
+        certification_metadata["public_max_workshop_seats"] = int(
+            certification["public_max_workshop_seats"]
+        )
     if "allowed_exposure_policies" in runtime:
         access_metadata["allowed_exposure_policies"] = copy.deepcopy(
             runtime["allowed_exposure_policies"]

@@ -1,0 +1,154 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261002-sovereign-ai-301-public-1seat-r1",
+  "catalog_item_id": "sovereign-ai-301",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-02T14:27:22Z",
+  "contract": {
+    "catalog_version_under_test": "0.1.1",
+    "git_commit": "48715ff665c40ebf9e9f590d1bb3390f2bbdee2e",
+    "intake_path": "catalog-onboarding/sovereign-ai-301.yaml",
+    "path": "certification/catalog/sovereign-ai-301.yaml",
+    "sha256": "f90446e014a7360b2496ad88ea86941df15936da9ef56bed19a41fa680a13159"
+  },
+  "source": {
+    "showroom_revision": "a07902e0f58af8bd01a9e7f156bf89687173b72e",
+    "workload_revision": "a07902e0f58af8bd01a9e7f156bf89687173b72e",
+    "workload_image": "ghcr.io/jkershawrh/sovereign-ai-301-qualifier@sha256:9972430351ea2b5b8c6f8798e3b9baf244194fc29b48471d42cb2ee06f497e62",
+    "presentation_image": "ghcr.io/jkershawrh/sovereign-ai-301-presentation@sha256:203a386123a2ea34198a0b3a67c967481d4a72300f232010a48af4c4209f5893",
+    "source_state": "REHEARSAL"
+  },
+  "plan": {
+    "catalog_item_id": "sovereign-ai-301",
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false,
+    "all_seats_same_cluster": true
+  },
+  "capacity_preview": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "seats_requested": 1,
+    "supported_seats": 85,
+    "estimated_resources": {
+      "cpu_millicores": 50,
+      "memory_mib": 80,
+      "pods": 2
+    }
+  },
+  "order": {
+    "workshop_id": "b250b720-88e0-442e-9764-8ce603916485",
+    "session_ids": [
+      "445a67f8-98f5-42d1-a8e4-79b9f326f9fb"
+    ],
+    "namespaces": [
+      "launchpad-flightpath-candida-sovereign-ai-301-60422e"
+    ],
+    "seat_count": 1,
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready"
+  },
+  "seat_results": [
+    {
+      "seat_id": "60422ec3-b30b-4e9d-92fb-29762065f42c",
+      "seat_number": 1,
+      "session_id": "445a67f8-98f5-42d1-a8e4-79b9f326f9fb",
+      "namespace": "launchpad-flightpath-candida-sovereign-ai-301-60422e",
+      "cluster_ref": "flightpath",
+      "probe": {
+        "passed": true,
+        "exit_code": 0,
+        "assertion_failures": [],
+        "result": {
+          "result": "GREEN-live-internal-seat",
+          "readiness": {
+            "qualifier_health": true,
+            "presentation_http_status": 200
+          },
+          "journey": {
+            "mode": "REHEARSAL",
+            "live_tdx_observed": false,
+            "confidential_runtime_enabled": false,
+            "hardware_quote_verified": false,
+            "trustee_verified": false,
+            "allow_path": "ALLOW_SYNTHETIC_RELEASE",
+            "deny_path": "DENY_MEASUREMENT",
+            "synthetic_receipt_only": true,
+            "key_material_released": false,
+            "inference_authorized": false,
+            "model_invoked": false,
+            "human_authority_retained": true
+          },
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-sovereign-ai-301-60422e",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "contains_sensitive_values": false
+        }
+      },
+      "public_browser": {
+        "trusted_tls": true,
+        "claim_succeeded": true,
+        "same_seat_recovery_succeeded": true,
+        "showroom_loaded": true,
+        "showroom_antora_content_loaded": true,
+        "story_embedded": true,
+        "terminal_embedded": true,
+        "declared_tools_loaded": true,
+        "participant_identity_namespace_scoped": true,
+        "cross_namespace_access_denied": true,
+        "cluster_node_access_denied": true,
+        "public_url": "https://labs.smg-helix.ai/labs/sovereign-ai-301-b250b720"
+      }
+    }
+  ],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "public_browser_passed": true,
+    "same_seat_recovery_passed": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "truthful_rehearsal_boundary_passed": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "idempotent_reclaim": true,
+    "access_policy_enabled": false,
+    "active_claim_count": 0,
+    "model_keys_revoked": true,
+    "model_key_revocation_confirmation": "http-success",
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    }
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_email_exported": false,
+    "participant_identity_is_opaque": true,
+    "namespace_scope_enforced": true
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}

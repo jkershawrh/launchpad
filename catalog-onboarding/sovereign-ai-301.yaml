@@ -6,7 +6,7 @@ catalog:
     resource policy, independent inference authorization, refusal states, and human
     authority.
   category: guided_build
-  version: 0.1.0
+  version: 0.1.1
   status: active
 learning:
   learning_level: '301'
@@ -71,6 +71,7 @@ runtime:
     source: showroom.terminal
   allowed_exposure_policies:
   - internal
+  - public_code
   workload:
     source_kind: chart
     gitops_ready: true
@@ -99,7 +100,11 @@ certification:
   stage: 1-seat-certified
   certified_seats: 1
   max_workshop_seats: 1
+  public_access_stage: one-seat-certified
+  public_max_workshop_seats: 1
   promotion_sequence:
   - 1
   activation_blockers: []
   proof_contract: certification/catalog/sovereign-ai-301.yaml
+references:
+  certification_evidence: evidence/runs/flightpath-live-20261002-sovereign-ai-301-public-1seat-r1.json
