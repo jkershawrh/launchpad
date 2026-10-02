@@ -1,0 +1,147 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261002-virtualization-ai-401-public-1seat-r1",
+  "catalog_item_id": "virtualization-ai-401",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-02T15:47:45Z",
+  "contract": {
+    "catalog_version_under_test": "0.1.1",
+    "git_commit": "38e2fa91",
+    "backend_release_commit": "554332be3495c74329d01b9db12bb11b522fac45",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:6af8015cc6f48935b1940a8948483a71653f347ecbded6d0733efcc671f6b9c2",
+    "backend_release_workflow": "https://github.com/rhpds/launchpad/actions/runs/37027466374",
+    "intake_path": "catalog-onboarding/virtualization-ai-401.yaml",
+    "path": "certification/catalog/virtualization-ai-401.yaml",
+    "sha256": "2944bca3a207de099a89e160544b2b2bd9e7b1b18b788710152dc4b492d83452"
+  },
+  "source": {
+    "showroom_revision": "f00b4bc075acf37f014b8ee55d5810625639b6b3",
+    "workload_revision": "f00b4bc075acf37f014b8ee55d5810625639b6b3",
+    "presentation_image": "ghcr.io/jkershawrh/virtualization-ai-401-presentation@sha256:7115b9332335e9ceb77f68b9dc04828b36e1f0c874deee56272556fa3001bf25",
+    "adapter_image": "ghcr.io/jkershawrh/virtualization-ai-401-operations-adapter@sha256:864ad89cb5f4bae6f2b403c31604d78692e30afe9275c0d753a9eafaeae9d8ca",
+    "source_state": "REHEARSAL"
+  },
+  "plan": {
+    "catalog_item_id": "virtualization-ai-401",
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false,
+    "all_seats_same_cluster": true
+  },
+  "capacity_preview": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "seats_requested": 1,
+    "catalog_seat_limit": 1,
+    "estimated_resources": {
+      "cpu_millicores": 625,
+      "memory_mib": 672,
+      "pods": 3
+    }
+  },
+  "order": {
+    "workshop_id": "6611e9ca-c53e-416d-bf9d-0e375b680180",
+    "session_ids": ["4eac618e-e93a-4414-95b3-064b06913e4f"],
+    "namespaces": ["launchpad-flightpath-candida-virtualization-ai-6b5819"],
+    "seat_count": 1,
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready"
+  },
+  "seat_results": [
+    {
+      "seat_id": "6b58197d-b3e6-4dcf-8278-d7c08850b80e",
+      "seat_number": 1,
+      "session_id": "4eac618e-e93a-4414-95b3-064b06913e4f",
+      "namespace": "launchpad-flightpath-candida-virtualization-ai-6b5819",
+      "cluster_ref": "flightpath",
+      "probe": {
+        "passed": true,
+        "result": {
+          "result": "GREEN-live-internal-seat",
+          "readiness": {
+            "vms_running": 1,
+            "vmis_ready": 1,
+            "presentation_http_status": 200,
+            "adapter_health": true
+          },
+          "journey": {
+            "source_state": "REHEARSAL",
+            "outcome": "ALLOW_REVIEW",
+            "model_participated": false,
+            "human_authority_preserved": true
+          },
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-virtualization-ai-6b5819",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "contains_sensitive_values": false
+        }
+      },
+      "public_browser": {
+        "trusted_tls": true,
+        "claim_succeeded": true,
+        "same_seat_recovery_succeeded": true,
+        "showroom_loaded": true,
+        "showroom_antora_content_loaded": true,
+        "story_embedded": true,
+        "terminal_page_loaded": true,
+        "terminal_token_entitlement_revalidated": true,
+        "terminal_websocket_handshake": true,
+        "terminal_websocket_upstream": "wss://showroom-launchpad-flightpath-candida-virtualization-ai-6b5819.apps.flightpath.fm2aihpcsed.com/terminal/ws",
+        "openshift_console_embedded": true,
+        "participant_identity_namespace_scoped": true,
+        "cross_namespace_access_denied": true,
+        "cluster_node_access_denied": true,
+        "public_url": "https://labs.smg-helix.ai/labs/virtualization-ai-401-6611e9ca"
+      }
+    }
+  ],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "public_browser_passed": true,
+    "same_seat_recovery_passed": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "truthful_rehearsal_boundary_passed": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "idempotent_reclaim": true,
+    "access_policy_enabled": false,
+    "active_claim_count": 0,
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    }
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_email_exported": false,
+    "participant_identity_is_opaque": true,
+    "namespace_scope_enforced": true
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}

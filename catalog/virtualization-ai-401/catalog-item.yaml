@@ -55,7 +55,7 @@ metadata:
   allowed_exposure_policies:
   - internal
   - public_code
-  public_access_certification_stage: one-seat-candidate
+  public_access_certification_stage: one-seat-certified
   public_max_workshop_seats: 1
   showroom_journey: virtualization-ai-401
   showroom_title: "Virtualization + AI 401 \u2014 Operate Hybrid VM and AI Workloads"
@@ -126,4 +126,4 @@ metadata:
   source_content_revision: f00b4bc075acf37f014b8ee55d5810625639b6b3
   source_references:
     release_workflow: https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36761503526
-    certification_evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r9.json
+    certification_evidence: evidence/runs/flightpath-live-20261002-virtualization-ai-401-public-1seat-r1.json
