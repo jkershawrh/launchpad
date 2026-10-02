@@ -72,7 +72,7 @@ def test_shared_driver_retries_participant_routes_at_scale():
     )
 
 
-def test_401_certification_records_the_earned_twenty_five_seat_limit():
+def test_401_revised_source_restarts_certification_at_one_seat():
     contract = load_certification_contract(CERTIFICATION)
     intake = load_intake(INTAKE)
     assert validate_certification_contract(
@@ -83,7 +83,7 @@ def test_401_certification_records_the_earned_twenty_five_seat_limit():
     spec = contract["spec"]
 
     assert spec["target_cluster"] == "flightpath"
-    assert spec["allowed_exposure_policies"] == ["internal"]
+    assert spec["allowed_exposure_policies"] == ["internal", "public_code"]
     assert spec["scale_profiles"] == [
         {
             "seats": 1,
@@ -113,15 +113,19 @@ def test_401_certification_records_the_earned_twenty_five_seat_limit():
     plan = build_certification_plan(
         contract,
         intake=intake,
-        seats=25,
+        seats=1,
         exposure_policy="internal",
     )
-    assert plan["current_certified_seats"] == 5
-    assert plan["next_promotion_target"] == 25
-    assert plan["certification_override"] is True
+    assert intake["learning"]["certification_transfer"] == "none"
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["certified_seats"] == 1
+    assert intake["certification"]["max_workshop_seats"] == 1
+    assert plan["current_certified_seats"] == 1
+    assert plan["next_promotion_target"] == 5
+    assert plan["certification_override"] is False
     assert plan["execution_eligible"] is True
-    assert plan["probe_concurrency"] == 10
-    assert plan["required_consecutive_runs"] == 3
+    assert plan["probe_concurrency"] == 1
+    assert plan["required_consecutive_runs"] == 1
     assertions = {
         item["path"]: item for item in spec["seat_probe"]["json_assertions"]
     }

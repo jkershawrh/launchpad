@@ -7,9 +7,8 @@ Launchpad journey built on the Red Hat and Intel evidence-backed multi-agent
 blueprint: a Triforce-style pre-lab presentation followed by the 401 hands-on
 operations lab.
 
-The source and content candidate were committed on branch
-`codex/flightpath-migration-20260922`. The catalog pins the Showroom content to
-commit `ddd7c2aab25d4c10f7738f15eece1ab101a95b15`.
+The catalog pins the reviewed version 0.1.1 Showroom content to commit
+`d12a47688d57b9d72fe8c069bad45cb0baad94aa`.
 
 The presentation source is pinned to commit
 `9cec3cebe7972b92385c55174674532eeb895f97` in
@@ -59,9 +58,10 @@ Files:
 
 The candidate reuses the digest-pinned `multi-agent-seat` chart and workload
 image from `multi-agent-quickstart`. It remains `status: draft` and is not
-ready for participant ordering. Its current immutable runtime has earned an
-internal certification limit of 25 seats while its public limit remains one
-seat.
+ready for participant ordering. Historical runtime receipts prove one, five,
+and 25 internal seats, but those version 0.1.0 receipts do not transfer to the
+revised version 0.1.1 learner journey. The exact candidate therefore returns
+to a one-seat ceiling pending fresh one-seat certification.
 
 The chart now has an opt-in presentation runtime contract. When the 401
 catalog item enables it, Argo CD creates a separately owned presentation
@@ -155,8 +155,9 @@ The catalog item records these gates:
 2. Add certified OpenTelemetry collection and a learner-visible trace.
 3. Validate namespace-scoped GitOps drift detection and pipeline evaluation.
 4. Publish approved Intel Xeon latency, token, and CPU-allocation telemetry.
-5. Keep the immutable content provenance and completed one-, five-, and
-   twenty-five-seat zero-residue evidence attached to subsequent releases.
+5. Keep the historical one-, five-, and twenty-five-seat zero-residue evidence
+   attached to the exact releases it tested; do not transfer it to revised
+   content or runtime candidates.
 
 The previous runtime digest earned 25-seat internal scale. Runtime source
 `43889bc9444f9ef07f5b1a88e7de534af9647264` adds native correlation, keeps
@@ -235,16 +236,16 @@ GREEN-live runs (`r4`, `r5`, and `r6`), each with 25/25 participant probes,
 
 ## Recommended next work
 
-1. Review the 401 learning flow and commands for the intended participant
-   persona.
-2. Build the Showroom package and visually inspect every page.
-3. Preserve the current authenticated runtime and repeat the scale gate after
+1. Run fresh one-seat certification for the exact version 0.1.1 Showroom
+   revision, including all six stages, presentation handoff, surfaces,
+   inference identity, restoration, and zero-residue reclaim.
+2. Preserve the current authenticated runtime and repeat the scale gate after
    any workload, presentation, chart, model-route, or probe-contract change.
-4. Add an independently addressable guardrail boundary so failure injection
+3. Add an independently addressable guardrail boundary so failure injection
    can be tested without terminating the compact workload pod.
-5. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
+4. Add approved OpenTelemetry and Intel endpoint telemetry incrementally, with
    contract tests first.
-6. Preserve the Flightpath ingress CA as an explicit certification input; do
+5. Preserve the Flightpath ingress CA as an explicit certification input; do
    not replace certificate verification with an insecure client flag.
-7. Keep the catalog draft and public capacity at one until the remaining
+6. Keep the catalog draft and public capacity at one until the remaining
    telemetry, failure-boundary, and production-ownership blockers are closed.

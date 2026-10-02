@@ -19,7 +19,7 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["learning_stage"] == "Operate"
     assert metadata["journey_role"] == "core"
     assert metadata["shared_blueprint"] == "red-hat-intel-agentic-v1"
-    assert metadata["max_workshop_seats"] == 5
+    assert metadata["max_workshop_seats"] == 1
     assert metadata["public_max_workshop_seats"] == 1
     assert metadata["promotion_sequence"] == [1, 5, 25]
     assert metadata["package_base_commit"] == (
@@ -74,7 +74,8 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
         {"name": "launchpad-registry-pull"}
     ]
     assert metadata["activation_blockers"]
-    assert metadata["certification_stage"] == "5-seat-certified"
+    assert metadata["certification_stage"] == "1-seat-certified"
+    assert metadata["certification_transfer"] == "none"
     assert len(metadata["activation_blockers"]) == 4
     assert not any(
         "same-origin" in blocker or "correlation fields" in blocker
@@ -112,6 +113,34 @@ def test_operate_blueprint_content_is_a_linear_evidence_journey():
         "REHEARSAL",
     ):
         assert proof in guide
+
+
+def test_operate_blueprint_intake_names_all_six_stages_exactly():
+    intake = yaml.safe_load(
+        (ROOT / "catalog-onboarding/operate-agentic-blueprint.yaml").read_text()
+    )
+
+    assert [track["title"] for track in intake["runtime"]["learning_tracks"]] == [
+        "Establish the Operational Baseline",
+        "Correlate the Journey",
+        "Inspect Evidence and Policy",
+        "Prove Safe Denial and Recovery",
+        "Change, Compare, and Restore",
+        "Operational Proof Package",
+    ]
+    assert all(
+        set(track) == {"id", "title"}
+        for track in intake["runtime"]["learning_tracks"]
+    )
+
+
+def test_operate_blueprint_handoff_preserves_the_exact_source_certification_boundary():
+    handoff = (ROOT / "docs/agentic-blueprint-401-handoff.md").read_text()
+
+    assert "d12a47688d57b9d72fe8c069bad45cb0baad94aa" in handoff
+    assert "version 0.1.1" in handoff
+    assert "do not transfer" in handoff
+    assert "fresh one-seat certification" in handoff
 
 
 def test_operate_blueprint_does_not_present_uncertified_integrations_as_live():

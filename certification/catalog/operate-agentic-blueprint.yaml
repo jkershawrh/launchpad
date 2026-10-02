@@ -10,6 +10,7 @@ spec:
   kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
   allowed_exposure_policies:
     - internal
+    - public_code
 
   scale_profiles:
     - seats: 1
@@ -122,6 +123,20 @@ spec:
       - path: intel_xeon_inference.configured_model
         equals: granite-3.2-8b-tools
       - path: intel_xeon_inference.workflow_completed
+        equals: true
+      - path: intel_xeon_inference.semantic_route_completed
+        equals: true
+      - path: semantic_routing.classification_status
+        equals: ok
+      - path: semantic_routing.classifier
+        equals: llm-fallback
+      - path: semantic_routing.selected_model
+        equals: simple
+      - path: semantic_routing.selected_workflow
+        equals: standard
+      - path: learner_policy.rollback_restored_baseline
+        equals: true
+      - path: learner_policy.configmap_removed
         equals: true
       - path: terminal_scope
         contains: own_edit=yes

@@ -38,10 +38,12 @@ def test_activation_audit_preserves_scale_and_activation_boundary():
     assert catalog["status"] == "draft"
     # The audit belongs to a prior immutable digest. It remains historical
     # scale evidence and does not raise the current draft candidate's ceiling.
-    assert catalog["metadata"]["max_workshop_seats"] == 5
+    assert catalog["metadata"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["public_max_workshop_seats"] == 1
-    # Two gates were subsequently closed by the correlation/live-policy
-    # one-seat release; this historical audit remains immutable.
+    assert catalog["metadata"]["certification_transfer"] == "none"
+    # The exact 0.1.1 one-seat journey subsequently closed the source-proof
+    # gate. This historical scale audit remains immutable and does not close
+    # the four independent activation gates.
     assert len(catalog["metadata"]["activation_blockers"]) == 4
 
 

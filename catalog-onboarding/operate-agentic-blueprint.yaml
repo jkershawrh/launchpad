@@ -23,6 +23,7 @@ learning:
   returns_to: null
   shared_blueprint: red-hat-intel-agentic-v1
   solution_family: operations_reliability
+  certification_transfer: none
 sources:
   showroom:
     repo_url: https://github.com/rhpds/launchpad.git
@@ -48,20 +49,24 @@ runtime:
   - id: stage-4-recovery
     title: Prove Safe Denial and Recovery
   - id: stage-5-change
-    title: Change
-    Compare: null
-    and Restore: null
+    title: Change, Compare, and Restore
   - id: stage-6-proof-package
     title: Operational Proof Package
 certification:
-  stage: 5-seat-certified
-  certified_seats: 5
-  max_workshop_seats: 5
+  stage: 1-seat-certified
+  certified_seats: 1
+  max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
   - 25
   proof_contract: certification/catalog/operate-agentic-blueprint.yaml
   activation_blockers:
-  - Resolve the remaining non-scale activation blockers recorded in the catalog item
-    before changing draft status.
+  - Prove independent guardrail and inference outage tests, fail-closed behavior,
+    and recovery without relying on co-located-process restarts.
+  - Add certified OpenTelemetry collection and a learner-visible correlated trace
+    without exposing secrets or hidden model reasoning.
+  - Validate namespace-scoped GitOps drift detection and pipeline-based evaluation
+    before presenting those operator capabilities as live.
+  - Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation
+    through an approved telemetry source.
