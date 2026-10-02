@@ -1472,6 +1472,16 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "showroom_antora_flat": bool(
                 runtime.get("showroom_antora_flat", False)
             ),
+            **(
+                {"showroom_antora_name": str(runtime["showroom_antora_name"])}
+                if "showroom_antora_name" in runtime
+                else {}
+            ),
+            **(
+                {"showroom_antora_version": str(runtime["showroom_antora_version"])}
+                if "showroom_antora_version" in runtime
+                else {}
+            ),
             "showroom_tabs": runtime["tabs"],
             **(
                 {"workshop_cluster_ref": runtime["workshop_cluster_ref"]}

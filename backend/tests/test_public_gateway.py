@@ -5,6 +5,7 @@ from app.public_gateway import (
     _lab_cards,
     _public_order_prefix,
     _rewrite_showroom_config,
+    _terminal_ws_token,
     _rewrite_upstream_content,
     _tool_proxy_request_headers,
     _tool_proxy_response_headers,
@@ -551,6 +552,18 @@ def test_gateway_accepts_oauth_proxy_websocket_identity_headers():
         },
     )()
     assert _username(request) == "lp-87bd01a6f6c73d54ece70b489ceb3957"
+
+
+def test_terminal_upgrade_token_is_order_scoped_and_short_lived(monkeypatch):
+    from app import public_gateway
+
+    monkeypatch.setattr(public_gateway, "BROKER_KEY", "test-broker-key")
+    monkeypatch.setattr(public_gateway.time, "time", lambda: 1_000)
+
+    token = _terminal_ws_token("lp-test", "/labs/virtualization-ai-401-abcd1234")
+
+    assert token.count(".") == 1
+    assert "lp-test" not in token
 
 
 def test_verified_wss_uses_the_websocket_clients_default_tls_context():

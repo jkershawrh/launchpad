@@ -11,10 +11,15 @@ Runs as a pod on Arena and routes tunnel traffic to in-cluster services:
 from __future__ import annotations
 
 import asyncio
+import base64
+import hashlib
+import hmac
+import json
 import logging
 import os
 import re
 import ssl
+import time
 import traceback
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
@@ -327,7 +332,51 @@ def _websocket_connection(
     return upstream_url, connect_overrides
 
 
-async def _resolve_showroom_ws(headers: dict, path: str) -> str | None:
+def _terminal_websocket_target(path: str) -> tuple[str, str] | None:
+    """Map public/legacy ttyd paths to an entitled Showroom WebSocket."""
+    shared = re.fullmatch(
+        r"(labs/[a-z0-9]+(?:-[a-z0-9]+)*/showroom)/terminal/(.+)",
+        path,
+    )
+    if shared:
+        public_path = "/" + shared.group(1).split("/showroom", 1)[0]
+        return public_path, shared.group(2)
+    if path.startswith("terminal/"):
+        return "", path.removeprefix("terminal/")
+    return None
+
+
+def _terminal_token_identity(query: str, public_path: str) -> str:
+    """Validate the gateway-issued, order-scoped ttyd upgrade token."""
+    token = dict(parse_qsl(query, keep_blank_values=True)).get("token", "")
+    if not BROKER_KEY or "." not in token:
+        return ""
+    encoded, supplied_signature = token.split(".", 1)
+    expected_signature = base64.urlsafe_b64encode(
+        hmac.new(BROKER_KEY.encode(), encoded.encode(), hashlib.sha256).digest()
+    ).rstrip(b"=").decode()
+    if not hmac.compare_digest(supplied_signature, expected_signature):
+        return ""
+    try:
+        padding = "=" * (-len(encoded) % 4)
+        payload = json.loads(base64.urlsafe_b64decode(encoded + padding))
+    except (ValueError, json.JSONDecodeError):
+        return ""
+    try:
+        expires_at = int(payload.get("e", 0))
+    except (TypeError, ValueError):
+        return ""
+    if payload.get("p") != public_path or expires_at < int(time.time()):
+        return ""
+    return str(payload.get("u", ""))
+
+
+async def _resolve_showroom_ws(
+    headers: dict,
+    path: str,
+    public_path: str = "",
+    username: str = "",
+) -> str | None:
     """Resolve the Showroom WebSocket URL by making an authenticated HTTP
     request through the gateway's oauth2-proxy (which works for HTTP), then
     connecting the WebSocket directly to the Showroom route (which doesn't
@@ -336,27 +385,28 @@ async def _resolve_showroom_ws(headers: dict, path: str) -> str | None:
     tunnel_host = headers.get("host", "")
     cookie = headers.get("cookie", "")
 
-    if not cookie or not tunnel_host:
+    if not tunnel_host or (not username and not cookie):
         ws_log.warning("No cookie or host for WS resolve")
         return None
 
     try:
-        # oauth2-proxy validates the browser session and returns the trusted
-        # stable participant username in its auth-response headers.
-        auth_url = f"{GATEWAY_ORIGIN}/oauth2/auth"
-        async with httpx.AsyncClient(timeout=10, verify=False) as client:
-            resp = await client.get(
-                auth_url,
-                headers={"host": tunnel_host, "cookie": cookie},
-            )
-            username = resp.headers.get("x-auth-request-email", "") or resp.headers.get(
-                "x-auth-request-user", ""
-            )
-            ws_log.info(
-                "Resolved username from oauth2: %s (status=%s)",
-                username,
-                resp.status_code,
-            )
+        if not username:
+            # oauth2-proxy validates the browser session and returns the
+            # stable participant username when the cookie fits the upgrade.
+            auth_url = f"{GATEWAY_ORIGIN}/oauth2/auth"
+            async with httpx.AsyncClient(timeout=10, verify=False) as client:
+                resp = await client.get(
+                    auth_url,
+                    headers={"host": tunnel_host, "cookie": cookie},
+                )
+                username = resp.headers.get("x-auth-request-email", "") or resp.headers.get(
+                    "x-auth-request-user", ""
+                )
+                ws_log.info(
+                    "Resolved username from oauth2: %s (status=%s)",
+                    username,
+                    resp.status_code,
+                )
 
         if not username:
             ws_log.warning("Could not resolve username from oauth2/auth")
@@ -366,7 +416,11 @@ async def _resolve_showroom_ws(headers: dict, path: str) -> str | None:
         async with httpx.AsyncClient(timeout=10, verify=False) as client:
             resp = await client.get(
                 f"{BACKEND_URL}/public-access/private/resolve-identity",
-                params={"host": tunnel_host.split(":")[0], "username": username},
+                params={
+                    "host": tunnel_host.split(":")[0],
+                    "username": username,
+                    "public_path": public_path,
+                },
                 headers={"X-Access-Broker-Key": BROKER_KEY},
             )
             if resp.status_code != 200:
@@ -532,14 +586,30 @@ async def websocket_route(path: str, client: WebSocket):
     selected_protocol = "tty" if "tty" in requested_protocols else None
     await client.accept(subprotocol=selected_protocol)
     try:
-        # For terminal WebSocket: resolve the Showroom URL from the backend
-        # and connect directly, bypassing the gateway's oauth2-proxy which
-        # doesn't reliably proxy WebSocket upgrades.
-        if upstream_path.startswith("terminal/"):
-            actual_url = await _resolve_showroom_ws(headers, upstream_path)
-            if actual_url:
-                upstream_url = actual_url
-                connect_overrides = {}
+        # For terminal WebSockets, resolve the entitled Showroom route and
+        # connect directly.  Shared-origin labs mount ttyd beneath
+        # /labs/<order>/showroom/terminal, but ttyd appends /ws to that whole
+        # browser path.  Normalize both shared and legacy forms back to the
+        # Showroom origin's /ws endpoint instead of sending the upgrade
+        # through oauth2-proxy.
+        terminal_target = _terminal_websocket_target(upstream_path)
+        if terminal_target:
+            public_path, terminal_path = terminal_target
+            terminal_username = _terminal_token_identity(
+                client.url.query,
+                public_path,
+            )
+            actual_url = await _resolve_showroom_ws(
+                headers,
+                terminal_path,
+                public_path=public_path,
+                username=terminal_username,
+            )
+            if not actual_url:
+                await client.close(code=4403)
+                return
+            upstream_url = actual_url
+            connect_overrides = {}
 
         ws_kwargs = dict(
             additional_headers={k: v for k, v in headers.items() if k.casefold() != "host"},

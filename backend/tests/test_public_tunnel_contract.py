@@ -755,6 +755,33 @@ def test_tunnel_websocket_keeps_the_public_host_while_dialing_the_gateway_servic
     }
 
 
+def test_shared_origin_terminal_websocket_resolves_the_order_and_ttyd_endpoint():
+    router = _router_module()
+
+    assert router._terminal_websocket_target(
+        "labs/virtualization-ai-401-6611e9ca/showroom/terminal/ws"
+    ) == ("/labs/virtualization-ai-401-6611e9ca", "ws")
+    assert router._terminal_websocket_target("terminal/ws") == ("", "ws")
+    assert router._terminal_websocket_target("labs/example/showroom/ws") is None
+
+
+def test_terminal_websocket_token_is_bound_to_the_public_order(monkeypatch):
+    from app import public_gateway
+
+    router = _router_module()
+    monkeypatch.setattr(public_gateway, "BROKER_KEY", "test-broker-key")
+    monkeypatch.setattr(router, "BROKER_KEY", "test-broker-key")
+    monkeypatch.setattr(public_gateway.time, "time", lambda: 1_000)
+    monkeypatch.setattr(router.time, "time", lambda: 1_001)
+    path = "/labs/virtualization-ai-401-abcd1234"
+    token = public_gateway._terminal_ws_token("lp-test", path)
+
+    assert router._terminal_token_identity(f"token={token}", path) == "lp-test"
+    assert router._terminal_token_identity(
+        f"token={token}", "/labs/other-abcd1234"
+    ) == ""
+
+
 def test_public_terminal_websockets_use_bounded_keepalive_timeouts():
     tunnel_router = (ROOT / "deploy/tunnel-oncluster/router.py").read_text()
     public_gateway = (ROOT / "backend/app/public_gateway.py").read_text()

@@ -2,7 +2,7 @@ catalog_item_id: virtualization-ai-401
 display_name: "Virtualization + AI 401 \u2014 Operate Hybrid VM and AI Workloads"
 description: Certified one-seat governed hybrid VM and AI day-two operations experience.
 category: guided_build
-version: 0.1.0
+version: 0.1.1
 status: active
 required_capabilities:
 - openshift
@@ -54,8 +54,14 @@ metadata:
   certification_proof_contract: certification/catalog/virtualization-ai-401.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
+  public_access_certification_stage: one-seat-candidate
+  public_max_workshop_seats: 1
   showroom_journey: virtualization-ai-401
   showroom_title: "Virtualization + AI 401 \u2014 Operate Hybrid VM and AI Workloads"
+  showroom_antora_name: virtualization-ai-401
+  showroom_antora_version: ''
+  showroom_antora_flat: false
   namespace_slug: virtualization-ai-401
   showroom_terminal_storage: true
   showroom_tabs:
@@ -71,7 +77,7 @@ metadata:
     source: cluster.console_url
   workshop_cluster_ref: flightpath
   required_models: []
-  inference_endpoint: litellm
+  inference_endpoint: none
   seat_cpu_millicores: 625
   seat_memory_mib: 672
   seat_pods: 3
@@ -118,4 +124,6 @@ metadata:
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/virtualization-ai-401.git
   source_content_revision: f00b4bc075acf37f014b8ee55d5810625639b6b3
-  source_references: {}
+  source_references:
+    release_workflow: https://github.com/jkershawrh/virtualization-ai-401/actions/runs/36761503526
+    certification_evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-401-1seat-r9.json

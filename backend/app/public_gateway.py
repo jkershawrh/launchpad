@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 import asyncio
+import base64
+import hashlib
 import html
+import hmac
+import json
 import os
 import re
 import ssl
+import time
 from collections.abc import Mapping
 from datetime import datetime
 from pathlib import Path
@@ -14,7 +19,7 @@ import httpx
 import websockets
 import yaml
 from fastapi import FastAPI, Form, HTTPException, Request, Response, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
@@ -64,6 +69,22 @@ def _username(request: Request) -> str:
         or request.headers.get("x-forwarded-user", "")
         or request.headers.get("x-auth-request-user", "")
     )
+
+
+def _terminal_ws_token(username: str, public_path: str, ttl_seconds: int = 60) -> str:
+    """Issue a short-lived, order-scoped terminal upgrade credential."""
+    if not BROKER_KEY or not username or not re.fullmatch(
+        r"/labs/[a-z0-9]+(?:-[a-z0-9]+)*", public_path
+    ):
+        raise HTTPException(403, "Terminal access cannot be completed")
+    payload = json.dumps(
+        {"u": username, "p": public_path, "e": int(time.time()) + ttl_seconds},
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode()
+    encoded = base64.urlsafe_b64encode(payload).rstrip(b"=").decode()
+    signature = hmac.new(BROKER_KEY.encode(), encoded.encode(), hashlib.sha256).digest()
+    return encoded + "." + base64.urlsafe_b64encode(signature).rstrip(b"=").decode()
 
 
 async def _resolve(request: Request) -> dict:
@@ -798,6 +819,15 @@ async def order_showroom(
     order_ref: str,
     path: str = "",
 ):
+    if path == "terminal/token":
+        # The surrounding HTTP request has already passed OIDC.  Resolve the
+        # entitlement again before issuing a short-lived credential because
+        # browsers and tunnel edges don't reliably forward large split OIDC
+        # cookies on WebSocket upgrades.
+        await _resolve(request)
+        return JSONResponse(
+            {"token": _terminal_ws_token(_username(request), f"/labs/{order_ref}")}
+        )
     upstream_path = f"www/{path}" if path == "ui-config.yml" else path
     return await _showroom_alias(
         request,

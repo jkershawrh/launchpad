@@ -163,12 +163,13 @@ def build_showroom_application(
         "modules": [{"name": "index", "label": "Instructions"}],
     }
     if not seat.antora_flat:
-        antora_config.update(
-            {
-                "name": seat.antora_name or seat.journey,
-                "version": seat.antora_version,
-            }
-        )
+        antora_config["name"] = seat.antora_name or seat.journey
+        # Antora omits the version directory for some latest/unversioned
+        # components.  An explicitly empty catalog version must therefore be
+        # omitted from Showroom's URL resolver instead of being coerced to
+        # ``main``.
+        if seat.antora_version:
+            antora_config["version"] = seat.antora_version
     ui_config = {
         "type": "showroom",
         "default_width": 40,
