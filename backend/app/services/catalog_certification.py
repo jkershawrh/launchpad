@@ -22,6 +22,7 @@ ALLOWED_CLEANUP_RESOURCES = {
     "namespaces",
     "applications.argoproj.io",
     "rolebindings.rbac.authorization.k8s.io",
+    "clusterrolebinding-subjects.rbac.authorization.k8s.io",
     "persistentvolumeclaims",
     "persistentvolumes",
     "routes.route.openshift.io",

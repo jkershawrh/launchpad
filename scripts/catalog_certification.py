@@ -504,10 +504,39 @@ def _resource_counts(
     kubeconfig: str,
     cleanup_kubeconfig: str | None = None,
     control_kubeconfig: str | None = None,
+    namespaces: list[str] | None = None,
 ) -> dict[str, int]:
     selector = f"launchpad.redhat.com/workshop-id={workshop_id}"
     counts: dict[str, int] = {}
     for resource in resources:
+        if resource == "clusterrolebinding-subjects.rbac.authorization.k8s.io":
+            completed = subprocess.run(
+                [
+                    "oc",
+                    "--kubeconfig",
+                    cleanup_kubeconfig or kubeconfig,
+                    "get",
+                    "clusterrolebindings.rbac.authorization.k8s.io",
+                    "--output",
+                    "json",
+                ],
+                check=False,
+                text=True,
+                capture_output=True,
+                timeout=60,
+            )
+            if completed.returncode != 0:
+                counts[resource] = -1
+                continue
+            payload = json.loads(completed.stdout)
+            target_namespaces = set(namespaces or [])
+            counts[resource] = sum(
+                1
+                for item in payload.get("items", [])
+                for subject in (item.get("subjects", []) or [])
+                if subject.get("namespace") in target_namespaces
+            )
+            continue
         resource_kubeconfig = cleanup_kubeconfig or kubeconfig
         if resource in CONTROL_PLANE_RESOURCES and control_kubeconfig:
             resource_kubeconfig = control_kubeconfig
@@ -546,6 +575,7 @@ def _wait_for_zero_resources(
     control_kubeconfig: str | None = None,
     timeout_seconds: float,
     interval_seconds: float,
+    namespaces: list[str] | None = None,
 ) -> tuple[dict[str, int], float]:
     """Wait for asynchronous namespace garbage collection within the cleanup SLO."""
     started = time.monotonic()
@@ -556,6 +586,7 @@ def _wait_for_zero_resources(
             kubeconfig=kubeconfig,
             cleanup_kubeconfig=cleanup_kubeconfig,
             control_kubeconfig=control_kubeconfig,
+            namespaces=namespaces,
         )
         elapsed = time.monotonic() - started
         if counts and all(count == 0 for count in counts.values()):
@@ -840,6 +871,7 @@ def _run_command(args: argparse.Namespace) -> int:
                 control_kubeconfig=control_kubeconfig,
                 timeout_seconds=remaining_cleanup_seconds,
                 interval_seconds=args.poll_interval,
+                namespaces=namespaces,
             )
             cleanup_seconds = (cleanup_seconds or 0) + residue_seconds
             try:

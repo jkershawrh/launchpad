@@ -161,6 +161,7 @@ class TestOrphanedRoleBindingCleanup:
 
         mock_core.delete_namespace.return_value = None
         mock_core.read_namespace.side_effect = _K8sApiException(status=404)
+        mock_rbac.read_cluster_role_binding.side_effect = _K8sApiException(status=404)
 
         adapter._core_v1 = mock_core
         adapter._rbac_v1 = mock_rbac
@@ -183,6 +184,7 @@ class TestOrphanedRoleBindingCleanup:
         missing = _K8sApiException(status=404)
         adapter._core_v1.read_namespace.side_effect = missing
         adapter._rbac_v1.read_namespaced_role_binding.side_effect = missing
+        adapter._rbac_v1.read_cluster_role_binding.side_effect = missing
         adapter._showroom_gitops.custom_objects.get_namespaced_custom_object.side_effect = (
             missing
         )
@@ -197,6 +199,7 @@ class TestOrphanedRoleBindingCleanup:
             "image_puller_role_binding": 0,
             "showroom_application": 0,
             "workload_application": 1,
+            "shared_cluster_role_binding_subject": 0,
         }
         adapter._core_v1.delete_namespace.assert_not_called()
 
@@ -213,8 +216,28 @@ class TestOrphanedRoleBindingCleanup:
         mock_core.delete_namespace.return_value = None
         mock_core.read_namespace.side_effect = _K8sApiException(status=404)
         mock_rbac.delete_namespaced_role_binding.side_effect = _K8sApiException(status=404)
+        mock_rbac.read_cluster_role_binding.side_effect = _K8sApiException(status=404)
 
         adapter._core_v1 = mock_core
         adapter._rbac_v1 = mock_rbac
 
         adapter.cleanup("test-demo-namespace")
+
+    def test_cleanup_removes_only_reclaimed_namespace_from_shared_binding(self):
+        from app.adapters.openshift.cleanup import OpenShiftCleanupAdapter
+
+        adapter = OpenShiftCleanupAdapter.__new__(OpenShiftCleanupAdapter)
+        adapter._active_namespaces = {}
+        adapter._core_v1 = MagicMock()
+        adapter._rbac_v1 = MagicMock()
+        adapter._core_v1.delete_namespace.return_value = None
+        binding = MagicMock()
+        stale = MagicMock(namespace="test-demo-namespace")
+        retained = MagicMock(namespace="another-namespace")
+        binding.subjects = [stale, retained]
+        adapter._rbac_v1.read_cluster_role_binding.return_value = binding
+
+        adapter.cleanup("test-demo-namespace")
+
+        adapter._rbac_v1.replace_cluster_role_binding.assert_called_once()
+        assert binding.subjects == [retained]

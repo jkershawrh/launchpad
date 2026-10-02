@@ -15,6 +15,10 @@ except ImportError:  # pragma: no cover
 
 logger = logging.getLogger("launchpad.openshift.cleanup")
 
+PIPELINES_SHARED_BINDINGS = (
+    "openshift-pipelines-clusterinterceptors",
+)
+
 
 class CleanupTimeoutError(Exception):
     pass
@@ -87,6 +91,7 @@ class OpenShiftCleanupAdapter:
         except ApiException as exc:
             if exc.status == 404:
                 self._cleanup_role_binding(namespace)
+                self._cleanup_shared_cluster_role_binding_subjects(namespace)
                 self._active_namespaces.pop(namespace, None)
                 return True
             raise ValueError(
@@ -96,6 +101,7 @@ class OpenShiftCleanupAdapter:
         if timeout > 0:
             self._wait_for_deletion(namespace, timeout=timeout)
         self._cleanup_role_binding(namespace)
+        self._cleanup_shared_cluster_role_binding_subjects(namespace)
         self._active_namespaces.pop(namespace, None)
         return True
 
@@ -121,6 +127,20 @@ class OpenShiftCleanupAdapter:
         binding_name = f"{namespace}-image-puller"
         showroom = self._showroom_gitops
         workload = self._workload_gitops
+        shared_binding_subjects = 0
+        for binding_name in PIPELINES_SHARED_BINDINGS:
+            try:
+                binding = self._rbac_v1.read_cluster_role_binding(binding_name)
+            except ApiException as exc:
+                if exc.status == 404:
+                    continue
+                raise
+            shared_binding_subjects += sum(
+                1
+                for subject in (binding.subjects or [])
+                if getattr(subject, "namespace", None) == namespace
+            )
+
         return {
             "namespace": self._present(
                 lambda: self._core_v1.read_namespace(namespace)
@@ -148,6 +168,7 @@ class OpenShiftCleanupAdapter:
                     workload_application_name(namespace),
                 )
             ),
+            "shared_cluster_role_binding_subject": shared_binding_subjects,
         }
 
     def _wait_for_deletion(self, namespace: str, timeout: int = 60) -> None:
@@ -183,3 +204,43 @@ class OpenShiftCleanupAdapter:
                 pass
             else:
                 logger.warning("Failed to delete RoleBinding %s: %s", binding_name, exc.reason)
+
+    def _cleanup_shared_cluster_role_binding_subjects(self, namespace: str) -> None:
+        """Remove only obsolete Pipeline subjects owned by the reclaimed namespace."""
+
+        for binding_name in PIPELINES_SHARED_BINDINGS:
+            for attempt in range(3):
+                try:
+                    binding = self._rbac_v1.read_cluster_role_binding(binding_name)
+                except ApiException as exc:
+                    if exc.status == 404:
+                        break
+                    raise ValueError(
+                        f"Failed to inspect ClusterRoleBinding '{binding_name}': "
+                        f"{exc.status} {exc.reason}"
+                    ) from exc
+
+                original = list(binding.subjects or [])
+                retained = [
+                    subject
+                    for subject in original
+                    if getattr(subject, "namespace", None) != namespace
+                ]
+                if len(retained) == len(original):
+                    break
+                binding.subjects = retained
+                try:
+                    self._rbac_v1.replace_cluster_role_binding(binding_name, binding)
+                    logger.info(
+                        "Removed reclaimed namespace %s from ClusterRoleBinding %s",
+                        namespace,
+                        binding_name,
+                    )
+                    break
+                except ApiException as exc:
+                    if exc.status == 409 and attempt < 2:
+                        continue
+                    raise ValueError(
+                        f"Failed to clean ClusterRoleBinding '{binding_name}': "
+                        f"{exc.status} {exc.reason}"
+                    ) from exc

@@ -45,6 +45,10 @@ rules:
     resources: [clusterroles]
     resourceNames: [edit, launchpad-flightpath-argocd-seat-manager]
     verbs: [bind]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [clusterrolebindings]
+    resourceNames: [openshift-pipelines-clusterinterceptors]
+    verbs: [get, update, patch]
   - apiGroups: [networking.k8s.io]
     resources: [networkpolicies]
     verbs: [get, list, create, update, patch, delete]
@@ -146,7 +150,20 @@ spec:
               && (request.operation == 'DELETE' ? oldObject.subjects : object.subjects).all(
                 subject,
                 subject.kind == 'Group'
-                  && subject.name.startsWith('system:serviceaccounts:launchpad-'))))
+                  && subject.name.startsWith('system:serviceaccounts:launchpad-')))
+            || (request.resource.group == 'rbac.authorization.k8s.io'
+              && request.resource.resource == 'clusterrolebindings'
+              && request.operation == 'UPDATE'
+              && object.metadata.name == 'openshift-pipelines-clusterinterceptors'
+              && object.roleRef == oldObject.roleRef
+              && object.subjects.all(subject, oldObject.subjects.exists(old, old == subject))
+              && oldObject.subjects.filter(subject,
+                !object.subjects.exists(current, current == subject)).size() > 0
+              && oldObject.subjects.filter(subject,
+                !object.subjects.exists(current, current == subject)).all(subject,
+                  subject.kind == 'ServiceAccount'
+                  && subject.name == 'pipeline'
+                  && subject.namespace.startsWith('launchpad-'))))
       message: Flightpath candidate writes are restricted to Launchpad-owned namespaces.
 ---
 apiVersion: admissionregistration.k8s.io/v1
