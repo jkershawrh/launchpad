@@ -190,6 +190,32 @@ def test_declared_workspace_tab_takes_precedence_over_legacy_workspace_route():
     }
 
 
+def test_public_gateway_derives_declared_tool_route_created_during_lab():
+    session = SimpleNamespace(
+        namespace="launchpad-tenant-agent-seat1",
+        resources={"routes": {}},
+    )
+    catalog_item = SimpleNamespace(
+        metadata={
+            "showroom_tabs": [
+                {"id": "workspace", "source": "workload.route.workspace"},
+            ],
+            "workload_routes": {"workspace": "app"},
+        }
+    )
+    cluster = SimpleNamespace(
+        ingress_domain="apps.flightpath.fm2aihpcsed.com",
+        service_urls={},
+    )
+
+    assert _participant_tool_urls(session, catalog_item, cluster) == {
+        "workspace": (
+            "https://app-launchpad-tenant-agent-seat1."
+            "apps.flightpath.fm2aihpcsed.com"
+        ),
+    }
+
+
 def test_public_access_defaults_to_internal():
     assert ExposurePolicy.INTERNAL.value == "internal"
 

@@ -80,6 +80,25 @@ def _participant_tool_urls(lab_session, catalog_item, cluster) -> dict[str, str]
     route_names = metadata.get("workload_routes", {})
     route_urls = (lab_session.resources or {}).get("routes", {})
     service_urls = getattr(cluster, "service_urls", {}) if cluster else {}
+
+    def declared_route_url(route_name: str) -> str:
+        url = str(route_urls.get(route_name, ""))
+        if url:
+            return url
+        namespace = str(getattr(lab_session, "namespace", "") or "").strip()
+        ingress_domain = str(
+            getattr(cluster, "ingress_domain", "") or ""
+        ).strip()
+        dns_label = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
+        dns_name = re.compile(r"^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$")
+        if (
+            dns_label.fullmatch(route_name)
+            and dns_label.fullmatch(namespace)
+            and dns_name.fullmatch(ingress_domain)
+        ):
+            return f"https://{route_name}-{namespace}.{ingress_domain}"
+        return ""
+
     tools: dict[str, str] = {}
     for tab in metadata.get("showroom_tabs", []):
         tool_id = str(tab.get("id", ""))
@@ -90,7 +109,7 @@ def _participant_tool_urls(lab_session, catalog_item, cluster) -> dict[str, str]
         if source.startswith("workload.route."):
             route_id = source.removeprefix("workload.route.")
             route_name = str(route_names.get(route_id, ""))
-            url = str(route_urls.get(route_name, ""))
+            url = declared_route_url(route_name)
             same_origin_path = str(tab.get("same_origin_path", "")).strip()
             rewrite_target = str(tab.get("rewrite_target", "")).strip()
             public_proxy_root = bool(tab.get("public_proxy_root", False))
@@ -121,28 +140,10 @@ def _participant_tool_urls(lab_session, catalog_item, cluster) -> dict[str, str]
         if isinstance(tab, dict)
     )
     if workspace_route and not has_declared_workspace:
-        workspace_url = str(route_urls.get(workspace_route, ""))
-        if not workspace_url:
-            namespace = str(getattr(lab_session, "namespace", "") or "").strip()
-            ingress_domain = str(
-                getattr(cluster, "ingress_domain", "") or ""
-            ).strip()
-            dns_label = re.compile(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
-            dns_name = re.compile(
-                r"^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$"
-            )
-            if (
-                dns_label.fullmatch(workspace_route)
-                and dns_label.fullmatch(namespace)
-                and dns_name.fullmatch(ingress_domain)
-            ):
-                # Content-only labs can create their participant application
-                # after the session's initial Route snapshot.  Derive only
-                # the catalog-declared Route on the persisted seat namespace;
-                # never expose arbitrary namespace Route discovery here.
-                workspace_url = (
-                    f"https://{workspace_route}-{namespace}.{ingress_domain}"
-                )
+        # Content-only labs can create participant applications after the
+        # session's initial Route snapshot. Derive only the catalog-declared
+        # Route; never expose arbitrary namespace Route discovery here.
+        workspace_url = declared_route_url(workspace_route)
         parsed = urlsplit(workspace_url)
         if parsed.scheme == "https" and parsed.netloc and not parsed.username:
             tools["workspace"] = workspace_url.rstrip("/")
