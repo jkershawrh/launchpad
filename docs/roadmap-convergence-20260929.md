@@ -173,7 +173,14 @@ recommend but never creates eligibility.
   RBAC, model-key revocation, idempotent reclaim, and zero active residue. The
   immutable evidence is
   `evidence/runs/catalog/sovereign-ai-201-flightpath-public-one-seat-20261001-r1.json`.
-- All three catalog entries are active, expose `internal` and `public_code`, and
+- `virtualization-ai-201` passed public one-seat certification against its exact
+  `3c94600ca8808a55693e94d5a1f169efbadbedd1` release. A clean external browser
+  completed claim, My Lab Access, Story, Terminal, and same-seat recovery; the
+  live contract-author VM journey used `granite-3.2-8b-tools` on Intel Xeon,
+  preserved human authority, enforced namespace-only RBAC, and reclaimed with
+  model-key revocation and zero active residue. The immutable evidence is
+  `evidence/runs/catalog/virtualization-ai-201-flightpath-public-one-seat-20261001-r1.json`.
+- All four catalog entries are active, expose `internal` and `public_code`, and
   remain deliberately capped at one certified seat.
 - The broader participant-path task remains open: these two passing catalogs
   do not prove every catalog, add-lab permutation, Console path, supported

@@ -1,0 +1,93 @@
+{
+  "schema": "launchpad.redhat.com/public-exposure-certification-evidence/v1",
+  "catalog_item_id": "virtualization-ai-201",
+  "result": "GREEN-live-public-exposure",
+  "observed_at": "2026-10-02T01:36:33Z",
+  "source": {
+    "launchpad_commit_sha": "3bd40b7f1c21dba5bd82bea7bc1f61c62524ae48",
+    "lab_content_commit_sha": "3c94600ca8808a55693e94d5a1f169efbadbedd1",
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:e35bd0a68d6aad7d09eb11ccdad1c8672b5229a27f4d904d8735b5acb850e028"
+  },
+  "internal_evidence": {
+    "path": "evidence/runs/flightpath-live-20261001-virtualization-ai-201-1seat-r24.json",
+    "sha256": "37c1ab40fbcaea2e70ed0dae210d3ff1323840021bc24d95ea1ca9c35298e66e"
+  },
+  "plan": {
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false
+  },
+  "run": {
+    "workshop_id": "42e6cfbd-bb3a-43a6-9b9c-12e7fb03974d",
+    "session_id": "81fce3c9-fafa-43a2-afcf-c1c2badfa4a2",
+    "seat_id": "dca363c3-44da-448e-a0a4-0631c7095b3a",
+    "namespace": "launchpad-flightpath-candida-virtualization-ai-dca363",
+    "public_url": "https://labs.smg-helix.ai/labs/virtualization-ai-201-42e6cfbd"
+  },
+  "identity_and_claim": {
+    "one_time_code_disclosed_once": true,
+    "claim_succeeded": true,
+    "same_identity_recovered_same_seat": true,
+    "plaintext_code_persisted": false,
+    "claim_count_after_recovery": 1
+  },
+  "participant_journey": {
+    "landing": true,
+    "showroom": true,
+    "declared_tools": true,
+    "logout_and_resume": true,
+    "my_labs_recovery": true,
+    "instructions_path": "/showroom/www/virtualization-ai-201/main/index.html",
+    "story_loaded": true,
+    "terminal_loaded": true,
+    "live_inference_journey": true,
+    "request_origin": "contract-author-vm",
+    "model": "granite-3.2-8b-tools",
+    "post_reclaim_reauthentication_required": true
+  },
+  "authorization": {
+    "assigned_namespace_edit": true,
+    "cross_namespace_denied": true,
+    "unauthenticated_denied": true,
+    "cluster_scoped_nodes_denied": true
+  },
+  "edge": {
+    "trusted_tls": true,
+    "external_browser": true,
+    "stable_origin": "https://labs.smg-helix.ai"
+  },
+  "abuse_controls": {
+    "uniform_denial": true,
+    "rate_limit_enforced": true,
+    "failed_attempts_exercised": 6,
+    "uniform_http_status": 403,
+    "component_evidence": "evidence/public-access/green-live-flightpath-public-access-2026-09-24.yaml"
+  },
+  "cleanup": {
+    "status": "completed",
+    "identity_disabled_after_final_entitlement": true,
+    "model_keys_revoked": true,
+    "model_key_revocation_confirmation": "http-success",
+    "idempotent_reclaim": true,
+    "resource_counts": {
+      "namespaces": 0,
+      "applications": 0,
+      "routes": 0,
+      "rolebindings": 0,
+      "secrets": 0,
+      "policy_enabled": 0,
+      "active_entitlements": 0,
+      "identities_due_disable": 0
+    },
+    "audit_retention": "Disabled policy and expired entitlement records are retained as non-authorizing historical evidence."
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_email_exported": false
+  },
+  "rubric": {
+    "score": 100,
+    "passed": true
+  }
+}
