@@ -2,8 +2,8 @@
 
 ## Decision
 
-Five specialty catalog items have completed one-seat Flightpath proof, the
-full external `public_code` journey, and normal reclaim. All five may be
+Six specialty catalog items have completed one-seat Flightpath proof, the
+full external `public_code` journey, and normal reclaim. All six may be
 presented as public one-seat releases. No result below authorizes more than
 one seat.
 
@@ -14,6 +14,7 @@ one seat.
 | `sovereign-ai-201` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim and same-seat recovery; Showroom, Story, Terminal, live governed-boundary journey, Intel Xeon model contract, namespace isolation, and fail-closed behavior passed | Normal reclaim; identity disabled, model key revoked, idempotent reclaim, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 | `sovereign-ai-101` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim; same-seat recovery; landing, Showroom, declared tools, logout and resume; own-namespace edit allowed and cross-namespace access denied | Normal reclaim; identity disabled, model key revoked, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 | `virtualization-ai-301` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim; same-seat recovery; corrected Story and Terminal journeys; own-namespace edit allowed; cross-namespace and cluster-scoped node access denied | Normal reclaim; identity disabled, model key revoked, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
+| `agent-reliability` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim and same-seat recovery; corrected Showroom journey; scoped Terminal; Reliability Advisor; live `granite-3.2-8b-tools` inference; three evidence tools; and human-approval boundary passed | Normal reclaim; identity disabled, model key revoked, idempotent reclaim, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 
 The original internal three-item baseline is Launchpad commit `a89d7c4`.
 Sovereign AI 101 was re-certified on October 1 at Launchpad commit `f5cbe90`
@@ -31,21 +32,26 @@ Virtualization AI 201 was publicly certified on October 1 at Launchpad commit
 Virtualization Foundations 101 was publicly certified on October 1 at Launchpad
 commit `a81a54d` and exact content commit
 `e74393d0def1a7a2749911b3a421c62f3f1c2558`.
+Agent Reliability was publicly certified on October 1 at Launchpad commit
+`468df61` and exact content commit
+`fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc`.
 Runtime and content dependencies remain digest- or commit-pinned in the
 corresponding catalog packages.
 
 ## Evidence accounting
 
-Sovereign AI 101, Sovereign AI 201, Virtualization AI 201, and Virtualization
-AI 301, and Virtualization Foundations 101 have immutable public evidence:
+Sovereign AI 101, Sovereign AI 201, Virtualization AI 201, Virtualization AI
+301, Virtualization Foundations 101, and Agent Reliability have immutable
+public evidence:
 
 - `evidence/runs/catalog/sovereign-ai-101-flightpath-public-one-seat-20261001-r2.json`
 - `evidence/runs/catalog/sovereign-ai-201-flightpath-public-one-seat-20261001-r1.json`
 - `evidence/runs/catalog/virtualization-ai-201-flightpath-public-one-seat-20261001-r1.json`
 - `evidence/runs/catalog/virtualization-ai-301-flightpath-public-one-seat-20261001-r2.json`
 - `evidence/runs/catalog/virtualization-ai-foundations-101-flightpath-public-one-seat-20261001-r1.json`
+- `evidence/runs/catalog/agent-reliability-flightpath-public-one-seat-20261001-r1.json`
 
-All five manifests have verified SHA-256 sidecars, record a 100-point passing
+All six manifests have verified SHA-256 sidecars, record a 100-point passing
 rubric, contain no plaintext credentials or participant email export, and end
 with zero counted residue.
 
@@ -94,7 +100,7 @@ pass against one unchanged Flightpath candidate and one seat:
 Only after every row is green should another catalog item move from
 `draft`/internal-only to public orderability. This gate is complete for
 Sovereign AI 101, Sovereign AI 201, Virtualization Foundations 101,
-Virtualization AI 201, and Virtualization AI 301 only.
+Virtualization AI 201, Virtualization AI 301, and Agent Reliability only.
 
 ## Metadata reconciliation still required
 

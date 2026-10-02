@@ -193,7 +193,15 @@ recommend but never creates eligibility.
   abuse controls, model-key revocation, idempotent reclaim, and zero residue
   all passed. The immutable evidence is
   `evidence/runs/catalog/virtualization-ai-foundations-101-flightpath-public-one-seat-20261001-r1.json`.
-- All five catalog entries are active, expose `internal` and `public_code`, and
+- `agent-reliability` passed public one-seat certification against exact
+  content commit `fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc`. The certification
+  caught and corrected its stale Showroom component path before promotion,
+  then proved claim and same-seat recovery, scoped Terminal, Reliability
+  Advisor, live `granite-3.2-8b-tools` inference, evidence-backed human
+  authority, namespace isolation, abuse controls, model-key revocation,
+  idempotent reclaim, and zero active residue. The immutable evidence is
+  `evidence/runs/catalog/agent-reliability-flightpath-public-one-seat-20261001-r1.json`.
+- All six catalog entries are active, expose `internal` and `public_code`, and
   remain deliberately capped at one certified seat.
 - The broader participant-path task remains open: these five passing catalogs
   do not prove every catalog, add-lab permutation, Console path, supported
