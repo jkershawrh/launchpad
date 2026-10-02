@@ -38,6 +38,7 @@ def test_multi_agent_quickstart_is_a_one_seat_public_flightpath_catalog_item():
         "internal",
         "public_code",
     ]
+    assert catalog["metadata"]["showroom_antora_flat"] is True
     assert catalog["metadata"]["production_blockers"]
     assert catalog["metadata"]["certification_stage"] == "1-seat-certified"
     assert catalog["metadata"]["max_workshop_seats"] == 1

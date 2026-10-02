@@ -49,6 +49,7 @@ runtime:
   deployment_type: helm
   deployment_scope: seat
   showroom_terminal_storage: false
+  showroom_antora_flat: true
   provisioner_refs:
   - helm-workload
   - showroom

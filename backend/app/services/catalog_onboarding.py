@@ -1461,6 +1461,9 @@ def build_catalog_item(intake: dict[str, Any]) -> dict[str, Any]:
             "showroom_terminal_storage": bool(
                 runtime.get("showroom_terminal_storage", True)
             ),
+            "showroom_antora_flat": bool(
+                runtime.get("showroom_antora_flat", False)
+            ),
             "showroom_tabs": runtime["tabs"],
             **(
                 {"workshop_cluster_ref": runtime["workshop_cluster_ref"]}

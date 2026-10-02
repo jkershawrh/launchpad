@@ -74,6 +74,7 @@ metadata:
   showroom_content_playbook: site-multi-agent-quickstart.yml
   showroom_content_start_path: content-multi-agent-quickstart
   showroom_terminal_storage: false
+  showroom_antora_flat: true
   showroom_tabs:
   - id: presentation
     title: Multi-Agent Systems Story
