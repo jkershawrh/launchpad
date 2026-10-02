@@ -9,7 +9,7 @@ spec:
   state: one-seat-candidate
   target_cluster: flightpath
   kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
-  allowed_exposure_policies: [internal]
+  allowed_exposure_policies: [internal, public_code]
 
   scale_profiles:
     - seats: 1

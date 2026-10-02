@@ -22,7 +22,7 @@ REHEARSAL_IMAGE = (
 )
 
 
-def test_agentic_ai_101_is_internal_one_seat_certified_with_exact_artifacts() -> None:
+def test_agentic_ai_101_is_one_seat_certified_for_internal_and_public_access() -> None:
     intake = load_intake(INTAKE_PATH)
 
     report = validate_intake(intake)
@@ -36,7 +36,10 @@ def test_agentic_ai_101_is_internal_one_seat_certified_with_exact_artifacts() ->
     assert intake["learning"]["recommended_next_items"] == [
         "intel-xeon6-agent-201"
     ]
-    assert intake["runtime"]["allowed_exposure_policies"] == ["internal"]
+    assert intake["runtime"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
     assert intake["runtime"]["required_models"] == []
     assert intake["runtime"]["workload"]["helm_values"] == {
         "workload_image": REHEARSAL_IMAGE,
@@ -77,3 +80,4 @@ def test_agentic_ai_101_probe_checks_isolation_and_never_claims_live_inference()
     assert "targetMutated == false" in probe
     assert "cross_namespace=DENIED" in probe
     assert "node_list=DENIED" in probe
+    assert 'curl -fksS --retry 4' in probe

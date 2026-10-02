@@ -40,6 +40,7 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
 
     assert active == {
         "agent-reliability",
+        "agentic-ai-101",
         "agentic-ai-601",
         "ai-sandbox",
         "cpu-inference-serving",
@@ -62,6 +63,17 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
         "virtualization-ai-401",
         "virtualization-ai-501",
     }
+
+
+def test_agentic_ai_101_is_one_seat_certified_and_public_orderable():
+    item = _effective_flightpath_items()["agentic-ai-101"]
+    metadata = item["metadata"]
+
+    assert item["status"] == "active"
+    assert metadata["certification_stage"] == "1-seat-certified"
+    assert metadata["max_workshop_seats"] == 1
+    assert metadata["allowed_exposure_policies"] == ["internal", "public_code"]
+    assert metadata["activation_blockers"] == []
 
 
 def test_specialty_catalog_status_matches_certification_evidence():

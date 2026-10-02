@@ -52,6 +52,7 @@ metadata:
   certification_proof_contract: certification/catalog/agentic-ai-101.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: agentic-ai-101
   showroom_title: "Agentic AI 101 \u2014 Understand Agentic Workflows"
   namespace_slug: agentic-ai-101

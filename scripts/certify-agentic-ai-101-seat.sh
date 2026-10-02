@@ -30,7 +30,7 @@ rehearsal_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l a
 
 stage="presentation"
 presentation_host="$(oc --kubeconfig "$KUBECONFIG" get route story -n "$namespace" -o jsonpath='{.spec.host}')"
-presentation="$(curl -fsS --retry 4 --retry-all-errors --retry-delay 2 --max-time 180 "https://${presentation_host}/")"
+presentation="$(curl -fksS --retry 4 --retry-all-errors --retry-delay 2 --max-time 180 "https://${presentation_host}/")"
 grep -q 'Agentic AI 101' <<<"$presentation"
 
 runtime_pod="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app.kubernetes.io/component=rehearsal-service -o jsonpath='{.items[0].metadata.name}')"

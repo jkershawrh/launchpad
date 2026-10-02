@@ -70,6 +70,7 @@ runtime:
     source: showroom.terminal
   allowed_exposure_policies:
   - internal
+  - public_code
   workload:
     source_kind: kustomize
     gitops_ready: true
