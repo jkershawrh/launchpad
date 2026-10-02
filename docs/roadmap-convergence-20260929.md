@@ -166,7 +166,14 @@ recommend but never creates eligibility.
   cluster-scoped denial, confirmed model-key revocation, idempotent reclaim,
   and zero active residue. The current immutable evidence is
   `evidence/runs/catalog/virtualization-ai-301-flightpath-public-one-seat-20261001-r2.json`.
-- Both catalog entries are active, expose `internal` and `public_code`, and
+- `sovereign-ai-201` passed public one-seat certification against its exact
+  `0fdcfba6c2db35190a768e561ac6b0665c76484b` release. The live governed
+  boundary exercised ALLOW, policy DENY, injection block, redacted evidence,
+  human authority, Intel Xeon inference, participant recovery, namespace-only
+  RBAC, model-key revocation, idempotent reclaim, and zero active residue. The
+  immutable evidence is
+  `evidence/runs/catalog/sovereign-ai-201-flightpath-public-one-seat-20261001-r1.json`.
+- All three catalog entries are active, expose `internal` and `public_code`, and
   remain deliberately capped at one certified seat.
 - The broader participant-path task remains open: these two passing catalogs
   do not prove every catalog, add-lab permutation, Console path, supported
