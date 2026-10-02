@@ -30,6 +30,7 @@ def test_agent_reliability_canonical_mapping_and_immutable_pins_are_exact():
         "/agent-reliability-quickstart.git"
     )
     assert metadata["showroom_content_ref"] == REVISION
+    assert metadata["showroom_journey"] == "agent-reliability-quickstart"
     assert metadata["workload_revision"] == REVISION
     assert metadata["source_content_revision"] == REVISION
     assert intake["sources"]["showroom"]["revision"] == REVISION
@@ -54,6 +55,14 @@ def test_agent_reliability_is_one_seat_live_certified_and_active():
     assert intake["certification"]["activation_blockers"] == []
     assert intake["runtime"]["required_models"] == ["granite-3.2-8b-tools"]
     assert intake["runtime"]["inference_endpoint"] == "litellm_virtual_key_candidate"
+    assert catalog["metadata"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
+    assert intake["runtime"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
 
 
 def test_agent_reliability_operator_tabs_are_explicit():

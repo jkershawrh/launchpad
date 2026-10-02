@@ -58,7 +58,8 @@ metadata:
   activation_blockers: []
   allowed_exposure_policies:
   - internal
-  showroom_journey: agent-reliability
+  - public_code
+  showroom_journey: agent-reliability-quickstart
   showroom_title: 'Intel AI 301: Engineer Reliable Agentic Workflows'
   namespace_slug: agent-reliability
   showroom_terminal_storage: true

@@ -75,14 +75,14 @@ def test_specialty_catalog_status_matches_certification_evidence():
     assert {catalog_id: items[catalog_id]["status"] for catalog_id in expected} == expected
 
 
-def test_rebuilt_sovereign_101_is_one_seat_certified_and_internal_only():
+def test_rebuilt_sovereign_101_is_one_seat_certified_and_public_orderable():
     item = _effective_flightpath_items()["sovereign-ai-101"]
     metadata = item["metadata"]
 
     assert item["status"] == "active"
     assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["max_workshop_seats"] == 1
-    assert metadata["allowed_exposure_policies"] == ["internal"]
+    assert metadata["allowed_exposure_policies"] == ["internal", "public_code"]
     assert metadata["activation_blockers"] == []
     assert metadata["showroom_content_ref"] == (
         "6d7c6f267407d42ca465b8a381d841d8b5b77567"

@@ -89,6 +89,7 @@ runtime:
       workspace: ar
   allowed_exposure_policies:
   - internal
+  - public_code
 certification:
   stage: 1-seat-certified
   certified_seats: 1
