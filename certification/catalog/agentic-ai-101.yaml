@@ -20,13 +20,12 @@ spec:
 
   showroom:
     pages:
-      - {id: welcome, path: /www/agentic-ai-101/index.html, marker: "Understand Agentic Workflows"}
-      - {id: request, path: /www/agentic-ai-101/01-request.html, marker: "Start with the request"}
-      - {id: proposal, path: /www/agentic-ai-101/02-proposal.html, marker: "Separate proposal from authority"}
-      - {id: tools, path: /www/agentic-ai-101/03-tools.html, marker: "Bound the tools"}
-      - {id: evidence, path: /www/agentic-ai-101/04-evidence.html, marker: "Label the evidence"}
-      - {id: decision, path: /www/agentic-ai-101/05-decision.html, marker: "Keep deterministic policy"}
-      - {id: record, path: /www/agentic-ai-101/06-record.html, marker: "Leave a reviewable record"}
+      - {id: welcome, path: /www/agentic-ai-101/main/index.html, marker: "Understand Agentic Workflows"}
+      - {id: frame, path: /www/agentic-ai-101/main/00-frame.html, marker: "Frame the workflow"}
+      - {id: investigate, path: /www/agentic-ai-101/main/01-investigate.html, marker: "Investigate with evidence"}
+      - {id: request-action, path: /www/agentic-ai-101/main/02-request-action.html, marker: "Request a controlled action"}
+      - {id: compare, path: /www/agentic-ai-101/main/03-compare.html, marker: "Compare the traces"}
+      - {id: decide, path: /www/agentic-ai-101/main/04-decide.html, marker: "Prove understanding"}
 
   seat_probe:
     argv: [bash, scripts/certify-agentic-ai-101-seat.sh, "{namespace}", "{cluster_ref}"]
