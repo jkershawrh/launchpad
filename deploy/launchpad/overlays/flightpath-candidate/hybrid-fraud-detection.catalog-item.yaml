@@ -56,6 +56,7 @@ metadata:
   certification_proof_contract: certification/catalog/hybrid-fraud-detection.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: hybrid-fraud-detection
   showroom_title: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
   namespace_slug: fraud

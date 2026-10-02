@@ -44,6 +44,11 @@ def test_hybrid_fraud_exact_candidate_is_one_seat_certified_and_active() -> None
         "activation_blockers"
     ]
     assert intake["certification"]["certified_seats"] == 1
+    assert metadata["allowed_exposure_policies"] == ["internal", "public_code"]
+    assert intake["runtime"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
 
 
 def test_hybrid_fraud_exact_candidate_vulnerability_disposition_is_recorded() -> None:

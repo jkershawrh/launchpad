@@ -87,6 +87,7 @@ runtime:
     source: cluster.console_url
   allowed_exposure_policies:
   - internal
+  - public_code
 certification:
   stage: 1-seat-certified
   max_workshop_seats: 1
