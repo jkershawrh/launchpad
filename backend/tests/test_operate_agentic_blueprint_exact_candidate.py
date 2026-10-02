@@ -25,6 +25,17 @@ def test_401_exact_candidate_pins_are_consistent_across_catalog_and_intake():
     assert metadata["max_workshop_seats"] == intake["certification"]["max_workshop_seats"] == 1
     assert metadata["certification_stage"] == intake["certification"]["stage"] == "1-seat-certified"
     assert intake["certification"]["certified_seats"] == 1
+    assert metadata["public_access_certification_stage"] == "one-seat-certified"
+    assert intake["certification"]["public_access_stage"] == "one-seat-certified"
+    assert metadata["public_max_workshop_seats"] == 1
+    assert intake["certification"]["public_max_workshop_seats"] == 1
+    assert intake["runtime"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
+    assert metadata["source_references"]["certification_evidence"] == (
+        "evidence/runs/flightpath-live-20261002-agentic-ai-401-public-1seat-r4.json"
+    )
     assert metadata["activation_blockers"] == intake["certification"]["activation_blockers"]
     assert metadata["activation_blockers"] == [
         "Prove independent guardrail and inference outage tests, fail-closed behavior, and recovery without relying on co-located-process restarts.",

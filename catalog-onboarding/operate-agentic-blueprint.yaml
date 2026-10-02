@@ -39,6 +39,7 @@ runtime:
   workshop_provision_concurrency: 1
   allowed_exposure_policies:
   - internal
+  - public_code
   learning_tracks:
   - id: stage-1-baseline
     title: Establish the Operational Baseline
@@ -56,6 +57,8 @@ certification:
   stage: 1-seat-certified
   certified_seats: 1
   max_workshop_seats: 1
+  public_access_stage: one-seat-certified
+  public_max_workshop_seats: 1
   promotion_sequence:
   - 1
   - 5
@@ -70,3 +73,5 @@ certification:
     before presenting those operator capabilities as live.
   - Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation
     through an approved telemetry source.
+references:
+  certification_evidence: evidence/runs/flightpath-live-20261002-agentic-ai-401-public-1seat-r4.json

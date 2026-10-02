@@ -51,6 +51,7 @@ metadata:
   certification_stage: 1-seat-certified
   certification_proof_contract: certification/catalog/operate-agentic-blueprint.yaml
   max_workshop_seats: 1
+  public_access_certification_stage: one-seat-certified
   public_max_workshop_seats: 1
   promotion_sequence:
   - 1
@@ -166,3 +167,4 @@ metadata:
       path: contracts/agentic-blueprint-v1.yaml
     telemetry_contract:
       path: contracts/agentic-journey-telemetry-v1.yaml
+    certification_evidence: evidence/runs/flightpath-live-20261002-agentic-ai-401-public-1seat-r4.json
