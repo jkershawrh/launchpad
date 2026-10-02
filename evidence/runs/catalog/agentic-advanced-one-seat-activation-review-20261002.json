@@ -1,0 +1,62 @@
+{
+  "schema": "launchpad.redhat.com/catalog-activation-review/v1",
+  "reviewed_at": "2026-10-02",
+  "decision": "BOUNDED_ONE_SEAT_ACTIVATION_APPROVED",
+  "scope": {
+    "cluster": "flightpath",
+    "general_availability": false,
+    "scale_certification": false,
+    "production_authority": false
+  },
+  "items": [
+    {
+      "catalog_item_id": "operate-agentic-blueprint",
+      "status": "active",
+      "release_scope": "one-seat-pilot",
+      "allowed_exposure_policies": [
+        "internal",
+        "public_code"
+      ],
+      "maximum_seats": 1,
+      "evidence": "evidence/runs/flightpath-live-20261002-agentic-ai-401-public-1seat-r4.json",
+      "evidence_result": "GREEN-live",
+      "rubric_score": 100,
+      "activation_blockers": [],
+      "production_boundaries": [
+        "No independent outage-recovery claim",
+        "No certified OpenTelemetry correlation claim",
+        "No live GitOps or pipeline-evaluation claim",
+        "No approved Intel Xeon telemetry claim",
+        "No scale claim beyond one seat",
+        "No general-availability claim"
+      ]
+    },
+    {
+      "catalog_item_id": "scale-agentic-blueprint",
+      "status": "active",
+      "release_scope": "one-seat-destination-rehearsal",
+      "allowed_exposure_policies": [
+        "internal"
+      ],
+      "maximum_seats": 1,
+      "evidence": "evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json",
+      "evidence_result": "GREEN-live",
+      "rubric_score": 100,
+      "activation_blockers": [],
+      "production_boundaries": [
+        "Rehearsal evidence only",
+        "No model participation or live Intel Xeon telemetry claim",
+        "No production action adapter claim",
+        "No scale claim beyond one seat",
+        "No general-availability claim"
+      ]
+    }
+  ],
+  "assertions": {
+    "catalog_status_matches_scope": true,
+    "one_seat_limit_enforced": true,
+    "evidence_is_immutable": true,
+    "limitations_are_participant_visible": true,
+    "production_gaps_remain_explicit": true
+  }
+}

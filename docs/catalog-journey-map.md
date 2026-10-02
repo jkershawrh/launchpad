@@ -28,8 +28,8 @@ Only an active release with current certification receives an order action.
 | 101 | Understand Agentic Workflows — planned | Understand Sovereign AI — immutable candidate draft; live proof pending | Understand VM and AI Coexistence — immutable candidate draft with per-seat VM identity; live proof pending |
 | 201 | Build an AI Agent on Intel Xeon 6 — published candidate draft; immutable workload pin and live proof pending | Build the Governed Inference Boundary — immutable candidate draft; live proof pending | Author and Qualify the Contract — immutable candidate draft; live proof pending |
 | 301 | Build Multi-Agent Systems — immutable candidate draft; live proof pending | Confidential Inference and Intel TDX Foundations — immutable candidate draft; live TDX proof pending | Modernize VMs with Governed AI — immutable candidate draft; live proof and platform placement receipt pending |
-| 401 | Operate Evidence-Backed Agents — draft | Confidential AI with Intel TDX — immutable candidate draft; live Trustee/KBS proof pending | Operate Hybrid VM and AI Workloads — immutable candidate draft; live proof pending |
-| 501 | Scale and Certify Agentic Systems — immutable candidate draft; live proof pending | Prove and Certify Sovereign AI — immutable candidate draft; destination proof pending | Scale Governed AI Modernization — immutable candidate draft; live proof pending |
+| 401 | Operate Evidence-Backed Agents — active for bounded one-seat internal and public-code use; production gates remain | Confidential AI with Intel TDX — immutable candidate draft; live Trustee/KBS proof pending | Operate Hybrid VM and AI Workloads — immutable candidate draft; live proof pending |
+| 501 | Scale and Certify Agentic Systems — active for bounded one-seat internal rehearsal; live execution and scale claims remain gated | Prove and Certify Sovereign AI — immutable candidate draft; destination proof pending | Scale Governed AI Modernization — immutable candidate draft; live proof pending |
 | 601 | Earn the Right to Act — immutable candidate draft; live proof pending | Not offered | Not offered |
 
 Sales enablement is a separate persona axis over these technical tracks. Sales
@@ -70,10 +70,12 @@ Catalog lifecycle and journey role are independent:
    evidence belongs to v1.0.8.
 4. `multi-agent-quickstart` — 301 Engineer; the exact Story-enabled candidate
    is a draft awaiting one-seat recertification.
-5. `operate-agentic-blueprint` — 401 Operate; currently a draft content and
-   certification candidate using this same runtime.
-6. `scale-agentic-blueprint` — 501 Scale; the exact signed candidate is pinned
-   as a non-orderable draft awaiting one-seat qualification and reclaim proof.
+5. `operate-agentic-blueprint` — 401 Operate; active for bounded one-seat
+   internal and public-code use. Its live Flightpath proof authorizes this
+   pilot scope only; scale and production gates remain open.
+6. `scale-agentic-blueprint` — 501 Scale; active for bounded one-seat internal
+   rehearsal. Its signed candidate and one-seat lifecycle proof do not yet
+   authorize live telemetry, multi-seat scale, or production claims.
 
 ## Specialty episodes
 

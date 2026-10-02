@@ -35,16 +35,17 @@ def test_activation_audit_preserves_scale_and_activation_boundary():
     assert audit["certified_scale"]["public_workshop_seats"] == 1
     assert audit["certified_scale"]["consecutive_green_runs"] == 3
     assert audit["certified_scale"]["zero_residue"] is True
-    assert catalog["status"] == "draft"
+    assert catalog["status"] == "active"
     # The audit belongs to a prior immutable digest. It remains historical
     # scale evidence and does not raise the current draft candidate's ceiling.
     assert catalog["metadata"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["public_max_workshop_seats"] == 1
     assert catalog["metadata"]["certification_transfer"] == "none"
-    # The exact 0.1.1 one-seat journey subsequently closed the source-proof
-    # gate. This historical scale audit remains immutable and does not close
-    # the four independent activation gates.
-    assert len(catalog["metadata"]["activation_blockers"]) == 4
+    # The exact 0.1.1 one-seat journey subsequently earned bounded pilot
+    # activation. The historical audit remains immutable; its unresolved
+    # capabilities stay explicit production gates rather than being erased.
+    assert catalog["metadata"]["activation_blockers"] == []
+    assert len(catalog["metadata"]["production_blockers"]) >= 6
 
 
 def test_activation_audit_references_immutable_green_evidence():

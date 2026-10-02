@@ -17,6 +17,7 @@ def test_401_exact_candidate_pins_are_consistent_across_catalog_and_intake():
     intake = yaml.safe_load(INTAKE.read_text())
     metadata = catalog["metadata"]
 
+    assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert catalog["version"] == intake["catalog"]["version"] == "0.1.1"
     assert metadata["showroom_content_ref"] == intake["sources"]["showroom"]["revision"]
     assert metadata["source_content_revision"] == metadata["showroom_content_ref"]
@@ -36,13 +37,15 @@ def test_401_exact_candidate_pins_are_consistent_across_catalog_and_intake():
     assert metadata["source_references"]["certification_evidence"] == (
         "evidence/runs/flightpath-live-20261002-agentic-ai-401-public-1seat-r4.json"
     )
-    assert metadata["activation_blockers"] == intake["certification"]["activation_blockers"]
-    assert metadata["activation_blockers"] == [
+    assert metadata["activation_blockers"] == intake["certification"]["activation_blockers"] == []
+    assert metadata["production_blockers"] == intake["certification"]["production_blockers"]
+    for blocker in [
         "Prove independent guardrail and inference outage tests, fail-closed behavior, and recovery without relying on co-located-process restarts.",
         "Add certified OpenTelemetry collection and a learner-visible correlated trace without exposing secrets or hidden model reasoning.",
         "Validate namespace-scoped GitOps drift detection and pipeline-based evaluation before presenting those operator capabilities as live.",
         "Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation through an approved telemetry source.",
-    ]
+    ]:
+        assert blocker in metadata["production_blockers"]
 
 
 def test_401_one_seat_contract_proves_live_model_route_and_restoration():
@@ -65,7 +68,7 @@ def test_401_one_seat_contract_proves_live_model_route_and_restoration():
         assert assertion in assertions
 
 
-def test_401_public_proof_uses_admin_override_while_candidate_is_draft():
+def test_401_public_one_seat_is_orderable_without_admin_override():
     contract = yaml.safe_load(CERTIFICATION.read_text())
     intake = yaml.safe_load(INTAKE.read_text())
 
@@ -77,7 +80,7 @@ def test_401_public_proof_uses_admin_override_while_candidate_is_draft():
     )
 
     assert plan["current_certified_seats"] == 1
-    assert plan["certification_override"] is True
+    assert plan["certification_override"] is False
     assert plan["execution_eligible"] is True
 
 
@@ -94,6 +97,6 @@ def test_401_review_records_exact_source_and_artifact_boundary():
         "presentation": "quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580",
     }
     assert source_state["certification_transfer"] == "none"
-    assert review["overall_status"] == "one-seat-live-certified-draft"
+    assert review["overall_status"] == "one-seat-pilot-active"
     assert review["live_certification"]["result"] == "GREEN-live"
     assert review["live_certification"]["rubric_score"] == 100

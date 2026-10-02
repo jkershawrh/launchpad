@@ -192,7 +192,8 @@ def test_one_seat_experience_proof_does_not_claim_multi_seat_or_live_inference()
         {"path": "evidence_source", "equals": "rehearsal"},
         {"path": "live_claim", "equals": False},
     ]
-    blockers = " ".join(intake["certification"]["activation_blockers"])
+    assert intake["certification"]["activation_blockers"] == []
+    blockers = " ".join(intake["certification"]["production_blockers"]).lower()
     assert "five- and twenty-five-seat scale certification is deferred" in blockers
 
 
@@ -225,7 +226,7 @@ def test_rehearsal_certifier_proves_exact_artifacts_without_model_participation(
 def test_review_evidence_marks_the_exact_release_as_published_and_nontransferable():
     review = _load(REVIEW_PATH)["labs"]["scale-agentic-blueprint"]
 
-    assert review["overall_status"] in {"immutable-source-published-draft", "one-seat-live-certified-draft"}
+    assert review["overall_status"] == "one-seat-rehearsal-active"
     assert review["source_state"]["published_revision"] == SOURCE_REVISION
     assert review["source_state"]["certification_transfer"] == "none"
 

@@ -4,7 +4,7 @@ description: Qualify a production-shaped multi-agent architecture through correl
   evidence, deterministic policy, resilience trials, and human-controlled promotion.
 category: guided_build
 version: 0.2.0-flightpath.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -48,11 +48,11 @@ metadata:
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
+  activation_blockers: []
+  production_blockers:
   - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry
-    before activation.
-  - Complete one-seat certification with zero-residue reclaim before activation; five-
-    and twenty-five-seat scale certification is deferred.
+    before any live-execution or production claim.
+  - Five- and twenty-five-seat scale certification is deferred.
   - Complete human authority review before promotion.
   certification_proof_contract: certification/catalog/scale-agentic-blueprint.yaml
   allowed_exposure_policies:
@@ -124,3 +124,4 @@ metadata:
   source_content_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
   source_references:
     certification_evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
+    activation_review: evidence/runs/catalog/agentic-advanced-one-seat-activation-review-20261002.json

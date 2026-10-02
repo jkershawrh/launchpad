@@ -49,7 +49,9 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
         "multi-agent-quickstart",
         "network-operations-agent",
         "openshift-operators-workshop",
+        "operate-agentic-blueprint",
         "rag-on-xeon",
+        "scale-agentic-blueprint",
         "sovereign-ai-101",
         "sovereign-ai-201",
         "sovereign-ai-301",
@@ -96,11 +98,11 @@ def test_rebuilt_sovereign_101_is_one_seat_certified_and_public_orderable():
     )
 
 
-def test_agentic_501_is_mounted_as_a_fail_closed_destination_qualification_draft():
+def test_agentic_501_is_mounted_as_a_bounded_one_seat_rehearsal():
     item = _effective_flightpath_items()["scale-agentic-blueprint"]
     metadata = item["metadata"]
 
-    assert item["status"] == "draft"
+    assert item["status"] == "active"
     assert metadata["certification_stage"] == "one-seat-destination-qualified"
     assert metadata["max_workshop_seats"] == 1
     assert metadata["allowed_exposure_policies"] == ["internal"]
@@ -122,31 +124,32 @@ def test_agentic_501_is_mounted_as_a_fail_closed_destination_qualification_draft
     }
     assert metadata["workload_helm_values"]["qualifier"]["evidenceSource"] == "rehearsal"
     assert metadata["workload_helm_values"]["qualifier"]["live"]["enabled"] is False
-    assert metadata["activation_blockers"]
+    assert metadata["activation_blockers"] == []
+    assert metadata["production_blockers"]
 
 
-def test_agentic_601_is_mounted_as_a_prerequisite_gated_draft():
+def test_agentic_601_is_mounted_as_a_destination_qualified_draft():
     item = _effective_flightpath_items()["agentic-ai-601"]
     metadata = item["metadata"]
 
     assert item["status"] == "draft"
-    assert metadata["certification_stage"] == "immutable-source-published"
+    assert metadata["certification_stage"] == "one-seat-destination-qualified"
     assert metadata["max_workshop_seats"] == 1
     assert metadata["prerequisites"] == [
         "operate-agentic-blueprint",
         "scale-agentic-blueprint",
     ]
     assert metadata["allowed_exposure_policies"] == ["internal"]
-    assert metadata["workload_revision"] == "22f4e4656843721c66b0779e52c30fc46a4061de"
+    assert metadata["workload_revision"] == "588412fc789dd3fa3560e04b7f96966e72e98078"
     assert metadata["showroom_content_ref"] == metadata["workload_revision"]
     assert metadata["workload_helm_values"]["images"] == {
         "presentation": {
             "repository": "ghcr.io/jkershawrh/agentic-ai-601-presentation",
-            "digest": "sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e",
+            "digest": "sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971",
         },
         "qualifier": {
             "repository": "ghcr.io/jkershawrh/agentic-ai-601-qualifier",
-            "digest": "sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc",
+            "digest": "sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c",
         },
     }
     assert metadata["workload_helm_values"]["routes"] == {

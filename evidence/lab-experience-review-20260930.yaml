@@ -691,7 +691,7 @@ labs:
 
   operate-agentic-blueprint:
     display_name: "Intel AI 401: Operate Evidence-Backed Multi-Agent Systems"
-    overall_status: one-seat-live-certified-draft
+    overall_status: one-seat-pilot-active
     published_content_revision: d12a47688d57b9d72fe8c069bad45cb0baad94aa
     story: {status: green-source, evidence: "A live operations presentation frames correlation, evidence, deterministic policy, inference, and human authority."}
     show: {status: green-live, evidence: "The exact presentation handoff and governed workspace passed the one-seat Flightpath journey."}
@@ -718,11 +718,11 @@ labs:
         presentation: quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580
       certification_transfer: none
       certification_boundary: "Exact 0.1.1 is one-seat certified. Historical 0.1.0 one-, five-, and 25-seat receipts remain nontransferable, and this proof does not activate scale or the remaining operator/telemetry claims."
-    next_action: retain draft status until independent outage recovery, learner-visible OpenTelemetry, namespace-scoped GitOps and pipeline evaluation, approved Intel Xeon telemetry, and browser Console SSO/navigation are proven
+    next_action: retain bounded one-seat pilot orderability; treat independent outage recovery, learner-visible OpenTelemetry, namespace-scoped GitOps and pipeline evaluation, approved Intel Xeon telemetry, browser Console SSO/navigation, scale, and general availability as separate production gates
 
   scale-agentic-blueprint:
     display_name: "Intel AI 501: Production Multi-Agent Blueprint"
-    overall_status: one-seat-live-certified-draft
+    overall_status: one-seat-rehearsal-active
     story: {status: green-source, evidence: "The production-blueprint story advances the learner from one trusted run to a measured deployment envelope."}
     show: {status: green-live-rehearsal, evidence: "The exact presentation and all five Showroom checkpoints served with explicit SCALE PROOF and rehearsal labeling."}
     learn: {status: green-live-rehearsal, evidence: "The live seat preserved the 401-to-501 progression from operating one trusted run to qualifying a measured deployment envelope."}
@@ -761,7 +761,7 @@ labs:
       cleanup_seconds: 65.696
       evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
       proof: "The exact 173f019 release was reconfirmed on 2026-10-02 at 100/100: trusted Showroom rendering, rehearsal qualification, exact image identity, zero presentation restarts, terminal isolation, Console URL discovery, key revocation, reclaim, and zero residue all passed. This remains destination rehearsal evidence, not live inference or scale certification."
-    next_action: retain draft status; live adapters, Intel Xeon telemetry, fault drivers, thresholds, browser Console SSO/navigation, and all scale claims remain independently blocked
+    next_action: retain bounded internal one-seat rehearsal orderability; live adapters, Intel Xeon telemetry, fault drivers, thresholds, browser Console SSO/navigation, scale, and general availability remain independently blocked
 
   agentic-ai-601:
     display_name: "Intel AI 601: Earn the Right to Act"

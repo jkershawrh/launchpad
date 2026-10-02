@@ -7,7 +7,7 @@ catalog:
     evidence, deterministic policy, resilience trials, and human-controlled promotion.
   category: guided_build
   version: 0.2.0-flightpath.1
-  status: draft
+  status: active
 learning:
   learning_level: '501'
   learning_stage: Scale
@@ -101,17 +101,19 @@ certification:
   promotion_sequence:
   - 1
   proof_contract: certification/catalog/scale-agentic-blueprint.yaml
-  activation_blockers:
-  - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry before activation.
-  - Complete one-seat certification with zero-residue reclaim before activation; five- and twenty-five-seat scale certification is deferred.
+  activation_blockers: []
+  production_blockers:
+  - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry before any live-execution or production claim.
+  - Five- and twenty-five-seat scale certification is deferred.
   - Complete human authority review before promotion.
   certification_evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
+  activation_review: evidence/runs/catalog/agentic-advanced-one-seat-activation-review-20261002.json
 factory_receipt:
   schema_version: demo-story.redhat-intel.com/launchpad-handoff/v1
   handoff_path: /Users/jkershaw/Documents/agentic-scale-501/handoff/launchpad-handoff.yaml
   source_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
   artifact_source_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
   evidence_mode: rehearsal
-  orderable: false
-  certified: false
+  orderable: true
+  certified: true
   promotion_eligible: false

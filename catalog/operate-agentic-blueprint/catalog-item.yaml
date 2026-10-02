@@ -6,7 +6,7 @@ description: 'Operate the same Red Hat and Intel multi-agent blueprint built at 
   configuration change on OpenShift.'
 category: guided_build
 version: 0.1.1
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -57,7 +57,8 @@ metadata:
   - 1
   - 5
   - 25
-  activation_blockers:
+  activation_blockers: []
+  production_blockers:
   - Prove independent guardrail and inference outage tests, fail-closed behavior,
     and recovery without relying on co-located-process restarts.
   - Add certified OpenTelemetry collection and a learner-visible correlated trace
@@ -66,7 +67,6 @@ metadata:
     before presenting those operator capabilities as live.
   - Measure and publish Intel Xeon endpoint latency, token usage, and CPU allocation
     through an approved telemetry source.
-  production_blockers:
   - Use an organization-owned digest-pinned workload image before general availability.
   - Use an organization-owned digest-pinned presentation image before general availability.
   allowed_exposure_policies:
@@ -168,3 +168,4 @@ metadata:
     telemetry_contract:
       path: contracts/agentic-journey-telemetry-v1.yaml
     certification_evidence: evidence/runs/flightpath-live-20261002-agentic-ai-401-public-1seat-r4.json
+    activation_review: evidence/runs/catalog/agentic-advanced-one-seat-activation-review-20261002.json
