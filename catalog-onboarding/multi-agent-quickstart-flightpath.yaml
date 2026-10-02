@@ -70,6 +70,7 @@ runtime:
   - granite-3.2-8b-tools
   allowed_exposure_policies:
   - internal
+  - public_code
   single_environment: true
   learning_tracks:
   - id: track-1-local

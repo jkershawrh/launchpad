@@ -65,6 +65,7 @@ metadata:
     components as deployed services.
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: multi-agent-quickstart
   showroom_title: 'Intel AI 301: Build Multi-Agent AI Systems with Open Protocols'
   namespace_slug: multi-agent

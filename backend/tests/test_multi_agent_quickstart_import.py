@@ -16,7 +16,7 @@ TRACKS = {
 }
 
 
-def test_multi_agent_quickstart_is_a_one_seat_internal_flightpath_catalog_item():
+def test_multi_agent_quickstart_is_a_one_seat_public_flightpath_catalog_item():
     intake = load_intake(INTAKE_PATH)
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
 
@@ -34,7 +34,10 @@ def test_multi_agent_quickstart_is_a_one_seat_internal_flightpath_catalog_item()
     assert catalog["status"] == "active"
     assert catalog["metadata"]["onboarding_managed"] is True
     assert catalog["metadata"]["activation_blockers"] == []
-    assert catalog["metadata"]["allowed_exposure_policies"] == ["internal"]
+    assert catalog["metadata"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
     assert catalog["metadata"]["production_blockers"]
     assert catalog["metadata"]["certification_stage"] == "1-seat-certified"
     assert catalog["metadata"]["max_workshop_seats"] == 1
