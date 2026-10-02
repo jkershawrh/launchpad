@@ -356,8 +356,17 @@ def build_certification_plan(
     promotion_sequence = list(intake["certification"]["promotion_sequence"])
     next_targets = [value for value in promotion_sequence if value > current_certified_seats]
     next_promotion_target = next_targets[0] if next_targets else None
-    certification_override = seats > current_certified_seats
-    execution_eligible = not certification_override or seats == next_promotion_target
+    catalog_status = str((intake.get("catalog") or {}).get("status", "draft"))
+    # Certification must be able to exercise an exact candidate while it is
+    # still hidden from normal ordering.  A draft candidate therefore always
+    # uses the admin-only override, even when the requested seat count has
+    # already earned an internal proof at the same scale.
+    certification_override = (
+        catalog_status != "active" or seats > current_certified_seats
+    )
+    execution_eligible = (
+        seats <= current_certified_seats or seats == next_promotion_target
+    )
     return {
         "catalog_item_id": contract["metadata"]["catalog_item_id"],
         "cluster_ref": spec["target_cluster"],

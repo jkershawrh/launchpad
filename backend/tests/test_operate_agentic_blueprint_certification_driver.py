@@ -122,7 +122,7 @@ def test_401_revised_source_restarts_certification_at_one_seat():
     assert intake["certification"]["max_workshop_seats"] == 1
     assert plan["current_certified_seats"] == 1
     assert plan["next_promotion_target"] == 5
-    assert plan["certification_override"] is False
+    assert plan["certification_override"] is True
     assert plan["execution_eligible"] is True
     assert plan["probe_concurrency"] == 1
     assert plan["required_consecutive_runs"] == 1

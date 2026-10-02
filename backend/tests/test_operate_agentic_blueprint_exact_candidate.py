@@ -2,6 +2,8 @@ from pathlib import Path
 
 import yaml
 
+from app.services.catalog_certification import build_certification_plan
+
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG = ROOT / "catalog/operate-agentic-blueprint/catalog-item.yaml"
@@ -50,6 +52,22 @@ def test_401_one_seat_contract_proves_live_model_route_and_restoration():
         {"path": "learner_policy.configmap_removed", "equals": True},
     ):
         assert assertion in assertions
+
+
+def test_401_public_proof_uses_admin_override_while_candidate_is_draft():
+    contract = yaml.safe_load(CERTIFICATION.read_text())
+    intake = yaml.safe_load(INTAKE.read_text())
+
+    plan = build_certification_plan(
+        contract,
+        intake=intake,
+        seats=1,
+        exposure_policy="public_code",
+    )
+
+    assert plan["current_certified_seats"] == 1
+    assert plan["certification_override"] is True
+    assert plan["execution_eligible"] is True
 
 
 def test_401_review_records_exact_source_and_artifact_boundary():
