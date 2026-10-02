@@ -760,8 +760,8 @@ def test_shared_origin_terminal_websocket_resolves_the_order_and_ttyd_endpoint()
 
     assert router._terminal_websocket_target(
         "labs/virtualization-ai-401-6611e9ca/showroom/terminal/ws"
-    ) == ("/labs/virtualization-ai-401-6611e9ca", "ws")
-    assert router._terminal_websocket_target("terminal/ws") == ("", "ws")
+    ) == ("/labs/virtualization-ai-401-6611e9ca", "terminal/ws")
+    assert router._terminal_websocket_target("terminal/ws") == ("", "terminal/ws")
     assert router._terminal_websocket_target("labs/example/showroom/ws") is None
 
 

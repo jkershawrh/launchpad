@@ -340,9 +340,9 @@ def _terminal_websocket_target(path: str) -> tuple[str, str] | None:
     )
     if shared:
         public_path = "/" + shared.group(1).split("/showroom", 1)[0]
-        return public_path, shared.group(2)
+        return public_path, f"terminal/{shared.group(2)}"
     if path.startswith("terminal/"):
-        return "", path.removeprefix("terminal/")
+        return "", path
     return None
 
 
