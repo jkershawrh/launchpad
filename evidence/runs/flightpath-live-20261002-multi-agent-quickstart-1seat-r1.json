@@ -1,0 +1,196 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261002-multi-agent-quickstart-1seat-r1",
+  "catalog_item_id": "multi-agent-quickstart",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-02T11:58:21Z",
+  "contract": {
+    "catalog_version": "0.2.16-flightpath.1",
+    "git_commit": "5e0956ae0d12a4645dea1df387f6f821b6bb44ff",
+    "intake_path": "catalog-onboarding/multi-agent-quickstart-flightpath.yaml",
+    "path": "certification/catalog/multi-agent-quickstart-flightpath.yaml",
+    "sha256": "a1019945f4b66965410c62aae041fda5e53c293e0fd17c37ddd01b2a900c9fb8"
+  },
+  "source": {
+    "showroom_revision": "4b341ad1f7b9ee833a5b664b5f52a4a8f9ffcb6c",
+    "workload_revision": "4b341ad1f7b9ee833a5b664b5f52a4a8f9ffcb6c",
+    "original_lab_revision": "fd6affb22691236f6e0c7ff13abd2a8c0829453e",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:c873443b307c32deeb83b123d545048bf29dd4497d0013fa835bc27d97f55c0f",
+    "workload_image": "ghcr.io/jkershawrh/multi-agent-quickstart@sha256:67184f0bd18f29146f9353d2f80108c5d62e6bf9f866c01000b8762449812eb1",
+    "workload_platform_image_id": "ghcr.io/jkershawrh/multi-agent-quickstart@sha256:18b629bf4738ebf52092b80a06bf4189fac186a5b044ed3a2b4f7b42da677b94",
+    "presentation_image": "ghcr.io/jkershawrh/multi-agent-quickstart-presentation@sha256:3bb02d76c74e001fd5218634467295760b24f79e575edb2ca6ff84294df9a61b"
+  },
+  "plan": {
+    "catalog_item_id": "multi-agent-quickstart",
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false,
+    "all_seats_same_cluster": true
+  },
+  "capacity_preview": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "seats_requested": 1,
+    "supported_seats": 57,
+    "estimated_resources": {
+      "cpu_millicores": 1250,
+      "memory_mib": 2112,
+      "pods": 3
+    }
+  },
+  "order": {
+    "workshop_id": "85f48ade-83b2-4a41-98c2-53466422b521",
+    "session_ids": [
+      "abb9bcb4-9071-4a9e-992f-4334979622bc"
+    ],
+    "namespaces": [
+      "launchpad-flightpath-candida-multi-agent-0bfa09"
+    ],
+    "seat_count": 1,
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready"
+  },
+  "seat_results": [
+    {
+      "seat_id": "0bfa0904-7b9f-45b5-9d3c-6cd783874299",
+      "seat_number": 1,
+      "session_id": "abb9bcb4-9071-4a9e-992f-4334979622bc",
+      "namespace": "launchpad-flightpath-candida-multi-agent-0bfa09",
+      "cluster_ref": "flightpath",
+      "probe": {
+        "passed": true,
+        "exit_code": 0,
+        "assertion_failures": [],
+        "result": {
+          "result": "GREEN-live-internal-seat",
+          "readiness": {
+            "http_status": 200,
+            "status": "ready",
+            "agents_discovered": 3,
+            "agents_expected": 3,
+            "agent_names": [
+              "research",
+              "analyst",
+              "executor"
+            ]
+          },
+          "multi_agent_journey": {
+            "steps": 3,
+            "mcp_steps": 3,
+            "errors": 0,
+            "correlation_fields_present": true,
+            "correlation_stable": true,
+            "unique_event_ids": true
+          },
+          "participant_ui_journey": {
+            "http_error": false,
+            "executor_present": true,
+            "step_count_one": true,
+            "history_count": 1,
+            "event_count": 4
+          },
+          "presentation": {
+            "required": true,
+            "root_http_status": 200,
+            "navigation_markers": 5,
+            "live_label_present": true,
+            "rehearsal_label_present": true,
+            "offline_label_present": true,
+            "health_status": "healthy",
+            "agents_discovered": 3,
+            "workflow_steps": 3,
+            "workflow_errors": 0,
+            "handoff_http_status": 302,
+            "handoff_target_http_status": 200,
+            "client_token_exposed": false
+          },
+          "learner_policy": {
+            "applied_max_tokens": 48,
+            "workflow_passed": true,
+            "rollback_restored_baseline": true,
+            "configmap_removed": true
+          },
+          "guardrails": {
+            "blocked_agents": 3
+          },
+          "semantic_routing": {
+            "classification_status": "ok",
+            "classifier": "llm-fallback",
+            "selected_workflow": "standard",
+            "selected_model": "simple",
+            "steps": 2,
+            "errors": 0
+          },
+          "intel_xeon_inference": {
+            "configured_model": "granite-3.2-8b-tools",
+            "workflow_completed": true,
+            "semantic_route_completed": true
+          },
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-multi-agent-0bfa09",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "contains_sensitive_values": false
+        }
+      },
+      "public_browser": {
+        "trusted_tls": true,
+        "claim_succeeded": true,
+        "same_seat_recovery_succeeded": true,
+        "showroom_loaded": true,
+        "showroom_flat_antora_path_loaded": true,
+        "presentation_embedded": true,
+        "terminal_embedded": true,
+        "workspace_embedded": true,
+        "openshift_console_embedded": true,
+        "openshift_console_namespace_scoped": true,
+        "openshift_console_pods_listed": 3,
+        "cross_namespace_access_denied": true,
+        "cluster_node_access_denied": true,
+        "public_url": "https://labs.smg-helix.ai/labs/multi-agent-quickstart-85f48ade"
+      }
+    }
+  ],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "public_browser_passed": true,
+    "same_seat_recovery_passed": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "idempotent_reclaim": true,
+    "access_policy_enabled": false,
+    "active_claim_count": 0,
+    "model_keys_revoked": true,
+    "model_key_revocation_confirmation": "http-success",
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    }
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}
