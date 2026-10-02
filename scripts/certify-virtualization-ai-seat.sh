@@ -212,7 +212,7 @@ case "$catalog_id" in
     stage=vm-origin-request
     response="$(terminal_vm_request 11111111-1111-4111-8111-111111111111 healthy)"
     jq -e '.source_state == "LIVE" and .ai_participated == true and .model.hardware == "Intel Xeon CPU" and .validation.schema_valid == true and .validation.category_valid == true and .authority.final_decision_owner == "human operator" and (.authority.actions_permitted | length) == 0' <<<"$response" >/dev/null
-    evidence="$(curl -fsS "http://127.0.0.1:18080/api/v1/evidence/11111111-1111-4111-8111-111111111111")"
+    evidence="$(curl -fsS "http://127.0.0.1:${forward_port}/api/v1/evidence/11111111-1111-4111-8111-111111111111")"
     jq -e --arg ns "$namespace" '.request_id == "11111111-1111-4111-8111-111111111111" and .origin.kind == "virtual-machine" and .origin.namespace == $ns and .origin.vm_name == "operations-vm"' <<<"$evidence" >/dev/null
     journey_source_state=LIVE
     journey_request_origin=operations-vm

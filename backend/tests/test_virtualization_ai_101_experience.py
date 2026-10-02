@@ -22,8 +22,11 @@ def test_101_records_certification_without_claiming_browser_console_sso() -> Non
     assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert intake["certification"]["certified_seats"] == 1
     assert metadata["certification_stage"] == "1-seat-certified"
-    assert metadata["allowed_exposure_policies"] == ["internal"]
-    assert intake["runtime"]["allowed_exposure_policies"] == ["internal"]
+    assert metadata["allowed_exposure_policies"] == ["internal", "public_code"]
+    assert intake["runtime"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
     assert metadata["showroom_journey"] == "virtualization-ai-101"
     assert metadata["workload_revision"] == "e74393d0def1a7a2749911b3a421c62f3f1c2558"
     assert metadata["recommended_next_items"] == ["virtualization-ai-201"]
@@ -88,3 +91,7 @@ def test_101_certifier_waits_for_the_vm_guest_path() -> None:
     assert "--local-ssh-opts='-o StrictHostKeyChecking=no'" in script
     assert "--local-ssh-opts='-o UserKnownHostsFile=/dev/null'" in script
     assert "key_path=/tmp/launchpad-certification/lab-key" in script
+    assert (
+        'http://127.0.0.1:${forward_port}/api/v1/evidence/'
+        '11111111-1111-4111-8111-111111111111'
+    ) in script

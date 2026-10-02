@@ -57,6 +57,7 @@ metadata:
   certification_proof_contract: certification/catalog/virtualization-ai-foundations-101.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: virtualization-ai-101
   showroom_title: 'Virtualization + AI 101: Trace a VM to Governed AI'
   namespace_slug: virtualization-ai-foundations-101
