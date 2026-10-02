@@ -730,7 +730,7 @@ labs:
     prove: {status: green-live-rehearsal, evidence: "The one-seat destination receipt scored 100/100 while explicitly denying live inference and scale certification claims."}
     operators: {status: green-live-partial, evidence: "Story, Terminal, Qualification Evidence, exact runtime images, namespace isolation, and Console URL were proven; browser Console SSO/navigation remains an activation gate."}
     inference: {status: not-claimed, evidence: "No required model is declared; approved live Xeon telemetry remains an activation blocker."}
-    cleanup: {status: green-live, evidence: "Reclaim completed in 64.695 seconds with model key revocation and zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
+    cleanup: {status: green-live, evidence: "The 2026-10-02 confirmation reclaim completed in 65.696 seconds with model key revocation and zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_state:
       repository: /Users/jkershaw/Documents/agentic-scale-501
       published_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
@@ -754,13 +754,13 @@ labs:
       failure: "Workshop stopped in failed state before participant journey proof."
       cleanup_boundary: "Namespace residue reached zero, but model-key revocation was not proven."
     live_certification:
-      observed_at: "2026-09-30"
+      observed_at: "2026-10-02"
       result: GREEN-live
       rubric_score: 100
-      ready_seconds: 57.626
-      cleanup_seconds: 64.695
-      evidence: evidence/runs/flightpath-live-20260930-scale-agentic-501-1seat-r5.json
-      proof: "The exact 173f019 release passed trusted Showroom rendering, rehearsal qualification, exact image identity, zero presentation restarts, terminal isolation, Console URL discovery, key revocation, reclaim, and zero residue."
+      ready_seconds: 57.65
+      cleanup_seconds: 65.696
+      evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
+      proof: "The exact 173f019 release was reconfirmed on 2026-10-02 at 100/100: trusted Showroom rendering, rehearsal qualification, exact image identity, zero presentation restarts, terminal isolation, Console URL discovery, key revocation, reclaim, and zero residue all passed. This remains destination rehearsal evidence, not live inference or scale certification."
     next_action: retain draft status; live adapters, Intel Xeon telemetry, fault drivers, thresholds, browser Console SSO/navigation, and all scale claims remain independently blocked
 
   agentic-ai-601:

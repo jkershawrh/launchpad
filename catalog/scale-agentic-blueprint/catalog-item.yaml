@@ -44,12 +44,11 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/scale-agentic-blueprint.yaml
-  certification_stage: immutable-source-published
+  certification_stage: one-seat-destination-qualified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   activation_blockers:
-  - Complete trusted render and destination artifact qualification on Flightpath.
   - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry
     before activation.
   - Complete one-seat certification with zero-residue reclaim before activation; five-
@@ -123,4 +122,5 @@ metadata:
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-scale-501.git
   source_content_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
-  source_references: {}
+  source_references:
+    certification_evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json

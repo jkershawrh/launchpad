@@ -95,17 +95,17 @@ runtime:
       qualifier: agentic-scale-501-qualifier
     readiness: []
 certification:
-  stage: immutable-source-published
-  certified_seats: 0
+  stage: one-seat-destination-qualified
+  certified_seats: 1
   max_workshop_seats: 1
   promotion_sequence:
   - 1
   proof_contract: certification/catalog/scale-agentic-blueprint.yaml
   activation_blockers:
-  - Complete trusted render and destination artifact qualification on Flightpath.
   - Replace rehearsal evidence with approved live execution and Intel Xeon telemetry before activation.
   - Complete one-seat certification with zero-residue reclaim before activation; five- and twenty-five-seat scale certification is deferred.
   - Complete human authority review before promotion.
+  certification_evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
 factory_receipt:
   schema_version: demo-story.redhat-intel.com/launchpad-handoff/v1
   handoff_path: /Users/jkershaw/Documents/agentic-scale-501/handoff/launchpad-handoff.yaml

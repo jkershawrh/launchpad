@@ -101,7 +101,7 @@ def test_agentic_501_is_mounted_as_a_fail_closed_destination_qualification_draft
     metadata = item["metadata"]
 
     assert item["status"] == "draft"
-    assert metadata["certification_stage"] == "immutable-source-published"
+    assert metadata["certification_stage"] == "one-seat-destination-qualified"
     assert metadata["max_workshop_seats"] == 1
     assert metadata["allowed_exposure_policies"] == ["internal"]
     assert metadata["workload_revision"] == "173f019da79d0d55431457ff24ed3e7253d98b23"

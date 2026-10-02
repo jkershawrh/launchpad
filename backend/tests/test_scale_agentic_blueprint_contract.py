@@ -168,7 +168,7 @@ def test_one_seat_experience_proof_does_not_claim_multi_seat_or_live_inference()
     catalog = _load(CATALOG_PATH)
     intake = _load(INTAKE_PATH)
 
-    assert intake["certification"]["certified_seats"] == 0
+    assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["max_workshop_seats"] == 1
     assert catalog["metadata"]["required_models"] == []
@@ -180,7 +180,11 @@ def test_one_seat_experience_proof_does_not_claim_multi_seat_or_live_inference()
     }
     assert catalog["metadata"]["promotion_sequence"] == [1]
     assert intake["certification"]["promotion_sequence"] == [1]
-    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert intake["certification"]["stage"] == "one-seat-destination-qualified"
+    assert catalog["metadata"]["certification_stage"] == "one-seat-destination-qualified"
+    evidence = "evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json"
+    assert intake["certification"]["certification_evidence"] == evidence
+    assert catalog["metadata"]["source_references"]["certification_evidence"] == evidence
     assert [profile["seats"] for profile in certification["spec"]["scale_profiles"]] == [1]
     assert certification["spec"]["seat_probe"]["json_assertions"][:4] == [
         {"path": "result", "equals": "GREEN-destination-rehearsal-seat"},
