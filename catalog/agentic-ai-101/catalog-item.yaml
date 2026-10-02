@@ -4,7 +4,7 @@ description: Trace a request through model proposal, bounded tools, source-label
   evidence, deterministic policy, human authority, and a reviewable workflow record.
 category: guided_build
 version: 0.1.0
-status: draft
+status: active
 required_capabilities:
 - openshift
 - showroom
@@ -44,19 +44,11 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agentic-ai-101.yaml
-  certification_stage: factory-source-qualified
+  certification_stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Destination OpenShift admission, Route behavior, Showroom integration, and participant
-    terminal execution remain unverified.
-  - One-seat provisioning, participant journey, reclaim, and zero-residue evidence
-    remain unverified.
-  - No live model participation, Intel hardware placement, performance, autonomous
-    action, or production readiness is claimed.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   certification_proof_contract: certification/catalog/agentic-ai-101.yaml
   allowed_exposure_policies:
   - internal

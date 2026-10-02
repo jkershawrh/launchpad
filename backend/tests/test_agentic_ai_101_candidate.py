@@ -22,13 +22,16 @@ REHEARSAL_IMAGE = (
 )
 
 
-def test_agentic_ai_101_intake_is_an_internal_draft_with_exact_artifacts() -> None:
+def test_agentic_ai_101_is_internal_one_seat_certified_with_exact_artifacts() -> None:
     intake = load_intake(INTAKE_PATH)
 
     report = validate_intake(intake)
     assert report["validation_status"] == "pass"
     assert report["errors"] == []
-    assert intake["catalog"]["status"] == "draft"
+    assert intake["catalog"]["status"] == "active"
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["certified_seats"] == 1
+    assert intake["certification"]["activation_blockers"] == []
     assert intake["learning"]["learning_level"] == "101"
     assert intake["learning"]["recommended_next_items"] == [
         "intel-xeon6-agent-201"

@@ -6,7 +6,7 @@ catalog:
     evidence, deterministic policy, human authority, and a reviewable workflow record.
   category: guided_build
   version: 0.1.0
-  status: draft
+  status: active
 learning:
   learning_level: '101'
   learning_stage: Learn
@@ -43,7 +43,10 @@ runtime:
   required_models: []
   inference_endpoint: none
   showroom_terminal_storage: false
-  validation_refs: [pod-ready, route-accessible, governed-workflow-journey]
+  validation_refs:
+  - pod-ready
+  - route-accessible
+  - governed-workflow-journey
   observability_profile: governed-workflow-foundations
   seat_resources:
     cpu_millicores: 50
@@ -82,17 +85,10 @@ runtime:
       presentation: story
     readiness: []
 certification:
-  stage: factory-source-qualified
+  stage: 1-seat-certified
   max_workshop_seats: 1
   promotion_sequence:
   - 1
-  activation_blockers:
-  - Destination OpenShift admission, Route behavior, Showroom integration, and participant
-    terminal execution remain unverified.
-  - One-seat provisioning, participant journey, reclaim, and zero-residue evidence
-    remain unverified.
-  - No live model participation, Intel hardware placement, performance, autonomous
-    action, or production readiness is claimed.
-  - Complete trusted render and destination artifact qualification on Flightpath.
-  - Complete one-seat live certification and zero-residue reclaim before activation.
+  activation_blockers: []
   proof_contract: certification/catalog/agentic-ai-101.yaml
+  certified_seats: 1
