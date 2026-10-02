@@ -17,7 +17,7 @@ from urllib.request import urlopen
 import yaml
 
 
-WORKLOAD_REVISION = "6f27403de91eeb722533cf596d666f409755708e"
+WORKLOAD_REVISION = "095132b68bec5696e384fa1304702fa3c460cccb"
 RAW_PREFIX = (
     "https://raw.githubusercontent.com/rhpds/triforce/"
     f"{WORKLOAD_REVISION}/infrastructure/manifests-201/"
