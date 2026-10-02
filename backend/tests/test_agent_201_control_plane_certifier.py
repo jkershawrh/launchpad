@@ -15,14 +15,14 @@ CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
 SOURCE_REVISION = "aa1e95081ae7dc513f273f71d24eed386b310703"
 HISTORICAL_CERTIFIED_SOURCE_REVISION = "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
-WORKLOAD_REVISION = "095132b68bec5696e384fa1304702fa3c460cccb"
+WORKLOAD_REVISION = "f484cb66c3dcddff323df8814f637dc92c73c179"
 WORKLOAD_BASE = (
     "https://raw.githubusercontent.com/rhpds/triforce/"
     f"{WORKLOAD_REVISION}/infrastructure/manifests-201"
 )
 RUNTIME_IMAGES = {
     "solution-tools": "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850",
-    "solution-agent": "ghcr.io/jkershawrh/triforce-solution-agent@sha256:4bcaedd2b706c47c736ad53f9fe457da9e9c3e3e6de5d37f54fc837ac0557a3b",
+    "solution-agent": "ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67",
     "solution-ui": "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb",
 }
 

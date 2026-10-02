@@ -80,7 +80,7 @@ def test_adapter_defines_all_and_only_short_launchpad_aliases():
         "solution-ui": "app",
     }
     assert MODULE.RAW_PREFIX.endswith(
-        "095132b68bec5696e384fa1304702fa3c460cccb/infrastructure/manifests-201/"
+        "f484cb66c3dcddff323df8814f637dc92c73c179/infrastructure/manifests-201/"
     )
 
 

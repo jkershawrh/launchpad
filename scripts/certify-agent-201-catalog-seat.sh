@@ -7,10 +7,10 @@ expected_cluster="${2:?usage: certify-agent-201-catalog-seat.sh <namespace> <clu
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 showroom_revision="aa1e95081ae7dc513f273f71d24eed386b310703"
-workload_revision="095132b68bec5696e384fa1304702fa3c460cccb"
-workload_base="https://raw.githubusercontent.com/rhpds/triforce/095132b68bec5696e384fa1304702fa3c460cccb/infrastructure/manifests-201"
+workload_revision="f484cb66c3dcddff323df8814f637dc92c73c179"
+workload_base="https://raw.githubusercontent.com/rhpds/triforce/f484cb66c3dcddff323df8814f637dc92c73c179/infrastructure/manifests-201"
 expected_tools_image="quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
-expected_agent_image="ghcr.io/jkershawrh/triforce-solution-agent@sha256:4bcaedd2b706c47c736ad53f9fe457da9e9c3e3e6de5d37f54fc837ac0557a3b"
+expected_agent_image="ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67"
 expected_ui_image="quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR

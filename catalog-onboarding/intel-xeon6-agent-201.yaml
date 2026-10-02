@@ -38,7 +38,7 @@ sources:
     start_path: .
   workload:
     repo_url: "https://github.com/rhpds/triforce.git"
-    revision: "095132b68bec5696e384fa1304702fa3c460cccb"
+    revision: "f484cb66c3dcddff323df8814f637dc92c73c179"
     deploy_path: .
 
 runtime:
