@@ -5,7 +5,7 @@ namespace="${1:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
-source_revision="79998ff66d5d0e2a18f001f0e096badda06f0671"
+source_revision="0458cc6ed797e2d54ef02d177224804beffb3638"
 expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f"
 expected_rehearsal_image="ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"
 
@@ -29,7 +29,7 @@ rehearsal_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l a
 [[ "$rehearsal_image_id" == *"${expected_rehearsal_image#*@}" ]]
 
 stage="presentation"
-presentation_host="$(oc --kubeconfig "$KUBECONFIG" get route agentic-ai-101-presentation -n "$namespace" -o jsonpath='{.spec.host}')"
+presentation_host="$(oc --kubeconfig "$KUBECONFIG" get route story -n "$namespace" -o jsonpath='{.spec.host}')"
 presentation="$(curl -fsS --retry 4 --retry-all-errors --retry-delay 2 --max-time 180 "https://${presentation_host}/")"
 grep -q 'Agentic AI 101' <<<"$presentation"
 
