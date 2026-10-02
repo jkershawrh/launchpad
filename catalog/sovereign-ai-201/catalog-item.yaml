@@ -56,6 +56,7 @@ metadata:
   certification_proof_contract: certification/catalog/sovereign-ai-201.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: sovereign-ai-201
   showroom_title: 'Sovereign AI 201: Build the Governed Inference Boundary'
   namespace_slug: sovereign-ai-201

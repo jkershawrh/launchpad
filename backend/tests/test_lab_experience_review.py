@@ -163,6 +163,14 @@ def test_sovereign_201_exact_release_requires_live_inference_recertification() -
         intake["certification"]["stage"]
     ) == "1-seat-certified"
     assert intake["certification"]["certified_seats"] == 1
+    assert catalog["metadata"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
+    assert intake["runtime"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
     assert intake["sources"]["workload"]["revision"] == (
         "0fdcfba6c2db35190a768e561ac6b0665c76484b"
     )
@@ -226,7 +234,7 @@ def test_virtualization_301_pins_public_root_playbook_and_exact_internal_certifi
         assert source["gitops_repo_url"].startswith("https://github.com/")
     assert metadata["workload_repo"].startswith("https://github.com/")
     assert metadata["activation_blockers"] == []
-    assert metadata["allowed_exposure_policies"] == ["internal"]
+    assert metadata["allowed_exposure_policies"] == ["internal", "public_code"]
     assert metadata["activation_blockers"] == intake["certification"][
         "activation_blockers"
     ]
