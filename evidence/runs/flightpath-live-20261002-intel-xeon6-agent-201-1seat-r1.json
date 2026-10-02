@@ -1,0 +1,140 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261002-intel-xeon6-agent-201-1seat-r1",
+  "catalog_item_id": "intel-xeon6-agent-201",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-02T05:47:31Z",
+  "contract": {
+    "catalog_version": "1.0.9-flightpath.1",
+    "git_commit": "e3cd9bdb",
+    "intake_path": "catalog-onboarding/intel-xeon6-agent-201.yaml",
+    "path": "certification/catalog/intel-xeon6-agent-201.yaml",
+    "sha256": "ad7fa94cf10a0c276cf378f73a9a1b3ade43e9c991169f9e80206dcf04976e6f"
+  },
+  "source": {
+    "showroom_revision": "aa1e95081ae7dc513f273f71d24eed386b310703",
+    "workload_revision": "f484cb66c3dcddff323df8814f637dc92c73c179",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:c873443b307c32deeb83b123d545048bf29dd4497d0013fa835bc27d97f55c0f",
+    "solution_agent_image": "ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67",
+    "solution_tools_image": "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850",
+    "solution_ui_image": "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
+  },
+  "plan": {
+    "catalog_item_id": "intel-xeon6-agent-201",
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": true,
+    "all_seats_same_cluster": true
+  },
+  "capacity_preview": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "seats_requested": 1,
+    "estimated_resources": {
+      "cpu_millicores": 415,
+      "memory_mib": 912,
+      "pods": 3
+    }
+  },
+  "order": {
+    "workshop_id": "d513183a-bbee-4982-b1d1-3a393bad80fa",
+    "session_ids": [
+      "cc9a754d-c1c6-4826-8045-c862325f6b54"
+    ],
+    "namespaces": [
+      "launchpad-flightpath-candida-intel-xeon6-agent-e7ad4e"
+    ],
+    "seat_count": 1,
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready"
+  },
+  "seat_results": [
+    {
+      "seat_id": "e7ad4e3d-f65f-4a12-ab3c-336ad0c8ca6f",
+      "seat_number": 1,
+      "session_id": "cc9a754d-c1c6-4826-8045-c862325f6b54",
+      "namespace": "launchpad-flightpath-candida-intel-xeon6-agent-e7ad4e",
+      "cluster_ref": "flightpath",
+      "probe": {
+        "passed": true,
+        "exit_code": 0,
+        "assertion_failures": [],
+        "result": {
+          "result": "GREEN-live-internal-seat",
+          "agent_journey": {
+            "functional_agent": true,
+            "brief_length": 817,
+            "tool_count": 3,
+            "response_sha256": "55b62bdd52a68280f555902a0c5c5c8f6e8a36ff4f87c82fa77ebb42b1087067"
+          },
+          "intel_xeon_inference": {
+            "configured_model": "granite-3.2-8b-tools",
+            "observed_models": [
+              "granite-3.2-8b-tools"
+            ],
+            "model_participated": true
+          },
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-intel-xeon6-agent-e7ad4e",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "contains_sensitive_values": false
+        }
+      },
+      "public_browser": {
+        "trusted_tls": true,
+        "claim_succeeded": true,
+        "same_seat_recovery_succeeded": true,
+        "showroom_loaded": true,
+        "terminal_embedded": true,
+        "workspace_embedded": true,
+        "openshift_console_embedded": true,
+        "openshift_console_namespace_scoped": true,
+        "live_business_query_succeeded": true,
+        "human_approval_preserved": true,
+        "public_url": "https://labs.smg-helix.ai/labs/intel-xeon6-agent-201-d513183a"
+      }
+    }
+  ],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "public_browser_passed": true,
+    "same_seat_recovery_passed": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "idempotent_reclaim": true,
+    "access_policy_enabled": false,
+    "active_claim_count": 0,
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    }
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}
