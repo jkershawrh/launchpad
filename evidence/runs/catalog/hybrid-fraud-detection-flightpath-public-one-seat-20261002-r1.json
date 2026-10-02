@@ -1,0 +1,105 @@
+{
+  "schema": "launchpad.redhat.com/public-exposure-certification-evidence/v1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "result": "GREEN-live-public-exposure",
+  "observed_at": "2026-10-02T04:05:00Z",
+  "source": {
+    "launchpad_commit_sha": "9525faef032cf23b98492e282e2c0987151062b8",
+    "lab_content_commit_sha": "2ea5e1f5cfce7e7a45e9b10408d8653590a4af79",
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:e35bd0a68d6aad7d09eb11ccdad1c8672b5229a27f4d904d8735b5acb850e028",
+    "workload_image": "ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:faa4b11c6e314bf3f995b13153c7fa061bcba862753fe3f97b2488d4c117eb03"
+  },
+  "internal_evidence": {
+    "path": "evidence/runs/flightpath-live-20261002-hybrid-fraud-detection-1seat-r1.json",
+    "sha256": "94564d2366e1fd45e6f6672048a344103019ba97d2a5d8b21824d4d4d2878a30"
+  },
+  "plan": {
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false
+  },
+  "run": {
+    "workshop_id": "13b774fd-ae1e-40e6-bd41-720fd7a8e9b2",
+    "session_id": "90389bf2-8897-400d-a52e-a153ceea23da",
+    "seat_id": "bb5330c3-72df-47d9-b07e-be62f59a029e",
+    "namespace": "launchpad-flightpath-candida-fraud-bb5330",
+    "public_url": "https://labs.smg-helix.ai/labs/hybrid-fraud-detection-13b774fd"
+  },
+  "authentication_recovery_canary": {
+    "workshop_id": "8decdc07-30ee-46e2-b32d-390a5f13fbf8",
+    "session_id": "1af1577c-bbc6-4224-82a4-c82f406f2418",
+    "seat_id": "42369907-2cf2-4728-bfff-f6cdcfcbea74",
+    "same_seat_before_and_after_logout": true,
+    "cleanup_completed": true
+  },
+  "identity_and_claim": {
+    "one_time_code_disclosed_once": true,
+    "claim_succeeded": true,
+    "same_identity_recovered_same_seat": true,
+    "plaintext_code_persisted": false,
+    "claim_count_after_recovery": 1
+  },
+  "participant_journey": {
+    "landing": true,
+    "showroom": true,
+    "declared_tools": true,
+    "logout_and_resume": true,
+    "my_labs_recovery": true,
+    "instructions_path": "/showroom/www/hybrid-fraud-detection/main/index.html",
+    "terminal_loaded": true,
+    "workspace_loaded": true,
+    "openshift_console_loaded": true,
+    "openshift_console_same_origin": true,
+    "live_inference_journey": true,
+    "model": "granite-3.2-8b-tools",
+    "bounded_input": true,
+    "human_authority_preserved": true,
+    "post_reclaim_reauthentication_required": true
+  },
+  "authorization": {
+    "assigned_namespace_edit": true,
+    "cross_namespace_denied": true,
+    "unauthenticated_denied": true,
+    "cluster_scoped_nodes_denied": true,
+    "console_cluster_scope_denied": true
+  },
+  "edge": {
+    "trusted_tls": true,
+    "external_browser": true,
+    "stable_origin": "https://labs.smg-helix.ai"
+  },
+  "abuse_controls": {
+    "uniform_denial": true,
+    "rate_limit_enforced": true,
+    "failed_attempts_exercised": 6,
+    "uniform_http_status": 403,
+    "component_evidence": "evidence/public-access/green-live-flightpath-public-access-2026-09-24.yaml"
+  },
+  "cleanup": {
+    "status": "completed",
+    "identity_disabled_after_final_entitlement": true,
+    "model_keys_revoked": true,
+    "model_key_revocation_confirmation": "http-success",
+    "idempotent_reclaim": true,
+    "resource_counts": {
+      "namespaces": 0,
+      "applications": 0,
+      "routes": 0,
+      "rolebindings": 0,
+      "secrets": 0,
+      "policy_enabled": 0,
+      "active_entitlements": 0,
+      "identities_due_disable": 0
+    },
+    "audit_retention": "Disabled policy and expired entitlement records are retained as non-authorizing historical evidence."
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_email_exported": false
+  },
+  "rubric": {
+    "score": 100,
+    "passed": true
+  }
+}

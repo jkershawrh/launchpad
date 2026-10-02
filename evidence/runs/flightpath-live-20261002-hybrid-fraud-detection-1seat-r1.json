@@ -1,0 +1,124 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261002-hybrid-fraud-detection-1seat-r1",
+  "catalog_item_id": "hybrid-fraud-detection",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-02T03:55:12.791723Z",
+  "contract": {
+    "catalog_version": "0.1.2-flightpath.3",
+    "git_commit": "9525faef032cf23b98492e282e2c0987151062b8",
+    "intake_path": "catalog-onboarding/hybrid-fraud-detection.yaml",
+    "path": "certification/catalog/hybrid-fraud-detection.yaml",
+    "sha256": "ca2658db648a6c9de4e9bc22198a6273f7ccc436d049d0e147bc5a8485499e15"
+  },
+  "source": {
+    "lab_content_commit_sha": "2ea5e1f5cfce7e7a45e9b10408d8653590a4af79",
+    "backend_image": "quay.io/rh-ee-jkershaw/launchpad-backend@sha256:e35bd0a68d6aad7d09eb11ccdad1c8672b5229a27f4d904d8735b5acb850e028",
+    "workload_image": "ghcr.io/jkershawrh/hybrid-fraud-detection@sha256:faa4b11c6e314bf3f995b13153c7fa061bcba862753fe3f97b2488d4c117eb03"
+  },
+  "plan": {
+    "catalog_item_id": "hybrid-fraud-detection",
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false,
+    "all_seats_same_cluster": true
+  },
+  "capacity_preview": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "seats_requested": 1,
+    "estimated_resources": {
+      "cpu_millicores": 700,
+      "memory_mib": 1280,
+      "pods": 2
+    }
+  },
+  "order": {
+    "workshop_id": "13b774fd-ae1e-40e6-bd41-720fd7a8e9b2",
+    "session_ids": [
+      "90389bf2-8897-400d-a52e-a153ceea23da"
+    ],
+    "namespaces": [
+      "launchpad-flightpath-candida-fraud-bb5330"
+    ],
+    "seat_count": 1,
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready"
+  },
+  "seat_results": [
+    {
+      "seat_id": "bb5330c3-72df-47d9-b07e-be62f59a029e",
+      "seat_number": 1,
+      "session_id": "90389bf2-8897-400d-a52e-a153ceea23da",
+      "namespace": "launchpad-flightpath-candida-fraud-bb5330",
+      "cluster_ref": "flightpath",
+      "probe": {
+        "passed": true,
+        "exit_code": 0,
+        "assertion_failures": [],
+        "result": {
+          "result": "GREEN-live-internal-seat",
+          "readiness": {
+            "health": true,
+            "model_ready": true,
+            "workspace_http_status": 200
+          },
+          "hybrid_journey": {
+            "live_model": true,
+            "model": "granite-3.2-8b-tools",
+            "risk_score": 52.0,
+            "llm_score": 85.0,
+            "bounded_input": true,
+            "human_authority_preserved": true
+          },
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-fraud-bb5330",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "contains_sensitive_values": false
+        }
+      }
+    }
+  ],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    }
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}

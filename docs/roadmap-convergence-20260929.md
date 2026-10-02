@@ -201,9 +201,18 @@ recommend but never creates eligibility.
   authority, namespace isolation, abuse controls, model-key revocation,
   idempotent reclaim, and zero active residue. The immutable evidence is
   `evidence/runs/catalog/agent-reliability-flightpath-public-one-seat-20261001-r1.json`.
-- All six catalog entries are active, expose `internal` and `public_code`, and
+- `hybrid-fraud-detection` passed public one-seat certification against exact
+  content commit `2ea5e1f5cfce7e7a45e9b10408d8653590a4af79`. A clean external browser
+  completed claim, logout, and exact same-seat recovery; Showroom, scoped
+  Terminal, Hybrid Decision Casebook, and namespace-scoped OpenShift Console
+  loaded through the stable public origin. Live `granite-3.2-8b-tools` hybrid
+  scoring, bounded invalid input, human authority, namespace isolation, abuse
+  controls, model-key revocation, idempotent reclaim, and zero active residue
+  passed. The immutable evidence is
+  `evidence/runs/catalog/hybrid-fraud-detection-flightpath-public-one-seat-20261002-r1.json`.
+- All seven catalog entries are active, expose `internal` and `public_code`, and
   remain deliberately capped at one certified seat.
-- The broader participant-path task remains open: these five passing catalogs
+- The broader participant-path task remains open: these seven passing catalogs
   do not prove every catalog, add-lab permutation, Console path, supported
   browser, or the final unchanged-candidate frontend sweep.
 
