@@ -43,7 +43,10 @@ rules:
     verbs: [get, list, create, update, patch, delete]
   - apiGroups: [rbac.authorization.k8s.io]
     resources: [clusterroles]
-    resourceNames: [edit, launchpad-flightpath-argocd-seat-manager]
+    resourceNames:
+      - edit
+      - launchpad-flightpath-argocd-seat-manager
+      - openshift-pipelines-clusterinterceptors
     verbs: [bind]
   - apiGroups: [rbac.authorization.k8s.io]
     resources: [clusterrolebindings]
