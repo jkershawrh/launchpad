@@ -13,7 +13,8 @@ CATALOG = ROOT / "catalog/intel-xeon6-agent-201/catalog-item.yaml"
 INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
-SOURCE_REVISION = "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
+SOURCE_REVISION = "aa1e95081ae7dc513f273f71d24eed386b310703"
+HISTORICAL_CERTIFIED_SOURCE_REVISION = "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
 WORKLOAD_REVISION = "c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d"
 WORKLOAD_BASE = (
     "https://raw.githubusercontent.com/rhpds/triforce/"
@@ -205,7 +206,10 @@ def test_agent_201_evidence_records_exact_candidate_live_certification():
     )["labs"]["intel-xeon6-agent-201"]
 
     assert review["overall_status"] == "one-seat-live-certified-active"
-    assert review["source_truth"]["candidate_revision"] == SOURCE_REVISION
+    assert (
+        review["source_truth"]["candidate_revision"]
+        == HISTORICAL_CERTIFIED_SOURCE_REVISION
+    )
     assert review["source_truth"]["certification_transfer"] == "exact-candidate-only"
     assert review["live_certification"]["result"] == "GREEN-live"
     assert review["live_certification"]["rubric_score"] == 100

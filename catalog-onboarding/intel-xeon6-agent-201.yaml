@@ -33,7 +33,7 @@ learning:
 sources:
   showroom:
     repo_url: "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
-    revision: "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
+    revision: "aa1e95081ae7dc513f273f71d24eed386b310703"
     playbook: site.yml
     start_path: .
   workload:

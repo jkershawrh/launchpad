@@ -40,7 +40,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  showroom_content_ref: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
+  showroom_content_ref: aa1e95081ae7dc513f273f71d24eed386b310703
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   operator_workshop: true
@@ -104,5 +104,5 @@ metadata:
     workspace: app
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  source_content_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
+  source_content_revision: aa1e95081ae7dc513f273f71d24eed386b310703
   source_references: {}

@@ -1,7 +1,7 @@
 site:
   title: "Intel Xeon 6 201: Building an AI Agent"
   url: https://github.com/rhpds/launchpad
-  start_page: modules::index.adoc
+  start_page: intel-xeon6-agent-201:main:index.adoc
 
 content:
   sources:

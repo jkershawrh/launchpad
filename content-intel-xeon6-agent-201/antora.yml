@@ -1,6 +1,6 @@
-name: modules
+name: intel-xeon6-agent-201
 title: "Intel Xeon 6 201 — Building an AI Agent"
-version: ~
+version: main
 nav:
   - modules/ROOT/nav.adoc
 asciidoc:
