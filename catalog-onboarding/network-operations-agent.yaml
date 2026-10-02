@@ -6,7 +6,7 @@ catalog:
   description: Investigate a simulated telecom network alarm with an evidence-backed
     agent, internal MCP diagnostics, and shared CPU model inference.
   category: guided_build
-  version: 0.2.1-flightpath.10
+  version: 0.2.1-flightpath.11
   status: active
 learning:
   learning_level: '301'
@@ -24,11 +24,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
+    gitops_repo_url: https://github.com/jkershawrh/network-operations-agent.git
     revision: 6ed5c53337afa55c03949b2963b429f32977ef69
     playbook: site-lab.yml
     start_path: showroom-lab
   workload:
     repo_url: https://github.com/jkershawrh/network-operations-agent.git
+    gitops_repo_url: https://github.com/jkershawrh/network-operations-agent.git
     revision: 6ed5c53337afa55c03949b2963b429f32977ef69
     deploy_path: chart
 runtime:
@@ -70,17 +72,25 @@ runtime:
     title: Story
     source: workload.route.ui
     path: /story/
+    same_origin_path: /story/
+    public_proxy_root: true
   - id: terminal
     title: Terminal
     source: showroom.terminal
   - id: workspace
     title: Network Operations Workspace
     source: workload.route.ui
+    same_origin_path: /workspace
+    rewrite_target: /
+    proxy_paths:
+    - path: /api
+    - path: /health
   - id: openshift-console
     title: OpenShift Console
     source: cluster.console_url
   allowed_exposure_policies:
   - internal
+  - public_code
 certification:
   stage: 1-seat-certified
   certified_seats: 1

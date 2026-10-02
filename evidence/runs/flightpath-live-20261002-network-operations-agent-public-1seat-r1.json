@@ -1,0 +1,162 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261002-network-operations-agent-public-1seat-r1",
+  "catalog_item_id": "network-operations-agent",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-02T12:46:06Z",
+  "contract": {
+    "catalog_version_under_test": "0.2.1-flightpath.10",
+    "promoted_catalog_version": "0.2.1-flightpath.11",
+    "git_commit": "38aba4e63df7c81e620c4a356c59be4c27002f6d",
+    "intake_path": "catalog-onboarding/network-operations-agent.yaml",
+    "path": "certification/catalog/network-operations-agent.yaml",
+    "sha256": "95f8c183771d672f4d25e88961112d2c925a4d5a3f553b131a86d3cce9b395d8"
+  },
+  "source": {
+    "showroom_revision": "6ed5c53337afa55c03949b2963b429f32977ef69",
+    "workload_revision": "6ed5c53337afa55c03949b2963b429f32977ef69",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:c873443b307c32deeb83b123d545048bf29dd4497d0013fa835bc27d97f55c0f",
+    "workload_image": "ghcr.io/jkershawrh/network-operations-agent@sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242",
+    "release_workflow": "https://github.com/jkershawrh/network-operations-agent/actions/runs/36733546281"
+  },
+  "plan": {
+    "catalog_item_id": "network-operations-agent",
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false,
+    "all_seats_same_cluster": true
+  },
+  "capacity_preview": {
+    "can_provision": true,
+    "selected_cluster": "flightpath",
+    "seats_requested": 1,
+    "supported_seats": 85,
+    "estimated_resources": {
+      "cpu_millicores": 100,
+      "memory_mib": 256,
+      "pods": 2
+    }
+  },
+  "order": {
+    "workshop_id": "a0e13143-589f-4d2f-9f06-20c815c8da0e",
+    "session_ids": [
+      "856eb6b4-bc5e-4d4e-85a9-3c083df81bb4"
+    ],
+    "namespaces": [
+      "launchpad-flightpath-candida-network-ops-1e33f2"
+    ],
+    "seat_count": 1,
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready"
+  },
+  "seat_results": [
+    {
+      "seat_id": "1e33f29d-9966-48f0-90d5-7bca03a94e30",
+      "seat_number": 1,
+      "session_id": "856eb6b4-bc5e-4d4e-85a9-3c083df81bb4",
+      "namespace": "launchpad-flightpath-candida-network-ops-1e33f2",
+      "cluster_ref": "flightpath",
+      "probe": {
+        "passed": true,
+        "exit_code": 0,
+        "assertion_failures": [],
+        "result": {
+          "result": "GREEN-live-internal-seat",
+          "namespace": "launchpad-flightpath-candida-network-ops-1e33f2",
+          "cluster_ref": "flightpath",
+          "readiness": {
+            "health": true,
+            "mcp_ready": true,
+            "workspace_http_status": 200,
+            "story_http_status": 200
+          },
+          "investigation": {
+            "cause": "hardware_timing",
+            "live_model": true,
+            "model": "granite-3.2-8b-tools",
+            "human_approval": true,
+            "action_executed": false
+          },
+          "qualification": {
+            "result": "pass",
+            "scenarios": 5,
+            "qualification_id": "bfb894d9147a"
+          },
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-network-ops-1e33f2",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "runtime_secret_keys": [
+            "api-key",
+            "endpoint",
+            "name"
+          ],
+          "contains_sensitive_values": false
+        }
+      },
+      "public_browser": {
+        "trusted_tls": true,
+        "claim_succeeded": true,
+        "same_seat_recovery_succeeded": true,
+        "showroom_loaded": true,
+        "showroom_flat_antora_path_loaded": true,
+        "presentation_embedded": true,
+        "terminal_embedded": true,
+        "workspace_embedded": true,
+        "openshift_console_embedded": true,
+        "openshift_console_namespace_scoped": true,
+        "openshift_console_pods_listed": 3,
+        "cross_namespace_access_denied": true,
+        "cluster_node_access_denied": true,
+        "public_url": "https://labs.smg-helix.ai/labs/network-operations-agent-a0e13143"
+      }
+    }
+  ],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "public_browser_passed": true,
+    "same_seat_recovery_passed": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "idempotent_reclaim": true,
+    "access_policy_enabled": false,
+    "active_claim_count": 0,
+    "model_keys_revoked": true,
+    "model_key_revocation_confirmation": "http-success",
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    }
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_identity_is_opaque": true,
+    "namespace_scope_enforced": true
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}
