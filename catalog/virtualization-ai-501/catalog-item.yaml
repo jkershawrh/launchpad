@@ -55,7 +55,7 @@ metadata:
   allowed_exposure_policies:
   - internal
   - public_code
-  public_access_certification_stage: one-seat-candidate
+  public_access_certification_stage: one-seat-certified
   public_max_workshop_seats: 1
   showroom_journey: virtualization-ai-501
   showroom_title: "Virtualization + AI 501 \u2014 Qualify a Governed VM Inference\
@@ -116,4 +116,4 @@ metadata:
   source_content_revision: 6e65858f773e2a28a4874a2a59785e8c8ab52b07
   source_references:
     release_workflow: https://github.com/jkershawrh/virtualization-ai-501/actions/runs/36771381538
-    certification_evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-501-1seat-r8.json
+    certification_evidence: evidence/runs/flightpath-live-20261002-virtualization-ai-501-public-1seat-r1.json

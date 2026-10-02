@@ -92,7 +92,7 @@ certification:
   stage: 1-seat-certified
   certified_seats: 1
   max_workshop_seats: 1
-  public_access_stage: one-seat-candidate
+  public_access_stage: one-seat-certified
   public_max_workshop_seats: 1
   promotion_sequence:
   - 1
@@ -100,4 +100,4 @@ certification:
   proof_contract: certification/catalog/virtualization-ai-501.yaml
 references:
   release_workflow: https://github.com/jkershawrh/virtualization-ai-501/actions/runs/36771381538
-  certification_evidence: evidence/runs/flightpath-live-20260930-virtualization-ai-501-1seat-r8.json
+  certification_evidence: evidence/runs/flightpath-live-20261002-virtualization-ai-501-public-1seat-r1.json

@@ -1,0 +1,66 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261002-virtualization-ai-501-public-1seat-r1",
+  "catalog_item_id": "virtualization-ai-501",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-02T16:02:32Z",
+  "contract": {
+    "catalog_version_under_test": "0.1.1",
+    "git_commit": "ef70ef1f",
+    "path": "certification/catalog/virtualization-ai-501.yaml",
+    "sha256": "09194344ff739b01d936b4af65627a2e9a1551d51a835c63d58fb4b4a3a40999"
+  },
+  "source": {
+    "revision": "6e65858f773e2a28a4874a2a59785e8c8ab52b07",
+    "presentation_image": "ghcr.io/jkershawrh/virtualization-ai-501-presentation@sha256:06e5e51b88f561bd401dd634acdcc07e3c6112caf4316fb46c989ac8baf3f762",
+    "adapter_image": "ghcr.io/jkershawrh/virtualization-ai-501-qualification-adapter@sha256:e14a5dc17dfb1a63321a99d4e76ad904dd271e5fb57b359c62c263891b8173bf",
+    "source_state": "REHEARSAL"
+  },
+  "plan": {"seats": 1, "cluster_ref": "flightpath", "exposure_policy": "public_code", "certification_override": false},
+  "capacity_preview": {"can_provision": true, "selected_cluster": "flightpath", "seats_requested": 1, "catalog_seat_limit": 1, "estimated_resources": {"cpu_millicores": 1625, "memory_mib": 1696, "pods": 5}},
+  "order": {
+    "workshop_id": "254ed2f1-a9db-49c2-9f16-152fc984a8db",
+    "session_ids": ["0668fd7f-53cf-409a-bca1-d071aa495dc6"],
+    "namespaces": ["launchpad-flightpath-candida-v501-426c5c"],
+    "seat_count": 1, "cluster_ref": "flightpath", "status_before_reclaim": "ready"
+  },
+  "seat_results": [{
+    "seat_id": "426c5c6a-9824-403b-89e6-77a73df4d4a2",
+    "seat_number": 1,
+    "session_id": "0668fd7f-53cf-409a-bca1-d071aa495dc6",
+    "namespace": "launchpad-flightpath-candida-v501-426c5c",
+    "cluster_ref": "flightpath",
+    "probe": {"passed": true, "result": {
+      "result": "GREEN-live-internal-seat",
+      "readiness": {"vms_running": 3, "vmis_ready": 3, "presentation_http_status": 200, "adapter_health": true},
+      "journey": {"source_state": "REHEARSAL", "outcome": "ALLOW_REVIEW", "model_participated": false, "human_authority_preserved": true},
+      "terminal_scope": ["project=launchpad-flightpath-candida-v501-426c5c", "own_edit=yes", "cross_namespace=DENIED", "node_list=DENIED"],
+      "contains_sensitive_values": false
+    }},
+    "public_browser": {
+      "trusted_tls": true, "claim_succeeded": true, "same_seat_recovery_succeeded": true,
+      "showroom_loaded": true, "showroom_antora_content_loaded": true, "story_embedded": true,
+      "terminal_embedded": true, "terminal_websocket_handshake": true, "openshift_console_embedded": true,
+      "participant_identity_namespace_scoped": true, "cross_namespace_access_denied": true,
+      "cluster_node_access_denied": true,
+      "public_url": "https://labs.smg-helix.ai/labs/virtualization-ai-501-254ed2f1"
+    }
+  }],
+  "gates": {
+    "all_seats_ready": true, "capacity_passed": true, "cleanup_completed": true,
+    "contract_valid": true, "evidence_hashed": true, "model_keys_revoked": true,
+    "namespace_isolation_passed": true, "public_browser_passed": true,
+    "same_seat_recovery_passed": true, "seat_probes_passed": true,
+    "sensitive_values_absent": true, "showroom_pages_passed": true,
+    "single_cluster_assignment": true, "truthful_rehearsal_boundary_passed": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed", "idempotent_reclaim": true, "access_policy_enabled": false,
+    "active_claim_count": 0, "model_keys_revoked": true,
+    "resource_counts": {"applications.argoproj.io": 0, "namespaces": 0, "persistentvolumeclaims": 0, "persistentvolumes": 0, "rolebindings.rbac.authorization.k8s.io": 0, "routes.route.openshift.io": 0, "secrets": 0}
+  },
+  "security": {"contains_plaintext_credentials": false, "participant_email_exported": false, "participant_identity_is_opaque": true, "namespace_scope_enforced": true},
+  "rubric": {"required": 100, "score": 100, "passed": true},
+  "errors": []
+}
