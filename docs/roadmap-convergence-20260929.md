@@ -180,9 +180,17 @@ recommend but never creates eligibility.
   preserved human authority, enforced namespace-only RBAC, and reclaimed with
   model-key revocation and zero active residue. The immutable evidence is
   `evidence/runs/catalog/virtualization-ai-201-flightpath-public-one-seat-20261001-r1.json`.
-- All four catalog entries are active, expose `internal` and `public_code`, and
+- `virtualization-ai-foundations-101` passed public one-seat certification
+  against exact content commit `e74393d0def1a7a2749911b3a421c62f3f1c2558`.
+  The corrected `virtualization-ai-101` Showroom journey, participant landing,
+  My Lab Access, Story, Terminal, same-seat recovery, operations-VM request,
+  live `granite-3.2-8b-tools` inference on Intel Xeon, namespace-only RBAC,
+  abuse controls, model-key revocation, idempotent reclaim, and zero residue
+  all passed. The immutable evidence is
+  `evidence/runs/catalog/virtualization-ai-foundations-101-flightpath-public-one-seat-20261001-r1.json`.
+- All five catalog entries are active, expose `internal` and `public_code`, and
   remain deliberately capped at one certified seat.
-- The broader participant-path task remains open: these two passing catalogs
+- The broader participant-path task remains open: these five passing catalogs
   do not prove every catalog, add-lab permutation, Console path, supported
   browser, or the final unchanged-candidate frontend sweep.
 

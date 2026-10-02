@@ -2,14 +2,14 @@
 
 ## Decision
 
-Five specialty catalog items have completed one-seat Flightpath proof and
-normal reclaim. One remains internal-only. Four items completed the
-full external `public_code` journey and may be presented as public one-seat
-releases. No result below authorizes more than one seat.
+Five specialty catalog items have completed one-seat Flightpath proof, the
+full external `public_code` journey, and normal reclaim. All five may be
+presented as public one-seat releases. No result below authorizes more than
+one seat.
 
 | Catalog item | One-seat result | Participant journey | Reclaim | Current exposure contract | Promotion state |
 | --- | --- | --- | --- | --- | --- |
-| `virtualization-ai-foundations-101` | GREEN-live on Flightpath | LIVE Intel Xeon inference; VM ready; terminal scoped to the seat namespace; own-namespace edit allowed; cross-namespace and node access denied | Normal reclaim; zero namespace and Argo CD Application residue | `internal` | Internal proof complete; public promotion not requested or proven |
+| `virtualization-ai-foundations-101` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim and same-seat recovery; corrected Showroom journey, Story, Terminal, operations VM, live Intel Xeon inference, and namespace isolation passed | Normal reclaim; identity disabled, model key revoked, idempotent reclaim, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 | `virtualization-ai-201` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim and same-seat recovery; Showroom, Story, Terminal, ready contract-author VM, live Intel Xeon inference, namespace isolation, and the authored contract journey passed | Normal reclaim; identity disabled, model key revoked, idempotent reclaim, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 | `sovereign-ai-201` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim and same-seat recovery; Showroom, Story, Terminal, live governed-boundary journey, Intel Xeon model contract, namespace isolation, and fail-closed behavior passed | Normal reclaim; identity disabled, model key revoked, idempotent reclaim, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 | `sovereign-ai-101` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim; same-seat recovery; landing, Showroom, declared tools, logout and resume; own-namespace edit allowed and cross-namespace access denied | Normal reclaim; identity disabled, model key revoked, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
@@ -26,29 +26,24 @@ Sovereign AI 201 was publicly certified on October 1 at Launchpad commit
 Virtualization AI 201 was publicly certified on October 1 at Launchpad commit
 `3bd40b7` and exact content commit
 `3c94600ca8808a55693e94d5a1f169efbadbedd1`.
+Virtualization Foundations 101 was publicly certified on October 1 at Launchpad
+commit `a81a54d` and exact content commit
+`e74393d0def1a7a2749911b3a421c62f3f1c2558`.
 Runtime and content dependencies remain digest- or commit-pinned in the
 corresponding catalog packages.
 
 ## Evidence accounting
 
-The remaining internal-only certification output still requires conversion
-to one immutable, hashed evidence manifest per catalog item. Their correct roadmap
-state remains:
-
-- implementation and live-cluster behavior: **GREEN-live (internal)**;
-- durable EDD package: **open**;
-- external participant behavior: **RED / not run**;
-- public catalog promotion: **blocked**.
-
 Sovereign AI 101, Sovereign AI 201, Virtualization AI 201, and Virtualization
-AI 301 have immutable public evidence:
+AI 301, and Virtualization Foundations 101 have immutable public evidence:
 
 - `evidence/runs/catalog/sovereign-ai-101-flightpath-public-one-seat-20260929-r1.json`
 - `evidence/runs/catalog/sovereign-ai-201-flightpath-public-one-seat-20261001-r1.json`
 - `evidence/runs/catalog/virtualization-ai-201-flightpath-public-one-seat-20261001-r1.json`
 - `evidence/runs/catalog/virtualization-ai-301-flightpath-public-one-seat-20261001-r2.json`
+- `evidence/runs/catalog/virtualization-ai-foundations-101-flightpath-public-one-seat-20261001-r1.json`
 
-All four manifests have verified SHA-256 sidecars, record a 100-point passing
+All five manifests have verified SHA-256 sidecars, record a 100-point passing
 rubric, contain no plaintext credentials or participant email export, and end
 with zero counted residue.
 
@@ -96,15 +91,15 @@ pass against one unchanged Flightpath candidate and one seat:
 
 Only after every row is green should another catalog item move from
 `draft`/internal-only to public orderability. This gate is complete for
-Sovereign AI 101, Sovereign AI 201, Virtualization AI 201, and Virtualization
-AI 301 only. Virtualization Foundations 101 remains internal until separately
-promoted and certified.
+Sovereign AI 101, Sovereign AI 201, Virtualization Foundations 101,
+Virtualization AI 201, and Virtualization AI 301 only.
 
 ## Metadata reconciliation still required
 
 The remaining internal-only catalog files may still contain pre-certification
 activation wording. Reconcile it only when writing their immutable internal
 manifests and making an explicit promotion decision. Sovereign AI 101,
-Sovereign AI 201, Virtualization AI 201, and Virtualization AI 301 already have empty activation
-blockers and truthful one-seat public metadata. Do not silently remove remaining public, scale,
+Sovereign AI 201, Virtualization Foundations 101, Virtualization AI 201, and
+Virtualization AI 301 already have empty activation blockers and truthful
+one-seat public metadata. Do not silently remove remaining public, scale,
 security, or artifact-retention gates from any other item.
