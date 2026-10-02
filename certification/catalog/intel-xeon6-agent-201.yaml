@@ -67,11 +67,11 @@ spec:
       - path: provenance.showroom_revision
         equals: aa1e95081ae7dc513f273f71d24eed386b310703
       - path: provenance.workload_revision
-        equals: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
+        equals: 6f27403de91eeb722533cf596d666f409755708e
       - path: runtime_images.solution_tools
         equals: "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
       - path: runtime_images.solution_agent
-        equals: "quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03"
+        equals: "ghcr.io/jkershawrh/triforce-solution-agent@sha256:bdf283c222c1894ad43655f43ed4c510a6bb4af77105008cea96d9785207d693"
       - path: runtime_images.solution_ui
         equals: "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
       - path: terminal_scope

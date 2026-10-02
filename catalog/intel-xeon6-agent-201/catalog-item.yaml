@@ -87,7 +87,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/rhpds/triforce.git
-  workload_revision: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
+  workload_revision: 6f27403de91eeb722533cf596d666f409755708e
   workload_deploy_type: manifests
   workload_deployment_scope: seat
   workload_deploy_path: .
