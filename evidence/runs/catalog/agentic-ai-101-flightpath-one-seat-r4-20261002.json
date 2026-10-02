@@ -1,0 +1,310 @@
+{
+  "capacity_preview": {
+    "can_provision": true,
+    "catalog_seat_limit": 1,
+    "certification_override": true,
+    "certification_target_seats": 1,
+    "estimated_resources": {
+      "cpu_millicores": 50,
+      "memory_mib": 64,
+      "pods": 2
+    },
+    "placement_reason": "single-cluster placement",
+    "reason": "Cluster can support 85 seats (CPU: 7968, Memory: 12473, Pods: 85; Eligible nodes: 3; 20.0% headroom)",
+    "resource_breakdown": {
+      "per_seat": {
+        "cpu_millicores": 50,
+        "memory_mib": 64,
+        "pods": 2
+      },
+      "shared": {
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      },
+      "transient": {
+        "concurrent_seats": 1,
+        "cpu_millicores": 0,
+        "memory_mib": 0,
+        "pods": 0
+      }
+    },
+    "seats_requested": 1,
+    "selected_cluster": "flightpath"
+  },
+  "catalog_item_id": "agentic-ai-101",
+  "cleanup": {
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0,
+      "secrets": 0
+    },
+    "seconds": 92.829,
+    "status": "completed"
+  },
+  "completed_at": "2026-10-02T20:38:37.015130Z",
+  "contract": {
+    "catalog_version": "0.1.0",
+    "certification_runner_image": "",
+    "git_commit": "8fe91e1b82b78bc2deea3d280e7c72b1a657f1e2",
+    "intake_path": "catalog-onboarding/agentic-ai-101.yaml",
+    "path": "certification/catalog/agentic-ai-101.yaml",
+    "platform_manifest_sha256": "",
+    "sha256": "0a4387a54bb03e144f591c4c4818df884f808c9e885c9413eb91d7cce82d1098"
+  },
+  "errors": [],
+  "gates": {
+    "all_seats_ready": true,
+    "capacity_passed": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "ready_within_limit": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": false,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "order": {
+    "cluster_ref": "flightpath",
+    "namespaces": [
+      "launchpad-flightpath-candida-agentic-ai-101-17166a"
+    ],
+    "ready_seconds": 50.872,
+    "seat_count": 1,
+    "session_ids": [
+      "36fa0ca1-4c28-43d2-af9e-99f3f4cbb60d"
+    ],
+    "status_before_reclaim": "ready",
+    "workshop_id": "dac9694c-0355-4dd9-89b8-305d7f287cb4"
+  },
+  "plan": {
+    "all_seats_same_cluster": true,
+    "catalog_item_id": "agentic-ai-101",
+    "certification_override": true,
+    "cluster_ref": "flightpath",
+    "current_certified_seats": 1,
+    "execution_eligible": true,
+    "exposure_policy": "internal",
+    "kubeconfig_server": "https://api.flightpath.fm2aihpcsed.com:6443",
+    "maximum_cleanup_seconds": 600,
+    "maximum_ready_seconds": 900,
+    "mutates_cluster": true,
+    "next_promotion_target": null,
+    "probe_concurrency": 1,
+    "provision_concurrency": 1,
+    "required_consecutive_runs": 1,
+    "seat_probe_count": 1,
+    "seats": 1,
+    "showroom_pages_per_seat": 7,
+    "workshop_orders": 1
+  },
+  "promotion": {
+    "consecutive_passing_runs": 0,
+    "eligible": false,
+    "required_consecutive_runs": 1
+  },
+  "proof_strategy": {
+    "BDD": "Given one workshop order, all seats must become ready before concurrent participant journeys run, and reclaim must leave zero residue.",
+    "CBT": "Contract parsing, API lifecycle, Showroom checks, lab-specific probes, isolation, rubric scoring, and cleanup are independently observable components.",
+    "CDD": "The versioned CatalogCertification document defines scale, Showroom, probe, cleanup, and promotion interfaces.",
+    "EDD": "The run writes immutable source identity, lifecycle timing, per-seat results, cleanup counts, rubric decisions, and a SHA-256 manifest.",
+    "TDD": "Contract, planner, assertion, runner, cleanup, and evidence behavior are protected by failing-then-passing tests."
+  },
+  "result": "RED-live",
+  "rubric": {
+    "categories": {
+      "contract_and_provenance": {
+        "awarded": 15,
+        "passed": true,
+        "requires": [
+          "contract_valid",
+          "evidence_hashed"
+        ],
+        "weight": 15
+      },
+      "foundational_journey": {
+        "awarded": 0,
+        "passed": false,
+        "requires": [
+          "showroom_pages_passed",
+          "seat_probes_passed"
+        ],
+        "weight": 25
+      },
+      "isolation_and_authority": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "namespace_isolation_passed",
+          "sensitive_values_absent"
+        ],
+        "weight": 20
+      },
+      "lifecycle": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "cleanup_completed",
+          "zero_residue_cleanup"
+        ],
+        "weight": 20
+      },
+      "provisioning_and_readiness": {
+        "awarded": 20,
+        "passed": true,
+        "requires": [
+          "capacity_passed",
+          "all_seats_ready",
+          "ready_within_limit"
+        ],
+        "weight": 20
+      }
+    },
+    "passed": false,
+    "required": 100,
+    "score": 75
+  },
+  "run_id": "agentic-ai-101-flightpath-one-seat-r4-20261002",
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "seat_results": [
+    {
+      "cluster_ref": "flightpath",
+      "namespace": "launchpad-flightpath-candida-agentic-ai-101-17166a",
+      "probe": {
+        "assertion_failures": [],
+        "duration_seconds": 31.534,
+        "exit_code": 0,
+        "passed": true,
+        "result": {
+          "authority": {
+            "human_review_required": true
+          },
+          "cluster_ref": "flightpath",
+          "contains_sensitive_values": false,
+          "inference": {
+            "participated": false,
+            "required": false
+          },
+          "namespace": "launchpad-flightpath-candida-agentic-ai-101-17166a",
+          "presentation_host": "story-launchpad-flightpath-candida-agentic-ai-101-17166a.apps.flightpath.fm2aihpcsed.com",
+          "provenance": {
+            "source_revision": "0458cc6ed797e2d54ef02d177224804beffb3638"
+          },
+          "readiness": {
+            "presentation": true,
+            "rehearsal": true
+          },
+          "result": "GREEN-destination-rehearsal-seat",
+          "runtime_images": {
+            "presentation": "ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f",
+            "rehearsal": "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"
+          },
+          "source_state": "REHEARSAL",
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-agentic-ai-101-17166a",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "workflow": {
+            "deterministic_replay": true,
+            "read_only_grounded": true,
+            "state_change_denied": true,
+            "target_mutated": false,
+            "unknown_scenario_rejected": true
+          }
+        }
+      },
+      "seat_id": "17166a59-85d3-4c87-8193-5eb11cef2e73",
+      "seat_number": 1,
+      "session_id": "36fa0ca1-4c28-43d2-af9e-99f3f4cbb60d",
+      "showroom": [
+        {
+          "duration_seconds": 0.644,
+          "http_status": 404,
+          "id": "welcome",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.466,
+          "http_status": 404,
+          "id": "request",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.442,
+          "http_status": 404,
+          "id": "proposal",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.391,
+          "http_status": 404,
+          "id": "tools",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.449,
+          "http_status": 404,
+          "id": "evidence",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.443,
+          "http_status": 404,
+          "id": "decision",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        },
+        {
+          "duration_seconds": 0.449,
+          "http_status": 404,
+          "id": "record",
+          "marker_present": false,
+          "passed": false,
+          "track_id": null
+        }
+      ]
+    }
+  ],
+  "security": {
+    "contains_plaintext_credentials": false,
+    "credential_values_logged": false
+  },
+  "started_at": "2026-10-02T20:35:32.918905Z",
+  "validation_matrix": {
+    "all_seats_ready": "GREEN-live",
+    "capacity_passed": "GREEN-live",
+    "cleanup_completed": "GREEN-live",
+    "contract_valid": "GREEN-live",
+    "evidence_hashed": "GREEN-live",
+    "model_keys_revoked": "GREEN-live",
+    "namespace_isolation_passed": "GREEN-live",
+    "ready_within_limit": "GREEN-live",
+    "seat_probes_passed": "GREEN-live",
+    "sensitive_values_absent": "GREEN-live",
+    "showroom_pages_passed": "RED-live",
+    "single_cluster_assignment": "GREEN-live",
+    "zero_residue_cleanup": "GREEN-live"
+  }
+}
