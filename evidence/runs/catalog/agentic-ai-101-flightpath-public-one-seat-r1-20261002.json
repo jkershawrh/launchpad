@@ -1,0 +1,97 @@
+{
+  "schema": "launchpad.redhat.com/public-exposure-certification-evidence/v1",
+  "catalog_item_id": "agentic-ai-101",
+  "result": "GREEN-live-public-exposure",
+  "observed_at": "2026-10-02T23:03:16Z",
+  "source": {
+    "launchpad_commit_sha": "132141d5cd3470fe74864ead24ef405d21d2d045",
+    "lab_content_commit_sha": "0458cc6ed797e2d54ef02d177224804beffb3638",
+    "presentation_image": "ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f",
+    "rehearsal_image": "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"
+  },
+  "internal_evidence": {
+    "path": "evidence/runs/catalog/agentic-ai-101-flightpath-one-seat-r8-20261002.json",
+    "sha256": "7ebc9f20a45868bacb196a53f206e112219512283ea7f7533d57c1f066298455"
+  },
+  "runtime_evidence": {
+    "path": "evidence/runs/catalog/agentic-ai-101-flightpath-public-runtime-r3-20261002.json",
+    "sha256": "5ef648269b8e45b66d85d703dd90b2184b890f3c2fde3d46294c647202438c59",
+    "score": 100,
+    "zero_residue": true
+  },
+  "plan": {
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false
+  },
+  "run": {
+    "workshop_id": "b60be12c-822e-4216-ac2f-79338f029763",
+    "session_id": "e01ee5d7-7c53-44e1-bc95-65ce76095a3f",
+    "seat_id": "05868479-c7f1-4bf3-9fd0-44ab314c6440",
+    "namespace": "launchpad-flightpath-candida-agentic-ai-101-058684",
+    "public_url": "https://labs.smg-helix.ai/labs/agentic-ai-101-b60be12c"
+  },
+  "identity_and_claim": {
+    "one_time_code_disclosed_once": true,
+    "claim_succeeded": true,
+    "same_identity_recovered_same_seat": true,
+    "plaintext_code_persisted": false,
+    "claim_count_after_recovery": 1
+  },
+  "participant_journey": {
+    "landing": true,
+    "showroom": true,
+    "declared_tools": true,
+    "logout_and_resume": true,
+    "recovery_method": "The private Keycloak validation contract was invoked twice with a fresh request and recovered the same identity and seat.",
+    "showroom_pages_passed": 6,
+    "story_loaded": true,
+    "terminal_scope_validated": true,
+    "source_state": "REHEARSAL"
+  },
+  "authorization": {
+    "assigned_namespace_edit": true,
+    "cross_namespace_denied": true,
+    "unauthenticated_denied": true,
+    "cluster_scoped_nodes_denied": true
+  },
+  "edge": {
+    "trusted_tls": true,
+    "external_browser": true,
+    "stable_origin": "https://labs.smg-helix.ai",
+    "oidc_login_redirect": true
+  },
+  "abuse_controls": {
+    "uniform_denial": true,
+    "rate_limit_enforced": true,
+    "component_evidence": "evidence/public-access/green-live-flightpath-public-access-2026-09-24.yaml"
+  },
+  "cleanup": {
+    "status": "completed",
+    "identity_disabled_after_final_entitlement": true,
+    "model_keys_revoked": true,
+    "policy_enabled": false,
+    "claim_count_after_reclaim": 0,
+    "resource_counts": {
+      "namespaces": 0,
+      "applications": 0,
+      "routes": 0,
+      "rolebindings": 0,
+      "clusterrolebinding_subjects": 0,
+      "secrets": 0,
+      "persistentvolumeclaims": 0,
+      "persistentvolumes": 0,
+      "active_entitlements": 0,
+      "identities_due_disable": 0
+    }
+  },
+  "rubric": {
+    "score": 100,
+    "passed": true
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_email_exported": false
+  }
+}
