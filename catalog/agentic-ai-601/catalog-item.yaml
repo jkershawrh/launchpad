@@ -5,7 +5,7 @@ description: >-
   decision, bounded simulated action, independent validation or rollback, and
   human-owned evaluation without granting the runtime production authority.
 category: guided_build
-version: "0.1.0-flightpath.2"
+version: "0.1.0-flightpath.3"
 status: draft
 required_capabilities:
   - openshift
@@ -45,13 +45,11 @@ metadata:
   content_only: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/agentic-ai-601.yaml
-  certification_stage: immutable-source-published
+  certification_stage: one-seat-destination-qualified
   certification_proof_contract: certification/catalog/agentic-ai-601.yaml
   max_workshop_seats: 1
   promotion_sequence:
     - 1
-    - 5
-    - 25
   required_proof:
     - Agentic AI 401 and 501 certification for their exact immutable revisions.
     - Deterministic denial when prerequisite, scope, approval, or evidence is absent.
@@ -62,9 +60,9 @@ metadata:
   activation_blockers:
     - Complete Agentic AI 401 activation review.
     - Complete Agentic AI 501 live destination certification and activation review.
-    - Complete trusted render and artifact qualification on Flightpath.
-    - Replace synthetic rehearsal evidence with approved destination evidence before any live authority claim.
-    - Complete one-seat certification with zero-residue reclaim; five- and twenty-five-seat scale certification is deferred.
+    - Review the one-seat destination rehearsal evidence before catalog activation.
+    - Replace synthetic rehearsal evidence with approved live evidence before any live authority claim.
+    - Five- and twenty-five-seat scale certification is deferred.
     - Complete human authority review before promotion.
   production_blockers:
     - Production action adapters are intentionally not implemented.
@@ -75,8 +73,8 @@ metadata:
   showroom_journey: agentic-ai-601
   showroom_title: "Intel AI 601: Earn the Right to Act"
   namespace_slug: agentic-ai-601
-  showroom_content_repo_url: git@github.com:jkershawrh/agentic-ai-601.git
-  showroom_content_ref: 22f4e4656843721c66b0779e52c30fc46a4061de
+  showroom_content_repo_url: https://github.com/jkershawrh/agentic-ai-601.git
+  showroom_content_ref: 588412fc789dd3fa3560e04b7f96966e72e98078
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   showroom_terminal_storage: false
@@ -103,8 +101,8 @@ metadata:
   workshop_provision_concurrency: 1
   workshop_node_spread: false
   workshop_node_min_ready_seconds: 0
-  workload_repo: git@github.com:jkershawrh/agentic-ai-601.git
-  workload_revision: 22f4e4656843721c66b0779e52c30fc46a4061de
+  workload_repo: https://github.com/jkershawrh/agentic-ai-601.git
+  workload_revision: 588412fc789dd3fa3560e04b7f96966e72e98078
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/agentic-ai-601
@@ -115,10 +113,10 @@ metadata:
     images:
       presentation:
         repository: ghcr.io/jkershawrh/agentic-ai-601-presentation
-        digest: sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e
+        digest: sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971
       qualifier:
         repository: ghcr.io/jkershawrh/agentic-ai-601-qualifier
-        digest: sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc
+        digest: sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c
     routes:
       enabled: true
       ingressDomain: apps.flightpath.fm2aihpcsed.com
@@ -135,7 +133,7 @@ metadata:
     qualifier: agentic-ai-601-qualifier
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-ai-601.git
-  source_content_revision: 22f4e4656843721c66b0779e52c30fc46a4061de
+  source_content_revision: 588412fc789dd3fa3560e04b7f96966e72e98078
   source_references:
     authority_ladder:
       path: contracts/authority-ladder.v1.json

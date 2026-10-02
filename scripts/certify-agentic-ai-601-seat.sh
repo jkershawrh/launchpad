@@ -4,6 +4,9 @@ set -euo pipefail
 namespace="${1:?usage: certify-agentic-ai-601-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agentic-ai-601-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
+source_revision="588412fc789dd3fa3560e04b7f96966e72e98078"
+expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-601-presentation@sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971"
+expected_qualifier_image="ghcr.io/jkershawrh/agentic-ai-601-qualifier@sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c"
 
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
@@ -26,12 +29,22 @@ oc --kubeconfig "$KUBECONFIG" rollout status deployment/agentic-ai-601-presentat
 oc --kubeconfig "$KUBECONFIG" rollout status deployment/agentic-ai-601-qualifier \
   -n "$namespace" --timeout=300s >/dev/null
 
+stage="runtime-images"
+presentation_image="$(oc --kubeconfig "$KUBECONFIG" get deployment agentic-ai-601-presentation -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
+qualifier_image="$(oc --kubeconfig "$KUBECONFIG" get deployment agentic-ai-601-qualifier -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
+[[ "$presentation_image" == "$expected_presentation_image" ]]
+[[ "$qualifier_image" == "$expected_qualifier_image" ]]
+presentation_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app.kubernetes.io/name=agentic-ai-601-presentation -o jsonpath='{.items[0].status.containerStatuses[0].imageID}')"
+qualifier_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app.kubernetes.io/name=agentic-ai-601-qualifier -o jsonpath='{.items[0].status.containerStatuses[0].imageID}')"
+[[ "$presentation_image_id" == *"${expected_presentation_image#*@}" ]]
+[[ "$qualifier_image_id" == *"${expected_qualifier_image#*@}" ]]
+
 stage="route-discovery"
 presentation_host="$(oc --kubeconfig "$KUBECONFIG" get route agentic-ai-601-presentation \
   -n "$namespace" -o jsonpath='{.spec.host}')"
 qualifier_host="$(oc --kubeconfig "$KUBECONFIG" get route agentic-ai-601-qualifier \
   -n "$namespace" -o jsonpath='{.spec.host}')"
-curl_options=(-fsSk --retry 4 --retry-all-errors --retry-delay 2 --max-time 180)
+curl_options=(-fsS --retry 4 --retry-all-errors --retry-delay 2 --max-time 180)
 api="https://${qualifier_host}"
 
 stage="presentation"
@@ -40,7 +53,7 @@ grep -q 'Earn the Right to Act' <<<"$presentation"
 
 stage="qualifier-health"
 jq -e '.status == "ok"' <<<"$(curl "${curl_options[@]}" "${api}/healthz")" >/dev/null
-jq -e '.status == "ready"' <<<"$(curl "${curl_options[@]}" "${api}/readyz")" >/dev/null
+jq -e '.status == "ok"' <<<"$(curl "${curl_options[@]}" "${api}/readyz")" >/dev/null
 status="$(curl "${curl_options[@]}" "${api}/api/v1/status")"
 jq -e '
   .sourceState == "rehearsal"
@@ -64,7 +77,7 @@ observe="$(run_loop cert-observe cert-observe '{"scenario":"restart_required","r
 jq -e '.sourceState == "rehearsal" and .signal.conditionClass == "synthetic.pod_unhealthy" and .action.attempts == 0' <<<"$observe" >/dev/null
 
 unapproved="$(run_loop cert-unapproved cert-unapproved '{"scenario":"restart_required","requestedStage":"bounded_action","namespace":"agentic-ai-601-lab-cert"}')"
-jq -e '.decision.reason == "human_approval_required" and .action.attempts == 0' <<<"$unapproved" >/dev/null
+jq -e '.decision.reason == "single_use_human_approval_required" and .action.attempts == 0' <<<"$unapproved" >/dev/null
 
 approved_body='{"scenario":"restart_required","requestedStage":"bounded_action","namespace":"agentic-ai-601-lab-cert","approvalToken":"approval-cert-single-use","simulation":true}'
 approved="$(run_loop cert-approved cert-approved "$approved_body")"
@@ -105,12 +118,22 @@ jq -cn \
   --arg presentation_host "$presentation_host" \
   --arg qualifier_host "$qualifier_host" \
   --arg terminal_scope "$terminal_scope" \
+  --arg source_revision "$source_revision" \
+  --arg presentation_image "$presentation_image" \
+  --arg qualifier_image "$qualifier_image" \
   '{
     result: "GREEN-destination-rehearsal-seat",
     namespace: $namespace,
     cluster_ref: $cluster_ref,
     source_state: "rehearsal",
     execution_authority_enabled: false,
+    inference: {required: false, participated: false},
+    rehearsal: {target_state_mutated: false},
+    provenance: {source_revision: $source_revision},
+    runtime_images: {
+      presentation: $presentation_image,
+      qualifier: $qualifier_image
+    },
     readiness: {presentation: true, qualifier: true, routes: true},
     presentation_host: $presentation_host,
     qualifier_host: $qualifier_host,

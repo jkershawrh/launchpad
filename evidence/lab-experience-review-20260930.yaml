@@ -108,7 +108,7 @@ labs:
     source_repository: https://github.com/jkershawrh/sovereign-ai-101
     candidate_branch: codex/sovereign-ai-101-lab-experience
     candidate_revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
-    overall_status: one-seat-live-certified-active
+    overall_status: one-seat-destination-qualified-draft
     story:
       status: green-local
       evidence: internal policy assistant mission with human decision ownership
@@ -771,17 +771,17 @@ labs:
     learn: {status: green-local, evidence: "The capstone now explicitly connects 301 build, 401 operate, 501 qualify, and 601 authority evaluation."}
     do: {status: green-local, evidence: "The learner exercises a reversible control loop against clearly labeled synthetic evidence with external authority disabled."}
     prove: {status: rehearsal-only, evidence: "No live authority, destination evidence, or production action is claimed."}
-    operators: {status: conditional, evidence: "Story, Terminal, Qualification Evidence, and Console are declared but not live-certified."}
+    operators: {status: green-live, evidence: "The exact Flightpath seat served all nine Showroom stages, exercised the qualification API, and proved terminal namespace scope; browser Console SSO remains an activation review item."}
     inference: {status: not-applicable, evidence: "The catalog deliberately declares no model dependency; the learning claim is governance of authority, not generation."}
-    cleanup: {status: green-local, evidence: "Immutable in-memory rehearsal evidence is preserved while Launchpad owns seat teardown; rollback and live zero-residue remain promotion gates."}
+    cleanup: {status: green-live, evidence: "Run r5 revoked the model key and reclaimed the namespace, Argo CD Application, Routes, RoleBinding, Secrets, PVCs, and PVs with zero residue in 65.398 seconds."}
     source_state:
       repository: /Users/jkershaw/Documents/agentic-ai-601
-      published_revision: 22f4e4656843721c66b0779e52c30fc46a4061de
-      catalog_pinned_revision: 22f4e4656843721c66b0779e52c30fc46a4061de
-      publication_workflow: https://github.com/jkershawrh/agentic-ai-601/actions/runs/36742311396
+      published_revision: 588412fc789dd3fa3560e04b7f96966e72e98078
+      catalog_pinned_revision: 588412fc789dd3fa3560e04b7f96966e72e98078
+      publication_workflow: https://github.com/jkershawrh/agentic-ai-601/actions/runs/37040683302
       immutable_images:
-        presentation: ghcr.io/jkershawrh/agentic-ai-601-presentation@sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e
-        qualifier: ghcr.io/jkershawrh/agentic-ai-601-qualifier@sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc
+        presentation: ghcr.io/jkershawrh/agentic-ai-601-presentation@sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971
+        qualifier: ghcr.io/jkershawrh/agentic-ai-601-qualifier@sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c
       publication_validation: "Both exact linux/amd64 images passed zero-vulnerability Trivy inventories and retain signed digest, SPDX SBOM, SLSA provenance, signature verification, and provenance verification artifacts."
     prior_live_attempt:
       status: RED-live
@@ -789,7 +789,14 @@ labs:
       score: 15
       failure: "The order timed out awaiting a terminal participant-ready state."
       cleanup_boundary: "Namespace residue reached zero, but model-key revocation and participant journey completion were not proven."
-    next_action: retain draft status and certify the exact immutable release only after 401/501 prerequisites, independent destination evidence, rollback, Console scope, and one-seat zero-residue reclaim all pass
+    destination_certification:
+      status: GREEN-live
+      score: 100
+      ready_seconds: 57.645
+      cleanup_seconds: 65.398
+      evidence: evidence/runs/flightpath-live-20261002-agentic-ai-601-1seat-r5.json
+      proof: "The exact 588412f release passed all nine Showroom stages, governed-loop denial and bounded simulation, single-use approval, idempotent replay, rollback and demotion, emergency stop, evidence-chain verification, namespace isolation, key revocation, reclaim, and zero residue. It proves destination rehearsal only and grants no production execution authority."
+    next_action: retain draft status until 401/501 activation review, browser Console SSO review, class-specific thresholds, human authority approval, and any live authority claim are independently satisfied
 
   sovereign-ai-301:
     display_name: "Sovereign AI 301 — Confidential Inference and Intel TDX Foundations"

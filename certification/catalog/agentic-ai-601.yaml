@@ -6,8 +6,8 @@ metadata:
   display_name: "Agentic AI 601 — Earn the Right to Act"
 
 spec:
-  state: prerequisite-gated
-  execution_enabled: false
+  state: destination-qualification
+  execution_enabled: true
   prerequisite_catalog_items:
     - operate-agentic-blueprint
     - scale-agentic-blueprint
@@ -22,28 +22,41 @@ spec:
       probe_concurrency: 1
       maximum_ready_seconds: 900
       maximum_cleanup_seconds: 600
-    - seats: 5
-      required_consecutive_runs: 3
-      probe_concurrency: 5
-      maximum_ready_seconds: 1200
-      maximum_cleanup_seconds: 900
-    - seats: 25
-      required_consecutive_runs: 3
-      probe_concurrency: 10
-      maximum_ready_seconds: 2400
-      maximum_cleanup_seconds: 1200
 
   execution_blockers:
-    - Agentic AI 401 has five-seat evidence but has not completed activation review.
-    - Agentic AI 501 has not completed live destination certification.
+    - Agentic AI 401 and 501 have exact one-seat destination evidence but remain draft pending their independent activation reviews.
     - The current 601 runtime is synthetic rehearsal and must not be represented as production execution authority.
     - Class-specific thresholds and human authority review remain unapproved.
 
   showroom:
     pages:
       - id: welcome
-        path: /www/modules/index.html
+        path: /www/agentic-ai-601/index.html
         marker: "Agentic AI 601"
+      - id: preflight
+        path: /www/agentic-ai-601/00-preflight.html
+        marker: "Preflight"
+      - id: signal
+        path: /www/agentic-ai-601/01-signal.html
+        marker: "Signal"
+      - id: decision
+        path: /www/agentic-ai-601/02-decision.html
+        marker: "Decision"
+      - id: authority
+        path: /www/agentic-ai-601/03-authority.html
+        marker: "Authority"
+      - id: bounded-action
+        path: /www/agentic-ai-601/04-bounded-action.html
+        marker: "Bounded action"
+      - id: validate-rollback
+        path: /www/agentic-ai-601/05-validate-rollback.html
+        marker: "Validate and rollback"
+      - id: learn-evaluate
+        path: /www/agentic-ai-601/06-learn-evaluate.html
+        marker: "Learn and evaluate"
+      - id: close-handoff
+        path: /www/agentic-ai-601/07-close-handoff.html
+        marker: "Close and handoff"
 
   seat_probe:
     argv:
@@ -62,6 +75,18 @@ spec:
         equals: rehearsal
       - path: execution_authority_enabled
         equals: false
+      - path: inference.required
+        equals: false
+      - path: inference.participated
+        equals: false
+      - path: rehearsal.target_state_mutated
+        equals: false
+      - path: provenance.source_revision
+        equals: 588412fc789dd3fa3560e04b7f96966e72e98078
+      - path: runtime_images.presentation
+        equals: "ghcr.io/jkershawrh/agentic-ai-601-presentation@sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971"
+      - path: runtime_images.qualifier
+        equals: "ghcr.io/jkershawrh/agentic-ai-601-qualifier@sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c"
       - path: governed_loop.signal_observed
         equals: true
       - path: governed_loop.unapproved_action_denied
@@ -107,13 +132,13 @@ spec:
         requires: [contract_valid, evidence_hashed]
       - id: provisioning_and_capacity
         weight: 20
-        requires: [all_seats_ready, ready_within_limit, capacity_admitted]
-      - id: governed_loop
+        requires: [capacity_passed, single_cluster_assignment, all_seats_ready, ready_within_limit]
+      - id: governed_rehearsal
         weight: 25
-        requires: [representative_probe_passed_per_seat, routes_ready]
+        requires: [showroom_pages_passed, seat_probes_passed]
       - id: isolation_and_authority
         weight: 20
-        requires: [namespace_isolation_passed, cross_namespace_denied, secrets_absent]
+        requires: [namespace_isolation_passed, sensitive_values_absent]
       - id: lifecycle
         weight: 20
-        requires: [cleanup_within_limit, zero_residue_cleanup, model_keys_revoked]
+        requires: [cleanup_completed, zero_residue_cleanup, model_keys_revoked]
