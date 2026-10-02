@@ -157,9 +157,14 @@ recommend but never creates eligibility.
 
 ## Current proof gained after convergence
 
-- `sovereign-ai-101` passed public one-seat certification on Flightpath with a
-  100-point rubric, trusted external TLS, claim and same-seat recovery,
-  namespace isolation, participant journey, reclaim, and zero residue.
+- `sovereign-ai-101` passed current-revision public one-seat certification on
+  Flightpath against exact content commit
+  `6d7c6f267407d42ca465b8a381d841d8b5b77567`. Its REHEARSAL-only contract,
+  trusted external TLS, claim and same-seat recovery, Interactive Story,
+  Terminal, allow/injection/evidence paths, namespace isolation, model-key
+  revocation, idempotent reclaim, and zero residue passed without making a
+  live-model claim. The immutable evidence is
+  `evidence/runs/catalog/sovereign-ai-101-flightpath-public-one-seat-20261001-r2.json`.
 - `virtualization-ai-301` passed the same public one-seat gate, including the
   exact `30f51e19223faf64c689a07e254870fbc43fd0c6` content revision, Story and
   Terminal paths, same-seat recovery, uniform denial and rate limiting,

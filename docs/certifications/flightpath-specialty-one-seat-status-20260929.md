@@ -15,8 +15,10 @@ one seat.
 | `sovereign-ai-101` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim; same-seat recovery; landing, Showroom, declared tools, logout and resume; own-namespace edit allowed and cross-namespace access denied | Normal reclaim; identity disabled, model key revoked, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 | `virtualization-ai-301` | GREEN-live on Flightpath | Trusted external TLS; email-and-code claim; same-seat recovery; corrected Story and Terminal journeys; own-namespace edit allowed; cross-namespace and cluster-scoped node access denied | Normal reclaim; identity disabled, model key revoked, and zero namespaces, Applications, Routes, RoleBindings, Secrets, or active entitlements | `internal`, `public_code` | Public one-seat certified; active and capped at one seat |
 
-The original internal three-item baseline is Launchpad commit `a89d7c4`. Sovereign AI
-101 retains its September 29 public proof. Virtualization AI 301 was
+The original internal three-item baseline is Launchpad commit `a89d7c4`.
+Sovereign AI 101 was re-certified on October 1 at Launchpad commit `f5cbe90`
+against exact content commit
+`6d7c6f267407d42ca465b8a381d841d8b5b77567`. Virtualization AI 301 was
 re-certified on October 1 at Launchpad commit `2bd00ad`, backend image
 `quay.io/rh-ee-jkershaw/launchpad-backend@sha256:e35bd0a68d6aad7d09eb11ccdad1c8672b5229a27f4d904d8735b5acb850e028`,
 and exact content commit `30f51e19223faf64c689a07e254870fbc43fd0c6`.
@@ -37,7 +39,7 @@ corresponding catalog packages.
 Sovereign AI 101, Sovereign AI 201, Virtualization AI 201, and Virtualization
 AI 301, and Virtualization Foundations 101 have immutable public evidence:
 
-- `evidence/runs/catalog/sovereign-ai-101-flightpath-public-one-seat-20260929-r1.json`
+- `evidence/runs/catalog/sovereign-ai-101-flightpath-public-one-seat-20261001-r2.json`
 - `evidence/runs/catalog/sovereign-ai-201-flightpath-public-one-seat-20261001-r1.json`
 - `evidence/runs/catalog/virtualization-ai-201-flightpath-public-one-seat-20261001-r1.json`
 - `evidence/runs/catalog/virtualization-ai-301-flightpath-public-one-seat-20261001-r2.json`
