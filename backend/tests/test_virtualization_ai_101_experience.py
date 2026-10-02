@@ -22,6 +22,9 @@ def test_101_records_certification_without_claiming_browser_console_sso() -> Non
     assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert intake["certification"]["certified_seats"] == 1
     assert metadata["certification_stage"] == "1-seat-certified"
+    assert metadata["allowed_exposure_policies"] == ["internal"]
+    assert intake["runtime"]["allowed_exposure_policies"] == ["internal"]
+    assert metadata["showroom_journey"] == "virtualization-ai-101"
     assert metadata["workload_revision"] == "e74393d0def1a7a2749911b3a421c62f3f1c2558"
     assert metadata["recommended_next_items"] == ["virtualization-ai-201"]
     assert intake["learning"]["recommended_next_items"] == ["virtualization-ai-201"]
