@@ -59,6 +59,7 @@ metadata:
   certification_proof_contract: certification/catalog/virtualization-ai-201.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: virtualization-ai-201
   showroom_title: 'Virtualization + AI 201: Author and Qualify the Contract'
   namespace_slug: virtualization-ai-201

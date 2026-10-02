@@ -36,6 +36,8 @@ def test_201_requires_vm_origin_and_truthful_live_inference_before_certification
     assert catalog["status"] == intake["catalog"]["status"] == "active"
     assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["stage"] == "1-seat-certified"
+    assert metadata["allowed_exposure_policies"] == ["internal", "public_code"]
+    assert runtime["allowed_exposure_policies"] == ["internal", "public_code"]
     assert metadata["recommended_next_items"] == ["virtualization-ai-301"]
     assert intake["learning"]["recommended_next_items"] == ["virtualization-ai-301"]
     assert metadata["showroom_tabs"] == runtime["tabs"]

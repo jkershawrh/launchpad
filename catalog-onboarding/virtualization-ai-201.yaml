@@ -74,6 +74,7 @@ runtime:
     source: cluster.console_url
   allowed_exposure_policies:
   - internal
+  - public_code
   workload:
     source_kind: chart
     gitops_ready: true
