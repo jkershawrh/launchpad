@@ -6,7 +6,7 @@ description: >-
   human-owned evaluation without granting the runtime production authority.
 category: guided_build
 version: "0.1.0-flightpath.3"
-status: draft
+status: active
 required_capabilities:
   - openshift
   - showroom
@@ -57,14 +57,12 @@ metadata:
     - Independent validation, rollback, demotion, and emergency-stop evidence.
     - Complete hash-linked evidence chain with human-owned disposition.
     - One-seat destination certification with zero-residue reclaim for initial catalog activation.
-  activation_blockers:
-    - Complete Agentic AI 401 activation review.
-    - Complete Agentic AI 501 live destination certification and activation review.
-    - Review the one-seat destination rehearsal evidence before catalog activation.
+  activation_blockers: []
+  production_blockers:
+    - The active release is limited to one-seat internal rehearsal and grants no production execution authority.
     - Replace synthetic rehearsal evidence with approved live evidence before any live authority claim.
     - Five- and twenty-five-seat scale certification is deferred.
-    - Complete human authority review before promotion.
-  production_blockers:
+    - Complete a separate human authority review before any promotion beyond bounded rehearsal.
     - Production action adapters are intentionally not implemented.
     - Class-specific thresholds require independent human approval.
     - Organization-owned images and operational ownership are required for production.
@@ -145,3 +143,5 @@ metadata:
       path: contracts/evidence-record.schema.json
     launchpad_handoff:
       path: handoff/launchpad-handoff.yaml
+    activation_review:
+      path: evidence/runs/catalog/agentic-ai-601-one-seat-activation-review-20261002.json

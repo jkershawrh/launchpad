@@ -1,0 +1,50 @@
+{
+  "schema_version": "launchpad.activation-review/v1",
+  "catalog_item_id": "agentic-ai-601",
+  "reviewed_at": "2026-10-02T00:00:00Z",
+  "decision": "BOUNDED_ONE_SEAT_INTERNAL_REHEARSAL_APPROVED",
+  "release": {
+    "version": "0.1.0-flightpath.3",
+    "source_revision": "588412fc789dd3fa3560e04b7f96966e72e98078",
+    "cluster": "flightpath",
+    "maximum_seats": 1,
+    "allowed_exposure_policies": [
+      "internal"
+    ]
+  },
+  "prerequisites": {
+    "operate_agentic_blueprint": "bounded-one-seat-active",
+    "scale_agentic_blueprint": "bounded-one-seat-active",
+    "destination_certification": "GREEN-live",
+    "destination_certification_score": 100,
+    "cleanup_zero_residue": true
+  },
+  "evidence": [
+    "evidence/runs/catalog/agentic-advanced-one-seat-activation-review-20261002.json",
+    "evidence/runs/flightpath-live-20261002-agentic-ai-601-1seat-r5.json",
+    "certification/catalog/agentic-ai-601.yaml",
+    "catalog/agentic-ai-601/catalog-item.yaml"
+  ],
+  "authorized_claims": [
+    "One participant may order and run the exact immutable rehearsal release on Flightpath.",
+    "The learner may evaluate deterministic denial, bounded simulated action, rollback, demotion, emergency stop, and the hash-linked evidence chain.",
+    "The release may be represented as destination-qualified rehearsal only."
+  ],
+  "explicitly_not_authorized": [
+    "Production action authority",
+    "Mutation of a production target",
+    "Live inference participation",
+    "Public-code access",
+    "Multi-seat scale",
+    "General availability",
+    "Production readiness"
+  ],
+  "remaining_production_gates": [
+    "Approved live evidence before any live authority claim",
+    "Five- and twenty-five-seat scale certification",
+    "Separate human authority review for promotion beyond rehearsal",
+    "Production action adapters",
+    "Class-specific thresholds",
+    "Organization-owned images and operational ownership"
+  ]
+}

@@ -30,9 +30,9 @@ learning_tracks:
       "101": {title: Understand Agentic Workflows, lifecycle: planned}
       "201": {title: Build an AI Agent on Intel Xeon 6, lifecycle: draft, catalog_id: intel-xeon6-agent-201}
       "301": {title: Build Multi-Agent Systems, lifecycle: draft, catalog_id: multi-agent-quickstart}
-      "401": {title: Operate Evidence-Backed Agents, lifecycle: draft, catalog_id: operate-agentic-blueprint}
-      "501": {title: Scale and Certify Agentic Systems, lifecycle: draft, catalog_id: scale-agentic-blueprint}
-      "601": {title: Earn the Right to Act, lifecycle: draft, catalog_id: agentic-ai-601}
+      "401": {title: Operate Evidence-Backed Agents, lifecycle: active, catalog_id: operate-agentic-blueprint}
+      "501": {title: Scale and Certify Agentic Systems, lifecycle: active, catalog_id: scale-agentic-blueprint}
+      "601": {title: Earn the Right to Act, lifecycle: active, catalog_id: agentic-ai-601}
   sovereign_ai:
     label: Sovereign AI
     entries:

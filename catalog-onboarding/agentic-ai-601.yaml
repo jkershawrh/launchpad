@@ -8,7 +8,7 @@ catalog:
     runtime production execution or promotion authority.
   category: guided_build
   version: "0.1.0-flightpath.3"
-  status: draft
+  status: active
 learning:
   learning_level: "601"
   learning_stage: Qualify
@@ -75,19 +75,23 @@ certification:
   max_workshop_seats: 1
   promotion_sequence: [1]
   proof_contract: certification/catalog/agentic-ai-601.yaml
-  activation_blockers:
-    - Complete Agentic AI 401 activation review.
-    - Complete Agentic AI 501 live destination certification and activation review.
-    - Review the one-seat destination rehearsal evidence before catalog activation.
+  activation_blockers: []
+  production_blockers:
+    - The active release is limited to one-seat internal rehearsal and grants no production execution authority.
+    - Replace synthetic rehearsal evidence with approved live evidence before any live authority claim.
     - Five- and twenty-five-seat scale certification is deferred.
-    - Complete human authority review.
+    - Complete a separate human authority review before any promotion beyond bounded rehearsal.
+    - Production action adapters are intentionally not implemented.
+    - Class-specific thresholds require independent human approval.
+    - Organization-owned images and operational ownership are required for production.
 factory_receipt:
   schema_version: demo-story.redhat-intel.com/launchpad-handoff/v1
   handoff_path: /Users/jkershaw/Documents/agentic-ai-601/handoff/launchpad-handoff.yaml
   source_revision: 588412fc789dd3fa3560e04b7f96966e72e98078
   artifact_source_revision: 588412fc789dd3fa3560e04b7f96966e72e98078
   evidence_mode: rehearsal
-  orderable: false
-  certified: false
+  orderable: true
+  certified: true
   promotion_eligible: false
   certification_evidence: evidence/runs/flightpath-live-20261002-agentic-ai-601-1seat-r5.json
+  activation_review: evidence/runs/catalog/agentic-ai-601-one-seat-activation-review-20261002.json

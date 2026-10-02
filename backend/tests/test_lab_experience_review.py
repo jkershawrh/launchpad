@@ -301,9 +301,9 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
     expected = {
         "agentic-ai-601": {
-            "revision": "22f4e4656843721c66b0779e52c30fc46a4061de",
-            "presentation": "sha256:4442f16d4d401c376a86dbcfa0acc111abf78c8cd0668f149adb41a6dc35192e",
-            "workload": "sha256:5a80d8c2a5f3031c2c90e3b0059123633a2984d54344ab6e964a21b9b537fafc",
+            "revision": "588412fc789dd3fa3560e04b7f96966e72e98078",
+            "presentation": "sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971",
+            "workload": "sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c",
         },
         "virtualization-ai-501": {
             "revision": "6e65858f773e2a28a4874a2a59785e8c8ab52b07",
@@ -326,15 +326,11 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
         )
         metadata = catalog["metadata"]
 
-        expected_status = (
-            "active"
-            if catalog_id in {"virtualization-ai-401", "virtualization-ai-501"}
-            else "draft"
-        )
+        expected_status = "active"
         expected_stage = (
             "1-seat-certified"
             if catalog_id in {"virtualization-ai-401", "virtualization-ai-501"}
-            else "immutable-source-published"
+            else "one-seat-destination-qualified"
         )
         assert catalog["status"] == intake["catalog"]["status"] == expected_status
         assert metadata["certification_stage"] == (
@@ -349,7 +345,7 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
         expected_overall = {
             "virtualization-ai-401": "one-seat-live-certified-active",
             "virtualization-ai-501": "one-seat-live-certified-active",
-            "agentic-ai-601": "immutable-source-published-draft",
+            "agentic-ai-601": "one-seat-live-certified-active",
         }[catalog_id]
         assert review["labs"][catalog_id]["overall_status"] == expected_overall
 

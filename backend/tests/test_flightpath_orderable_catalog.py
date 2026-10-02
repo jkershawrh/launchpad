@@ -40,6 +40,7 @@ def test_only_evidence_backed_flightpath_labs_are_participant_orderable():
 
     assert active == {
         "agent-reliability",
+        "agentic-ai-601",
         "ai-sandbox",
         "cpu-inference-serving",
         "hybrid-fraud-detection",
@@ -128,11 +129,11 @@ def test_agentic_501_is_mounted_as_a_bounded_one_seat_rehearsal():
     assert metadata["production_blockers"]
 
 
-def test_agentic_601_is_mounted_as_a_destination_qualified_draft():
+def test_agentic_601_is_mounted_as_bounded_one_seat_internal_rehearsal():
     item = _effective_flightpath_items()["agentic-ai-601"]
     metadata = item["metadata"]
 
-    assert item["status"] == "draft"
+    assert item["status"] == "active"
     assert metadata["certification_stage"] == "one-seat-destination-qualified"
     assert metadata["max_workshop_seats"] == 1
     assert metadata["prerequisites"] == [
@@ -160,4 +161,5 @@ def test_agentic_601_is_mounted_as_a_destination_qualified_draft():
         "sourceState": "rehearsal",
         "authorityExecutionEnabled": False,
     }
-    assert metadata["activation_blockers"]
+    assert metadata["activation_blockers"] == []
+    assert metadata["production_blockers"]

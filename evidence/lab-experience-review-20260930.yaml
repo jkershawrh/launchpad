@@ -796,7 +796,7 @@ labs:
       cleanup_seconds: 65.398
       evidence: evidence/runs/flightpath-live-20261002-agentic-ai-601-1seat-r5.json
       proof: "The exact 588412f release passed all nine Showroom stages, governed-loop denial and bounded simulation, single-use approval, idempotent replay, rollback and demotion, emergency stop, evidence-chain verification, namespace isolation, key revocation, reclaim, and zero residue. It proves destination rehearsal only and grants no production execution authority."
-    next_action: retain draft status until 401/501 activation review, browser Console SSO review, class-specific thresholds, human authority approval, and any live authority claim are independently satisfied
+    next_action: retain bounded internal one-seat rehearsal orderability; browser Console SSO, class-specific thresholds, production adapters, scale, general availability, and any live authority claim require separate evidence and human approval
 
   sovereign-ai-301:
     display_name: "Sovereign AI 301 — Confidential Inference and Intel TDX Foundations"

@@ -34,9 +34,12 @@ The intended progression is:
 2. `intel-llm-cpu-serving` — learn shared CPU inference.
 3. `intel-xeon6-agent-201` — build a bounded agent and MCP tools.
 4. `multi-agent-quickstart` — engineer the canonical multi-agent system.
-5. `operate-agentic-blueprint` — operate and recover that same system; this
-   remains draft until its activation gates are certified.
-6. A future certified 501 item will scale and qualify that same architecture.
+5. `operate-agentic-blueprint` — operate and recover that same system; active
+   for bounded one-seat internal and public-code use.
+6. `scale-agentic-blueprint` — qualify the deployment envelope through a
+   bounded one-seat internal rehearsal.
+7. `agentic-ai-601` — evaluate whether the system has earned authority through
+   a bounded one-seat internal rehearsal; production action remains disabled.
 
 The canonical architecture is
 [`../contracts/agentic-blueprint-v1.yaml`](../contracts/agentic-blueprint-v1.yaml).

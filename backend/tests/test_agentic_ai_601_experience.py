@@ -44,13 +44,13 @@ def test_agentic_601_exact_release_and_factory_receipt_are_consistent():
     ]["images"]
 
 
-def test_agentic_601_is_truthfully_one_seat_qualified_but_not_orderable():
+def test_agentic_601_is_truthfully_active_for_one_seat_internal_rehearsal():
     catalog = _load(CATALOG)
     intake = _load(INTAKE)
     certification = _load(CERTIFICATION)
     metadata = catalog["metadata"]
 
-    assert catalog["status"] == "draft"
+    assert catalog["status"] == "active"
     assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["stage"] == "one-seat-destination-qualified"
     assert metadata["certification_stage"] == "one-seat-destination-qualified"
@@ -68,8 +68,12 @@ def test_agentic_601_is_truthfully_one_seat_qualified_but_not_orderable():
     assert certification["spec"]["execution_enabled"] is True
     assert certification["spec"]["execution_blockers"]
     assert [profile["seats"] for profile in certification["spec"]["scale_profiles"]] == [1]
-    assert intake["factory_receipt"]["orderable"] is False
-    assert intake["factory_receipt"]["certified"] is False
+    assert metadata["activation_blockers"] == []
+    assert metadata["production_blockers"]
+    assert intake["certification"]["activation_blockers"] == []
+    assert intake["certification"]["production_blockers"]
+    assert intake["factory_receipt"]["orderable"] is True
+    assert intake["factory_receipt"]["certified"] is True
     assert intake["factory_receipt"]["promotion_eligible"] is False
 
 

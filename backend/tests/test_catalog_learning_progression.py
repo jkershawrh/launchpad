@@ -134,13 +134,14 @@ def test_scale_blueprint_extends_401_as_a_separate_gated_catalog_item():
     operate = items["operate-agentic-blueprint"]
     scale = items["scale-agentic-blueprint"]
 
-    assert scale["status"] == "draft"
+    assert scale["status"] == "active"
     assert scale["metadata"]["learning_level"] == "501"
     assert scale["metadata"]["prerequisites"] == ["operate-agentic-blueprint"]
     assert scale["metadata"]["shared_blueprint"] == operate["metadata"]["shared_blueprint"]
-    assert scale["metadata"]["solution_family"] == "operations_reliability"
-    assert scale["metadata"]["publication_gate"] == "certified"
-    assert scale["metadata"]["activation_blockers"]
+    assert scale["metadata"]["solution_family"] == "agentic_ai"
+    assert scale["metadata"]["certification_stage"] == "one-seat-destination-qualified"
+    assert scale["metadata"]["activation_blockers"] == []
+    assert scale["metadata"]["production_blockers"]
 
 
 def test_public_learning_titles_include_their_level():
@@ -174,17 +175,17 @@ def test_flightpath_candidate_titles_match_canonical_learning_titles():
         assert candidate["display_name"] == canonical[catalog_id]["display_name"]
 
 
-def test_new_agentic_expansion_stops_at_one_seat_for_initial_activation():
+def test_new_agentic_expansion_is_bounded_to_one_seat_after_activation():
     for catalog_id in ("scale-agentic-blueprint", "agentic-ai-601"):
         item = _items()[catalog_id]
         intake = yaml.safe_load((ONBOARDING / f"{catalog_id}.yaml").read_text())
 
-        assert item["status"] == "draft"
+        assert item["status"] == "active"
         assert item["metadata"]["max_workshop_seats"] == 1
         assert intake["certification"]["max_workshop_seats"] == 1
-        blockers = " ".join(intake["certification"]["activation_blockers"])
-        assert "one-seat" in blockers
-        assert "scale certification is deferred" in blockers
+        assert intake["certification"]["activation_blockers"] == []
+        blockers = " ".join(intake["certification"]["production_blockers"])
+        assert "scale certification is deferred" in blockers.lower()
 
 
 @pytest.mark.parametrize(

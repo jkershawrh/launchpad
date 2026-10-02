@@ -30,7 +30,7 @@ Only an active release with current certification receives an order action.
 | 301 | Build Multi-Agent Systems — immutable candidate draft; live proof pending | Confidential Inference and Intel TDX Foundations — immutable candidate draft; live TDX proof pending | Modernize VMs with Governed AI — immutable candidate draft; live proof and platform placement receipt pending |
 | 401 | Operate Evidence-Backed Agents — active for bounded one-seat internal and public-code use; production gates remain | Confidential AI with Intel TDX — immutable candidate draft; live Trustee/KBS proof pending | Operate Hybrid VM and AI Workloads — immutable candidate draft; live proof pending |
 | 501 | Scale and Certify Agentic Systems — active for bounded one-seat internal rehearsal; live execution and scale claims remain gated | Prove and Certify Sovereign AI — immutable candidate draft; destination proof pending | Scale Governed AI Modernization — immutable candidate draft; live proof pending |
-| 601 | Earn the Right to Act — immutable candidate draft; live proof pending | Not offered | Not offered |
+| 601 | Earn the Right to Act — active for bounded one-seat internal rehearsal; production authority and scale remain gated | Not offered | Not offered |
 
 Sales enablement is a separate persona axis over these technical tracks. Sales
 tracks may select different talk tracks, outcomes, and evidence while reusing a
