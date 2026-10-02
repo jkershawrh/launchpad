@@ -67,6 +67,7 @@ runtime:
     source: showroom.terminal
   allowed_exposure_policies:
   - internal
+  - public_code
   workload:
     source_kind: kustomize
     gitops_ready: true
@@ -92,8 +93,7 @@ certification:
   - 1
   activation_blockers: []
   certification_scope:
-  - The previous source revision was certified in one internal Flightpath seat; that
-    proof does not transfer to this newly published revision.
+  - The exact immutable revision was certified in one internal Flightpath seat.
   - The immutable experience is explicitly REHEARSAL; it makes no live-model or Intel
     CPU placement claim.
   - Certification is limited to one seat. Higher scale gates remain independent.

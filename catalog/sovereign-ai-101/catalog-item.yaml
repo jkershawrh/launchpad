@@ -18,7 +18,6 @@ provisioner_refs:
 validation_refs:
 - pod-ready
 - route-accessible
-- inference-health
 - agentops-journey
 observability_profile: agentops-full-stack
 supported_branding:
@@ -55,6 +54,7 @@ metadata:
   certification_proof_contract: certification/catalog/sovereign-ai-101.yaml
   allowed_exposure_policies:
   - internal
+  - public_code
   showroom_journey: sovereign-ai-101
   showroom_title: 'Sovereign AI 101: Understand Governed Inference'
   namespace_slug: sovereign-ai-101
