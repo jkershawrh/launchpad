@@ -4,7 +4,7 @@ metadata: {catalog_item_id: virtualization-ai-501, display_name: "Virtualization
 spec:
   target_cluster: flightpath
   kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
-  allowed_exposure_policies: [internal]
+  allowed_exposure_policies: [internal, public_code]
   scale_profiles:
     - {seats: 1, required_consecutive_runs: 1, probe_concurrency: 1, maximum_ready_seconds: 1500, maximum_cleanup_seconds: 600}
   showroom:
