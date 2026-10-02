@@ -1,0 +1,53 @@
+{
+  "schema_version": "launchpad.redhat.com/direct-qualification-evidence/v1",
+  "catalog_item_id": "agentic-ai-101",
+  "qualification_type": "trusted-destination-render",
+  "promotion_authority": "none",
+  "target_cluster": "flightpath",
+  "namespace": "launchpad-cert-agentic-ai-101-1002",
+  "source": {
+    "repository": "https://github.com/jkershawrh/agentic-ai-101",
+    "deployment_revision": "79998ff66d5d0e2a18f001f0e096badda06f0671",
+    "artifact_revision": "9160ab05830cd68ab2746e03dd200bea5e5d016a"
+  },
+  "artifact_release": {
+    "workflow": "https://github.com/jkershawrh/agentic-ai-101/actions/runs/37056295405",
+    "fixable_high_critical_scan": "pass",
+    "sbom": "pass",
+    "keyless_signature": "verified",
+    "provenance_attestation": "verified",
+    "presentation": "ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f",
+    "rehearsal": "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"
+  },
+  "result": "GREEN-direct-destination-render",
+  "checks": {
+    "pods_ready": true,
+    "container_restarts": 0,
+    "presentation_http_status": 200,
+    "presentation_marker": true,
+    "health": true,
+    "ready": true,
+    "source_state": "REHEARSAL",
+    "read_only_grounded": true,
+    "deterministic_replay": true,
+    "state_change_denied": true,
+    "target_mutated": false,
+    "unknown_scenario_rejected": true,
+    "exact_image_digests": true,
+    "cluster_scoped_resources_created": false
+  },
+  "cleanup": {
+    "namespace_absent": true,
+    "applications": 0,
+    "clusterroles": 0,
+    "clusterrolebindings": 0,
+    "persistentvolumes": 0,
+    "matching_namespaces": 0,
+    "pipelines_orphan_subject_removed": true
+  },
+  "limitations": [
+    "This was a direct destination render, not a Launchpad order.",
+    "Participant Showroom, terminal identity, and API-driven reclaim remain unproven.",
+    "No live model participation, Intel hardware placement, performance, autonomous action, public access, staging readiness, or production readiness is claimed."
+  ]
+}

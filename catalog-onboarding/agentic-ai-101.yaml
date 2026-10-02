@@ -1,0 +1,98 @@
+api_version: launchpad.redhat.com/v1alpha1
+catalog:
+  catalog_item_id: agentic-ai-101
+  display_name: "Agentic AI 101 \u2014 Understand Agentic Workflows"
+  description: Trace a request through model proposal, bounded tools, source-labeled
+    evidence, deterministic policy, human authority, and a reviewable workflow record.
+  category: guided_build
+  version: 0.1.0
+  status: draft
+learning:
+  learning_level: '101'
+  learning_stage: Learn
+  experience_type: guided_foundations
+  prerequisites: []
+  recommended_next_items:
+  - intel-xeon6-agent-201
+  journey_role: core
+  specialty_family: null
+  branches_from: null
+  returns_to: null
+  shared_blueprint: red-hat-intel-agentic-v1
+  solution_family: agentic_ai
+sources:
+  showroom:
+    repo_url: https://github.com/jkershawrh/agentic-ai-101.git
+    revision: 79998ff66d5d0e2a18f001f0e096badda06f0671
+    playbook: site.yml
+    start_path: showroom
+    gitops_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
+  workload:
+    repo_url: https://github.com/jkershawrh/agentic-ai-101.git
+    revision: 79998ff66d5d0e2a18f001f0e096badda06f0671
+    deploy_path: deploy/openshift/base
+    gitops_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
+runtime:
+  namespace_slug: agentic-ai-101
+  workshop_cluster_ref: flightpath
+  deployment_type: kustomize
+  deployment_scope: seat
+  required_capabilities:
+  - openshift
+  - showroom
+  required_models: []
+  inference_endpoint: none
+  showroom_terminal_storage: false
+  validation_refs: [pod-ready, route-accessible, governed-workflow-journey]
+  observability_profile: governed-workflow-foundations
+  seat_resources:
+    cpu_millicores: 50
+    memory_mib: 64
+    pods: 2
+    storage_gib: 0
+  workshop_shared_resources:
+    cpu_millicores: 0
+    memory_mib: 0
+    pods: 0
+    storage_gib: 0
+  workshop_provision_concurrency: 1
+  workshop_node_spread: false
+  workshop_node_min_ready_seconds: 0
+  tabs:
+  - id: story
+    title: Interactive Story
+    source: workload.route.presentation
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  allowed_exposure_policies:
+  - internal
+  workload:
+    source_kind: kustomize
+    gitops_ready: true
+    release_name: agentic-ai-101
+    helm_values:
+      workload_image: ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63
+      presentation_image: ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f
+      source_state: REHEARSAL
+    runtime_secret_name: ''
+    runtime_secret_value_path: ''
+    runtime_secret_sources: {}
+    routes:
+      presentation: agentic-ai-101-presentation
+    readiness: []
+certification:
+  stage: factory-source-qualified
+  max_workshop_seats: 1
+  promotion_sequence:
+  - 1
+  activation_blockers:
+  - Destination OpenShift admission, Route behavior, Showroom integration, and participant
+    terminal execution remain unverified.
+  - One-seat provisioning, participant journey, reclaim, and zero-residue evidence
+    remain unverified.
+  - No live model participation, Intel hardware placement, performance, autonomous
+    action, or production readiness is claimed.
+  - Complete trusted render and destination artifact qualification on Flightpath.
+  - Complete one-seat live certification and zero-residue reclaim before activation.
+  proof_contract: certification/catalog/agentic-ai-101.yaml

@@ -27,7 +27,7 @@ learning_tracks:
   agentic_ai:
     label: Agentic AI
     entries:
-      "101": {title: Understand Agentic Workflows, lifecycle: planned}
+      "101": {title: Understand Agentic Workflows, lifecycle: draft}
       "201": {title: Build an AI Agent on Intel Xeon 6, lifecycle: draft, catalog_id: intel-xeon6-agent-201}
       "301": {title: Build Multi-Agent Systems, lifecycle: draft, catalog_id: multi-agent-quickstart}
       "401": {title: Operate Evidence-Backed Agents, lifecycle: active, catalog_id: operate-agentic-blueprint}

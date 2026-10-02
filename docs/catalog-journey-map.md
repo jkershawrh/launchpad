@@ -25,7 +25,7 @@ Only an active release with current certification receives an order action.
 
 | Level | Agentic AI | Sovereign AI | Virtualization + AI |
 | --- | --- | --- | --- |
-| 101 | Understand Agentic Workflows — planned | Understand Sovereign AI — immutable candidate draft; live proof pending | Understand VM and AI Coexistence — immutable candidate draft with per-seat VM identity; live proof pending |
+| 101 | Understand Agentic Workflows — signed immutable presentation/runtime and direct Flightpath qualification green; Launchpad one-seat order/reclaim proof pending | Understand Sovereign AI — immutable candidate draft; live proof pending | Understand VM and AI Coexistence — immutable candidate draft with per-seat VM identity; live proof pending |
 | 201 | Build an AI Agent on Intel Xeon 6 — published candidate draft; immutable workload pin and live proof pending | Build the Governed Inference Boundary — immutable candidate draft; live proof pending | Author and Qualify the Contract — immutable candidate draft; live proof pending |
 | 301 | Build Multi-Agent Systems — immutable candidate draft; live proof pending | Confidential Inference and Intel TDX Foundations — immutable candidate draft; live TDX proof pending | Modernize VMs with Governed AI — immutable candidate draft; live proof and platform placement receipt pending |
 | 401 | Operate Evidence-Backed Agents — active for bounded one-seat internal and public-code use; production gates remain | Confidential AI with Intel TDX — immutable candidate draft; live Trustee/KBS proof pending | Operate Hybrid VM and AI Workloads — immutable candidate draft; live proof pending |

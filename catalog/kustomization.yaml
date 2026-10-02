@@ -29,6 +29,9 @@ configMapGenerator:
   - name: canonical-agentic-ai-601-catalog
     files:
       - catalog-item.yaml=agentic-ai-601/catalog-item.yaml
+  - name: canonical-agentic-ai-101-catalog
+    files:
+      - catalog-item.yaml=agentic-ai-101/catalog-item.yaml
   - name: canonical-sovereign-ai-101-catalog
     files:
       - catalog-item.yaml=sovereign-ai-101/catalog-item.yaml

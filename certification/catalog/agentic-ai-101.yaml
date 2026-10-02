@@ -1,0 +1,73 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: CatalogCertification
+
+metadata:
+  catalog_item_id: agentic-ai-101
+  display_name: "Agentic AI 101 — Understand Agentic Workflows"
+
+spec:
+  state: one-seat-candidate
+  target_cluster: flightpath
+  kubeconfig_server: https://api.flightpath.fm2aihpcsed.com:6443
+  allowed_exposure_policies: [internal]
+
+  scale_profiles:
+    - seats: 1
+      required_consecutive_runs: 1
+      probe_concurrency: 1
+      maximum_ready_seconds: 900
+      maximum_cleanup_seconds: 600
+
+  showroom:
+    pages:
+      - {id: welcome, path: /www/agentic-ai-101/index.html, marker: "Understand Agentic Workflows"}
+      - {id: request, path: /www/agentic-ai-101/01-request.html, marker: "Start with the request"}
+      - {id: proposal, path: /www/agentic-ai-101/02-proposal.html, marker: "Separate proposal from authority"}
+      - {id: tools, path: /www/agentic-ai-101/03-tools.html, marker: "Bound the tools"}
+      - {id: evidence, path: /www/agentic-ai-101/04-evidence.html, marker: "Label the evidence"}
+      - {id: decision, path: /www/agentic-ai-101/05-decision.html, marker: "Keep deterministic policy"}
+      - {id: record, path: /www/agentic-ai-101/06-record.html, marker: "Leave a reviewable record"}
+
+  seat_probe:
+    argv: [bash, scripts/certify-agentic-ai-101-seat.sh, "{namespace}", "{cluster_ref}"]
+    timeout_seconds: 600
+    result_format: json
+    json_assertions:
+      - {path: result, equals: GREEN-destination-rehearsal-seat}
+      - {path: cluster_ref, equals: flightpath}
+      - {path: source_state, equals: REHEARSAL}
+      - {path: inference.required, equals: false}
+      - {path: inference.participated, equals: false}
+      - {path: runtime_images.presentation, equals: "ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f"}
+      - {path: runtime_images.rehearsal, equals: "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"}
+      - {path: readiness.presentation, equals: true}
+      - {path: readiness.rehearsal, equals: true}
+      - {path: workflow.read_only_grounded, equals: true}
+      - {path: workflow.deterministic_replay, equals: true}
+      - {path: workflow.state_change_denied, equals: true}
+      - {path: workflow.target_mutated, equals: false}
+      - {path: workflow.unknown_scenario_rejected, equals: true}
+      - {path: authority.human_review_required, equals: true}
+      - {path: terminal_scope, contains: own_edit=yes}
+      - {path: terminal_scope, contains: cross_namespace=DENIED}
+      - {path: terminal_scope, contains: node_list=DENIED}
+      - {path: contains_sensitive_values, equals: false}
+
+  cleanup:
+    resources:
+      - namespaces
+      - applications.argoproj.io
+      - rolebindings.rbac.authorization.k8s.io
+      - persistentvolumeclaims
+      - persistentvolumes
+      - routes.route.openshift.io
+      - secrets
+
+  rubric:
+    required_score: 100
+    categories:
+      - {id: contract_and_provenance, weight: 15, requires: [contract_valid, evidence_hashed]}
+      - {id: provisioning_and_readiness, weight: 20, requires: [capacity_passed, all_seats_ready, ready_within_limit]}
+      - {id: foundational_journey, weight: 25, requires: [showroom_pages_passed, seat_probes_passed]}
+      - {id: isolation_and_authority, weight: 20, requires: [namespace_isolation_passed, sensitive_values_absent]}
+      - {id: lifecycle, weight: 20, requires: [cleanup_completed, zero_residue_cleanup]}
