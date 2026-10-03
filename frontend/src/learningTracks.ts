@@ -22,7 +22,7 @@ export const LEARNING_TRACKS: LearningTrack[] = [
     label: 'Agentic AI',
     description: 'Progress from agentic workflow concepts to governed, evidence-backed authority.',
     entries: [
-      { level: '101', title: 'Understand Agentic Workflows', lifecycle: 'draft' },
+      { level: '101', title: 'Understand Agentic Workflows', lifecycle: 'active', catalogId: 'agentic-ai-101' },
       { level: '201', title: 'Build an AI Agent on Intel Xeon 6', lifecycle: 'active', catalogId: 'intel-xeon6-agent-201' },
       { level: '301', title: 'Build Multi-Agent Systems', lifecycle: 'active', catalogId: 'multi-agent-quickstart' },
       { level: '401', title: 'Operate Evidence-Backed Agents', lifecycle: 'active', catalogId: 'operate-agentic-blueprint' },

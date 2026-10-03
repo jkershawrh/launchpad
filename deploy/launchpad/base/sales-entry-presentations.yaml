@@ -1,0 +1,246 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-ai-strategy
+  labels:
+    app.kubernetes.io/name: sales-ai-strategy
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: sales-entry
+    launchpad.redhat.com/surface: sales-entry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sales-ai-strategy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sales-ai-strategy
+        app.kubernetes.io/part-of: partner-ai-launchpad
+        app.kubernetes.io/component: sales-entry
+        launchpad.redhat.com/surface: sales-entry
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: presentation
+          image: ghcr.io/jkershawrh/red-hat-intel-ai-strategy-web@sha256:09c2f7a226938ff6e085a2b92d6ad88048be95d06a1ad2f9b3c1b15fd1c48732
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
+          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: {drop: [ALL]}
+            runAsNonRoot: true
+            seccompProfile: {type: RuntimeDefault}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-ai-strategy
+  labels:
+    app.kubernetes.io/name: sales-ai-strategy
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: sales-entry
+    launchpad.redhat.com/surface: sales-entry
+spec:
+  selector: {app.kubernetes.io/name: sales-ai-strategy}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-ai-strategy
+  labels:
+    app.kubernetes.io/name: sales-ai-strategy
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: sales-entry
+    launchpad.redhat.com/surface: sales-entry
+spec:
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}
+  to: {kind: Service, name: sales-ai-strategy, weight: 100}
+  port: {targetPort: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-intel-xeon
+  labels:
+    app.kubernetes.io/name: sales-intel-xeon
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: sales-entry
+    launchpad.redhat.com/surface: sales-entry
+spec:
+  replicas: 1
+  selector: {matchLabels: {app.kubernetes.io/name: sales-intel-xeon}}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sales-intel-xeon
+        app.kubernetes.io/part-of: partner-ai-launchpad
+        app.kubernetes.io/component: sales-entry
+        launchpad.redhat.com/surface: sales-entry
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: presentation
+          image: ghcr.io/jkershawrh/intel-xeon-ai-sales-web@sha256:86ac164c2fdb0b6d13f64f897c2b47dfb7b13a5f4821cc3d847d481fd6233ba5
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
+          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-intel-xeon
+  labels: {app.kubernetes.io/name: sales-intel-xeon, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  selector: {app.kubernetes.io/name: sales-intel-xeon}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-intel-xeon
+  labels: {app.kubernetes.io/name: sales-intel-xeon, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}
+  to: {kind: Service, name: sales-intel-xeon, weight: 100}
+  port: {targetPort: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-governed-agentic
+  labels:
+    app.kubernetes.io/name: sales-governed-agentic
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: sales-entry
+    launchpad.redhat.com/surface: sales-entry
+spec:
+  replicas: 1
+  selector: {matchLabels: {app.kubernetes.io/name: sales-governed-agentic}}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: sales-governed-agentic, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: presentation
+          image: ghcr.io/jkershawrh/governed-agentic-ai-sales-web@sha256:4eb250e4e7c87fb7280dc9a3bcf59b94cb93542f8d826ab15672d392a8641ebb
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
+          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-governed-agentic
+  labels: {app.kubernetes.io/name: sales-governed-agentic, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  selector: {app.kubernetes.io/name: sales-governed-agentic}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-governed-agentic
+  labels: {app.kubernetes.io/name: sales-governed-agentic, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}
+  to: {kind: Service, name: sales-governed-agentic, weight: 100}
+  port: {targetPort: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-sovereign-ai
+  labels:
+    app.kubernetes.io/name: sales-sovereign-ai
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: sales-entry
+    launchpad.redhat.com/surface: sales-entry
+spec:
+  replicas: 1
+  selector: {matchLabels: {app.kubernetes.io/name: sales-sovereign-ai}}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: sales-sovereign-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: presentation
+          image: ghcr.io/jkershawrh/sovereign-ai-sales-web@sha256:f1c3d7fc716d3650c6cc1fad2f046e907834c4683369708addf36c8a92fd54a6
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
+          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-sovereign-ai
+  labels: {app.kubernetes.io/name: sales-sovereign-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  selector: {app.kubernetes.io/name: sales-sovereign-ai}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-sovereign-ai
+  labels: {app.kubernetes.io/name: sales-sovereign-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}
+  to: {kind: Service, name: sales-sovereign-ai, weight: 100}
+  port: {targetPort: http}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-virtualization-ai
+  labels:
+    app.kubernetes.io/name: sales-virtualization-ai
+    app.kubernetes.io/part-of: partner-ai-launchpad
+    app.kubernetes.io/component: sales-entry
+    launchpad.redhat.com/surface: sales-entry
+spec:
+  replicas: 1
+  selector: {matchLabels: {app.kubernetes.io/name: sales-virtualization-ai}}
+  template:
+    metadata:
+      labels: {app.kubernetes.io/name: sales-virtualization-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: presentation
+          image: ghcr.io/jkershawrh/virtualization-ai-sales-web@sha256:1a976ffcaa557ed8b4f2c3ee5f7c2c0b8a6d6a495c88c8ecf0a54e85f4d550c2
+          ports: [{name: http, containerPort: 8080}]
+          readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
+          livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
+          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-virtualization-ai
+  labels: {app.kubernetes.io/name: sales-virtualization-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  selector: {app.kubernetes.io/name: sales-virtualization-ai}
+  ports: [{name: http, port: 8080, targetPort: http}]
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-virtualization-ai
+  labels: {app.kubernetes.io/name: sales-virtualization-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
+spec:
+  tls: {termination: edge, insecureEdgeTerminationPolicy: Redirect}
+  to: {kind: Service, name: sales-virtualization-ai, weight: 100}
+  port: {targetPort: http}

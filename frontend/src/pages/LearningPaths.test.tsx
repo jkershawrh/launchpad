@@ -26,6 +26,7 @@ describe('LearningPaths', () => {
 
   it('shows all named tracks but only orders backend-confirmed active labs', async () => {
     vi.mocked(api.listCatalog).mockResolvedValue([
+      catalog('agentic-ai-101', 'active'),
       catalog('intel-xeon6-agent-201', 'active'),
       catalog('multi-agent-quickstart', 'active'),
       catalog('agentic-ai-601', 'draft'),
@@ -38,8 +39,11 @@ describe('LearningPaths', () => {
     expect(screen.getByText('Sovereign AI')).toBeInTheDocument();
     expect(screen.getByText('Virtualization + AI')).toBeInTheDocument();
     expect(screen.getByText('Earn the Right to Act')).toBeInTheDocument();
-    expect(screen.getAllByText('Order this lab →')).toHaveLength(3);
-    expect(screen.getByText(/Sales tracks remain a separate persona layer/)).toBeInTheDocument();
+    expect(screen.getAllByText('Order this lab →')).toHaveLength(4);
+    expect(screen.getByText('Start with the customer conversation')).toBeInTheDocument();
+    expect(screen.getAllByText('Sales entry · no environment provisioned')).toHaveLength(5);
+    expect(screen.getByText('Continue to Agentic AI 101 →').closest('a')).toHaveAttribute('href', '/request?catalog_item=agentic-ai-101');
+    expect(screen.getByText('Continue to Virtualization + AI 101 →').closest('a')).toHaveAttribute('href', '/request?catalog_item=virtualization-ai-foundations-101');
   });
 
   it('fails closed when live catalog status cannot be loaded', async () => {

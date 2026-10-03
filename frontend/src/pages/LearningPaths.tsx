@@ -5,6 +5,7 @@ import type { CatalogItem } from '../api/types';
 import { catalogLaunchPath } from '../catalogNavigation';
 import { LEARNING_STAGE } from '../catalogLearning';
 import { LEARNING_TRACKS, type LearningTrackEntry } from '../learningTracks';
+import { SALES_ENTRIES, salesEntryUrl } from '../salesEntries';
 
 const STATE_STYLE = {
   available: 'border-[#3E8635]/60 bg-[#3E8635]/10 text-[#BDEFA6]',
@@ -31,6 +32,7 @@ export default function LearningPaths() {
     () => new Map(catalog.map((item) => [item.catalog_item_id, item])),
     [catalog],
   );
+  const currentHostname = typeof window === 'undefined' ? '' : window.location.hostname;
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-6 py-8 lg:px-8">
@@ -83,14 +85,34 @@ export default function LearningPaths() {
         ))}
       </div>
 
-      <section className="rounded-lg border border-[#333] bg-[#212121] p-6">
-        <div className="grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#F8C95E]">Sales enablement</p>
-            <h2 className="mt-1 text-xl font-semibold text-white">Sales tracks remain a separate persona layer</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-[#A3A3A3]">Sales journeys will reuse certified technical labs with role-specific outcomes, talk tracks, evidence, and handoff guidance. Their titles and audience mapping are intentionally not invented here; they remain pending product-owner definition.</p>
-          </div>
-          <Link to="/catalog" className="rounded bg-[#EE0000] px-5 py-3 text-center text-sm font-semibold text-white hover:bg-[#CC0000]">Browse orderable labs</Link>
+      <section className="rounded-lg border border-[#333] bg-[#212121] p-6" aria-labelledby="sales-entry-heading">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#F8C95E]">Sales enablement</p>
+        <h2 id="sales-entry-heading" className="mt-1 text-xl font-semibold text-white">Start with the customer conversation</h2>
+        <p className="mt-2 max-w-4xl text-sm leading-6 text-[#A3A3A3]">These short presentation experiences frame the opportunity before a learner enters a certified technical lab. Exploring a story does not provision an environment or consume a seat.</p>
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          {SALES_ENTRIES.map((entry) => {
+            const storyUrl = salesEntryUrl(entry.routeName, currentHostname);
+            const labPath = entry.labCatalogId
+              ? `/request?catalog_item=${encodeURIComponent(entry.labCatalogId)}`
+              : '/paths';
+            return (
+              <article key={entry.id} className="rounded border border-[#444] bg-[#181818] p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#73BCF7]">Sales entry · no environment provisioned</p>
+                <h3 className="mt-2 text-base font-semibold leading-6 text-white">{entry.title}</h3>
+                <p className="mt-2 text-xs leading-5 text-[#A3A3A3]">{entry.description}</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {storyUrl && (
+                    <a href={storyUrl} target="_blank" rel="noreferrer" className="rounded bg-[#0066CC] px-4 py-2 text-xs font-semibold text-white hover:bg-[#004B95]">
+                      Explore story
+                    </a>
+                  )}
+                  <Link to={labPath} className="rounded border border-[#6A6E73] px-4 py-2 text-xs font-semibold text-white hover:border-[#A3A3A3]">
+                    {entry.labLabel} →
+                  </Link>
+                </div>
+              </article>
+            );
+          })}
         </div>
       </section>
     </div>
