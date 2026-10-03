@@ -8,11 +8,11 @@ ROOT = Path(__file__).resolve().parents[2]
 OVERLAY = ROOT / "deploy" / "launchpad" / "overlays" / "flightpath-candidate"
 
 EXPECTED = {
-    "sales-ai-strategy": "ghcr.io/jkershawrh/red-hat-intel-ai-strategy-web@sha256:09c2f7a226938ff6e085a2b92d6ad88048be95d06a1ad2f9b3c1b15fd1c48732",
-    "sales-intel-xeon": "ghcr.io/jkershawrh/intel-xeon-ai-sales-web@sha256:86ac164c2fdb0b6d13f64f897c2b47dfb7b13a5f4821cc3d847d481fd6233ba5",
-    "sales-governed-agentic": "ghcr.io/jkershawrh/governed-agentic-ai-sales-web@sha256:4eb250e4e7c87fb7280dc9a3bcf59b94cb93542f8d826ab15672d392a8641ebb",
-    "sales-sovereign-ai": "ghcr.io/jkershawrh/sovereign-ai-sales-web@sha256:f1c3d7fc716d3650c6cc1fad2f046e907834c4683369708addf36c8a92fd54a6",
-    "sales-virtualization-ai": "ghcr.io/jkershawrh/virtualization-ai-sales-web@sha256:1a976ffcaa557ed8b4f2c3ee5f7c2c0b8a6d6a495c88c8ecf0a54e85f4d550c2",
+    "sales-ai-strategy": "ghcr.io/jkershawrh/red-hat-intel-ai-strategy-web@sha256:158695afa247c8c0df58c94ed7bc82ed40cbb6c9bf138e048cb676f23b961218",
+    "sales-intel-xeon": "ghcr.io/jkershawrh/intel-xeon-ai-sales-web@sha256:674e0653dd8fd27bf3f100946abc80dd229add5d7d4faf81e0a6de482fddb5e5",
+    "sales-governed-agentic": "ghcr.io/jkershawrh/governed-agentic-ai-sales-web@sha256:266e5d0bfffb68d78d202070c3db94dcb327bc79fb7f2543be87ceaed30d8356",
+    "sales-sovereign-ai": "ghcr.io/jkershawrh/sovereign-ai-sales-web@sha256:6fd78a5f584480d4e141b9c9a95638c11311c528fb5465e04c64e8fcf5967f65",
+    "sales-virtualization-ai": "ghcr.io/jkershawrh/virtualization-ai-sales-web@sha256:1d5d784cf1683bcc74d3bcdcf44836c1da2faa92c9cbb4fafe19c54ff3aca8d4",
 }
 
 
