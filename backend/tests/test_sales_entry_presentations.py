@@ -57,6 +57,7 @@ def test_sales_entries_have_isolated_services_and_tls_routes_but_no_catalog_reco
         assert service["metadata"]["labels"]["launchpad.redhat.com/surface"] == "sales-entry"
         assert route["spec"]["tls"] == {"termination": "edge", "insecureEdgeTerminationPolicy": "Redirect"}
         assert route["spec"]["to"]["name"] == name
+        assert route["spec"]["host"] == f"{name}.apps.flightpath.fm2aihpcsed.com"
 
     sales_deployments = [
         item for item in objects

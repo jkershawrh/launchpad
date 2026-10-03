@@ -61,6 +61,7 @@ patches:
   - path: patch-generated-secrets.yaml
   - path: patch-remove-shared-rbac.yaml
   - path: patch-runtime.yaml
+  - path: patch-sales-entry-routes.yaml
 
 labels:
   - pairs:

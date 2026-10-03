@@ -1,0 +1,34 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-ai-strategy
+spec:
+  host: sales-ai-strategy.apps.flightpath.fm2aihpcsed.com
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-intel-xeon
+spec:
+  host: sales-intel-xeon.apps.flightpath.fm2aihpcsed.com
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-governed-agentic
+spec:
+  host: sales-governed-agentic.apps.flightpath.fm2aihpcsed.com
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-sovereign-ai
+spec:
+  host: sales-sovereign-ai.apps.flightpath.fm2aihpcsed.com
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: sales-virtualization-ai
+spec:
+  host: sales-virtualization-ai.apps.flightpath.fm2aihpcsed.com
