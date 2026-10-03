@@ -28,7 +28,7 @@ spec:
           ports: [{name: http, containerPort: 8080}]
           readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
           livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
-          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          resources: {requests: {cpu: 50m, memory: 128Mi}, limits: {cpu: 300m, memory: 512Mi}}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities: {drop: [ALL]}
@@ -90,7 +90,7 @@ spec:
           ports: [{name: http, containerPort: 8080}]
           readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
           livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
-          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          resources: {requests: {cpu: 50m, memory: 128Mi}, limits: {cpu: 300m, memory: 512Mi}}
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
 ---
 apiVersion: v1
@@ -136,7 +136,7 @@ spec:
           ports: [{name: http, containerPort: 8080}]
           readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
           livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
-          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          resources: {requests: {cpu: 50m, memory: 128Mi}, limits: {cpu: 300m, memory: 512Mi}}
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
 ---
 apiVersion: v1
@@ -182,7 +182,7 @@ spec:
           ports: [{name: http, containerPort: 8080}]
           readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
           livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
-          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          resources: {requests: {cpu: 50m, memory: 128Mi}, limits: {cpu: 300m, memory: 512Mi}}
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
 ---
 apiVersion: v1
@@ -228,7 +228,7 @@ spec:
           ports: [{name: http, containerPort: 8080}]
           readinessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 3, periodSeconds: 10}
           livenessProbe: {httpGet: {path: /, port: http}, initialDelaySeconds: 10, periodSeconds: 30}
-          resources: {requests: {cpu: 25m, memory: 32Mi}, limits: {cpu: 200m, memory: 128Mi}}
+          resources: {requests: {cpu: 50m, memory: 128Mi}, limits: {cpu: 300m, memory: 512Mi}}
           securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
 ---
 apiVersion: v1

@@ -45,6 +45,8 @@ def test_sales_entries_are_presentation_only_and_digest_pinned():
         assert deployment["spec"]["template"]["spec"]["imagePullSecrets"] == [
             {"name": "launchpad-registry-pull"}
         ]
+        assert containers[0]["resources"]["requests"]["memory"] == "128Mi"
+        assert containers[0]["resources"]["limits"]["memory"] == "512Mi"
 
 
 def test_sales_entries_have_isolated_services_and_tls_routes_but_no_catalog_records():
