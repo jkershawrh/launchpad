@@ -42,6 +42,9 @@ def test_sales_entries_are_presentation_only_and_digest_pinned():
             ("presentation", expected_image)
         ]
         assert deployment["spec"]["template"]["spec"]["automountServiceAccountToken"] is False
+        assert deployment["spec"]["template"]["spec"]["imagePullSecrets"] == [
+            {"name": "launchpad-registry-pull"}
+        ]
 
 
 def test_sales_entries_have_isolated_services_and_tls_routes_but_no_catalog_records():

@@ -21,6 +21,7 @@ spec:
         launchpad.redhat.com/surface: sales-entry
     spec:
       automountServiceAccountToken: false
+      imagePullSecrets: [{name: launchpad-registry-pull}]
       containers:
         - name: presentation
           image: ghcr.io/jkershawrh/red-hat-intel-ai-strategy-web@sha256:09c2f7a226938ff6e085a2b92d6ad88048be95d06a1ad2f9b3c1b15fd1c48732
@@ -82,6 +83,7 @@ spec:
         launchpad.redhat.com/surface: sales-entry
     spec:
       automountServiceAccountToken: false
+      imagePullSecrets: [{name: launchpad-registry-pull}]
       containers:
         - name: presentation
           image: ghcr.io/jkershawrh/intel-xeon-ai-sales-web@sha256:86ac164c2fdb0b6d13f64f897c2b47dfb7b13a5f4821cc3d847d481fd6233ba5
@@ -127,6 +129,7 @@ spec:
       labels: {app.kubernetes.io/name: sales-governed-agentic, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
     spec:
       automountServiceAccountToken: false
+      imagePullSecrets: [{name: launchpad-registry-pull}]
       containers:
         - name: presentation
           image: ghcr.io/jkershawrh/governed-agentic-ai-sales-web@sha256:4eb250e4e7c87fb7280dc9a3bcf59b94cb93542f8d826ab15672d392a8641ebb
@@ -172,6 +175,7 @@ spec:
       labels: {app.kubernetes.io/name: sales-sovereign-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
     spec:
       automountServiceAccountToken: false
+      imagePullSecrets: [{name: launchpad-registry-pull}]
       containers:
         - name: presentation
           image: ghcr.io/jkershawrh/sovereign-ai-sales-web@sha256:f1c3d7fc716d3650c6cc1fad2f046e907834c4683369708addf36c8a92fd54a6
@@ -217,6 +221,7 @@ spec:
       labels: {app.kubernetes.io/name: sales-virtualization-ai, app.kubernetes.io/part-of: partner-ai-launchpad, app.kubernetes.io/component: sales-entry, launchpad.redhat.com/surface: sales-entry}
     spec:
       automountServiceAccountToken: false
+      imagePullSecrets: [{name: launchpad-registry-pull}]
       containers:
         - name: presentation
           image: ghcr.io/jkershawrh/virtualization-ai-sales-web@sha256:1a976ffcaa557ed8b4f2c3ee5f7c2c0b8a6d6a495c88c8ecf0a54e85f4d550c2
