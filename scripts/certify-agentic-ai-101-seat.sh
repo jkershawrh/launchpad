@@ -5,7 +5,7 @@ namespace="${1:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
-source_revision="8ae1351e8aad2e50443b405469cad9f5ed35cd78"
+source_revision="896590d237b20031960aefa10fe717b44b7e7921"
 expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f"
 expected_rehearsal_image="ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"
 
