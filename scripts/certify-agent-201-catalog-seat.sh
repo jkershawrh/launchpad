@@ -6,7 +6,7 @@ expected_cluster="${2:?usage: certify-agent-201-catalog-seat.sh <namespace> <clu
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-showroom_revision="da98172e3b5f2c186836493c2aa949dff10c4c15"
+showroom_revision="11e209450b798678d78c8964407106f5475aca33"
 workload_revision="f484cb66c3dcddff323df8814f637dc92c73c179"
 workload_base="https://raw.githubusercontent.com/rhpds/triforce/f484cb66c3dcddff323df8814f637dc92c73c179/infrastructure/manifests-201"
 expected_tools_image="quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
