@@ -23,13 +23,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-    revision: 016ab9eb35e2bb2960adfc22fd9168216993dcd6
+    revision: b2ba71802140d1de9c237766e010f9ef4fe09a00
     playbook: site.yml
     start_path: showroom
     gitops_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
   workload:
     repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-    revision: 0458cc6ed797e2d54ef02d177224804beffb3638
+    revision: b2ba71802140d1de9c237766e010f9ef4fe09a00
     deploy_path: deploy/openshift/base
     gitops_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
 runtime:
