@@ -14,11 +14,11 @@ PROBE_PATH = ROOT / "scripts/certify-agentic-ai-101-seat.sh"
 
 PRESENTATION_IMAGE = (
     "ghcr.io/jkershawrh/agentic-ai-101-presentation@"
-    "sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f"
+    "sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9"
 )
 REHEARSAL_IMAGE = (
     "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@"
-    "sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"
+    "sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a"
 )
 
 
