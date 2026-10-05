@@ -5,9 +5,9 @@ namespace="${1:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
-source_revision="896590d237b20031960aefa10fe717b44b7e7921"
-expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f"
-expected_rehearsal_image="ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63"
+source_revision="f79869c962c37456373d2a8061d2e4274c2c12b5"
+expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9"
+expected_rehearsal_image="ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a"
 
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR

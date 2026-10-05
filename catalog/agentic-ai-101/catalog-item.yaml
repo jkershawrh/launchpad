@@ -37,7 +37,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-  showroom_content_ref: 896590d237b20031960aefa10fe717b44b7e7921
+  showroom_content_ref: f79869c962c37456373d2a8061d2e4274c2c12b5
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -85,7 +85,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  workload_revision: 896590d237b20031960aefa10fe717b44b7e7921
+  workload_revision: f79869c962c37456373d2a8061d2e4274c2c12b5
   workload_deploy_type: kustomize
   workload_deployment_scope: seat
   workload_deploy_path: deploy/openshift/base
@@ -93,8 +93,8 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: agentic-ai-101
   workload_helm_values:
-    workload_image: ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:7839278c27a1960f425e37dbe3a8c4479d61c866727207976446120686bf3e63
-    presentation_image: ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:311b0ee016af01c76f8339ccc14006060d4e9d1fb5feab856c0c15aefa426d0f
+    workload_image: ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a
+    presentation_image: ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9
     source_state: REHEARSAL
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
@@ -105,5 +105,5 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  source_content_revision: 896590d237b20031960aefa10fe717b44b7e7921
+  source_content_revision: f79869c962c37456373d2a8061d2e4274c2c12b5
   source_references: {}
