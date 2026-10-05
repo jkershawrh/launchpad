@@ -792,6 +792,25 @@ def test_public_terminal_websockets_use_bounded_keepalive_timeouts():
         assert "close_timeout=10" in source
 
 
+def test_tunnel_accepts_shared_origin_websocket_session_headers():
+    """Console + Keycloak cookies must not strand the embedded terminal."""
+    for manifest_name in ("deployment.yaml", "flightpath-deployment.yaml"):
+        manifest = list(
+            yaml.safe_load_all(
+                (ROOT / "deploy/tunnel-oncluster" / manifest_name).read_text()
+            )
+        )
+        deployment = next(item for item in manifest if item["kind"] == "Deployment")
+        router = next(
+            item
+            for item in deployment["spec"]["template"]["spec"]["containers"]
+            if item["name"] == "router"
+        )
+        env = {item["name"]: item.get("value") for item in router["env"]}
+
+        assert env["WEBSOCKETS_MAX_LINE_LENGTH"] == "262144"
+
+
 def test_named_tunnel_preserves_runtime_contract_when_reconciled():
     manifest = list(
         yaml.safe_load_all(

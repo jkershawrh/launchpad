@@ -1448,6 +1448,10 @@ class ProvisioningService:
         self._require_lifecycle_ownership(lifecycle_guard)
         session = self._scrub_credentials(session)
         self._save_session(session)
+        access = getattr(self, "public_access_service", None)
+        if access:
+            self._require_lifecycle_ownership(lifecycle_guard)
+            access.expire_order(session.request_id)
         return session
 
     def force_reclaim_catalog_sessions(self, catalog_item_id: str) -> dict:

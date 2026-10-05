@@ -225,6 +225,17 @@ class TestCredentialScrubbing:
 
 class TestForceReclaimCleanup:
 
+    def test_force_reclaim_expires_public_access_order(self):
+        """Force reclaim must revoke the public policy and its entitlements."""
+        svc = _svc()
+        access = MagicMock()
+        svc.public_access_service = access
+        session = _provision(svc)
+
+        svc.force_reclaim_session(session.session_id)
+
+        access.expire_order.assert_called_once_with(session.request_id)
+
     def test_force_reclaim_calls_cleanup_on_namespace(self):
         """RED: force_reclaim should call cleanup adapter for the namespace."""
         mock_cleanup = MagicMock()

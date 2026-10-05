@@ -70,6 +70,12 @@ spec:
           # exercised the full lab journey.
           args: [router:app, --host, 0.0.0.0, --port, "8080", --app-dir, /opt/tunnel, --h11-max-incomplete-event-size, "262144"]
           env:
+            # Keycloak and the embedded OpenShift Console share the public
+            # origin. Their combined cookies can exceed websockets' 8 KiB
+            # per-line default before the order-scoped terminal token is
+            # evaluated. Keep this bounded to the same 256 KiB allowance as
+            # the HTTP parser.
+            - {name: WEBSOCKETS_MAX_LINE_LENGTH, value: "262144"}
             - name: ACCESS_BROKER_KEY
               valueFrom:
                 secretKeyRef: {name: launchpad-public-access, key: ACCESS_BROKER_KEY}
