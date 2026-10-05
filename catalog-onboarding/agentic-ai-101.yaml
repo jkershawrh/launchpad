@@ -23,7 +23,7 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-    revision: 0458cc6ed797e2d54ef02d177224804beffb3638
+    revision: 016ab9eb35e2bb2960adfc22fd9168216993dcd6
     playbook: site.yml
     start_path: showroom
     gitops_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
@@ -65,6 +65,10 @@ runtime:
   - id: story
     title: Interactive Story
     source: workload.route.presentation
+    path: /story/
+    same_origin_path: /story/
+    rewrite_target: /
+    public_proxy_root: true
   - id: terminal
     title: Terminal
     source: showroom.terminal

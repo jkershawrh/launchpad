@@ -37,7 +37,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-  showroom_content_ref: 0458cc6ed797e2d54ef02d177224804beffb3638
+  showroom_content_ref: 016ab9eb35e2bb2960adfc22fd9168216993dcd6
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -62,6 +62,10 @@ metadata:
   - id: story
     title: Interactive Story
     source: workload.route.presentation
+    path: /story/
+    same_origin_path: /story/
+    rewrite_target: /
+    public_proxy_root: true
   - id: terminal
     title: Terminal
     source: showroom.terminal
@@ -101,5 +105,5 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  source_content_revision: 0458cc6ed797e2d54ef02d177224804beffb3638
+  source_content_revision: 016ab9eb35e2bb2960adfc22fd9168216993dcd6
   source_references: {}

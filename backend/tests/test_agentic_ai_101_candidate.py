@@ -41,6 +41,22 @@ def test_agentic_ai_101_is_one_seat_certified_for_internal_and_public_access() -
         "public_code",
     ]
     assert intake["runtime"]["required_models"] == []
+    assert intake["runtime"]["tabs"] == [
+        {
+            "id": "story",
+            "title": "Interactive Story",
+            "source": "workload.route.presentation",
+            "path": "/story/",
+            "same_origin_path": "/story/",
+            "rewrite_target": "/",
+            "public_proxy_root": True,
+        },
+        {
+            "id": "terminal",
+            "title": "Terminal",
+            "source": "showroom.terminal",
+        },
+    ]
     assert intake["runtime"]["workload"]["helm_values"] == {
         "workload_image": REHEARSAL_IMAGE,
         "presentation_image": PRESENTATION_IMAGE,
