@@ -155,6 +155,8 @@ def test_agent_201_catalog_and_source_expose_the_three_operator_tabs():
             "source": "workload.route.workspace",
             "same_origin_path": "/workspace/",
             "rewrite_target": "/",
+            "upstream_service": "solution-ui",
+            "upstream_port": 8080,
             "proxy_paths": [{"path": "/api/v1"}],
         },
         {

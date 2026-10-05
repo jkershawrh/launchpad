@@ -958,18 +958,23 @@ http {{
             source_route_name = workload_routes.get(route_id, "")
             if not source_route_name:
                 raise ValueError(f"No workload Route is declared for '{route_id}'")
-            source_route = self._custom_objects.get_namespaced_custom_object(
-                "route.openshift.io",
-                "v1",
-                namespace,
-                "routes",
-                source_route_name,
-            )
-            source_spec = source_route.get("spec", {})
-            service_name = str(source_spec.get("to", {}).get("name", "")).strip()
+            service_name = str(spec.get("upstream_service", "")).strip()
+            target_port = spec.get("upstream_port")
             if not service_name:
-                raise ValueError(f"Workload Route '{source_route_name}' has no target Service")
-            target_port = source_spec.get("port", {}).get("targetPort")
+                source_route = self._custom_objects.get_namespaced_custom_object(
+                    "route.openshift.io",
+                    "v1",
+                    namespace,
+                    "routes",
+                    source_route_name,
+                )
+                source_spec = source_route.get("spec", {})
+                service_name = str(source_spec.get("to", {}).get("name", "")).strip()
+                if not service_name:
+                    raise ValueError(
+                        f"Workload Route '{source_route_name}' has no target Service"
+                    )
+                target_port = source_spec.get("port", {}).get("targetPort")
             paths = [
                 {
                     "path": same_origin_path,

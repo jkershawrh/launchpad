@@ -362,6 +362,39 @@ def test_builds_scoped_same_origin_showroom_proxy_route():
     assert route["spec"]["port"] == {"targetPort": "http"}
 
 
+def test_same_origin_proxy_can_target_a_declared_service_before_learner_deploys_it():
+    adapter = object.__new__(OpenShiftProvisioningAdapter)
+    adapter._custom_objects = MagicMock()
+    adapter._custom_objects.create_namespaced_custom_object.return_value = {}
+
+    adapter._apply_showroom_same_origin_routes(
+        [
+            {
+                "id": "workspace",
+                "source": "workload.route.workspace",
+                "same_origin_path": "/workspace/",
+                "rewrite_target": "/",
+                "upstream_service": "solution-ui",
+                "upstream_port": 8080,
+                "proxy_paths": [{"path": "/api/v1"}],
+            }
+        ],
+        namespace="launchpad-seat-1",
+        apps_domain="apps.flightpath.example.com",
+        workload_routes={"workspace": "app"},
+        labels={"app.kubernetes.io/managed-by": "launchpad"},
+    )
+
+    adapter._custom_objects.get_namespaced_custom_object.assert_not_called()
+    created = adapter._custom_objects.create_namespaced_custom_object.call_args_list
+    assert [call.args[4]["spec"]["path"] for call in created] == [
+        "/workspace",
+        "/api/v1",
+    ]
+    assert all(call.args[4]["spec"]["to"]["name"] == "solution-ui" for call in created)
+    assert all(call.args[4]["spec"]["port"] == {"targetPort": 8080} for call in created)
+
+
 def test_same_origin_showroom_proxy_rejects_root_and_escape_paths():
     for path in ("/", "../admin", "/../admin"):
         with pytest.raises(ValueError, match="unsafe same-origin path"):
