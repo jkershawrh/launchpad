@@ -13,7 +13,7 @@ CATALOG = ROOT / "catalog/intel-xeon6-agent-201/catalog-item.yaml"
 INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
-SOURCE_REVISION = "11e209450b798678d78c8964407106f5475aca33"
+SOURCE_REVISION = "50d4c05fe7e10522e66519f7f533de0f239a1c4c"
 HISTORICAL_CERTIFIED_SOURCE_REVISION = "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
 WORKLOAD_REVISION = "f484cb66c3dcddff323df8814f637dc92c73c179"
 WORKLOAD_BASE = (

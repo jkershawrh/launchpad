@@ -65,7 +65,7 @@ spec:
       - path: proof_export.contains_sensitive_values
         equals: false
       - path: provenance.showroom_revision
-        equals: 11e209450b798678d78c8964407106f5475aca33
+        equals: 50d4c05fe7e10522e66519f7f533de0f239a1c4c
       - path: provenance.workload_revision
         equals: f484cb66c3dcddff323df8814f637dc92c73c179
       - path: runtime_images.solution_tools
