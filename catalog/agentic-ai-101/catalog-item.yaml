@@ -37,7 +37,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-  showroom_content_ref: b2ba71802140d1de9c237766e010f9ef4fe09a00
+  showroom_content_ref: 8ae1351e8aad2e50443b405469cad9f5ed35cd78
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -85,7 +85,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  workload_revision: b2ba71802140d1de9c237766e010f9ef4fe09a00
+  workload_revision: 8ae1351e8aad2e50443b405469cad9f5ed35cd78
   workload_deploy_type: kustomize
   workload_deployment_scope: seat
   workload_deploy_path: deploy/openshift/base
@@ -105,5 +105,5 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  source_content_revision: b2ba71802140d1de9c237766e010f9ef4fe09a00
+  source_content_revision: 8ae1351e8aad2e50443b405469cad9f5ed35cd78
   source_references: {}
