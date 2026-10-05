@@ -13,7 +13,7 @@ CATALOG = ROOT / "catalog/intel-xeon6-agent-201/catalog-item.yaml"
 INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
-SOURCE_REVISION = "aa1e95081ae7dc513f273f71d24eed386b310703"
+SOURCE_REVISION = "da98172e3b5f2c186836493c2aa949dff10c4c15"
 HISTORICAL_CERTIFIED_SOURCE_REVISION = "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
 WORKLOAD_REVISION = "f484cb66c3dcddff323df8814f637dc92c73c179"
 WORKLOAD_BASE = (
@@ -153,6 +153,9 @@ def test_agent_201_catalog_and_source_expose_the_three_operator_tabs():
             "id": "workspace",
             "title": "Solution Architect",
             "source": "workload.route.workspace",
+            "same_origin_path": "/workspace/",
+            "rewrite_target": "/",
+            "proxy_paths": [{"path": "/api/v1"}],
         },
         {
             "id": "openshift-console",

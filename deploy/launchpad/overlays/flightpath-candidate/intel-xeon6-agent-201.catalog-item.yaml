@@ -40,7 +40,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  showroom_content_ref: aa1e95081ae7dc513f273f71d24eed386b310703
+  showroom_content_ref: da98172e3b5f2c186836493c2aa949dff10c4c15
   showroom_content_playbook: site.yml
   showroom_content_start_path: .
   operator_workshop: true
@@ -70,6 +70,10 @@ metadata:
   - id: workspace
     title: Solution Architect
     source: workload.route.workspace
+    same_origin_path: /workspace/
+    rewrite_target: /
+    proxy_paths:
+    - path: /api/v1
   - id: openshift-console
     title: OpenShift Console
     source: cluster.console_url
@@ -104,5 +108,5 @@ metadata:
     workspace: app
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  source_content_revision: aa1e95081ae7dc513f273f71d24eed386b310703
+  source_content_revision: da98172e3b5f2c186836493c2aa949dff10c4c15
   source_references: {}

@@ -33,7 +33,7 @@ learning:
 sources:
   showroom:
     repo_url: "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
-    revision: "aa1e95081ae7dc513f273f71d24eed386b310703"
+    revision: "da98172e3b5f2c186836493c2aa949dff10c4c15"
     playbook: site.yml
     start_path: .
   workload:
@@ -86,6 +86,10 @@ runtime:
     - id: workspace
       title: Solution Architect
       source: workload.route.workspace
+      same_origin_path: /workspace/
+      rewrite_target: /
+      proxy_paths:
+        - path: /api/v1
     - id: openshift-console
       title: OpenShift Console
       source: cluster.console_url
