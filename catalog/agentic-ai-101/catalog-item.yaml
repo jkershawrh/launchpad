@@ -37,7 +37,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-  showroom_content_ref: f79869c962c37456373d2a8061d2e4274c2c12b5
+  showroom_content_ref: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -69,6 +69,9 @@ metadata:
   - id: terminal
     title: Terminal
     source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   workshop_cluster_ref: flightpath
   required_models: []
   inference_endpoint: none
@@ -85,7 +88,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  workload_revision: f79869c962c37456373d2a8061d2e4274c2c12b5
+  workload_revision: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
   workload_deploy_type: kustomize
   workload_deployment_scope: seat
   workload_deploy_path: deploy/openshift/base
@@ -105,5 +108,5 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  source_content_revision: f79869c962c37456373d2a8061d2e4274c2c12b5
+  source_content_revision: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
   source_references: {}

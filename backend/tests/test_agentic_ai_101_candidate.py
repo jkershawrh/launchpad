@@ -56,6 +56,11 @@ def test_agentic_ai_101_is_one_seat_certified_for_internal_and_public_access() -
             "title": "Terminal",
             "source": "showroom.terminal",
         },
+        {
+            "id": "openshift-console",
+            "title": "OpenShift Console",
+            "source": "cluster.console_url",
+        },
     ]
     assert intake["runtime"]["workload"]["helm_values"] == {
         "workload_image": REHEARSAL_IMAGE,
@@ -97,3 +102,6 @@ def test_agentic_ai_101_probe_checks_isolation_and_never_claims_live_inference()
     assert "cross_namespace=DENIED" in probe
     assert "node_list=DENIED" in probe
     assert 'curl -fksS --retry 4' in probe
+    assert 'stage="showroom-runtime-connectivity"' in probe
+    assert "http://agentic-ai-101:8080/readyz" in probe
+    assert "showroom_to_runtime: true" in probe

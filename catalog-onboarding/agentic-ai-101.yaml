@@ -23,13 +23,13 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-    revision: f79869c962c37456373d2a8061d2e4274c2c12b5
+    revision: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
     playbook: site.yml
     start_path: showroom
     gitops_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
   workload:
     repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-    revision: f79869c962c37456373d2a8061d2e4274c2c12b5
+    revision: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
     deploy_path: deploy/openshift/base
     gitops_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
 runtime:
@@ -72,6 +72,9 @@ runtime:
   - id: terminal
     title: Terminal
     source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   allowed_exposure_policies:
   - internal
   - public_code

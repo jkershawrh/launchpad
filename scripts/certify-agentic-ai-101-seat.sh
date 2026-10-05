@@ -5,7 +5,7 @@ namespace="${1:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
-source_revision="f79869c962c37456373d2a8061d2e4274c2c12b5"
+source_revision="24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2"
 expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9"
 expected_rehearsal_image="ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a"
 
@@ -46,6 +46,11 @@ ready="$(oc --kubeconfig "$KUBECONFIG" exec -n "$namespace" "$runtime_pod" -- no
 jq -e '.status == "ok" and .sourceState == "REHEARSAL"' <<<"$health" >/dev/null
 jq -e '.status == "ok" and .sourceState == "REHEARSAL"' <<<"$ready" >/dev/null
 
+stage="showroom-runtime-connectivity"
+showroom_ready="$(oc --kubeconfig "$KUBECONFIG" exec -n "$namespace" deployment/showroom -c terminal -- \
+  curl -fsS --connect-timeout 5 --max-time 15 http://agentic-ai-101:8080/readyz)"
+jq -e '.status == "ok" and .sourceState == "REHEARSAL"' <<<"$showroom_ready" >/dev/null
+
 stage="workflow"
 read_only_first="$(runtime_request read-only)"
 read_only_second="$(runtime_request read-only)"
@@ -85,7 +90,7 @@ jq -cn \
     inference: {required: false, participated: false},
     provenance: {source_revision: $source_revision},
     runtime_images: {presentation: $presentation_image, rehearsal: $rehearsal_image},
-    readiness: {presentation: true, rehearsal: true},
+    readiness: {presentation: true, rehearsal: true, showroom_to_runtime: true},
     presentation_host: $presentation_host,
     workflow: {
       read_only_grounded: true,

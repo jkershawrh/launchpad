@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import { useBranding } from '../context/useBranding';
-import type { AvailableModel, BrandingProfile, CatalogItem, Tenant } from '../api/types';
+import type { AvailableModel, BrandingProfile, CatalogItem, LabRequest, Tenant } from '../api/types';
 import { defaultModelSelection, toggleModelSelection } from '../modelAccessContract';
 import { allowedExposurePolicies, participantCatalog } from '../catalogVisibility';
 
@@ -17,6 +17,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [pendingPublicRequest, setPendingPublicRequest] = useState<LabRequest | null>(null);
   const [availableModels, setAvailableModels] = useState<AvailableModel[]>([]);
   const [modelsLoading, setModelsLoading] = useState(true);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
@@ -132,10 +133,33 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
         return;
       }
 
+      if (
+        request.exposure_policy === 'public_code'
+        && request.one_time_access_code
+        && request.public_url
+      ) {
+        setPendingPublicRequest(request);
+        setSubmitting(false);
+        return;
+      }
+
       const validated = await api.provisionLabToReady(request.request_id);
       navigate(`/sessions/${validated.session_id}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create lab');
+      setSubmitting(false);
+    }
+  };
+
+  const confirmPublicProvisioning = async () => {
+    if (!pendingPublicRequest) return;
+    setSubmitting(true);
+    setError('');
+    try {
+      const validated = await api.provisionLabToReady(pendingPublicRequest.request_id);
+      navigate(`/sessions/${validated.session_id}`);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to provision lab');
       setSubmitting(false);
     }
   };
@@ -152,10 +176,30 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      {pendingPublicRequest && (
+        <section className="mb-6 rounded-md border border-amber-400/50 bg-amber-400/10 p-5" aria-labelledby="public-access-heading">
+          <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Copy now — shown once</p>
+          <h2 id="public-access-heading" className="mt-2 text-xl font-bold text-[#151515]">Participant access is ready</h2>
+          <p className="mt-2 text-sm text-[#3C3F42]">Save both values before provisioning. Launchpad cannot show this instructor code again.</p>
+          <p className="mt-4 break-all font-mono text-xl font-semibold text-[#151515]">{pendingPublicRequest.one_time_access_code}</p>
+          <p className="mt-3 break-all text-sm text-[#3C3F42]">{pendingPublicRequest.public_url}</p>
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={confirmPublicProvisioning}
+            style={{ backgroundColor: primaryColor }}
+            className="mt-5 w-full rounded-md px-5 py-3 font-semibold text-white disabled:opacity-50"
+          >
+            {submitting ? 'Provisioning...' : 'I saved the code — start provisioning'}
+          </button>
+        </section>
+      )}
+
+      {!pendingPublicRequest && <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-[#3C3F42] mb-1">Catalog Item</label>
+          <label htmlFor="catalog-item" className="block text-sm font-medium text-[#3C3F42] mb-1">Catalog Item</label>
           <select
+            id="catalog-item"
             value={form.catalog_item_id}
             onChange={(e) => {
               const item = catalogs.find((c) => c.catalog_item_id === e.target.value);
@@ -182,8 +226,9 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#3C3F42] mb-1">Tenant</label>
+          <label htmlFor="tenant" className="block text-sm font-medium text-[#3C3F42] mb-1">Tenant</label>
           <select
+            id="tenant"
             value={form.tenant_id}
             onChange={(e) => setForm({ ...form, tenant_id: e.target.value })}
             className="w-full border border-[#D2D2D2] rounded-md px-3 py-2 text-sm"
@@ -239,8 +284,8 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[#3C3F42] mb-1">Access</label>
-          <select value={form.exposure_policy} onChange={(e) => setForm({...form, exposure_policy:e.target.value as 'internal' | 'public_code'})} className="w-full border border-[#D2D2D2] rounded-md px-3 py-2 text-sm">
+          <label htmlFor="access-policy" className="block text-sm font-medium text-[#3C3F42] mb-1">Access</label>
+          <select id="access-policy" value={form.exposure_policy} onChange={(e) => setForm({...form, exposure_policy:e.target.value as 'internal' | 'public_code'})} className="w-full border border-[#D2D2D2] rounded-md px-3 py-2 text-sm">
             {exposurePolicies.includes('internal') && <option value="internal">Internal access</option>}
             {exposurePolicies.includes('public_code') && <option value="public_code">Public link + instructor code</option>}
           </select>
@@ -433,7 +478,7 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
         >
           {submitting ? 'Provisioning...' : isSandbox ? 'Launch Sandbox' : 'Launch Lab'}
         </button>
-      </form>
+      </form>}
     </div>
   );
 }
