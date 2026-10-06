@@ -26,7 +26,7 @@ Only an active release with current certification receives an order action.
 | Level | Agentic AI | Sovereign AI | Virtualization + AI |
 | --- | --- | --- | --- |
 | 101 | Understand Agentic Workflows — signed immutable presentation/runtime and direct Flightpath qualification green; Launchpad one-seat order/reclaim proof pending | Understand Sovereign AI — immutable candidate draft; live proof pending | Understand VM and AI Coexistence — immutable candidate draft with per-seat VM identity; live proof pending |
-| 201 | Build an AI Agent on Intel Xeon 6 — published candidate draft; immutable workload pin and live proof pending | Build the Governed Inference Boundary — immutable candidate draft; live proof pending | Author and Qualify the Contract — immutable candidate draft; live proof pending |
+| 201 | Build an AI Agent on Intel Xeon 6 — one-seat Flightpath participant journey, public Console SSO, namespace isolation, proof, and zero-residue reclaim are green; immutable workload-image promotion remains gated | Build the Governed Inference Boundary — immutable candidate draft; live proof pending | Author and Qualify the Contract — immutable candidate draft; live proof pending |
 | 301 | Build Multi-Agent Systems — immutable candidate draft; live proof pending | Confidential Inference and Intel TDX Foundations — immutable candidate draft; live TDX proof pending | Modernize VMs with Governed AI — immutable candidate draft; live proof and platform placement receipt pending |
 | 401 | Operate Evidence-Backed Agents — active for bounded one-seat internal and public-code use; production gates remain | Confidential AI with Intel TDX — immutable candidate draft; live Trustee/KBS proof pending | Operate Hybrid VM and AI Workloads — immutable candidate draft; live proof pending |
 | 501 | Scale and Certify Agentic Systems — active for bounded one-seat internal rehearsal; live execution and scale claims remain gated | Prove and Certify Sovereign AI — immutable candidate draft; destination proof pending | Scale Governed AI Modernization — immutable candidate draft; live proof pending |
@@ -65,9 +65,13 @@ Catalog lifecycle and journey role are independent:
 1. `ai-sandbox` — 001 Explore; the guided-start enhancement is a draft awaiting
    publication, immutable pins, and one-seat recertification.
 2. `intel-llm-cpu-serving` — 101 Learn.
-3. `intel-xeon6-agent-201` — 201 Build; the current v1.0.9 candidate is a
-   draft because its workload still uses a mutable tag and its thirty-seat
-   evidence belongs to v1.0.8.
+3. `intel-xeon6-agent-201` — 201 Build; the current v1.0.9 Flightpath
+   candidate has passed the complete one-seat public participant journey,
+   including scoped Terminal access, live Intel Xeon inference, three MCP
+   tools, embedded Solution Architect and OpenShift Console tabs, public SSO,
+   cross-namespace and node denial, learner cleanup, and platform reclaim.
+   Production promotion remains gated on replacing the mutable workload image
+   reference with an immutable digest and repeating the required scale proof.
 4. `multi-agent-quickstart` — 301 Engineer; the exact Story-enabled candidate
    is a draft awaiting one-seat recertification.
 5. `operate-agentic-blueprint` — 401 Operate; active for bounded one-seat
