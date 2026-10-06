@@ -60,6 +60,9 @@ def test_job_is_fail_closed_and_binds_candidate_identity() -> None:
     assert init["image"] == "__CERTIFICATION_RUNNER_IMAGE__"
     assert "default-ingress-cert" in init["args"][0]
     assert env["LAUNCHPAD_CA_BUNDLE"]["value"] == "/trust/ca-bundle.crt"
+    assert env["CURL_CA_BUNDLE"]["value"] == "/trust/ca-bundle.crt"
+    assert env["REQUESTS_CA_BUNDLE"]["value"] == "/trust/ca-bundle.crt"
+    assert env["SSL_CERT_FILE"]["value"] == "/trust/ca-bundle.crt"
     assert env["LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT"]["value"] == (
         "launchpad-flightpath-candidate:launchpad-certification-runner"
     )

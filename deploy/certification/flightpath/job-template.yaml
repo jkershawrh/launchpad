@@ -60,6 +60,9 @@ spec:
             - {name: LAUNCHPAD_CERTIFICATION_RUNNER_IMAGE, value: "__CERTIFICATION_RUNNER_IMAGE__"}
             - {name: LAUNCHPAD_RUN_PREFIX, value: "flightpath-e2d78de"}
             - {name: LAUNCHPAD_CA_BUNDLE, value: "/trust/ca-bundle.crt"}
+            - {name: CURL_CA_BUNDLE, value: "/trust/ca-bundle.crt"}
+            - {name: REQUESTS_CA_BUNDLE, value: "/trust/ca-bundle.crt"}
+            - {name: SSL_CERT_FILE, value: "/trust/ca-bundle.crt"}
             - {name: LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT, value: "launchpad-flightpath-candidate:launchpad-certification-runner"}
           resources:
             requests: {cpu: "500m", memory: 512Mi}
