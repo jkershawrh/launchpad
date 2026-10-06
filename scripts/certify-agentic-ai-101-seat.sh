@@ -5,9 +5,9 @@ namespace="${1:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agentic-ai-101-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
-source_revision="24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2"
-expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9"
-expected_rehearsal_image="ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a"
+source_revision="e4713118a683fec17e1d3cd0938058052803e88d"
+expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:8fc499945efa777483c125dbc691d0ed89cc8140c9a0c63fec268add52362856"
+expected_rehearsal_image="ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:69af3304d5b639871787dfc63ffd5961b7d4473c9228d7d4ede55f8ef2e49fb3"
 
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
@@ -21,12 +21,33 @@ oc --kubeconfig "$KUBECONFIG" rollout status deployment/agentic-ai-101-presentat
 stage="runtime-images"
 presentation_image="$(oc --kubeconfig "$KUBECONFIG" get deployment agentic-ai-101-presentation -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
 rehearsal_image="$(oc --kubeconfig "$KUBECONFIG" get deployment agentic-ai-101 -n "$namespace" -o jsonpath='{.spec.template.spec.containers[0].image}')"
-[[ "$presentation_image" == "$expected_presentation_image" ]]
-[[ "$rehearsal_image" == "$expected_rehearsal_image" ]]
+require_exact_image() {
+  local component="$1"
+  local actual="$2"
+  local expected="$3"
+  if [[ "$actual" != "$expected" ]]; then
+    printf 'runtime_image_mismatch component=%s expected=%s actual=%s\n' \
+      "$component" "$expected" "$actual" >&2
+    return 1
+  fi
+}
+require_image_id_digest() {
+  local component="$1"
+  local image_id="$2"
+  local expected="$3"
+  local digest="${expected#*@}"
+  if [[ "$image_id" != *"$digest" ]]; then
+    printf 'runtime_image_id_mismatch component=%s expected_digest=%s actual=%s\n' \
+      "$component" "$digest" "$image_id" >&2
+    return 1
+  fi
+}
+require_exact_image "presentation" "$presentation_image" "$expected_presentation_image"
+require_exact_image "rehearsal" "$rehearsal_image" "$expected_rehearsal_image"
 presentation_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app.kubernetes.io/component=presentation -o jsonpath='{.items[0].status.containerStatuses[0].imageID}')"
 rehearsal_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app.kubernetes.io/component=rehearsal-service -o jsonpath='{.items[0].status.containerStatuses[0].imageID}')"
-[[ "$presentation_image_id" == *"${expected_presentation_image#*@}" ]]
-[[ "$rehearsal_image_id" == *"${expected_rehearsal_image#*@}" ]]
+require_image_id_digest "presentation" "$presentation_image_id" "$expected_presentation_image"
+require_image_id_digest "rehearsal" "$rehearsal_image_id" "$expected_rehearsal_image"
 
 stage="presentation"
 presentation_host="$(oc --kubeconfig "$KUBECONFIG" get route story -n "$namespace" -o jsonpath='{.spec.host}')"

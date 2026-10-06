@@ -6,7 +6,6 @@ from app.services.catalog_certification import (
 )
 from app.services.catalog_onboarding import load_intake, validate_intake
 
-
 ROOT = Path(__file__).resolve().parents[2]
 INTAKE_PATH = ROOT / "catalog-onboarding/agentic-ai-101.yaml"
 CONTRACT_PATH = ROOT / "certification/catalog/agentic-ai-101.yaml"
@@ -14,11 +13,11 @@ PROBE_PATH = ROOT / "scripts/certify-agentic-ai-101-seat.sh"
 
 PRESENTATION_IMAGE = (
     "ghcr.io/jkershawrh/agentic-ai-101-presentation@"
-    "sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9"
+    "sha256:8fc499945efa777483c125dbc691d0ed89cc8140c9a0c63fec268add52362856"
 )
 REHEARSAL_IMAGE = (
     "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@"
-    "sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a"
+    "sha256:69af3304d5b639871787dfc63ffd5961b7d4473c9228d7d4ede55f8ef2e49fb3"
 )
 
 
@@ -67,6 +66,10 @@ def test_agentic_ai_101_is_one_seat_certified_for_internal_and_public_access() -
         "presentation_image": PRESENTATION_IMAGE,
         "source_state": "REHEARSAL",
     }
+    assert intake["runtime"]["workload"]["kustomize_images"] == [
+        "ghcr.io/jkershawrh/agentic-ai-101-rehearsal=" + REHEARSAL_IMAGE,
+        "ghcr.io/jkershawrh/agentic-ai-101-presentation=" + PRESENTATION_IMAGE,
+    ]
 
 
 def test_agentic_ai_101_one_seat_contract_is_fail_closed() -> None:
@@ -105,3 +108,14 @@ def test_agentic_ai_101_probe_checks_isolation_and_never_claims_live_inference()
     assert 'stage="showroom-runtime-connectivity"' in probe
     assert "http://agentic-ai-101:8080/readyz" in probe
     assert "showroom_to_runtime: true" in probe
+
+
+def test_agentic_ai_101_probe_fails_closed_on_runtime_image_drift() -> None:
+    probe = PROBE_PATH.read_text()
+
+    assert "require_exact_image" in probe
+    assert 'require_exact_image "presentation"' in probe
+    assert 'require_exact_image "rehearsal"' in probe
+    assert 'return 1' in probe
+    assert '[[ "$presentation_image" == "$expected_presentation_image" ]]' not in probe
+    assert '[[ "$rehearsal_image" == "$expected_rehearsal_image" ]]' not in probe

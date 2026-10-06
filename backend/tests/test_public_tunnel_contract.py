@@ -755,6 +755,27 @@ def test_tunnel_websocket_keeps_the_public_host_while_dialing_the_gateway_servic
     }
 
 
+def test_console_websocket_uses_the_console_route_host_while_dialing_internal_ingress():
+    router = _router_module()
+
+    url, connect_overrides = router._websocket_connection(
+        router.CONSOLE_ORIGIN,
+        "api/kubernetes/api/v1/pods?watch=true",
+        "",
+        "labs.smg-helix.ai",
+    )
+
+    assert url == (
+        "wss://labs.smg-helix.ai/"
+        "api/kubernetes/api/v1/pods?watch=true"
+    )
+    assert connect_overrides == {
+        "host": "console.openshift-console.svc",
+        "port": 443,
+        "proxy": None,
+    }
+
+
 def test_shared_origin_terminal_websocket_resolves_the_order_and_ttyd_endpoint():
     router = _router_module()
 

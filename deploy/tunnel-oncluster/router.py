@@ -315,8 +315,12 @@ def _websocket_connection(
     uri_host = parsed.netloc
     connect_overrides: dict[str, object] = {}
     normalized_public_host = public_host.strip().casefold()
+    preserve_public_host = origin.rstrip("/") in {
+        GATEWAY_ORIGIN.rstrip("/"),
+        CONSOLE_ORIGIN.rstrip("/"),
+    }
     if (
-        origin.rstrip("/") == GATEWAY_ORIGIN.rstrip("/")
+        preserve_public_host
         and _PUBLIC_HOST.fullmatch(normalized_public_host)
         and parsed.hostname
     ):

@@ -37,7 +37,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agentic-ai-101.git
-  showroom_content_ref: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
+  showroom_content_ref: e4713118a683fec17e1d3cd0938058052803e88d
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -88,7 +88,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  workload_revision: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
+  workload_revision: e4713118a683fec17e1d3cd0938058052803e88d
   workload_deploy_type: kustomize
   workload_deployment_scope: seat
   workload_deploy_path: deploy/openshift/base
@@ -96,9 +96,12 @@ metadata:
   workload_gitops_ready: true
   workload_release_name: agentic-ai-101
   workload_helm_values:
-    workload_image: ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a
-    presentation_image: ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9
+    workload_image: ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:69af3304d5b639871787dfc63ffd5961b7d4473c9228d7d4ede55f8ef2e49fb3
+    presentation_image: ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:8fc499945efa777483c125dbc691d0ed89cc8140c9a0c63fec268add52362856
     source_state: REHEARSAL
+  workload_kustomize_images:
+  - ghcr.io/jkershawrh/agentic-ai-101-rehearsal=ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:69af3304d5b639871787dfc63ffd5961b7d4473c9228d7d4ede55f8ef2e49fb3
+  - ghcr.io/jkershawrh/agentic-ai-101-presentation=ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:8fc499945efa777483c125dbc691d0ed89cc8140c9a0c63fec268add52362856
   workload_ignore_differences: []
   workload_runtime_secret_name: ''
   workload_runtime_secret_sources: {}
@@ -108,5 +111,5 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-ai-101.git
-  source_content_revision: 24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2
+  source_content_revision: e4713118a683fec17e1d3cd0938058052803e88d
   source_references: {}
