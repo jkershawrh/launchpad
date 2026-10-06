@@ -27,7 +27,7 @@ learning:
 sources:
   showroom:
     repo_url: https://github.com/rhpds/launchpad.git
-    revision: bb32c924f63a7d2d92569878debfbab9c5a245f6
+    revision: 7ec1d937afe89d6f5922c1a762b777daa8d67acd
     playbook: site-operate-agentic-blueprint.yml
     start_path: content-operate-agentic-blueprint
   workload:
