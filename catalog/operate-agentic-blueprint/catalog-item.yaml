@@ -76,7 +76,7 @@ metadata:
   showroom_title: 'Intel AI 401: Operate Evidence-Backed Multi-Agent Systems'
   namespace_slug: agentic-ops
   showroom_content_repo_url: https://github.com/rhpds/launchpad.git
-  showroom_content_ref: d12a47688d57b9d72fe8c069bad45cb0baad94aa
+  showroom_content_ref: bb32c924f63a7d2d92569878debfbab9c5a245f6
   showroom_content_playbook: site-operate-agentic-blueprint.yml
   showroom_content_start_path: content-operate-agentic-blueprint
   showroom_antora_flat: true
@@ -161,7 +161,7 @@ metadata:
     presentation: story
   workload_readiness: []
   source_content_repo: https://github.com/rhpds/launchpad.git
-  source_content_revision: d12a47688d57b9d72fe8c069bad45cb0baad94aa
+  source_content_revision: bb32c924f63a7d2d92569878debfbab9c5a245f6
   source_references:
     canonical_blueprint:
       path: contracts/agentic-blueprint-v1.yaml
