@@ -22,20 +22,23 @@ spec:
   showroom:
     pages:
       - id: welcome
-        path: /www/modules/index.html
+        path: /www/intel-xeon6-agent-201/main/index.html
         marker: "Building an AI Agent"
+      - id: anatomy
+        path: /www/intel-xeon6-agent-201/main/01-anatomy.html
+        marker: "Anatomy of an Agent"
       - id: deploy-tools
-        path: /www/modules/02-deploy-tools.html
+        path: /www/intel-xeon6-agent-201/main/02-deploy-tools.html
         marker: "Deploy the MCP Tools"
       - id: wire-agent
-        path: /www/modules/03-wire-agent.html
+        path: /www/intel-xeon6-agent-201/main/03-wire-agent.html
         marker: "Wire the Agent"
       - id: test-and-tune
-        path: /www/modules/04-test-and-tune.html
+        path: /www/intel-xeon6-agent-201/main/04-test-and-tune.html
         marker: "Make It Yours"
       - id: prove-and-clean
-        path: /www/modules/05-prove-and-clean.html
-        marker: "Prove and Clean Up"
+        path: /www/intel-xeon6-agent-201/main/99-conclusion.html
+        marker: "Next"
 
   seat_probe:
     argv:

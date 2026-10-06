@@ -375,41 +375,42 @@ labs:
   intel-xeon6-agent-201:
     display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
     overall_status: one-seat-live-certified-active
-    published_content_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
-    published_pin_revision: 61233d277a3f4d495d1cbb11e5056ceeb8c9e620
+    published_content_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
+    published_pin_revision: pending-current-proof-commit
     story: {status: green, evidence: "A Solution Architect agent gives the lab a concrete business role."}
     show: {status: green, evidence: "The working agent UI demonstrates the target outcome."}
     learn: {status: green, evidence: "Agent, tool, and model responsibilities are explained."}
     do: {status: green, evidence: "The learner builds and queries the agent."}
-    prove: {status: green-live, evidence: "The exact candidate produced a 6,793-character sourced brief, used all three MCP tools, matched every model-bearing record to granite-3.2-8b-tools, and exported credential-free proof."}
+    prove: {status: green-live, evidence: "The exact current candidate produced a 1,007-character sourced brief, used all three MCP tools, matched every model-bearing record to granite-3.2-8b-tools, and exported credential-free proof."}
     operators: {status: green-live, evidence: "The participant terminal proved namespace edit access while cross-namespace and node access were denied; the UI, tools, and agent services were all healthy."}
     inference: {status: green-live, evidence: "The exact Flightpath seat proved managed granite-3.2-8b-tools participation through the participant runtime connection."}
     cleanup: {status: green-live, evidence: "Reclaim revoked the model key and left zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_truth:
-      reviewed_showroom_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
-      catalog_showroom_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
-      candidate_revision: b8475464e5f1447da67ccfc0673b9a8a3e4757d7
-      workload_reference: c8dcf5bcef1f926aa5867bcc1b86b69ec33b988d
+      reviewed_showroom_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
+      catalog_showroom_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
+      candidate_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
+      workload_reference: f484cb66c3dcddff323df8814f637dc92c73c179
       workload_reference_status: immutable-public-commit
       certification_transfer: exact-candidate-only
       certification_boundary: "The published Showroom revision and Launchpad adapter preserve the pinned Triforce Deployments, Services, image digests, selectors, ports, probes, and Route targets while changing only Route metadata names to tools, agent, and app. Historical receipts do not transfer to this candidate."
       runtime_images:
         tools: quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850
-        agent: quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03
+        agent: ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67
         ui: quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb
       supply_chain_boundary: "The public Git commits and image digests are immutable and retrievable, but this source repository has no signature, SBOM, provenance, release, or tag workflow; those artifacts are not claimed."
       current_catalog_version: 1.0.9-flightpath.1
       historical_scale_version: 1.0.8
       historical_scale_seats: 30
       evidence_boundary: "The thirty-seat result is historical evidence for v1.0.8 and does not certify this v1.0.9 candidate."
-    local_validation: "The published candidate passed 11 source-contract checks, Antora rendering, 24 focused adapter/control-plane/content tests, 31 onboarding tests, and exact Triforce semantic comparison proving only Route metadata names changed."
+    local_validation: "The current candidate passed the focused nine-test Agent 201 source, operator-tab, provenance, inference, and certification contract suite; the roadmap dashboard suite also passed after the RUM action was added."
     live_certification:
       result: GREEN-live
       rubric_score: 100
-      ready_seconds: 46.079
-      probe_seconds: 170.923
-      evidence: evidence/runs/flightpath-live-20260930-intel-xeon6-agent-201-1seat-r5.json
-      proof: "Exact Showroom and Triforce revisions passed Story, all five guide pages, immutable workload images, three MCP tools, live Xeon inference, namespace isolation, key revocation, reclaim, and zero residue."
+      ready_seconds: 46.176
+      probe_seconds: 84.99
+      cleanup_seconds: 65.642
+      evidence: evidence/runs/catalog/intel-xeon6-agent-201-flightpath-full-journey-one-seat-20261005-r3.json
+      proof: "The exact current Showroom and workload revisions passed all six guide pages, immutable workload images, three MCP tools, live Xeon inference, the Solution Architect journey, namespace isolation, key revocation, reclaim, and zero residue."
     next_action: retain one-seat orderability; address the durable external image-mirror production blocker before moving the control plane
 
   multi-agent-quickstart:

@@ -14,7 +14,6 @@ INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
 SOURCE_REVISION = "42b250426fd4b5a8c7df843076b9ad8b54bf53a2"
-HISTORICAL_CERTIFIED_SOURCE_REVISION = "b8475464e5f1447da67ccfc0673b9a8a3e4757d7"
 WORKLOAD_REVISION = "f484cb66c3dcddff323df8814f637dc92c73c179"
 WORKLOAD_BASE = (
     "https://raw.githubusercontent.com/rhpds/triforce/"
@@ -187,13 +186,22 @@ def test_agent_201_certification_fails_closed_on_inference_identity_and_exports_
         assert assertion in assertions
 
     pages = {page["id"]: page for page in contract["spec"]["showroom"]["pages"]}
+    assert list(pages) == [
+        "welcome",
+        "anatomy",
+        "deploy-tools",
+        "wire-agent",
+        "test-and-tune",
+        "prove-and-clean",
+    ]
     assert pages["prove-and-clean"] == {
         "id": "prove-and-clean",
-        "path": "/www/modules/05-prove-and-clean.html",
-        "marker": "Prove and Clean Up",
+        "path": "/www/intel-xeon6-agent-201/main/99-conclusion.html",
+        "marker": "Next",
     }
 
     source = CATALOG_SEAT_PROBE.read_text()
+    assert f'showroom_revision="{SOURCE_REVISION}"' in source
     assert 'stage="response-model"' in source
     assert "ADVISOR_MODEL" in source
     assert "all(. == $configured_model)" in source
@@ -211,10 +219,10 @@ def test_agent_201_evidence_records_exact_candidate_live_certification():
     )["labs"]["intel-xeon6-agent-201"]
 
     assert review["overall_status"] == "one-seat-live-certified-active"
-    assert (
-        review["source_truth"]["candidate_revision"]
-        == HISTORICAL_CERTIFIED_SOURCE_REVISION
-    )
+    assert review["source_truth"]["candidate_revision"] == SOURCE_REVISION
     assert review["source_truth"]["certification_transfer"] == "exact-candidate-only"
     assert review["live_certification"]["result"] == "GREEN-live"
     assert review["live_certification"]["rubric_score"] == 100
+    assert review["live_certification"]["evidence"].endswith(
+        "intel-xeon6-agent-201-flightpath-full-journey-one-seat-20261005-r3.json"
+    )
