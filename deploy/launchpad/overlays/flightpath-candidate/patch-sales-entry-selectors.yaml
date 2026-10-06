@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-ai-strategy
+spec:
+  selector:
+    matchLabels:
+      $patch: replace
+      app.kubernetes.io/name: sales-ai-strategy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-intel-xeon
+spec:
+  selector:
+    matchLabels:
+      $patch: replace
+      app.kubernetes.io/name: sales-intel-xeon
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-governed-agentic
+spec:
+  selector:
+    matchLabels:
+      $patch: replace
+      app.kubernetes.io/name: sales-governed-agentic
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-sovereign-ai
+spec:
+  selector:
+    matchLabels:
+      $patch: replace
+      app.kubernetes.io/name: sales-sovereign-ai
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-virtualization-ai
+spec:
+  selector:
+    matchLabels:
+      $patch: replace
+      app.kubernetes.io/name: sales-virtualization-ai

@@ -144,6 +144,20 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
         "sales-sovereign-ai": 1,
         "sales-virtualization-ai": 1,
     }
+    for name in (
+        "sales-ai-strategy",
+        "sales-intel-xeon",
+        "sales-governed-agentic",
+        "sales-sovereign-ai",
+        "sales-virtualization-ai",
+    ):
+        deployment = _one(documents, "Deployment", name)
+        assert deployment["spec"]["selector"]["matchLabels"] == {
+            "app.kubernetes.io/name": name,
+        }
+        assert deployment["spec"]["template"]["metadata"]["labels"][
+            "app.kubernetes.io/managed-by"
+        ] == "kustomize"
     assert _one(documents, "CronJob", "lifecycle-scheduler")["spec"]["suspend"] is False
 
     assert not [document for document in documents if document.get("kind") == "Secret"]

@@ -62,6 +62,7 @@ patches:
   - path: patch-remove-shared-rbac.yaml
   - path: patch-runtime.yaml
   - path: patch-sales-entry-routes.yaml
+  - path: patch-sales-entry-selectors.yaml
 
 labels:
   - pairs:
