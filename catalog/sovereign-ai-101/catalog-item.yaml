@@ -67,6 +67,9 @@ metadata:
   - id: terminal
     title: Terminal
     source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   workshop_cluster_ref: flightpath
   required_models: []
   inference_endpoint: none

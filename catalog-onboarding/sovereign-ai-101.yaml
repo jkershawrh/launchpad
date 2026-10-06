@@ -65,6 +65,9 @@ runtime:
   - id: terminal
     title: Terminal
     source: showroom.terminal
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   allowed_exposure_policies:
   - internal
   - public_code

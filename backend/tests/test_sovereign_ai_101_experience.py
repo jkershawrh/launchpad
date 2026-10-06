@@ -37,8 +37,9 @@ def test_sovereign_ai_101_orderability_matches_exact_rehearsal_proof() -> None:
     assert runtime["workload"]["runtime_secret_name"] == ""
     assert runtime["workload"]["runtime_secret_sources"] == {}
 
-    assert [tab["id"] for tab in metadata["showroom_tabs"]] == ["story", "terminal"]
-    assert [tab["id"] for tab in runtime["tabs"]] == ["story", "terminal"]
+    expected_tabs = ["story", "terminal", "openshift-console"]
+    assert [tab["id"] for tab in metadata["showroom_tabs"]] == expected_tabs
+    assert [tab["id"] for tab in runtime["tabs"]] == expected_tabs
 
     assert metadata["showroom_content_ref"] == SOURCE_REVISION
     assert metadata["workload_revision"] == SOURCE_REVISION
@@ -55,4 +56,10 @@ def test_sovereign_ai_101_orderability_matches_exact_rehearsal_proof() -> None:
     assert {"path": "journey.mode", "equals": "REHEARSAL"} in assertions
     assert {"path": "journey.live_qualified", "equals": False} in assertions
     assert {"path": "journey.session_removed", "equals": True} in assertions
+    assert {"path": "operators.openshift_console_url_declared", "equals": True} in assertions
     assert any(item["path"] == "terminal_scope" for item in assertions)
+
+    probe = (ROOT / "scripts/certify-sovereign-ai-101-seat.sh").read_text()
+    assert "curl_options=(-sS" in probe
+    assert "curl_options=(-sSk" not in probe
+    assert "OpenShift Console" in probe

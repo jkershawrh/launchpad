@@ -42,6 +42,7 @@ spec:
       - {path: journey.injection_path, equals: deny}
       - {path: journey.evidence_chain_valid, equals: true}
       - {path: journey.session_removed, equals: true}
+      - {path: operators.openshift_console_url_declared, equals: true}
       - {path: terminal_scope, contains: own_edit=yes}
       - {path: terminal_scope, contains: cross_namespace=DENIED}
       - {path: terminal_scope, contains: node_list=DENIED}

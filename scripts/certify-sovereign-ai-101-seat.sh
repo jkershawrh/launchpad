@@ -12,10 +12,11 @@ probe_serviceaccount="${LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT:-launchpad-flight
 work_dir="$(mktemp -d)"
 session_token=""
 app_host=""
+curl_options=(-sS --max-time 30)
 
 cleanup() {
   if [[ -n "$session_token" && -n "$app_host" ]]; then
-    curl -sSk --max-time 15 -X DELETE \
+    curl "${curl_options[@]}" --max-time 15 -X DELETE \
       -H "Authorization: Bearer $session_token" \
       "https://${app_host}/api/session" >/dev/null 2>&1 || true
   fi
@@ -37,7 +38,7 @@ request_json() {
   local url="$3"
   local body="${4:-}"
   local auth="${5:-true}"
-  local -a args=(-sSk --max-time 30 -o "$work_dir/body" -w '%{http_code}' -X "$method")
+  local -a args=("${curl_options[@]}" -o "$work_dir/body" -w '%{http_code}' -X "$method")
   if [[ "$auth" == "true" && -n "$session_token" ]]; then
     args+=(-H "Authorization: Bearer $session_token")
   fi
@@ -56,7 +57,7 @@ app_host="$(oc --kubeconfig "$KUBECONFIG" get route sovereign-presentation -n "$
 [[ -n "$app_host" ]]
 
 stage="presentation"
-root_status="$(curl -sSkL --max-time 30 -o /dev/null -w '%{http_code}' "https://${app_host}/")"
+root_status="$(curl "${curl_options[@]}" -L -o /dev/null -w '%{http_code}' "https://${app_host}/")"
 [[ "$root_status" == "200" ]]
 
 stage="health"
@@ -102,6 +103,11 @@ grep -qx 'own_edit=yes' <<<"$terminal_scope"
 grep -qx 'cross_namespace=DENIED' <<<"$terminal_scope"
 grep -qx 'node_list=DENIED' <<<"$terminal_scope"
 
+stage="operator-tabs"
+ui_config="$(oc --kubeconfig "$KUBECONFIG" exec -n "$namespace" deployment/showroom -c content -- cat /showroom/www/ui-config.yml)"
+grep -q 'name: OpenShift Console' <<<"$ui_config"
+grep -q "${namespace}" <<<"$ui_config"
+
 stage="session-cleanup"
 removed="$(request_json 200 DELETE "https://${app_host}/api/session")"
 jq -e '.session_removed == true' <<<"$removed" >/dev/null
@@ -127,6 +133,7 @@ jq -cn \
       session_id: $session_id,
       session_removed: true
     },
+    operators: {openshift_console_url_declared: true},
     terminal_scope: ($terminal_scope | split("\n")),
     contains_sensitive_values: false
   }'
