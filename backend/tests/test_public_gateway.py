@@ -133,6 +133,31 @@ def test_order_home_exposes_only_order_scoped_participant_links(monkeypatch):
     assert "apps.arena.fm2aihpcsed.com" not in response.text
 
 
+def test_root_home_uses_the_resolved_order_path_for_showroom_and_tools(monkeypatch):
+    async def resolved(_request):
+        return {
+            "seat_ref": "seat-1",
+            "expires_at": "2026-09-17T20:00:00Z",
+            "public_url": "https://labs.example.test/labs/build-agent-ab12cd34",
+            "showroom_url": "https://showroom-seat.apps.flightpath.example",
+            "workspace_url": "https://app-seat.apps.flightpath.example",
+            "console_url": "",
+            "tool_urls": {
+                "workspace": "https://app-seat.apps.flightpath.example"
+            },
+        }
+
+    monkeypatch.setattr("app.public_gateway._resolve", resolved)
+    response = TestClient(app).get("/")
+
+    assert response.status_code == 200
+    assert "href='/labs/build-agent-ab12cd34/showroom/'" in response.text
+    assert (
+        "href='/labs/build-agent-ab12cd34/proxy/tool/workspace/'"
+        in response.text
+    )
+
+
 def test_order_home_hides_duplicate_workspace_when_showroom_is_the_workspace(monkeypatch):
     async def resolved(_request):
         return {

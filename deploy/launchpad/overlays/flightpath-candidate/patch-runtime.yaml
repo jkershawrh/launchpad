@@ -35,8 +35,7 @@ spec:
               subPath: catalog-item.yaml
               readOnly: true
             - name: candidate-agent-201-catalog
-              mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
-              subPath: catalog-item.yaml
+              mountPath: /opt/catalog/intel-xeon6-agent-201
               readOnly: true
             - name: candidate-multi-agent-catalog
               mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml
@@ -250,8 +249,7 @@ spec:
               subPath: catalog-item.yaml
               readOnly: true
             - name: candidate-agent-201-catalog
-              mountPath: /opt/catalog/intel-xeon6-agent-201/catalog-item.yaml
-              subPath: catalog-item.yaml
+              mountPath: /opt/catalog/intel-xeon6-agent-201
               readOnly: true
             - name: candidate-multi-agent-catalog
               mountPath: /opt/catalog/multi-agent-quickstart/catalog-item.yaml

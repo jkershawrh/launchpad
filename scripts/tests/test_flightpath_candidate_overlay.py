@@ -347,7 +347,7 @@ def test_candidate_isolates_agent_201_on_flightpath() -> None:
         "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
     )
     assert metadata["showroom_content_ref"] == (
-        "42b250426fd4b5a8c7df843076b9ad8b54bf53a2"
+        "1a650e43a92747200778288256921205777782e2"
     )
     assert metadata["inference_endpoint"] == "direct_vllm_candidate"
 
@@ -360,8 +360,7 @@ def test_candidate_isolates_agent_201_on_flightpath() -> None:
         container = next(item for item in pod_spec["containers"] if item["name"] == container_name)
         assert {
             "name": "candidate-agent-201-catalog",
-            "mountPath": "/opt/catalog/intel-xeon6-agent-201/catalog-item.yaml",
-            "subPath": "catalog-item.yaml",
+            "mountPath": "/opt/catalog/intel-xeon6-agent-201",
             "readOnly": True,
         } in container["volumeMounts"]
 

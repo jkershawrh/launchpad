@@ -6,13 +6,14 @@ expected_cluster="${2:?usage: certify-agent-201-catalog-seat.sh <namespace> <clu
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-showroom_revision="42b250426fd4b5a8c7df843076b9ad8b54bf53a2"
+showroom_revision="1a650e43a92747200778288256921205777782e2"
 workload_revision="f484cb66c3dcddff323df8814f637dc92c73c179"
 workload_base="https://raw.githubusercontent.com/rhpds/triforce/f484cb66c3dcddff323df8814f637dc92c73c179/infrastructure/manifests-201"
 expected_tools_image="quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
 expected_agent_image="ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67"
 expected_ui_image="quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
 stage="setup"
+route_ca_file=""
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
 
 # The remote provisioner intentionally has no cluster-wide pods/exec grant.
@@ -23,6 +24,9 @@ probe_serviceaccount="${LAUNCHPAD_CERTIFICATION_SERVICEACCOUNT:-partner-ai-launc
 cleanup_probe_access() {
   oc --kubeconfig "$KUBECONFIG" delete rolebinding "$probe_binding" \
     --namespace "$namespace" --ignore-not-found >/dev/null 2>&1 || true
+  if [[ -n "$route_ca_file" ]]; then
+    rm -f "$route_ca_file"
+  fi
 }
 trap cleanup_probe_access EXIT
 oc --kubeconfig "$KUBECONFIG" create rolebinding "$probe_binding" \
@@ -65,7 +69,12 @@ app_host="$(
   oc --kubeconfig "$KUBECONFIG" get route app -n "$namespace" \
     -o jsonpath='{.spec.host}'
 )"
-curl_options=(-fsS --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
+route_ca_file="$(mktemp)"
+oc --kubeconfig "$KUBECONFIG" get secret/router-certs-default \
+  --namespace openshift-ingress \
+  -o jsonpath='{.data.tls\.crt}' \
+  | base64 --decode >"$route_ca_file"
+curl_options=(-fsS --cacert "$route_ca_file" --retry 3 --retry-all-errors --retry-delay 2 --max-time 180)
 stage="tools-health"
 [[ "$(curl "${curl_options[@]}" -o /dev/null -w '%{http_code}' "https://${tools_host}/health")" == "200" ]]
 stage="agent-health"

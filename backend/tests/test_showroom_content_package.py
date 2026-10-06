@@ -18,7 +18,7 @@ INTEL_GUIDED_LABS = [
         "title": "Intel Xeon 6 201 — Building an AI Agent",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
-        "content_ref": "42b250426fd4b5a8c7df843076b9ad8b54bf53a2",
+        "content_ref": "1a650e43a92747200778288256921205777782e2",
         "status": "active",
         "content_repo": "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git",
         "max_workshop_seats": 1,
@@ -393,7 +393,7 @@ def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass()
 
     assert catalog["version"] == "1.0.9-flightpath.1"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "42b250426fd4b5a8c7df843076b9ad8b54bf53a2"
+        "1a650e43a92747200778288256921205777782e2"
     )
     assert 'ADVISOR_API_URL="http://solution-agent:8082"' in exercises
     assert exercises.count("${ADVISOR_API_URL}/api/v1/advise") == 5

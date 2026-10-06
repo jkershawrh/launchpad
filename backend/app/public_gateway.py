@@ -533,6 +533,10 @@ async def home(request: Request, order_ref: str = ""):
             f"<form method=post action={proxy_prefix}/claim><input name=email type=email required placeholder='Email'>"
             "<input name=code required autocomplete=one-time-code placeholder='Instructor code'><button>Join lab</button></form>"
         )
+    if not proxy_prefix:
+        resolved_path = urlsplit(str(target.get("public_url", ""))).path.rstrip("/")
+        if re.fullmatch(r"/labs/[a-z0-9]+(?:-[a-z0-9]+)*", resolved_path):
+            proxy_prefix = resolved_path
     links = []
     for key, label in (
         ("showroom_url", "Open Lab"),

@@ -13,7 +13,7 @@ CATALOG = ROOT / "catalog/intel-xeon6-agent-201/catalog-item.yaml"
 INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
-SOURCE_REVISION = "42b250426fd4b5a8c7df843076b9ad8b54bf53a2"
+SOURCE_REVISION = "1a650e43a92747200778288256921205777782e2"
 WORKLOAD_REVISION = "f484cb66c3dcddff323df8814f637dc92c73c179"
 WORKLOAD_BASE = (
     "https://raw.githubusercontent.com/rhpds/triforce/"
@@ -100,6 +100,10 @@ def test_catalog_seat_probe_reports_bounded_failure_stages():
     assert "inference_http_statuses:" in source
     assert "curl -k" not in source
     assert "curl_options=(-fsSk" not in source
+    assert 'route_ca_file="$(mktemp)"' in source
+    assert "secret/router-certs-default" in source
+    assert 'curl_options=(-fsS --cacert "$route_ca_file"' in source
+    assert 'rm -f "$route_ca_file"' in source
     assert 'deployment/showroom' in source
     assert 'http://solution-agent:8082/api/v1/advise' in source
     assert 'https://${agent_host}/api/v1/advise' not in source

@@ -478,6 +478,7 @@ def resolve_gateway_target(
         "workspace_url": workspace_url,
         "console_url": console_url,
         "tool_urls": _session_tool_urls(lab_session),
+        "public_url": policy.public_url,
     }
 
 
@@ -568,6 +569,7 @@ def resolve_oidc_identity(
         "workspace_url": workspace_url,
         "console_url": console_url,
         "tool_urls": _session_tool_urls(lab_session),
+        "public_url": policy.public_url,
     }
 
 
