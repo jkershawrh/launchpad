@@ -60,7 +60,7 @@ def test_live_platform_canary_closes_the_selective_recertification_gate() -> Non
     assert proof["decision"]["targeted_lab_recertification_required"] == []
 
 
-def test_full_overlay_canary_is_green_without_overclaiming_staging() -> None:
+def test_full_overlay_canary_and_qualification_extension_are_green() -> None:
     proof = yaml.safe_load(FULL_OVERLAY_CANARY.read_text(encoding="utf-8"))
 
     assert proof["schema_version"] == "launchpad.redhat.com/full-overlay-canary/v1"
@@ -76,13 +76,16 @@ def test_full_overlay_canary_is_green_without_overclaiming_staging() -> None:
     assert proof["cleanup"]["argocd_application_count"] == 0
     assert proof["decision"]["immutable_overlay_convergence"] == "GREEN-live"
     assert proof["decision"]["lifecycle_canary"] == "GREEN-live"
-    assert proof["decision"]["staging_candidate_qualified"] is False
     assert proof["decision"]["live_workshop_order_and_capacity"] == "GREEN-live"
     assert proof["decision"]["authenticated_admin_bounded_action"] == "GREEN-live"
     assert proof["decision"]["public_participant_journey"] == "GREEN-live"
     assert proof["decision"]["namespace_isolation"] == "GREEN-live"
     assert proof["decision"]["workload_reclaim"] == "GREEN-live"
-    assert len(proof["decision"]["remaining_qualification_gates"]) == 1
+    assert proof["qualification_extension"]["identity_cleanup"] == "GREEN-live"
+    assert proof["qualification_extension"]["openshift_participant_users_after"] == 0
+    assert proof["qualification_extension"]["openshift_participant_tokens_after"] == 0
+    assert proof["decision"]["staging_candidate_qualified"] is True
+    assert proof["decision"]["remaining_qualification_gates"] == []
 
 
 def test_staging_workshop_public_canary_records_the_last_gate_truthfully() -> None:

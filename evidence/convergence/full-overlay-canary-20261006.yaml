@@ -70,6 +70,16 @@ cleanup:
   argocd_application_count: 0
   result: pass
 
+qualification_extension:
+  evidence: staging-workshop-public-canary-20261006.yaml
+  evidence_sha256: 7737028db2922c75647af5adca182b20addbc78fc6ba7d869b863bc7fc210cb1
+  recorded_at: '2026-10-06T14:55:16Z'
+  identity_cleanup: GREEN-live
+  openshift_participant_users_after: 0
+  openshift_participant_tokens_after: 0
+  cleanup_pending_after: 0
+  scheduled_reconciler: GREEN-live
+
 decision:
   immutable_overlay_convergence: GREEN-live
   lifecycle_canary: GREEN-live
@@ -79,6 +89,5 @@ decision:
   public_participant_journey: GREEN-live
   namespace_isolation: GREEN-live
   workload_reclaim: GREEN-live
-  staging_candidate_qualified: false
-  remaining_qualification_gates:
-    - automatic least-privilege OpenShift OAuth token revocation and disabled user lifecycle cleanup
+  staging_candidate_qualified: true
+  remaining_qualification_gates: []

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-30T10:50:17Z",
+  "updated_at": "2026-10-06T15:03:53Z",
   "release_target": "production-product",
   "stages": [
     "red",
@@ -602,36 +602,38 @@
       "note": "Explicitly tracked as not yet proven; closure requires evidence at the task's declared gate."
     },
     "LP-T033": {
-      "state": "green-integration",
+      "state": "green-live",
       "methods": {
-        "tdd": "green-integration",
-        "edd": "green-integration",
-        "cdd": "green-integration",
-        "bdd": "green-integration",
-        "cbt": "green-integration"
+        "tdd": "green-live",
+        "edd": "green-live",
+        "cdd": "green-live",
+        "bdd": "green-live",
+        "cbt": "green-live"
       },
       "evidence": [
         "backend/app/api/routers/public_access.py",
         "backend/app/api/routers/workshops.py",
         "backend/app/services/event_orchestration.py",
         "backend/app/services/public_access.py",
+        "backend/app/services/resource_reconciliation.py",
         "backend/app/storage/stores.py",
         "backend/tests/test_event_cleanup_postgres.py",
         "backend/tests/test_public_access.py",
+        "backend/tests/test_public_gateway_availability_contract.py",
+        "backend/tests/test_resource_reconciliation.py",
         "backend/tests/test_storage_sync.py",
         "backend/tests/test_workshop_order_contract.py",
+        "docs/participant-access-availability-contract.md",
+        "evidence/convergence/full-overlay-canary-20261006.yaml",
+        "evidence/convergence/staging-workshop-public-canary-20261006.yaml",
         "evidence/runs/flightpath-stage/deployment.json",
         "evidence/runs/flightpath-stage/keycloak-ha.json",
         "evidence/runs/flightpath-stage/postgres-ha.xml",
+        "evidence/runs/flightpath-staging-readiness-20260927.json",
         "evidence/runs/public-access-atomic-activation/green-local.xml",
-        "evidence/runs/public-access-atomic-rotation/green-local.xml",
-        "backend/tests/test_public_gateway_availability_contract.py",
-        "docs/participant-access-availability-contract.md",
-        "backend/app/services/resource_reconciliation.py",
-        "backend/tests/test_resource_reconciliation.py",
-        "evidence/runs/flightpath-staging-readiness-20260927.json"
+        "evidence/runs/public-access-atomic-rotation/green-local.xml"
       ],
-      "note": "Flightpath isolated stage proves two API replicas and two Keycloak replicas on separate workers, shared PostgreSQL state, the custom order-code authenticator, and Keycloak replica-loss recovery with 40/40 survivor requests and automatic return to two replicas. The September 27 read-only staging audit found no participant namespaces and all 341 session records reclaimed, but also found five enabled expired access policies and two expired entitlements still marked active. A new GREEN-local, idempotent reconciliation sweep disables expired policies, expires entitlements, revokes final sessions, and disables identities even when no active session remains; 55 focused public-access and lifecycle tests pass. It is not deployed, so the stale live counts remain open. A GREEN-local participant gateway contract returns retryable 503 on upstream transport failure rather than a false empty-labs state. This remains GREEN-integration: deploy the cleanup sweep and prove zero stale records, complete realm/client/browser and namespace-RBAC journeys, correct candidate admin DNS, publish a dependency-policy-compliant Keycloak image, certify PostgreSQL HA, and complete external load, live failover, and soak."
+      "note": "Flightpath staging proof is GREEN-live: the permanent public journey, same-seat recovery, namespace-scoped Showroom/Story/Terminal/Console access, reclaim, Keycloak logout/disable, bounded OpenShift token and User cleanup, durable completion marking, and the enabled five-minute reconciler all passed with zero participant identity residue. Production-scale 25-claim load, connector/worker failure, PostgreSQL HA, and soak remain separate production gates."
     },
     "LP-T034": {
       "state": "red",
