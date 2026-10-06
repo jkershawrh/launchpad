@@ -13,16 +13,18 @@ INTEL_GUIDED_LABS = [
     {
         "catalog_id": "intel-xeon6-agent-201",
         "display_name": "Intel AI 201: Build an AI Agent on Intel Xeon 6",
-        "playbook": "site-intel-xeon6-agent-201.yml",
+        "playbook": "site.yml",
         "content_path": "content-intel-xeon6-agent-201",
         "title": "Intel Xeon 6 201 — Building an AI Agent",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
-        "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
-        "status": "draft",
-        "content_repo": "https://github.com/jkershawrh/launchpad.git",
+        "content_ref": "42b250426fd4b5a8c7df843076b9ad8b54bf53a2",
+        "status": "active",
+        "content_repo": "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git",
         "max_workshop_seats": 1,
-        "certification_stage": "source-candidate-recertification-required",
+        "certification_stage": "1-seat-certified",
+        "external_source": True,
+        "content_only": False,
     },
     {
         "catalog_id": "intel-llm-cpu-serving",
@@ -33,11 +35,11 @@ INTEL_GUIDED_LABS = [
         "model": "granite-2b-cpu",
         "models": ["granite-3.2-8b-tools", "granite-2b-cpu"],
         "workspace_route": "rag",
-        "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
+        "content_ref": "67d1965c8e6347afe502ff4cba61b99e24257ec4",
         "status": "active",
         "content_repo": "https://github.com/jkershawrh/launchpad.git",
-        "max_workshop_seats": 5,
-        "certification_stage": "five-seat-certified",
+        "max_workshop_seats": 1,
+        "certification_stage": "1-seat-certified",
     },
     {
         "catalog_id": "intel-llm-tool-calling",
@@ -47,11 +49,11 @@ INTEL_GUIDED_LABS = [
         "title": "Enable AI Tool Calling on OpenShift",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "",
-        "content_ref": "1ed487299f043a89660916c9ce8a8ae5a155d6e3",
-        "status": "draft",
+        "content_ref": "13e8119b807735b5b8ba161d2daf8e462e7baeb7",
+        "status": "active",
         "content_repo": "https://github.com/jkershawrh/launchpad.git",
         "max_workshop_seats": 1,
-        "certification_stage": "source-update-published",
+        "certification_stage": "1-seat-certified",
     },
 ]
 
@@ -180,14 +182,17 @@ def test_intel_guided_lab_is_native_launchpad_content(lab):
     metadata = catalog["metadata"]
     assert metadata["showroom"] is True
     assert metadata["operator_workshop"] is True
-    assert metadata["content_only"] is True
+    assert metadata["content_only"] is lab.get("content_only", True)
     assert metadata["max_workshop_seats"] == lab["max_workshop_seats"]
     assert metadata["certification_stage"] == lab["certification_stage"]
     assert metadata["required_models"] == lab.get("models", [lab["model"]])
     assert metadata["showroom_content_repo_url"] == lab["content_repo"]
     assert metadata["showroom_content_ref"] == lab["content_ref"]
     assert metadata["showroom_content_playbook"] == lab["playbook"]
-    assert metadata.get("workspace_route_name", "") == lab["workspace_route"]
+    workspace_route = metadata.get("workspace_route_name") or (
+        metadata.get("workload_routes") or {}
+    ).get("workspace", "")
+    assert workspace_route == lab["workspace_route"]
 
     # OpenShift's generated route host uses <route>-<namespace> as one DNS
     # label. Keep it below the 63-character label limit for the longest
@@ -197,6 +202,10 @@ def test_intel_guided_lab_is_native_launchpad_content(lab):
         catalog_id = lab["catalog_id"][:18]
         namespace = f"launchpad-{tenant}-{catalog_id}-abcdef"
         assert len(f"{lab['workspace_route']}-{namespace}") <= 63
+
+    if lab.get("external_source"):
+        assert metadata["showroom_content_start_path"] == "."
+        return
 
     playbook = yaml.safe_load((ROOT / lab["playbook"]).read_text())
     assert playbook["site"]["start_page"] == "modules::index.adoc"
@@ -325,8 +334,14 @@ def test_agent_201_uses_three_pods_by_colocating_agent_and_tools():
 
 def test_agent_201_remote_certification_driver_understands_colocated_tools():
     driver = (ROOT / "scripts/certify-agent-201-remote-seat.sh").read_text()
+    contract = yaml.safe_load(
+        (ROOT / "certification/catalog/intel-xeon6-agent-201.yaml").read_text()
+    )
 
-    assert "/www/modules/02-deploy-tools.html" in driver
+    assert any(
+        page["path"].endswith("/02-deploy-tools.html")
+        for page in contract["spec"]["showroom"]["pages"]
+    )
     assert "--containers=solution-agent" in driver
     assert "for deployment in solution-agent solution-ui" in driver
     assert "for deployment in solution-tools solution-agent solution-ui" not in driver
@@ -374,7 +389,7 @@ def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass()
 
     assert catalog["version"] == "1.0.9-flightpath.1"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "1ed487299f043a89660916c9ce8a8ae5a155d6e3"
+        "42b250426fd4b5a8c7df843076b9ad8b54bf53a2"
     )
     assert 'ADVISOR_API_URL="http://solution-agent:8082"' in exercises
     assert exercises.count("${ADVISOR_API_URL}/api/v1/advise") == 5
@@ -488,7 +503,8 @@ def test_cpu_serving_content_uses_route_name_that_fits_launchpad_namespace():
     ) in content
     assert "jsonpath=" not in content
     assert 'curl -s "${MAAS_ENDPOINT}' not in content
-    assert 'curl -ks "${MAAS_ENDPOINT}' in content
+    assert 'curl -fsS "${MAAS_ENDPOINT}' in content
+    assert 'curl -ks "${MAAS_ENDPOINT}' not in content
     assert "$0/token" not in content
     assert "your LiteLLM virtual key" not in content
     assert "OpenShift Console Checkpoint" in content
@@ -688,7 +704,7 @@ def test_cpu_serving_showroom_waits_for_the_external_route_to_be_ready():
 
     assert "Wait for the Pod and Route" in page
     # Escape the curl formatter so Antora does not consume it as an attribute.
-    assert "curl -ksS -o /dev/null -w '%\\{http_code\\}'" in page
+    assert "curl -fsS -o /dev/null -w '%\\{http_code\\}'" in page
     assert '"$ANYTHINGLLM_URL/api/ping"' in page
     assert "for attempt in {1..40}" in page
     assert "OpenShift safely coalesces ingress updates" in page

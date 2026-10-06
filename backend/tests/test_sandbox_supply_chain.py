@@ -2,7 +2,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -42,8 +41,8 @@ def test_flightpath_uses_the_exact_published_sandbox_digest():
     intake = yaml.safe_load((ROOT / "catalog-onboarding/ai-sandbox.yaml").read_text())
     image = patch["data"]["SANDBOX_IMAGE"]
 
-    assert image == (
-        "ghcr.io/jkershawrh/launchpad-sandbox@"
-        "sha256:5fe2a362fe8e751b5e1fd200e7ba48118cf9e1d2141cdcfcee15075af5cc825c"
+    expected = (
+        f"{intake['runtime']['image']['repository']}@"
+        f"{intake['runtime']['image']['digest']}"
     )
-    assert intake["runtime"]["image"]["digest"] in image
+    assert image == expected

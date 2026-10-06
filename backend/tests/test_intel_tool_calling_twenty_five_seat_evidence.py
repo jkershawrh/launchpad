@@ -2,7 +2,6 @@
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "evidence/intel-tool-calling-twenty-five-seat-2026-09-04.json"
 
@@ -61,9 +60,9 @@ def test_twenty_five_seat_evidence_is_complete_and_does_not_overclaim_scope():
 def test_tool_calling_driver_executes_the_complete_protocol_from_the_seat():
     driver = (ROOT / "scripts/certify-tool-calling-journey.sh").read_text()
 
-    assert "*config-arena*" in driver
-    assert "refusing to validate a non-Arena cluster" in driver
-    assert "02-serving-with-tools.html" in driver
+    assert 'expected_cluster="${2:' in driver
+    assert "actual_cluster" in driver
+    assert '[[ "$actual_cluster" == "$expected_cluster" ]]' in driver
     assert "deploy/showroom -c terminal" in driver
     assert 'name:"get_weather"' in driver
     assert "tool_calls" in driver

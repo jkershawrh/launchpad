@@ -32,6 +32,12 @@ metadata:
   returns_to: null
   shared_blueprint: null
   solution_family: generative_ai
+  certification_stage: deprecated-legacy
+  certification_transfer: none
+  replacement_catalog_item_id: intel-llm-cpu-serving
+  activation_blockers:
+    - "Do not order or certify this legacy item; use intel-llm-cpu-serving for the maintained RAG build journey."
+    - "The legacy Showroom source is pinned to the mutable main branch and contains no executable retrieval/model proof or bounded cleanup contract."
   demo_pages: try-it
   workspace_path: /try-it
   required_models:

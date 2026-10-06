@@ -52,11 +52,33 @@ metadata:
   certification_proof_contract: certification/catalog/cpu-inference-serving.yaml
   showroom_journey: intel-llm-cpu-serving
   showroom_title: CPU Inference Serving on Xeon
+  showroom_content_start_path: content-intel-llm-cpu-serving
+  showroom_terminal_storage: false
+  showroom_tabs:
+  - id: terminal
+    title: Terminal
+    source: showroom.terminal
+  - id: workspace
+    title: RAG Assistant
+    source: workload.route.ui
+  - id: openshift-console
+    title: OpenShift Console
+    source: cluster.console_url
   workspace_route_name: rag
   workspace_title: RAG Assistant
   showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
   showroom_content_ref: 9526ede61b5c31949f3a1bedd133b5a17e554178
   showroom_content_playbook: site-intel-llm-cpu-serving.yml
+  source_content_repo: https://github.com/jkershawrh/launchpad.git
+  source_content_revision: 9526ede61b5c31949f3a1bedd133b5a17e554178
+  workload_repo: https://github.com/rh-ai-quickstart/llm-cpu-serving.git
+  workload_revision: 88867e14b1eede7d9aa563069aa093c122a4a53a
+  workload_routes:
+    ui: rag
+  allowed_exposure_policies:
+  - internal
+  - public_code
+  hardware_claim_status: platform-declared
   required_models:
   - granite-3.2-8b-tools
   - granite-2b-cpu

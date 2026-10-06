@@ -20,6 +20,17 @@ def _load() -> tuple[dict, dict, dict]:
     policy = yaml.safe_load(POLICY.read_text())
     intake = yaml.safe_load(INTAKE.read_text())
     probe = yaml.safe_load((ROOT / policy["pull_evidence"]["path"]).read_text())
+    # This policy is an immutable, Arena-only admission exception for the
+    # original draft candidate.  Build that historical candidate explicitly
+    # instead of making the policy tests depend on the currently promoted
+    # Flightpath catalog record.
+    intake["catalog"]["status"] = "draft"
+    for component in ("showroom", "workload"):
+        intake["sources"][component]["revision"] = policy["source_revision"]
+    intake["runtime"]["workload"]["helm_values"]["app"]["image"] = policy["image"]
+    intake["runtime"]["allowed_exposure_policies"] = [policy["exposure_policy"]]
+    intake["runtime"]["workshop_cluster_ref"] = policy["cluster"]
+    intake["certification"]["max_workshop_seats"] = policy["max_workshop_seats"]
     return policy, intake, probe
 
 

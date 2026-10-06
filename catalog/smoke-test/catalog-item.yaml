@@ -1,12 +1,11 @@
 catalog_item_id: smoke-test
 display_name: "Launchpad 001: Platform Smoke Test"
-description: "Minimal demo for platform validation. Deploys a single nginx pod. No model dependency. 10 minute TTL."
+description: "Internal diagnostic fixture for validating catalog loading and basic control-plane lifecycle plumbing. It is not participant curriculum and makes no workload, operator, hardware, or inference claim."
 category: quick_start
 version: "1.0.0"
 status: draft
 required_capabilities:
   - openshift
-default_hardware_profile: xeon-basic
 default_quota_profile: small
 default_ttl: "10m"
 provisioner_refs:
@@ -27,6 +26,23 @@ metadata:
   returns_to: null
   shared_blueprint: null
   solution_family: platform_validation
+  audience: platform_operators
+  catalog_visibility: internal_diagnostic
+  participant_orderable: false
+  learning_contract: not_applicable
+  operator_surfaces: []
+  inference_claim_status: none
+  hardware_claim_status: none
+  provenance:
+    type: bundled_launchpad_source
+    release_bound: true
+    catalog_path: catalog/smoke-test/catalog-item.yaml
+    runtime_path: backend/app/adapters/openshift/provisioning.py
+  certification_status: not_certified_internal_fixture
+  lifecycle_expectations:
+    - create
+    - readiness
+    - reclaim
+    - zero_residue
   deploy_method: kustomize-dir
-  cpu_only: true
   smoke_test: true

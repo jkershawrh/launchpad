@@ -44,6 +44,7 @@ metadata:
   showroom_content_start_path: showroom/content
   operator_workshop: true
   content_only: false
+  showroom_antora_flat: false
   onboarding_managed: true
   onboarding_contract: catalog-onboarding/virtualization-ai-301.yaml
   certification_stage: 1-seat-certified

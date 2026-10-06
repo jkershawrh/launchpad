@@ -30,9 +30,17 @@ def test_agentops_is_registered_as_decommissioned():
     assert catalog["catalog_item_id"] == "agentops-observability"
     assert catalog["status"] == "deprecated"
     assert catalog["version"] == "0.1.4"
-    assert catalog["metadata"]["certification_stage"] == "twenty-five-seat-certification"
+    assert catalog["metadata"]["certification_stage"] == "deprecated-reference"
+    assert catalog["metadata"]["certification_transfer"] == "none"
+    assert catalog["metadata"]["replacement_catalog_item_id"] == (
+        "operate-agentic-blueprint"
+    )
     assert catalog["metadata"]["max_workshop_seats"] == 5
-    assert catalog["metadata"]["activation_blockers"]
+    assert catalog["metadata"]["promotion_sequence"] == [1, 5]
+    blockers = "\n".join(catalog["metadata"]["activation_blockers"])
+    assert "Do not order or recertify" in blockers
+    assert "operate-agentic-blueprint" in blockers
+    assert "25-seat" not in blockers
     assert catalog["metadata"]["showroom_content_repo_url"] == (
         "https://github.com/rhpds/launchpad.git"
     )
@@ -88,7 +96,7 @@ def test_agentops_cannot_be_activated_while_intake_blockers_remain():
         adapter.set_status("agentops-observability", CatalogStatus.ACTIVE)
 
 
-def test_private_source_can_use_matching_read_only_gitops_transport() -> None:
+def test_public_agentic_601_source_uses_matching_https_gitops_transport() -> None:
     intake = load_intake(ROOT / "catalog-onboarding/agentic-ai-601.yaml")
     validation = validate_intake(intake)
     generated = build_catalog_item(intake)["metadata"]
@@ -97,10 +105,10 @@ def test_private_source_can_use_matching_read_only_gitops_transport() -> None:
         error for error in validation["errors"] if "gitops_repo_url" in error
     ]
     assert generated["showroom_content_repo_url"] == (
-        "git@github.com:jkershawrh/agentic-ai-601.git"
+        "https://github.com/jkershawrh/agentic-ai-601.git"
     )
     assert generated["workload_repo"] == (
-        "git@github.com:jkershawrh/agentic-ai-601.git"
+        "https://github.com/jkershawrh/agentic-ai-601.git"
     )
     assert generated["source_content_repo"] == (
         "https://github.com/jkershawrh/agentic-ai-601.git"
@@ -347,10 +355,11 @@ def test_agentops_intake_captures_the_large_lab_runtime_contract():
         "source": "model_endpoint",
         "model": "nomic-embed-text-v1.5",
     }
-    assert certification["promotion_sequence"] == [1, 5, 25]
+    assert certification["stage"] == "deprecated-reference"
+    assert certification["promotion_sequence"] == [1, 5]
     blockers = "\n".join(certification["activation_blockers"])
-    assert "mutable latest UI bundle" not in blockers
-    assert "instead of its original qwen3-14b" not in blockers
+    assert "Do not order or recertify" in blockers
+    assert "historical evidence only" in blockers
 
 
 def test_validator_accepts_complete_local_source_contract(tmp_path: Path):

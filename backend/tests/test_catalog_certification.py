@@ -10,7 +10,6 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
 from app.services.catalog_certification import (
     build_certification_plan,
     evaluate_json_assertions,
@@ -206,13 +205,11 @@ def test_agent_201_certification_targets_exact_flightpath_candidate_release():
     } == {"flightpath"}
     assert intake["catalog"]["version"] == "1.0.9-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
-    assert intake["catalog"]["status"] == "draft"
-    assert intake["certification"]["stage"] == (
-        "source-candidate-recertification-required"
-    )
-    assert intake["certification"]["certified_seats"] == 0
+    assert intake["catalog"]["status"] == "active"
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["max_workshop_seats"] == 1
-    assert intake["certification"]["activation_blockers"]
+    assert intake["certification"]["activation_blockers"] == []
 
 
 def test_multi_agent_certification_targets_exact_flightpath_candidate_release():
@@ -237,7 +234,7 @@ def test_multi_agent_certification_targets_exact_flightpath_candidate_release():
     assert intake["catalog"]["version"] == "0.2.16-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
     assert intake["runtime"]["inference_endpoint"] == "litellm_virtual_key_candidate"
-    assert intake["certification"]["stage"] == "immutable-source-published"
+    assert intake["certification"]["stage"] == "1-seat-certified"
     assert intake["certification"]["max_workshop_seats"] == 1
 
 
@@ -263,8 +260,8 @@ def test_cpu_serving_certification_targets_exact_flightpath_candidate_release():
     assert intake["catalog"]["version"] == "1.0.13-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
     assert intake["runtime"]["inference_endpoint"] == "direct_vllm_candidate"
-    assert intake["certification"]["stage"] == "five-seat-certified"
-    assert intake["certification"]["max_workshop_seats"] == 5
+    assert intake["certification"]["stage"] == "1-seat-certified"
+    assert intake["certification"]["max_workshop_seats"] == 1
     assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1, 5]
 
 
@@ -324,7 +321,7 @@ def test_only_certified_or_next_scale_profile_can_execute():
     assert thirty["next_promotion_target"] is None
 
 
-def test_flightpath_candidate_uses_its_destination_certification_state():
+def test_tool_calling_candidate_is_limited_to_its_one_seat_publication_gate():
     contract = load_certification_contract(
         ROOT / "certification/catalog/intel-llm-tool-calling.yaml"
     )
@@ -333,18 +330,17 @@ def test_flightpath_candidate_uses_its_destination_certification_state():
     one = build_certification_plan(
         contract, intake=intake, seats=1, exposure_policy="internal"
     )
-    five = build_certification_plan(
-        contract, intake=intake, seats=5, exposure_policy="internal"
-    )
-
     assert one["cluster_ref"] == "flightpath"
-    assert one["current_certified_seats"] == 0
-    assert one["next_promotion_target"] == 1
-    assert one["certification_override"] is True
+    assert one["current_certified_seats"] == 1
+    assert one["next_promotion_target"] is None
+    assert one["certification_override"] is False
     assert one["execution_eligible"] is True
-    assert five["current_certified_seats"] == 0
-    assert five["certification_override"] is True
-    assert five["execution_eligible"] is False
+    with pytest.raises(
+        ValueError, match="Certification contract does not declare a 5-seat profile"
+    ):
+        build_certification_plan(
+            contract, intake=intake, seats=5, exposure_policy="internal"
+        )
 
 
 def test_seat_probe_only_contract_can_certify_a_non_showroom_environment():
@@ -764,7 +760,7 @@ def test_agent_201_remote_probe_reports_bounded_failure_stages_without_secrets()
     assert 'seat_probe_failure stage=%s exit_code=%s' in probe
     for stage in (
         "cluster-identity",
-        "showroom-contract",
+        "participant-runtime-contract",
         "terminal-readiness",
         "connection-config",
         "model-key-binding",

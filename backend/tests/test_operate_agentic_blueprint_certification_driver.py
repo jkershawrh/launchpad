@@ -1,14 +1,11 @@
 from pathlib import Path
 
-import yaml
-
 from app.services.catalog_certification import (
     build_certification_plan,
     load_certification_contract,
     validate_certification_contract,
 )
 from app.services.catalog_onboarding import load_intake
-
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE_DRIVER = ROOT / "scripts/certify-multi-agent-seat.sh"
@@ -122,7 +119,7 @@ def test_401_revised_source_restarts_certification_at_one_seat():
     assert intake["certification"]["max_workshop_seats"] == 1
     assert plan["current_certified_seats"] == 1
     assert plan["next_promotion_target"] == 5
-    assert plan["certification_override"] is True
+    assert plan["certification_override"] is False
     assert plan["execution_eligible"] is True
     assert plan["probe_concurrency"] == 1
     assert plan["required_consecutive_runs"] == 1

@@ -28,6 +28,8 @@ learning:
   returns_to: null
   shared_blueprint: null
   solution_family: operations_reliability
+  certification_transfer: none
+  replacement_catalog_item_id: operate-agentic-blueprint
 
 sources:
   showroom:
@@ -208,47 +210,14 @@ runtime:
         timeout_seconds: 300
 
 certification:
-  stage: twenty-five-seat-certification
+  stage: deprecated-reference
   max_workshop_seats: 5
   promotion_sequence:
     - 1
     - 5
-    - 25
   activation_blockers:
     - >-
-      Deploy and live-certify the Launchpad entitlement gateway proxy for
-      every participant workload and shared-service route, including
-      cross-seat and cross-tenant denial. Local contracts prove catalog-only
-      allowlisting, Showroom tab rewriting, WebSocket support, and origin
-      escape rejection.
-    - >-
-      Certify the Arena participant route for shared MLflow and per-seat
-      Grafana, and install and certify OpenShift Logging/Loki. Shared MLflow
-      3.14.0, workspace-scoped write authorization, OpenShift AI 3.5, Data
-      Science Pipelines, and a seven-span AgentOps trace were confirmed live on
-      2026-09-05. Trusted external TLS is still RED.
-    - >-
-      Replace the clean-live-certified RHOAI 3.5 MLMD compatibility workaround
-      with an upstream-supported encrypted internal component configuration
-      before production. The per-seat MariaDB connection now enforces and
-      verifies OpenShift service-ca TLS; podToPodTLS remains disabled because
-      the RHOAI-generated MLMD server TLS config drops the database TLS options.
-      Shared MLflow metadata uses persistent PostgreSQL with verified service-ca
-      TLS.
-    - >-
-      Replace the 1x.demo Loki/MinIO/NFS pilot with durable S3-compatible
-      object storage, dynamic block storage, and production sizing before
-      production activation. Controlled internal five-seat certification may
-      retain the pilot only through the explicit admin certification override
-      and must measure ingestion, query latency, restarts, and storage growth.
-    - >-
-      Complete 25-seat functional, performance, failure-recovery, and
-      zero-residue certification before raising the catalog maximum above
-      five seats. The current single qualified 250-pod worker cannot retain
-      the required headroom; add or qualify stable worker capacity or reduce
-      the per-seat topology before attempting that gate.
-    - >-
-      Reconcile the quarantined build-83 RED-run PostgreSQL persistent volume
-      through an approved storage-administrator procedure before production
-      activation. It is excluded from build-84's zero-residue result and must
-      not be removed by deleting only the PV API object.
+      Do not order or recertify this deprecated reference. Use
+      operate-agentic-blueprint for the maintained AI 401 operations journey.
+      The retained one- and five-seat AgentOps receipts are historical evidence
+      only and do not transfer certification to the replacement.

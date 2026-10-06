@@ -59,6 +59,7 @@ metadata:
   - public_code
   showroom_journey: hybrid-fraud-detection
   showroom_title: 'Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon'
+  workspace_title: Hybrid Decision Casebook
   namespace_slug: fraud
   showroom_terminal_storage: true
   showroom_tabs:

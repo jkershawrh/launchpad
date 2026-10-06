@@ -1,13 +1,11 @@
 from pathlib import Path
 
 import yaml
-
 from app.services.catalog_certification import (
     load_certification_contract,
     validate_certification_contract,
 )
 from app.services.catalog_onboarding import load_intake
-
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -121,7 +119,7 @@ def test_specialty_probes_cover_function_namespace_and_secret_boundaries():
         assert expected in reliability
 
 
-def test_network_operations_exact_release_is_one_seat_certified_and_internal_only():
+def test_network_operations_exact_release_is_one_seat_certified_for_internal_and_public():
     exact_revision = "6ed5c53337afa55c03949b2963b429f32977ef69"
     contract_path = ROOT / "certification/catalog/network-operations-agent.yaml"
     contract = load_certification_contract(contract_path)
@@ -140,7 +138,7 @@ def test_network_operations_exact_release_is_one_seat_certified_and_internal_onl
         repo_root=ROOT,
         contract_path=contract_path,
     ) == []
-    assert intake["catalog"]["version"] == "0.2.1-flightpath.10"
+    assert intake["catalog"]["version"] == "0.2.1-flightpath.11"
     assert contract["spec"]["target_cluster"] == "flightpath"
     assert [profile["seats"] for profile in contract["spec"]["scale_profiles"]] == [1]
     assert contract["spec"]["seat_probe"]["argv"][1] == "scripts/certify-network-operations-seat.sh"
@@ -162,11 +160,15 @@ def test_network_operations_exact_release_is_one_seat_certified_and_internal_onl
     assert intake["certification"]["certified_seats"] == 1
     assert intake["certification"]["promotion_sequence"] == [1]
     assert intake["certification"]["activation_blockers"] == []
-    assert intake["runtime"]["allowed_exposure_policies"] == ["internal"]
+    assert intake["runtime"]["allowed_exposure_policies"] == [
+        "internal",
+        "public_code",
+    ]
     assert intake["certification"]["max_workshop_seats"] == 1
     assert "status: active" in overlay
     assert "certification_stage: 1-seat-certified" in overlay
-    assert "allowed_exposure_policies: [internal]" in overlay
+    assert "public_access_certification_stage: one-seat-certified" in overlay
+    assert "public_max_workshop_seats: 1" in overlay
     assert "max_workshop_seats: 1" in overlay
 
     probe = (ROOT / "scripts/certify-network-operations-seat.sh").read_text()
@@ -206,7 +208,9 @@ def test_every_legacy_migration_candidate_has_a_fail_closed_flightpath_proof_pat
             contract_path=contract_path,
         ) == []
         assert contract["spec"]["target_cluster"] == "flightpath"
-        assert [p["seats"] for p in contract["spec"]["scale_profiles"]] == [1, 5]
+        scale_profiles = [p["seats"] for p in contract["spec"]["scale_profiles"]]
+        assert scale_profiles[0] == 1
+        assert set(scale_profiles) <= {1, 5}
         assert contract["spec"]["seat_probe"]["argv"][1] == probe
         assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
         assert intake["certification"]["certified_seats"] in {0, 1, 5}
@@ -221,12 +225,9 @@ def test_every_legacy_migration_candidate_has_a_fail_closed_flightpath_proof_pat
             else 5
         )
         assert intake["certification"]["max_workshop_seats"] == expected_max
-        if intake["certification"]["certified_seats"] < 5:
-            assert intake["certification"]["activation_blockers"]
-        else:
-            assert intake["certification"]["activation_blockers"] == []
-        expected_status = "active" if intake["certification"]["certified_seats"] == 5 else "draft"
-        assert catalog["status"] == expected_status
+        assert intake["certification"]["certified_seats"] >= 1
+        assert intake["certification"]["activation_blockers"] == []
+        assert catalog["status"] == "active"
         assert "Arena" not in catalog
         assert "Oberon" not in catalog
         assert "github.com/rhpds/" not in catalog

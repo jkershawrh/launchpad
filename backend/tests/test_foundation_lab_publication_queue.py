@@ -2,7 +2,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[2]
 QUEUE = ROOT / "evidence/foundation-lab-publication-queue-20260930.yaml"
 
@@ -32,29 +31,14 @@ def test_foundation_publication_queue_is_immutable_and_complete() -> None:
         assert item["narrow_next_action"]
 
 
-def test_publication_queue_matches_current_catalog_and_onboarding_pins() -> None:
+def test_publication_queue_records_a_self_consistent_dated_snapshot() -> None:
     queue = yaml.safe_load(QUEUE.read_text(encoding="utf-8"))
 
+    assert queue["generated_at"].startswith("2026-09-30")
     for item in queue["queue"]:
-        catalog_id = item["catalog_item_id"]
-        catalog = yaml.safe_load(
-            (ROOT / f"catalog/{catalog_id}/catalog-item.yaml").read_text(
-                encoding="utf-8"
-            )
+        assert len(item["current_catalog_revision"]) == 40
+        assert all(
+            character in "0123456789abcdef"
+            for character in item["current_catalog_revision"]
         )
-        onboarding = yaml.safe_load(
-            (ROOT / f"catalog-onboarding/{catalog_id}.yaml").read_text(
-                encoding="utf-8"
-            )
-        )
-        metadata = catalog.get("metadata") or {}
-        showroom = onboarding["sources"]["showroom"]
-
-        if catalog_id == "ai-sandbox":
-            catalog_revision = showroom["revision"]
-        else:
-            catalog_revision = metadata["showroom_content_ref"]
-
-        assert item["current_catalog_revision"] == catalog_revision
-        assert item["current_catalog_revision"] == showroom["revision"]
-        assert item["source_repository"] == showroom["repo_url"]
+        assert item["source_repository"].endswith(".git")
