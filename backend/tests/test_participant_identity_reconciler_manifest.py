@@ -17,8 +17,12 @@ def test_identity_reconciler_has_a_dedicated_service_account_and_minimal_role() 
     cronjob = next(item for item in documents if item["kind"] == "CronJob")
     role = next(item for item in documents if item["kind"] == "ClusterRole")
     pod = cronjob["spec"]["jobTemplate"]["spec"]["template"]["spec"]
+    pod_labels = cronjob["spec"]["jobTemplate"]["spec"]["template"]["metadata"][
+        "labels"
+    ]
 
     assert pod["serviceAccountName"] == "launchpad-participant-identity-reconciler"
+    assert pod_labels["app.kubernetes.io/part-of"] == "partner-ai-launchpad"
     assert pod["containers"][0]["command"] == [
         "python",
         "-m",

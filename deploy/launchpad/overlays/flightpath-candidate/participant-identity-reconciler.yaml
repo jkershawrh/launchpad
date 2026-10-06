@@ -84,6 +84,7 @@ spec:
           labels:
             app.kubernetes.io/name: participant-identity-reconciler
             app.kubernetes.io/component: identity-lifecycle
+            app.kubernetes.io/part-of: partner-ai-launchpad
         spec:
           serviceAccountName: launchpad-participant-identity-reconciler
           restartPolicy: Never
