@@ -1,0 +1,83 @@
+schema_version: launchpad.redhat.com/full-overlay-canary/v1
+generated_at: '2026-10-06T13:21:45Z'
+
+candidate:
+  branch: codex/flightpath-migration-20260922
+  source_commit: ae802b21
+  cluster: flightpath
+  namespace: launchpad-flightpath-candidate
+  rendered_manifest_sha256: e78af81fed3b207a308c95c8c63305e69a821285c22f75c9787739b1af66dc0a
+  rendered_resource_count: 76
+
+preflight:
+  server_dry_run: pass
+  active_sessions: 0
+  participant_namespaces: 0
+  selector_immutability_errors: 0
+  overlay_contract_tests:
+    passed: 13
+    failed: 0
+
+deployment:
+  configured_resources: 53
+  unchanged_resources: 23
+  rollouts:
+    backend: pass
+    lifecycle_worker: pass
+    requester: pass
+    admin: pass
+    public_access_gateway: pass
+    sales_entries: pass
+  residual_diff:
+    material_resources: 0
+    ignored_server_metadata:
+      - resource: networkpolicy/postgres-deny-egress
+        field: metadata.generation
+
+runtime:
+  ready_nodes: 6
+  total_nodes: 6
+  active_catalog_items: 23
+  backend_health: pass
+
+canary:
+  request_id: 64e2eb1d-dae7-4948-baaa-cfc9958249c3
+  session_id: cb649ddb-8cdf-4af5-a714-1348ba6cc6f5
+  catalog_item_id: agentic-ai-101
+  tenant_id: flightpath-candidate-cert
+  exposure_policy: internal
+  cluster_ref: flightpath
+  namespace: launchpad-flightpath-candida-agentic-ai-101-64e2eb
+  lifecycle:
+    provisioning_started_at: '2026-10-06T13:18:07.039455Z'
+    ready_at: '2026-10-06T13:18:42.594954Z'
+    cleanup_queued_at: '2026-10-06T13:19:03.871063Z'
+    reclaimed_at: '2026-10-06T13:19:37.751850Z'
+  validation:
+    checks_passed: 6
+    checks_failed: 0
+    showroom_http_status: 200
+    showroom_title: Showroom
+    repeatability_score: 100
+    result: pass
+
+cleanup:
+  durable_session_status: reclaimed
+  credentials_scrubbed: true
+  namespace_count: 0
+  route_count: 0
+  rolebinding_count: 0
+  argocd_application_count: 0
+  result: pass
+
+decision:
+  immutable_overlay_convergence: GREEN-live
+  lifecycle_canary: GREEN-live
+  zero_residue: GREEN-live
+  staging_candidate_qualified: false
+  remaining_qualification_gates:
+    - authenticated admin browser and bounded action journey
+    - live one-seat workshop capacity preview and order contract
+    - public participant claim, resume, add-lab, Console, logout, and reclaim journey
+    - final impact-selected catalog regression and staging evidence manifest
+

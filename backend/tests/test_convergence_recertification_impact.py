@@ -5,6 +5,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 IMPACT = ROOT / "evidence/convergence/recertification-impact-20261006.yaml"
 CANARY = ROOT / "evidence/convergence/platform-canary-20261006.yaml"
+FULL_OVERLAY_CANARY = ROOT / "evidence/convergence/full-overlay-canary-20261006.yaml"
 
 
 def test_convergence_requires_a_platform_canary_without_overclaiming_lab_recertification() -> None:
@@ -54,3 +55,23 @@ def test_live_platform_canary_closes_the_selective_recertification_gate() -> Non
     assert proof["decision"]["platform_canary"] == "GREEN-live"
     assert proof["decision"]["blanket_lab_recertification_required"] is False
     assert proof["decision"]["targeted_lab_recertification_required"] == []
+
+
+def test_full_overlay_canary_is_green_without_overclaiming_staging() -> None:
+    proof = yaml.safe_load(FULL_OVERLAY_CANARY.read_text(encoding="utf-8"))
+
+    assert proof["schema_version"] == "launchpad.redhat.com/full-overlay-canary/v1"
+    assert proof["candidate"]["source_commit"] == "ae802b21"
+    assert proof["candidate"]["rendered_resource_count"] == 76
+    assert proof["preflight"]["selector_immutability_errors"] == 0
+    assert proof["deployment"]["residual_diff"]["material_resources"] == 0
+    assert proof["canary"]["validation"]["checks_passed"] == 6
+    assert proof["canary"]["validation"]["repeatability_score"] == 100
+    assert proof["cleanup"]["namespace_count"] == 0
+    assert proof["cleanup"]["route_count"] == 0
+    assert proof["cleanup"]["rolebinding_count"] == 0
+    assert proof["cleanup"]["argocd_application_count"] == 0
+    assert proof["decision"]["immutable_overlay_convergence"] == "GREEN-live"
+    assert proof["decision"]["lifecycle_canary"] == "GREEN-live"
+    assert proof["decision"]["staging_candidate_qualified"] is False
+    assert len(proof["decision"]["remaining_qualification_gates"]) == 4
