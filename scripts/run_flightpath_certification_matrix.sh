@@ -54,6 +54,10 @@ declare -a failed=()
 for contract_name in ${matrix}; do
   catalog_id="${contract_name%-flightpath}"
   contract="certification/catalog/${contract_name}.yaml"
+  flightpath_contract="certification/catalog/${catalog_id}-flightpath.yaml"
+  if [[ -f "${flightpath_contract}" ]]; then
+    contract="${flightpath_contract}"
+  fi
   intake="catalog-onboarding/${contract_name}.yaml"
   if [[ ! -f "${intake}" ]]; then
     intake="catalog-onboarding/${catalog_id}.yaml"

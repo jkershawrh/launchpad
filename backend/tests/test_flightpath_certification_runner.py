@@ -107,6 +107,8 @@ def test_matrix_defaults_to_one_seat_and_requires_an_explicit_scale_override() -
     assert '--seats 5' not in text
     assert 'run_id="${run_prefix}-${catalog_id}-${certification_seats}-seat"' in text
     assert '--expected-catalogs "${catalog_count}"' in text
+    assert 'flightpath_contract="certification/catalog/${catalog_id}-flightpath.yaml"' in text
+    assert 'contract="${flightpath_contract}"' in text
 
 
 def test_zero_residue_verifier_does_not_hardcode_catalog_count() -> None:

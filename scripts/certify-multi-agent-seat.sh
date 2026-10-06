@@ -318,15 +318,18 @@ printf '%s' "$participant_ui_journey" | jq -e '
 
 stage="learner-policy-slot"
 acquire_policy_slot
-stage="learner-policy-apply"
+stage="learner-policy-config-apply"
 oc create configmap workflow-policy -n "$namespace" \
   --from-literal=AGENT_MAX_TOKENS_OVERRIDE=48 \
   --dry-run=client -o yaml \
   | oc apply -f - >/dev/null
 policy_config_created=true
+stage="learner-policy-rollout-restart"
 oc rollout restart deployment/multi-agent -n "$namespace" >/dev/null
+stage="learner-policy-rollout-readiness"
 oc rollout status deployment/multi-agent -n "$namespace" --timeout=5m >/dev/null
 
+stage="learner-policy-value"
 applied_max_tokens="$(
   oc exec deployment/multi-agent -c executor -n "$namespace" -- \
     python -c 'import agent; print(agent.AGENT_MAX_TOKENS)'

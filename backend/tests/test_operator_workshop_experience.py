@@ -93,6 +93,8 @@ def test_operator_certification_probes_reconciliation_and_cleanup():
     assert "oc create deployment" not in script
     assert "MAAS_API" not in script
     assert "/chat/completions" not in script
+    assert 'oc delete taskrun,pod -n "$namespace"' in script
+    assert '-l "tekton.dev/pipelineRun=${run_name}"' in script
     assert 'inference:{required:false,participated:false}' in script
 
 

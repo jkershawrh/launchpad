@@ -346,7 +346,10 @@ def test_track_two_certification_executes_and_cleans_the_learner_change():
     probe = (ROOT / "scripts/certify-multi-agent-seat.sh").read_text()
 
     for command in (
-        'stage="learner-policy-apply"',
+        'stage="learner-policy-config-apply"',
+        'stage="learner-policy-rollout-restart"',
+        'stage="learner-policy-rollout-readiness"',
+        'stage="learner-policy-value"',
         "oc create configmap workflow-policy",
         "oc rollout restart deployment/multi-agent",
         "import agent; print(agent.AGENT_MAX_TOKENS)",

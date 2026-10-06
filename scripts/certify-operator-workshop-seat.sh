@@ -134,6 +134,9 @@ taskrun_count="$(oc get taskrun -n "$namespace" \
 stage=exercise-cleanup
 oc delete pipelinerun "$run_name" -n "$namespace" \
   --ignore-not-found --wait=true >/dev/null
+oc delete taskrun,pod -n "$namespace" \
+  -l "tekton.dev/pipelineRun=${run_name}" \
+  --ignore-not-found --wait=true >/dev/null
 oc delete pipeline "$pipeline_name" task "$task_name" -n "$namespace" \
   --ignore-not-found --wait=true >/dev/null
 

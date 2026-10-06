@@ -106,10 +106,14 @@ do
       *Invalid*|*invalid*) failure_class="invalid" ;;
       *NotFound*|*"not found"*) failure_class="not-found" ;;
       *Unauthorized*|*unauthorized*) failure_class="unauthorized" ;;
+      *AlreadyExists*|*"already exists"*) failure_class="already-exists" ;;
+      *Conflict*|*conflict*) failure_class="conflict" ;;
       *timeout*|*Timeout*) failure_class="timeout" ;;
     esac
+    failure_reason="$(printf '%s' "$apply_output" | tail -1 | tr '\n\r' '  ' | cut -c1-240)"
     printf 'semantic_response=workload_apply_failure manifest:%s failure_class=%s\n' \
       "${manifest%.yaml}" "$failure_class" >&2
+    printf 'semantic_response=workload_apply_reason:%s\n' "$failure_reason" >&2
     false
   fi
 done
