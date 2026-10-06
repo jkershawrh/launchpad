@@ -11,7 +11,7 @@ INTAKE = ROOT / "catalog-onboarding/network-operations-agent.yaml"
 CERTIFICATION = ROOT / "certification/catalog/network-operations-agent.yaml"
 EVIDENCE = (
     ROOT
-    / "evidence/runs/flightpath-live-20261002-network-operations-agent-public-1seat-r1.json"
+    / "evidence/runs/flightpath-live-20261006-network-operations-agent-public-1seat-r2.json"
 )
 
 
@@ -25,9 +25,9 @@ def test_active_network_operations_experience_transfers_exact_certified_release(
     contract = _yaml(CERTIFICATION)
     evidence = json.loads(EVIDENCE.read_text(encoding="utf-8"))
     metadata = catalog["metadata"]
-    revision = "6ed5c53337afa55c03949b2963b429f32977ef69"
+    revision = "225af4a33489ffc4e8ac26fbbd6bc2b975512aab"
     image_digest = (
-        "sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242"
+        "sha256:9390dc029162a51995d407de99f5e1050901ab2b3ab9ecffaeb7d3bb550c9e9e"
     )
 
     assert catalog["status"] == intake["catalog"]["status"] == "active"
@@ -82,7 +82,7 @@ def test_active_network_operations_experience_transfers_exact_certified_release(
 
     references = metadata["source_references"]
     assert references["release_workflow"] == (
-        "https://github.com/jkershawrh/network-operations-agent/actions/runs/36733546281"
+        "https://github.com/jkershawrh/network-operations-agent/actions/runs/37506931093"
     )
     assert references["certification_evidence"] == str(EVIDENCE.relative_to(ROOT))
 

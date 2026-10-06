@@ -486,40 +486,41 @@ labs:
     prove: {status: green-live, evidence: "The exact source passed the live investigation, five-scenario qualification, namespace isolation, and sensitive-value checks."}
     operators: {status: green-live, evidence: "Story, Terminal, Workspace, and namespace-scoped OpenShift evidence all passed the one-seat Flightpath probe."}
     inference: {status: green-live, evidence: "The live investigation proved granite-3.2-8b-tools participation and retained human approval with no automated action."}
-    cleanup: {status: green-live, evidence: "The promotion-bound run reclaimed in 95.296 seconds with model keys revoked and zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
+    cleanup: {status: green-live, evidence: "The current public run passed idempotent reclaim, revoked the model key and OpenShift token, disabled the Keycloak identity, removed the linked OpenShift User and Identity, and left zero managed resource residue."}
     source_state:
       repository: /Users/jkershaw/Documents/network-operations-agent
       checked_out_branch: main
-      local_head: 6ed5c53337afa55c03949b2963b429f32977ef69
-      published_head: 6ed5c53337afa55c03949b2963b429f32977ef69
-      catalog_pinned_revision: 6ed5c53337afa55c03949b2963b429f32977ef69
-      catalog_pinned_image: ghcr.io/jkershawrh/network-operations-agent@sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242
+      local_head: 225af4a33489ffc4e8ac26fbbd6bc2b975512aab
+      published_head: 225af4a33489ffc4e8ac26fbbd6bc2b975512aab
+      catalog_pinned_revision: 225af4a33489ffc4e8ac26fbbd6bc2b975512aab
+      catalog_pinned_image: ghcr.io/jkershawrh/network-operations-agent@sha256:9390dc029162a51995d407de99f5e1050901ab2b3ab9ecffaeb7d3bb550c9e9e
       post_review_changes: one-seat-live-certified
       post_review_paths:
-        - showroom-lab/modules/ROOT/pages/conclusion.adoc
-        - showroom-lab/modules/ROOT/pages/01-baseline.adoc
-        - tests/publication/test_readme.py
+        - showroom/supplemental-ui/partials/header-content.hbs
+        - showroom/supplemental-ui/css/site-extra.css
+        - showroom/supplemental-ui/img/redhat-logo.svg
+        - tests/publication/test_showroom_branding.py
       local_validation:
         status: green-local
-        evidence: "69 publication checks, presentation checks, both Showroom builds, Docker Compose and smoke checks, Helm lint, and Helm render passed."
+        evidence: "The partnership-branding publication tests and Antora Showroom build passed for the exact current source."
       publication_validation:
         status: green-integration
-        workflow: https://github.com/jkershawrh/network-operations-agent/actions/runs/36733546281
-        evidence: "Exact linux/amd64 image build and smoke, SBOM, keyless signature, SPDX attestation, source-provenance attestation, workflow identity verification, and transparency-log verification passed for source 6ed5c53337afa55c03949b2963b429f32977ef69."
+        workflow: https://github.com/jkershawrh/network-operations-agent/actions/runs/37506931093
+        evidence: "Exact linux/amd64 image build and smoke, SBOM, keyless signature, attestations, and verification passed for source 225af4a33489ffc4e8ac26fbbd6bc2b975512aab."
       five_seat_live_evidence: evidence/runs/staging-candidate-e2d78de/flightpath-e2d78de-20260929T124528Z-7fpm8-network-operations-agent-five-seat.json
       image_provenance:
         status: verified-signed-exact-source
-        manifest_digest: sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242
-        image_source_revision: 6ed5c53337afa55c03949b2963b429f32977ef69
-        workflow: https://github.com/jkershawrh/network-operations-agent/actions/runs/36733546281
-      publication_note: "The previous five-seat result remains historical evidence. The exact updated source and immutable image now have fresh one-seat GREEN-live proof; public exposure and larger scale remain separately gated."
+        manifest_digest: sha256:9390dc029162a51995d407de99f5e1050901ab2b3ab9ecffaeb7d3bb550c9e9e
+        image_source_revision: 225af4a33489ffc4e8ac26fbbd6bc2b975512aab
+        workflow: https://github.com/jkershawrh/network-operations-agent/actions/runs/37506931093
+      publication_note: "The previous five-seat result remains historical scale evidence. The current signed source and immutable image have fresh public one-seat participant, inference, Console SSO, recovery, identity cleanup, and zero-residue proof."
       one_seat_live_certification:
-        observed_at: "2026-09-30"
+        observed_at: "2026-10-06"
         result: GREEN-live
         rubric_score: 100
-        evidence: evidence/runs/flightpath-live-20260930-network-operations-agent-1seat-r2.json
-        proof: "Exact pinned release, participant surfaces, live model-backed investigation, human authority, namespace isolation, 95.296-second reclaim, model-key revocation, and zero residue all passed against the one-seat promotion contract."
-    next_action: retain the deployed one-seat internal ceiling; certify public_code exposure separately and require fresh evidence before any scale increase
+        evidence: evidence/runs/flightpath-live-20261006-network-operations-agent-public-1seat-r2.json
+        proof: "The exact pinned release passed public claim, same-seat recovery, branded Showroom, scoped terminal, live workspace investigation, embedded namespace-scoped Console, deterministic five-scenario qualification, idempotent reclaim, identity cleanup, model-key revocation, and zero residue."
+    next_action: retain the deployed one-seat internal and public ceiling; require fresh evidence before any scale increase
 
   hybrid-fraud-detection:
     display_name: "Intel AI 201: Build Hybrid Fraud Detection on Intel Xeon"

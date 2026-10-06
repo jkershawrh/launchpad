@@ -38,7 +38,7 @@ generatorOptions:
 images:
   - name: backend
     newName: ghcr.io/rhpds/launchpad-backend
-    digest: sha256:88702ef1f76b0374b6cf936b73070fef64ed411e5be88efcf245a3181898e5e5
+    digest: sha256:f6e70c9ace7a3f51f79c678d4b0c93924eb399d73b44688b3e4372e581f3e31f
   - name: partner-portal
     newName: ghcr.io/jkershawrh/launchpad-portal
     digest: sha256:ec41032da5dcd38680ce59e077bb67619f7170d68691f0c9376051505404a2a3

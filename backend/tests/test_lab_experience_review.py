@@ -467,7 +467,7 @@ def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> 
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
     expected_states = {
         "network-operations-agent": {
-            "revision": "6ed5c53337afa55c03949b2963b429f32977ef69",
+            "revision": "225af4a33489ffc4e8ac26fbbd6bc2b975512aab",
             "overall": "one-seat-live-certified-active",
             "cleanup": "green-live",
             "change_state": "one-seat-live-certified",

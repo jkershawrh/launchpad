@@ -452,10 +452,10 @@ def test_candidate_pins_network_operations_participant_experience() -> None:
     assert catalog["version"] == "0.2.1-flightpath.11"
     assert metadata["workshop_cluster_ref"] == "flightpath"
     assert metadata["showroom_content_ref"] == (
-        "6ed5c53337afa55c03949b2963b429f32977ef69"
+        "225af4a33489ffc4e8ac26fbbd6bc2b975512aab"
     )
     assert metadata["workload_revision"] == (
-        "6ed5c53337afa55c03949b2963b429f32977ef69"
+        "225af4a33489ffc4e8ac26fbbd6bc2b975512aab"
     )
     assert metadata["workspace_route_name"] == "netops"
     assert metadata["workload_routes"] == {"ui": "netops"}

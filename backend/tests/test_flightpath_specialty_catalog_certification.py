@@ -120,7 +120,7 @@ def test_specialty_probes_cover_function_namespace_and_secret_boundaries():
 
 
 def test_network_operations_exact_release_is_one_seat_certified_for_internal_and_public():
-    exact_revision = "6ed5c53337afa55c03949b2963b429f32977ef69"
+    exact_revision = "225af4a33489ffc4e8ac26fbbd6bc2b975512aab"
     contract_path = ROOT / "certification/catalog/network-operations-agent.yaml"
     contract = load_certification_contract(contract_path)
     intake = load_intake(ROOT / "catalog-onboarding/network-operations-agent.yaml")
@@ -153,7 +153,7 @@ def test_network_operations_exact_release_is_one_seat_certified_for_internal_and
         exact_revision
     )
     assert intake["runtime"]["workload"]["helm_values"]["image"]["digest"] == (
-        "sha256:a6ac58c4040127bdd790a2f2fd61c9eacf659f346d6c70d5da5dec06e7756242"
+        "sha256:9390dc029162a51995d407de99f5e1050901ab2b3ab9ecffaeb7d3bb550c9e9e"
     )
     assert intake["catalog"]["status"] == "active"
     assert intake["certification"]["stage"] == "1-seat-certified"

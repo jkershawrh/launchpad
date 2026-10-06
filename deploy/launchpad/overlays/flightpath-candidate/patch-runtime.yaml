@@ -12,7 +12,7 @@ spec:
         - name: launchpad-registry-pull
       containers:
         - name: backend
-          image: ghcr.io/rhpds/launchpad-backend@sha256:88702ef1f76b0374b6cf936b73070fef64ed411e5be88efcf245a3181898e5e5
+          image: ghcr.io/rhpds/launchpad-backend@sha256:f6e70c9ace7a3f51f79c678d4b0c93924eb399d73b44688b3e4372e581f3e31f
           env:
             - name: SSL_CERT_FILE
               value: /etc/launchpad-ca/ca-bundle.crt
@@ -484,7 +484,7 @@ spec:
                   app.kubernetes.io/name: public-access-gateway
       containers:
         - name: gateway
-          image: ghcr.io/rhpds/launchpad-backend@sha256:88702ef1f76b0374b6cf936b73070fef64ed411e5be88efcf245a3181898e5e5
+          image: ghcr.io/rhpds/launchpad-backend@sha256:f6e70c9ace7a3f51f79c678d4b0c93924eb399d73b44688b3e4372e581f3e31f
           env:
             - {name: SSL_CERT_FILE, value: /etc/launchpad-ca/ca-bundle.crt}
             - {name: REQUESTS_CA_BUNDLE, value: /etc/launchpad-ca/ca-bundle.crt}
