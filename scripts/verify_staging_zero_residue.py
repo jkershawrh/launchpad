@@ -37,6 +37,7 @@ def main() -> int:
     parser.add_argument("--evidence-dir", required=True)
     parser.add_argument("--candidate-commit", required=True)
     parser.add_argument("--manifest-sha256", required=True)
+    parser.add_argument("--expected-catalogs", required=True, type=int)
     parser.add_argument("--run-prefix", required=True)
     parser.add_argument("--run-started-at", required=True)
     parser.add_argument("--output", required=True)
@@ -97,7 +98,9 @@ def main() -> int:
             ["oc", "get", "applications.argoproj.io", "-A", "-l", "launchpad.redhat.com/session-id", "-o", "name"]
         ),
     }
-    all_green = len(bundles) == 11 and all(x["result"] == "GREEN-live" for x in bundles)
+    all_green = len(bundles) == args.expected_catalogs and all(
+        x["result"] == "GREEN-live" for x in bundles
+    )
     zero_residue = all(value == 0 for value in database_counts.values()) and all(
         value == 0 for value in resource_counts.values()
     )
@@ -105,6 +108,7 @@ def main() -> int:
         "schema": "launchpad.redhat.com/staging-zero-residue/v1",
         "candidate_git_commit": args.candidate_commit,
         "candidate_manifest_sha256": args.manifest_sha256,
+        "expected_catalogs": args.expected_catalogs,
         "observed_at": datetime.now(UTC).isoformat(),
         "certification_bundles": bundles,
         "database_counts": database_counts,

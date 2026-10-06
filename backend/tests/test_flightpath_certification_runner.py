@@ -99,6 +99,14 @@ def test_matrix_defaults_to_one_seat_and_requires_an_explicit_scale_override() -
     assert '--seats "${certification_seats}"' in text
     assert '--seats 5' not in text
     assert 'run_id="${run_prefix}-${catalog_id}-${certification_seats}-seat"' in text
+    assert '--expected-catalogs "${catalog_count}"' in text
+
+
+def test_zero_residue_verifier_does_not_hardcode_catalog_count() -> None:
+    text = (ROOT / "scripts/verify_staging_zero_residue.py").read_text()
+    assert 'parser.add_argument("--expected-catalogs", required=True, type=int)' in text
+    assert "len(bundles) == args.expected_catalogs" in text
+    assert "len(bundles) == 11" not in text
 
 
 def test_matrix_covers_every_active_participant_catalog() -> None:
