@@ -1,0 +1,65 @@
+{
+  "evidence_id": "agentic-ai-101-flightpath-full-participant-one-seat-20261005",
+  "result": "GREEN-destination-rehearsal-seat",
+  "catalog_item_id": "agentic-ai-101",
+  "cluster_ref": "flightpath",
+  "tenant_id": "flightpath-candidate-cert",
+  "request_id": "88604e0b-21a3-4dee-97a6-82ef7953a130",
+  "session_id": "08bbef5e-31ec-487d-843b-0c6c0a3d4966",
+  "namespace": "launchpad-flightpath-candida-agentic-ai-101-88604e",
+  "source_commit": "24403fa7a3bf228f685e2a0aa549d1aa6c7fe7e2",
+  "launchpad_commit": "8f4b9b7c",
+  "runtime_images": {
+    "presentation": "ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:bc9d4db4534e08551ff48938f6e840a27fe1373045586e922d3b100afae2edf9",
+    "rehearsal": "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:1fedfffd99183023350cbff16c9535fb3ff9bb67a3ca44f575d6a50d8cfc5a6a"
+  },
+  "lifecycle": {
+    "provisioning_started_at": "2026-10-06T04:03:34.638652Z",
+    "ready_at": "2026-10-06T04:04:05.304894Z",
+    "reclaim_started_at": "2026-10-06T04:05:47.482583Z",
+    "reclaimed_at": "2026-10-06T04:06:21.665130Z",
+    "final_status": "reclaimed"
+  },
+  "proof": {
+    "source_check_passed": true,
+    "source_tests_passed": 45,
+    "presentation_ready": true,
+    "rehearsal_runtime_ready": true,
+    "showroom_pages_checked": 6,
+    "showroom_pages_passed": 6,
+    "showroom_execute_blocks_present": 5,
+    "red_hat_intel_branding_contract_passed": true,
+    "interactive_story_same_origin_http_200": true,
+    "interactive_story_asset_http_200": true,
+    "terminal_http_200": true,
+    "openshift_console_url_declared": true,
+    "read_only_workflow_grounded": true,
+    "deterministic_replay": true,
+    "state_change_denied": true,
+    "unknown_scenario_rejected": true,
+    "target_state_mutated": false,
+    "human_review_required": true,
+    "terminal_namespace_isolation": true,
+    "cross_namespace_access_denied": true,
+    "cluster_node_access_denied": true,
+    "evidence_source": "rehearsal",
+    "live_claim": false,
+    "model_participated": false,
+    "strict_cluster_ca_validation": true,
+    "browser_visual_certification": "conditional on a browser-trusted Flightpath route certificate"
+  },
+  "cleanup": {
+    "namespace_remaining": 0,
+    "applications_remaining": 0,
+    "routes_remaining": 0,
+    "role_bindings_remaining": 0,
+    "secrets_remaining": 0
+  },
+  "proof_strategy": {
+    "TDD": "The current source suite passed 45 component and service tests, including namespace-safe deployment and partnership-branding contracts.",
+    "EDD": "This manifest binds the exact source, image digests, order, seat, lifecycle timestamps, participant journey, and zero-residue cleanup.",
+    "CDD": "Catalog, onboarding, certification, route, image, and operator-tab contracts matched the deployed seat.",
+    "BDD": "Given an Agentic AI 101 seat, a participant can frame, investigate, request a controlled action, compare traces, and prove understanding without mutating a target.",
+    "CBT": "Presentation, six Showroom pages, execute controls, rehearsal API, same-origin story proxy, terminal, namespace isolation, and cleanup were checked independently."
+  }
+}
