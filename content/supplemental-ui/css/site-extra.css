@@ -11,8 +11,9 @@
   align-items: center;
   display: inline-flex;
   flex: none;
-  gap: 0.6rem;
-  padding-right: 1rem;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding: 0.5rem 1.25rem;
   text-decoration: none;
 }
 
@@ -23,47 +24,35 @@
 
 .launchpad-showroom-redhat {
   display: block;
-  height: 1.65rem;
+  height: 2.1rem;
   width: auto;
 }
 
 .launchpad-showroom-partnership {
   color: #a3a3a3;
-  font-size: 1rem;
+  font-size: 1.25rem;
   line-height: 1;
 }
 
 .launchpad-showroom-intel {
   display: block;
-  height: 1.3rem;
+  height: 1.7rem;
   width: auto;
-}
-
-.launchpad-showroom-title {
-  border-left: 1px solid #4f5255;
-  min-width: 0;
-  overflow: hidden;
-  padding-left: 1rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media (max-width: 640px) {
   .launchpad-showroom-brand {
-    gap: 0.4rem;
+    gap: 0.55rem;
+    min-height: 3rem;
     padding-left: 0.65rem;
     padding-right: 0.65rem;
   }
 
   .launchpad-showroom-redhat {
-    height: 1.4rem;
+    height: 1.8rem;
   }
 
   .launchpad-showroom-intel {
-    height: 1.1rem;
-  }
-
-  .launchpad-showroom-title {
-    display: none;
+    height: 1.45rem;
   }
 }
