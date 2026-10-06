@@ -31,6 +31,10 @@ def test_runner_uses_dedicated_identity_and_durable_evidence() -> None:
     assert ingress_rule["apiGroups"] == ["config.openshift.io"]
     assert ingress_rule["resourceNames"] == ["cluster"]
     assert ingress_rule["verbs"] == ["get"]
+    cluster_binding_rule = next(
+        r for r in role["rules"] if r["resources"] == ["clusterrolebindings"]
+    )
+    assert cluster_binding_rule["verbs"] == ["get", "list"]
     assert build["spec"]["source"]["type"] == "Git"
     assert len(build["spec"]["source"]["git"]["ref"]) == 40
     assert build["spec"]["output"]["to"] == {
