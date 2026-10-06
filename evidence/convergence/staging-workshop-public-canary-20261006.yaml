@@ -1,0 +1,138 @@
+schema_version: launchpad.redhat.com/staging-workshop-public-canary/v1
+generated_at: '2026-10-06T14:07:26Z'
+
+candidate:
+  branch: codex/flightpath-migration-20260922
+  source_commit: 3de7bb48
+  cluster: flightpath
+  namespace: launchpad-flightpath-candidate
+  backend_image: ghcr.io/rhpds/launchpad-backend@sha256:ed51a92852da8fb4be1aa5b36f95791bc3d351e97dcc6e98fbce2f106b383be3
+  signed_build:
+    run_id: 37472652069
+    result: pass
+    url: https://github.com/rhpds/launchpad/actions/runs/37472652069
+
+deployment:
+  backend_replicas_ready: 1
+  lifecycle_worker_replicas_ready: 2
+  public_access_gateway_replicas_ready: 2
+  exact_image_digest_on_all_three_workloads: true
+  ready_nodes: 6
+  total_nodes: 6
+
+internal_workshop:
+  workshop_id: 661b6b26-9530-41af-af14-0c38f8bbf86c
+  session_id: 4453f799-9752-4427-b9f1-276a6041d094
+  catalog_item_id: agentic-ai-101
+  tenant_id: flightpath-candidate-cert
+  cluster_ref: flightpath
+  seats_requested: 1
+  seats_ready: 1
+  capacity_preview:
+    available_seats: 83
+    cpu_limited_seats: 7963
+    memory_limited_seats: 12463
+    pod_limited_seats: 83
+    eligible_nodes: 3
+    retained_headroom_percent: 20
+  lifecycle:
+    created_at: '2026-10-06T13:25:43.128537Z'
+    provisioning_started_at: '2026-10-06T13:25:53.066966Z'
+    completed_at: '2026-10-06T13:36:13.163282Z'
+  requester_ui: pass
+  admin_ui: pass
+  result: GREEN-live
+
+defect_correction:
+  observation: >-
+    Force-reclaiming a workshop seat through the administrator session endpoint
+    reclaimed the session resources but left its parent workshop ready.
+  regression_test_commit: 58242e2d
+  deployment_commit: 3de7bb48
+  correction: >-
+    The administrator session action now routes workshop seats through the
+    aggregate workshop reclaim lifecycle.
+  focused_tests:
+    passed: 108
+    failed: 0
+  deployed_retest:
+    session_force_reclaim_http_status: 200
+    parent_workshop_status: completed
+    seat_status: reclaimed
+    session_status: reclaimed
+    result: GREEN-live
+
+public_workshop:
+  workshop_id: 6ec12bff-f4e4-4284-9675-c03c3470ac71
+  session_id: af277301-7045-4688-9441-c1bb1a1d5c5f
+  seat_id: b9ad380a-c524-49d7-adf9-84053bb4a3b0
+  participant_id: b2506958b9b5f585d19a2ecf25bba64e
+  catalog_item_id: agentic-ai-101
+  tenant_id: flightpath-candidate-cert
+  cluster_ref: flightpath
+  namespace: launchpad-flightpath-candida-agentic-ai-101-b9ad38
+  exposure_policy: public_code
+  seats_requested: 1
+  seats_ready: 1
+  public_url: https://labs.smg-helix.ai/labs/agentic-ai-101-6ec12bff
+  instructor_code_recorded: false
+  lifecycle:
+    created_at: '2026-10-06T13:44:48.396482Z'
+    provisioning_started_at: '2026-10-06T13:45:15.980016Z'
+    reclaimed_at: '2026-10-06T14:05:13.647801Z'
+  participant_journey:
+    trusted_tls: pass
+    email_and_code_claim: pass
+    same_seat_recovery: pass
+    participant_home: pass
+    my_labs: pass
+    add_lab_control_present: pass
+    explicit_logout: pass
+    showroom: pass
+    interactive_story: pass
+    terminal: pass
+    namespace_scoped_console: pass
+  authorization:
+    assigned_namespace_list_pods: allowed
+    control_plane_namespace_list_pods: denied
+    cluster_nodes_get: denied
+    result: pass
+  result: GREEN-live
+
+reclaim:
+  parent_workshop_status: completed
+  seat_status: reclaimed
+  session_status: reclaimed
+  access_policy_enabled: false
+  entitlement_status: expired
+  participant_identity_disabled: true
+  namespace_count: 0
+  route_count: 0
+  rolebinding_count: 0
+  argocd_application_count: 0
+  public_route_access_after_reclaim: denied
+  result: GREEN-live-workload-residue
+
+security_residue:
+  openshift_oauth_access_tokens_for_disabled_identity: 2
+  openshift_user_object_retained: true
+  effective_namespace_authorization_after_reclaim: none
+  classification: staging-blocker
+  rationale: >-
+    Namespace deletion and RoleBinding removal fail closed, but the accepted
+    staging contract requires zero inactive identity residue. Automatic,
+    least-privilege OpenShift OAuth token revocation and user lifecycle cleanup
+    are not implemented yet.
+
+decision:
+  workshop_order_and_capacity: GREEN-live
+  administrator_bounded_action: GREEN-live
+  public_participant_journey: GREEN-live
+  namespace_isolation: GREEN-live
+  workload_reclaim_and_zero_residue: GREEN-live
+  identity_cleanup: RED
+  staging_candidate_qualified: false
+  remaining_qualification_gates:
+    - automatic least-privilege OpenShift OAuth token revocation on final entitlement expiry or reclaim
+    - safe removal or retention-policy reconciliation of the disabled OpenShift user object
+

@@ -131,3 +131,29 @@ Using one one-seat order created through the requester UI:
 
 Only after this journey is GREEN-live may the staging evidence manifest be
 assembled and explicit staging acceptance requested.
+
+## October 6 convergence result
+
+The unchanged Flightpath candidate now passes the requester, administrator,
+workshop, and public participant browser journey. The one-seat internal and
+public Agentic AI 101 canaries proved capacity preview, order creation,
+workshop/session visibility, email-and-code claim, same-seat recovery, My Labs,
+add-lab control presence, logout, Showroom, Interactive Story, Terminal,
+namespace-scoped OpenShift Console, own-namespace access, cross-namespace and
+cluster-scope denial, aggregate reclaim, and zero workload residue.
+
+The exercise also found and corrected one administrator lifecycle defect:
+force-reclaiming a workshop seat directly left the parent workshop ready. The
+deployed correction now routes that action through the parent workshop
+lifecycle; the live retest left the workshop completed, its seat and session
+reclaimed, and no namespace, Route, RoleBinding, or Argo CD Application.
+
+The staging gate is reduced to one security boundary. OpenShift retains OAuth
+access tokens and a User object after Launchpad disables the participant's
+final identity. Namespace deletion and RoleBinding removal deny effective lab
+access, but the accepted gate requires zero inactive identity residue. The
+candidate must therefore remain unqualified until least-privilege token
+revocation and disabled-user lifecycle cleanup are implemented and proven.
+
+The immutable evidence is
+`evidence/convergence/staging-workshop-public-canary-20261006.yaml`.

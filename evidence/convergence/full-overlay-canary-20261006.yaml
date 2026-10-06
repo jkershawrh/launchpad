@@ -74,9 +74,11 @@ decision:
   immutable_overlay_convergence: GREEN-live
   lifecycle_canary: GREEN-live
   zero_residue: GREEN-live
+  live_workshop_order_and_capacity: GREEN-live
+  authenticated_admin_bounded_action: GREEN-live
+  public_participant_journey: GREEN-live
+  namespace_isolation: GREEN-live
+  workload_reclaim: GREEN-live
   staging_candidate_qualified: false
   remaining_qualification_gates:
-    - authenticated admin browser and bounded action journey
-    - live one-seat workshop capacity preview and order contract
-    - public participant claim, resume, add-lab, Console, logout, and reclaim journey
-    - final impact-selected catalog regression and staging evidence manifest
+    - automatic least-privilege OpenShift OAuth token revocation and disabled user lifecycle cleanup

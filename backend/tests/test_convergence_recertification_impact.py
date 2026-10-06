@@ -6,6 +6,9 @@ ROOT = Path(__file__).resolve().parents[2]
 IMPACT = ROOT / "evidence/convergence/recertification-impact-20261006.yaml"
 CANARY = ROOT / "evidence/convergence/platform-canary-20261006.yaml"
 FULL_OVERLAY_CANARY = ROOT / "evidence/convergence/full-overlay-canary-20261006.yaml"
+STAGING_WORKSHOP_PUBLIC_CANARY = (
+    ROOT / "evidence/convergence/staging-workshop-public-canary-20261006.yaml"
+)
 
 
 def test_convergence_requires_a_platform_canary_without_overclaiming_lab_recertification() -> None:
@@ -74,4 +77,43 @@ def test_full_overlay_canary_is_green_without_overclaiming_staging() -> None:
     assert proof["decision"]["immutable_overlay_convergence"] == "GREEN-live"
     assert proof["decision"]["lifecycle_canary"] == "GREEN-live"
     assert proof["decision"]["staging_candidate_qualified"] is False
-    assert len(proof["decision"]["remaining_qualification_gates"]) == 4
+    assert proof["decision"]["live_workshop_order_and_capacity"] == "GREEN-live"
+    assert proof["decision"]["authenticated_admin_bounded_action"] == "GREEN-live"
+    assert proof["decision"]["public_participant_journey"] == "GREEN-live"
+    assert proof["decision"]["namespace_isolation"] == "GREEN-live"
+    assert proof["decision"]["workload_reclaim"] == "GREEN-live"
+    assert len(proof["decision"]["remaining_qualification_gates"]) == 1
+
+
+def test_staging_workshop_public_canary_records_the_last_gate_truthfully() -> None:
+    proof = yaml.safe_load(STAGING_WORKSHOP_PUBLIC_CANARY.read_text(encoding="utf-8"))
+
+    assert proof["schema_version"] == (
+        "launchpad.redhat.com/staging-workshop-public-canary/v1"
+    )
+    assert proof["candidate"]["source_commit"] == "3de7bb48"
+    assert proof["candidate"]["backend_image"].endswith(
+        "sha256:ed51a92852da8fb4be1aa5b36f95791bc3d351e97dcc6e98fbce2f106b383be3"
+    )
+    assert proof["candidate"]["signed_build"]["result"] == "pass"
+    assert proof["internal_workshop"]["seats_ready"] == 1
+    assert proof["defect_correction"]["focused_tests"]["passed"] == 108
+    assert proof["defect_correction"]["deployed_retest"]["parent_workshop_status"] == "completed"
+    assert proof["public_workshop"]["participant_journey"]["same_seat_recovery"] == "pass"
+    assert proof["public_workshop"]["participant_journey"]["namespace_scoped_console"] == "pass"
+    assert proof["public_workshop"]["authorization"] == {
+        "assigned_namespace_list_pods": "allowed",
+        "control_plane_namespace_list_pods": "denied",
+        "cluster_nodes_get": "denied",
+        "result": "pass",
+    }
+    assert proof["reclaim"]["parent_workshop_status"] == "completed"
+    assert proof["reclaim"]["namespace_count"] == 0
+    assert proof["reclaim"]["route_count"] == 0
+    assert proof["reclaim"]["rolebinding_count"] == 0
+    assert proof["reclaim"]["argocd_application_count"] == 0
+    assert proof["security_residue"]["openshift_oauth_access_tokens_for_disabled_identity"] == 2
+    assert proof["security_residue"]["classification"] == "staging-blocker"
+    assert proof["decision"]["identity_cleanup"] == "RED"
+    assert proof["decision"]["staging_candidate_qualified"] is False
+    assert len(proof["decision"]["remaining_qualification_gates"]) == 2
