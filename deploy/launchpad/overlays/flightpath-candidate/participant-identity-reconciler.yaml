@@ -69,10 +69,9 @@ metadata:
   name: participant-identity-reconciler
 spec:
   schedule: "*/5 * * * *"
-  # First activation is deliberately suspended. Certification creates one
-  # explicit Job from this template, verifies the identity boundary and zero
-  # residue, and only then enables the recurring schedule.
-  suspend: true
+  # Enabled only after the controlled Flightpath proof verified the identity
+  # boundary, zero residue, and a second idempotent no-op run.
+  suspend: false
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3

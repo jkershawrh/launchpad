@@ -43,11 +43,11 @@ def test_identity_reconciler_has_a_dedicated_service_account_and_minimal_role() 
     ]
 
 
-def test_identity_reconciler_starts_suspended_for_controlled_live_certification() -> None:
+def test_identity_reconciler_is_enabled_after_controlled_live_certification() -> None:
     documents = _documents()
     cronjob = next(item for item in documents if item["kind"] == "CronJob")
 
-    assert cronjob["spec"]["suspend"] is True
+    assert cronjob["spec"]["suspend"] is False
 
 
 def test_identity_reconciler_delete_permission_is_admission_bounded() -> None:
