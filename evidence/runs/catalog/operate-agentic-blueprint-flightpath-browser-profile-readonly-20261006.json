@@ -1,0 +1,61 @@
+{
+  "schema_version": "launchpad.redhat.com/catalog-browser-profile-evidence/v1",
+  "evidence_id": "operate-agentic-blueprint-flightpath-browser-profile-readonly-20261006",
+  "observed_at": "2026-10-06T16:57:31Z",
+  "result": "GREEN-live-read-only-partial",
+  "candidate_commit": "ca46766e5398000018374e45b21ad8ddece673e3",
+  "cluster_ref": "flightpath",
+  "catalog_item_id": "operate-agentic-blueprint",
+  "session_id": "1528e3bd-e44d-4d93-85fe-12ee69420af1",
+  "request_id": "9bfb2886-1fbc-47bb-91d4-c38001a89ae5",
+  "namespace": "launchpad-flightpath-candida-agentic-ops-9bfb28",
+  "expires_at": "2026-10-06T19:31:00.502532Z",
+  "mutated_cluster": false,
+  "checks": {
+    "session_ready": true,
+    "pods_ready": 3,
+    "container_restarts": 0,
+    "argocd_showroom_synced_healthy": true,
+    "argocd_workload_synced_healthy": true,
+    "showroom_pages_http_200": 7,
+    "showroom_markers_passed": 7,
+    "presentation_health": "healthy",
+    "agents_discovered": 3,
+    "policy_authority": "recommend_only",
+    "presentation_workflow_steps": 3,
+    "presentation_workflow_errors": 0,
+    "orchestrator_workflow_steps": 3,
+    "orchestrator_workflow_errors": 0,
+    "orchestrator_latency_ms": 18509.7,
+    "guardrail_blocked_agents": [
+      "research",
+      "analyst",
+      "executor"
+    ],
+    "semantic_routing_status": "ok",
+    "semantic_routing_classifier": "llm-fallback",
+    "semantic_routing_workflow": "standard",
+    "semantic_routing_model": "simple",
+    "semantic_routing_errors": 0,
+    "participant_project_is_assigned_namespace": true,
+    "participant_can_edit_assigned_namespace": true,
+    "cross_namespace_access_denied": true,
+    "cluster_node_access_denied": true
+  },
+  "immutable_images": {
+    "presentation": "quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580",
+    "workload": "ghcr.io/jkershawrh/multi-agent-quickstart@sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86",
+    "terminal": "quay.io/rh-ee-jkershaw/launchpad-showroom-terminal@sha256:324dc5c4201f0da030a572dab389bc8cfdc2f66e800dff3fcee824b7e795daae"
+  },
+  "open_gates": [
+    "email_and_code_claim",
+    "participant_landing_and_resume",
+    "authenticated_same_origin_showroom_and_tool_paths",
+    "embedded_openshift_console_sso",
+    "learner_policy_change_and_rollback",
+    "logout_and_resume",
+    "reclaim_is_idempotent",
+    "zero_residue"
+  ],
+  "certification_claim": "This evidence proves the non-disruptive live workload and namespace-isolation subset only. It is not a complete browser-profile or catalog lifecycle certification."
+}
