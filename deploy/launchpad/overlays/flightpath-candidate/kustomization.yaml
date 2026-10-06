@@ -43,8 +43,8 @@ images:
     newName: ghcr.io/jkershawrh/launchpad-portal
     digest: sha256:ec41032da5dcd38680ce59e077bb67619f7170d68691f0c9376051505404a2a3
   - name: admin
-    newName: ghcr.io/jkershawrh/launchpad-admin
-    digest: sha256:4607beb42f2d5b677dee5d7c0f1772b70319406feb947b7ca241644ff50e697e
+    newName: ghcr.io/rhpds/launchpad-admin
+    digest: sha256:09bc575aec72955757f2fa387405d619261704fdc0beac1560a003f27fbba4a7
   - name: postgres
     newName: docker.io/library/postgres
     digest: sha256:075f7ba66bc9b3ce7d6b8b635208ff61cd7cf1a67d71ec530eec5d7ae0cbe571
