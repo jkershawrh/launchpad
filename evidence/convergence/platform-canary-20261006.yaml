@@ -55,6 +55,17 @@ rollout:
     endpoint: /
     http_status: 200
     result: pass
+  requester_ui:
+    authenticated_browser: pass
+    participant_catalog_items_visible: 21
+    compatibility_aliases_hidden: 2
+    learning_paths:
+      agentic_available: 6
+      sovereign_available: 3
+      sovereign_draft: 2
+      virtualization_available: 5
+    order_links_resolve_to_declared_catalog_ids: true
+    result: pass
 
 canary:
   request_id: ea157923-071a-43df-ac58-04c7838771e3

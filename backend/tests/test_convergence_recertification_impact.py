@@ -41,6 +41,9 @@ def test_live_platform_canary_closes_the_selective_recertification_gate() -> Non
     assert proof["preconditions"]["ready_nodes"] == 6
     assert proof["rollout"]["requester"]["result"] == "pass"
     assert proof["rollout"]["admin"]["result"] == "pass"
+    assert proof["rollout"]["requester_ui"]["participant_catalog_items_visible"] == 21
+    assert proof["rollout"]["requester_ui"]["compatibility_aliases_hidden"] == 2
+    assert proof["rollout"]["requester_ui"]["order_links_resolve_to_declared_catalog_ids"] is True
     assert proof["canary"]["validation"]["checks_passed"] == 6
     assert proof["canary"]["validation"]["repeatability_score"] == 100
     assert proof["cleanup"]["namespace_count"] == 0
