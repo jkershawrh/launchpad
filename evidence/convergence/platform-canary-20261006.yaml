@@ -1,0 +1,102 @@
+schema_version: launchpad.redhat.com/platform-canary/v1
+generated_at: '2026-10-06T12:12:57Z'
+
+source:
+  branch: codex/flightpath-migration-20260922
+  deployment_commit: 4e25830f
+  portal_source_commit: c53b969646f56dda1eb1b920af49271519602943
+  image_workflow:
+    run_id: 37453708390
+    result: success
+  images:
+    requester: ghcr.io/jkershawrh/launchpad-portal@sha256:ec41032da5dcd38680ce59e077bb67619f7170d68691f0c9376051505404a2a3
+    admin: ghcr.io/jkershawrh/launchpad-admin@sha256:4607beb42f2d5b677dee5d7c0f1772b70319406feb947b7ca241644ff50e697e
+
+scope:
+  cluster: flightpath
+  namespace: launchpad-flightpath-candidate
+  rollout_strategy: targeted-requester-and-admin-only
+  unchanged_components:
+    - backend
+    - lifecycle-worker
+    - model-serving
+    - catalog runtime revisions
+    - participant lab images
+  full_overlay_apply_blocked: true
+  full_overlay_blocker: >-
+    The existing sales-ai-strategy Deployment has immutable selector drift.
+    The candidate was therefore rolled out by exact requester and admin image
+    digest only; unrelated resources were not reconciled.
+
+preconditions:
+  ready_nodes: 6
+  total_nodes: 6
+  active_sessions: 0
+  participant_lab_namespaces: 0
+
+rollout:
+  requester:
+    replicas_ready: 1
+    replicas_desired: 1
+    result: pass
+  admin:
+    replicas_ready: 1
+    replicas_desired: 1
+    result: pass
+  backend_health:
+    endpoint: /health
+    http_status: 200
+    result: pass
+  requester_origin:
+    endpoint: /
+    http_status: 200
+    result: pass
+  admin_origin:
+    endpoint: /
+    http_status: 200
+    result: pass
+
+canary:
+  request_id: ea157923-071a-43df-ac58-04c7838771e3
+  session_id: 084aae23-8450-4b67-83ab-a9210a83cb41
+  catalog_item_id: agentic-ai-101
+  tenant_id: flightpath-candidate-cert
+  exposure_policy: internal
+  cluster_ref: flightpath
+  namespace: launchpad-flightpath-candida-agentic-ai-101-ea1579
+  source_commit_annotation: 4e25830f
+  lifecycle:
+    provisioning_started_at: '2026-10-06T12:07:31.924637Z'
+    ready_at: '2026-10-06T12:08:12.554121Z'
+    cleanup_queued_at: '2026-10-06T12:09:19.111959Z'
+    reclaimed_at: '2026-10-06T12:09:51.161022Z'
+  validation:
+    result: pass
+    checks_passed: 6
+    checks_failed: 0
+    showroom_http_status: 200
+    showroom_title: Showroom
+    handoff_generated: true
+    repeatability_score: 100
+
+cleanup:
+  durable_session_status: reclaimed
+  credentials_scrubbed: true
+  final_observation_at: '2026-10-06T12:12:57Z'
+  namespace_count: 0
+  route_count: 0
+  rolebinding_count: 0
+  argocd_application_count: 0
+  active_session_count: 0
+  result: pass
+
+decision:
+  platform_canary: GREEN-live
+  blanket_lab_recertification_required: false
+  targeted_lab_recertification_required: []
+  staging_gate_effect: >-
+    The requester/admin convergence change has completed its required live
+    platform order, readiness, handoff, reclaim, and zero-residue proof.
+    Existing immutable lab certifications remain valid because no participant
+    runtime, content, model, dataset, prompt, or cluster binding changed.
+
