@@ -21,9 +21,9 @@
   text-decoration: none;
 }
 
-.launchpad-showroom-intel {
+.launchpad-showroom-redhat {
   display: block;
-  height: 1.15rem;
+  height: 1.65rem;
   width: auto;
 }
 
@@ -33,10 +33,9 @@
   line-height: 1;
 }
 
-.launchpad-showroom-rhdp {
+.launchpad-showroom-intel {
   display: block;
-  height: 1.55rem;
-  max-width: 13rem;
+  height: 1.3rem;
   width: auto;
 }
 
@@ -56,13 +55,12 @@
     padding-right: 0.65rem;
   }
 
-  .launchpad-showroom-intel {
-    height: 1rem;
+  .launchpad-showroom-redhat {
+    height: 1.4rem;
   }
 
-  .launchpad-showroom-rhdp {
-    height: 1.25rem;
-    max-width: 10.5rem;
+  .launchpad-showroom-intel {
+    height: 1.1rem;
   }
 
   .launchpad-showroom-title {

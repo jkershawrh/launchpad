@@ -1,0 +1,57 @@
+name: showroom-ui-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Immutable Launchpad Showroom UI release tag
+        required: true
+        default: showroom-ui-v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      UPSTREAM_REPOSITORY: https://github.com/rhpds/nookbag.git
+      UPSTREAM_COMMIT: 19cf40e863bd98e226f843d2d5c11c05f4cd3cd6
+      ASSET_NAME: launchpad-showroom-ui-v1.0.0.zip
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out reviewed Nookbag source
+        run: |
+          git clone "$UPSTREAM_REPOSITORY" upstream-nookbag
+          git -C upstream-nookbag checkout "$UPSTREAM_COMMIT"
+          test "$(git -C upstream-nookbag rev-parse HEAD)" = "$UPSTREAM_COMMIT"
+      - name: Apply Red Hat and Intel branding
+        run: python3 scripts/build_branded_showroom_ui.py upstream-nookbag
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: upstream-nookbag/package-lock.json
+      - name: Test and build
+        working-directory: upstream-nookbag
+        run: |
+          npm ci
+          npm run test:run
+          npm run build
+      - name: Package immutable bundle
+        run: |
+          cd upstream-nookbag/dist
+          zip -qr "../../$ASSET_NAME" .
+          cd ../..
+          sha256sum "$ASSET_NAME" > "$ASSET_NAME.sha256"
+      - name: Publish release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists; immutable assets will not be replaced" >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" --title "$RELEASE_TAG" --notes "Launchpad-branded Showroom UI built from rhpds/nookbag@$UPSTREAM_COMMIT"
+          gh release upload "$RELEASE_TAG" "$ASSET_NAME" "$ASSET_NAME.sha256"

@@ -84,10 +84,14 @@ def test_shared_showroom_ui_uses_canonical_terminal_execute_controls():
     assert "copy-button" in script
     assert "launchpad-execute-button" not in script
     assert ".launchpad-execute-button" not in styles
+    assert "redhat-logo.svg" in header
+    assert (supplemental / "img/redhat-logo.svg").is_file()
     assert "intel-logo.svg" in header
     assert (supplemental / "img/intel-logo.svg").is_file()
-    assert "logo-demo-platform.svg" in header
-    assert "Red Hat Demo Platform" in header
+    assert "logo-demo-platform.svg" not in header
+    assert "Demo Platform" not in header
+    assert 'alt="Red Hat"' in header
+    assert 'alt="Intel"' in header
     assert ".launchpad-showroom-brand" in styles
 
 

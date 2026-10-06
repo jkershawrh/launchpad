@@ -6,6 +6,7 @@ import yaml
 from app.adapters.openshift.showroom_gitops import (
     SHOWROOM_CHART,
     SHOWROOM_GIT_CLONER_IMAGE,
+    SHOWROOM_UI_BUNDLE,
     ShowroomGitOpsAdapter,
     ShowroomSeat,
     ShowroomToolTab,
@@ -14,6 +15,25 @@ from app.adapters.openshift.showroom_gitops import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_showroom_uses_launchpad_owned_red_hat_intel_shell_bundle():
+    app = build_showroom_application(
+        ShowroomSeat(
+            namespace="launchpad-seat-branded-1",
+            workshop_id="workshop-1",
+            seat_id="seat-1",
+            participant_id="participant-1",
+            workspace_url="",
+            content_repo_url="https://github.com/rhpds/launchpad.git",
+            content_ref="a" * 40,
+            apps_domain="apps.example.com",
+        )
+    )
+    values = yaml.safe_load(app["spec"]["source"]["helm"]["values"])
+
+    assert values["content"]["zero_touch_bundle"] == SHOWROOM_UI_BUNDLE
+    assert "/rhpds/launchpad/releases/download/showroom-ui-v1.0.0/" in SHOWROOM_UI_BUNDLE
 
 
 def test_showroom_uses_immutable_git_cloner_that_marks_repo_safe_before_entering_it():

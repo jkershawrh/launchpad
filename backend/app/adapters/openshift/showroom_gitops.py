@@ -16,6 +16,10 @@ ARGO_PLURAL = "applications"
 SHOWROOM_CHART_REPOSITORY = "https://rhpds.github.io/showroom-deployer"
 SHOWROOM_CHART = "showroom-single-pod"
 SHOWROOM_CHART_VERSION = "2.2.*"
+SHOWROOM_UI_BUNDLE = (
+    "https://github.com/rhpds/launchpad/releases/download/showroom-ui-v1.0.0/"
+    "launchpad-showroom-ui-v1.0.0.zip"
+)
 SHOWROOM_TERMINAL_IMAGE = (
     "image-registry.openshift-image-registry.svc:5000/partner-ai-launchpad/"
     "launchpad-showroom-terminal@sha256:"
@@ -203,7 +207,7 @@ def build_showroom_application(
             "antoraPlaybook": seat.content_playbook,
             "uiConfig": yaml.safe_dump(ui_config, sort_keys=False),
             "user_data": yaml.safe_dump(user_data, sort_keys=False),
-            "zero_touch_bundle": "https://github.com/rhpds/nookbag/releases/download/nookbag-v0.4.0/nookbag-v0.4.0.zip",
+            "zero_touch_bundle": SHOWROOM_UI_BUNDLE,
         },
         "git_cloner": {"image": seat.git_cloner_image},
     }
