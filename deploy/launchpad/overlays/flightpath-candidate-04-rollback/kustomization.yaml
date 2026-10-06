@@ -9,12 +9,12 @@ resources:
   - ../flightpath-candidate
 
 images:
-  - name: ghcr.io/rhpds/launchpad-backend
+  - name: ghcr.io/jkershawrh/launchpad-flightpath-backend
     newName: quay.io/rh-ee-jkershaw/launchpad-backend
     digest: sha256:e922ef53a5e08ae957de8b0a034652f7d64d605e09bdc032a6405279ba9c16e1
-  - name: ghcr.io/rhpds/launchpad-portal
+  - name: ghcr.io/jkershawrh/launchpad-portal
     newName: quay.io/rh-ee-jkershaw/launchpad-portal
     digest: sha256:84358765ab9c78258fbba8ddb50791dcff69578b7c2fc6a822758d25c4b7f71d
-  - name: ghcr.io/rhpds/launchpad-admin
+  - name: ghcr.io/jkershawrh/launchpad-admin
     newName: quay.io/rh-ee-jkershaw/launchpad-admin
     digest: sha256:b599a1d7b75005c55ce32fbe51db86d1aa3e8c0946260d0310dfa700f55acb29

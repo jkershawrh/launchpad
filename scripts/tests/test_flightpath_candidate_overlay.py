@@ -118,6 +118,11 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
         "launchpad": "launchpad-candidate.apps.flightpath.fm2aihpcsed.com",
         "launchpad-admin": "launchpad-admin-candidate.apps.flightpath.fm2aihpcsed.com",
         "launchpad-api": "launchpad-api-candidate.apps.flightpath.fm2aihpcsed.com",
+        "sales-ai-strategy": "sales-ai-strategy.apps.flightpath.fm2aihpcsed.com",
+        "sales-governed-agentic": "sales-governed-agentic.apps.flightpath.fm2aihpcsed.com",
+        "sales-intel-xeon": "sales-intel-xeon.apps.flightpath.fm2aihpcsed.com",
+        "sales-sovereign-ai": "sales-sovereign-ai.apps.flightpath.fm2aihpcsed.com",
+        "sales-virtualization-ai": "sales-virtualization-ai.apps.flightpath.fm2aihpcsed.com",
     }
 
     deployments = {
@@ -128,11 +133,16 @@ def test_candidate_is_isolated_and_fail_closed() -> None:
     assert deployments == {
         "admin": 1,
         "backend": 1,
-        "lifecycle-worker": 1,
+        "lifecycle-worker": 2,
         "launchpad-candidate-maas": 1,
         "partner-portal": 1,
         "postgres": 1,
         "public-access-gateway": 2,
+        "sales-ai-strategy": 1,
+        "sales-governed-agentic": 1,
+        "sales-intel-xeon": 1,
+        "sales-sovereign-ai": 1,
+        "sales-virtualization-ai": 1,
     }
     assert _one(documents, "CronJob", "lifecycle-scheduler")["spec"]["suspend"] is False
 
@@ -287,7 +297,7 @@ def test_candidate_pins_the_certified_flightpath_showroom_content() -> None:
         "https://github.com/jkershawrh/launchpad.git"
     )
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "9526ede61b5c31949f3a1bedd133b5a17e554178"
+        "67d1965c8e6347afe502ff4cba61b99e24257ec4"
     )
 
     for deployment_name, container_name in (
@@ -318,12 +328,12 @@ def test_candidate_isolates_agent_201_on_flightpath() -> None:
     metadata = catalog["metadata"]
     assert catalog["catalog_item_id"] == "intel-xeon6-agent-201"
     assert metadata["workshop_cluster_ref"] == "flightpath"
-    assert metadata["certification_stage"] == "thirty-seat-certified"
+    assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["showroom_content_repo_url"] == (
-        "https://github.com/jkershawrh/launchpad.git"
+        "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
     )
     assert metadata["showroom_content_ref"] == (
-        "9526ede61b5c31949f3a1bedd133b5a17e554178"
+        "42b250426fd4b5a8c7df843076b9ad8b54bf53a2"
     )
     assert metadata["inference_endpoint"] == "direct_vllm_candidate"
 
@@ -352,18 +362,18 @@ def test_candidate_isolates_multi_agent_on_flightpath() -> None:
     metadata = catalog["metadata"]
     assert catalog["catalog_item_id"] == "multi-agent-quickstart"
     assert metadata["workshop_cluster_ref"] == "flightpath"
-    assert metadata["certification_stage"] == "twenty-five-seat-certified"
+    assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["showroom_content_repo_url"] == (
         "https://github.com/jkershawrh/launchpad.git"
     )
     assert metadata["showroom_content_ref"] == (
-        "2302acddb0e696ff72b647677049b7de529060e3"
+        "4b341ad1f7b9ee833a5b664b5f52a4a8f9ffcb6c"
     )
     assert metadata["workload_repo"] == "https://github.com/jkershawrh/launchpad.git"
     assert metadata["workload_revision"] == (
-        "2302acddb0e696ff72b647677049b7de529060e3"
+        "4b341ad1f7b9ee833a5b664b5f52a4a8f9ffcb6c"
     )
-    assert metadata["inference_endpoint"] == "direct_vllm_candidate"
+    assert metadata["inference_endpoint"] == "litellm_virtual_key_candidate"
 
     for deployment_name, container_name in (
         ("backend", "backend"),
@@ -425,13 +435,13 @@ def test_candidate_pins_network_operations_participant_experience() -> None:
     metadata = catalog["metadata"]
 
     assert catalog["catalog_item_id"] == "network-operations-agent"
-    assert catalog["version"] == "0.2.0-flightpath.10"
+    assert catalog["version"] == "0.2.1-flightpath.11"
     assert metadata["workshop_cluster_ref"] == "flightpath"
     assert metadata["showroom_content_ref"] == (
-        "287bffcca9c90336ed199ab2156d4471377b2c3e"
+        "6ed5c53337afa55c03949b2963b429f32977ef69"
     )
     assert metadata["workload_revision"] == (
-        "287bffcca9c90336ed199ab2156d4471377b2c3e"
+        "6ed5c53337afa55c03949b2963b429f32977ef69"
     )
     assert metadata["workspace_route_name"] == "netops"
     assert metadata["workload_routes"] == {"ui": "netops"}
