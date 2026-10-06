@@ -16,7 +16,7 @@ run_attempt="${LAUNCHPAD_RUN_ATTEMPT:-$(date -u +%Y%m%dT%H%M%SZ)-${HOSTNAME##*-}
 run_prefix="${run_series}-${run_attempt}"
 cluster_api="${LAUNCHPAD_CLUSTER_API:-https://api.flightpath.fm2aihpcsed.com:6443}"
 ca_bundle="${LAUNCHPAD_CA_BUNDLE:-}"
-matrix="${LAUNCHPAD_CERTIFICATION_MATRIX:-agent-reliability ai-sandbox cpu-inference-serving hybrid-fraud-detection intel-llm-cpu-serving intel-llm-tool-calling intel-xeon6-agent-201 multi-agent-quickstart-flightpath network-operations-agent openshift-operators-workshop rag-on-xeon}"
+matrix="${LAUNCHPAD_CERTIFICATION_MATRIX:-agent-reliability agentic-ai-101 agentic-ai-601 ai-sandbox cpu-inference-serving hybrid-fraud-detection intel-llm-cpu-serving intel-llm-tool-calling intel-xeon6-agent-201 multi-agent-quickstart network-operations-agent openshift-operators-workshop operate-agentic-blueprint rag-on-xeon scale-agentic-blueprint sovereign-ai-101 sovereign-ai-201 sovereign-ai-301 virtualization-ai-201 virtualization-ai-301 virtualization-ai-401 virtualization-ai-501 virtualization-ai-foundations-101}"
 certification_seats="${LAUNCHPAD_CERTIFICATION_SEATS:-1}"
 run_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -94,4 +94,5 @@ if (( ${#failed[@]} > 0 || residue_rc != 0 )); then
   printf 'certification_matrix_failed catalogs=%s residue_rc=%s\n' "${failed[*]:-none}" "${residue_rc}" >&2
   exit 1
 fi
-echo "certification_matrix_green catalogs=11 seats=${certification_seats}"
+catalog_count="$(wc -w <<<"${matrix}" | tr -d ' ')"
+echo "certification_matrix_green catalogs=${catalog_count} seats=${certification_seats}"

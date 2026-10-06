@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 import yaml
 
@@ -98,3 +99,22 @@ def test_matrix_defaults_to_one_seat_and_requires_an_explicit_scale_override() -
     assert '--seats "${certification_seats}"' in text
     assert '--seats 5' not in text
     assert 'run_id="${run_prefix}-${catalog_id}-${certification_seats}-seat"' in text
+
+
+def test_matrix_covers_every_active_participant_catalog() -> None:
+    text = (ROOT / "scripts/run_flightpath_certification_matrix.sh").read_text()
+    match = re.search(
+        r'LAUNCHPAD_CERTIFICATION_MATRIX:-([^}]*)',
+        text,
+    )
+    assert match is not None
+    matrix = set(match.group(1).split())
+
+    active = set()
+    for path in (ROOT / "catalog").glob("*/catalog-item.yaml"):
+        item = yaml.safe_load(path.read_text())
+        if item.get("status") == "active":
+            active.add(item.get("catalog_item_id", item.get("id", path.parent.name)))
+
+    assert matrix == active
+    assert len(matrix) == 23
