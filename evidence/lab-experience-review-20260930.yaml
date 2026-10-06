@@ -108,34 +108,34 @@ labs:
     source_repository: https://github.com/jkershawrh/sovereign-ai-101
     candidate_branch: codex/sovereign-ai-101-lab-experience
     candidate_revision: 6d7c6f267407d42ca465b8a381d841d8b5b77567
-    overall_status: one-seat-destination-qualified-draft
+    overall_status: one-seat-live-certified-active
     story:
-      status: green-local
-      evidence: internal policy assistant mission with human decision ownership
+      status: green-live
+      evidence: the exact Flightpath seat served the internal policy assistant mission with human decision ownership
     show:
-      status: green-local
-      evidence: governed request outcomes expose classification, policy, dispatch, and receipts
+      status: green-live
+      evidence: six required participant pages rendered and governed request outcomes exposed classification, policy, dispatch, and receipts
     learn:
-      status: green-local
-      evidence: classification, authorization, generation, and evidence are explained separately
+      status: green-live
+      evidence: classification, authorization, generation, and evidence were presented separately in the exact seat
     do:
-      status: green-local
-      evidence: all eight stages now enforce a learner action between Learn and Prove
+      status: green-live
+      evidence: eight executable blocks exercise allow, deny, evidence, session, and cleanup behavior
     prove:
-      status: green-local
-      evidence: learner checkpoints are nested under Prove, covering allow, deny, fail-closed, receipt verification, decision brief, and cleanup
+      status: green-live
+      evidence: allow, injection denial, evidence-chain verification, session removal, namespace isolation, strict CA, reclaim, and zero residue passed
     story_tab:
       status: green-live
       evidence: the exact presentation route returned HTTP 200 in the certified Flightpath seat
     operators:
-      status: green-live-scope
-      evidence: the participant terminal had edit in its own namespace and was denied cross-namespace and node access; this 101 experience does not claim a separate operator workflow
+      status: green-live
+      evidence: the participant terminal had edit only in its namespace and the generated Showroom frame declared a namespace-scoped OpenShift Console operator; browser Console SSO remains conditional
     inference:
       status: rehearsal-certified
       evidence: the live seat proved mode REHEARSAL, live_qualified false, and no production model claim
     cleanup:
       status: green-live
-      evidence: the session was removed, reclaim completed in 62.662 seconds, model keys were revoked, and all tracked resource counts reached zero
+      evidence: the participant session was removed, reclaim reached the reclaimed state in 3.957 seconds, and namespace, Application, Route, RoleBinding, and Secret residue reached zero
     tests:
       status: green-local
       evidence:
@@ -156,12 +156,12 @@ labs:
         - exact image digests signed and attested with GitHub OIDC
         - workflow identity, SBOM attestation, and custom provenance attestation verified
     live_certification:
-      observed_at: "2026-09-30"
+      observed_at: "2026-10-05"
       result: GREEN-live
       rubric_score: 100
-      evidence: evidence/runs/flightpath-live-20260930-sovereign-ai-101-1seat-r1.json
-      proof: "Exact immutable release, six participant pages, allow/deny/evidence journey, truthful REHEARSAL state, namespace isolation, 62.662-second reclaim, model-key revocation, and zero residue all passed."
-    next_action: retain the one-seat internal ceiling and certify public_code exposure separately
+      evidence: evidence/runs/catalog/sovereign-ai-101-flightpath-console-operator-one-seat-20261005.json
+      proof: "The exact immutable release passed six participant pages, eight execute blocks, allow/deny/evidence behavior, truthful REHEARSAL state, strict route CA validation, namespace isolation, generated namespace-scoped OpenShift Console declaration, reclaim, and zero residue."
+    next_action: retain the one-seat ceiling; browser-level Console SSO and any live inference or scale claim remain separate gates
 
   sovereign-ai-201:
     display_name: "Sovereign AI 201: Build the Governed Inference Boundary"

@@ -1,0 +1,60 @@
+{
+  "evidence_id": "sovereign-ai-101-flightpath-console-operator-one-seat-20261005",
+  "result": "GREEN-live-internal-seat",
+  "catalog_item_id": "sovereign-ai-101",
+  "cluster_ref": "flightpath",
+  "tenant_id": "flightpath-candidate-cert",
+  "request_id": "713b6a5f-bd83-4e17-ad26-d646ea344d99",
+  "session_id": "79f0fc94-54d0-40ce-a40e-05124366a12d",
+  "namespace": "launchpad-flightpath-candida-sovereign-ai-101-713b6a",
+  "source_commit": "6d7c6f267407d42ca465b8a381d841d8b5b77567",
+  "launchpad_commit": "2e20c815",
+  "runtime_images": {
+    "presentation": "ghcr.io/jkershawrh/sovereign-ai-101-presentation@sha256:c9301b53eca8b8a20c9f87d142363b7c9b0f2abffeb36fd6b97ee3ebb895ec2d",
+    "rehearsal": "ghcr.io/jkershawrh/sovereign-ai-101-rehearsal@sha256:c7f5058213960ceb1a268506f43fe666c4cf5df62ce7d6e444dd277b34886958"
+  },
+  "lifecycle": {
+    "provisioning_started_at": "2026-10-06T04:16:09.790597Z",
+    "ready_at": "2026-10-06T04:17:17.569611Z",
+    "reclaim_started_at": "2026-10-06T04:18:30.896372Z",
+    "reclaimed_at": "2026-10-06T04:18:34.853656Z",
+    "final_status": "reclaimed"
+  },
+  "proof": {
+    "source_repository_check_passed": true,
+    "showroom_pages_checked": 6,
+    "showroom_pages_passed": 6,
+    "showroom_execute_blocks_present": 8,
+    "presentation_http_200": true,
+    "health_ready": true,
+    "journey_mode": "REHEARSAL",
+    "live_qualified": false,
+    "allow_path": "allow",
+    "injection_path": "deny",
+    "evidence_chain_valid": true,
+    "session_removed": true,
+    "openshift_console_url_declared": true,
+    "openshift_console_namespace_scoped": true,
+    "terminal_namespace_isolation": true,
+    "cross_namespace_access_denied": true,
+    "cluster_node_access_denied": true,
+    "contains_sensitive_values": false,
+    "strict_cluster_ca_validation": true,
+    "model_participated": false,
+    "browser_visual_certification": "conditional on a browser-trusted Flightpath route certificate"
+  },
+  "cleanup": {
+    "namespace_remaining": 0,
+    "applications_remaining": 0,
+    "routes_remaining": 0,
+    "role_bindings_remaining": 0,
+    "secrets_remaining": 0
+  },
+  "proof_strategy": {
+    "TDD": "A failing catalog test first exposed that Sovereign AI 101 omitted the OpenShift Console operator; the test now requires the three participant tabs.",
+    "EDD": "This manifest binds the exact release, order, seat, strict-CA participant proof, console contract, lifecycle, and zero-residue cleanup.",
+    "CDD": "Catalog, onboarding, certification assertions, generated ui-config, and the certifier agree on the namespace-scoped OpenShift Console contract.",
+    "BDD": "Given one Sovereign AI 101 seat, the participant can complete allow and deny journeys, verify evidence, use a namespace-scoped terminal, and see the OpenShift Console operator without a production inference claim.",
+    "CBT": "Story, Showroom pages, execute controls, rehearsal API, evidence chain, terminal isolation, operator tabs, and cleanup were verified independently."
+  }
+}
