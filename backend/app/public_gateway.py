@@ -188,6 +188,11 @@ def _tool_proxy_response_headers(
     return response
 
 
+def _tool_proxy_attempts(method: str) -> int:
+    """Retry only idempotent reads used by browser asset bursts."""
+    return 4 if method.upper() in {"GET", "HEAD"} else 1
+
+
 def _rewrite_upstream_content(
     content: bytes,
     content_type: str,
@@ -679,19 +684,31 @@ async def proxy_tool(
     except ValueError as exc:
         raise HTTPException(404) from exc
     request_headers = _tool_proxy_request_headers(request.headers)
-    try:
-        async with httpx.AsyncClient(
-            timeout=TOOL_PROXY_TIMEOUT,
-            follow_redirects=False,
-            verify=UPSTREAM_TLS_VERIFY,
-        ) as client:
-            upstream = await client.request(
-                request.method,
-                url,
-                content=await request.body(),
-                headers=request_headers,
-            )
-    except httpx.RequestError:
+    request_body = await request.body()
+    upstream: httpx.Response | None = None
+    attempts = _tool_proxy_attempts(request.method)
+    async with httpx.AsyncClient(
+        timeout=TOOL_PROXY_TIMEOUT,
+        follow_redirects=False,
+        verify=UPSTREAM_TLS_VERIFY,
+    ) as client:
+        for attempt in range(attempts):
+            try:
+                candidate = await client.request(
+                    request.method,
+                    url,
+                    content=request_body,
+                    headers=request_headers,
+                )
+            except httpx.RequestError:
+                candidate = None
+            if candidate is not None:
+                upstream = candidate
+                if candidate.status_code not in {502, 503, 504}:
+                    break
+            if attempt + 1 < attempts:
+                await asyncio.sleep(0.1 * (2**attempt))
+    if upstream is None:
         return _tool_not_ready(tool_id)
     response_headers = _tool_proxy_response_headers(upstream.headers)
     public_mount = f"{_public_order_prefix(request)}/proxy/tool/{tool_id}"

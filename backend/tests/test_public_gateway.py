@@ -7,6 +7,7 @@ from app.public_gateway import (
     _rewrite_showroom_config,
     _terminal_ws_token,
     _rewrite_upstream_content,
+    _tool_proxy_attempts,
     _tool_proxy_request_headers,
     _tool_proxy_response_headers,
     _tool_upstream_url,
@@ -376,6 +377,13 @@ def test_tool_proxy_read_timeout_covers_the_multi_agent_ui_workflow_budget():
     ).read_text()
     assert 'name: PUBLIC_TOOL_PROXY_READ_TIMEOUT, value: "330"' in manifest
     assert "--upstream-timeout=330s" in manifest
+
+
+def test_tool_proxy_retries_only_read_only_requests():
+    assert _tool_proxy_attempts("GET") == 4
+    assert _tool_proxy_attempts("HEAD") == 4
+    assert _tool_proxy_attempts("POST") == 1
+    assert _tool_proxy_attempts("PUT") == 1
 
 
 def test_tool_proxy_rewrites_textual_cluster_urls_to_the_order_mount():
