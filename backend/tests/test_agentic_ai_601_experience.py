@@ -8,9 +8,9 @@ CATALOG = ROOT / "catalog/agentic-ai-601/catalog-item.yaml"
 INTAKE = ROOT / "catalog-onboarding/agentic-ai-601.yaml"
 CERTIFICATION = ROOT / "certification/catalog/agentic-ai-601.yaml"
 SEAT_PROBE = ROOT / "scripts/certify-agentic-ai-601-seat.sh"
-REVISION = "588412fc789dd3fa3560e04b7f96966e72e98078"
-PRESENTATION_DIGEST = "sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971"
-QUALIFIER_DIGEST = "sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c"
+REVISION = "de4bc2ea057fce33967b2eb52790d57b77ff0832"
+PRESENTATION_DIGEST = "sha256:9395648031e9e7d9b33985b550cb06133f1e11464f086a4dea34bbfd63ecadf1"
+QUALIFIER_DIGEST = "sha256:b95d3779c254a352028cdfb13aecffb229113ef78d2dba332aef19596ca0d732"
 
 
 def _load(path: Path) -> dict:
@@ -85,6 +85,10 @@ def test_agentic_601_operator_tabs_are_explicit():
         "qualification",
         "openshift-console",
     ]
+    qualification = next(
+        tab for tab in intake["runtime"]["tabs"] if tab["id"] == "qualification"
+    )
+    assert qualification["path"] == "/api/v1/status/view"
 
 
 def test_agentic_601_rubric_uses_only_certification_runner_gates():
@@ -165,3 +169,9 @@ def test_agentic_601_probe_matches_the_qualifier_readiness_contract():
     assert "${api}/readyz" in probe
     assert "'.status == \"ok\"'" in probe
     assert 'single_use_human_approval_required' in probe
+    assert '"${api}/api/v1/status"' in probe
+    assert '"${api}/api/v1/status/view"' in probe
+    assert "AGENTIC AI 601 · EARNED AUTHORITY" in probe
+    assert "Qualification Evidence" in probe
+    assert "Human review required" in probe
+    assert "No production authority" in probe

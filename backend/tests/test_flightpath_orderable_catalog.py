@@ -153,16 +153,16 @@ def test_agentic_601_is_mounted_as_bounded_one_seat_internal_rehearsal():
         "scale-agentic-blueprint",
     ]
     assert metadata["allowed_exposure_policies"] == ["internal"]
-    assert metadata["workload_revision"] == "588412fc789dd3fa3560e04b7f96966e72e98078"
+    assert metadata["workload_revision"] == "de4bc2ea057fce33967b2eb52790d57b77ff0832"
     assert metadata["showroom_content_ref"] == metadata["workload_revision"]
     assert metadata["workload_helm_values"]["images"] == {
         "presentation": {
             "repository": "ghcr.io/jkershawrh/agentic-ai-601-presentation",
-            "digest": "sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971",
+            "digest": "sha256:9395648031e9e7d9b33985b550cb06133f1e11464f086a4dea34bbfd63ecadf1",
         },
         "qualifier": {
             "repository": "ghcr.io/jkershawrh/agentic-ai-601-qualifier",
-            "digest": "sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c",
+            "digest": "sha256:b95d3779c254a352028cdfb13aecffb229113ef78d2dba332aef19596ca0d732",
         },
     }
     assert metadata["workload_helm_values"]["routes"] == {

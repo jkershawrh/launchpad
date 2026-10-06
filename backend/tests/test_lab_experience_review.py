@@ -301,9 +301,9 @@ def test_advanced_and_virtualization_labs_pin_their_exact_releases() -> None:
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
     expected = {
         "agentic-ai-601": {
-            "revision": "588412fc789dd3fa3560e04b7f96966e72e98078",
-            "presentation": "sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971",
-            "workload": "sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c",
+            "revision": "de4bc2ea057fce33967b2eb52790d57b77ff0832",
+            "presentation": "sha256:9395648031e9e7d9b33985b550cb06133f1e11464f086a4dea34bbfd63ecadf1",
+            "workload": "sha256:b95d3779c254a352028cdfb13aecffb229113ef78d2dba332aef19596ca0d732",
         },
         "virtualization-ai-501": {
             "revision": "6e65858f773e2a28a4874a2a59785e8c8ab52b07",

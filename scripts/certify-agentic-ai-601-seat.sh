@@ -4,9 +4,9 @@ set -euo pipefail
 namespace="${1:?usage: certify-agentic-ai-601-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-agentic-ai-601-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
-source_revision="588412fc789dd3fa3560e04b7f96966e72e98078"
-expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-601-presentation@sha256:11dfe82586bdb54bab1f5a580179071b7c471d471d741b32d61c7abe8e939971"
-expected_qualifier_image="ghcr.io/jkershawrh/agentic-ai-601-qualifier@sha256:37a4f79bf4572107de975780495c6230998ec0a2e531c0842a6082528719d43c"
+source_revision="de4bc2ea057fce33967b2eb52790d57b77ff0832"
+expected_presentation_image="ghcr.io/jkershawrh/agentic-ai-601-presentation@sha256:9395648031e9e7d9b33985b550cb06133f1e11464f086a4dea34bbfd63ecadf1"
+expected_qualifier_image="ghcr.io/jkershawrh/agentic-ai-601-qualifier@sha256:b95d3779c254a352028cdfb13aecffb229113ef78d2dba332aef19596ca0d732"
 
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
@@ -62,6 +62,11 @@ jq -e '
   and .prerequisites.agentic401Certified == false
   and .prerequisites.agentic501Certified == false
 ' <<<"$status" >/dev/null
+qualification_view="$(curl "${curl_options[@]}" "${api}/api/v1/status/view")"
+grep -q 'AGENTIC AI 601 · EARNED AUTHORITY' <<<"$qualification_view"
+grep -q 'Qualification Evidence' <<<"$qualification_view"
+grep -q 'Human review required' <<<"$qualification_view"
+grep -q 'No production authority' <<<"$qualification_view"
 
 run_loop() {
   local correlation="$1" idempotency="$2" body="$3"
