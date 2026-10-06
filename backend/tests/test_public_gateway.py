@@ -433,6 +433,25 @@ def test_tool_proxy_adapts_solution_architect_inline_api_base_to_the_order_mount
     assert "fetch(AGENT_URL + '/api/v1/advise')" in rewritten
 
 
+def test_tool_proxy_adapts_gradio_api_prefix_to_the_order_mount():
+    source = (
+        b'<script>window.gradio_config = {"version":"6.29.0",'
+        b'"api_prefix":"/gradio_api","mode":"blocks"};</script>'
+    )
+
+    rewritten = _rewrite_upstream_content(
+        source,
+        "text/html; charset=utf-8",
+        "https://multi-agent-ui-seat.apps.flightpath.example",
+        "/labs/multi-agent-ab12cd34/proxy/tool/workspace",
+    ).decode()
+
+    assert (
+        '"api_prefix":"/labs/multi-agent-ab12cd34/proxy/tool/workspace/gradio_api"'
+        in rewritten
+    )
+
+
 def test_tool_proxy_adapts_anythingllm_bundle_to_the_order_mount():
     source = (
         b'const O="modulepreload",P=function(e){return"/"+e};'

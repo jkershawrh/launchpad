@@ -226,6 +226,16 @@ def _rewrite_upstream_content(
             "const AGENT_URL = window.AGENT_URL || '';",
             f"const AGENT_URL = window.AGENT_URL || '{public}';",
         )
+        # Gradio publishes its API prefix as an absolute path in the inline
+        # window.gradio_config object. Beneath the entitlement-aware gateway,
+        # `/gradio_api` would escape the order mount and leave the participant
+        # UI stuck on its loading screen. Keep the API and SSE queue requests
+        # on the same authorized tool proxy path. This signature is specific
+        # to Gradio's generated configuration and leaves unrelated HTML alone.
+        source = source.replace(
+            '"api_prefix":"/gradio_api"',
+            f'"api_prefix":"{public}/gradio_api"',
+        )
     elif media_type == "application/javascript":
         # AnythingLLM's published image is a Vite SPA compiled for `/` and it
         # does not expose a supported runtime base-path option. Detect its
