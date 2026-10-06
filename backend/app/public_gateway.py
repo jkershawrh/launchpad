@@ -237,6 +237,31 @@ def _rewrite_upstream_content(
             f'"api_prefix":"{public}/gradio_api"',
         )
     elif media_type == "application/javascript":
+        # The Triforce-style presentation is a Vite bundle built for an
+        # origin root. Its stable paired brand assets identify the bundle so
+        # live API calls, health checks, and logos can remain under the
+        # participant's entitled presentation mount without changing other
+        # JavaScript applications.
+        if '"/logos/redhat.svg"' in source and '"/logos/intel.png"' in source:
+            source = re.sub(
+                r'(?P<quote>["\'`])/(?P<path>(?:logos/[A-Za-z0-9_.-]+\.(?:png|svg)|api/v1/[A-Za-z0-9_./?&=-]+|health))(?P=quote)',
+                lambda match: (
+                    f'{match.group("quote")}{public}/{match.group("path")}'
+                    f'{match.group("quote")}'
+                ),
+                source,
+            )
+        # The injected handoff helper is served as a separate asset. Keep its
+        # `/lab` navigation inside the same entitled presentation mount, where
+        # the upstream presentation Route performs the Showroom redirect.
+        if "launchpadLabHandoff" in source:
+            source = re.sub(
+                r'(?P<quote>["\'`])/lab(?P=quote)',
+                lambda match: (
+                    f'{match.group("quote")}{public}/lab{match.group("quote")}'
+                ),
+                source,
+            )
         # AnythingLLM's published image is a Vite SPA compiled for `/` and it
         # does not expose a supported runtime base-path option. Detect its
         # stable VITE_API_BASE signature before applying the narrowly-scoped

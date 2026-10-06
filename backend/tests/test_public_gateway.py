@@ -452,6 +452,45 @@ def test_tool_proxy_adapts_gradio_api_prefix_to_the_order_mount():
     )
 
 
+def test_tool_proxy_adapts_demo_story_assets_and_live_api_to_the_order_mount():
+    source = (
+        b'const redhat="/logos/redhat.svg",intel="/logos/intel.png";'
+        b'load(`/api/v1/agents`);load(`/health`);'
+    )
+
+    rewritten = _rewrite_upstream_content(
+        source,
+        "application/javascript; charset=utf-8",
+        "https://story-seat.apps.flightpath.example",
+        "/labs/multi-agent-ab12cd34/proxy/tool/presentation",
+    ).decode()
+
+    mount = "/labs/multi-agent-ab12cd34/proxy/tool/presentation"
+    assert f'"{mount}/logos/redhat.svg"' in rewritten
+    assert f'"{mount}/logos/intel.png"' in rewritten
+    assert f'`{mount}/api/v1/agents`' in rewritten
+    assert f'`{mount}/health`' in rewritten
+
+
+def test_tool_proxy_adapts_demo_story_handoff_to_the_order_mount():
+    source = (
+        b"link.dataset.launchpadLabHandoff = 'true';"
+        b"link.href = '/lab';"
+    )
+
+    rewritten = _rewrite_upstream_content(
+        source,
+        "application/javascript; charset=utf-8",
+        "https://story-seat.apps.flightpath.example",
+        "/labs/multi-agent-ab12cd34/proxy/tool/presentation",
+    ).decode()
+
+    assert (
+        "link.href = '/labs/multi-agent-ab12cd34/proxy/tool/presentation/lab';"
+        in rewritten
+    )
+
+
 def test_tool_proxy_adapts_anythingllm_bundle_to_the_order_mount():
     source = (
         b'const O="modulepreload",P=function(e){return"/"+e};'
