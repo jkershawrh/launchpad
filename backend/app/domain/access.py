@@ -45,6 +45,7 @@ class ParticipantIdentity(BaseModel):
     keycloak_username: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     disabled_at: Optional[datetime] = None
+    external_cleanup_at: Optional[datetime] = None
 
     @field_validator("normalized_email")
     @classmethod

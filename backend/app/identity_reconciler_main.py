@@ -35,6 +35,7 @@ class PostgresDisabledIdentitySource:
                     """SELECT data->>'keycloak_username'
                        FROM participant_identities
                        WHERE data->>'disabled_at' IS NOT NULL
+                         AND data->>'external_cleanup_at' IS NULL
                          AND data->>'keycloak_username' LIKE 'lp-%'"""
                 )
                 return [str(row[0]) for row in cursor.fetchall()]
@@ -101,6 +102,18 @@ class PostgresDisabledIdentitySource:
                     connection.rollback()
                     return None
                 result = cleanup(username)
+                cursor.execute(
+                    """UPDATE participant_identities
+                       SET data = jsonb_set(
+                             data,
+                             '{external_cleanup_at}',
+                             to_jsonb(%s::text),
+                             true
+                           ),
+                           updated_at = NOW()
+                       WHERE data->>'keycloak_username' = %s""",
+                    (datetime.now(UTC).isoformat(), username),
+                )
                 connection.commit()
                 return result
         except Exception:

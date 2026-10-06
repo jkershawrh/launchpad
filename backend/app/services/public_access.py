@@ -343,7 +343,12 @@ class PublicAccessService:
                     if self.store:
                         self.store.save_identity(identity)
                 elif identity.disabled_at is not None:
-                    identity = identity.model_copy(update={"disabled_at": None})
+                    identity = identity.model_copy(
+                        update={
+                            "disabled_at": None,
+                            "external_cleanup_at": None,
+                        }
+                    )
                     if self.store:
                         self.store.save_identity(identity)
 
@@ -509,7 +514,12 @@ class PublicAccessService:
             return
         identity = next((item for item in self._identities.values() if item.participant_id == participant_id), None)
         if identity:
-            disabled = identity.model_copy(update={"disabled_at": datetime.utcnow()})
+            disabled = identity.model_copy(
+                update={
+                    "disabled_at": datetime.utcnow(),
+                    "external_cleanup_at": None,
+                }
+            )
             self._identities[disabled.normalized_email] = disabled
             if self.store:
                 self.store.save_identity(disabled)

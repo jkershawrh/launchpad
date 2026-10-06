@@ -1137,6 +1137,10 @@ def test_claiming_a_later_lab_reactivates_the_ephemeral_identity():
     )
     first = access.claim("first", "person@example.com", first_code, "192.0.2.30")
     access.expire_order("first")
+    disabled = access._identities["person@example.com"].model_copy(
+        update={"external_cleanup_at": datetime.utcnow()}
+    )
+    access._identities["person@example.com"] = disabled
     assert access._identities["person@example.com"].disabled_at is not None
     _, next_code = access.create_policy(
         order_id="next",
@@ -1148,6 +1152,7 @@ def test_claiming_a_later_lab_reactivates_the_ephemeral_identity():
     resumed = access.claim("next", "person@example.com", next_code, "192.0.2.30")
     assert resumed.identity.participant_id == first.identity.participant_id
     assert resumed.identity.disabled_at is None
+    assert resumed.identity.external_cleanup_at is None
 
 
 def test_existing_oidc_session_can_claim_a_new_lab_after_last_entitlement_expired(

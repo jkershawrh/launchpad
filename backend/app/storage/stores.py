@@ -209,7 +209,12 @@ class PostgresAccessStore:
                         _decode_json(row[0])
                     )
                     if identity.disabled_at is not None:
-                        identity = identity.model_copy(update={"disabled_at": None})
+                        identity = identity.model_copy(
+                            update={
+                                "disabled_at": None,
+                                "external_cleanup_at": None,
+                            }
+                        )
                 else:
                     identity = ParticipantIdentity(
                         participant_id=proposed_participant_id,

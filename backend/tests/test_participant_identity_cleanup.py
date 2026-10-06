@@ -1,4 +1,5 @@
 import pytest
+from app.identity_reconciler_main import PostgresDisabledIdentitySource
 from app.services.participant_identity_cleanup import (
     DisabledIdentityCleanupCoordinator,
     ParticipantIdentityCleanupService,
@@ -68,3 +69,79 @@ def test_coordinator_rechecks_durable_state_before_each_cleanup() -> None:
 
     assert cleaned == ["lp-disabled"]
     assert [item.username for item in results] == ["lp-disabled"]
+
+
+class FakeCursor:
+    def __init__(self, rows) -> None:
+        self.rows = iter(rows)
+        self.statements: list[tuple[str, object]] = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return None
+
+    def execute(self, statement, params=None) -> None:
+        self.statements.append((" ".join(statement.split()), params))
+
+    def fetchone(self):
+        return next(self.rows)
+
+    def fetchall(self):
+        return next(self.rows)
+
+
+class FakeConnection:
+    def __init__(self, rows) -> None:
+        self.cursor_instance = FakeCursor(rows)
+        self.commits = 0
+        self.rollbacks = 0
+
+    def cursor(self):
+        return self.cursor_instance
+
+    def set_session(self, **_kwargs) -> None:
+        return None
+
+    def commit(self) -> None:
+        self.commits += 1
+
+    def rollback(self) -> None:
+        self.rollbacks += 1
+
+    def close(self) -> None:
+        return None
+
+
+def test_cleanup_source_skips_identities_already_reconciled(monkeypatch) -> None:
+    connection = FakeConnection([[('lp-disabled',)]])
+    source = PostgresDisabledIdentitySource("postgresql://unused")
+    monkeypatch.setattr(source, "_connect", lambda: connection)
+
+    assert source.candidate_usernames() == ["lp-disabled"]
+    statement = connection.cursor_instance.statements[0][0]
+    assert "data->>'external_cleanup_at' IS NULL" in statement
+
+
+def test_successful_cleanup_is_marked_durably(monkeypatch) -> None:
+    identity = {
+        "participant_id": "participant-1",
+        "normalized_email": "person@example.com",
+        "keycloak_username": "lp-disabled",
+        "disabled_at": "2026-10-06T12:00:00Z",
+    }
+    connection = FakeConnection([(identity,), (identity,), (0,)])
+    source = PostgresDisabledIdentitySource("postgresql://unused")
+    monkeypatch.setattr(source, "_connect", lambda: connection)
+
+    result = source.cleanup_if_still_disabled("lp-disabled", lambda username: username)
+
+    assert result == "lp-disabled"
+    assert connection.commits == 1
+    update = next(
+        statement
+        for statement, _params in connection.cursor_instance.statements
+        if statement.startswith("UPDATE participant_identities")
+    )
+    assert "external_cleanup_at" in update
