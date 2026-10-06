@@ -66,7 +66,10 @@ def main() -> int:
         with connection.cursor() as cursor:
             global_queries = {
                 "active_sessions": "SELECT count(*) FROM lab_sessions WHERE status <> 'reclaimed'",
-                "active_workshops": "SELECT count(*) FROM workshops WHERE status <> 'completed'",
+                "active_workshops": (
+                    "SELECT count(*) FROM workshops "
+                    "WHERE status NOT IN ('completed', 'completed_with_errors', 'failed', 'reclaimed')"
+                ),
             }
             database_counts = {}
             for name, query in global_queries.items():

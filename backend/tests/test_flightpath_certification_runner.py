@@ -107,6 +107,8 @@ def test_zero_residue_verifier_does_not_hardcode_catalog_count() -> None:
     assert 'parser.add_argument("--expected-catalogs", required=True, type=int)' in text
     assert "len(bundles) == args.expected_catalogs" in text
     assert "len(bundles) == 11" not in text
+    assert "completed_with_errors" in text
+    assert "status <> 'completed'" not in text
 
 
 def test_matrix_covers_every_active_participant_catalog() -> None:
