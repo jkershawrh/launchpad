@@ -28,7 +28,7 @@ def test_parse_roadmap_preserves_hierarchy_and_all_tasks():
     ]
     assert len(model["epics"]) == 29
     assert len(model["stories"]) == 39
-    assert len(model["tasks"]) == 210
+    assert len(model["tasks"]) == 211
     assert "LP-T095" in model["tasks"]
     assert "lab.step.executed" in model["tasks"]["LP-T095"]["title"]
     assert model["tasks"]["LP-T084"]["epic_id"] == "LP-E002"

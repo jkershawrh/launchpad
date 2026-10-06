@@ -851,8 +851,18 @@ cluster, edge, artifact, MCP, or model related from one console.**
 - `LP-T049` Add alert ownership, runbook links, incident timelines, evidence
   capture, and backlog linkage.
 - `LP-T050` Define service SLOs and support escalation for event and steady use.
+- `LP-T211` Add privacy-safe Real User Monitoring (RUM) for participant,
+  instructor, requester, and administrator journeys: page and operator-tab
+  load time, navigation and reconnect failures, client-side errors, journey
+  completion and abandonment, and correlation to the opaque order, workshop,
+  seat, catalog revision, cluster, and model request. Exclude prompt content,
+  terminal input/output, instructor codes, tokens, email addresses, and other
+  direct identifiers; require documented consent/notice, retention, access,
+  sampling, redaction, and deletion controls before live collection.
 - **Gate:** injected failures produce the correct signal, alert, runbook, audit,
-  and resolution evidence without relying on unrestricted cluster access.
+  and resolution evidence without relying on unrestricted cluster access. A
+  synthetic participant journey must also prove that RUM identifies the failed
+  step and supporting backend trace without recording prohibited content.
 
 ### LP-E011 — Safe self-service and remediation
 

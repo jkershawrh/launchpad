@@ -2954,6 +2954,18 @@
       },
       "evidence": [],
       "note": "Pinned and intentionally deferred until the unchanged-candidate lab certification, manual requester/admin/participant frontend journeys, ordering, reclaim, and staging evidence are complete and the product owner explicitly resumes this track."
+    },
+    "LP-T211": {
+      "state": "red",
+      "methods": {
+        "tdd": "red",
+        "edd": "red",
+        "cdd": "red",
+        "bdd": "red",
+        "cbt": "red"
+      },
+      "evidence": [],
+      "note": "Action item accepted. Define the privacy, consent, redaction, retention, sampling, correlation, and deletion contract before selecting or installing a RUM collector. No live participant monitoring is authorized by this roadmap entry."
     }
   },
   "rubric": [
