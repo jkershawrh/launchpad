@@ -610,6 +610,68 @@ def test_public_workshop_order_persists_generated_public_url():
     )
 
 
+def test_public_workshop_enables_declared_openshift_console():
+    workshop = Workshop(
+        tenant_id="public-console-tenant",
+        catalog_item_id="operator-lab",
+        num_users=1,
+        status=WorkshopStatus.AWAITING_CONFIRMATION,
+        exposure_policy="public_code",
+        cluster_ref="flightpath",
+        seats=[WorkshopSeat(workshop_id="pending", seat_number=1)],
+    )
+    policy = SimpleNamespace(
+        public_url="https://labs.example.io/labs/operator-lab-12345678",
+        public_console_enabled=False,
+    )
+    enabled_policy = SimpleNamespace(
+        public_url=policy.public_url,
+        public_console_enabled=True,
+    )
+    item = SimpleNamespace(
+        metadata={
+            "showroom_tabs": [
+                {"id": "terminal", "source": "showroom.terminal"},
+                {"id": "openshift-console", "source": "cluster.console_url"},
+            ]
+        }
+    )
+
+    with (
+        patch.object(
+            api_provisioning_service,
+            "create_workshop_order",
+            return_value=workshop,
+        ),
+        patch.object(
+            api_provisioning_service.catalog,
+            "get_item",
+            return_value=item,
+        ),
+        patch(
+            "app.api.routers.workshops.public_access_service.get_policy",
+            return_value=policy,
+        ),
+        patch(
+            "app.api.routers.workshops.public_access_service.set_public_console_enabled",
+            return_value=enabled_policy,
+        ) as enable_console,
+    ):
+        response = client.post(
+            "/api/v1/workshops/orders",
+            json={
+                "tenant_id": workshop.tenant_id,
+                "catalog_item_id": workshop.catalog_item_id,
+                "num_users": 1,
+                "ttl": "4h",
+                "exposure_policy": "public_code",
+            },
+        )
+
+    assert response.status_code == 201
+    enable_console.assert_called_once_with(workshop.workshop_id, True)
+
+
 def test_concurrent_public_workshop_activation_returns_conflict_to_loser():
     workshop = Workshop(
         tenant_id="public-code-race-tenant",

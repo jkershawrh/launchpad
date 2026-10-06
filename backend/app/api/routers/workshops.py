@@ -134,6 +134,19 @@ def _safe_order_error(exc: ValueError) -> str:
     return "Workshop operation could not be completed"
 
 
+def _catalog_requests_public_console(catalog_item_id: str) -> bool:
+    """Enable Console SSO only when the catalog explicitly declares its tab."""
+
+    item = provisioning_service.catalog.get_item(catalog_item_id)
+    if item is None:
+        return False
+    return any(
+        isinstance(tab, dict)
+        and tab.get("source") == "cluster.console_url"
+        for tab in item.metadata.get("showroom_tabs", [])
+    )
+
+
 def _authorized_workshop(workshop_id: str, user: User) -> Workshop:
     workshop = provisioning_service.get_workshop(workshop_id)
     if not workshop or not can_access_tenant(user, workshop.tenant_id):
@@ -211,6 +224,11 @@ def create_workshop_order(
                     catalog_slug=workshop.catalog_item_id,
                     seat_refs=[seat.seat_id for seat in workshop.seats],
                     expires_at=datetime.utcnow() + delta,
+                )
+            if _catalog_requests_public_console(workshop.catalog_item_id):
+                policy = public_access_service.set_public_console_enabled(
+                    workshop.workshop_id,
+                    True,
                 )
             workshop.public_url = policy.public_url
             provisioning_service._save_workshop(workshop)
