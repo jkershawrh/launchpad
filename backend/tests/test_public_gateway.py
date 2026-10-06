@@ -11,6 +11,7 @@ from app.public_gateway import (
     _rewrite_upstream_content,
     _tool_proxy_attempts,
     _tool_proxy_request_headers,
+    _tool_proxy_redirect_location,
     _tool_proxy_response_headers,
     _tool_upstream_url,
     _username,
@@ -506,6 +507,7 @@ def test_tool_proxy_adapts_demo_story_assets_and_live_api_to_the_order_mount():
 
 def test_tool_proxy_adapts_demo_story_handoff_to_the_order_mount():
     source = (
+        b"const handoff = document.querySelector('.guided-handoff');"
         b"link.dataset.launchpadLabHandoff = 'true';"
         b"link.href = '/lab';"
     )
@@ -521,6 +523,18 @@ def test_tool_proxy_adapts_demo_story_handoff_to_the_order_mount():
         "link.href = '/labs/multi-agent-ab12cd34/proxy/tool/presentation/lab';"
         in rewritten
     )
+    assert "document.querySelector('.stage')" in rewritten
+    assert "get('finale') === '1'" in rewritten
+
+
+def test_demo_story_handoff_redirects_to_the_public_order_showroom():
+    assert _tool_proxy_redirect_location(
+        "https://story-seat.apps.flightpath.example",
+        "https://showroom-seat.apps.flightpath.example/",
+        "/labs/multi-agent-ab12cd34/proxy/tool/presentation",
+        "presentation",
+        "lab",
+    ) == "/labs/multi-agent-ab12cd34/showroom/"
 
 
 def test_tool_proxy_adapts_anythingllm_bundle_to_the_order_mount():

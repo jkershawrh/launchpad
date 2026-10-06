@@ -216,6 +216,32 @@ def _tool_proxy_attempts(method: str) -> int:
     return 4 if method.upper() in {"GET", "HEAD"} else 1
 
 
+def _tool_proxy_redirect_location(
+    base: str,
+    location: str,
+    public_mount: str,
+    tool_id: str,
+    path: str,
+) -> str:
+    """Keep tool redirects inside the participant's entitled order."""
+    if tool_id == "presentation" and path.strip("/") == "lab":
+        order_prefix = public_mount.split("/proxy/tool/", 1)[0]
+        return f"{order_prefix}/showroom/"
+    redirected = urljoin(base.rstrip("/") + "/", location)
+    parsed_base = urlsplit(base)
+    parsed_redirect = urlsplit(redirected)
+    if (parsed_redirect.scheme, parsed_redirect.netloc) != (
+        parsed_base.scheme,
+        parsed_base.netloc,
+    ):
+        return location
+    suffix = parsed_redirect.path.lstrip("/")
+    rewritten = f"{public_mount}/{suffix}"
+    if parsed_redirect.query:
+        rewritten += f"?{parsed_redirect.query}"
+    return rewritten
+
+
 def _rewrite_upstream_content(
     content: bytes,
     content_type: str,
@@ -276,6 +302,12 @@ def _rewrite_upstream_content(
         # `/lab` navigation inside the same entitled presentation mount, where
         # the upstream presentation Route performs the Showroom redirect.
         if "launchpadLabHandoff" in source:
+            source = source.replace(
+                "document.querySelector('.guided-handoff')",
+                "document.querySelector('.guided-handoff') || "
+                "(new URLSearchParams(window.location.search).get('finale') === '1' "
+                "? document.querySelector('.stage') : null)",
+            )
             source = re.sub(
                 r'(?P<quote>["\'`])/lab(?P=quote)',
                 lambda match: (
@@ -730,17 +762,9 @@ async def proxy_tool(
     public_mount = f"{_public_order_prefix(request)}/proxy/tool/{tool_id}"
     location = response_headers.get("location")
     if location:
-        redirected = urljoin(base.rstrip("/") + "/", location)
-        parsed_base = urlsplit(base)
-        parsed_redirect = urlsplit(redirected)
-        if (parsed_redirect.scheme, parsed_redirect.netloc) == (
-            parsed_base.scheme,
-            parsed_base.netloc,
-        ):
-            suffix = parsed_redirect.path.lstrip("/")
-            response_headers["location"] = f"{public_mount}/{suffix}"
-            if parsed_redirect.query:
-                response_headers["location"] += f"?{parsed_redirect.query}"
+        response_headers["location"] = _tool_proxy_redirect_location(
+            base, location, public_mount, tool_id, path
+        )
     if (
         upstream.status_code in {502, 503, 504}
         and request.method == "GET"
