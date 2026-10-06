@@ -109,6 +109,8 @@ def test_matrix_defaults_to_one_seat_and_requires_an_explicit_scale_override() -
     assert '--expected-catalogs "${catalog_count}"' in text
     assert 'flightpath_contract="certification/catalog/${catalog_id}-flightpath.yaml"' in text
     assert 'contract="${flightpath_contract}"' in text
+    assert 'flightpath_intake="catalog-onboarding/${catalog_id}-flightpath.yaml"' in text
+    assert 'intake="${flightpath_intake}"' in text
 
 
 def test_zero_residue_verifier_does_not_hardcode_catalog_count() -> None:

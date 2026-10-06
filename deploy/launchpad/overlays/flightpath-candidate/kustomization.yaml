@@ -11,6 +11,7 @@ resources:
   - candidate-maas.yaml
   - public-access-ha.yaml
   - participant-identity-reconciler.yaml
+  - multi-agent-runtime-builds.yaml
 
 configMapGenerator:
   - name: flightpath-candidate-serve-llms-catalog

@@ -37,9 +37,9 @@ sources:
     playbook: site.yml
     start_path: .
   workload:
-    repo_url: "https://github.com/rhpds/triforce.git"
-    revision: "f484cb66c3dcddff323df8814f637dc92c73c179"
-    deploy_path: .
+    repo_url: "https://github.com/jkershawrh/launchpad.git"
+    revision: "9526ede61b5c31949f3a1bedd133b5a17e554178"
+    deploy_path: content-intel-xeon6-agent-201/manifests
 
 runtime:
   namespace_slug: intel-xeon6-agent-201

@@ -131,15 +131,18 @@ taskrun_count="$(oc get taskrun -n "$namespace" \
   -l "tekton.dev/pipelineRun=${run_name}" -o json | jq '.items | length')"
 [[ "$taskrun_count" -eq 1 ]]
 
-stage=exercise-cleanup
+stage=exercise-cleanup-pipelinerun
 oc delete pipelinerun "$run_name" -n "$namespace" \
   --ignore-not-found --wait=true >/dev/null
+stage=exercise-cleanup-dependents
 oc delete taskrun,pod -n "$namespace" \
   -l "tekton.dev/pipelineRun=${run_name}" \
   --ignore-not-found --wait=true >/dev/null
+stage=exercise-cleanup-definitions
 oc delete pipeline "$pipeline_name" task "$task_name" -n "$namespace" \
   --ignore-not-found --wait=true >/dev/null
 
+stage=exercise-cleanup-verification
 remaining=unknown
 for _ in {1..30}; do
   remaining="$({

@@ -59,6 +59,10 @@ for contract_name in ${matrix}; do
     contract="${flightpath_contract}"
   fi
   intake="catalog-onboarding/${contract_name}.yaml"
+  flightpath_intake="catalog-onboarding/${catalog_id}-flightpath.yaml"
+  if [[ -f "${flightpath_intake}" ]]; then
+    intake="${flightpath_intake}"
+  fi
   if [[ ! -f "${intake}" ]]; then
     intake="catalog-onboarding/${catalog_id}.yaml"
   fi

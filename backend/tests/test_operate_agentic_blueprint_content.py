@@ -67,8 +67,8 @@ def test_operate_blueprint_is_an_active_one_seat_core_401_on_the_canonical_runti
     assert presentation_tab["source"] == "workload.route.presentation"
     assert metadata["seat_pods"] == 3
     assert metadata["workload_helm_values"]["image"] == {
-        "repository": "ghcr.io/jkershawrh/multi-agent-quickstart",
-        "digest": "sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86",
+        "repository": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart",
+        "digest": "sha256:b3502efd724872444cf9e4b71f55cf0c31f4a31f13642a8a7ef60d55d20cbd2d",
     }
     assert metadata["workload_helm_values"]["imagePullSecrets"] == [
         {"name": "launchpad-registry-pull"}

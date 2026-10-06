@@ -14,14 +14,14 @@ INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
 SOURCE_REVISION = "1a650e428ed8d8f0652b97827bb002b643c74725"
-WORKLOAD_REVISION = "f484cb66c3dcddff323df8814f637dc92c73c179"
+WORKLOAD_REVISION = "9526ede61b5c31949f3a1bedd133b5a17e554178"
 WORKLOAD_BASE = (
-    "https://raw.githubusercontent.com/rhpds/triforce/"
-    f"{WORKLOAD_REVISION}/infrastructure/manifests-201"
+    "https://raw.githubusercontent.com/jkershawrh/launchpad/"
+    f"{WORKLOAD_REVISION}/content-intel-xeon6-agent-201/manifests"
 )
 RUNTIME_IMAGES = {
     "solution-tools": "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850",
-    "solution-agent": "ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67",
+    "solution-agent": "quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03",
     "solution-ui": "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb",
 }
 
@@ -127,7 +127,11 @@ def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():
         "playbook": "site.yml",
         "start_path": ".",
     }
-    assert intake["sources"]["workload"]["revision"] == WORKLOAD_REVISION
+    assert intake["sources"]["workload"] == {
+        "repo_url": "https://github.com/jkershawrh/launchpad.git",
+        "revision": WORKLOAD_REVISION,
+        "deploy_path": "content-intel-xeon6-agent-201/manifests",
+    }
     assert intake["catalog"]["status"] == "active"
     assert intake["certification"]["stage"] == "1-seat-certified"
     assert intake["certification"]["certified_seats"] == 1

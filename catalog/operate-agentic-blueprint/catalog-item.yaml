@@ -131,8 +131,8 @@ metadata:
     imagePullSecrets:
     - name: launchpad-registry-pull
     image:
-      repository: ghcr.io/jkershawrh/multi-agent-quickstart
-      digest: sha256:087d9548c044f1af641530f1913609715675e2eadf6dfe8c68c05bcad0cc7c86
+      repository: quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart
+      digest: sha256:b3502efd724872444cf9e4b71f55cf0c31f4a31f13642a8a7ef60d55d20cbd2d
     presentation:
       enabled: true
       image:

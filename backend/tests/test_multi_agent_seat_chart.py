@@ -9,6 +9,10 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 CHART = ROOT / "deploy/workloads/multi-agent-seat"
 BUILD_CONFIG = ROOT / "deploy/launchpad/overlays/arena/buildconfig.yaml"
+FLIGHTPATH_RUNTIME_BUILDS = (
+    ROOT
+    / "deploy/launchpad/overlays/flightpath-candidate/multi-agent-runtime-builds.yaml"
+)
 
 SOURCE_REPOSITORY = "https://github.com/jkershawrh/multi-agent-quickstart.git"
 SOURCE_REVISION = "159113ab9f8df39e09e08926b51c7c32da0fc1af"
@@ -28,6 +32,25 @@ def test_chart_defaults_to_a_portable_repository_and_requires_a_pinned_digest():
     assert values["image"]["repository"].startswith("quay.io/")
     assert values["image"]["digest"] == ""
     assert "image-registry.openshift-image-registry.svc" not in values["image"]["repository"]
+
+
+def test_flightpath_runtime_builds_are_pinned_and_include_the_learner_override():
+    builds = [document for document in yaml.safe_load_all(FLIGHTPATH_RUNTIME_BUILDS.read_text()) if document]
+    assert {build["metadata"]["name"] for build in builds} == {
+        "multi-agent-301-runtime",
+        "operate-agentic-401-runtime",
+    }
+    assert {build["spec"]["source"]["git"]["ref"] for build in builds} == {
+        "fd6affb22691236f6e0c7ff13abd2a8c0829453e",
+        "43889bc9444f9ef07f5b1a88e7de534af9647264",
+    }
+    for build in builds:
+        assert build["spec"]["source"]["git"]["uri"] == SOURCE_REPOSITORY
+        assert "AGENT_MAX_TOKENS_OVERRIDE" in build["spec"]["source"]["dockerfile"]
+        assert build["spec"]["output"]["to"]["name"].startswith(
+            "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart:"
+        )
+        assert build["spec"]["output"]["pushSecret"]["name"] == "launchpad-registry-pull"
 
 OWNERSHIP_LABELS = {
     "app.kubernetes.io/managed-by": "launchpad",

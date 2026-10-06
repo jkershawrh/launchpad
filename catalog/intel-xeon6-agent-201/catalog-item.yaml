@@ -92,11 +92,11 @@ metadata:
   workshop_node_min_ready_seconds: 900
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
-  workload_repo: https://github.com/rhpds/triforce.git
-  workload_revision: f484cb66c3dcddff323df8814f637dc92c73c179
+  workload_repo: https://github.com/jkershawrh/launchpad.git
+  workload_revision: 9526ede61b5c31949f3a1bedd133b5a17e554178
   workload_deploy_type: manifests
   workload_deployment_scope: seat
-  workload_deploy_path: .
+  workload_deploy_path: content-intel-xeon6-agent-201/manifests
   workload_source_kind: chart
   workload_gitops_ready: false
   workload_release_name: intel-xeon6-agent-201

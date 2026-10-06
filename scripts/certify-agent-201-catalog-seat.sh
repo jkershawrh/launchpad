@@ -7,10 +7,10 @@ expected_cluster="${2:?usage: certify-agent-201-catalog-seat.sh <namespace> <clu
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 showroom_revision="1a650e428ed8d8f0652b97827bb002b643c74725"
-workload_revision="f484cb66c3dcddff323df8814f637dc92c73c179"
-workload_base="https://raw.githubusercontent.com/rhpds/triforce/f484cb66c3dcddff323df8814f637dc92c73c179/infrastructure/manifests-201"
+workload_revision="9526ede61b5c31949f3a1bedd133b5a17e554178"
+workload_base="https://raw.githubusercontent.com/jkershawrh/launchpad/9526ede61b5c31949f3a1bedd133b5a17e554178/content-intel-xeon6-agent-201/manifests"
 expected_tools_image="quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
-expected_agent_image="ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67"
+expected_agent_image="quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03"
 expected_ui_image="quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
 stage="setup"
 route_ca_file=""
@@ -43,18 +43,18 @@ setup_result="$(
 )"
 
 stage="runtime-images"
-tools_image="$(oc --kubeconfig "$KUBECONFIG" get deployment solution-tools -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-tools")].image}')"
+tools_image="$(oc --kubeconfig "$KUBECONFIG" get deployment solution-agent -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-tools")].image}')"
 agent_image="$(oc --kubeconfig "$KUBECONFIG" get deployment solution-agent -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-agent")].image}')"
 ui_image="$(oc --kubeconfig "$KUBECONFIG" get deployment solution-ui -n "$namespace" -o jsonpath='{.spec.template.spec.containers[?(@.name=="solution-ui")].image}')"
 [[ "$tools_image" == "$expected_tools_image" ]]
 [[ "$agent_image" == "$expected_agent_image" ]]
 [[ "$ui_image" == "$expected_ui_image" ]]
-for deployment in solution-tools solution-agent solution-ui; do
-  expected_var="expected_${deployment#solution-}_image"
-  expected_image="${!expected_var}"
-  image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l "app=${deployment}" -o jsonpath='{.items[0].status.containerStatuses[0].imageID}')"
-  [[ "$image_id" == *"${expected_image#*@}" ]]
-done
+tools_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app=solution-agent -o jsonpath='{.items[0].status.containerStatuses[?(@.name=="solution-tools")].imageID}')"
+agent_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app=solution-agent -o jsonpath='{.items[0].status.containerStatuses[?(@.name=="solution-agent")].imageID}')"
+ui_image_id="$(oc --kubeconfig "$KUBECONFIG" get pod -n "$namespace" -l app=solution-ui -o jsonpath='{.items[0].status.containerStatuses[?(@.name=="solution-ui")].imageID}')"
+[[ "$tools_image_id" == *"${expected_tools_image#*@}" ]]
+[[ "$agent_image_id" == *"${expected_agent_image#*@}" ]]
+[[ "$ui_image_id" == *"${expected_ui_image#*@}" ]]
 
 stage="route-discovery"
 tools_host="$(
