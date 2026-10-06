@@ -118,4 +118,72 @@ describe('requester workshop order journey', () => {
     });
     expect(screen.getByText('https://example.invalid/order/workshop-1')).toBeInTheDocument();
   });
+
+  it('excludes compatibility aliases and internal diagnostics from workshop ordering', async () => {
+    vi.mocked(api.listCatalog).mockResolvedValue([
+      {
+        catalog_item_id: 'unrelated-lab',
+        display_name: 'Unrelated Lab',
+        description: 'Must not be selected by alias fallback',
+        category: 'guided_build',
+        version: '1.0.0',
+        status: 'active',
+        required_capabilities: [],
+        optional_capabilities: [],
+        metadata: { max_workshop_seats: 1 },
+      },
+      {
+        catalog_item_id: 'intel-llm-cpu-serving',
+        display_name: 'Serve LLMs on Intel Xeon CPUs',
+        description: 'Canonical learner experience',
+        category: 'guided_build',
+        version: '1.0.0',
+        status: 'active',
+        required_capabilities: [],
+        optional_capabilities: [],
+        metadata: { max_workshop_seats: 5 },
+      },
+      {
+        catalog_item_id: 'cpu-inference-serving',
+        display_name: 'Legacy CPU Inference Alias',
+        description: 'Compatibility alias',
+        category: 'guided_build',
+        version: '1.0.0',
+        status: 'active',
+        required_capabilities: [],
+        optional_capabilities: [],
+        metadata: {
+          migration_mode: 'compatibility_alias',
+          canonical_item_id: 'intel-llm-cpu-serving',
+          max_workshop_seats: 5,
+        },
+      },
+      {
+        catalog_item_id: 'smoke-test',
+        display_name: 'Platform Smoke Test',
+        description: 'Internal diagnostic',
+        category: 'quick_start',
+        version: '1.0.0',
+        status: 'active',
+        required_capabilities: [],
+        optional_capabilities: [],
+        metadata: {
+          catalog_visibility: 'internal_diagnostic',
+          participant_orderable: false,
+        },
+      },
+    ]);
+
+    render(
+      <MemoryRouter initialEntries={['/request?type=workshop&catalog_item=cpu-inference-serving']}>
+        <WorkshopOrderForm />
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole('option', { name: 'Serve LLMs on Intel Xeon CPUs' });
+    expect(screen.queryByRole('option', { name: 'Legacy CPU Inference Alias' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'Platform Smoke Test' })).not.toBeInTheDocument();
+    const labSelects = screen.getAllByLabelText('Lab');
+    expect(labSelects.at(-1)).toHaveValue('intel-llm-cpu-serving');
+  });
 });

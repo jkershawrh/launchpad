@@ -3,6 +3,7 @@ import type { CatalogItem } from './api/types';
 import {
   allowedExposurePolicies,
   participantCatalog,
+  resolveParticipantCatalogId,
   supportsExposurePolicy,
 } from './catalogVisibility';
 
@@ -46,6 +47,34 @@ describe('participant catalog visibility', () => {
     expect(participantCatalog([canonical, alias]).map((entry) => entry.catalog_item_id)).toEqual([
       'intel-llm-cpu-serving',
     ]);
+  });
+
+  it('keeps explicitly internal diagnostics out of participant ordering even if active', () => {
+    const diagnostic = {
+      ...item('smoke-test', 'active'),
+      metadata: {
+        catalog_visibility: 'internal_diagnostic',
+        participant_orderable: false,
+      },
+    };
+
+    expect(participantCatalog([diagnostic])).toEqual([]);
+  });
+
+  it('resolves a compatibility alias only to its visible canonical item', () => {
+    const canonical = item('intel-llm-cpu-serving', 'active');
+    const alias = {
+      ...item('cpu-inference-serving', 'active'),
+      metadata: {
+        migration_mode: 'compatibility_alias',
+        canonical_item_id: 'intel-llm-cpu-serving',
+      },
+    };
+
+    expect(
+      resolveParticipantCatalogId([alias, canonical], 'cpu-inference-serving'),
+    ).toBe('intel-llm-cpu-serving');
+    expect(resolveParticipantCatalogId([alias], 'cpu-inference-serving')).toBe('');
   });
 
   it('preserves an internal-only certification gate in ordering surfaces', () => {

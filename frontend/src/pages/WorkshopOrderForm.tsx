@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
 import type { CatalogItem, Tenant, Workshop, WorkshopCapacityPreview } from '../api/types';
-import { allowedExposurePolicies } from '../catalogVisibility';
+import {
+  allowedExposurePolicies,
+  participantCatalog,
+  resolveParticipantCatalogId,
+} from '../catalogVisibility';
 import {
   certifiedSeatLimit,
   initialSeatCount,
@@ -27,11 +31,17 @@ export default function WorkshopOrderForm({ embedded = false }: { embedded?: boo
 
   useEffect(() => {
     Promise.all([api.listCatalog(), api.listTenants(), api.getCurrentIdentity()]).then(([items, tenantItems, identity]) => {
-      const orderable = items.filter((item) => item.category !== 'open_sandbox' && item.status === 'active');
+      const orderable = participantCatalog(items).filter(
+        (item) => item.category !== 'open_sandbox',
+      );
+      const resolvedCatalogItem = resolveParticipantCatalogId(
+        items,
+        requestedCatalogItem,
+      );
       setCatalog(orderable);
       setTenants(tenantItems.filter((tenant) => tenant.status === 'active'));
       setForm((current) => {
-        const selected = orderable.find((item) => item.catalog_item_id === requestedCatalogItem)
+        const selected = orderable.find((item) => item.catalog_item_id === resolvedCatalogItem)
           ?? orderable.find((item) => item.catalog_item_id === current.catalog_item_id)
           ?? orderable[0];
         const exposurePolicies = allowedExposurePolicies(selected);
