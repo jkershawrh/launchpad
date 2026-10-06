@@ -148,12 +148,17 @@ deployed correction now routes that action through the parent workshop
 lifecycle; the live retest left the workshop completed, its seat and session
 reclaimed, and no namespace, Route, RoleBinding, or Argo CD Application.
 
-The staging gate is reduced to one security boundary. OpenShift retains OAuth
-access tokens and a User object after Launchpad disables the participant's
-final identity. Namespace deletion and RoleBinding removal deny effective lab
-access, but the accepted gate requires zero inactive identity residue. The
-candidate must therefore remain unqualified until least-privilege token
-revocation and disabled-user lifecycle cleanup are implemented and proven.
+That final security boundary is now closed by the least-privilege participant
+identity reconciler. The October 6 Agentic AI 201 public one-seat run proved
+that reclaim disabled the access policy, expired the entitlement, recorded
+external identity cleanup, and removed the participant's OpenShift OAuth token,
+Identity, and User. A second reclaim was idempotent, and the seat namespace,
+Routes, and Argo CD Application also reached zero residue. The frontend and
+participant-lifecycle staging gate is therefore GREEN-live; the complete
+unchanged-candidate catalog regression remains the final staging acceptance
+step.
 
 The immutable evidence is
-`evidence/convergence/staging-workshop-public-canary-20261006.yaml`.
+`evidence/convergence/staging-workshop-public-canary-20261006.yaml` together
+with
+`evidence/runs/flightpath-live-20261006-intel-xeon6-agent-201-staging-r4.json`.

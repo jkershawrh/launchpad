@@ -80,10 +80,15 @@
     "idempotent_reclaim": true,
     "access_policy_enabled": false,
     "active_claim_count": 0,
+    "participant_entitlement_status": "expired",
+    "external_identity_cleanup_recorded": true,
     "resource_counts": {
       "applications.argoproj.io": 0,
       "namespaces": 0,
-      "routes.route.openshift.io": 0
+      "routes.route.openshift.io": 0,
+      "users.user.openshift.io": 0,
+      "identities.user.openshift.io": 0,
+      "oauthaccesstokens.oauth.openshift.io": 0
     }
   },
   "rubric": {
