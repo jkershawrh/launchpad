@@ -1,0 +1,151 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261006-agentic-ai-101-public-1seat-r3",
+  "catalog_item_id": "agentic-ai-101",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-06T19:45:37Z",
+  "contract": {
+    "catalog_version_under_test": "0.1.0",
+    "promoted_catalog_version": "0.1.0",
+    "git_commit": "9ba1bea27a95ace3ecee75f4a1710cff0b95bc6b",
+    "intake_path": "catalog-onboarding/agentic-ai-101.yaml",
+    "path": "certification/catalog/agentic-ai-101.yaml",
+    "sha256": "f81ddb3ea6f43903527e42c84ebeb095f2465f39af5d9c8688dee5f4ab97c846"
+  },
+  "source": {
+    "showroom_revision": "e4713118a683fec17e1d3cd0938058052803e88d",
+    "workload_revision": "e4713118a683fec17e1d3cd0938058052803e88d",
+    "backend_image": "ghcr.io/rhpds/launchpad-backend@sha256:f6e70c9ace7a3f51f79c678d4b0c93924eb399d73b44688b3e4372e581f3e31f",
+    "presentation_image": "ghcr.io/jkershawrh/agentic-ai-101-presentation@sha256:8fc499945efa777483c125dbc691d0ed89cc8140c9a0c63fec268add52362856",
+    "rehearsal_image": "ghcr.io/jkershawrh/agentic-ai-101-rehearsal@sha256:69af3304d5b639871787dfc63ffd5961b7d4473c9228d7d4ede55f8ef2e49fb3",
+    "release_workflow": "https://github.com/jkershawrh/agentic-ai-101/actions/runs/37515041861"
+  },
+  "plan": {
+    "catalog_item_id": "agentic-ai-101",
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "certification_override": false,
+    "all_seats_same_cluster": true
+  },
+  "order": {
+    "order_id": "5b3aa019-74b3-4dce-a6f3-f7a7fbbaf370",
+    "session_ids": [
+      "32a7385d-65a4-4b91-8bb8-46333d60b13b"
+    ],
+    "namespaces": [
+      "launchpad-flightpath-candida-agentic-ai-101-5b3aa0"
+    ],
+    "seat_count": 1,
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready",
+    "ready_seconds": 45
+  },
+  "seat_results": [
+    {
+      "seat_id": "5b3aa019-74b3-4dce-a6f3-f7a7fbbaf370",
+      "seat_number": 1,
+      "session_id": "32a7385d-65a4-4b91-8bb8-46333d60b13b",
+      "namespace": "launchpad-flightpath-candida-agentic-ai-101-5b3aa0",
+      "cluster_ref": "flightpath",
+      "probe": {
+        "passed": true,
+        "exit_code": 0,
+        "assertion_failures": [],
+        "result": {
+          "result": "GREEN-destination-rehearsal-seat",
+          "source_state": "REHEARSAL",
+          "runtime_images_exact": true,
+          "presentation_ready": true,
+          "rehearsal_ready": true,
+          "showroom_to_runtime": true,
+          "read_only_grounded": true,
+          "deterministic_replay": true,
+          "state_change_denied": true,
+          "target_mutated": false,
+          "unknown_scenario_rejected": true,
+          "human_review_required": true,
+          "terminal_scope": [
+            "project=launchpad-flightpath-candida-agentic-ai-101-5b3aa0",
+            "own_edit=yes",
+            "cross_namespace=DENIED",
+            "node_list=DENIED"
+          ],
+          "contains_sensitive_values": false
+        }
+      },
+      "public_browser": {
+        "trusted_tls": true,
+        "claim_succeeded": true,
+        "same_seat_recovery_succeeded": true,
+        "showroom_loaded": true,
+        "partnership_branding_loaded": true,
+        "all_guide_pages_loaded": true,
+        "all_execute_controls_sent_to_terminal": true,
+        "read_only_proof_passed": true,
+        "state_change_proof_passed": true,
+        "workflow_map_completed": true,
+        "interactive_story_embedded": true,
+        "interactive_story_two_traces_completed": true,
+        "interactive_story_source_state": "REHEARSAL",
+        "interactive_story_policy_result": "deny and escalate",
+        "interactive_story_target_changed": false,
+        "terminal_embedded": true,
+        "terminal_namespace_scoped": true,
+        "openshift_console_embedded": true,
+        "openshift_console_namespace_scoped": true,
+        "openshift_console_pods_listed": 3,
+        "public_url": "https://labs.smg-helix.ai/labs/agentic-ai-101-5b3aa019"
+      }
+    }
+  ],
+  "red_green": {
+    "red_runtime_image_drift_detected": true,
+    "green_exact_image_override_proven": true,
+    "red_console_watch_websocket_503_reproduced": true,
+    "green_console_watch_websocket_proven": true,
+    "regression_tests_passed": 134
+  },
+  "gates": {
+    "all_seats_ready": true,
+    "cleanup_completed": true,
+    "contract_valid": true,
+    "evidence_hashed": true,
+    "model_keys_revoked": true,
+    "namespace_isolation_passed": true,
+    "participant_identity_cleanup_passed": true,
+    "public_browser_passed": true,
+    "same_seat_recovery_passed": true,
+    "seat_probes_passed": true,
+    "sensitive_values_absent": true,
+    "showroom_pages_passed": true,
+    "single_cluster_assignment": true,
+    "zero_residue_cleanup": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "completed_at": "2026-10-06T19:45:36.785377",
+    "idempotent_reclaim": true,
+    "access_policy_enabled": false,
+    "active_claim_count": 0,
+    "reclaimed_code_rejected": true,
+    "model_keys_revoked": true,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "rolebindings.rbac.authorization.k8s.io": 0,
+      "routes.route.openshift.io": 0
+    }
+  },
+  "security": {
+    "contains_plaintext_credentials": false,
+    "participant_identity_is_opaque": true,
+    "namespace_scope_enforced": true
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}
