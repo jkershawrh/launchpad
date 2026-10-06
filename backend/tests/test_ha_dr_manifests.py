@@ -627,6 +627,19 @@ def test_flightpath_stage_is_isolated_internal_and_fail_closed() -> None:
         "app.kubernetes.io/name"
     ] == "keycloak"
     assert {port["port"] for port in keycloak_peer["ports"]} == {7800, 57800}
+    keycloak_cross_namespace = keycloak_network["spec"]["ingress"][1]
+    assert keycloak_cross_namespace["from"][0]["namespaceSelector"]["matchLabels"] == {
+        "kubernetes.io/metadata.name": "launchpad-flightpath-candidate"
+    }
+    name_selector = keycloak_cross_namespace["from"][0]["podSelector"][
+        "matchExpressions"
+    ][0]
+    assert set(name_selector["values"]) == {
+        "cloudflare-tunnel",
+        "participant-identity-reconciler",
+        "public-access-gateway",
+    }
+    assert keycloak_cross_namespace["ports"] == [{"port": 8080, "protocol": "TCP"}]
     assert keycloak_schema["spec"]["template"]["spec"][
         "automountServiceAccountToken"
     ] is False

@@ -45,7 +45,10 @@ spec:
             matchExpressions:
               - key: app.kubernetes.io/name
                 operator: In
-                values: [cloudflare-tunnel, public-access-gateway]
+                values:
+                  - cloudflare-tunnel
+                  - participant-identity-reconciler
+                  - public-access-gateway
       ports:
         - {port: 8080, protocol: TCP}
 ---
