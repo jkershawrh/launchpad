@@ -771,7 +771,7 @@ labs:
     learn: {status: green-local, evidence: "The capstone now explicitly connects 301 build, 401 operate, 501 qualify, and 601 authority evaluation."}
     do: {status: green-local, evidence: "The learner exercises a reversible control loop against clearly labeled synthetic evidence with external authority disabled."}
     prove: {status: rehearsal-only, evidence: "No live authority, destination evidence, or production action is claimed."}
-    operators: {status: green-live, evidence: "The exact Flightpath seat served all nine Showroom stages, exercised the qualification API, and proved terminal namespace scope; browser Console SSO remains an activation review item."}
+    operators: {status: green-live, evidence: "The exact Flightpath seat served all nine Showroom stages, preserved the machine-readable qualification API, rendered the branded human-readable Qualification Evidence operator, and proved terminal namespace scope; browser Console SSO remains an activation review item."}
     inference: {status: not-applicable, evidence: "The catalog deliberately declares no model dependency; the learning claim is governance of authority, not generation."}
     cleanup: {status: green-live, evidence: "Run r5 revoked the model key and reclaimed the namespace, Argo CD Application, Routes, RoleBinding, Secrets, PVCs, and PVs with zero residue in 65.398 seconds."}
     source_state:
@@ -792,10 +792,10 @@ labs:
     destination_certification:
       status: GREEN-live
       score: 100
-      ready_seconds: 57.645
-      cleanup_seconds: 65.398
-      evidence: evidence/runs/flightpath-live-20261002-agentic-ai-601-1seat-r5.json
-      proof: "The exact 588412f release passed all nine Showroom stages, governed-loop denial and bounded simulation, single-use approval, idempotent replay, rollback and demotion, emergency stop, evidence-chain verification, namespace isolation, key revocation, reclaim, and zero residue. It proves destination rehearsal only and grants no production execution authority."
+      ready_seconds: 35.694
+      cleanup_seconds: 2.813
+      evidence: evidence/runs/catalog/agentic-ai-601-flightpath-qualification-operator-one-seat-20261005.json
+      proof: "The exact de4bc2e signed release passed all nine Showroom stages, eight executable learning blocks, governed-loop denial and bounded simulation, single-use approval, idempotent replay, rollback and demotion, emergency stop, evidence-chain verification, the branded human-readable Qualification Evidence operator, namespace isolation, reclaim, and zero residue. It proves destination rehearsal only and grants no production execution authority."
     next_action: retain bounded internal one-seat rehearsal orderability; browser Console SSO, class-specific thresholds, production adapters, scale, general availability, and any live authority claim require separate evidence and human approval
 
   sovereign-ai-301:

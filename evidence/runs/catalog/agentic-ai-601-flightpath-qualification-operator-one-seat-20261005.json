@@ -1,0 +1,73 @@
+{
+  "evidence_id": "agentic-ai-601-flightpath-qualification-operator-one-seat-20261005",
+  "result": "GREEN-destination-rehearsal-seat",
+  "catalog_item_id": "agentic-ai-601",
+  "cluster_ref": "flightpath",
+  "tenant_id": "flightpath-candidate-cert",
+  "request_id": "aca29b69-00a2-436a-bb4d-70762945b0f9",
+  "session_id": "6b71bc3a-6781-4d4e-9657-77ab6e4b70b5",
+  "namespace": "launchpad-flightpath-candida-agentic-ai-601-aca29b",
+  "source_commit": "de4bc2ea057fce33967b2eb52790d57b77ff0832",
+  "launchpad_commit": "8c8f4700",
+  "release_run": "https://github.com/jkershawrh/agentic-ai-601/actions/runs/37410137904",
+  "runtime_images": {
+    "presentation": "ghcr.io/jkershawrh/agentic-ai-601-presentation@sha256:9395648031e9e7d9b33985b550cb06133f1e11464f086a4dea34bbfd63ecadf1",
+    "qualifier": "ghcr.io/jkershawrh/agentic-ai-601-qualifier@sha256:b95d3779c254a352028cdfb13aecffb229113ef78d2dba332aef19596ca0d732"
+  },
+  "lifecycle": {
+    "provisioning_started_at": "2026-10-06T03:52:00.189823Z",
+    "ready_at": "2026-10-06T03:52:35.883781Z",
+    "reclaim_started_at": "2026-10-06T03:58:48.881895Z",
+    "reclaimed_at": "2026-10-06T03:58:51.695203Z",
+    "final_status": "reclaimed"
+  },
+  "proof": {
+    "exact_signed_images": true,
+    "zero_high_or_critical_image_findings": true,
+    "sbom_signature_and_provenance_verified": true,
+    "presentation_ready": true,
+    "qualifier_ready": true,
+    "showroom_pages_checked": 9,
+    "showroom_pages_passed": 9,
+    "showroom_execute_blocks_present": 8,
+    "qualification_status_json_preserved": true,
+    "qualification_status_page_http_200": true,
+    "qualification_status_page_human_readable": true,
+    "qualification_status_page_rehearsal_labeled": true,
+    "qualification_status_page_human_review_labeled": true,
+    "qualification_status_page_no_production_authority_labeled": true,
+    "signal_observed": true,
+    "unapproved_action_denied": true,
+    "single_use_approval_enforced": true,
+    "idempotent_replay": true,
+    "rollback_and_demotion": true,
+    "emergency_stop_precedes_action": true,
+    "evidence_chain_valid": true,
+    "terminal_namespace_isolation": true,
+    "cross_namespace_access_denied": true,
+    "cluster_node_access_denied": true,
+    "openshift_console_url_declared": true,
+    "automated_promotion": false,
+    "human_review_required": true,
+    "evidence_source": "rehearsal",
+    "live_claim": false,
+    "model_participated": false,
+    "target_state_mutated": false,
+    "strict_cluster_ca_validation": true,
+    "browser_visual_certification": "conditional on a browser-trusted Flightpath route certificate"
+  },
+  "cleanup": {
+    "namespace_remaining": 0,
+    "applications_remaining": 0,
+    "routes_remaining": 0,
+    "role_bindings_remaining": 0,
+    "secrets_remaining": 0
+  },
+  "proof_strategy": {
+    "TDD": "The human-readable qualification endpoint first failed with HTTP 404; component tests now preserve the JSON contract and require the branded operator view.",
+    "EDD": "This manifest binds source and Launchpad commits, signed image digests, release run, request, session, lifecycle timestamps, participant checks, and cleanup counts.",
+    "CDD": "The Showroom Qualification Evidence tab and destination certifier both require /api/v1/status/view while /api/v1/status remains the machine-readable contract.",
+    "BDD": "Given an internal Agentic AI 601 seat, the participant can traverse all nine learning stages, exercise bounded authority decisions, inspect human-readable qualification evidence, and remain namespace-scoped.",
+    "CBT": "Presentation, every Showroom page, executable blocks, qualifier health, JSON status, operator status UI, governed-loop controls, terminal isolation, and cleanup were verified independently."
+  }
+}
