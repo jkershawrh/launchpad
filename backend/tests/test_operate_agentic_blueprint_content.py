@@ -9,12 +9,12 @@ CATALOG_PATH = ROOT / "catalog/operate-agentic-blueprint/catalog-item.yaml"
 CONTENT_ROOT = ROOT / "content-operate-agentic-blueprint"
 
 
-def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
+def test_operate_blueprint_is_an_active_one_seat_core_401_on_the_canonical_runtime():
     catalog = yaml.safe_load(CATALOG_PATH.read_text())
     metadata = catalog["metadata"]
 
     assert catalog["catalog_item_id"] == "operate-agentic-blueprint"
-    assert catalog["status"] == "draft"
+    assert catalog["status"] == "active"
     assert metadata["learning_level"] == "401"
     assert metadata["learning_stage"] == "Operate"
     assert metadata["journey_role"] == "core"
@@ -73,14 +73,10 @@ def test_operate_blueprint_is_a_draft_core_401_on_the_canonical_runtime():
     assert metadata["workload_helm_values"]["imagePullSecrets"] == [
         {"name": "launchpad-registry-pull"}
     ]
-    assert metadata["activation_blockers"]
+    assert metadata["activation_blockers"] == []
     assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["certification_transfer"] == "none"
-    assert len(metadata["activation_blockers"]) == 4
-    assert not any(
-        "same-origin" in blocker or "correlation fields" in blocker
-        for blocker in metadata["activation_blockers"]
-    )
+    assert metadata["public_access_certification_stage"] == "one-seat-certified"
 
 
 def test_operate_blueprint_content_is_a_linear_evidence_journey():

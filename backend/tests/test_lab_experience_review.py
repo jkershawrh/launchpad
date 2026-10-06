@@ -31,15 +31,15 @@ def _portfolio_catalog_ids() -> set[str]:
     return included
 
 
-def test_experience_review_covers_all_25_non_deprecated_catalog_items() -> None:
+def test_experience_review_covers_all_26_non_deprecated_catalog_items() -> None:
     review = yaml.safe_load(REVIEW.read_text(encoding="utf-8"))
 
-    assert len(_portfolio_catalog_ids()) == 25
+    assert len(_portfolio_catalog_ids()) == 26
     assert set(review["labs"]) == _portfolio_catalog_ids()
     assert review["portfolio_scope"]["included_statuses"] == ["active", "draft"]
     assert review["portfolio_scope"]["excluded_statuses"] == ["deprecated"]
-    assert review["portfolio_scope"]["distinct_learning_experience_count"] == 23
-    assert review["portfolio_scope"]["participant_learning_experience_count"] == 22
+    assert review["portfolio_scope"]["distinct_learning_experience_count"] == 24
+    assert review["portfolio_scope"]["participant_learning_experience_count"] == 23
     assert review["portfolio_scope"]["platform_validation_experience_count"] == 1
     assert review["portfolio_scope"]["compatibility_alias_count"] == 2
 
@@ -472,17 +472,17 @@ def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> 
             "cleanup": "green-live",
             "change_state": "one-seat-live-certified",
         },
-            "hybrid-fraud-detection": {
-                "revision": "9dccae859e939d836c06cc9fb51d8ae4a848a38f",
-                "overall": "security-remediation-required-draft",
-                "cleanup": "green-local",
-                "change_state": "committed-published-pinned-not-live-certified",
-            },
+        "hybrid-fraud-detection": {
+            "revision": "2ea5e1f5cfce7e7a45e9b10408d8653590a4af79",
+            "overall": "one-seat-live-certified-active",
+            "cleanup": "green-live",
+            "change_state": "exact-pinned-candidate-internal-and-public-one-seat-live-certified",
+        },
         "agent-reliability": {
-            "revision": "9c69348c34904c58997318d9124ac3d50661984b",
-            "overall": "source-update-published-draft",
-            "cleanup": "green-local",
-            "change_state": "committed-published-pinned-not-live-certified",
+            "revision": "fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc",
+            "overall": "one-seat-live-certified-active",
+            "cleanup": "green-live",
+            "change_state": "one-seat-live-certified",
         },
     }
 
@@ -512,9 +512,9 @@ def test_applied_lab_reviews_separate_live_proof_from_local_source_updates() -> 
         )
 
     reliability = review["labs"]["agent-reliability"]
-    assert reliability["prove"]["status"] == "conditional"
-    assert reliability["operators"]["status"] == "green-local"
-    assert reliability["inference"]["status"] == "conditional"
+    assert reliability["prove"]["status"] == "green-live"
+    assert reliability["operators"]["status"] == "green-live"
+    assert reliability["inference"]["status"] == "green-live"
 
 
 def test_agent_reliability_records_verified_registry_mirror_provenance() -> None:
@@ -523,17 +523,17 @@ def test_agent_reliability_records_verified_registry_mirror_provenance() -> None
         "image_provenance"
     ]
 
-    assert provenance["status"] == "verified-byte-identical-mirror"
+    assert provenance["status"] == "exact-source-publication"
     assert provenance["manifest_digest"] == (
-        "sha256:604331d4a050f47457e27c2191106aa3fa075d408514143cd9eac6da18dfc3fb"
+        "sha256:eca79307a3a23e9314bd050a8f944f00a88f2869f55b24c925551b545984dc00"
     )
     assert provenance["config_digest"] == (
-        "sha256:62275b5e05c96d695019c85a16bbf208c97cdeb24320af03863d9b5af1b3dbfc"
+        "sha256:ea0ec523a47629a79737d706ee232f696db0f17cc18199d03c519db38cfad8a4"
     )
     assert provenance["image_source_revision"] == (
-        "4cf610d3c225c8b31a73354bb405a3f9022305a2"
+        "fa6a1797662e10eced38cc3cfd5fee4f52ecc7fc"
     )
-    assert provenance["source_manifest_registry"] == "quay.io"
+    assert provenance["source_manifest_registry"] == "ghcr.io"
     assert provenance["catalog_registry"] == "ghcr.io"
     assert provenance["ghcr_visibility"] == "public"
 

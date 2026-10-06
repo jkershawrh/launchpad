@@ -97,6 +97,10 @@ def test_401_review_records_exact_source_and_artifact_boundary():
         "presentation": "quay.io/rh-ee-jkershaw/launchpad-operate-agentic-blueprint-presentation@sha256:2aee08aaac09e296725954a9450ffc87240b9a9ef458a291916127871259c580",
     }
     assert source_state["certification_transfer"] == "none"
-    assert review["overall_status"] == "one-seat-pilot-active"
+    assert review["overall_status"] == "one-seat-live-certified-active"
     assert review["live_certification"]["result"] == "GREEN-live"
     assert review["live_certification"]["rubric_score"] == 100
+    assert review["operators"]["status"] == "green-live"
+    assert review["live_certification"]["evidence"].endswith(
+        "operate-agentic-blueprint-flightpath-public-console-one-seat-20261005.json"
+    )
