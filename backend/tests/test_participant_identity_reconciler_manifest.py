@@ -23,6 +23,7 @@ def test_identity_reconciler_has_a_dedicated_service_account_and_minimal_role() 
 
     assert pod["serviceAccountName"] == "launchpad-participant-identity-reconciler"
     assert pod_labels["app.kubernetes.io/part-of"] == "partner-ai-launchpad"
+    assert pod_labels["app.kubernetes.io/managed-by"] == "kustomize"
     assert pod["containers"][0]["command"] == [
         "python",
         "-m",
