@@ -82,8 +82,16 @@ Catalog lifecycle and journey role are independent:
    OpenTelemetry integrations, organization-owned artifact publication, and
    the later scale proof.
 5. `operate-agentic-blueprint` — 401 Operate; active for bounded one-seat
-   internal and public-code use. Its live Flightpath proof authorizes this
-   pilot scope only; scale and production gates remain open.
+   internal and public-code use. The October 5 Flightpath participant proof
+   covered the branded six-stage Showroom journey, live Story, three-agent
+   Workspace, MCP evidence, guarded denial and recovery, semantic routing,
+   Intel Xeon inference, reversible learner policy, scoped Terminal, and an
+   embedded OpenShift Console that was enabled automatically from the catalog
+   contract and reached the assigned namespace through SSO. Normal reclaim
+   disabled access and left zero namespaces, Applications, Routes,
+   RoleBindings, or Secrets. This authorizes the one-seat pilot scope only;
+   scale and production gates remain open. Evidence:
+   `evidence/runs/catalog/operate-agentic-blueprint-flightpath-public-console-one-seat-20261005.json`.
 6. `scale-agentic-blueprint` — 501 Scale; active for bounded one-seat internal
    rehearsal. Its signed candidate and one-seat lifecycle proof do not yet
    authorize live telemetry, multi-seat scale, or production claims.
