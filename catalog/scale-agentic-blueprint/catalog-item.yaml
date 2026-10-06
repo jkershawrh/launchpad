@@ -37,7 +37,7 @@ metadata:
   solution_family: agentic_ai
   showroom: true
   showroom_content_repo_url: https://github.com/jkershawrh/agentic-scale-501.git
-  showroom_content_ref: 173f019da79d0d55431457ff24ed3e7253d98b23
+  showroom_content_ref: 960d295025faf3d8f45bb916163a90ec4e43770a
   showroom_content_playbook: site.yml
   showroom_content_start_path: showroom
   operator_workshop: true
@@ -88,7 +88,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/agentic-scale-501.git
-  workload_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
+  workload_revision: 960d295025faf3d8f45bb916163a90ec4e43770a
   workload_deploy_type: helm
   workload_deployment_scope: seat
   workload_deploy_path: charts/agentic-scale-501
@@ -99,10 +99,10 @@ metadata:
     images:
       presentation:
         repository: ghcr.io/jkershawrh/agentic-scale-501-presentation
-        digest: sha256:c69aa83eafde91e67544d79f804ab3849a0402522277cbb21a72bc649866a1cb
+        digest: sha256:cfbb376c62903a96e4c85a5e2bcceaa663d915a109b69df4c20a21f4e3bf882b
       qualifier:
         repository: ghcr.io/jkershawrh/agentic-scale-501-qualifier
-        digest: sha256:e33dd9066e36d01e0b90143d7752004c15128b21f42b5f4c1aac465b9a5be7a0
+        digest: sha256:160c9cf301dd0699e5eaf130c7eb9632051fd959a1e28001ec460d85488ef0a3
     routes:
       enabled: true
       ingressDomain: apps.flightpath.fm2aihpcsed.com
@@ -121,7 +121,7 @@ metadata:
     qualifier: agentic-scale-501-qualifier
   workload_readiness: []
   source_content_repo: https://github.com/jkershawrh/agentic-scale-501.git
-  source_content_revision: 173f019da79d0d55431457ff24ed3e7253d98b23
+  source_content_revision: 960d295025faf3d8f45bb916163a90ec4e43770a
   source_references:
     certification_evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
     activation_review: evidence/runs/catalog/agentic-advanced-one-seat-activation-review-20261002.json

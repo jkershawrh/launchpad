@@ -4,9 +4,9 @@ set -euo pipefail
 namespace="${1:?usage: certify-scale-agentic-blueprint-seat.sh <namespace> <cluster-id>}"
 expected_cluster="${2:?usage: certify-scale-agentic-blueprint-seat.sh <namespace> <cluster-id>}"
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
-source_revision="173f019da79d0d55431457ff24ed3e7253d98b23"
-expected_presentation_image="ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:c69aa83eafde91e67544d79f804ab3849a0402522277cbb21a72bc649866a1cb"
-expected_qualifier_image="ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:e33dd9066e36d01e0b90143d7752004c15128b21f42b5f4c1aac465b9a5be7a0"
+source_revision="960d295025faf3d8f45bb916163a90ec4e43770a"
+expected_presentation_image="ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:cfbb376c62903a96e4c85a5e2bcceaa663d915a109b69df4c20a21f4e3bf882b"
+expected_qualifier_image="ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:160c9cf301dd0699e5eaf130c7eb9632051fd959a1e28001ec460d85488ef0a3"
 
 stage="setup"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
@@ -61,12 +61,19 @@ stage="qualifier-health"
 jq -e '.status == "ok"' <<<"$(curl "${curl_options[@]}" "https://${qualifier_host}/healthz")" >/dev/null
 jq -e '.status == "ready"' <<<"$(curl "${curl_options[@]}" "https://${qualifier_host}/readyz")" >/dev/null
 
+stage="qualification-operator"
+qualification_status="$(curl "${curl_options[@]}" "https://${qualifier_host}/api/v1/status")"
+grep -q 'Qualification Evidence' <<<"$qualification_status"
+grep -q 'REHEARSAL' <<<"$qualification_status"
+grep -q 'Human review required' <<<"$qualification_status"
+grep -q 'No model participated' <<<"$qualification_status"
+
 stage="rehearsal-qualification"
 profile="$(jq -cn '{profile:{
   id:"flightpath-destination-qualification",
   version:"policy-v1",
   phase:"baseline",
-  workloadImageDigest:"sha256:e33dd9066e36d01e0b90143d7752004c15128b21f42b5f4c1aac465b9a5be7a0",
+  workloadImageDigest:"sha256:160c9cf301dd0699e5eaf130c7eb9632051fd959a1e28001ec460d85488ef0a3",
   evaluationSetVersion:"agentic-scale-501-v1",
   target:"flightpath/agentic-scale-501",
   concurrency:1,
@@ -144,6 +151,7 @@ jq -cn \
       terminal_scope_verified: true,
       console_url_present: ($console_url | startswith("https://")),
       qualification_service_verified: true,
+      qualification_status_page_verified: true,
       console_url: $console_url
     },
     qualification: {

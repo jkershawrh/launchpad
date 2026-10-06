@@ -11,9 +11,9 @@ CATALOG_PATH = ROOT / "catalog/scale-agentic-blueprint/catalog-item.yaml"
 INTAKE_PATH = ROOT / "catalog-onboarding/scale-agentic-blueprint.yaml"
 CERTIFIER_PATH = ROOT / "scripts/certify-scale-agentic-blueprint-seat.sh"
 REVIEW_PATH = ROOT / "evidence/lab-experience-review-20260930.yaml"
-SOURCE_REVISION = "173f019da79d0d55431457ff24ed3e7253d98b23"
-PRESENTATION_IMAGE = "ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:c69aa83eafde91e67544d79f804ab3849a0402522277cbb21a72bc649866a1cb"
-QUALIFIER_IMAGE = "ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:e33dd9066e36d01e0b90143d7752004c15128b21f42b5f4c1aac465b9a5be7a0"
+SOURCE_REVISION = "960d295025faf3d8f45bb916163a90ec4e43770a"
+PRESENTATION_IMAGE = "ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:cfbb376c62903a96e4c85a5e2bcceaa663d915a109b69df4c20a21f4e3bf882b"
+QUALIFIER_IMAGE = "ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:160c9cf301dd0699e5eaf130c7eb9632051fd959a1e28001ec460d85488ef0a3"
 
 
 def _load(path: Path) -> dict:
@@ -220,6 +220,9 @@ def test_rehearsal_certifier_proves_exact_artifacts_without_model_participation(
     assert "! grep -q 'LIVE WORKLOAD'" in certifier
     assert "curl_options=(-fsS" in certifier
     assert "curl_options=(-fsSk" not in certifier
+    assert '"https://${qualifier_host}/api/v1/status"' in certifier
+    assert "grep -q 'Qualification Evidence'" in certifier
+    assert "grep -q 'No model participated'" in certifier
     assert "whoami --show-console" in certifier
 
 
