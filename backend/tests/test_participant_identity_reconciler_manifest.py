@@ -38,6 +38,13 @@ def test_identity_reconciler_has_a_dedicated_service_account_and_minimal_role() 
     ]
 
 
+def test_identity_reconciler_starts_suspended_for_controlled_live_certification() -> None:
+    documents = _documents()
+    cronjob = next(item for item in documents if item["kind"] == "CronJob")
+
+    assert cronjob["spec"]["suspend"] is True
+
+
 def test_identity_reconciler_delete_permission_is_admission_bounded() -> None:
     documents = _documents()
     policy = next(item for item in documents if item["kind"] == "ValidatingAdmissionPolicy")

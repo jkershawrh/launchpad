@@ -69,6 +69,10 @@ metadata:
   name: participant-identity-reconciler
 spec:
   schedule: "*/5 * * * *"
+  # First activation is deliberately suspended. Certification creates one
+  # explicit Job from this template, verifies the identity boundary and zero
+  # residue, and only then enables the recurring schedule.
+  suspend: true
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 3
