@@ -10,6 +10,7 @@ resources:
   - candidate-rbac.yaml
   - candidate-maas.yaml
   - public-access-ha.yaml
+  - participant-identity-reconciler.yaml
 
 configMapGenerator:
   - name: flightpath-candidate-serve-llms-catalog
