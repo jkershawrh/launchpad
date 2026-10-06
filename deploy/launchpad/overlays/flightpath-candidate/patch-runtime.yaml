@@ -483,7 +483,7 @@ spec:
                   app.kubernetes.io/name: public-access-gateway
       containers:
         - name: gateway
-          image: ghcr.io/jkershawrh/launchpad-flightpath-backend@sha256:d0a91717ea6be780d0e19eb5454c7ac21c0d2227a6db0b63afe9db305477010f
+          image: ghcr.io/jkershawrh/launchpad-flightpath-backend@sha256:2bcf78f749e713eff260f72ac92e7d2e59725c0488bf1b88d9f9a22490b43d7c
           env:
             - {name: SSL_CERT_FILE, value: /etc/launchpad-ca/ca-bundle.crt}
             - {name: REQUESTS_CA_BUNDLE, value: /etc/launchpad-ca/ca-bundle.crt}
