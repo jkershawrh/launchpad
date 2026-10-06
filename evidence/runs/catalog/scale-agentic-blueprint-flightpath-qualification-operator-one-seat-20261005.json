@@ -1,0 +1,67 @@
+{
+  "evidence_id": "scale-agentic-blueprint-flightpath-qualification-operator-one-seat-20261005",
+  "result": "GREEN-destination-rehearsal-seat",
+  "catalog_item_id": "scale-agentic-blueprint",
+  "cluster_ref": "flightpath",
+  "tenant_id": "flightpath-candidate-cert",
+  "request_id": "e21672ef-f1b1-41f3-9d63-94f168c72184",
+  "session_id": "65fdf09f-50bb-474c-b854-f52ac5243368",
+  "namespace": "launchpad-flightpath-candida-agentic-scale-e21672",
+  "source_commit": "960d295025faf3d8f45bb916163a90ec4e43770a",
+  "launchpad_commit": "596268fe",
+  "release_run": "https://github.com/jkershawrh/agentic-scale-501/actions/runs/37408391031",
+  "runtime_images": {
+    "presentation": "ghcr.io/jkershawrh/agentic-scale-501-presentation@sha256:cfbb376c62903a96e4c85a5e2bcceaa663d915a109b69df4c20a21f4e3bf882b",
+    "qualifier": "ghcr.io/jkershawrh/agentic-scale-501-qualifier@sha256:160c9cf301dd0699e5eaf130c7eb9632051fd959a1e28001ec460d85488ef0a3"
+  },
+  "lifecycle": {
+    "provisioning_started_at": "2026-10-06T03:28:09.240816Z",
+    "ready_at": "2026-10-06T03:28:44.863181Z",
+    "reclaim_started_at": "2026-10-06T03:31:50.923676Z",
+    "reclaimed_at": "2026-10-06T03:31:53.782799Z",
+    "final_status": "reclaimed"
+  },
+  "proof": {
+    "exact_signed_images": true,
+    "zero_high_or_critical_image_findings": true,
+    "sbom_signature_and_provenance_verified": true,
+    "presentation_ready": true,
+    "qualifier_ready": true,
+    "showroom_pages_checked": 5,
+    "showroom_pages_passed": 5,
+    "showroom_execute_blocks_present": true,
+    "qualification_status_page_http_200": true,
+    "qualification_status_page_human_readable": true,
+    "qualification_status_page_rehearsal_labeled": true,
+    "qualification_status_page_human_review_labeled": true,
+    "qualification_status_page_no_model_claim": true,
+    "terminal_namespace_isolation": true,
+    "cross_namespace_access_denied": true,
+    "cluster_node_access_denied": true,
+    "openshift_console_url_declared": true,
+    "attempted_journeys": 3,
+    "completed_journeys": 3,
+    "correlated_journeys": 3,
+    "automated_promotion": false,
+    "human_review_required": true,
+    "evidence_source": "rehearsal",
+    "live_claim": false,
+    "model_participated": false,
+    "strict_cluster_ca_validation": true,
+    "browser_visual_certification": "conditional on a browser-trusted Flightpath route certificate"
+  },
+  "cleanup": {
+    "namespace_remaining": 0,
+    "applications_remaining": 0,
+    "routes_remaining": 0,
+    "role_bindings_remaining": 0,
+    "secrets_remaining": 0
+  },
+  "proof_strategy": {
+    "TDD": "The qualifier status endpoint first failed with HTTP 404; a component test now requires a branded, human-readable status page.",
+    "EDD": "This manifest binds the source commit, signed image digests, release run, request, session, lifecycle timestamps, participant checks, and cleanup counts.",
+    "CDD": "The declared Qualification Evidence operator path is now exercised by the destination certifier and cannot silently drift from the workload API.",
+    "BDD": "Given an internal Agentic AI 501 seat, the participant can traverse the story, terminal, qualification evidence, and OpenShift operator contracts while all claims remain explicitly rehearsal-only.",
+    "CBT": "Presentation, Showroom milestones, executable blocks, qualifier health, qualifier status UI, rehearsal API, terminal isolation, and cleanup were verified independently."
+  }
+}

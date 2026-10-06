@@ -123,5 +123,5 @@ metadata:
   source_content_repo: https://github.com/jkershawrh/agentic-scale-501.git
   source_content_revision: 960d295025faf3d8f45bb916163a90ec4e43770a
   source_references:
-    certification_evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
+    certification_evidence: evidence/runs/catalog/scale-agentic-blueprint-flightpath-qualification-operator-one-seat-20261005.json
     activation_review: evidence/runs/catalog/agentic-advanced-one-seat-activation-review-20261002.json

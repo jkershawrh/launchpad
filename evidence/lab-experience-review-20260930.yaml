@@ -759,7 +759,7 @@ labs:
       rubric_score: 100
       ready_seconds: 57.65
       cleanup_seconds: 65.696
-      evidence: evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json
+      evidence: evidence/runs/catalog/scale-agentic-blueprint-flightpath-qualification-operator-one-seat-20261005.json
       proof: "The exact 173f019 release was reconfirmed on 2026-10-02 at 100/100: trusted Showroom rendering, rehearsal qualification, exact image identity, zero presentation restarts, terminal isolation, Console URL discovery, key revocation, reclaim, and zero residue all passed. This remains destination rehearsal evidence, not live inference or scale certification."
     next_action: retain bounded internal one-seat rehearsal orderability; live adapters, Intel Xeon telemetry, fault drivers, thresholds, browser Console SSO/navigation, scale, and general availability remain independently blocked
 

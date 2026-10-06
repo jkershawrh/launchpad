@@ -182,7 +182,7 @@ def test_one_seat_experience_proof_does_not_claim_multi_seat_or_live_inference()
     assert intake["certification"]["promotion_sequence"] == [1]
     assert intake["certification"]["stage"] == "one-seat-destination-qualified"
     assert catalog["metadata"]["certification_stage"] == "one-seat-destination-qualified"
-    evidence = "evidence/runs/flightpath-live-20261002-scale-agentic-501-1seat-r4.json"
+    evidence = "evidence/runs/catalog/scale-agentic-blueprint-flightpath-qualification-operator-one-seat-20261005.json"
     assert intake["certification"]["certification_evidence"] == evidence
     assert catalog["metadata"]["source_references"]["certification_evidence"] == evidence
     assert [profile["seats"] for profile in certification["spec"]["scale_profiles"]] == [1]
