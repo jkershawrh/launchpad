@@ -486,7 +486,7 @@ def test_tool_proxy_leaves_gradio_api_prefix_for_gradio_to_join_to_its_root():
 
 def test_tool_proxy_adapts_demo_story_assets_and_live_api_to_the_order_mount():
     source = (
-        b'const redhat="/logos/redhat.svg",intel="/logos/intel.png";'
+        b'const redhat=`/logos/redhat.svg`,intel=`/logos/intel.png`;'
         b'load(`/api/v1/agents`);load(`/health`);'
     )
 
@@ -498,8 +498,8 @@ def test_tool_proxy_adapts_demo_story_assets_and_live_api_to_the_order_mount():
     ).decode()
 
     mount = "/labs/multi-agent-ab12cd34/proxy/tool/presentation"
-    assert f'"{mount}/logos/redhat.svg"' in rewritten
-    assert f'"{mount}/logos/intel.png"' in rewritten
+    assert f'`{mount}/logos/redhat.svg`' in rewritten
+    assert f'`{mount}/logos/intel.png`' in rewritten
     assert f'`{mount}/api/v1/agents`' in rewritten
     assert f'`{mount}/health`' in rewritten
 

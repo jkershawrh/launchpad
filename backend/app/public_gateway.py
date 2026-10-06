@@ -263,7 +263,7 @@ def _rewrite_upstream_content(
         # live API calls, health checks, and logos can remain under the
         # participant's entitled presentation mount without changing other
         # JavaScript applications.
-        if '"/logos/redhat.svg"' in source and '"/logos/intel.png"' in source:
+        if "/logos/redhat.svg" in source and "/logos/intel.png" in source:
             source = re.sub(
                 r'(?P<quote>["\'`])/(?P<path>(?:logos/[A-Za-z0-9_.-]+\.(?:png|svg)|api/v1/[A-Za-z0-9_./?&=-]+|health))(?P=quote)',
                 lambda match: (
