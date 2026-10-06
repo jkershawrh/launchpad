@@ -12,8 +12,8 @@ rules:
     resources: [oauthaccesstokens]
     verbs: [get, list, delete]
   - apiGroups: [user.openshift.io]
-    resources: [users]
-    verbs: [get, delete]
+    resources: [users, identities]
+    verbs: [get, list, delete]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -44,7 +44,7 @@ spec:
       - apiGroups: [user.openshift.io]
         apiVersions: [v1]
         operations: [DELETE]
-        resources: [users]
+        resources: [users, identities]
         scope: Cluster
   validations:
     - expression: >-
@@ -52,7 +52,9 @@ spec:
         'system:serviceaccount:launchpad-flightpath-candidate:launchpad-participant-identity-reconciler'
         || (request.resource.group == 'oauth.openshift.io'
           ? oldObject.userName.startsWith('lp-')
-          : oldObject.metadata.name.startsWith('lp-'))
+          : (request.resource.resource == 'identities'
+            ? oldObject.user.name.startsWith('lp-')
+            : oldObject.metadata.name.startsWith('lp-')))
       message: The Launchpad identity reconciler may remove only lp- participant identities.
 ---
 apiVersion: admissionregistration.k8s.io/v1

@@ -86,6 +86,29 @@ class OpenShiftParticipantIdentityAdapter:
                 name=item["metadata"]["name"],
             )
 
+        # OpenShift Identity objects are independent cluster resources. If the
+        # User is removed while its Identity remains, a later login with the
+        # same stable participant username follows the stale mapping and fails
+        # with "users.user.openshift.io <username> not found". Remove only
+        # identities that explicitly reference this Launchpad participant.
+        identities = self.api.list_cluster_custom_object(
+            group="user.openshift.io",
+            version="v1",
+            plural="identities",
+        )
+        matching_identities = [
+            item
+            for item in identities.get("items", [])
+            if item.get("user", {}).get("name") == username
+        ]
+        for item in matching_identities:
+            self.api.delete_cluster_custom_object(
+                group="user.openshift.io",
+                version="v1",
+                plural="identities",
+                name=item["metadata"]["name"],
+            )
+
         user_removed = False
         try:
             self.api.delete_cluster_custom_object(

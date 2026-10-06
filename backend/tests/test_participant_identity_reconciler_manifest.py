@@ -37,8 +37,8 @@ def test_identity_reconciler_has_a_dedicated_service_account_and_minimal_role() 
         },
         {
             "apiGroups": ["user.openshift.io"],
-            "resources": ["users"],
-            "verbs": ["get", "delete"],
+            "resources": ["users", "identities"],
+            "verbs": ["get", "list", "delete"],
         },
     ]
 
@@ -58,6 +58,7 @@ def test_identity_reconciler_delete_permission_is_admission_bounded() -> None:
     assert "launchpad-participant-identity-reconciler" in expression
     assert "oldObject.userName.startsWith('lp-')" in expression
     assert "oldObject.metadata.name.startsWith('lp-')" in expression
+    assert "oldObject.user.name.startsWith('lp-')" in expression
 
 
 def test_identity_reconciler_requires_out_of_band_keycloak_client_secret() -> None:

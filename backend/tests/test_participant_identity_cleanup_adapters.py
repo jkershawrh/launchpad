@@ -54,13 +54,31 @@ def test_keycloak_adapter_disables_and_logs_out_exact_participant(monkeypatch) -
 
 def test_openshift_adapter_deletes_only_tokens_for_exact_username() -> None:
     api = SimpleNamespace()
-    api.list_cluster_custom_object = lambda **_kwargs: {
-        "items": [
-            {"metadata": {"name": "token-a"}, "userName": "lp-person"},
-            {"metadata": {"name": "token-b"}, "userName": "someone-else"},
-            {"metadata": {"name": "token-c"}, "userName": "lp-person"},
-        ]
-    }
+    def list_cluster_custom_object(*, group, plural, **_kwargs):
+        if group == "oauth.openshift.io" and plural == "oauthaccesstokens":
+            return {
+                "items": [
+                    {"metadata": {"name": "token-a"}, "userName": "lp-person"},
+                    {"metadata": {"name": "token-b"}, "userName": "someone-else"},
+                    {"metadata": {"name": "token-c"}, "userName": "lp-person"},
+                ]
+            }
+        if group == "user.openshift.io" and plural == "identities":
+            return {
+                "items": [
+                    {
+                        "metadata": {"name": "launchpad-public:participant-a"},
+                        "user": {"name": "lp-person"},
+                    },
+                    {
+                        "metadata": {"name": "launchpad-public:participant-b"},
+                        "user": {"name": "someone-else"},
+                    },
+                ]
+            }
+        raise AssertionError(f"unexpected list: {group}/{plural}")
+
+    api.list_cluster_custom_object = list_cluster_custom_object
     deletions: list[tuple[str, str]] = []
 
     def delete_cluster_custom_object(*, group, plural, name, **_kwargs):
@@ -77,5 +95,6 @@ def test_openshift_adapter_deletes_only_tokens_for_exact_username() -> None:
     assert deletions == [
         ("oauth.openshift.io/oauthaccesstokens", "token-a"),
         ("oauth.openshift.io/oauthaccesstokens", "token-c"),
+        ("user.openshift.io/identities", "launchpad-public:participant-a"),
         ("user.openshift.io/users", "lp-person"),
     ]
