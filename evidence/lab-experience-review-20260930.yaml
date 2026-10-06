@@ -400,20 +400,20 @@ labs:
   intel-xeon6-agent-201:
     display_name: "Intel AI 201: Build an AI Agent on Intel Xeon 6"
     overall_status: one-seat-live-certified-active
-    published_content_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
-    published_pin_revision: pending-current-proof-commit
+    published_content_revision: 1a650e428ed8d8f0652b97827bb002b643c74725
+    published_pin_revision: 929dcdca86730afb31d643eeb244692fe7bdd731
     story: {status: green, evidence: "A Solution Architect agent gives the lab a concrete business role."}
     show: {status: green, evidence: "The working agent UI demonstrates the target outcome."}
     learn: {status: green, evidence: "Agent, tool, and model responsibilities are explained."}
     do: {status: green, evidence: "The learner builds and queries the agent."}
-    prove: {status: green-live, evidence: "The exact current candidate produced a 1,007-character sourced brief, used all three MCP tools, matched every model-bearing record to granite-3.2-8b-tools, and exported credential-free proof."}
+    prove: {status: green-live, evidence: "The exact current candidate produced an 842-character sourced brief, used all three MCP tools, matched every model-bearing record to granite-3.2-8b-tools, and exported credential-free proof."}
     operators: {status: green-live, evidence: "The participant terminal proved namespace edit access while cross-namespace and node access were denied; the UI, tools, and agent services were all healthy."}
     inference: {status: green-live, evidence: "The exact Flightpath seat proved managed granite-3.2-8b-tools participation through the participant runtime connection."}
     cleanup: {status: green-live, evidence: "Reclaim revoked the model key and left zero namespace, Application, PVC, PV, RoleBinding, Route, or Secret residue."}
     source_truth:
-      reviewed_showroom_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
-      catalog_showroom_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
-      candidate_revision: 42b250426fd4b5a8c7df843076b9ad8b54bf53a2
+      reviewed_showroom_revision: 1a650e428ed8d8f0652b97827bb002b643c74725
+      catalog_showroom_revision: 1a650e428ed8d8f0652b97827bb002b643c74725
+      candidate_revision: 1a650e428ed8d8f0652b97827bb002b643c74725
       workload_reference: f484cb66c3dcddff323df8814f637dc92c73c179
       workload_reference_status: immutable-public-commit
       certification_transfer: exact-candidate-only
@@ -431,11 +431,9 @@ labs:
     live_certification:
       result: GREEN-live
       rubric_score: 100
-      ready_seconds: 46.176
-      probe_seconds: 84.99
-      cleanup_seconds: 65.642
-      evidence: evidence/runs/catalog/intel-xeon6-agent-201-flightpath-full-journey-one-seat-20261005-r3.json
-      proof: "The exact current Showroom and workload revisions passed all six guide pages, immutable workload images, three MCP tools, live Xeon inference, the Solution Architect journey, namespace isolation, key revocation, reclaim, and zero residue."
+      ready_seconds: 30
+      evidence: evidence/runs/flightpath-live-20261006-intel-xeon6-agent-201-staging-r4.json
+      proof: "The exact current Showroom and workload revisions passed immutable source resolution, branded order-scoped Showroom access, embedded terminal Execute, three MCP tools, live Xeon inference, embedded Solution Architect output, logout/resume recovery, namespace isolation, idempotent reclaim, and zero residue."
     next_action: retain one-seat orderability; address the durable external image-mirror production blocker before moving the control plane
 
   multi-agent-quickstart:

@@ -1,0 +1,95 @@
+{
+  "schema": "launchpad.redhat.com/catalog-certification-evidence/v1",
+  "run_id": "flightpath-live-20261006-intel-xeon6-agent-201-staging-r4",
+  "catalog_item_id": "intel-xeon6-agent-201",
+  "result": "GREEN-live",
+  "completed_at": "2026-10-06T21:47:04Z",
+  "contract": {
+    "catalog_version": "1.0.9-flightpath.1",
+    "backend_git_commit": "929dcdca86730afb31d643eeb244692fe7bdd731",
+    "intake_path": "catalog-onboarding/intel-xeon6-agent-201.yaml",
+    "path": "certification/catalog/intel-xeon6-agent-201.yaml",
+    "sha256": "d7d8d44333c62d4cc42b5826b84894283707abd79c0cb32db0366baf7b35ed4f"
+  },
+  "source": {
+    "showroom_revision": "1a650e428ed8d8f0652b97827bb002b643c74725",
+    "workload_revision": "f484cb66c3dcddff323df8814f637dc92c73c179",
+    "backend_image": "ghcr.io/jkershawrh/launchpad-backend-flightpath@sha256:c4297f4bfca30358e5cd483124ac306e8362c5750a72da0bbe08eaa7637173a9",
+    "solution_agent_image": "ghcr.io/jkershawrh/triforce-solution-agent@sha256:fbe9c2dacb203346e89257aaf097a35bd0e741fe8ddbbc8fea72f4e547961e67",
+    "solution_tools_image": "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850",
+    "solution_ui_image": "quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
+  },
+  "plan": {
+    "seats": 1,
+    "cluster_ref": "flightpath",
+    "exposure_policy": "public_code",
+    "all_seats_same_cluster": true
+  },
+  "order": {
+    "request_id": "63557b9f-7b41-4acb-9fae-6fd9d7324d5c",
+    "session_id": "ddcd10d0-e52e-44ba-a153-e49088d92af9",
+    "namespace": "launchpad-flightpath-candida-intel-xeon6-agent-63557b",
+    "cluster_ref": "flightpath",
+    "status_before_reclaim": "ready"
+  },
+  "seat_result": {
+    "probe": {
+      "passed": true,
+      "result": "GREEN-live-internal-seat",
+      "response_sha256": "60931cd327b735696f4521cd4fc013e86a18f9f9eaff57dcce5a40476af88113",
+      "brief_length": 842,
+      "tool_count": 3,
+      "configured_model": "granite-3.2-8b-tools",
+      "observed_models": ["granite-3.2-8b-tools"],
+      "terminal_scope": [
+        "own_edit=yes",
+        "cross_namespace=DENIED",
+        "node_list=DENIED"
+      ],
+      "contains_sensitive_values": false
+    },
+    "public_browser": {
+      "trusted_tls": true,
+      "claim_succeeded": true,
+      "same_seat_recovery_succeeded": true,
+      "order_scoped_showroom_link": true,
+      "showroom_loaded": true,
+      "partnership_branding_visible": true,
+      "terminal_embedded": true,
+      "execute_button_drove_terminal": true,
+      "workspace_embedded": true,
+      "live_business_query_succeeded": true,
+      "openshift_console_required": false,
+      "public_url": "https://labs.smg-helix.ai/labs/intel-xeon6-agent-201-63557b9f"
+    }
+  },
+  "gates": {
+    "seat_ready": true,
+    "contract_valid": true,
+    "immutable_sources_resolved": true,
+    "model_and_tools_passed": true,
+    "namespace_isolation_passed": true,
+    "public_browser_passed": true,
+    "same_seat_recovery_passed": true,
+    "idempotent_reclaim_passed": true,
+    "zero_residue_cleanup": true,
+    "sensitive_values_absent": true
+  },
+  "cleanup": {
+    "status": "completed",
+    "idempotent_reclaim": true,
+    "access_policy_enabled": false,
+    "active_claim_count": 0,
+    "resource_counts": {
+      "applications.argoproj.io": 0,
+      "namespaces": 0,
+      "routes.route.openshift.io": 0
+    }
+  },
+  "rubric": {
+    "required": 100,
+    "score": 100,
+    "passed": true
+  },
+  "errors": []
+}

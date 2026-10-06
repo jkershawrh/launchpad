@@ -347,7 +347,7 @@ def test_candidate_isolates_agent_201_on_flightpath() -> None:
         "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
     )
     assert metadata["showroom_content_ref"] == (
-        "1a650e43a92747200778288256921205777782e2"
+        "1a650e428ed8d8f0652b97827bb002b643c74725"
     )
     assert metadata["inference_endpoint"] == "direct_vllm_candidate"
 
