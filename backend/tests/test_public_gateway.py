@@ -1,7 +1,9 @@
+import asyncio
 from pathlib import Path
 
 from app.public_gateway import (
     TOOL_PROXY_TIMEOUT,
+    _coalesce_resolution,
     _lab_cards,
     _public_order_prefix,
     _rewrite_showroom_config,
@@ -23,6 +25,30 @@ def test_gateway_exposes_only_public_health_identity():
     response = TestClient(app).get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok", "service": "public-access-gateway"}
+
+
+def test_simultaneous_asset_requests_share_only_the_inflight_entitlement_check():
+    calls = 0
+
+    async def exercise():
+        async def resolve_once():
+            nonlocal calls
+            calls += 1
+            await asyncio.sleep(0.01)
+            return {"seat_ref": "seat-1"}
+
+        key = ("labs.example.test", "/labs/order-1", "participant-1", "cookie")
+        results = await asyncio.gather(
+            *[_coalesce_resolution(key, resolve_once) for _ in range(40)]
+        )
+        assert results == [{"seat_ref": "seat-1"}] * 40
+        assert calls == 1
+
+        # Completed checks are not cached: the next request revalidates access.
+        assert await _coalesce_resolution(key, resolve_once) == {"seat_ref": "seat-1"}
+        assert calls == 2
+
+    asyncio.run(exercise())
 
 
 def test_gateway_has_no_openapi_or_admin_surface():
@@ -441,7 +467,7 @@ def test_tool_proxy_adapts_solution_architect_inline_api_base_to_the_order_mount
     assert "fetch(AGENT_URL + '/api/v1/advise')" in rewritten
 
 
-def test_tool_proxy_adapts_gradio_api_prefix_to_the_order_mount():
+def test_tool_proxy_leaves_gradio_api_prefix_for_gradio_to_join_to_its_root():
     source = (
         b'<script>window.gradio_config = {"version":"6.29.0",'
         b'"api_prefix":"/gradio_api","mode":"blocks"};</script>'
@@ -454,10 +480,8 @@ def test_tool_proxy_adapts_gradio_api_prefix_to_the_order_mount():
         "/labs/multi-agent-ab12cd34/proxy/tool/workspace",
     ).decode()
 
-    assert (
-        '"api_prefix":"/labs/multi-agent-ab12cd34/proxy/tool/workspace/gradio_api"'
-        in rewritten
-    )
+    assert '"api_prefix":"/gradio_api"' in rewritten
+    assert rewritten.count("/labs/multi-agent-ab12cd34") == 0
 
 
 def test_tool_proxy_adapts_demo_story_assets_and_live_api_to_the_order_mount():

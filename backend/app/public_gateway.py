@@ -46,6 +46,7 @@ TOOL_PROXY_TIMEOUT = httpx.Timeout(
 _PRIVATE_CLUSTER_ROUTE = re.compile(
     r"^(?:[a-z0-9-]+\.)*apps\.[a-z0-9-]+\.fm2aihpcsed\.com$"
 )
+_RESOLVE_INFLIGHT: dict[tuple[str, str, str, str], asyncio.Task] = {}
 
 
 def _host(request: Request) -> str:
@@ -87,7 +88,20 @@ def _terminal_ws_token(username: str, public_path: str, ttl_seconds: int = 60) -
     return encoded + "." + base64.urlsafe_b64encode(signature).rstrip(b"=").decode()
 
 
-async def _resolve(request: Request) -> dict:
+async def _coalesce_resolution(key: tuple[str, str, str, str], resolver) -> dict:
+    """Share only an in-flight entitlement check; never cache its result."""
+    task = _RESOLVE_INFLIGHT.get(key)
+    if task is None:
+        task = asyncio.create_task(resolver())
+        _RESOLVE_INFLIGHT[key] = task
+    try:
+        return await asyncio.shield(task)
+    finally:
+        if task.done() and _RESOLVE_INFLIGHT.get(key) is task:
+            _RESOLVE_INFLIGHT.pop(key, None)
+
+
+async def _resolve_uncached(request: Request) -> dict:
     username = _username(request)
     cookie = request.cookies.get("launchpad_access", "")
     public_path = _public_order_prefix(request)
@@ -115,6 +129,15 @@ async def _resolve(request: Request) -> dict:
     if result.status_code != 200:
         raise HTTPException(result.status_code, "Access denied")
     return result.json()
+
+
+async def _resolve(request: Request) -> dict:
+    username = _username(request)
+    cookie_digest = hashlib.sha256(
+        request.cookies.get("launchpad_access", "").encode()
+    ).hexdigest()
+    key = (_host(request), _public_order_prefix(request), username, cookie_digest)
+    return await _coalesce_resolution(key, lambda: _resolve_uncached(request))
 
 
 def _tool_upstream_url(base: str, path: str, query: str) -> str:
@@ -231,16 +254,9 @@ def _rewrite_upstream_content(
             "const AGENT_URL = window.AGENT_URL || '';",
             f"const AGENT_URL = window.AGENT_URL || '{public}';",
         )
-        # Gradio publishes its API prefix as an absolute path in the inline
-        # window.gradio_config object. Beneath the entitlement-aware gateway,
-        # `/gradio_api` would escape the order mount and leave the participant
-        # UI stuck on its loading screen. Keep the API and SSE queue requests
-        # on the same authorized tool proxy path. This signature is specific
-        # to Gradio's generated configuration and leaves unrelated HTML alone.
-        source = source.replace(
-            '"api_prefix":"/gradio_api"',
-            f'"api_prefix":"{public}/gradio_api"',
-        )
+        # Keep Gradio's generated `/gradio_api` prefix unchanged. Gradio joins
+        # it to the document's current root path itself; replacing it with the
+        # full public mount makes Gradio append that mount twice.
     elif media_type == "application/javascript":
         # The Triforce-style presentation is a Vite bundle built for an
         # origin root. Its stable paired brand assets identify the bundle so
