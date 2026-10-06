@@ -140,6 +140,18 @@ def restart_container(name: str) -> Dict[str, Any]:
 @router.post("/sessions/{session_id}/force-reclaim", response_model=LabSessionResponse)
 def force_reclaim(session_id: str):
     try:
+        session = provisioning_service.get_session(session_id)
+        if not session:
+            raise ValueError(f"Session {session_id} not found")
+        workshop_id = provisioning_service._workshop_id_for_session(session)
+        if workshop_id and provisioning_service.get_workshop(workshop_id):
+            # A workshop seat is part of one aggregate lifecycle. Reclaiming
+            # only the session would delete its resources while leaving the
+            # parent workshop and seat marked ready. Route the admin action
+            # through the workshop cleanup path so both records converge.
+            provisioning_service.queue_workshop_reclaim(workshop_id)
+            provisioning_service.reclaim_workshop(workshop_id)
+            return provisioning_service.get_session(session_id)
         return provisioning_service.force_reclaim_session(session_id)
     except ValueError:
         raise HTTPException(404, "Session not found")

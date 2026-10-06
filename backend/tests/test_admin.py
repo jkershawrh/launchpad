@@ -296,6 +296,50 @@ def test_api_force_reclaim(client):
     assert resp.json()["status"] == "reclaimed"
 
 
+def test_api_force_reclaim_routes_workshop_seat_through_parent_cleanup(client):
+    session = _provision_session()
+    reclaimed = session.model_copy(update={"status": SessionStatus.RECLAIMED})
+
+    with (
+        patch.object(
+            provisioning_service,
+            "_workshop_id_for_session",
+            return_value="workshop-admin-reclaim",
+        ),
+        patch.object(
+            provisioning_service,
+            "get_workshop",
+            return_value=object(),
+        ),
+        patch.object(
+            provisioning_service,
+            "queue_workshop_reclaim",
+        ) as queue_workshop,
+        patch.object(
+            provisioning_service,
+            "reclaim_workshop",
+        ) as reclaim_workshop,
+        patch.object(
+            provisioning_service,
+            "get_session",
+            side_effect=[session, reclaimed],
+        ),
+        patch.object(
+            provisioning_service,
+            "force_reclaim_session",
+        ) as force_session,
+    ):
+        response = client.post(
+            f"/api/v1/admin/sessions/{session.session_id}/force-reclaim"
+        )
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "reclaimed"
+    queue_workshop.assert_called_once_with("workshop-admin-reclaim")
+    reclaim_workshop.assert_called_once_with("workshop-admin-reclaim")
+    force_session.assert_not_called()
+
+
 def test_api_force_reclaim_404(client):
     resp = client.post("/api/v1/admin/sessions/nonexistent/force-reclaim")
     assert resp.status_code == 404
