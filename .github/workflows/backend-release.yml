@@ -12,6 +12,11 @@ on:
         required: true
         default: false
         type: boolean
+      image_name:
+        description: GHCR package name (use a repository-owned package when the legacy package is not writable)
+        required: true
+        default: launchpad-backend
+        type: string
 
 permissions:
   contents: read
@@ -20,7 +25,7 @@ permissions:
   attestations: write
 
 env:
-  IMAGE_REPOSITORY: ghcr.io/${{ github.repository_owner }}/launchpad-backend
+  IMAGE_REPOSITORY: ghcr.io/${{ github.repository_owner }}/${{ inputs.image_name }}
 
 jobs:
   release:
@@ -33,11 +38,16 @@ jobs:
 
       - name: Fail closed on revision drift
         shell: bash
+        env:
+          IMAGE_NAME: ${{ inputs.image_name }}
         run: |
           set -euo pipefail
           test "${{ github.sha }}" = "${{ inputs.expected_sha }}"
           test "$(git rev-parse HEAD)" = "${{ inputs.expected_sha }}"
           test -z "$(git status --porcelain)"
+          case "$IMAGE_NAME" in
+            ""|*[!a-z0-9._-]*) exit 1 ;;
+          esac
 
       - name: Set up emulation
         uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130
