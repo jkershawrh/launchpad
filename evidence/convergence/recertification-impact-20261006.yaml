@@ -1,0 +1,92 @@
+schema_version: launchpad.redhat.com/recertification-impact/v1
+generated_at: '2026-10-06'
+source_range:
+  base_commit: f3b7f94d
+  head_commit: 3f1c90f1
+  branch: codex/flightpath-migration-20260922
+
+decision:
+  full_catalog_recertification_required: false
+  affected_lab_recertifications: []
+  platform_canary_required: true
+  rationale: >-
+    The change range updates catalog governance, compatibility-alias handling,
+    participant ordering visibility, certification assertions, and generated
+    metadata defaults. It does not change a certified Showroom revision,
+    workload revision or image, model binding, participant RBAC boundary,
+    execution cluster, or reclamation implementation.
+
+change_classes:
+  - class: participant-ordering-contract
+    risk: platform-behavioral
+    changes:
+      - Hide compatibility aliases and internal diagnostics from participant ordering.
+      - Resolve a legacy alias URL to its explicit visible canonical catalog item.
+    required_proof:
+      - requester frontend unit tests
+      - requester production build
+      - one Flightpath order-and-reclaim canary after deployment
+  - class: metadata-only
+    risk: non-runtime
+    catalogs:
+      - sovereign-ai-401
+      - virtualization-ai-301
+      - hybrid-fraud-detection
+    changes:
+      - Persist the generated false default for showroom_antora_flat.
+      - Add the existing Hybrid Decision Casebook workspace title to the overlay.
+    required_proof:
+      - catalog generation equality
+      - catalog and overlay contract tests
+  - class: catalog-governance
+    risk: non-participant
+    catalogs:
+      - agentops-observability
+      - guided-rag-on-xeon
+      - smoke-test
+      - cpu-inference-serving
+      - rag-on-xeon
+    changes:
+      - Record deprecation, diagnostic-only, and compatibility-alias behavior.
+    required_proof:
+      - participant orderability contract tests
+      - legacy direct-client compatibility tests
+  - class: test-and-evidence
+    risk: non-runtime
+    changes:
+      - Reconcile stale assertions with existing immutable one-seat evidence.
+      - Preserve dated publication evidence as a historical snapshot.
+    required_proof:
+      - clean-patch backend regression suite
+
+completed_proof:
+  backend_non_local:
+    result: GREEN-local
+    passed: 2552
+    skipped: 27
+    deselected_local_only: 13
+  migration_gate:
+    result: GREEN-local
+    passed: 1
+  requester_frontend:
+    result: GREEN-local
+    test_files_passed: 22
+    tests_passed: 81
+    lint: passed
+    production_build: passed
+  repository_hygiene:
+    diff_check: passed
+    staged_secret_scan: passed
+
+remaining_gate:
+  - Deploy the unchanged-runtime candidate control plane and requester frontend to Flightpath.
+  - Verify every active participant catalog item is visible and selectable under its declared exposure policy.
+  - Order one certified lab, reach ready, exercise the participant handoff, reclaim it, and prove zero residue.
+  - Escalate to targeted lab recertification only if the canary exposes a participant-runtime regression.
+
+limitations:
+  - >-
+    This is a bounded diff-based decision. Not every historical receipt binds
+    independent platform, runtime, content, model, dataset, prompt, and runner
+    digests. Automated evidence reuse and dependency-graph impact analysis
+    remain open under LP-S037 and must be completed before production promotion.
