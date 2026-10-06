@@ -1,16 +1,16 @@
 schema_version: launchpad.redhat.com/staging-workshop-public-canary/v1
-generated_at: '2026-10-06T14:07:26Z'
+generated_at: '2026-10-06T14:55:16Z'
 
 candidate:
   branch: codex/flightpath-migration-20260922
-  source_commit: 3de7bb48
+  source_commit: 1adce64b
   cluster: flightpath
   namespace: launchpad-flightpath-candidate
-  backend_image: ghcr.io/rhpds/launchpad-backend@sha256:ed51a92852da8fb4be1aa5b36f95791bc3d351e97dcc6e98fbce2f106b383be3
+  backend_image: ghcr.io/rhpds/launchpad-backend@sha256:46eeb5f881369e843c03fe9e4c0a252798914332b1b3d429605f4beccdc3b053
   signed_build:
-    run_id: 37472652069
+    run_id: 37481774224
     result: pass
-    url: https://github.com/rhpds/launchpad/actions/runs/37472652069
+    url: https://github.com/rhpds/launchpad/actions/runs/37481774224
 
 deployment:
   backend_replicas_ready: 1
@@ -113,16 +113,45 @@ reclaim:
   public_route_access_after_reclaim: denied
   result: GREEN-live-workload-residue
 
+identity_cleanup:
+  implementation:
+    dedicated_service_account: launchpad-participant-identity-reconciler
+    delete_boundary: lp-prefix-validating-admission-policy
+    keycloak_permissions:
+      - query-users
+      - manage-users
+    database_race_fence: per-email-advisory-lock-and-active-entitlement-recheck
+    schedule: '*/5 * * * *'
+    schedule_enabled: true
+  controlled_activation:
+    disabled_candidates: 25
+    candidates_with_active_entitlements: 0
+    reconciled: 25
+    openshift_tokens_revoked: 3
+    openshift_users_after: 0
+    openshift_tokens_after: 0
+    cleanup_pending_after: 0
+    second_run_reconciled: 0
+    second_run_tokens_revoked: 0
+    result: GREEN-live
+  scheduled_execution:
+    job: participant-identity-reconciler-29854975
+    created_at: '2026-10-06T14:55:10Z'
+    completed_at: '2026-10-06T14:55:16Z'
+    succeeded: true
+    reconciled: 0
+    tokens_revoked: 0
+    result: GREEN-live
+
 security_residue:
-  openshift_oauth_access_tokens_for_disabled_identity: 2
-  openshift_user_object_retained: true
+  openshift_oauth_access_tokens_for_disabled_identity: 0
+  openshift_user_object_retained: false
   effective_namespace_authorization_after_reclaim: none
-  classification: staging-blocker
+  classification: none
   rationale: >-
-    Namespace deletion and RoleBinding removal fail closed, but the accepted
-    staging contract requires zero inactive identity residue. Automatic,
-    least-privilege OpenShift OAuth token revocation and user lifecycle cleanup
-    are not implemented yet.
+    The bounded reconciler disabled and logged out the Keycloak identity,
+    revoked all retained OpenShift OAuth tokens, removed the participant User
+    object, and durably marked cleanup complete. A second run was a no-op.
 
 decision:
   workshop_order_and_capacity: GREEN-live
@@ -130,9 +159,6 @@ decision:
   public_participant_journey: GREEN-live
   namespace_isolation: GREEN-live
   workload_reclaim_and_zero_residue: GREEN-live
-  identity_cleanup: RED
-  staging_candidate_qualified: false
-  remaining_qualification_gates:
-    - automatic least-privilege OpenShift OAuth token revocation on final entitlement expiry or reclaim
-    - safe removal or retention-policy reconciliation of the disabled OpenShift user object
-
+  identity_cleanup: GREEN-live
+  staging_candidate_qualified: true
+  remaining_qualification_gates: []

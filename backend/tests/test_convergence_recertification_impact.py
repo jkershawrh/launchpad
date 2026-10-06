@@ -91,9 +91,9 @@ def test_staging_workshop_public_canary_records_the_last_gate_truthfully() -> No
     assert proof["schema_version"] == (
         "launchpad.redhat.com/staging-workshop-public-canary/v1"
     )
-    assert proof["candidate"]["source_commit"] == "3de7bb48"
+    assert proof["candidate"]["source_commit"] == "1adce64b"
     assert proof["candidate"]["backend_image"].endswith(
-        "sha256:ed51a92852da8fb4be1aa5b36f95791bc3d351e97dcc6e98fbce2f106b383be3"
+        "sha256:46eeb5f881369e843c03fe9e4c0a252798914332b1b3d429605f4beccdc3b053"
     )
     assert proof["candidate"]["signed_build"]["result"] == "pass"
     assert proof["internal_workshop"]["seats_ready"] == 1
@@ -112,8 +112,13 @@ def test_staging_workshop_public_canary_records_the_last_gate_truthfully() -> No
     assert proof["reclaim"]["route_count"] == 0
     assert proof["reclaim"]["rolebinding_count"] == 0
     assert proof["reclaim"]["argocd_application_count"] == 0
-    assert proof["security_residue"]["openshift_oauth_access_tokens_for_disabled_identity"] == 2
-    assert proof["security_residue"]["classification"] == "staging-blocker"
-    assert proof["decision"]["identity_cleanup"] == "RED"
-    assert proof["decision"]["staging_candidate_qualified"] is False
-    assert len(proof["decision"]["remaining_qualification_gates"]) == 2
+    assert proof["identity_cleanup"]["controlled_activation"]["reconciled"] == 25
+    assert proof["identity_cleanup"]["controlled_activation"]["cleanup_pending_after"] == 0
+    assert proof["identity_cleanup"]["controlled_activation"]["second_run_reconciled"] == 0
+    assert proof["identity_cleanup"]["scheduled_execution"]["succeeded"] is True
+    assert proof["security_residue"]["openshift_oauth_access_tokens_for_disabled_identity"] == 0
+    assert proof["security_residue"]["openshift_user_object_retained"] is False
+    assert proof["security_residue"]["classification"] == "none"
+    assert proof["decision"]["identity_cleanup"] == "GREEN-live"
+    assert proof["decision"]["staging_candidate_qualified"] is True
+    assert proof["decision"]["remaining_qualification_gates"] == []
