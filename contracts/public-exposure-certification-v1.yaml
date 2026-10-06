@@ -4,6 +4,7 @@ metadata:
   name: one-seat-public-exposure
 spec:
   schema: launchpad.redhat.com/public-exposure-certification-evidence/v1
+  browserAccessProfiles: certification/browser-access-profiles-v1.yaml
   prerequisite:
     evidenceSchema: launchpad.redhat.com/catalog-certification-evidence/v1
     result: GREEN-live
@@ -44,3 +45,17 @@ spec:
   promotion:
     scaleCertificationChanged: false
     publicCertifiedSeats: 1
+  recertification:
+    edgeOnly:
+      fullRepresentativeSeatPerBrowserProfile: true
+      browserSmokePerActiveCatalog: true
+      repeatUnchangedRuntimeProbe: false
+    contentOnly:
+      liveSeatRequired: false
+      renderNavigationBrandingAndAccessibilityRequired: true
+    tabContract:
+      freshAffectedCatalogSeatRequired: true
+    runtime:
+      completeLabAndLifecycleSeatRequired: true
+    scale:
+      fiveSeatThenAdvertisedScaleRequired: true

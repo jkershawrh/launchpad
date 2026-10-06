@@ -1,0 +1,118 @@
+api_version: launchpad.redhat.com/v1alpha1
+kind: BrowserAccessCertificationProfiles
+
+metadata:
+  name: flightpath-single-origin-lab-access
+  public_origin: https://labs.smg-helix.ai
+  target_cluster: flightpath
+
+spec:
+  shared_gates:
+    - trusted_tls_without_browser_bypass
+    - email_and_code_claim
+    - same_identity_recovers_same_seat
+    - participant_landing_and_resume
+    - showroom_loads_on_public_origin
+    - terminal_connects_and_starts_in_assigned_namespace
+    - openshift_console_remains_in_showroom
+    - openshift_console_sso
+    - assigned_namespace_edit
+    - cross_namespace_denied
+    - cluster_scoped_access_denied
+    - no_recursive_iframe
+    - no_new_window_dependency
+    - no_403_404_or_500
+    - logout_and_resume
+    - reclaim_is_idempotent
+    - zero_residue
+
+  change_classes:
+    edge_only:
+      description: Public hostname, TLS, gateway, Console, OAuth, or proxy routing changed while catalog content and runtime remained immutable.
+      required_proof:
+        - one_full_representative_seat_per_profile
+        - one_browser_smoke_per_active_catalog
+      workload_recertification: false
+    content_only:
+      description: Showroom prose, navigation, styling, branding, or non-executable media changed without changing commands or runtime behavior.
+      required_proof:
+        - render_and_navigation
+        - links_and_code_blocks
+        - branding_and_accessibility
+      workload_recertification: false
+    tab_contract:
+      description: Tool tab source, proxy path, rewrite behavior, iframe behavior, or operator URL changed.
+      required_proof:
+        - fresh_one_seat_full_browser_journey_for_each_affected_catalog
+      workload_recertification: false
+    runtime:
+      description: Image, model, command, RBAC, resource profile, deployment, executable content, or service behavior changed.
+      required_proof:
+        - fresh_one_seat_full_lab_and_lifecycle_certification
+      workload_recertification: true
+    scale:
+      description: Advertised seat count, concurrency, capacity, or performance limit changed.
+      required_proof:
+        - five_seat_certification
+        - twenty_five_seat_certification_before_advertising_twenty_five
+      workload_recertification: true
+
+  profiles:
+    sandbox_console:
+      representative: ai-sandbox
+      additional_gates: [sandbox_workspace, console_namespace_scope]
+      catalogs: [ai-sandbox]
+    anythingllm_rag:
+      representative: intel-llm-cpu-serving
+      additional_gates: [anythingllm_ui, api_key_entry, document_upload, embedding, live_model_answer]
+      catalogs: [cpu-inference-serving, intel-llm-cpu-serving, rag-on-xeon]
+    terminal_console:
+      representative: openshift-operators-workshop
+      additional_gates: [terminal_commands, console_operator_discovery]
+      catalogs: [intel-llm-tool-calling, openshift-operators-workshop]
+    rest_workspace:
+      representative: agent-reliability
+      additional_gates: [workspace_ui, health_endpoint, representative_api_workflow, live_model_answer]
+      catalogs: [agent-reliability, hybrid-fraud-detection]
+    gradio_agent_workspace:
+      representative: intel-xeon6-agent-201
+      additional_gates: [gradio_assets, gradio_api, representative_agent_workflow, live_model_answer]
+      catalogs: [intel-xeon6-agent-201]
+    multi_agent_workspace:
+      representative: multi-agent-quickstart
+      additional_gates: [presentation, workspace_ui, three_agent_workflow, mcp_tools, guardrails, live_model_answer]
+      catalogs: [multi-agent-quickstart, operate-agentic-blueprint]
+    story_api:
+      representative: sovereign-ai-101
+      additional_gates: [interactive_story, story_api, executable_journey]
+      catalogs:
+        - agentic-ai-101
+        - sovereign-ai-101
+        - sovereign-ai-201
+        - sovereign-ai-301
+        - virtualization-ai-201
+        - virtualization-ai-301
+        - virtualization-ai-401
+        - virtualization-ai-501
+        - virtualization-ai-foundations-101
+    story_qualification:
+      representative: scale-agentic-blueprint
+      additional_gates: [interactive_story, qualification_ui, qualification_result]
+      catalogs: [agentic-ai-601, scale-agentic-blueprint]
+    network_dual_view:
+      representative: network-operations-agent
+      additional_gates: [live_story, operations_workspace, evidence_workflow, live_model_answer]
+      catalogs: [network-operations-agent]
+
+  promotion:
+    representative_result: GREEN-live-browser-profile
+    catalog_smoke_result: GREEN-live-browser-smoke
+    critical_failures:
+      - untrusted_tls
+      - console_authentication_loop
+      - cross_namespace_access
+      - recursive_iframe
+      - tool_route_403_404_or_500
+      - terminal_websocket_failure
+      - reclaim_residue
+    rule: Every representative and every active catalog smoke must be green for the exact unchanged candidate before the single-origin access gate closes.
