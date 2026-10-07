@@ -7,8 +7,6 @@ expected_cluster="${2:?usage: certify-agent-201-remote-seat.sh <namespace> <clus
 
 stage="cluster-identity"
 trap 'rc=$?; printf "seat_probe_failure stage=%s exit_code=%s\n" "$stage" "$rc" >&2' ERR
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-manifest_adapter="$repo_root/scripts/render-agent-201-short-routes.py"
 
 actual_cluster="$(
   oc get namespace "$namespace" \
@@ -79,22 +77,19 @@ test -n "$(
     --namespace "$namespace" -o jsonpath='{.data.api-key}'
 )"
 
-for manifest_contract in \
-  advisor-prompt-configmap.yaml:none \
-  solution-tools.yaml:tools \
-  solution-agent.yaml:agent \
-  solution-ui.yaml:app
+for manifest in \
+  advisor-prompt-configmap.yaml \
+  solution-tools.yaml \
+  solution-agent.yaml \
+  solution-ui.yaml
 do
-  manifest="${manifest_contract%%:*}"
-  route_alias="${manifest_contract##*:}"
   stage="workload-apply-${manifest%.yaml}"
   if apply_output="$(
-    if [[ "$route_alias" == "none" ]]; then
-      curl -fsS "$workload_base/$manifest"
-    else
-      python3 "$manifest_adapter" --source "$workload_base/$manifest" \
-        --route-alias "$route_alias"
-    fi \
+    # The immutable Launchpad workload revision already contains the
+    # namespace-safe short Route names. Apply that exact published artifact;
+    # adapting the former Triforce source here would reject the Launchpad URL
+    # before oc ever sees the manifest.
+    curl -fsS "$workload_base/$manifest" \
       | oc exec -i -n "$namespace" deploy/showroom -c terminal -- \
           oc apply -n "$namespace" -f - 2>&1
   )"; then

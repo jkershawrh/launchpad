@@ -762,6 +762,7 @@ def _run_command(args: argparse.Namespace) -> int:
     capacity: dict[str, Any] = {}
     workshop: dict[str, Any] = {}
     sessions: list[dict[str, Any]] = []
+    namespaces: list[str] = []
     seat_results: list[dict[str, Any]] = []
     ready_seconds: float | None = None
     cleanup_seconds: float | None = None

@@ -139,14 +139,14 @@ oc delete taskrun,pod -n "$namespace" \
   -l "tekton.dev/pipelineRun=${run_name}" \
   --ignore-not-found --wait=true >/dev/null
 stage=exercise-cleanup-definitions
-oc delete pipeline "$pipeline_name" task "$task_name" -n "$namespace" \
+oc delete "pipeline/$pipeline_name" "task/$task_name" -n "$namespace" \
   --ignore-not-found --wait=true >/dev/null
 
 stage=exercise-cleanup-verification
 remaining=unknown
 for _ in {1..30}; do
   remaining="$({
-    oc get task "$task_name" pipeline "$pipeline_name" pipelinerun "$run_name" \
+    oc get "task/$task_name" "pipeline/$pipeline_name" "pipelinerun/$run_name" \
       -n "$namespace" --ignore-not-found -o name
     oc get taskrun,pod -n "$namespace" \
       -l "tekton.dev/pipelineRun=${run_name}" --ignore-not-found -o name

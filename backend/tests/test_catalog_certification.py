@@ -777,10 +777,22 @@ def test_agent_201_remote_probe_reports_bounded_failure_stages_without_secrets()
     ):
         assert manifest in probe
     assert "semantic_response=workload_apply_failure" in probe
+    assert 'curl -fsS "$workload_base/$manifest"' in probe
+    assert "manifest_adapter" not in probe
     assert 'failure_class="forbidden"' in probe
     assert 'failure_class="invalid"' in probe
     assert "for attempt in $(seq 1 30)" in probe
     assert "BASH_COMMAND" not in probe
+
+
+def test_operator_probe_uses_unambiguous_resource_names_for_cleanup():
+    probe = (ROOT / "scripts/certify-operator-workshop-seat.sh").read_text()
+
+    assert 'oc delete "pipeline/$pipeline_name" "task/$task_name"' in probe
+    assert (
+        'oc get "task/$task_name" "pipeline/$pipeline_name" '
+        '"pipelinerun/$run_name"' in probe
+    )
 
 
 def test_network_probe_distinguishes_workspace_and_story_failures():
@@ -931,3 +943,79 @@ def test_generic_runner_places_probes_after_the_all_seat_barrier_and_reclaims(
     assert all(count == 0 for count in evidence["cleanup"]["resource_counts"].values())
     assert output.with_name(output.name + ".sha256").is_file()
     assert "not-a-real-key" not in capsys.readouterr().out
+
+
+def test_generic_runner_reclaims_when_workshop_fails_before_sessions_are_loaded(
+    tmp_path: Path, monkeypatch
+):
+    runner = _runner_module()
+    calls: list[str] = []
+
+    class FakeApi:
+        def __init__(self, *_args, **_kwargs):
+            pass
+
+        def capacity_preview(self, _body):
+            return {"can_provision": True, "selected_cluster": "arena"}
+
+        def create_order(self, _body, *, idempotency_key):
+            assert idempotency_key.endswith(":pre-session-failure")
+            return {"workshop_id": "workshop-failed", "cluster_ref": "arena"}
+
+        def confirm(self, _workshop_id):
+            return {"status": "queued"}
+
+        def workshop(self, _workshop_id):
+            if "reclaim" in calls:
+                return {"status": "completed", "cluster_ref": "arena", "seats": []}
+            return {"status": "failed", "cluster_ref": "arena", "seats": []}
+
+        def reclaim(self, _workshop_id):
+            calls.append("reclaim")
+            return {"status": "reclaiming"}
+
+    monkeypatch.setattr(runner, "LaunchpadApi", FakeApi)
+    monkeypatch.setattr(
+        runner,
+        "_kubeconfig_server",
+        lambda _kubeconfig: "https://api.arena.fm2aihpcsed.com:6443",
+    )
+    monkeypatch.setattr(
+        runner,
+        "_resource_counts",
+        lambda resources, **_kwargs: {resource: 0 for resource in resources},
+    )
+    monkeypatch.setattr(
+        runner,
+        "_git_value",
+        lambda *args: "a" * 40 if args == ("rev-parse", "HEAD") else "",
+    )
+    monkeypatch.setenv("TEST_LAUNCHPAD_API_KEY", "not-a-real-key")
+    monkeypatch.setenv("KUBECONFIG", str(tmp_path / "arena-kubeconfig"))
+    output = tmp_path / "evidence" / "pre-session-failure.json"
+    args = SimpleNamespace(
+        contract=str(CONTRACT_PATH),
+        intake=str(INTAKE_PATH),
+        seats=5,
+        exposure_policy="internal",
+        api_key_env="TEST_LAUNCHPAD_API_KEY",
+        api_base_url="https://launchpad.example/api/v1",
+        tenant_id="certification-tenant",
+        owner_id="proof-runner",
+        ttl="2h",
+        run_id="pre-session-failure",
+        output=str(output),
+        poll_interval=0.001,
+        ca_bundle=None,
+        insecure=False,
+        allow_dirty=True,
+    )
+
+    assert runner._run_command(args) == 1
+    evidence = json.loads(output.read_text())
+
+    assert calls == ["reclaim"]
+    assert evidence["cleanup"]["status"] == "completed"
+    assert all(count == 0 for count in evidence["cleanup"]["resource_counts"].values())
+    assert evidence["seat_results"] == []
+    assert any("Workshop stopped in failed state" in error for error in evidence["errors"])
