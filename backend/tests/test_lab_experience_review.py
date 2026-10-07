@@ -280,7 +280,7 @@ def test_multi_agent_301_exact_release_requires_story_and_correlation_recertific
     values = intake["runtime"]["workload"]["helm_values"]
     assert values["image"] == {
         "repository": "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart",
-        "digest": "sha256:73349a67af25d3d1c6774841a950cf00570c9cc58ac5ee4871da3d56c85e8bd6",
+        "digest": "sha256:7f5006d4c66cfa44da344241710250727be6aa6e0a5d9023fe963f26c22c46d1",
     }
     assert values["presentation"]["enabled"] is True
     assert [tab["id"] for tab in intake["runtime"]["tabs"]] == [
