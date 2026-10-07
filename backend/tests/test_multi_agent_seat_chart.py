@@ -45,8 +45,13 @@ def test_flightpath_runtime_builds_are_pinned_and_include_the_learner_override()
         "43889bc9444f9ef07f5b1a88e7de534af9647264",
     }
     for build in builds:
+        dockerfile = build["spec"]["source"]["dockerfile"]
         assert build["spec"]["source"]["git"]["uri"] == SOURCE_REPOSITORY
-        assert "AGENT_MAX_TOKENS_OVERRIDE" in build["spec"]["source"]["dockerfile"]
+        assert "AGENT_MAX_TOKENS_OVERRIDE" in dockerfile
+        assert "MODEL_API_KEY = os.environ.get" in dockerfile
+        assert "MODEL_NAME = /a MODEL_API_KEY" not in dockerfile
+        assert '/chat\\/completions",/a' not in dockerfile
+        assert "headers=_headers()" not in dockerfile
         assert build["spec"]["output"]["to"]["name"].startswith(
             "quay.io/rh-ee-jkershaw/launchpad-multi-agent-quickstart:"
         )
