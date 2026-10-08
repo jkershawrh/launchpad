@@ -203,7 +203,7 @@ def test_agent_201_certification_targets_exact_flightpath_candidate_release():
         for assertion in contract["spec"]["seat_probe"]["json_assertions"]
         if assertion["path"] == "cluster_ref"
     } == {"flightpath"}
-    assert intake["catalog"]["version"] == "1.0.9-flightpath.1"
+    assert intake["catalog"]["version"] == "1.0.10-flightpath.1"
     assert intake["runtime"]["workshop_cluster_ref"] == "flightpath"
     assert intake["catalog"]["status"] == "active"
     assert intake["certification"]["stage"] == "1-seat-certified"

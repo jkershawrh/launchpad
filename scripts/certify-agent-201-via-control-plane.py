@@ -36,7 +36,7 @@ warnings.filterwarnings("ignore", message="Unverified HTTPS request")
 
 CONTENT_BASE = (
     "https://raw.githubusercontent.com/jkershawrh/launchpad/"
-    "9526ede61b5c31949f3a1bedd133b5a17e554178/"
+    "f6702ef915a715582fbecb47d3457099855800fd/"
     "content-intel-xeon6-agent-201/manifests"
 )
 EXPECTED_TOOLS = {

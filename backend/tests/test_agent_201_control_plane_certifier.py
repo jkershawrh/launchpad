@@ -13,8 +13,8 @@ CATALOG = ROOT / "catalog/intel-xeon6-agent-201/catalog-item.yaml"
 INTAKE = ROOT / "catalog-onboarding/intel-xeon6-agent-201.yaml"
 CERTIFICATION = ROOT / "certification/catalog/intel-xeon6-agent-201.yaml"
 
-SOURCE_REVISION = "1a650e428ed8d8f0652b97827bb002b643c74725"
-WORKLOAD_REVISION = "9526ede61b5c31949f3a1bedd133b5a17e554178"
+SOURCE_REVISION = "f6702ef915a715582fbecb47d3457099855800fd"
+WORKLOAD_REVISION = "f6702ef915a715582fbecb47d3457099855800fd"
 WORKLOAD_BASE = (
     "https://raw.githubusercontent.com/jkershawrh/launchpad/"
     f"{WORKLOAD_REVISION}/content-intel-xeon6-agent-201/manifests"
@@ -52,7 +52,7 @@ def test_remote_certifier_runs_the_documented_agent_201_journey():
         assert expected in source
 
     assert "https://raw.githubusercontent.com/jkershawrh/launchpad/" in source
-    assert "9526ede61b5c31949f3a1bedd133b5a17e554178/" in source
+    assert "f6702ef915a715582fbecb47d3457099855800fd/" in source
     assert "content-intel-xeon6-agent-201/manifests" in source
 
 
@@ -122,9 +122,9 @@ def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():
     catalog = yaml.safe_load(CATALOG.read_text())
 
     assert intake["sources"]["showroom"] == {
-        "repo_url": "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git",
+        "repo_url": "https://github.com/jkershawrh/launchpad.git",
         "revision": SOURCE_REVISION,
-        "playbook": "site.yml",
+        "playbook": "site-intel-xeon6-agent-201.yml",
         "start_path": ".",
     }
     assert intake["sources"]["workload"] == {
@@ -145,7 +145,7 @@ def test_agent_201_catalog_pins_the_reviewed_source_and_resolved_workload():
     metadata = catalog["metadata"]
     assert metadata["showroom_content_repo_url"] == intake["sources"]["showroom"]["repo_url"]
     assert metadata["showroom_content_ref"] == SOURCE_REVISION
-    assert metadata["showroom_content_playbook"] == "site.yml"
+    assert metadata["showroom_content_playbook"] == "site-intel-xeon6-agent-201.yml"
     assert metadata["source_content_revision"] == SOURCE_REVISION
     assert metadata["workload_revision"] == WORKLOAD_REVISION
     assert metadata["certification_stage"] == "1-seat-certified"
@@ -221,13 +221,17 @@ def test_agent_201_certification_fails_closed_on_inference_identity_and_exports_
         assert image in source
 
 
-def test_agent_201_evidence_records_exact_candidate_live_certification():
+def test_agent_201_evidence_preserves_the_previous_live_certification():
     review = yaml.safe_load(
         (ROOT / "evidence/lab-experience-review-20260930.yaml").read_text()
     )["labs"]["intel-xeon6-agent-201"]
 
     assert review["overall_status"] == "one-seat-live-certified-active"
-    assert review["source_truth"]["candidate_revision"] == SOURCE_REVISION
+    # Historical evidence remains immutable. The corrected unified-source
+    # candidate receives a new evidence bundle after live recertification.
+    assert review["source_truth"]["candidate_revision"] == (
+        "1a650e428ed8d8f0652b97827bb002b643c74725"
+    )
     assert review["source_truth"]["certification_transfer"] == "exact-candidate-only"
     assert review["live_certification"]["result"] == "GREEN-live"
     assert review["live_certification"]["rubric_score"] == 100

@@ -344,10 +344,10 @@ def test_candidate_isolates_agent_201_on_flightpath() -> None:
     assert metadata["workshop_cluster_ref"] == "flightpath"
     assert metadata["certification_stage"] == "1-seat-certified"
     assert metadata["showroom_content_repo_url"] == (
-        "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git"
+        "https://github.com/jkershawrh/launchpad.git"
     )
     assert metadata["showroom_content_ref"] == (
-        "1a650e428ed8d8f0652b97827bb002b643c74725"
+        "f6702ef915a715582fbecb47d3457099855800fd"
     )
     assert metadata["inference_endpoint"] == "direct_vllm_candidate"
 

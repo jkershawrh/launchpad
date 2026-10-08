@@ -13,14 +13,14 @@ INTEL_GUIDED_LABS = [
     {
         "catalog_id": "intel-xeon6-agent-201",
         "display_name": "Intel AI 201: Build an AI Agent on Intel Xeon 6",
-        "playbook": "site.yml",
+        "playbook": "site-intel-xeon6-agent-201.yml",
         "content_path": "content-intel-xeon6-agent-201",
         "title": "Intel Xeon 6 201 — Building an AI Agent",
         "model": "granite-3.2-8b-tools",
         "workspace_route": "app",
-        "content_ref": "1a650e428ed8d8f0652b97827bb002b643c74725",
+        "content_ref": "f6702ef915a715582fbecb47d3457099855800fd",
         "status": "active",
-        "content_repo": "https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git",
+        "content_repo": "https://github.com/jkershawrh/launchpad.git",
         "max_workshop_seats": 1,
         "certification_stage": "1-seat-certified",
         "external_source": True,
@@ -391,9 +391,9 @@ def test_agent_201_terminal_calls_use_the_namespace_service_without_tls_bypass()
         for filename in ("03-wire-agent.adoc", "04-test-and-tune.adoc")
     )
 
-    assert catalog["version"] == "1.0.9-flightpath.1"
+    assert catalog["version"] == "1.0.10-flightpath.1"
     assert catalog["metadata"]["showroom_content_ref"] == (
-        "1a650e428ed8d8f0652b97827bb002b643c74725"
+        "f6702ef915a715582fbecb47d3457099855800fd"
     )
     assert 'ADVISOR_API_URL="http://solution-agent:8082"' in exercises
     assert exercises.count("${ADVISOR_API_URL}/api/v1/advise") == 5

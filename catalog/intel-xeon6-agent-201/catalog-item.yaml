@@ -3,7 +3,7 @@ display_name: 'Intel AI 201: Build an AI Agent on Intel Xeon 6'
 description: Build and tune a namespace-isolated AI solution advisor with LangGraph,
   MCP tools, and shared Intel Xeon inference.
 category: guided_build
-version: 1.0.9-flightpath.1
+version: 1.0.10-flightpath.1
 status: active
 required_capabilities:
 - openshift
@@ -39,9 +39,9 @@ metadata:
   shared_blueprint: red-hat-intel-agentic-v1
   solution_family: agentic_ai
   showroom: true
-  showroom_content_repo_url: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  showroom_content_ref: 1a650e428ed8d8f0652b97827bb002b643c74725
-  showroom_content_playbook: site.yml
+  showroom_content_repo_url: https://github.com/jkershawrh/launchpad.git
+  showroom_content_ref: f6702ef915a715582fbecb47d3457099855800fd
+  showroom_content_playbook: site-intel-xeon6-agent-201.yml
   showroom_content_start_path: .
   operator_workshop: true
   content_only: false
@@ -93,7 +93,7 @@ metadata:
   workshop_node_headroom_pods: 0
   workshop_node_required_labels: {}
   workload_repo: https://github.com/jkershawrh/launchpad.git
-  workload_revision: 9526ede61b5c31949f3a1bedd133b5a17e554178
+  workload_revision: f6702ef915a715582fbecb47d3457099855800fd
   workload_deploy_type: manifests
   workload_deployment_scope: seat
   workload_deploy_path: content-intel-xeon6-agent-201/manifests
@@ -109,6 +109,6 @@ metadata:
   workload_routes:
     workspace: app
   workload_readiness: []
-  source_content_repo: https://github.com/jkershawrh/intel-xeon6-ai-agent-201.git
-  source_content_revision: 1a650e428ed8d8f0652b97827bb002b643c74725
+  source_content_repo: https://github.com/jkershawrh/launchpad.git
+  source_content_revision: f6702ef915a715582fbecb47d3457099855800fd
   source_references: {}

@@ -68,9 +68,9 @@ spec:
       - path: proof_export.contains_sensitive_values
         equals: false
       - path: provenance.showroom_revision
-        equals: 1a650e428ed8d8f0652b97827bb002b643c74725
+        equals: f6702ef915a715582fbecb47d3457099855800fd
       - path: provenance.workload_revision
-        equals: 9526ede61b5c31949f3a1bedd133b5a17e554178
+        equals: f6702ef915a715582fbecb47d3457099855800fd
       - path: runtime_images.solution_tools
         equals: "quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
       - path: runtime_images.solution_agent

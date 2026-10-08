@@ -6,9 +6,9 @@ expected_cluster="${2:?usage: certify-agent-201-catalog-seat.sh <namespace> <clu
 : "${KUBECONFIG:?KUBECONFIG must point to the expected execution cluster credential}"
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-showroom_revision="1a650e428ed8d8f0652b97827bb002b643c74725"
-workload_revision="9526ede61b5c31949f3a1bedd133b5a17e554178"
-workload_base="https://raw.githubusercontent.com/jkershawrh/launchpad/9526ede61b5c31949f3a1bedd133b5a17e554178/content-intel-xeon6-agent-201/manifests"
+showroom_revision="f6702ef915a715582fbecb47d3457099855800fd"
+workload_revision="f6702ef915a715582fbecb47d3457099855800fd"
+workload_base="https://raw.githubusercontent.com/jkershawrh/launchpad/f6702ef915a715582fbecb47d3457099855800fd/content-intel-xeon6-agent-201/manifests"
 expected_tools_image="quay.io/redhat-gpte/triforce-solution-tools@sha256:856874dc984eeb05ec0aeadb6f49265a58687eed17e5a92bc769875d3df44850"
 expected_agent_image="quay.io/redhat-gpte/triforce-solution-agent@sha256:60897d598014f040c9f515312233b5a22df80c93ba3342c16f681be027933d03"
 expected_ui_image="quay.io/redhat-gpte/triforce-solution-ui@sha256:9388d91c19e845b8dcee12ef9037e4b93afadea4df5e7912dbe0a6151b8605fb"
