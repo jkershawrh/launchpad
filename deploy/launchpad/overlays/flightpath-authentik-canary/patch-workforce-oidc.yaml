@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launchpad-config
+data:
+  # Only these hosts require a signed Authentik token. Existing Flightpath
+  # requester/admin hosts continue using their current OpenShift login.
+  OIDC_JWT_HOSTS: "launchpad-auth-candidate.apps.flightpath.fm2aihpcsed.com,launchpad-admin-auth-candidate.apps.flightpath.fm2aihpcsed.com"
+  OIDC_ISSUER: "https://auth.smg-helix.ai/application/o/launchpad-workforce/"
+  OIDC_JWKS_URL: "https://auth.smg-helix.ai/application/o/launchpad-workforce/jwks/"
+  OIDC_AUDIENCES: "launchpad-workforce"

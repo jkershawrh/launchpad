@@ -1,9 +1,8 @@
 import pytest
+from app.api.routers.auth_identity import current_identity
+from app.auth import oauth
 from fastapi import HTTPException
 from starlette.requests import Request
-
-from app.auth import oauth
-from app.api.routers.auth_identity import current_identity
 
 
 def _request(headers: list[tuple[bytes, bytes]], host: bytes = b"launchpad.apps.example.com") -> Request:
@@ -64,6 +63,71 @@ def test_forwarded_identity_is_rejected_on_public_api_hostname(monkeypatch):
     with pytest.raises(HTTPException) as exc_info:
         oauth.get_current_user(request)
     assert exc_info.value.status_code == 401
+
+
+def test_oidc_host_requires_a_bearer_token_and_rejects_spoofed_headers(monkeypatch):
+    monkeypatch.setattr(oauth, "AUTH_ENABLED", True)
+    monkeypatch.setattr(oauth, "OIDC_JWT_HOSTS", {"requester-auth.example.com"})
+    request = _request(
+        [(b"x-forwarded-user", b"kube:admin")],
+        host=b"requester-auth.example.com",
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        oauth.get_current_user(request)
+
+    assert exc_info.value.status_code == 401
+    assert "Bearer" in exc_info.value.detail
+
+
+def test_oidc_claims_are_mapped_to_stable_identity_tenant_and_admin(monkeypatch):
+    monkeypatch.setattr(oauth, "AUTH_ENABLED", True)
+    monkeypatch.setattr(oauth, "OIDC_JWT_HOSTS", {"requester-auth.example.com"})
+    monkeypatch.setattr(
+        oauth,
+        "verify_oidc_token",
+        lambda token: {
+            "sub": "authentik-subject-123",
+            "preferred_username": "partner-user",
+            "email": "partner@example.com",
+            "groups": ["launchpad-admins", "launchpad-tenant:partner-b"],
+        },
+    )
+
+    user = oauth.get_current_user(_request(
+        [(b"authorization", b"Bearer signed-token")],
+        host=b"requester-auth.example.com",
+    ))
+
+    assert user.subject == "authentik-subject-123"
+    assert user.username == "partner-user"
+    assert user.email == "partner@example.com"
+    assert user.tenant_ids == ["partner-b"]
+    assert user.is_admin is True
+    assert user.identity_verified is True
+
+
+def test_oidc_host_does_not_fall_back_to_legacy_headers_when_token_is_invalid(monkeypatch):
+    monkeypatch.setattr(oauth, "AUTH_ENABLED", True)
+    monkeypatch.setattr(oauth, "OIDC_JWT_HOSTS", {"requester-auth.example.com"})
+
+    def reject_token(_token: str):
+        raise oauth.OIDCTokenError("signature verification failed")
+
+    monkeypatch.setattr(oauth, "verify_oidc_token", reject_token)
+    request = _request(
+        [
+            (b"authorization", b"Bearer invalid-token"),
+            (b"x-forwarded-user", b"kube:admin"),
+        ],
+        host=b"requester-auth.example.com",
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        oauth.get_current_user(request)
+
+    assert exc_info.value.status_code == 401
+    assert "token" in exc_info.value.detail.lower()
 
 
 def test_current_identity_contract_does_not_expose_groups_or_tenants():

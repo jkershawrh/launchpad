@@ -48,4 +48,10 @@ data:
   # plane a unique ownership identity.
   LAUNCHPAD_CONTROL_PLANE_ID: ""
   LAUNCHPAD_MODE: "openshift"
+  # Workforce OIDC is opt-in per hostname. Empty values preserve the current
+  # OpenShift oauth-proxy contract and fail closed if a canary is incomplete.
+  OIDC_JWT_HOSTS: ""
+  OIDC_ISSUER: ""
+  OIDC_JWKS_URL: ""
+  OIDC_AUDIENCES: ""
   CORS_ORIGINS: "https://launchpad.apps.example.com,https://launchpad-admin.apps.example.com"
