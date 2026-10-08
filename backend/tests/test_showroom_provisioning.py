@@ -352,10 +352,14 @@ def test_builds_scoped_same_origin_showroom_proxy_route():
         target_port="http",
         labels={"app.kubernetes.io/managed-by": "launchpad"},
         rewrite_target="/",
+        route_timeout="300s",
     )
 
     assert route["metadata"]["name"] == "showroom-proxy-workspace"
-    assert route["metadata"]["annotations"] == {"haproxy.router.openshift.io/rewrite-target": "/"}
+    assert route["metadata"]["annotations"] == {
+        "haproxy.router.openshift.io/rewrite-target": "/",
+        "haproxy.router.openshift.io/timeout": "300s",
+    }
     assert route["spec"]["host"] == ("showroom-launchpad-seat-1.apps.flightpath.example.com")
     assert route["spec"]["path"] == "/workspace"
     assert route["spec"]["to"]["name"] == "network-operations-agent-app"
@@ -376,7 +380,8 @@ def test_same_origin_proxy_can_target_a_declared_service_before_learner_deploys_
                 "rewrite_target": "/",
                 "upstream_service": "solution-ui",
                 "upstream_port": 8080,
-                "proxy_paths": [{"path": "/api/v1"}],
+                "route_timeout": "300s",
+                "proxy_paths": [{"path": "/api/v1", "route_timeout": "300s"}],
             }
         ],
         namespace="launchpad-seat-1",
@@ -393,6 +398,26 @@ def test_same_origin_proxy_can_target_a_declared_service_before_learner_deploys_
     ]
     assert all(call.args[4]["spec"]["to"]["name"] == "solution-ui" for call in created)
     assert all(call.args[4]["spec"]["port"] == {"targetPort": 8080} for call in created)
+    assert all(
+        call.args[4]["metadata"]["annotations"][
+            "haproxy.router.openshift.io/timeout"
+        ]
+        == "300s"
+        for call in created
+    )
+
+
+def test_showroom_proxy_rejects_invalid_route_timeout():
+    with pytest.raises(ValueError, match="unsafe Route timeout"):
+        OpenShiftProvisioningAdapter._build_showroom_proxy_route(
+            namespace="launchpad-seat-1",
+            apps_domain="apps.flightpath.example.com",
+            path="/api/v1",
+            service_name="solution-ui",
+            target_port=8080,
+            labels={},
+            route_timeout="300s; injected=true",
+        )
 
 
 def test_same_origin_showroom_proxy_rejects_root_and_escape_paths():

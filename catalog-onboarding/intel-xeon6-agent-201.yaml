@@ -90,8 +90,10 @@ runtime:
       rewrite_target: /
       upstream_service: solution-ui
       upstream_port: 8080
+      route_timeout: 300s
       proxy_paths:
         - path: /api/v1
+          route_timeout: 300s
     - id: openshift-console
       title: OpenShift Console
       source: cluster.console_url

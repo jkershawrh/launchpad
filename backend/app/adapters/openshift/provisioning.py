@@ -905,6 +905,7 @@ http {{
         target_port: str | int | None,
         labels: dict[str, str],
         rewrite_target: str = "",
+        route_timeout: str = "",
     ) -> dict:
         OpenShiftProvisioningAdapter._validate_showroom_proxy_path(path, path)
         annotations = {}
@@ -912,6 +913,10 @@ http {{
             if not rewrite_target.startswith("/") or ".." in rewrite_target.split("/"):
                 raise ValueError(f"Unsafe Showroom proxy rewrite target '{rewrite_target}'")
             annotations["haproxy.router.openshift.io/rewrite-target"] = rewrite_target
+        if route_timeout:
+            if not re.fullmatch(r"[1-9][0-9]*(?:us|ms|s|m|h|d)", route_timeout):
+                raise ValueError(f"Cannot use unsafe Route timeout '{route_timeout}'")
+            annotations["haproxy.router.openshift.io/timeout"] = route_timeout
         route = {
             "apiVersion": "route.openshift.io/v1",
             "kind": "Route",
@@ -979,6 +984,7 @@ http {{
                 {
                     "path": same_origin_path,
                     "rewrite_target": str(spec.get("rewrite_target", "")),
+                    "route_timeout": str(spec.get("route_timeout", "")),
                 },
                 *list(spec.get("proxy_paths", [])),
             ]
@@ -993,6 +999,10 @@ http {{
                     target_port=target_port,
                     labels=labels,
                     rewrite_target=str(path_spec.get("rewrite_target", "")),
+                    route_timeout=str(
+                        path_spec.get("route_timeout")
+                        or spec.get("route_timeout", "")
+                    ),
                 )
                 route_name = route["metadata"]["name"]
                 try:

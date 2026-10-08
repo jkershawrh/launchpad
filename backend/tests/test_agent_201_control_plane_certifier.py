@@ -164,7 +164,8 @@ def test_agent_201_catalog_and_source_expose_the_three_operator_tabs():
             "rewrite_target": "/",
             "upstream_service": "solution-ui",
             "upstream_port": 8080,
-            "proxy_paths": [{"path": "/api/v1"}],
+            "route_timeout": "300s",
+            "proxy_paths": [{"path": "/api/v1", "route_timeout": "300s"}],
         },
         {
             "id": "openshift-console",
