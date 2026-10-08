@@ -5,6 +5,7 @@ import { useBranding } from '../context/useBranding';
 import type { AvailableModel, BrandingProfile, CatalogItem, LabRequest, Tenant } from '../api/types';
 import { defaultModelSelection, toggleModelSelection } from '../modelAccessContract';
 import { allowedExposurePolicies, participantCatalog } from '../catalogVisibility';
+import { redirectToPublicLab } from '../publicLabNavigation';
 
 export default function LabRequestForm({ embedded = false }: { embedded?: boolean }) {
   const navigate = useNavigate();
@@ -156,8 +157,8 @@ export default function LabRequestForm({ embedded = false }: { embedded?: boolea
     setSubmitting(true);
     setError('');
     try {
-      const validated = await api.provisionLabToReady(pendingPublicRequest.request_id);
-      navigate(`/sessions/${validated.session_id}`);
+      await api.provisionLabToReady(pendingPublicRequest.request_id);
+      redirectToPublicLab(pendingPublicRequest.public_url!);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to provision lab');
       setSubmitting(false);

@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { api } from '../api/client';
+import { redirectToPublicLab } from '../publicLabNavigation';
 import LabRequestForm from './LabRequestForm';
 
 const navigate = vi.fn();
@@ -23,6 +24,10 @@ vi.mock('../api/client', () => ({
     provisionLabToReady: vi.fn(),
     listAvailableModels: vi.fn(),
   },
+}));
+
+vi.mock('../publicLabNavigation', () => ({
+  redirectToPublicLab: vi.fn(),
 }));
 
 describe('individual lab request journey', () => {
@@ -92,6 +97,43 @@ describe('individual lab request journey', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'I saved the code — start provisioning' }));
     await waitFor(() => expect(api.provisionLabToReady).toHaveBeenCalledWith('request-1'));
-    expect(navigate).toHaveBeenCalledWith('/sessions/session-1');
+    expect(redirectToPublicLab).toHaveBeenCalledWith(
+      'https://labs.example.test/labs/agentic-ai-101-request-1',
+    );
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('keeps an internal individual lab in the requester My Labs journey', async () => {
+    vi.mocked(api.createLabRequest).mockResolvedValue({
+      request_id: 'request-internal-1',
+      tenant_id: 'flightpath-candidate',
+      requester_id: 'instructor-1',
+      catalog_item_id: 'agentic-ai-101',
+      requested_mode: 'guided_build',
+      persistence: 'ephemeral',
+      status: 'approved',
+      created_at: '2026-10-05T12:00:00Z',
+      exposure_policy: 'internal',
+    });
+    vi.mocked(api.provisionLabToReady).mockResolvedValue({
+      session_id: 'session-internal-1',
+      request_id: 'request-internal-1',
+      tenant_id: 'flightpath-candidate',
+      catalog_item_id: 'agentic-ai-101',
+      status: 'ready',
+      resources: {},
+      validation_results: [],
+      lifecycle_events: [],
+    });
+
+    render(<MemoryRouter initialEntries={['/request?catalog_item=agentic-ai-101']}><LabRequestForm /></MemoryRouter>);
+
+    await screen.findByRole('option', { name: 'Agentic AI 101 (guided build)' });
+    fireEvent.change(screen.getByLabelText('Tenant'), { target: { value: 'flightpath-candidate' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Launch Lab' }));
+
+    await waitFor(() => expect(api.provisionLabToReady).toHaveBeenCalledWith('request-internal-1'));
+    expect(navigate).toHaveBeenCalledWith('/sessions/session-internal-1');
+    expect(redirectToPublicLab).not.toHaveBeenCalled();
   });
 });
